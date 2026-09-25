@@ -31,7 +31,12 @@ def setup(tmp_path,monkeypatch):
         'b':{'controls':{},'actions':{}}}
     state={'working_region':'b','next_action_mode':'explore','interactive_regions':['a'],'observation':{'id':'old','control_refs':['c']}}
     for rid,r in records.items():r.update(id=rid,name=rid,observations=[],transitions=[],tasks={})
+    records['a']['actions']['old'].update(control='c',operation='click',delivery='executed_receipt_zero',result={'exception':'none'})
+    records['a']['observations']=[{'image':str(run/'control.png'),'image_quality':'clear','image_quality_reason':'test source region'}]
+    monkeypatch.setattr(m.image_match,'locate',lambda *a:{'accepted':True,'box':[10,10,30,30]})
     (run/'run_manifest.json').write_text('{}')
+    import navigation_identity
+    monkeypatch.setattr(navigation_identity,'load',lambda *a:{'interactive_areas':[[0,0,100,100]],'region_bounds':{rid:[0,0,100,100] for rid in state['interactive_regions']}})
     monkeypatch.setattr(m.discovery,'load',lambda r:(snap,records,state))
     def publish(run,tag,change):change(records,state,snap,tmp_path);return {'snapshot':tag}
     monkeypatch.setattr(m.discovery,'publish',publish)
@@ -58,7 +63,7 @@ def test_known_edge_updates_location_without_graph_registration(tmp_path,monkeyp
 
 def test_failed_landing_hands_off_without_retry(tmp_path,monkeypatch):
     m,run,records,state,t,q=setup(tmp_path,monkeypatch);before=deepcopy(records)
-    monkeypatch.setattr(m,'same_surface',lambda old,new:Path(old).name!='old_after.png')
+    monkeypatch.setattr(m,'confirm_regions',lambda *a:[])
     result=m.try_step(t,q,run/'current.png')
     assert state['next_action_mode']=='discover' and t.account['gui_started']==1
     assert 'old' in state['navigation_failed_edges'] and records==before
@@ -152,5 +157,7 @@ def test_legacy_replay_uses_recorded_point_not_crop_center(monkeypatch):
 def test_destination_menu_must_match_even_when_whole_frame_matches(tmp_path,monkeypatch):
     m=module(monkeypatch)
     monkeypatch.setattr(m.image_match,'locate',lambda *a:{'accepted':False,'box':[0,0,10,10]})
+    import foreground_scope
+    monkeypatch.setattr(foreground_scope,'load',lambda *a:{'region_bounds':{'menu':[0,0,10,10]},'interactive_areas':[[0,0,10,10]]})
     records={'menu':{'observations':[{'image':'menu.png','evidence':{'observation':'after'}}]}}
     assert m.confirm_regions(tmp_path,records,['menu'],'after','current.png')==[]

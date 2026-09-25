@@ -57,15 +57,19 @@ def replay_point(row, recorded, before, current_box):
 
 def confirm_regions(snapshot,records,refs,observation,frame):
     """Confirm destination crops themselves; global similarity cannot prove an overlay."""
+    from foreground_scope import load,contains
+    scope=load(snapshot.parent.parent,frame)
+    if not scope:return []
     confirmed=[]
     for rid in refs:
+        if rid not in scope.get('region_bounds',{}):continue
         row=next((v for v in reversed(records.get(rid,{}).get('observations',[]))
                   if templates.usable(v) and v.get('evidence',{}).get('observation')==observation),None)
         if not row:continue
         try:
             hit=image_match.locate((snapshot/'regions'/rid/row['image']).resolve(),frame)
         except (OSError,ValueError):continue
-        if hit.get('accepted'):confirmed.append(rid)
+        if hit.get('accepted') and contains(hit['box'],scope):confirmed.append(rid)
     return confirmed
 
 
@@ -76,7 +80,7 @@ def handoff(transport, frame, event, reason):
                      pending_frame=str(frame),navigation_handoff=note,
                      correction_context='自动回溯交接：'+json.dumps(note,ensure_ascii=False)+'。先确认当前落点，不重放未确认动作；寻找其他入口时先发现登记。')
         state.setdefault('navigation_failed_edges',[])
-        if edge['attempt'] not in state['navigation_failed_edges']:state['navigation_failed_edges'].append(edge['attempt'])
+        if not event.get('needs_foreground') and edge['attempt'] not in state['navigation_failed_edges']:state['navigation_failed_edges'].append(edge['attempt'])
         state.pop('visual_navigation',None)
     discovery.publish(run,'navigation-handoff-'+uuid.uuid4().hex[:12],change)
     (run/'visual_navigation_pending.json').unlink(missing_ok=True)
@@ -90,7 +94,7 @@ def resume_pending(transport, frame):
 
 
 def shortcut_match(snapshot,records,state,edge,frame):
-    """A future click needs its historical source surface or an observed foreground owner."""
+    """Reuse a verified edge only through its currently interactive local entry."""
     source=edge['source_region'];cid=edge.get('source_control')
     if edge.get('operation') not in ('tap','click') or edge['attempt'] in state.get('navigation_failed_edges',[]):return None
     r=records.get(source,{});a=r.get('actions',{}).get(edge['attempt'],{})
@@ -100,31 +104,10 @@ def shortcut_match(snapshot,records,state,edge,frame):
             or result.get('exception','none')!='none'
             or not (result.get('exception')=='none' or result.get('status')=='observed_effect')
             or cid not in r.get('controls',{})):return None
-    evidence=a.get('evidence',{});before=evidence.get('before_image')
-    if not before or not evidence.get('after_image') or edge['target_region'] not in a.get('interactive_regions',[]):return None
-    def path(value):return (snapshot/'regions'/source/value).resolve()
-    before=path(before)
-    row=next((v for v in reversed(r['controls'][cid]['observations'])
-              if templates.usable(v) and v.get('evidence',{}).get('observation')==evidence.get('before_observation')),None)
-    if not row:return None
-    box=click_box(row,locate_control(path(row['image']),before,frame))
-    if box is None:return None
-    if same_surface(before,frame):return {'box':box,'basis':'historical_source_surface','image':str(path(row['image'])),**{k:row[k] for k in ('bbox','click_bbox') if k in row}}
-    # A region seen behind a modal cannot become actionable from one matching icon.
-    if source not in state.get('interactive_regions',[]):return None
-    observed=state.get('observation') or {}
-    observed_frame=observed.get('image')
-    if observed_frame:observed_frame=Path(snapshot).parent.parent/observed_frame
-    if (cid in observed.get('control_refs',[]) and observed_frame
-            and same_surface(observed_frame,frame)):
-        return {'box':box,'basis':'current_observed_surface_and_control','image':str(path(row['image'])),**{k:row[k] for k in ('bbox','click_bbox') if k in row}}
-    region=next((v for v in reversed(r.get('observations',[]))
-                 if templates.usable(v) and v.get('evidence',{}).get('observation')==evidence.get('before_observation')),None)
-    if not region:return None
-    region_box=locate_control(path(region['image']),before,frame)
-    if region_box and region_box[0]<=box[0]<box[2]<=region_box[2] and region_box[1]<=box[1]<box[3]<=region_box[3]:
-        return {'box':box,'basis':'observed_foreground_region_and_control','image':str(path(row['image'])),**{k:row[k] for k in ('bbox','click_bbox') if k in row}}
-    return None
+    evidence=a.get('evidence',{})
+    if not evidence.get('before_image') or not evidence.get('after_image') or edge['target_region'] not in a.get('interactive_regions',[]):return None
+    from navigation_identity import entry
+    return entry(snapshot,records,state,source,cid,frame)
 
 
 def try_step(transport, request, frame):
@@ -155,14 +138,19 @@ def try_step(transport, request, frame):
     def fail(reason):
         write_json(folder/'result.json',{**event,'reason':reason})
         return handoff(transport,frame,event,reason)
-    if not before or not after or (not shortcut and not same_surface(before,frame)):return fail('当前画面与历史动作来源不匹配，动作未执行')
+    if not before or not after:return fail('历史动作缺少前后证据，动作未执行')
+    if edge['operation'] in ('tap','click') and not shortcut:
+        from foreground_scope import load
+        event['needs_foreground']=load(run,frame) is None
+        return fail('当前截图缺少前景证据或入口未可靠对应，动作未执行')
+    if edge['operation']=='back' and not same_surface(before,frame):return fail('系统返回来源未确认，动作未执行')
     proposal={'action':'back' if edge['operation']=='back' else 'click','target':'系统返回','x':None,'y':None,
               'text':None,'end_x':None,'end_y':None,'reason':'复用图中已验证导航边'}
     if proposal['action']=='click':
         control=records[source]['controls'][edge['source_control']]
         row=shortcut if shortcut else templates.latest(control)
         row={**row,'image':str(resolve(row['image']))} if row else None
-        box=locate_control(row['image'],before,frame) if row else None
+        box=shortcut['identity_box'] if shortcut else (locate_control(row['image'],before,frame) if row else None)
         historical={}
         evidence_dir=action.get('evidence',{}).get('execution_dir')
         if evidence_dir:
@@ -176,10 +164,14 @@ def try_step(transport, request, frame):
     write_json(folder/'proposal.json',proposal)
     transport.screenshot(folder/'pre_dispatch.png');frame=folder/'pre_dispatch.png'
     if shortcut:
-        if not shortcut_match(snapshot,records,state,edge,frame):return fail('投递前后续入口依据发生变化，动作未执行')
+        if not shortcut_match(snapshot,records,state,edge,frame):
+            from foreground_scope import load
+            event['needs_foreground']=load(run,frame) is None
+            return fail('投递前后续入口依据发生变化，动作未执行')
     elif not same_surface(before,frame):return fail('投递前画面变化，动作未执行')
     if proposal['action']=='click':
-        box=click_box(row,locate_control(resolve(row['image']),before,frame))
+        fresh=shortcut_match(snapshot,records,state,edge,frame)
+        box=fresh['box'] if fresh else None
         if box is None or not(box[0]<=proposal['x']<box[2] and box[1]<=proposal['y']<box[3]):return fail('投递前入口位置变化，动作未执行')
     event['status']='dispatching';write_json(run/'visual_navigation_pending.json',event)
     write_json(folder/'dispatch.json',event)
@@ -192,11 +184,11 @@ def try_step(transport, request, frame):
     except Exception:
         # Keep the dispatch marker: next round observes instead of replaying.
         raise
-    if receipt['exit_code']!=0 or not same_surface(after,frame):return fail('回溯动作已投递，但未确认预期落点，交给Luna观察')
+    if receipt['exit_code']!=0:return fail('回溯动作投递未确认，交给Luna观察')
     refs=action.get('interactive_regions',[])
     if edge['target_region'] not in refs:return fail('历史动作缺少可信落点区块清单')
     refs=confirm_regions(snapshot,records,refs,action.get('evidence',{}).get('after_observation'),frame)
-    if edge['target_region'] not in refs:return fail('整屏相似但目的区块未确认出现，不能登记到达；交给Luna重新定位')
+    if edge['target_region'] not in refs:return fail('目的区块未确认出现，不能登记到达；交给Luna重新定位')
     controls={}
     for rid in refs:
         if rid not in records:return fail('历史落点区块缺失')
@@ -204,10 +196,13 @@ def try_step(transport, request, frame):
             row=templates.latest(c)
             template=(snapshot/'regions'/rid/row['image']).resolve() if row else None
             if template and locate_control(template,after,frame):controls[cid]=rid
+    from foreground_scope import load
+    verified_scope=load(run,frame)
+    foreground={key:[{'bbox':dict(zip(('left','top','right','bottom'),box)),'reason':'复用同一截图已确认的前景范围'} for box in verified_scope[key]] for key in ('interactive_areas','excluded_areas')} if verified_scope else {}
     observation='navigation:'+folder.name
     def arrive(records,state,*args):
         state.update(interactive_regions=refs,next_action_mode='explore',phase='ready_for_next_action',
-                     observation={'id':observation,'image':str(frame),'control_refs':list(controls)},
+                     observation={'id':observation,'image':str(frame),'control_refs':list(controls),'foreground':foreground},
                      visual_navigation={'observation':observation,'controls':controls,'replay':str(folder)})
         if request.get('source',{}).get('return_to') in refs:
             state['working_region']=request['source']['return_to']

@@ -2448,3 +2448,5 @@ nor falsely retired. Exhausting all other work produces
 2026-09-25：复制逐步遍历器桌面scroll改用OSWorld滚轮dx/dy，普通、纠错与恢复同合同，拒绝旧起终点滚轮；Android滑动不变。详见[桌面滚轮合同](modules/stepwise_debug_loop.md#2026-09-25-桌面滚轮合同)。
 
 2026-09-25：逐步遍历模型传输异常留证，step_repair对暂时失败最多连续3次计账请求，耗尽暂停保留待更新动作；见stepwise_debug_loop“模型传输有限重试”。
+
+2026-09-25：逐步点击回溯使用navigation_identity的当前图前景及局部区块/控件证据，取消click历史整屏门槛；缺前景证明仍交发现。系统back不变，见stepwise_debug_loop。

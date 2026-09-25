@@ -5,9 +5,10 @@ from tests.test_stepwise_resume_route import fixture, ROOT
 
 
 def later_edge(records,q):
-    records['b']['controls']['next']={'name':'Destination','observations':[{'image':'crop.png','evidence':{'observation':'later'}}]}
+    records['b']['controls']['next']={'name':'Destination','observations':[{'image':'crop.png','bbox':{'left':10,'top':10,'right':30,'bottom':30},'click_bbox':{'left':10,'top':10,'right':30,'bottom':30},'image_quality':'clear','image_quality_reason':'test entry','evidence':{'observation':'later'}}]}
     records['b']['actions']['later']={'control':'next','operation':'click','delivery':'executed_receipt_zero','result':{'exception':'none'},'interactive_regions':['goal'],
         'evidence':{'before_observation':'later','before_image':'later_before.png','after_image':'later_after.png'}}
+    records['b']['observations']=[{'image':'region.png','image_quality':'clear','image_quality_reason':'test owner','evidence':{'observation':'later'}}]
     records['goal']={**deepcopy(records['b']),'controls':{},'actions':{},'id':'goal','name':'goal'}
     q['source']['working_region']='goal'
     q['navigation_path'].append({'source_region':'b','source_control':'next','target_region':'goal','attempt':'later','operation':'click'})
@@ -15,7 +16,7 @@ def later_edge(records,q):
 
 def test_visible_later_entry_skips_first_edge_without_writing_graph(tmp_path,monkeypatch):
     m,run,records,state,t,q=setup(tmp_path,monkeypatch);later_edge(records,q)
-    monkeypatch.setattr(m,'same_surface',lambda old,new: 'old_before' not in str(old))
+    state['interactive_regions']=['a','b']
     before=deepcopy(records)
     result=m.try_step(t,q,run/'current.png')
     assert result['navigation']=='confirmed' and state['interactive_regions']==['goal']
@@ -56,7 +57,8 @@ def test_matching_icon_in_unconfirmed_background_does_not_skip(tmp_path,monkeypa
 
 def test_shortcut_failed_landing_hands_off_actual_selected_edge(tmp_path,monkeypatch):
     m,run,records,state,t,q=setup(tmp_path,monkeypatch);later_edge(records,q)
-    monkeypatch.setattr(m,'same_surface',lambda old,new:'later_after' not in str(old))
+    state['interactive_regions']=['a','b']
+    monkeypatch.setattr(m,'confirm_regions',lambda *a:[])
     m.try_step(t,q,run/'current.png')
     assert state['next_action_mode']=='discover' and t.account['gui_started']==1
     assert state['navigation_failed_edges']==['later']
@@ -65,18 +67,20 @@ def test_shortcut_failed_landing_hands_off_actual_selected_edge(tmp_path,monkeyp
 
 def test_shortcut_rechecks_before_dispatch(tmp_path,monkeypatch):
     m,run,records,state,t,q=setup(tmp_path,monkeypatch);later_edge(records,q)
-    monkeypatch.setattr(m,'same_surface',lambda old,new:not ('later_before' in str(old) and 'pre_dispatch' in str(new)))
+    state['interactive_regions']=['a','b']
+    original=m.shortcut_match
+    monkeypatch.setattr(m,'shortcut_match',lambda snap,rec,st,edge,frame:None if 'pre_dispatch' in str(frame) else original(snap,rec,st,edge,frame))
     m.try_step(t,q,run/'current.png')
     assert state['next_action_mode']=='discover' and t.account['gui_started']==0
 
 
 def test_known_foreground_region_can_match_without_identical_whole_screen(tmp_path,monkeypatch):
     m,run,records,state,t,q=setup(tmp_path,monkeypatch);later_edge(records,q)
-    records['b']['observations']=[{'image':'region.png','evidence':{'observation':'later'}}]
+    records['b']['observations']=[{'image':'region.png','image_quality':'clear','image_quality_reason':'test owner','evidence':{'observation':'later'}}]
     state['interactive_regions']=['b']
     monkeypatch.setattr(m,'same_surface',lambda *args:False)
     hit=m.shortcut_match(run,records,state,q['navigation_path'][1],run/'current.png')
-    assert hit['basis']=='observed_foreground_region_and_control'
+    assert hit['basis']=='current_foreground_region_and_control'
     state['interactive_regions']=['a']
     assert m.shortcut_match(run,records,state,q['navigation_path'][1],run/'current.png') is None
 
@@ -96,18 +100,13 @@ def test_first_edge_reuses_fresh_observation_after_old_surface_changed(tmp_path,
     result=m.try_step(t,q,run/'current.png')
     assert result['navigation']=='confirmed' and t.account['gui_started']==1
     saved=json.loads((__import__('pathlib').Path(result['replay'])/'result.json').read_text())
-    assert saved['shortcut_match']['basis']=='current_observed_surface_and_control'
+    assert saved['shortcut_match']['basis']=='current_foreground_region_and_control'
     assert saved['skipped_attempts']==[]
 
 
-def test_fresh_observation_cannot_authorize_changed_surface_or_unobserved_control(tmp_path,monkeypatch):
+def test_foreground_membership_cannot_authorize_missing_owner_template(tmp_path,monkeypatch):
     m,run,records,state,t,q=setup(tmp_path,monkeypatch)
-    records['a']['actions']['old'].update(control='c',operation='click',delivery='executed_receipt_zero',result={'exception':'none'})
-    state['observation']['image']=str(run/'current.png')
-    monkeypatch.setattr(m,'same_surface',lambda old,new:False)
-    assert m.shortcut_match(run,records,state,q['navigation_path'][0],run/'current.png') is None
-    monkeypatch.setattr(m,'same_surface',lambda old,new:'old_before' not in str(old))
-    state['observation']['control_refs']=[]
+    records['a']['observations']=[]
     assert m.shortcut_match(run,records,state,q['navigation_path'][0],run/'current.png') is None
 
 
@@ -118,4 +117,4 @@ def test_current_observation_path_is_relative_to_run(tmp_path,monkeypatch):
     snapshot=run/'knowledge_snapshots'/'current'
     monkeypatch.setattr(m,'same_surface',lambda old,new: __import__('pathlib').Path(old)==run/'current.png')
     hit=m.shortcut_match(snapshot,records,state,q['navigation_path'][0],run/'current.png')
-    assert hit and hit['basis']=='current_observed_surface_and_control'
+    assert hit and hit['basis']=='current_foreground_region_and_control'

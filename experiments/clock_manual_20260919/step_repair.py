@@ -6,6 +6,12 @@ import os
 from pathlib import Path
 import uuid
 import subprocess
+import time
+
+
+def retry_delay(failures):
+    time.sleep(min(2 ** failures, 8))
+
 import jsonschema
 import importlib.util
 
@@ -305,17 +311,29 @@ class Runner:
                 failed=read(manifest).get('last_call') if manifest.exists() else None
                 folder=Path(self.run)/'calls'/str(failed)
                 q=self.sent_request(job,q,failed,repairing)
-                if self.repair_parse_failure(job):continue
+                if self.repair_parse_failure(job):
+                    job.pop('service_request_failures',None);self.save(job)
+                    continue
                 evidence=folder/'http_error.json'
+                if not evidence.exists():evidence=folder/'transport_error.json'
                 if not evidence.exists():raise
                 failure=read(evidence)
                 job.setdefault('service_error_history',[]).append({'call':failed,'error':failure})
-                if failure.get('status') in (429,500,502,503,504) and not job.get('service_retry_used'):
-                    job['service_retry_used']=True;job['service_retry_request']=deepcopy(q);self.save(job)
-                    continue  # Retry only the same model request, never a GUI dispatch.
+                if helper('model_request_failure').retryable(failure):
+                    failures=job.get('service_request_failures',0)+1
+                    job['service_request_failures']=failures
+                    job['service_retry_request']=deepcopy(q);self.save(job)
+                    if failures>=3:
+                        raise Paused('service_unavailable','模型请求连续失败3次；保留原步骤与动作证据，暂停等待续接')
+                    if self.available()>0:retry_delay(failures)
+                    continue  # A new accounted call; never repeat GUI delivery.
+                if evidence.name=='transport_error.json':
+                    self.save(job)
+                    raise Paused('service_unavailable','不可自动重试的传输错误；详见 '+str(failed)+'/transport_error.json')
                 job['service_failure']={'call':failed,'error':failure};self.save(job)
                 if job['stage']=='function_registration':self.stop(job,'模型服务失败，仅暂挂功能整理，其他探索继续')
                 self.switch_branch(job)
+            job.pop('service_request_failures',None)
             q=self.sent_request(job,q,ref,repairing)
             job['call']=ref;job['history'].append({'call':ref,'role':q.get('role')})
             try:

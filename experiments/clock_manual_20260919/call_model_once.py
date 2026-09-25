@@ -7,6 +7,7 @@ manifest=json.loads((RUN/'run_manifest.json').read_text())
 source=Path(manifest.get('framework_source',ROOT/'experiments/clock_manual_20260919'))
 sys.path.insert(0,str(source))
 from model_reply_parse import parse,ReplyParseError
+from model_request_failure import send_once
 call=RUN/'calls'/sys.argv[1];request=json.loads((call/'request.json').read_text())
 def save(p,v):
  with p.open('x') as f:json.dump(v,f,ensure_ascii=False,indent=2)
@@ -18,7 +19,7 @@ def post(*args,**kwargs):
  if count:raise NoRetry('one request only')
  count+=1;kwargs['json']['max_output_tokens']=10000
  with (RUN/'events.jsonl').open('a') as f:f.write(json.dumps({'type':'model_request_started','call':call.name,'model':cfg.model})+'\n')
- start=time.time();response=original(*args,**kwargs);save(call/'http.json',{'status':response.status_code,'seconds':time.time()-start})
+ start=time.time();response=send_once(lambda:original(*args,**kwargs),call);save(call/'http.json',{'status':response.status_code,'seconds':time.time()-start})
  if response.ok:
   body=response.json();save(call/'raw_response.json',body)
   try:result=parse(body)

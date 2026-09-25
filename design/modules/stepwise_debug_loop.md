@@ -139,3 +139,7 @@ historical_inventory的普通补依据和功能整理限当前working_region，�
 ## 2026-09-25 桌面滚轮合同
 
 桌面scroll使用x/y接收点及dx/dy整数滚轮刻度（dy正上负下、dx正右负左），end_x/end_y为null。desktop_scroll.py集中平台schema扩展、有效性检查、命令映射和绑定；不接受旧起终点滚动重放。action_commands与recovery消费同一平台schema，普通/导航/恢复共用，非scroll的dx/dy为null。Android触屏滑动和桌面drag不变。恢复停滞比较与历史动作投影保留dx/dy；双轴各按一次底层命令计账。
+
+## 2026-09-25 模型传输有限重试
+
+call_model_once每个调用目录仍只发送一次HTTP；model_request_failure保留传输异常类型/耗时而不输出异常全文，阻止SDK隐式重试覆盖首次错误。step_repair对连接/超时及429/500/502/503/504最多连续3次尝试，等待2/4秒，每次经正常调用账本；额度不足保存同一请求。连续3次失败以service_unavailable暂停，原pending更新和已执行动作保留，不重放GUI。非暂时HTTP错误沿既有处理，SSL错误不自动重试。成功后清除本请求连续失败计数。

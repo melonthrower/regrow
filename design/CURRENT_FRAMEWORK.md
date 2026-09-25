@@ -2446,3 +2446,5 @@ nor falsely retired. Exhausting all other work produces
 2026-09-25：复制逐步遍历器网页新增只读 `/replay` 探索动画，上方真实保存帧、下方历史时点地图，保留原图详情入口；不改变遍历执行或模型合同。接口及边界见 [监督与展示](modules/stepwise_debug_loop.md#2026-09-25-只读探索动画)。
 
 2026-09-25：复制逐步遍历器桌面scroll改用OSWorld滚轮dx/dy，普通、纠错与恢复同合同，拒绝旧起终点滚轮；Android滑动不变。详见[桌面滚轮合同](modules/stepwise_debug_loop.md#2026-09-25-桌面滚轮合同)。
+
+2026-09-25：逐步遍历模型传输异常留证，step_repair对暂时失败最多连续3次计账请求，耗尽暂停保留待更新动作；见stepwise_debug_loop“模型传输有限重试”。

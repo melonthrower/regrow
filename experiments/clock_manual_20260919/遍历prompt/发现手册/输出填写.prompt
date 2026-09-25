@@ -1,0 +1,39 @@
+## 5. 填写观察结果
+
+按提供的JSON schema返回一份结果。下列字段用于存储观察，不要求你执行操作或分配持久编号。
+
+### 整体结果
+| 字段 | 填写内容 |
+| --- | --- |
+| foreground | description写当前前景；evidence写可见依据；uncertainty写未确认事项；exception和recovery_handoff按第2部分填写 |
+| focus_presence | 取值由本轮定位区块和本轮schema共同确定：有指定区块时只用interactive（可直接交互）、not_interactive（不在前景或被接管）、uncertain（证据不足）；仅无指定区块且schema类型为null时填null |
+| regions | 本轮确认范围内的区块列表；局部核对最多一个，全局重定位可多个 |
+| controls | 本轮局部登记或更新的控件列表；不限制为8个，已有且无需更新的控件可省略；全局重定位时为空 |
+| excluded | 不纳入本轮登记的内容，每项description说明对象、reason说明原因 |
+| uncertainties | 仍需后续核实的问题列表；没有则[] |
+
+### 每个区块
+| 字段 | 填写内容 |
+| --- | --- |
+| name / description | 区块名称 / 当前可见内容及职责 |
+| reason | 为什么这样划分区块 |
+| parent_index | 父区块在本次regions列表中的位置，从0开始；无父级填null |
+| bbox | 整屏边界框，填法见第4部分 |
+| identity / previous_name / identity_evidence | 与旧区块的对应关系，填法见第3部分 |
+
+### 每个控件
+| 字段 | 填写内容 |
+| --- | --- |
+| region_index | 直接所属区块在本次regions中的位置，从0开始 |
+| name / list_group | 稳定功能名称 / 列表交互类型；非列表填空字符串；具体可见数据写text |
+| text / icon_appearance | 可见文字 / 图标形状或外观；没有则填空字符串 |
+| state | 当前可见状态，例如选中、禁用、空值，不把操作推测写成状态 |
+| possible_operation | 可能执行的功能；尚未验证时明确使用“可能” |
+| uncertainty | 本控件的未确认事项，功能未知与身份疑问分别说明 |
+| bbox / click_bbox | 身份识别框（含标签等上下文）/ 实际点击框；均为整屏坐标，无法确定的框填null |
+| icon_bbox | 独立图标框，仅作外观记录；没有独立图标填null |
+| identity / previous_name / identity_evidence | 与旧控件的对应关系，填法见第3部分 |
+
+行号只表达本次回复中的归属。例如regions只有一个区块时，其控件region_index都为0；不是历史区块编号。每个字段都按schema提供；无疑问的字符串字段可填空字符串。
+
+提交前检查：本轮范围是否正确？同一个旧对象是否只绑定一次？是否把功能未验证误写成身份不明？是否把背景或装饰当成可操作控件？这次观察不宣布任务完成。

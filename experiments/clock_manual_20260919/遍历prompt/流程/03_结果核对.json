@@ -1,0 +1,8 @@
+{
+  "stage": "observation_update",
+  "parts": [
+    "更新/动作后观察与状态更新.prompt",
+    "更新/区块变化与字段.prompt"
+  ],
+  "schema": "输出格式/动作后更新.schema"
+}

@@ -1,0 +1,14 @@
+{
+  "stage": "action_selection",
+  "parts": [
+    "动作/观察与历史.prompt",
+    "动作/目标观察阅读.prompt",
+    "历史上下文/探索树阅读.prompt",
+    "通用/探索验证原则.prompt",
+    "动作/动作空间与字段.prompt",
+    "任务/选择探索入口.prompt",
+    "动作/围绕目标选择动作.prompt",
+    "共享/任务结束条件.prompt"
+  ],
+  "schema": "输出格式/选择探索入口.schema"
+}

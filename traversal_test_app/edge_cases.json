@@ -1,0 +1,28 @@
+{
+  "schema": "gui_rewalk.target_edge_cases.v1",
+  "cases": [
+    {"id": "scroll_today_notes", "file": "scroll.html", "start_hash": "", "source_page": "Wednesday plan", "target": "Open focus notes", "expected_destination": "Wednesday plan"},
+    {"id": "scroll_projects_plan", "file": "scroll.html", "start_hash": "", "source_page": "Wednesday plan", "target": "Open launch plan", "expected_destination": "Wednesday plan"},
+    {"id": "scroll_files_archive", "file": "scroll.html", "start_hash": "", "source_page": "Wednesday plan", "target": "Open research archive", "expected_destination": "Wednesday plan"},
+
+    {"id": "loop_orders_detail", "file": "loop.html", "start_hash": "#/1", "source_page": "My orders", "target": "Track order", "expected_destination": "Studio desk lamp"},
+    {"id": "loop_detail_journey", "file": "loop.html", "start_hash": "#/2", "source_page": "Studio desk lamp", "target": "View journey", "expected_destination": "Delivery journey"},
+    {"id": "loop_journey_courier", "file": "loop.html", "start_hash": "#/3", "source_page": "Delivery journey", "target": "View courier", "expected_destination": "Maya Chen"},
+    {"id": "loop_courier_orders", "file": "loop.html", "start_hash": "#/4", "source_page": "Maya Chen", "target": "View my orders", "expected_destination": "My orders"},
+
+    {"id": "back_recipes_recipe", "file": "back.html", "start_hash": "#/1", "source_page": "Recipe collection", "target": "Open recipe", "expected_destination": "Sunday tomato pasta"},
+    {"id": "back_recipes_notes", "file": "back.html", "start_hash": "#/1", "source_page": "Recipe collection", "target": "Open notes", "expected_destination": "Kitchen notes"},
+    {"id": "back_recipe_recipes", "file": "back.html", "start_hash": "#/2", "source_page": "Sunday tomato pasta", "target": "Browse recipes", "expected_destination": "Recipe collection"},
+    {"id": "back_recipe_notes", "file": "back.html", "start_hash": "#/2", "source_page": "Sunday tomato pasta", "target": "Open notes", "expected_destination": "Kitchen notes"},
+    {"id": "back_notes_recipes", "file": "back.html", "start_hash": "#/3", "source_page": "Kitchen notes", "target": "Browse recipes", "expected_destination": "Recipe collection"},
+    {"id": "back_notes_recipe", "file": "back.html", "start_hash": "#/3", "source_page": "Kitchen notes", "target": "Open recipe", "expected_destination": "Sunday tomato pasta"},
+
+    {"id": "merge_overview_review", "file": "region_merge.html", "start_hash": "#/overview", "source_page": "Today overview", "target": "Open weekly review", "expected_destination": "Weekly review"},
+    {"id": "merge_overview_workspace", "file": "region_merge.html", "start_hash": "#/overview", "source_page": "Today overview", "target": "Open workspace", "expected_destination": "Project workspace"},
+    {"id": "merge_workspace_overview", "file": "region_merge.html", "start_hash": "#/workspace", "source_page": "Project workspace", "target": "Open today overview", "expected_destination": "Today overview"},
+    {"id": "merge_workspace_library_review", "file": "region_merge.html", "start_hash": "#/workspace", "source_page": "Project workspace", "target": "Browse review library", "expected_destination": "Weekly review"},
+    {"id": "merge_workspace_inbox_review", "file": "region_merge.html", "start_hash": "#/workspace", "source_page": "Project workspace", "target": "Open weekly review", "expected_destination": "Weekly review"},
+    {"id": "merge_review_workspace", "file": "region_merge.html", "start_hash": "#/review", "source_page": "Weekly review", "target": "Open workspace", "expected_destination": "Project workspace"},
+    {"id": "merge_review_overview", "file": "region_merge.html", "start_hash": "#/review", "source_page": "Weekly review", "target": "Open today overview", "expected_destination": "Today overview"}
+  ]
+}

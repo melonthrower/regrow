@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dayline</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2433;
+      --muted: #687386;
+      --line: #e2e6ed;
+      --surface: #ffffff;
+      --canvas: #f4f5f7;
+      --primary: #5b4ce6;
+      --primary-soft: #eeecff;
+      --teal: #16806f;
+      --warn: #9a5b00;
+      --sidebar: #202431;
+      --shadow: 0 16px 40px rgba(22, 34, 51, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: var(--canvas);
+      font: 16px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid rgba(35, 86, 216, .35); outline-offset: 2px; }
+
+    #fixture-app { width: 100%; min-height: 100vh; background: var(--surface); }
+
+    .page { display: grid; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; background: linear-gradient(to right, var(--sidebar) 0 244px, var(--surface) 244px); }
+    .page.no-sidebar { display: block; background: var(--surface); }
+    .workspace { min-width: 0; background: var(--surface); }
+    .side-nav {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-self: start;
+      min-height: 100vh;
+      padding: 26px 18px 20px;
+      color: #eef0f7;
+      background: var(--sidebar);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 28px; font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #fff; background: linear-gradient(135deg, #8174ff, #5b4ce6); }
+    .nav-section-label { margin: 3px 11px 9px; color: #8e96a9; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .nav-links { display: grid; gap: 5px; }
+    .nav-button { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 12px; border: 0; border-radius: 10px; color: #b9c0cf; background: transparent; cursor: pointer; font-weight: 650; text-align: left; }
+    .nav-icon { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 7px; color: #ced3dd; background: rgba(255,255,255,.07); font-size: 12px; font-weight: 850; }
+    .nav-button[aria-current="page"] { color: #fff; background: rgba(129,116,255,.22); }
+    .nav-button[aria-current="page"] .nav-icon { color: #fff; background: #6558dd; }
+    .nav-profile { display: flex; align-items: center; gap: 10px; margin-top: auto; padding: 17px 10px 2px; border-top: 1px solid rgba(255,255,255,.09); }
+    .avatar { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; color: #fff; background: #16806f; font-size: 12px; font-weight: 800; }
+    .nav-profile strong { display: block; font-size: 13px; }
+    .nav-profile span { display: block; color: #939bad; font-size: 12px; }
+    .app-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
+      padding: 13px clamp(24px, 4vw, 54px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .97);
+    }
+    .app-bar h1 { margin: 0; flex: 1; font-size: 22px; line-height: 1.2; }
+    .app-bar > div { flex: 1; }
+    .eyebrow { margin: 0 0 3px; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+
+    .icon-button, .back-button {
+      min-width: 44px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--ink);
+      background: var(--surface);
+      cursor: pointer;
+    }
+    .icon-button { font-size: 24px; line-height: 1; }
+    .back-button { padding: 0 14px; font-weight: 650; }
+
+    main { width: min(100%, 1160px); margin: 0 auto; padding: 34px clamp(24px, 4vw, 54px) 48px; }
+    .hero {
+      padding: 30px;
+      border-radius: 24px;
+      color: #ffffff;
+      background: linear-gradient(125deg, #5b4ce6 0%, #493cae 58%, #16806f 135%);
+    }
+    .hero .eyebrow { color: rgba(255,255,255,.74); }
+    .hero h2 { max-width: 520px; margin: 0 0 10px; font-size: 34px; line-height: 1.12; }
+    .hero p { max-width: 540px; margin: 0 0 22px; color: rgba(255,255,255,.86); }
+
+    .section-heading { margin: 30px 0 14px; font-size: 20px; }
+    .muted { color: var(--muted); }
+    .stack { display: grid; gap: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .card {
+      padding: 19px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+    .card h3, .card h2 { margin: 0 0 6px; }
+    .card p { margin: 0; }
+    .metric { font-size: 30px; font-weight: 750; letter-spacing: -.03em; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      color: #4c3ec7;
+      background: var(--primary-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .primary-button, .secondary-button, .row-button, .switch-button {
+      min-height: 48px;
+      border-radius: 13px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary-button { padding: 0 18px; border: 0; color: #fff; background: var(--primary); }
+    .hero .primary-button { color: #17316f; background: #fff; }
+    .secondary-button { padding: 0 18px; border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+    .primary-button.block, .secondary-button.block { width: 100%; }
+    .secondary-button:disabled { cursor: not-allowed; color: #7d8796; background: #eef1f5; }
+
+    .quick-button {
+      display: grid;
+      min-height: 126px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: left;
+      color: var(--ink);
+      background: var(--surface);
+      cursor: pointer;
+    }
+    .quick-button strong { align-self: end; font-size: 18px; }
+    .quick-button span { color: var(--muted); }
+
+    .summary-band {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: #f4f7fb;
+    }
+    .summary-band p { margin: 0; }
+
+    .record-list { display: grid; gap: 12px; }
+    .record {
+      display: grid;
+      grid-template-columns: 52px minmax(0,1fr) auto;
+      align-items: center;
+      gap: 15px;
+      min-height: 104px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+    .record-index {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 15px;
+      color: #4c3ec7;
+      background: var(--primary-soft);
+      font-weight: 800;
+    }
+    .record h2 { margin: 0 0 4px; font-size: 19px; }
+    .record p { margin: 0; color: var(--muted); }
+    .row-button { padding: 0 15px; border: 1px solid var(--line); color: var(--primary); background: var(--surface); }
+
+    .timeline { position: relative; display: grid; gap: 18px; }
+    .timeline::before { content: ""; position: absolute; left: 24px; top: 30px; bottom: 30px; width: 2px; background: var(--line); }
+    .event { position: relative; display: grid; grid-template-columns: 50px 1fr; gap: 16px; min-height: 132px; }
+    .event-dot { z-index: 1; width: 18px; height: 18px; margin: 20px auto 0; border: 5px solid #fff; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 2px var(--teal); }
+    .event-card { padding: 18px; border: 1px solid var(--line); border-radius: 18px; }
+    .event-card h2 { margin: 0 0 6px; font-size: 18px; }
+    .event-card p { margin: 0; color: var(--muted); }
+
+    .detail-title { display: flex; align-items: center; gap: 16px; }
+    .detail-title .record-index { flex: 0 0 auto; width: 64px; height: 64px; }
+    .detail-title h2 { margin: 0; font-size: 28px; }
+    .definition-list { display: grid; grid-template-columns: 130px 1fr; gap: 0; margin: 22px 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+    .definition-list dt, .definition-list dd { margin: 0; padding: 15px 17px; border-bottom: 1px solid var(--line); }
+    .definition-list dt { color: var(--muted); background: #f7f9fc; font-weight: 700; }
+    .definition-list dt:last-of-type, .definition-list dd:last-of-type { border-bottom: 0; }
+    .switch-button { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 16px; border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+    .switch-track { position: relative; width: 48px; height: 28px; border-radius: 20px; background: #aab3c0; }
+    .switch-track::after { content: ""; position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .16s ease; }
+    .switch-button[aria-pressed="true"] .switch-track { background: var(--teal); }
+    .switch-button[aria-pressed="true"] .switch-track::after { transform: translateX(20px); }
+
+    .check-row { display: flex; align-items: flex-start; gap: 12px; }
+    .check-mark { display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; color: #fff; background: var(--teal); font-weight: 800; }
+    .check-row h3 { margin: 1px 0 3px; }
+    .check-row p { margin: 0; color: var(--muted); }
+
+    .setting-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 20px; padding: 20px; border: 1px solid var(--line); border-radius: 18px; }
+    .setting-row h2 { margin: 0 0 4px; font-size: 18px; }
+    .setting-row p { margin: 0; color: var(--muted); }
+
+    .region-workspace-page { height: 100vh; min-height: 0; overflow: hidden; }
+    .region-workspace-page .workspace {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      height: 100vh;
+      overflow: hidden;
+    }
+    .region-workspace-page .app-bar { position: static; }
+    .region-workspace-main {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 16px;
+      width: min(100%, 1320px);
+      height: 100%;
+      min-height: 0;
+      padding-top: 20px;
+      padding-bottom: 24px;
+      overflow: hidden;
+    }
+    .workspace-intro {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f7f9fc;
+    }
+    .workspace-intro h2 { margin: 0 0 4px; font-size: 20px; }
+    .workspace-intro p { margin: 0; }
+    .workspace-status {
+      flex: 0 0 min(390px, 42%);
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #155d52;
+      background: #e7f6f2;
+      font-weight: 700;
+    }
+    .region-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(280px, 1fr));
+      gap: 16px;
+      min-height: 0;
+      overflow-x: auto;
+    }
+    .region-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-width: 280px;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #f8fafc;
+      box-shadow: var(--shadow);
+    }
+    .region-panel-header {
+      padding: 15px 16px 13px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .region-panel-header h2 { margin: 0 0 4px; font-size: 19px; }
+    .region-panel-header p { margin: 0; color: var(--muted); font-size: 14px; }
+    .region-scroller {
+      min-height: 0;
+      padding: 14px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+    }
+    .region-item {
+      display: grid;
+      align-content: center;
+      min-height: 160px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .region-item + .region-item, .region-item + .region-action { margin-top: 12px; }
+    .region-item h3 { margin: 0 0 6px; font-size: 17px; }
+    .region-item p { margin: 0; color: var(--muted); }
+    .region-action {
+      display: grid;
+      align-content: center;
+      min-height: 96px;
+      padding: 14px;
+      border: 1px solid #d9d4ff;
+      border-radius: 14px;
+      background: var(--primary-soft);
+    }
+
+    .about-section { min-height: 250px; padding: 26px; border: 1px solid var(--line); border-radius: 20px; }
+    .about-section h2 { margin-top: 0; }
+    .about-section p, .about-section li { color: var(--muted); }
+
+    .completion { display: grid; place-items: center; min-height: 76vh; text-align: center; }
+    .completion-badge { display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto 22px; border-radius: 50%; color: #fff; background: var(--teal); font-size: 46px; font-weight: 800; }
+    .completion h1 { margin: 0 0 8px; font-size: 36px; }
+
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: grid;
+      align-items: start;
+      justify-items: center;
+      padding: 92px 18px 18px;
+      background: rgba(16, 25, 38, .46);
+    }
+    .popup-menu {
+      width: min(430px, calc(100vw - 36px));
+      padding: 18px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 22px 60px rgba(0,0,0,.24);
+    }
+    .popup-menu h2 { margin: 0 0 4px; }
+    .popup-menu p { margin: 0 0 16px; color: var(--muted); }
+    .menu-button { width: 100%; min-height: 54px; padding: 0 15px; border: 0; border-radius: 12px; text-align: left; color: var(--ink); background: #f3f6fa; cursor: pointer; font-weight: 700; }
+    .menu-button + .menu-button { margin-top: 10px; }
+
+    .dialog-card {
+      align-self: center;
+      width: min(520px, calc(100vw - 36px));
+      padding: 25px;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 22px 60px rgba(0,0,0,.28);
+    }
+    .dialog-card h2 { margin: 0 0 8px; }
+    .dialog-card p { margin: 0 0 22px; color: var(--muted); }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+    @media (max-width: 820px) {
+      .page { grid-template-columns: 78px minmax(0,1fr); background: linear-gradient(to right, var(--sidebar) 0 78px, var(--surface) 78px); }
+      .side-nav { padding-inline: 12px; }
+      .brand { justify-content: center; padding-inline: 0; }
+      .brand-name, .nav-label, .nav-section-label, .nav-profile div { display: none; }
+      .nav-button { justify-content: center; padding: 0; }
+      .nav-profile { justify-content: center; padding-inline: 0; }
+    }
+    @media (max-width: 600px) {
+      .page { display: block; background: var(--surface); }
+      .side-nav { position: static; display: none; }
+      main { padding-inline: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .record { grid-template-columns: 46px minmax(0,1fr); }
+      .record .row-button { grid-column: 1 / -1; width: 100%; }
+      .hero { padding: 24px; }
+      .hero h2 { font-size: 29px; }
+      .definition-list { grid-template-columns: 105px 1fr; }
+      .workspace-intro { align-items: flex-start; flex-direction: column; }
+      .workspace-status { flex-basis: auto; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <script type="application/json" id="fixture-oracle">__REWALK_ORACLE_JSON__</script>
+  <div id="fixture-app" aria-live="polite"></div>
+  <script>
+    (() => {
+      "use strict";
+      const oracle = JSON.parse(document.getElementById("fixture-oracle").textContent);
+      const root = document.getElementById("fixture-app");
+      const STORAGE_KEY = "rewalk.fixture.state.v1";
+      const defaults = { dailyTips: false, reviewed: {}, currentRecord: "01", returnPage: "home", workspaceSelection: "" };
+      let state;
+      try { state = { ...defaults, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+      catch (_) { state = { ...defaults }; }
+      let currentPage = "home";
+      let overlay = null;
+
+      const records = [
+        ["01", "Product launch notes", "Ada", "Updated 12 minutes ago"],
+        ["02", "Customer interview themes", "Lin", "Updated yesterday"],
+        ["03", "Q3 planning brief", "Mira", "Updated Monday"],
+        ["04", "Design review checklist", "Ada", "Updated Jul 14"],
+        ["05", "Team offsite ideas", "Lin", "Updated Jul 11"],
+        ["06", "Research reading list", "Mira", "Updated Jul 8"],
+        ["07", "Website copy draft", "Ada", "Updated Jul 5"],
+        ["08", "Weekly decision log", "Lin", "Updated Jul 2"],
+        ["09", "New hire handbook", "Mira", "Updated Jun 28"]
+      ].map(([number, title, owner, updated]) => ({ number, title, owner, updated }));
+
+      const workspaceRegions = [
+        {
+          id: "workspace.research_queue",
+          title: "Research queue",
+          summary: "Interview notes and open research questions.",
+          items: [
+            ["Interview schedule", "Four customer conversations are planned for this week."],
+            ["Theme review", "Early patterns cover onboarding, search, and sharing."],
+            ["Evidence notes", "Source excerpts are ready for the next synthesis pass."],
+            ["Open questions", "Two follow-up questions still need owners."]
+          ],
+          actionId: "workspace.open_interview_synthesis",
+          actionLabel: "Open interview synthesis"
+        },
+        {
+          id: "workspace.delivery_board",
+          title: "Delivery board",
+          summary: "Launch preparation across design, content, and quality.",
+          items: [
+            ["Design review", "The navigation update is ready for final review."],
+            ["Content handoff", "Release notes have owners and due dates."],
+            ["Quality checks", "Desktop and mobile checks are listed separately."],
+            ["Stakeholder sign-off", "Two approvals are complete and one is pending."],
+            ["Launch notes", "The rollout sequence has been drafted."],
+            ["Support readiness", "Common questions now have short responses."]
+          ],
+          actionId: "workspace.open_release_readiness",
+          actionLabel: "Open release readiness"
+        },
+        {
+          id: "workspace.reference_shelf",
+          title: "Reference shelf",
+          summary: "Guides, decisions, and reusable working agreements.",
+          items: [
+            ["Team principles", "A short guide to clear ownership and calm handoffs."],
+            ["Writing guide", "Examples keep product language direct and consistent."],
+            ["Review checklist", "Use the same evidence checks before every launch."],
+            ["Decision log", "Important tradeoffs are captured with their context."],
+            ["Research methods", "Interview and synthesis practices live together."],
+            ["Release process", "Stages run from readiness through follow-up."],
+            ["Accessibility notes", "Keyboard, focus, and contrast guidance is current."],
+            ["Incident guide", "Recovery steps favor safe and reversible actions."]
+          ],
+          actionId: "workspace.open_team_field_guide",
+          actionLabel: "Open team field guide"
+        }
+      ];
+      const workspaceOutcomes = {
+        "workspace.open_interview_synthesis": "Interview synthesis opened: twelve themes are ready to review.",
+        "workspace.open_release_readiness": "Release readiness opened: three launch checks remain.",
+        "workspace.open_team_field_guide": "Team field guide opened: the working agreements are available."
+      };
+
+      function esc(value) {
+        return String(value).replace(/[&<>'"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[ch]));
+      }
+      function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      function routeFromHash() {
+        const raw = location.hash.replace(/^#\/?/, "").split("?")[0];
+        return oracle.pages.some(p => p.id === raw) ? raw : "home";
+      }
+      function navigate(page, options = {}) {
+        if (options.record) { state.currentRecord = options.record; save(); }
+        overlay = null;
+        const next = `#/${page}`;
+        if (location.hash === next) { currentPage = page; window.scrollTo(0, 0); render(); }
+        else { location.hash = next; }
+      }
+      function actionAttrs(id, block, target = "") {
+        return `data-action-id="${esc(id)}" data-block-id="${esc(block)}"${target ? ` data-target-page="${esc(target)}"` : ""}`;
+      }
+      function appBar(title, page, back) {
+        return `<header class="app-bar" data-block-id="${page}.app_bar">${back ? `<button class="back-button" type="button" ${actionAttrs(back.id, `${page}.app_bar`, back.target)}>${esc(back.label)}</button>` : ""}<div><p class="eyebrow">Dayline workspace</p><h1>${esc(title)}</h1></div>${["home","library","activity","settings"].includes(page) ? `<button class="icon-button" type="button" aria-label="More options" ${actionAttrs(`${page}.more`, `${page}.app_bar`)}>⋮</button>` : ""}</header>`;
+      }
+      function sideNav(page) {
+        const items = [["home","H","Home"],["library","D","Documents"],["activity","A","Activity"],["settings","S","Settings"]];
+        return `<aside class="side-nav" aria-label="Primary navigation" data-block-id="${page}.bottom_nav"><div class="brand"><span class="brand-mark">D</span><span class="brand-name">Dayline</span></div><p class="nav-section-label">Workspace</p><nav class="nav-links">${items.map(([id,icon,label]) => `<button type="button" class="nav-button" ${id === page ? 'aria-current="page"' : ""} ${actionAttrs(`${page}.nav_${id}`, `${page}.bottom_nav`, id)}><span class="nav-icon">${icon}</span><span class="nav-label">${label}</span></button>`).join("")}</nav><div class="nav-profile"><span class="avatar">AL</span><div><strong>Alex Lee</strong><span>Personal workspace</span></div></div></aside>`;
+      }
+      function pageShell(page, inner, nav = true) {
+        return `<div class="page${nav ? "" : " no-sidebar"}" data-page-id="${page}" data-surface-kind="page">${nav ? sideNav(page) : ""}<div class="workspace">${inner}</div></div>`;
+      }
+
+      function renderHome() {
+        return pageShell("home", `${appBar("Home", "home")}<main><section class="hero" data-block-id="home.hero"><p class="eyebrow">Saturday, July 18</p><h2>Good morning, Alex</h2><p>Your notes, decisions, and team updates are together in one calm workspace.</p><button type="button" class="primary-button" ${actionAttrs("home.start_library", "home.hero", "library")}>Browse documents</button></section><h2 class="section-heading">Your workspace</h2><section class="grid" data-block-id="home.quick_actions"><button type="button" class="quick-button" ${actionAttrs("home.open_activity", "home.quick_actions", "activity")}><span>14 updates this week</span><strong>View recent activity</strong></button><button type="button" class="quick-button" ${actionAttrs("home.open_settings", "home.quick_actions", "settings")}><span>Notifications and sync</span><strong>Open settings</strong></button><button type="button" class="quick-button" ${actionAttrs("home.open_workspace", "home.quick_actions", "workspace")}><span>Research, delivery, and references</span><strong>Open planning workspace</strong></button></section><section class="summary-band" aria-label="Workspace summary"><div><strong>Everything is up to date</strong><p class="muted">9 documents · 3 collaborators · last synced just now</p></div><span class="tag">Personal</span></section></main>`);
+      }
+
+      function renderWorkspace() {
+        const selection = state.workspaceSelection || "";
+        const status = workspaceOutcomes[selection]
+          || "Choose a workflow entry from one of the three planning lanes.";
+        const regions = workspaceRegions.map(region => `<article class="region-panel" data-region-id="${region.id}"><header class="region-panel-header"><p class="eyebrow">Planning lane</p><h2>${region.title}</h2><p>${region.summary}</p></header><div class="region-scroller" tabindex="0" aria-label="${region.title} scroll area" data-scroll-region-id="${region.id}" data-block-id="${region.id}" data-scrollable="true">${region.items.map(([title, note]) => `<section class="region-item"><h3>${title}</h3><p>${note}</p></section>`).join("")}<section class="region-action"><button type="button" class="primary-button block" ${actionAttrs(region.actionId, region.id)}>${region.actionLabel}</button></section></div></article>`).join("");
+        return `<div class="page no-sidebar region-workspace-page" data-page-id="workspace" data-surface-kind="page" data-outer-scroll="false"><div class="workspace">${appBar("Planning workspace", "workspace", { id: "workspace.back", label: "Back to home", target: "home" })}<main class="region-workspace-main"><section class="workspace-intro" data-block-id="workspace.status"><div><p class="eyebrow">Three active lanes</p><h2>Plan across independent work areas</h2><p class="muted">Each lane keeps its own position while you review deeper items.</p></div><p class="workspace-status" role="status" data-workspace-status>${status}</p></section><section class="region-grid" aria-label="Planning workspace regions">${regions}</section></main></div></div>`;
+      }
+
+      function renderLibrary() {
+        const rows = records.map(r => `<article class="record" data-record="${r.number}"><div class="record-index">${r.number}</div><div><h2>${esc(r.title)}</h2><p>Owned by ${r.owner} · ${r.updated}</p></div><button type="button" class="row-button" ${actionAttrs(`library.record_${r.number}`, "library.record_list", "record_detail")}>Open Document ${r.number}</button></article>`).join("");
+        return pageShell("library", `${appBar("Documents", "library")}<main><section class="summary-band" data-block-id="library.summary"><div><strong>All documents</strong><p>Recently opened notes and shared working documents.</p></div><span class="tag">9 items</span></section><section class="record-list" data-block-id="library.record_list" data-scrollable="true">${rows}</section></main>`);
+      }
+
+      function renderDetail() {
+        const record = records.find(r => r.number === state.currentRecord) || records[0];
+        const reviewed = Boolean(state.reviewed[record.number]);
+        return pageShell("record_detail", `${appBar("Document details", "record_detail", { id: "detail.back", label: "Back to documents", target: "library" })}<main><section class="card" data-block-id="detail.identity"><div class="detail-title"><div class="record-index">${record.number}</div><div><p class="eyebrow">Shared document</p><h2>${esc(record.title)}</h2></div></div></section><dl class="definition-list" data-block-id="detail.metadata"><dt>Document</dt><dd>Document ${record.number}</dd><dt>Owner</dt><dd>${record.owner}</dd><dt>Updated</dt><dd>${record.updated}</dd><dt>Status</dt><dd>${reviewed ? "Reviewed" : "Needs review"}</dd></dl><section class="stack" data-block-id="detail.actions"><button type="button" class="switch-button" aria-pressed="${reviewed}" ${actionAttrs("detail.reviewed", "detail.actions", "record_detail")}><span>${reviewed ? "Mark unreviewed" : "Mark reviewed"}</span><span class="switch-track" aria-hidden="true"></span></button></section></main>`, false);
+      }
+
+      function renderActivity() {
+        const eventTitles = ["Document updated", "Comment resolved", "Document shared", "Review completed"];
+        const eventDetails = ["Ada edited Product launch notes", "Lin resolved a thread in Q3 planning brief", "Mira shared Customer interview themes", "Alex reviewed Design review checklist"];
+        const events = Array.from({ length: 14 }, (_, i) => `<article class="event"><div class="event-dot" aria-hidden="true"></div><div class="event-card"><h2>${eventTitles[i % 4]}</h2><p>${eventDetails[i % 4]} · ${i < 3 ? "Today" : i < 8 ? "Yesterday" : "This week"}</p></div></article>`).join("");
+        return pageShell("activity", `${appBar("Recent activity", "activity")}<main><section class="timeline" data-block-id="activity.timeline" data-scrollable="true">${events}</section><section class="card" data-block-id="activity.report_cta"><p class="eyebrow">This week</p><h2>You made steady progress</h2><p class="muted">See a compact summary of documents, reviews, and decisions from the past seven days.</p><p><button type="button" class="primary-button block" ${actionAttrs("activity.review_report", "activity.report_cta", "coverage_report")}>View weekly summary</button></p></section></main>`);
+      }
+
+      function renderReport() {
+        return pageShell("coverage_report", `${appBar("Weekly summary", "coverage_report", { id: "report.back", label: "Back to activity", target: "activity" })}<main><section class="grid" data-block-id="report.metrics"><div class="card"><p class="muted">Documents updated</p><div class="metric">8</div></div><div class="card"><p class="muted">Reviews completed</p><div class="metric">3</div></div></section><h2 class="section-heading">Highlights</h2><section class="stack" data-block-id="report.checks">${[["Launch plan is ready","The latest milestones and owners are captured."],["Customer themes consolidated","Interview notes now share one clear structure."],["Three reviews completed","The team closed the most important feedback loops."],["Decision log refreshed","This week's choices are easy to find later."]].map(([h,p]) => `<article class="card check-row"><span class="check-mark">✓</span><div><h3>${h}</h3><p>${p}</p></div></article>`).join("")}</section><section class="card" data-block-id="report.actions"><h2>Clear the weekly summary</h2><p class="muted">Archive this summary when you are ready to start a fresh week.</p><button type="button" class="primary-button block" ${actionAttrs("report.complete", "report.actions", "coverage_report")}>Archive weekly summary</button></section></main>`, false);
+      }
+
+      function renderSettings() {
+        return pageShell("settings", `${appBar("Settings", "settings")}<main><section class="stack" data-block-id="settings.preferences"><article class="setting-row"><div><h2>Daily digest</h2><p>Receive a short roundup of document and review activity.</p></div><button type="button" class="switch-button" style="width:160px" aria-pressed="${state.dailyTips}" ${actionAttrs("settings.daily_tips", "settings.preferences", "settings")}><span>${state.dailyTips ? "On" : "Off"}</span><span class="switch-track" aria-hidden="true"></span></button></article><article class="setting-row"><div><h2>Cloud sync</h2><p>Sign in to keep this workspace available on your other devices.</p></div><button type="button" class="secondary-button" disabled ${actionAttrs("settings.cloud_sync", "settings.preferences")}>Sign in</button></article></section><h2 class="section-heading">Application</h2><section class="card" data-block-id="settings.about"><h2>About Dayline</h2><p class="muted">Version details, product notes, privacy, and keyboard help.</p><p><button type="button" class="secondary-button block" ${actionAttrs("settings.about_fixture", "settings.about", "about")}>About Dayline</button></p></section></main>`);
+      }
+
+      function renderAbout() {
+        const sections = [
+          ["Dayline 1.0", "A quiet workspace for notes, decisions, reviews, and the small pieces of context that keep a team moving."],
+          ["Designed for focus", "Dayline keeps the interface simple so you can open a document, understand its status, and get back to work quickly."],
+          ["Documents", "Working notes and briefs stay together with clear owners and recent update times."],
+          ["Reviews", "Mark important documents as reviewed and revisit them whenever new context arrives."],
+          ["Activity", "A chronological activity view makes team updates easy to scan without sending more notifications."],
+          ["Privacy", "This local workspace does not send document content to an external service."],
+          ["Keyboard help", "Use the sidebar for primary navigation and Escape to close menus or dialogs."],
+          ["Product notes", "This release adds weekly summaries, a calmer document list, and clearer sync preferences."]
+        ];
+        return pageShell("about", `${appBar("About Dayline", "about", { id: "about.back", label: "Back", target: "home" })}<main><section class="stack" data-block-id="about.specification" data-scrollable="true">${sections.map(([h,p],i) => `<article class="about-section" ${i === 0 ? 'data-block-id="about.intro"' : ""}><p class="eyebrow">${i === 0 ? "About" : "Product note"} ${String(i+1).padStart(2,"0")}</p><h2>${h}</h2><p>${p}</p></article>`).join("")}</section><section class="card" data-block-id="about.actions"><h2>You are all caught up</h2><p class="muted">Return to your workspace whenever you are ready.</p><button type="button" class="primary-button block" ${actionAttrs("about.return_home", "about.actions", "home")}>Back to home</button></section></main>`, false);
+      }
+
+      function renderDone() {
+        return pageShell("done", `<main class="completion"><section data-block-id="done.summary"><div class="completion-badge">✓</div><p class="eyebrow">Weekly summary</p><h1>Summary archived</h1><p class="muted">Your workspace is ready for a fresh week.</p><div data-block-id="done.actions"><button type="button" class="primary-button" ${actionAttrs("done.return_home", "done.actions", "home")}>Back to home</button></div></section></main>`, false);
+      }
+
+      function renderOverlay() {
+        if (overlay === "menu") return `<div class="overlay-backdrop" data-surface-id="shared.more_menu" data-surface-kind="popup_menu"><section class="popup-menu" role="menu" aria-label="Workspace menu"><h2>Workspace menu</h2><p>Application information and shortcuts</p><button type="button" class="menu-button" role="menuitem" ${actionAttrs("menu.about", "shared.more_menu", "about")}>About Dayline</button><button type="button" class="menu-button" ${actionAttrs("menu.close", "shared.more_menu")}>Close menu</button></section></div>`;
+        if (overlay === "confirm") return `<div class="overlay-backdrop" data-surface-id="report.confirm_dialog" data-surface-kind="dialog"><section class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title"><p class="eyebrow">Weekly summary</p><h2 id="confirm-title">Archive this summary?</h2><p>You can return home and begin a fresh weekly view.</p><div class="dialog-actions"><button type="button" class="secondary-button" ${actionAttrs("dialog.cancel", "report.confirm_dialog")}>Cancel</button><button type="button" class="primary-button" ${actionAttrs("dialog.finish", "report.confirm_dialog", "done")}>Archive summary</button></div></section></div>`;
+        return "";
+      }
+
+      const renderers = { home: renderHome, workspace: renderWorkspace, library: renderLibrary, record_detail: renderDetail, activity: renderActivity, coverage_report: renderReport, settings: renderSettings, about: renderAbout, done: renderDone };
+      function render() {
+        currentPage = routeFromHash();
+        root.innerHTML = (renderers[currentPage] || renderHome)() + renderOverlay();
+        document.title = `${oracle.pages.find(p => p.id === currentPage)?.title || "Home"} · Dayline`;
+        root.dataset.currentPage = currentPage;
+        root.dataset.currentOverlay = overlay || "none";
+        root.dataset.workspaceSelection = state.workspaceSelection || "none";
+      }
+
+      root.addEventListener("click", event => {
+        const button = event.target.closest("button[data-action-id]");
+        if (!button || button.disabled) return;
+        const id = button.dataset.actionId;
+        if (id.endsWith(".more")) { overlay = "menu"; render(); return; }
+        if (id === "menu.close" || id === "dialog.cancel") { overlay = null; render(); return; }
+        if (id === "menu.about") { state.returnPage = currentPage; save(); navigate("about"); return; }
+        if (id === "report.complete") { overlay = "confirm"; render(); return; }
+        if (id === "dialog.finish") { navigate("done"); return; }
+        if (id === "settings.daily_tips") { state.dailyTips = !state.dailyTips; save(); render(); return; }
+        if (id === "detail.reviewed") { state.reviewed[state.currentRecord] = !state.reviewed[state.currentRecord]; save(); render(); return; }
+        if (workspaceOutcomes[id]) {
+          state.workspaceSelection = id;
+          save();
+          root.dataset.workspaceSelection = id;
+          const status = root.querySelector("[data-workspace-status]");
+          if (status) status.textContent = workspaceOutcomes[id];
+          return;
+        }
+        if (id.startsWith("library.record_")) { navigate("record_detail", { record: id.slice(-2) }); return; }
+        if (id === "about.back") { navigate(state.returnPage || "home"); return; }
+        const target = button.dataset.targetPage;
+        if (target) navigate(target);
+      });
+
+      window.addEventListener("hashchange", () => { overlay = null; window.scrollTo(0, 0); render(); });
+      window.__fixture = {
+        oracle,
+        navigate,
+        openMenu: () => { overlay = "menu"; render(); },
+        openConfirm: () => { currentPage = "coverage_report"; overlay = "confirm"; render(); },
+        reset: () => { localStorage.removeItem(STORAGE_KEY); state = { ...defaults, reviewed: {} }; overlay = null; navigate("home"); },
+        snapshot: () => ({ page: currentPage, overlay, state: JSON.parse(JSON.stringify(state)) })
+      };
+      if (!location.hash) location.replace("#/home"); else render();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi-region scroll test</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; font-family: system-ui, sans-serif; color: #202433; background: #f3f4f6; }
+    body { min-width: 900px; }
+    header { display: flex; align-items: center; justify-content: space-between; height: 74px; padding: 0 28px; border-bottom: 1px solid #e0e2e7; background: #fff; }
+    h1 { margin: 0; font-size: 22px; }
+    #status { padding: 10px 13px; border-radius: 10px; color: #27634c; background: #e2f4ea; font-size: 13px; font-weight: 700; }
+    main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; height: calc(100vh - 74px); padding: 18px; }
+    article { display: grid; grid-template-rows: auto minmax(0, 1fr); min-width: 0; overflow: hidden; border: 1px solid #dde0e6; border-radius: 14px; background: #e9eaed; }
+    article > header { height: auto; padding: 14px; }
+    h2 { margin: 0 0 4px; font-size: 17px; }
+    article header p { margin: 0; color: #717784; font-size: 12px; }
+    .scroller { min-height: 0; padding: 10px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+    .item { min-height: 128px; margin-bottom: 10px; padding: 15px; border: 1px solid #e0e2e7; border-radius: 12px; background: #fff; }
+    .item strong { display: block; margin: 22px 0 6px; }
+    .item span { color: #777d89; font-size: 12px; }
+    .entry { padding: 13px; border: 1px dashed #8c82e5; border-radius: 12px; background: #eeecff; }
+    .entry-result { display: none; margin-top: 10px; padding: 12px; border-radius: 9px; color: #303548; background: #fff; }
+    .entry-result[data-open="true"] { display: block; }
+    .entry-result strong { margin: 0 0 5px; }
+    button { width: 100%; padding: 11px; border: 0; border-radius: 9px; color: #fff; background: #6256d9; font: inherit; font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header><div><h1>Wednesday plan</h1></div><div id="status" role="status">Scroll one area to find its hidden action.</div></header>
+  <main id="regions"></main>
+  <script>
+    const data = [
+      { id: "scroll.today", title: "Today", entryId: "scroll.today.open_notes", entry: "Open focus notes", result: "Focus notes", detail: "Focused notes for the current day are now visible.", items: 6 },
+      { id: "scroll.projects", title: "Projects", entryId: "scroll.projects.open_plan", entry: "Open launch plan", result: "Launch plan", detail: "The project launch plan is now visible.", items: 8 },
+      { id: "scroll.files", title: "Files", entryId: "scroll.files.open_archive", entry: "Open research archive", result: "Research archive", detail: "Archived research material is now visible.", items: 10 }
+    ];
+    let activeEntry = null;
+    const labels = ["Stand-up notes", "Design review", "Interview clips", "Decision log", "Release checks", "Writing guide", "Research readout", "Team archive", "Launch notes", "Older files"];
+    document.getElementById("regions").innerHTML = data.map(region => `<article data-region-id="${region.id}"><header><div><h2>${region.title}</h2><p>Independent scroll area</p></div></header><div class="scroller" tabindex="0" data-scroll-region-id="${region.id}">${Array.from({length:region.items}, (_, i) => `<section class="item"><span>Item ${i + 1}</span><strong>${labels[i]}</strong><span>Ordinary workspace content.</span></section>`).join("")}<section class="entry"><button data-region-entry="${region.entryId}">${region.entry}</button><section class="entry-result" role="region" aria-live="polite" data-entry-result="${region.entryId}"><strong>${region.result}</strong><span>${region.detail}</span></section></section></div></article>`).join("");
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-region-entry]");
+      if (!button) return;
+      activeEntry = button.dataset.regionEntry;
+      document.body.dataset.activeEntry = activeEntry;
+      document.getElementById("status").textContent = `${button.textContent} opened.`;
+      document.querySelector(`[data-entry-result="${activeEntry}"]`).dataset.open = "true";
+    });
+    window.__fixture = { snapshot: () => ({ pageId: "scroll.workspace", activeEntry }) };
+  </script>
+</body>
+</html>

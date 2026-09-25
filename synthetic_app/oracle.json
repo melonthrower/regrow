@@ -1,0 +1,333 @@
+{
+  "schema_version": "rewalk.synthetic_app.oracle.v1",
+  "app": {
+    "id": "rewalk_fixture",
+    "name": "Dayline",
+    "start_page": "home",
+    "viewport": {
+      "width": 1365,
+      "height": 900
+    },
+    "purpose": "Deterministic visual-traversal fixture for Page/Variant identity, shared navigation, overlays, stateful controls, routing, and long-page scrolling."
+  },
+  "pages": [
+    {
+      "id": "home",
+      "title": "Home",
+      "anchors": ["Good morning, Alex", "Browse documents"],
+      "identity_anchors": ["Good morning, Alex"],
+      "variants": [
+        {"id": "default", "facts": {"surface": "page"}},
+        {"id": "menu_open", "facts": {"surface": "popup_menu"}}
+      ],
+      "blocks": [
+        {"id": "home.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "home.hero", "role": "hero", "scrollable": false},
+        {"id": "home.quick_actions", "role": "content", "scrollable": false},
+        {"id": "home.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "home.more", "label": "More options", "block": "home.app_bar", "type": "button", "category": "navigation", "coverage": "shared_once"},
+        {"id": "home.start_library", "label": "Browse documents", "block": "home.hero", "type": "button", "category": "navigation"},
+        {"id": "home.open_activity", "label": "View recent activity", "block": "home.quick_actions", "type": "button", "category": "navigation"},
+        {"id": "home.open_settings", "label": "Open settings", "block": "home.quick_actions", "type": "button", "category": "navigation"},
+        {"id": "home.open_workspace", "label": "Open planning workspace", "block": "home.quick_actions", "type": "button", "category": "navigation"},
+        {"id": "home.nav_library", "label": "Documents", "block": "home.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "home.nav_activity", "label": "Activity", "block": "home.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "home.nav_settings", "label": "Settings", "block": "home.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "workspace",
+      "title": "Planning workspace",
+      "anchors": ["Planning workspace", "Research queue", "Delivery board", "Reference shelf"],
+      "identity_anchors": ["Planning workspace", "Three active lanes"],
+      "variants": [
+        {"id": "default", "facts": {"workspace_selection": "none"}},
+        {"id": "interview_synthesis_open", "facts": {"workspace_selection": "interview_synthesis"}},
+        {"id": "release_readiness_open", "facts": {"workspace_selection": "release_readiness"}},
+        {"id": "team_field_guide_open", "facts": {"workspace_selection": "team_field_guide"}}
+      ],
+      "blocks": [
+        {"id": "workspace.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "workspace.status", "role": "status", "scrollable": false},
+        {"id": "workspace.research_queue", "role": "content_list", "scrollable": true},
+        {"id": "workspace.delivery_board", "role": "content_list", "scrollable": true},
+        {"id": "workspace.reference_shelf", "role": "content_list", "scrollable": true}
+      ],
+      "controls": [
+        {"id": "workspace.back", "label": "Back to home", "block": "workspace.app_bar", "type": "button", "category": "navigation"},
+        {"id": "workspace.open_interview_synthesis", "label": "Open interview synthesis", "block": "workspace.research_queue", "type": "button", "category": "navigation"},
+        {"id": "workspace.open_release_readiness", "label": "Open release readiness", "block": "workspace.delivery_board", "type": "button", "category": "navigation"},
+        {"id": "workspace.open_team_field_guide", "label": "Open team field guide", "block": "workspace.reference_shelf", "type": "button", "category": "navigation"}
+      ],
+      "scroll": {
+        "classification": "static",
+        "scope": "page",
+        "outer_page_scrolls": false,
+        "nested_regions": [
+          {
+            "region_id": "workspace.research_queue",
+            "label": "Research queue",
+            "entry_control_id": "workspace.open_interview_synthesis",
+            "entry_label": "Open interview synthesis",
+            "depth_rank": 1,
+            "expected_outcome": "Interview synthesis opened: twelve themes are ready to review."
+          },
+          {
+            "region_id": "workspace.delivery_board",
+            "label": "Delivery board",
+            "entry_control_id": "workspace.open_release_readiness",
+            "entry_label": "Open release readiness",
+            "depth_rank": 2,
+            "expected_outcome": "Release readiness opened: three launch checks remain."
+          },
+          {
+            "region_id": "workspace.reference_shelf",
+            "label": "Reference shelf",
+            "entry_control_id": "workspace.open_team_field_guide",
+            "entry_label": "Open team field guide",
+            "depth_rank": 3,
+            "expected_outcome": "Team field guide opened: the working agreements are available."
+          }
+        ]
+      }
+    },
+    {
+      "id": "library",
+      "title": "Documents",
+      "anchors": ["All documents", "Product launch notes", "Open Document 01"],
+      "identity_anchors": ["All documents"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "library.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "library.summary", "role": "summary", "scrollable": false},
+        {"id": "library.record_list", "role": "content_list", "scrollable": true},
+        {"id": "library.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "library.more", "label": "More options", "block": "library.app_bar", "type": "button", "category": "navigation", "coverage": "shared_once"},
+        {"id": "library.record_01", "label": "Open Document 01", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_02", "label": "Open Document 02", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_03", "label": "Open Document 03", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_04", "label": "Open Document 04", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_05", "label": "Open Document 05", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_06", "label": "Open Document 06", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_07", "label": "Open Document 07", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_08", "label": "Open Document 08", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.record_09", "label": "Open Document 09", "block": "library.record_list", "type": "button", "category": "navigation", "group": "record_item", "coverage": "group_once"},
+        {"id": "library.nav_home", "label": "Home", "block": "library.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "library.nav_activity", "label": "Activity", "block": "library.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "library.nav_settings", "label": "Settings", "block": "library.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {
+        "classification": "scrollable",
+        "scope": "page",
+        "min_scroll_steps": 2,
+        "bottom_anchor": "Open Document 09",
+        "must_restore_top": true
+      }
+    },
+    {
+      "id": "record_detail",
+      "title": "Document details",
+      "anchors": ["Document details", "Owner", "Mark reviewed"],
+      "identity_anchors": ["Document details"],
+      "data_only_fields": ["record_number", "record_title", "owner"],
+      "variants": [
+        {"id": "unreviewed", "facts": {"reviewed": false}},
+        {"id": "reviewed", "facts": {"reviewed": true}}
+      ],
+      "blocks": [
+        {"id": "record_detail.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "detail.identity", "role": "summary", "scrollable": false},
+        {"id": "detail.metadata", "role": "content", "scrollable": false},
+        {"id": "detail.actions", "role": "actions", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "detail.back", "label": "Back to documents", "block": "record_detail.app_bar", "type": "button", "category": "navigation"},
+        {"id": "detail.reviewed", "label": "Mark reviewed", "alternate_label": "Mark unreviewed", "block": "detail.actions", "type": "switch", "category": "stateful", "reversible": true}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "activity",
+      "title": "Recent activity",
+      "anchors": ["Recent activity", "Document updated", "View weekly summary"],
+      "identity_anchors": ["Recent activity"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "activity.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "activity.timeline", "role": "timeline", "scrollable": true},
+        {"id": "activity.report_cta", "role": "actions", "scrollable": true},
+        {"id": "activity.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "activity.more", "label": "More options", "block": "activity.app_bar", "type": "button", "category": "navigation", "coverage": "shared_once"},
+        {"id": "activity.review_report", "label": "View weekly summary", "block": "activity.report_cta", "type": "button", "category": "navigation"},
+        {"id": "activity.nav_home", "label": "Home", "block": "activity.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "activity.nav_library", "label": "Documents", "block": "activity.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "activity.nav_settings", "label": "Settings", "block": "activity.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {
+        "classification": "scrollable",
+        "scope": "page",
+        "min_scroll_steps": 3,
+        "bottom_anchor": "View weekly summary",
+        "must_restore_top": true
+      }
+    },
+    {
+      "id": "coverage_report",
+      "title": "Weekly summary",
+      "anchors": ["Weekly summary", "Documents updated", "Archive weekly summary"],
+      "identity_anchors": ["Weekly summary"],
+      "variants": [
+        {"id": "default", "facts": {"surface": "page"}},
+        {"id": "confirm_open", "facts": {"surface": "dialog"}}
+      ],
+      "blocks": [
+        {"id": "coverage_report.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "report.metrics", "role": "summary", "scrollable": false},
+        {"id": "report.checks", "role": "content", "scrollable": false},
+        {"id": "report.actions", "role": "actions", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "report.back", "label": "Back to activity", "block": "coverage_report.app_bar", "type": "button", "category": "navigation"},
+        {"id": "report.complete", "label": "Archive weekly summary", "block": "report.actions", "type": "button", "category": "navigation"}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "anchors": ["Settings", "Daily digest", "Cloud sync"],
+      "identity_anchors": ["Daily digest", "Cloud sync"],
+      "variants": [
+        {"id": "tips_off", "facts": {"daily_tips": false}},
+        {"id": "tips_on", "facts": {"daily_tips": true}},
+        {"id": "menu_open", "facts": {"surface": "popup_menu"}}
+      ],
+      "blocks": [
+        {"id": "settings.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "settings.preferences", "role": "settings_list", "scrollable": false},
+        {"id": "settings.about", "role": "actions", "scrollable": false},
+        {"id": "settings.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "settings.more", "label": "More options", "block": "settings.app_bar", "type": "button", "category": "navigation", "coverage": "shared_once"},
+        {"id": "settings.daily_tips", "label": "Daily digest", "block": "settings.preferences", "type": "switch", "category": "stateful", "reversible": true},
+        {"id": "settings.cloud_sync", "label": "Cloud sync", "block": "settings.preferences", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "login_required"},
+        {"id": "settings.about_fixture", "label": "About Dayline", "block": "settings.about", "type": "button", "category": "navigation"},
+        {"id": "settings.nav_home", "label": "Home", "block": "settings.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "settings.nav_library", "label": "Documents", "block": "settings.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "settings.nav_activity", "label": "Activity", "block": "settings.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "about",
+      "title": "About Dayline",
+      "anchors": ["About Dayline", "Dayline 1.0", "Back to home"],
+      "identity_anchors": ["Dayline 1.0"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "about.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "about.intro", "role": "summary", "scrollable": false},
+        {"id": "about.specification", "role": "content", "scrollable": true},
+        {"id": "about.actions", "role": "actions", "scrollable": true}
+      ],
+      "controls": [
+        {"id": "about.back", "label": "Back", "block": "about.app_bar", "type": "button", "category": "navigation"},
+        {"id": "about.return_home", "label": "Back to home", "block": "about.actions", "type": "button", "category": "navigation"}
+      ],
+      "scroll": {
+        "classification": "scrollable",
+        "scope": "page",
+        "min_scroll_steps": 2,
+        "bottom_anchor": "Back to home",
+        "must_restore_top": true
+      }
+    },
+    {
+      "id": "done",
+      "title": "Summary archived",
+      "anchors": ["Summary archived", "Your workspace is ready for a fresh week", "Back to home"],
+      "identity_anchors": ["Summary archived"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "done.summary", "role": "completion", "scrollable": false},
+        {"id": "done.actions", "role": "actions", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "done.return_home", "label": "Back to home", "block": "done.actions", "type": "button", "category": "navigation"}
+      ],
+      "scroll": {"classification": "static"}
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "shared.more_menu",
+      "kind": "popup_menu",
+      "host_pages": ["home", "library", "activity", "settings"],
+      "anchors": ["Workspace menu"],
+      "scrollable": false,
+      "controls": [
+        {"id": "menu.about", "label": "About Dayline", "type": "menu_item", "category": "navigation", "coverage": "shared_once"},
+        {"id": "menu.close", "label": "Close menu", "type": "button", "category": "navigation"}
+      ]
+    },
+    {
+      "id": "report.confirm_dialog",
+      "kind": "dialog",
+      "host_pages": ["coverage_report"],
+      "anchors": ["Archive this summary?", "Archive summary"],
+      "scrollable": false,
+      "controls": [
+        {"id": "dialog.cancel", "label": "Cancel", "type": "button", "category": "navigation"},
+        {"id": "dialog.finish", "label": "Archive summary", "type": "button", "category": "navigation"}
+      ]
+    }
+  ],
+  "transitions": [
+    {"id": "home.start_library", "source_page": "home", "action_label": "Browse documents", "target_page": "library", "effect": "forward", "required": true},
+    {"id": "home.open_activity", "source_page": "home", "action_label": "View recent activity", "target_page": "activity", "effect": "forward", "required": true},
+    {"id": "home.open_settings", "source_page": "home", "action_label": "Open settings", "target_page": "settings", "effect": "forward", "required": true},
+    {"id": "home.open_workspace", "source_page": "home", "action_label": "Open planning workspace", "target_page": "workspace", "effect": "forward", "required": true},
+    {"id": "workspace.back", "source_page": "workspace", "action_label": "Back to home", "target_page": "home", "effect": "return", "required": true},
+    {"id": "workspace.open_interview_synthesis", "source_page": "workspace", "action_label": "Open interview synthesis", "target_page": "workspace", "effect": "state_change", "required": true},
+    {"id": "workspace.open_release_readiness", "source_page": "workspace", "action_label": "Open release readiness", "target_page": "workspace", "effect": "state_change", "required": true},
+    {"id": "workspace.open_team_field_guide", "source_page": "workspace", "action_label": "Open team field guide", "target_page": "workspace", "effect": "state_change", "required": true},
+
+    {"id": "home.nav_library", "source_page": "home", "action_label": "Documents", "target_page": "library", "effect": "peer_navigation", "required": true},
+    {"id": "home.nav_activity", "source_page": "home", "action_label": "Activity", "target_page": "activity", "effect": "peer_navigation", "required": true},
+    {"id": "home.nav_settings", "source_page": "home", "action_label": "Settings", "target_page": "settings", "effect": "peer_navigation", "required": true},
+    {"id": "library.nav_home", "source_page": "library", "action_label": "Home", "target_page": "home", "effect": "peer_navigation", "required": true},
+    {"id": "library.nav_activity", "source_page": "library", "action_label": "Activity", "target_page": "activity", "effect": "peer_navigation", "required": true},
+    {"id": "library.nav_settings", "source_page": "library", "action_label": "Settings", "target_page": "settings", "effect": "peer_navigation", "required": true},
+    {"id": "activity.nav_home", "source_page": "activity", "action_label": "Home", "target_page": "home", "effect": "peer_navigation", "required": true},
+    {"id": "activity.nav_library", "source_page": "activity", "action_label": "Documents", "target_page": "library", "effect": "peer_navigation", "required": true},
+    {"id": "activity.nav_settings", "source_page": "activity", "action_label": "Settings", "target_page": "settings", "effect": "peer_navigation", "required": true},
+    {"id": "settings.nav_home", "source_page": "settings", "action_label": "Home", "target_page": "home", "effect": "peer_navigation", "required": true},
+    {"id": "settings.nav_library", "source_page": "settings", "action_label": "Documents", "target_page": "library", "effect": "peer_navigation", "required": true},
+    {"id": "settings.nav_activity", "source_page": "settings", "action_label": "Activity", "target_page": "activity", "effect": "peer_navigation", "required": true},
+
+    {"id": "library.open_record", "source_page": "library", "action_label_pattern": "Open Document ", "target_page": "record_detail", "effect": "forward", "coverage": "group_once", "required": true},
+    {"id": "detail.back", "source_page": "record_detail", "action_label": "Back to documents", "target_page": "library", "effect": "return", "required": true},
+    {"id": "detail.toggle_reviewed", "source_page": "record_detail", "action_labels": ["Mark reviewed", "Mark unreviewed"], "target_page": "record_detail", "effect": "state_change", "required": true},
+    {"id": "activity.review_report", "source_page": "activity", "action_label": "View weekly summary", "target_page": "coverage_report", "effect": "forward", "required": true},
+    {"id": "report.back", "source_page": "coverage_report", "action_label": "Back to activity", "target_page": "activity", "effect": "return", "required": true},
+    {"id": "report.open_dialog", "source_page": "coverage_report", "action_label": "Archive weekly summary", "target_page": "coverage_report", "target_surface": "report.confirm_dialog", "effect": "open_dialog", "required": true},
+    {"id": "dialog.cancel", "source_page": "coverage_report", "source_surface": "report.confirm_dialog", "action_label": "Cancel", "target_page": "coverage_report", "effect": "dismiss_overlay", "required": true},
+    {"id": "dialog.finish", "source_page": "coverage_report", "source_surface": "report.confirm_dialog", "action_label": "Archive summary", "target_page": "done", "effect": "forward", "required": true},
+    {"id": "settings.toggle_tips", "source_page": "settings", "action_label": "Daily digest", "target_page": "settings", "effect": "state_change", "required": true},
+    {"id": "settings.about", "source_page": "settings", "action_label": "About Dayline", "target_page": "about", "effect": "forward", "required": true},
+    {"id": "about.return_home", "source_page": "about", "action_label": "Back to home", "target_page": "home", "effect": "return", "required": true},
+    {"id": "done.return_home", "source_page": "done", "action_label": "Back to home", "target_page": "home", "effect": "return", "required": true},
+
+    {"id": "shared.open_menu", "source_pages": ["home", "library", "activity", "settings"], "action_label": "More options", "target_page": "$source", "target_surface": "shared.more_menu", "effect": "open_popup", "coverage": "shared_once", "required": true},
+    {"id": "menu.about", "source_pages": ["home", "library", "activity", "settings"], "source_surface": "shared.more_menu", "action_label": "About Dayline", "target_page": "about", "effect": "forward", "coverage": "shared_once", "required": true},
+    {"id": "menu.close", "source_pages": ["home", "library", "activity", "settings"], "source_surface": "shared.more_menu", "action_label": "Close menu", "target_page": "$source", "effect": "dismiss_overlay", "coverage": "shared_once", "required": true}
+  ]
+}

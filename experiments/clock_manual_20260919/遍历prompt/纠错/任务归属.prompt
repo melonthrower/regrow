@@ -1,0 +1,7 @@
+# 任务归属修订
+
+任务归属修订（在发现/任务清点纠错中使用）：record_edit可用region、task、field、before、after、evidence，task写任务名，before写原控件名。
+field=task_control只允许pending、无尝试/事实/结论/依赖的任务，after写本轮已登记且唯一的正确控件名。
+有历史时field=suspend_task、after为空，保留原归属与历史，暂挂并重新清点；给正确控件提出不同名的独立任务，不复制旧事实。
+正例：未执行的“查看音乐目录”误挂Recent，可改到已登记Music。反例：已点击Recent得到的内容不能转成Music的探索事实。
+任务误绑按上述发现/清点规则处理；不能改写已投递绑定。控件本身的所属区块错误使用本轮允许的 field="region" 修订，具体字段见本轮能力表；未提供该能力时不能自行迁移。累计任务结果核对不虚构新动作。

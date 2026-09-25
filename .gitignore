@@ -1,0 +1,148 @@
+*.pyc
+*__pycache__/
+logs/
+result/
+result*/
+llm_cost/
+OSWorld/
+OmniParser/
+.vmware*
+.claude/
+.vscode/
+*.log
+*.pid
+.codex_current_*.txt
+.pytest_cache/
+/.pytest-*/
+/.pytest_tmp_*/
+/.codex-temp/
+/.codex_tmp/
+/.tmp_test_*/
+*.tar.gz
+*.zip
+*.rar
+*.pdf
+
+
+# 环境变量/密钥(含阿里云 AccessKey),禁止提交
+.env
+.env.local
+*.env
+!*.env.example
+/.guiwalk.local.yaml
+
+# ── 凭据 / SSH ──────────────────────────────────────────────
+.ssh/
+
+# ── 调试 / 探针 / 临时脚本 ──────────────────────────────────
+_*.py
+!gui_rewalk/src/core/explore/__init__.py
+!tests/__init__.py
+!gui_rewalk/src/core/visual_traversal/__init__.py
+!gui_rewalk/src/core/visual_traversal/grounding/__init__.py
+!gui_rewalk/src/core/visual_traversal/grounding/region/__init__.py
+!gui_rewalk/src/core/visual_traversal/navigation/__init__.py
+!gui_rewalk/src/core/visual_traversal/runtime/__init__.py
+!gui_rewalk/src/core/visual_traversal/state/__init__.py
+_*.txt
+_*.png
+_*.jpg
+_*.xml
+.tmp_*.py
+test_click_sound*.py
+test_sound_no_revert.py
+test_stage2_signature_rebind.py
+test_android_smoke.py
+test_scenario_*.py
+recover_graph.py
+reset_terminal_mismatch.py
+annotate_mismatch_*.py
+visualize.py
+
+# ── 遍历产物 / 截图 / 可视化输出 ────────────────────────────
+*.png
+*.jpg
+*.jpeg
+nodes/
+graphs/
+*_graph_*.png
+*_visualization*.png
+*_overlay.png
+*_diff.png
+
+# ── 监控 / 会话笔记 (本地记录,不入库) ──────────────────────
+/TRAVERSAL_MONITOR_*.md
+/CLOCK_TRAVERSAL_WATCH_*.md
+/VSCODE_TRAVERSAL_DEBUG_*.md
+/MONITOR_*.md
+/CHANGELOG_session_*.md
+/NEXT_SESSION_PROMPT_*.md
+
+# ── 第三方仓库副本 / 大产物目录 ─────────────────────────────
+android_world_repo/
+graph-traverse-upload/
+aliyun_collection_upload/
+aliyun_upload_min/
+autoweb/
+clock_issue_visualization_*/
+
+# ── 数据 / 中间结果 ─────────────────────────────────────────
+*.json
+!aliyun.env.example
+*_results.json
+*_capabilities.json
+*_capabilities_prompt.txt
+*.html
+!tools/mobile_graph_annotator.html
+
+# scratch & one-off debug artifacts (ops/storage_convention.md)
+_scratch/
+
+# Runtime artifact boundary.  Keep only the contract document tracked.
+/artifacts/*
+!/artifacts/README.md
+
+# ── 清理补漏 (2026-07-07): _前缀目录 / js探针 / tgz快照 / 数据目录 ──
+# /_*/ 只匹配【根目录】下 _ 前缀的目录(_mobile50/_diag_nodes…),不碰子目录的
+# __init__.py/__pycache__(那些是文件, 且已被上面规则覆盖)。
+/_*/
+_*.js
+*.tgz
+/collections/
+/data/
+
+# Repository scope: keep framework code, tests, formal tools, current design
+# contracts, and reproducible synthetic fixtures.  Ignore local investigation
+# records and generated fixture build products.
+/issues/
+/research/
+/docs/superpowers/
+/.worktrees/
+/design/*
+!/design/CURRENT_FRAMEWORK.md
+!/design/modules/
+!/design/modules/**
+!/design/changelog/
+!/design/changelog/**
+!/design/archive/
+!/design/archive/**
+!/design/SERVER_HANDOFF.md
+
+# Local operational notes are evidence/logs, not framework source.
+/to_astra/
+/ops/*_log.md
+/run_synth_batch.sh
+
+# Android fixture build/cache products; keep Gradle files and app/src sources.
+/synthetic_mobile_app/.gradle/
+/synthetic_mobile_app/app/build/
+/synthetic_mobile_app/*.apk
+/synthetic_mobile_app/local.properties
+
+# Reproducible Local HTML fixture sources and oracle/model-shaped answers.
+# Reference screenshots, APKs, caches, and build outputs remain ignored above.
+!/synthetic_app/*.json
+!/synthetic_app/*.html
+!/synthetic_mobile_app/*.json
+!/synthetic_mobile_app/*.html
+!/synthetic_mobile_app/app/src/main/assets/*.html

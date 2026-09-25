@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atlas workspace</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; min-width: 980px; color: #172033; background: #edf1f7; }
+    button { font: inherit; }
+    .shell { display: grid; grid-template-rows: 68px 1fr 42px; min-height: 100vh; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 26px; color: #fff; background: #1d2a49; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 800; }
+    .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: #7c65e8; }
+    .toolbar { display: flex; gap: 10px; }
+    .toolbar button { padding: 9px 13px; border: 1px solid #52607f; border-radius: 10px; color: #eef2ff; background: #2b395d; cursor: pointer; }
+    .workspace { display: grid; grid-template-columns: 190px minmax(0, 1fr); min-height: 0; }
+    .nav { padding: 24px 16px; color: #e8ecf8; background: #263557; }
+    .nav small { display: block; margin: 0 10px 12px; color: #aeb8d2; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .nav button { display: block; width: 100%; margin: 6px 0; padding: 12px 13px; border: 0; border-radius: 10px; color: inherit; background: transparent; text-align: left; cursor: pointer; }
+    .nav button[aria-current="page"] { color: #fff; background: #4a5b86; font-weight: 750; }
+    .canvas { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; }
+    .side-panel { width: 252px; padding: 24px 20px; border-right: 1px solid #dce2eb; background: #f8f9fc; }
+    .side-panel.right { border-right: 0; border-left: 1px solid #dce2eb; }
+    .side-panel h2 { margin: 0 0 7px; font-size: 18px; }
+    .side-panel p { margin: 0 0 20px; color: #6e7789; font-size: 13px; line-height: 1.5; }
+    .side-panel button { width: 100%; padding: 10px; border: 1px solid #cfd6e2; border-radius: 10px; color: #394760; background: #fff; cursor: pointer; }
+    .main { min-width: 0; padding: 34px; overflow: auto; }
+    .eyebrow { color: #7762de; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 8px 0 9px; font-size: 32px; letter-spacing: -.035em; }
+    .lead { max-width: 700px; margin: 0 0 28px; color: #687286; line-height: 1.6; }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .card { min-height: 170px; padding: 21px; border: 1px solid #dbe1ea; border-radius: 17px; background: #fff; box-shadow: 0 10px 28px rgba(38, 52, 76, .06); }
+    .card strong { display: block; margin-bottom: 9px; font-size: 16px; }
+    .card span { color: #707a8c; font-size: 13px; line-height: 1.5; }
+    .primary { margin-top: 24px; padding: 12px 18px; border: 0; border-radius: 11px; color: #fff; background: #6f58de; font-weight: 760; cursor: pointer; }
+    .status { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-top: 1px solid #d9e0ea; color: #667187; background: #fff; font-size: 13px; }
+    .sheet-backdrop { position: fixed; inset: 68px 0 42px 190px; z-index: 5; background: rgba(24, 33, 53, .26); }
+    .sheet { position: absolute; right: 26px; bottom: 24px; left: 26px; min-height: 235px; padding: 25px 28px; border-radius: 19px; background: #fff; box-shadow: 0 24px 60px rgba(24, 33, 53, .25); }
+    .sheet h2 { margin: 0 0 8px; font-size: 23px; }
+    .sheet p { margin: 0; color: #6b7589; }
+    .sheet-actions { display: flex; gap: 10px; margin-top: 25px; }
+    .sheet-actions button { padding: 11px 15px; border: 1px solid #ccd4e0; border-radius: 10px; background: #fff; cursor: pointer; }
+    .sheet-actions .continue { border-color: #6f58de; color: #fff; background: #6f58de; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar" data-region-id="combo.toolbar">
+      <div class="brand"><span class="brand-mark">A</span><span>Atlas workspace</span></div>
+      <div class="toolbar">
+        <button data-action-id="combo.library.toggle" id="library-toggle">Show library</button>
+        <button data-action-id="combo.inspector.toggle" id="inspector-toggle">Show inspector</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <nav class="nav" data-region-id="combo.navigation">
+        <small>Workspace</small>
+        <button data-route="/home" data-action-id="combo.nav.home">Home</button>
+        <button data-route="/records" data-action-id="combo.nav.records">Records</button>
+        <button data-route="/analytics" data-action-id="combo.nav.analytics">Analytics</button>
+        <button data-route="/settings" data-action-id="combo.nav.settings">Settings</button>
+      </nav>
+
+      <section class="canvas">
+        <aside class="side-panel" id="library" data-region-id="combo.library" hidden>
+          <h2>Team library</h2>
+          <p>Saved briefs and reusable project references stay available across every workspace page.</p>
+          <button data-action-id="combo.library.open_records">Open recent records</button>
+        </aside>
+
+        <main class="main" id="main-region" data-region-id="combo.main.home">
+          <div class="eyebrow" id="page-eyebrow"></div>
+          <h1 id="page-title"></h1>
+          <p class="lead" id="page-summary"></p>
+          <section class="cards" id="page-cards"></section>
+          <button class="primary" id="page-primary"></button>
+        </main>
+
+        <aside class="side-panel right" id="inspector" data-region-id="combo.inspector" hidden>
+          <h2>Workspace inspector</h2>
+          <p>Owner, review status, and next checkpoint for the current workspace item.</p>
+          <button data-action-id="combo.inspector.close">Close inspector</button>
+        </aside>
+      </section>
+    </div>
+
+    <footer class="status" data-region-id="combo.status">
+      <span>Atlas sync is healthy</span><span id="status-context">Home context</span>
+    </footer>
+  </div>
+
+  <div class="sheet-backdrop" id="sheet-backdrop" hidden>
+    <section class="sheet" data-region-id="combo.review-sheet">
+      <div class="eyebrow">Quick review</div>
+      <h2>Analytics review sheet</h2>
+      <p>Confirm the visible trend before continuing to workspace settings.</p>
+      <div class="sheet-actions">
+        <button data-action-id="combo.sheet.close">Close review</button>
+        <button class="continue" data-action-id="combo.sheet.continue">Continue to settings</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const pages = {
+      "/home": {
+        id: "combo.home", eyebrow: "Workspace home", title: "Team overview",
+        summary: "A stable overview of current delivery work and the next useful handoff.",
+        cards: [["Delivery pulse", "Four active initiatives are moving on schedule."], ["Review queue", "Two decisions are ready for a short review."]],
+        action: "Begin workspace tour", actionId: "combo.home.begin"
+      },
+      "/records": {
+        id: "combo.records", eyebrow: "Records", title: "Project records",
+        summary: "Browse durable briefs, decisions, and notes without leaving the workspace shell.",
+        cards: [["Launch brief", "Approved scope and owner map."], ["Research notes", "Interview highlights and open questions."]],
+        action: "Continue to analytics", actionId: "combo.records.continue"
+      },
+      "/analytics": {
+        id: "combo.analytics", eyebrow: "Analytics", title: "Performance analytics",
+        summary: "Compare delivery trends while the same library and inspector remain available.",
+        cards: [["Throughput", "Completion rate is stable across the last four weeks."], ["Quality", "Review rework has decreased since the last checkpoint."]],
+        action: "Open quick review", actionId: "combo.analytics.review"
+      },
+      "/settings": {
+        id: "combo.settings", eyebrow: "Settings", title: "Workspace settings",
+        summary: "Manage shared workspace preferences without changing the surrounding shell.",
+        cards: [["Notifications", "Weekly summaries are enabled."], ["Access", "The project is visible to the delivery team."]],
+        action: "Return to team overview", actionId: "combo.settings.finish"
+      }
+    };
+
+    const state = { library: false, inspector: false, sheet: false };
+    const visits = [];
+    const actions = [];
+    const route = () => {
+      const value = location.hash.replace(/^#/, "") || "/home";
+      return pages[value] ? value : "/home";
+    };
+    const visibleRegionIds = () => [
+      "combo.toolbar",
+      "combo.navigation",
+      ...(state.library ? ["combo.library"] : []),
+      `combo.main.${route().slice(1)}`,
+      ...(state.inspector ? ["combo.inspector"] : []),
+      "combo.status",
+      ...(state.sheet ? ["combo.review-sheet"] : [])
+    ];
+
+    function render() {
+      const current = route();
+      const page = pages[current];
+      visits.push(page.id);
+      document.body.dataset.pageId = page.id;
+      document.body.dataset.stateKey = [page.id, state.library ? "library" : "no-library", state.inspector ? "inspector" : "no-inspector", state.sheet ? "sheet" : "no-sheet"].join("|");
+      document.querySelectorAll("[data-route]").forEach(button => {
+        button.setAttribute("aria-current", button.dataset.route === current ? "page" : "false");
+      });
+      document.getElementById("library").hidden = !state.library;
+      document.getElementById("inspector").hidden = !state.inspector;
+      document.getElementById("sheet-backdrop").hidden = !state.sheet;
+      document.getElementById("library-toggle").textContent = state.library ? "Hide library" : "Show library";
+      document.getElementById("inspector-toggle").textContent = state.inspector ? "Hide inspector" : "Show inspector";
+      const main = document.getElementById("main-region");
+      main.dataset.regionId = `combo.main.${current.slice(1)}`;
+      document.getElementById("page-eyebrow").textContent = page.eyebrow;
+      document.getElementById("page-title").textContent = page.title;
+      document.getElementById("page-summary").textContent = page.summary;
+      document.getElementById("page-cards").innerHTML = page.cards.map(([title, summary]) => `<article class="card"><strong>${title}</strong><span>${summary}</span></article>`).join("");
+      const primary = document.getElementById("page-primary");
+      primary.textContent = page.action;
+      primary.dataset.actionId = page.actionId;
+      document.getElementById("status-context").textContent = `${page.eyebrow} context`;
+    }
+
+    function record(actionId) { actions.push({ actionId, pageId: pages[route()].id, regions: visibleRegionIds() }); }
+    document.addEventListener("click", event => {
+      const target = event.target.closest("[data-action-id]");
+      if (!target) return;
+      const actionId = target.dataset.actionId;
+      record(actionId);
+      if (target.dataset.route) {
+        state.sheet = false;
+        location.hash = target.dataset.route;
+      } else if (actionId === "combo.library.toggle") {
+        state.library = !state.library;
+        render();
+      } else if (actionId === "combo.inspector.toggle") {
+        state.inspector = !state.inspector;
+        render();
+      } else if (actionId === "combo.library.open_records") {
+        state.sheet = false;
+        location.hash = "/records";
+      } else if (actionId === "combo.inspector.close") {
+        state.inspector = false;
+        render();
+      } else if (actionId === "combo.home.begin") {
+        state.library = true;
+        location.hash = "/records";
+      } else if (actionId === "combo.records.continue") {
+        state.inspector = true;
+        location.hash = "/analytics";
+      } else if (actionId === "combo.analytics.review") {
+        state.sheet = true;
+        render();
+      } else if (actionId === "combo.sheet.close") {
+        state.sheet = false;
+        render();
+      } else if (actionId === "combo.sheet.continue") {
+        state.sheet = false;
+        location.hash = "/settings";
+      } else if (actionId === "combo.settings.finish") {
+        location.hash = "/home";
+      }
+    });
+    addEventListener("hashchange", render);
+    window.__fixture = {
+      snapshot: () => ({
+        pageId: pages[route()].id,
+        stateKey: document.body.dataset.stateKey,
+        regions: visibleRegionIds(),
+        visits: [...visits],
+        actions: actions.map(item => ({ ...item, regions: [...item.regions] }))
+      })
+    };
+    render();
+  </script>
+</body>
+</html>

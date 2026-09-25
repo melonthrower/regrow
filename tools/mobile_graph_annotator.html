@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width,initial-scale=1" property="viewport">
+  <title>移动端状态建图台</title>
+  <style>
+    :root { color-scheme: dark; --bg:#111827; --panel:#1f2937; --line:#374151; --text:#f3f4f6; --muted:#9ca3af; --blue:#38bdf8; --amber:#fbbf24; --pink:#f472b6; --good:#34d399; }
+    * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 system-ui,sans-serif }
+    header { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 14px; background:#0b1220; border-bottom:1px solid var(--line) }
+    button,select { border:1px solid #4b5563; border-radius:7px; padding:7px 10px; background:#263244; color:var(--text); cursor:pointer }
+    button:hover { border-color:#94a3b8 } button.active { outline:2px solid var(--blue) } button:disabled { opacity:.42; cursor:not-allowed }
+    button.danger { margin-left:auto; border-color:#b91c1c; background:#4c1d1d; color:#fecaca }
+    .status { margin-left:auto; color:var(--good) } .muted { color:var(--muted) }
+    main { display:grid; grid-template-columns:minmax(0,1fr) 340px; min-height:calc(100vh - 58px) }
+    .workspace { padding:14px; overflow:auto } aside { border-left:1px solid var(--line); background:#151e2d; padding:12px; overflow:auto }
+    .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px } .group { padding:10px; margin-bottom:12px; border:1px solid var(--line); border-radius:9px; background:var(--panel) }
+    .group h3 { margin:0 0 8px; font-size:14px } .canvas-shell { position:relative; width:min(100%,1100px); margin:auto; user-select:none; touch-action:none }
+    #screen { display:block; width:100%; height:auto; background:#05070a; border-radius:8px }
+    #overlay { position:absolute; inset:0; width:100%; height:100%; overflow:visible }
+    .box { fill-opacity:.11; stroke-width:3; vector-effect:non-scaling-stroke; cursor:pointer }
+    .button-box { stroke:var(--blue); fill:var(--blue) } .region-box { stroke:var(--amber); fill:var(--amber) }
+    .shared-box { stroke-dasharray:8 5 } .selected { stroke:var(--pink); stroke-width:5 }
+    .pending { fill:var(--pink); stroke:white; stroke-width:2; vector-effect:non-scaling-stroke }
+    .draft { fill:transparent; stroke:white; stroke-dasharray:7 5; stroke-width:2; vector-effect:non-scaling-stroke }
+    .node { display:block; width:100%; margin:5px 0; text-align:left } .node.current { border-color:var(--blue); color:var(--blue) }
+    .edge { padding:5px 7px; margin:4px 0; background:#111827; border-radius:6px; font-family:ui-monospace,monospace }
+    .coord { font-family:ui-monospace,monospace; color:#cbd5e1; overflow-wrap:anywhere }
+    .local-graph-panel { width:min(100%,1100px); margin:16px auto 0; padding:12px; border:1px solid var(--line); border-radius:9px; background:var(--panel) }
+    .local-graph-panel h3 { margin:0 0 6px } #localGraph { display:block; width:100%; min-height:320px; max-height:72vh; background:#0b1220; border-radius:8px }
+    #localGraphEmpty { min-height:180px; display:grid; place-items:center; color:var(--muted) } #localGraphEmpty[hidden] { display:none }
+    .legend-swatch { display:inline-block; width:18px; margin-right:4px; border-top:3px solid; vertical-align:middle } .legend-same { border-top-style:dashed }
+    .device-pending { border:2px solid var(--pink); background:#3b1832; padding:9px 12px; border-radius:8px }
+    #localGraphRelations { display:grid; gap:5px; margin-top:8px } .relation-detail { padding:6px 9px; border-left:4px solid #64748b; border-radius:5px; background:#111827; color:#e5e7eb }
+    #emptyState { min-height:420px; display:grid; place-items:center; border:1px dashed var(--line); border-radius:8px; background:#05070a; color:var(--muted); font-size:16px }
+    #emptyState[hidden] { display:none }
+    input[type=file] { max-width:100%; color:var(--muted) }
+    @media (max-width:900px) { main { grid-template-columns:1fr } aside { border-left:0; border-top:1px solid var(--line) } .status { width:100%; margin-left:0 } }
+  </style>
+</head>
+<body>
+<header>
+  <button id="prev">上一状态</button><button id="next">下一状态</button>
+  <button id="viewportTab" class="active">短图</button><button id="fullpageTab">长图</button>
+  <button id="generateState">生成状态</button>
+  <button id="vmBack">虚拟机返回（Back）</button>
+  <span id="stateText" class="coord"></span><span id="saveState" class="status">已保存</span>
+</header>
+<main>
+  <section class="workspace">
+    <div class="row">
+      <button id="buttonMode">按钮框</button><button id="regionMode">区块框</button><button id="clickMode">点击点（仅标注）</button>
+      <button id="deleteSelection">删除选中</button><button id="undo">撤销</button>
+      <button id="clearGraph" class="danger">清空图</button>
+      <span class="muted">短图可画按钮、区块和点击点；长图只可画整个区块。按钮仅标当前前景/活跃区块内可操作项，不标被弹层或抽屉遮住、失活的背景按钮；没有局部前景区时整页视为活跃区。</span>
+    </div>
+    <div class="row"><input id="vmControl" type="checkbox" disabled><span id="controlWarning" class="muted">操作虚拟机（默认关闭）：点击、滚轮和 Back 可连续操作；待生成只保留最后一次，点击“生成状态”才截图建边。</span></div>
+    <div class="row device-pending"><span id="deviceActionText" class="coord">无待生成设备动作</span><button id="cancelDeviceAction">取消待生成（不回退设备）</button></div>
+    <div class="canvas-shell"><div id="emptyState" hidden>状态图为空；点击“生成状态”开始</div><img id="screen" alt="当前画布"><svg id="overlay"></svg></div>
+    <section class="local-graph-panel">
+      <h3>当前页局部图（1-hop）</h3>
+      <div id="localGraphSummary" class="coord muted"></div>
+      <div class="muted"><span class="legend-swatch" style="border-color:#38bdf8"></span>click　<span class="legend-swatch" style="border-color:#fbbf24"></span>scroll　<span class="legend-swatch" style="border-color:#f472b6"></span>back　<span class="legend-swatch legend-same" style="border-color:#a78bfa"></span>same-page（无向）</div>
+      <div id="localGraphEmpty" hidden>状态图为空</div><svg id="localGraph" aria-label="当前页一跳关系图"></svg><div id="localGraphRelations" aria-label="局部图关系明细"></div>
+    </section>
+  </section>
+  <aside>
+    <section class="group">
+      <h3>点击边</h3>
+      <div id="pendingText" class="coord muted">无待完成点击</div>
+      <div class="row"><button id="captureTarget">捕获为目标状态</button></div>
+      <div class="row"><select id="targetState"></select><button id="setExistingTarget">把已有状态设为目标</button></div>
+    </section>
+    <section class="group">
+      <h3>共享区块</h3>
+      <div class="row"><button id="makeShared">选中区块设为共享</button></div>
+      <div class="row"><select id="sharedChoice"></select><button id="reuseShared">一键复用共享区块</button></div>
+    </section>
+    <section class="group">
+      <h3>长图</h3>
+      <input id="fullpageFile" type="file" accept="image/png">
+      <div class="row"><button id="uploadFullpage">上传为当前长图</button></div>
+      <div class="row"><button id="autoScroll">一键生成滚动长图</button></div>
+      <div class="row"><button id="startScroll">开始长图序列</button><button id="appendScroll">追加当前画面</button><button id="stitchScroll">生成长图</button></div>
+      <div id="scrollText" class="coord muted"></div>
+    </section>
+    <section class="group">
+      <h3>状态图</h3>
+      <div class="muted">同一页面可容许动态内容、时间或普通滚动位置不同；modal、drawer、popup 等不同活跃表面不要标为同页。</div>
+      <div class="row"><select id="samePagePeer"></select><button id="linkSamePage">标为同一页面</button></div>
+      <div id="nodes"></div><div id="edges"></div>
+    </section>
+    <section class="group">
+      <h3>选中信息</h3><div id="selectionText" class="coord muted">未选中</div>
+    </section>
+  </aside>
+</main>
+<script>
+const ui={graph:null,live:false,controlAvailable:false,backAvailable:false,control:false,busy:false,index:0,canvas:'viewport',mode:'region',selected:null,start:null,draft:null};
+const $=id=>document.getElementById(id);
+// LOCAL_GRAPH_HELPERS_START
+function graphRelations(graph){const relations=[];for(const e of graph.click_edges||[])relations.push({id:e.id,type:'click',source:e.source,target:e.target,directed:true,summary:e.point_pixel?`@ ${e.point_pixel.join(',')}`:''});for(const e of graph.scroll_edges||[])relations.push({id:e.id,type:'scroll',source:e.source,target:e.target,directed:true,summary:`${e.direction||''}${e.anchor_pixel?' @ '+e.anchor_pixel.join(','):''}`.trim()});for(const e of graph.back_edges||[])relations.push({id:e.id,type:'back',source:e.source,target:e.target,directed:true,summary:''});for(const link of graph.same_page_links||[]){if(Array.isArray(link.states)&&link.states.length===2)relations.push({id:link.id,type:'same-page',source:link.states[0],target:link.states[1],directed:false,summary:''})}return relations}
+function oneHopSubgraph(graph,centerId){const valid=new Set((graph.states||[]).map(s=>s.id));if(!centerId||!valid.has(centerId))return {nodes:[],relations:[]};const all=graphRelations(graph),nodeSet=new Set([centerId]);for(const r of all)if(r.source===centerId||r.target===centerId){if(valid.has(r.source))nodeSet.add(r.source);if(valid.has(r.target))nodeSet.add(r.target)}const nodes=(graph.states||[]).map(s=>s.id).filter(id=>nodeSet.has(id));return {nodes,relations:all.filter(r=>nodeSet.has(r.source)&&nodeSet.has(r.target))}}
+function localGraphLayout(nodeIds,centerId){if(!nodeIds.length)return {width:600,height:360,positions:{}};const neighbors=nodeIds.filter(id=>id!==centerId),radius=neighbors.length?Math.max(260,neighbors.length*48):0,width=radius?2*(radius+180):600,height=radius?2*(radius+180):440,cx=width/2,cy=height/2,positions={[centerId]:{x:cx,y:cy,center:true}};neighbors.forEach((id,i)=>{const angle=neighbors.length===2?(i===0?Math.PI:0):-Math.PI/2+2*Math.PI*i/neighbors.length;positions[id]={x:cx+radius*Math.cos(angle),y:cy+radius*Math.sin(angle),center:false}});return {width,height,positions}}
+function clipLocalGraphPoint(from,toward,halfWidth,halfHeight){const dx=toward.x-from.x,dy=toward.y-from.y,scale=1/Math.max(Math.abs(dx)/halfWidth,Math.abs(dy)/halfHeight,1e-9);return {x:from.x+dx*scale,y:from.y+dy*scale}}
+// LOCAL_GRAPH_HELPERS_END
+async function api(path,data,progress='保存中…'){setSaved(progress,false);const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data||{})});const j=await r.json();if(!r.ok)throw Error(j.error||r.statusText);ui.graph=j.graph;setSaved('已保存',true);render();return j.result}
+function setSaved(text,good){$('saveState').textContent=text;$('saveState').style.color=good?'var(--good)':'var(--amber)'}
+function state(){return ui.graph&&ui.graph.states.length?ui.graph.states[ui.index]:null}
+function canvas(){const s=state();return s?s[ui.canvas]:null}
+function chooseMode(mode){ui.mode=mode;for(const id of ['buttonMode','regionMode','clickMode'])$(id).classList.remove('active');$({button:'buttonMode',region:'regionMode',click:'clickMode'}[mode]).classList.add('active')}
+function point(ev){const r=$('overlay').getBoundingClientRect(),c=canvas();return [Math.max(0,Math.min(c.width,(ev.clientX-r.left)*c.width/r.width)),Math.max(0,Math.min(c.height,(ev.clientY-r.top)*c.height/r.height))]}
+function svg(tag,attrs){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n}
+function renderCanvas(){const s=state(),c=canvas();$('emptyState').hidden=true;$('screen').hidden=false;$('overlay').hidden=false;$('stateText').textContent=`${s.id} · ${ui.canvas} · ${c.width}×${c.height}`;$('screen').src=`/api/image/${s.id}/${ui.canvas}?v=${Date.now()}`;$('overlay').setAttribute('viewBox',`0 0 ${c.width} ${c.height}`);$('overlay').replaceChildren();
+  for(const a of s.annotations.filter(x=>x.canvas===ui.canvas)){const [x1,y1,x2,y2]=a.bbox_xyxy,n=svg('rect',{x:x1,y:y1,width:x2-x1,height:y2-y1,class:`box ${a.kind==='button'?'button-box':'region-box'} ${a.shared_region_id?'shared-box':''} ${ui.selected===a.id?'selected':''}`});n.addEventListener('pointerdown',ev=>{if(ui.control)return;ev.stopPropagation();ui.selected=a.id;render()});$('overlay').append(n)}
+  const p=ui.graph.pending_click;if(ui.canvas==='viewport'&&p&&p.source===s.id)$('overlay').append(svg('circle',{cx:p.point_pixel[0],cy:p.point_pixel[1],r:Math.max(6,c.width/100),class:'pending'}));
+  if(ui.draft){const [x1,y1,x2,y2]=ui.draft;$('overlay').append(svg('rect',{x:Math.min(x1,x2),y:Math.min(y1,y2),width:Math.abs(x2-x1),height:Math.abs(y2-y1),class:'draft'}))}}
+function jumpLocalState(stateId){const index=ui.graph.states.findIndex(s=>s.id===stateId);if(index<0)return;ui.index=index;ui.canvas='viewport';ui.selected=null;render()}
+function renderLocalGraph(){const current=state(),panel=$('localGraph'),empty=$('localGraphEmpty'),details=$('localGraphRelations');panel.replaceChildren();details.replaceChildren();if(!current){panel.hidden=true;empty.hidden=false;$('localGraphSummary').textContent='0 个节点 · 0 条关系';return}const sub=oneHopSubgraph(ui.graph,current.id),layout=localGraphLayout(sub.nodes,current.id),positions=layout.positions;panel.hidden=false;empty.hidden=true;panel.setAttribute('viewBox',`0 0 ${layout.width} ${layout.height}`);$('localGraphSummary').textContent=`${sub.nodes.length} 个节点 · ${sub.relations.length} 条关系`;
+  const colors={click:'#38bdf8',scroll:'#fbbf24',back:'#f472b6','same-page':'#a78bfa'},defs=svg('defs',{});for(const type of ['click','scroll','back']){const marker=svg('marker',{id:`arrow-${type}`,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});marker.append(svg('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:colors[type]}));defs.append(marker)}panel.append(defs);
+  const groups=new Map();for(const r of sub.relations){const key=[r.source,r.target].sort().join('\u0000');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r)}for(const relations of groups.values())relations.forEach((r,i)=>{const a=positions[r.source],b=positions[r.target],parallel=(i-(relations.length-1)/2)*26,canonicalIds=[r.source,r.target].sort(),ca=positions[canonicalIds[0]],cb=positions[canonicalIds[1]],cdx=cb.x-ca.x,cdy=cb.y-ca.y,canonicalLength=Math.max(1,Math.hypot(cdx,cdy)),nx=-cdy/canonicalLength,ny=cdx/canonicalLength,sourceHalf=r.source===current.id?{w:110,h:165}:{w:75,h:112.5},targetHalf=r.target===current.id?{w:110,h:165}:{w:75,h:112.5};let d,labelX,labelY;if(r.source===r.target){const loop=80+i*24,top=a.y-sourceHalf.h;d=`M ${a.x-30} ${top} C ${a.x+loop} ${top-loop} ${a.x-loop} ${top-loop} ${a.x+30} ${top}`;labelX=a.x;labelY=top-loop-8}else{const mx=(a.x+b.x)/2+nx*parallel,my=(a.y+b.y)/2+ny*parallel,control={x:mx,y:my},start=clipLocalGraphPoint(a,control,sourceHalf.w,sourceHalf.h),end=clipLocalGraphPoint(b,control,targetHalf.w,targetHalf.h);d=`M ${start.x} ${start.y} Q ${mx} ${my} ${end.x} ${end.y}`;labelX=mx+nx*13;labelY=my+ny*13}const path=svg('path',{d,fill:'none',stroke:colors[r.type],'stroke-width':4,'stroke-dasharray':r.directed?'':'12 8'});if(r.directed)path.setAttribute('marker-end',`url(#arrow-${r.type})`);panel.append(path);const label=svg('text',{x:labelX,y:labelY,fill:colors[r.type],'font-size':18,'text-anchor':'middle','paint-order':'stroke',stroke:'#0b1220','stroke-width':5});label.textContent=r.type;panel.append(label)});
+  for(const id of sub.nodes){const p=positions[id],center=id===current.id,w=center?220:150,h=center?330:225,g=svg('g',{transform:`translate(${p.x-w/2} ${p.y-h/2})`,tabindex:0,role:'button','aria-label':`跳转到 ${id}`,style:'cursor:pointer'});g.append(svg('rect',{x:0,y:0,width:w,height:h,rx:12,fill:'#111827',stroke:center?'#38bdf8':'#64748b','stroke-width':center?8:3}));g.append(svg('image',{x:8,y:8,width:w-16,height:h-42,href:`/api/image/${id}/viewport`,preserveAspectRatio:'xMidYMid meet'}));const text=svg('text',{x:w/2,y:h-14,fill:center?'#38bdf8':'#f3f4f6','font-size':center?22:18,'font-weight':center?'700':'500','text-anchor':'middle'});text.textContent=id;g.append(text);g.addEventListener('click',()=>jumpLocalState(id));g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();jumpLocalState(id)}});panel.append(g)}
+  for(const r of sub.relations){const item=document.createElement('div');item.className='relation-detail';item.textContent=r.directed?`${r.source} —${r.type}→ ${r.target}${r.summary?' · '+r.summary:''}`:`${r.source} ←same-page→ ${r.target}`;details.append(item)}}
+function render(){if(!ui.graph)return;const hasState=ui.graph.states.length>0,devicePending=ui.graph.pending_device_action;if(hasState)ui.index=Math.max(0,Math.min(ui.index,ui.graph.states.length-1));else{ui.index=0;ui.canvas='viewport';ui.selected=null;ui.start=null;ui.draft=null}if(hasState&&ui.canvas==='fullpage'&&!state().fullpage)ui.canvas='viewport';const full=hasState&&ui.canvas==='fullpage';if(full||!hasState){ui.control=false;$('vmControl').checked=false}const stateControls=['deleteSelection','captureTarget','setExistingTarget','makeShared','reuseShared','uploadFullpage','fullpageFile','startScroll','appendScroll','stitchScroll'];for(const id of stateControls)$(id).disabled=ui.busy||!hasState;$('undo').disabled=ui.busy;$('prev').disabled=ui.busy||!hasState||ui.index===0;$('next').disabled=ui.busy||!hasState||ui.index===ui.graph.states.length-1;$('vmControl').disabled=!ui.controlAvailable||!hasState||full||ui.busy;$('vmBack').disabled=!ui.backAvailable||!hasState||full||ui.busy;$('clearGraph').disabled=ui.busy||!hasState;$('generateState').disabled=!ui.live||ui.busy;$('cancelDeviceAction').disabled=ui.busy||!devicePending;$('autoScroll').disabled=!ui.controlAvailable||!hasState||ui.busy||!!devicePending;$('viewportTab').disabled=!hasState||ui.busy;$('fullpageTab').disabled=!hasState||ui.busy;$('viewportTab').classList.toggle('active',!full);$('fullpageTab').classList.toggle('active',full);$('buttonMode').disabled=ui.busy||!hasState||full||ui.control;$('regionMode').disabled=ui.busy||!hasState||ui.control;$('clickMode').disabled=ui.busy||!hasState||full||ui.control;if(full&&ui.mode!=='region')chooseMode('region');if(hasState)renderCanvas();else{$('stateText').textContent='状态图为空';$('screen').removeAttribute('src');$('screen').hidden=true;$('overlay').replaceChildren();$('overlay').hidden=true;$('emptyState').hidden=false}
+  $('deviceActionText').textContent=devicePending?`待生成：${devicePending.kind} · ${devicePending.source}${devicePending.point_pixel?' @ '+devicePending.point_pixel.join(','):''}${devicePending.anchor_pixel?' @ '+devicePending.anchor_pixel.join(','):''}；继续操作会覆盖，只保留最后一次`:'无待生成设备动作';
+  $('pendingText').textContent=ui.graph.pending_click?`${ui.graph.pending_click.source} @ ${ui.graph.pending_click.point_pixel.join(',')}`:'无待完成点击';$('captureTarget').disabled=ui.busy||!ui.live||!hasState||!!devicePending;$('startScroll').disabled=ui.busy||!hasState||!!devicePending;$('appendScroll').disabled=ui.busy||!hasState||!!devicePending;
+  $('targetState').replaceChildren(...ui.graph.states.map(s=>new Option(s.id,s.id)));const sharedOptions=ui.graph.shared_regions.map(s=>new Option(`${s.id} · ${s.canvas}`,s.id));$('sharedChoice').replaceChildren(...sharedOptions);$('sharedChoice').selectedIndex=sharedOptions.length-1;$('reuseShared').disabled=ui.busy||sharedOptions.length===0;
+  const peerOptions=hasState?ui.graph.states.filter(s=>s.id!==state().id).map(s=>new Option(s.id,s.id)):[];$('samePagePeer').replaceChildren(...peerOptions);$('samePagePeer').disabled=ui.busy||peerOptions.length===0;$('linkSamePage').disabled=ui.busy||peerOptions.length===0;
+  $('nodes').replaceChildren(...ui.graph.states.map((s,i)=>{const b=document.createElement('button');b.className=`node ${i===ui.index?'current':''}`;b.textContent=`${s.id}  [${s.annotations.length}]`;b.onclick=()=>{ui.index=i;ui.selected=null;render()};return b}));
+  $('edges').replaceChildren(...ui.graph.click_edges.map(e=>{const d=document.createElement('div');d.className='edge';d.textContent=`${e.id}: click ${e.source} → ${e.target} @ ${e.point_pixel.join(',')}`;return d}),...(ui.graph.scroll_edges||[]).map(e=>{const d=document.createElement('div');d.className='edge';d.textContent=`${e.id}: scroll ${e.direction} ${e.source} → ${e.target} @ ${e.anchor_pixel.join(',')}`;return d}),...(ui.graph.back_edges||[]).map(e=>{const d=document.createElement('div');d.className='edge';d.textContent=`${e.id}: back ${e.source} → ${e.target}`;return d}),...(ui.graph.same_page_links||[]).map(link=>{const d=document.createElement('div');d.className='edge';d.textContent=`${link.id}: same-page ${link.states[0]} ↔ ${link.states[1]}`;return d}));
+  const current=state(),a=current&&current.annotations.find(x=>x.id===ui.selected);$('selectionText').textContent=a?`${a.id} · ${a.kind} · ${a.canvas} · [${a.bbox_xyxy.join(', ')}]${a.shared_region_id?' · '+a.shared_region_id:''}`:'未选中';const seq=current&&ui.graph.scroll_sequences[current.id];$('scrollText').textContent=seq?`${seq.frames.length} 帧 · ${seq.active?'采集中':'已生成'}`:hasState?'尚未开始':'状态图为空';renderLocalGraph()}
+$('overlay').addEventListener('pointerdown',ev=>{if(ui.busy||!state())return;if(!ui.control&&ev.target!==$('overlay'))return;const p=point(ev);if(ui.control){if(ui.canvas==='viewport')stageControlAction('/api/control/tap',{state_id:state().id,canvas:ui.canvas,point_pixel:p});return}if(ui.mode==='click'){if(ui.canvas!=='viewport')return;api('/api/pending',{state_id:state().id,point_pixel:p}).catch(fail);return}ui.start=p;ui.draft=[...p,...p];$('overlay').setPointerCapture(ev.pointerId);renderCanvas()});
+$('overlay').addEventListener('pointermove',ev=>{if(!ui.start)return;const p=point(ev);ui.draft=[...ui.start,...p];renderCanvas()});
+$('overlay').addEventListener('pointerup',ev=>{if(!ui.start)return;const p=point(ev),box=[...ui.start,...p];ui.start=null;ui.draft=null;api('/api/annotations',{state_id:state().id,kind:ui.mode,canvas:ui.canvas,bbox_xyxy:box}).then(a=>{ui.selected=a.id;render()}).catch(fail)});
+function fail(e){setSaved('错误：'+e.message,false);console.error(e)}
+async function stageControlAction(path,data){if(ui.busy)return;const currentId=state().id;ui.busy=true;render();try{await api(path,data);ui.index=ui.graph.states.findIndex(s=>s.id===currentId);ui.canvas='viewport'}catch(e){fail(e)}finally{ui.busy=false;render()}}
+$('overlay').addEventListener('wheel',ev=>{if(!ui.control||!state()||ui.canvas!=='viewport')return;ev.preventDefault();if(ui.busy||ev.deltaY===0)return;stageControlAction('/api/control/scroll',{state_id:state().id,canvas:ui.canvas,anchor_pixel:point(ev),delta_y:ev.deltaY})},{passive:false});
+$('prev').onclick=()=>{ui.index--;ui.selected=null;render()};$('next').onclick=()=>{ui.index++;ui.selected=null;render()};$('viewportTab').onclick=()=>{ui.canvas='viewport';ui.selected=null;render()};$('fullpageTab').onclick=()=>{if(state()&&state().fullpage){ui.canvas='fullpage';ui.selected=null;render()}else fail(Error('当前状态还没有长图'))};
+$('buttonMode').onclick=()=>chooseMode('button');$('regionMode').onclick=()=>chooseMode('region');$('clickMode').onclick=()=>chooseMode('click');
+$('vmControl').onchange=()=>{ui.control=$('vmControl').checked&&ui.controlAvailable;if(ui.control)ui.selected=null;render()};
+$('deleteSelection').onclick=()=>{if(ui.selected)api('/api/annotations/delete',{state_id:state().id,annotation_id:ui.selected}).then(()=>ui.selected=null).catch(fail)};$('undo').onclick=()=>api('/api/undo',{}).then(()=>ui.selected=null).catch(fail);
+$('clearGraph').onclick=async()=>{if(ui.busy)return;if(!window.confirm('确认清空图？这会从活动状态图隐藏所有 states，并清除所有框、点击点/待完成点、待生成设备动作、click/scroll/back 边、同页关系、共享区块、长图关联和滚动采集记录；原始截图文件与 capture manifest 保留不变，清空后可立即点击“撤销”完整恢复。'))return;ui.control=false;$('vmControl').checked=false;ui.selected=null;ui.start=null;ui.draft=null;ui.canvas='viewport';ui.busy=true;render();try{await api('/api/clear',{})}catch(e){fail(e)}finally{ui.busy=false;render()}};
+$('generateState').onclick=async()=>{if(ui.busy||!ui.live)return;ui.control=false;$('vmControl').checked=false;ui.selected=null;ui.busy=true;render();try{const r=await api('/api/state/generate',{},'正在生成状态…');ui.index=ui.graph.states.findIndex(s=>s.id===r.state_id);ui.canvas='viewport'}catch(e){fail(e)}finally{ui.busy=false;render()}};
+$('cancelDeviceAction').onclick=()=>api('/api/device-action/cancel',{}).catch(fail);
+$('vmBack').onclick=()=>{if(state())stageControlAction('/api/control/back',{state_id:state().id,canvas:ui.canvas})};
+$('linkSamePage').onclick=()=>{if(!state()||!$('samePagePeer').value)return;const currentId=state().id;api('/api/same-page/link',{state_id:currentId,peer_state_id:$('samePagePeer').value}).then(()=>{ui.index=ui.graph.states.findIndex(s=>s.id===currentId);render()}).catch(fail)};
+$('captureTarget').onclick=()=>api('/api/live-capture',{}).then(r=>{ui.index=ui.graph.states.findIndex(s=>s.id===r.state_id);ui.canvas='viewport';render()}).catch(fail);$('setExistingTarget').onclick=()=>api('/api/target-existing',{state_id:$('targetState').value}).catch(fail);
+$('makeShared').onclick=()=>{if(ui.selected)api('/api/shared/create',{state_id:state().id,annotation_id:ui.selected}).catch(fail)};$('reuseShared').onclick=()=>api('/api/shared/reuse',{state_id:state().id,shared_region_id:$('sharedChoice').value}).catch(fail);
+$('uploadFullpage').onclick=async()=>{const f=$('fullpageFile').files[0];if(!f)return fail(Error('请选择 PNG'));setSaved('上传中…',false);try{const r=await fetch(`/api/fullpage/upload?state=${encodeURIComponent(state().id)}`,{method:'POST',headers:{'Content-Type':'image/png'},body:f}),j=await r.json();if(!r.ok)throw Error(j.error);ui.graph=j.graph;ui.canvas='fullpage';setSaved('已保存',true);render()}catch(e){fail(e)}};
+$('startScroll').onclick=()=>api('/api/scroll/start',{state_id:state().id}).catch(fail);$('appendScroll').onclick=()=>api('/api/scroll/append',{state_id:state().id}).catch(fail);$('stitchScroll').onclick=()=>api('/api/scroll/stitch',{state_id:state().id}).then(()=>{ui.canvas='fullpage';render()}).catch(fail);
+$('autoScroll').onclick=async()=>{if(ui.busy||!ui.controlAvailable||ui.graph.pending_device_action)return;if(!window.confirm('确认一键生成滚动长图？这会真实滚动绑定设备，最多执行14次向下小步滑动，拼接后会尝试回到顶部。'))return;ui.control=false;$('vmControl').checked=false;ui.selected=null;ui.start=null;ui.draft=null;ui.busy=true;render();try{const r=await api('/api/scroll/auto',{state_id:state().id},'正在自动滚动并拼接…');ui.canvas='fullpage';if(!r.top_restored)setSaved('警告：长图已生成，但设备未确认回顶',false)}catch(e){fail(e)}finally{ui.busy=false;render()}};
+fetch('/api/graph').then(r=>r.json()).then(j=>{ui.graph=j.graph;ui.live=j.live_enabled;ui.controlAvailable=j.control_enabled;ui.backAvailable=j.back_enabled;ui.control=false;ui.index=Math.max(0,j.graph.states.length-1);chooseMode('region');render()}).catch(fail);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "stage": "discovery",
+  "parts": [
+    "通用/证据边界.prompt",
+    "区块识别/当前表面识别.prompt",
+    "区块识别/功能区块划分.prompt",
+    "区块识别/区块控件识别.prompt",
+    "视觉记录/坐标与裁剪.prompt",
+    "任务/首屏观察.prompt"
+  ],
+  "schema": "输出格式/首屏观察.schema"
+}

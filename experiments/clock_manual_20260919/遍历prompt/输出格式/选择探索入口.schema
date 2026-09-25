@@ -1,0 +1,80 @@
+{
+  "type": "object",
+  "properties": {
+    "target": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "click",
+        "double_click",
+        "long_press",
+        "input_text",
+        "scroll",
+        "back",
+        "wait",
+        "none",
+        "key_press",
+        "hotkey",
+        "hover",
+        "right_click",
+        "drag"
+      ]
+    },
+    "x": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "y": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "text": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "end_x": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "end_y": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "skip_task": {
+      "type": "boolean",
+      "description": "仅当前任务违反明确的遍历限制时为true，搭配none和具体原因；普通动作或定位困难填false。"
+    },
+    "request_task_review": {
+      "type": "boolean",
+      "description": "已有历史可能完成，或实际尝试后效果未确认且暂无有依据的新验证动作时，搭配none和skip_task=false请求第三步判断完成、继续或暂挂；不自动结算。普通动作或仅缺定位填false。"
+    }
+  },
+  "required": [
+    "target",
+    "action",
+    "x",
+    "y",
+    "reason",
+    "text",
+    "end_x",
+    "end_y",
+    "skip_task",
+    "request_task_review"
+  ],
+  "additionalProperties": false
+}

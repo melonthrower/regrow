@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Mosaic Maps</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { color-scheme: light; font-family: Arial, ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; color: #202124; background: #e7ece5; }
+    button { font: inherit; }
+    .app { display: grid; grid-template-rows: minmax(0, 1fr) 72px; min-height: 100vh; overflow: hidden; }
+    .screen { position: relative; min-height: 0; overflow: hidden; }
+    .map { position: absolute; inset: 0; background-color: #dfe8dc; background-image: linear-gradient(33deg, transparent 46%, rgba(255,255,255,.98) 47%, rgba(255,255,255,.98) 52%, transparent 53%), linear-gradient(116deg, transparent 44%, rgba(183,198,178,.9) 45%, rgba(183,198,178,.9) 48%, transparent 49%); background-size: 180px 150px, 250px 210px; }
+    .water { position: absolute; right: -80px; bottom: 0; width: 210px; height: 78%; border-radius: 50% 0 0; background: #b8dff3; transform: rotate(8deg); }
+    .search { position: absolute; top: 16px; right: 16px; left: 16px; z-index: 3; display: flex; align-items: center; gap: 11px; min-height: 52px; padding: 9px 12px; border-radius: 27px; background: #fff; box-shadow: 0 3px 12px rgba(48,53,48,.22); }
+    .search strong { flex: 1; color: #5f6368; font-weight: 500; }
+    .avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #fff; background: #7659a8; }
+    .search-action { position: absolute; top: 82px; left: 16px; z-index: 3; padding: 10px 14px; border: 0; border-radius: 19px; color: #174ea6; background: #fff; box-shadow: 0 2px 8px rgba(48,53,48,.18); cursor: pointer; }
+    .label { position: absolute; padding: 4px 7px; border-radius: 6px; color: #687066; background: rgba(255,255,255,.88); font-size: 11px; }
+    .pin { position: absolute; width: 22px; height: 22px; border: 5px solid #fff; border-radius: 50% 50% 50% 0; background: #ea4335; box-shadow: 0 3px 9px rgba(43,48,43,.26); transform: rotate(-45deg); }
+    .map-control { position: absolute; right: 16px; bottom: 185px; z-index: 3; display: grid; place-items: center; width: 46px; height: 46px; border: 0; border-radius: 50%; color: #1a73e8; background: #fff; box-shadow: 0 3px 12px rgba(48,53,48,.22); cursor: pointer; }
+    .sheet { position: absolute; right: 10px; bottom: 10px; left: 10px; z-index: 4; padding: 18px; border-radius: 19px; background: #fff; box-shadow: 0 8px 26px rgba(32,36,32,.24); }
+    .handle { width: 42px; height: 4px; margin: -8px auto 14px; border-radius: 4px; background: #d4d7da; }
+    .sheet h1 { margin: 5px 0 7px; font-size: 23px; }
+    .sheet p { margin: 5px 0 14px; color: #70757a; line-height: 1.45; }
+    .result { display: grid; grid-template-columns: 60px minmax(0, 1fr) auto; align-items: center; gap: 11px; padding: 12px 0; border-top: 1px solid #e7e9ec; }
+    .thumb { width: 60px; height: 54px; border-radius: 9px; background: linear-gradient(145deg, #d9a474, #5f7b92); }
+    .primary, .secondary { border-radius: 20px; cursor: pointer; }
+    .primary { padding: 10px 15px; border: 0; color: #fff; background: #1a73e8; font-weight: 700; }
+    .secondary { padding: 9px 13px; border: 1px solid #dadce0; color: #1a73e8; background: #fff; }
+    .place-actions { display: flex; gap: 9px; overflow: hidden; }
+    .directions { position: absolute; top: 82px; right: 12px; left: 12px; z-index: 4; padding: 16px; border-radius: 14px; background: #fff; box-shadow: 0 4px 14px rgba(32,36,32,.2); }
+    .directions label { display: block; margin: 8px 0; padding: 11px; border-radius: 8px; background: #f1f3f4; color: #60656a; }
+    .route-card { position: absolute; right: 12px; bottom: 18px; left: 12px; z-index: 4; padding: 15px; border-radius: 14px; background: #fff; }
+    .page { min-height: 100%; padding: 22px 18px 30px; background: #fff; overflow: auto; }
+    .page h1 { margin: 10px 0 6px; font-size: 27px; }
+    .page p { color: #6e7378; line-height: 1.5; }
+    .saved-card { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 13px; margin-top: 18px; padding: 14px; border: 1px solid #e0e3e7; border-radius: 14px; }
+    .saved-card .thumb { width: 82px; height: 78px; }
+    .hero { height: 240px; margin: -22px -18px 18px; background: linear-gradient(145deg, #d5a171, #5d7a91); }
+    .bottom-nav { position: relative; z-index: 8; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #dfe2e5; background: #fff; }
+    .bottom-nav button { border: 0; color: #74787d; background: transparent; font-size: 12px; cursor: pointer; }
+    .bottom-nav button span { display: block; margin-bottom: 4px; font-size: 20px; }
+    .bottom-nav button[aria-current="page"] { color: #1a73e8; font-weight: 700; }
+    .toast { position: fixed; right: 14px; bottom: 86px; left: 14px; z-index: 9; padding: 12px 15px; border-radius: 9px; color: #fff; background: #303134; box-shadow: 0 4px 16px rgba(32,36,32,.24); text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <main class="screen" id="screen"></main>
+    <nav class="bottom-nav" data-region-id="maps.bottom-nav"><button data-route="/explore" data-action-id="maps.nav.explore"><span>⌖</span>Explore</button><button data-route="/directions" data-action-id="maps.nav.go"><span>➜</span>Go</button><button data-route="/saved" data-action-id="maps.nav.saved"><span>♡</span>Saved</button></nav>
+  </div>
+  <div class="toast" id="feedback" hidden></div>
+  <script>
+    const pages = { "/explore": { id: "maps.explore", root: "/explore" }, "/directions": { id: "maps.directions", root: "/directions" }, "/saved": { id: "maps.saved", root: "/saved" }, "/place": { id: "maps.place", root: "/saved" } };
+    const state = { surface: "none", feedback: "" };
+    const visits = [], actions = [];
+    const route = () => { const value = location.hash.replace(/^#/, "") || "/explore"; return pages[value] ? value : "/explore"; };
+    const visibleRegions = () => {
+      const current = route();
+      if (current === "/explore") return ["maps.search", "maps.canvas", ...(state.surface === "results" ? ["maps.results.sheet"] : state.surface === "place" ? ["maps.place.sheet"] : []), "maps.bottom-nav"];
+      if (current === "/directions") return ["maps.search", "maps.canvas", "maps.directions.panel", "maps.bottom-nav"];
+      if (current === "/saved") return ["maps.saved.list", "maps.bottom-nav"];
+      return ["maps.place.content", "maps.bottom-nav"];
+    };
+    const search = () => `<section class="search" data-region-id="maps.search" data-action-id="maps.search.open"><span>☰</span><strong>Search here</strong><span>🎙</span><span class="avatar">A</span></section>`;
+    const mapBase = () => `<section class="map" data-region-id="maps.canvas"><div class="water"></div><span class="label" style="top:180px;left:48px">Market Street</span><span class="label" style="top:330px;right:86px">Harbor Walk</span><i class="pin" style="top:250px;left:47%"></i><i class="pin" style="top:410px;left:67%"></i><button class="map-control" data-action-id="maps.canvas.recenter" aria-label="Recenter map">◎</button></section>`;
+    function explore() { return `${mapBase()}${search()}${state.surface === "none" ? `<button class="search-action" data-action-id="maps.search.coffee">Coffee nearby</button>` : ""}${state.surface === "results" ? `<section class="sheet" data-region-id="maps.results.sheet"><div class="handle"></div><h1>Coffee nearby</h1><p>Three places found near the waterfront.</p><div class="result"><span class="thumb"></span><div><strong>Harbor Cafe</strong><br><small>4.7 · Open</small></div><button class="secondary" data-action-id="maps.results.harbor">View</button></div><div class="result"><span class="thumb"></span><div><strong>North Pier Coffee</strong><br><small>4.5 · Open</small></div><span>8 min</span></div></section>` : state.surface === "place" ? `<section class="sheet" data-region-id="maps.place.sheet"><div class="handle"></div><h1>Harbor Cafe</h1><p>4.7 ★ · Coffee and lunch · Open until 8 PM</p><div class="place-actions"><button class="primary" data-action-id="maps.place.directions">Directions</button><button class="secondary" data-action-id="maps.place.save">Save</button><button class="secondary" data-action-id="maps.place.share">Share</button></div></section>` : ""}`; }
+    function directions() { return `${mapBase()}${search()}<section class="directions" data-region-id="maps.directions.panel"><label>Your location</label><label>Harbor Cafe</label><div class="place-actions"><button class="primary" data-action-id="maps.route.drive">Drive · 12 min</button><button class="secondary" data-action-id="maps.route.walk">Walk · 24 min</button></div></section><section class="route-card"><strong>Fastest route</strong><p>3.2 km via Market Street</p></section>`; }
+    function saved() { return `<section class="page" data-region-id="maps.saved.list"><small>YOUR PLACES</small><h1>Saved</h1><p>Lists and places you want to remember.</p><article class="saved-card"><span class="thumb"></span><div><strong>Harbor Cafe</strong><p>Waterfront favorites · Saved today</p><button class="secondary" data-action-id="maps.saved.open-harbor">Open place</button></div></article><article class="saved-card"><span class="thumb"></span><div><strong>Weekend ideas</strong><p>8 saved places</p></div></article></section>`; }
+    function place() { return `<article class="page" data-region-id="maps.place.content"><div class="hero"></div><small>SAVED PLACE</small><h1>Harbor Cafe</h1><p>4.7 ★ · Coffee, lunch, and waterfront seating.</p><div class="place-actions"><button class="primary" data-action-id="maps.place.return-map">Show on map</button><button class="secondary" data-action-id="maps.place.call">Call</button><button class="secondary" data-action-id="maps.place.share-detail">Share</button></div><h2>About</h2><p>A bright neighborhood cafe beside Harbor Walk, known for pastries and long communal tables.</p></article>`; }
+    const renderers = { "/explore": explore, "/directions": directions, "/saved": saved, "/place": place };
+    function render() { const current = route(); visits.push(pages[current].id); document.body.dataset.pageId = pages[current].id; document.body.dataset.stateKey = `${pages[current].id}|${state.surface}`; document.getElementById("screen").innerHTML = renderers[current](); document.querySelectorAll("[data-route]").forEach(button => button.setAttribute("aria-current", button.dataset.route === pages[current].root ? "page" : "false")); const feedback = document.getElementById("feedback"); feedback.textContent = state.feedback; feedback.hidden = !state.feedback; }
+    function record(id) { actions.push({ actionId: id, pageId: pages[route()].id, regions: visibleRegions() }); }
+    function navigate(target, nextSurface = "none") { state.surface = nextSurface; state.feedback = ""; if (route() === target) render(); else location.hash = target; }
+    document.addEventListener("click", event => { const target = event.target.closest("[data-action-id]"); if (!target) return; const id = target.dataset.actionId; record(id); if (target.dataset.route) navigate(target.dataset.route); else if (id === "maps.search.open" || id === "maps.search.coffee") { state.surface = "results"; state.feedback = ""; render(); } else if (id === "maps.canvas.recenter") { state.feedback = "Map recentered"; render(); } else if (id === "maps.results.harbor") { state.surface = "place"; state.feedback = ""; render(); } else if (id === "maps.place.directions") navigate("/directions"); else if (id === "maps.saved.open-harbor") navigate("/place"); else if (id === "maps.place.return-map") navigate("/explore", "place"); else if (id === "maps.place.save") { state.feedback = "Saved to Favorites"; render(); } else if (id === "maps.place.share" || id === "maps.place.share-detail") { state.feedback = "Share link ready"; render(); } else if (id === "maps.route.drive") { state.feedback = "Driving route selected"; render(); } else if (id === "maps.route.walk") { state.feedback = "Walking route selected"; render(); } else if (id === "maps.place.call") { state.feedback = "Call preview ready"; render(); } });
+    addEventListener("hashchange", render);
+    window.__fixture = { snapshot: () => ({ pageId: pages[route()].id, stateKey: document.body.dataset.stateKey, regions: visibleRegions(), visits: [...visits], actions: [...actions] }) };
+    render();
+  </script>
+</body>
+</html>

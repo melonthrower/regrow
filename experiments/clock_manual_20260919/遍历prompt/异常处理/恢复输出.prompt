@@ -1,0 +1,23 @@
+## 3. 填写恢复回复
+
+| 字段 | 含义 |
+| --- | --- |
+| exception | 最新截图中的异常分类，按前文填写 |
+| decision | act：本次执行一步恢复；resume_exploration：交回发现；stop：无法继续 |
+| action | act时可提供一个共享动作对象，字段见动作空间；不用时null，act不能使用none |
+| framework_tool | act时可选restart_app；不用时null |
+| reason | 当前判断与所选处理的证据 |
+| handoff | 已观察的新事实、未解决问题及必要建议，不编写下一轮系统规则 |
+
+嵌套action也要填写skip_task，固定为false；恢复不负责跳过原业务任务。
+
+act只填写action或framework_tool其中一个；resume_exploration和stop两者都为null。exception=none必须resume_exploration；提示仍可见但确实不阻塞时exception填none并恢复，仍在外部应用或异常退出状态不能声称恢复。
+
+正例：准备返回时写“拟执行back，效果待下一图确认”。
+反例：刚提出back就交接“已成功返回”。恢复动作后仍需新图核验。
+
+完整嵌套示例：
+{"exception":"external_app","decision":"act","action":{"target":"返回目标应用","action":"back","skip_task":false,"x":null,"y":null,"text":null,"end_x":null,"end_y":null,"reason":"当前位于外部浏览器，尝试返回一步"},"framework_tool":null,"reason":"外部页面仍在前景","handoff":"返回效果等待下一张截图确认"}
+{"exception":"none","decision":"resume_exploration","action":null,"framework_tool":null,"reason":"目标应用内容可操作，提示不再阻塞","handoff":"回发现步确认当前区块；原任务仍待继续"}
+
+system_error表示系统或进程无响应的环境故障。恢复仍使用同一动作空间；提示仍阻塞时不能resume_exploration。必须在新截图确认不再阻塞后填none并返回发现步。恢复无效时stop，框架暂停该设备，其他应用继续；不要改业务记录、凭空请求设备重启或让纠错修改框架。只有明确应用外/目标退出时才用已有restart_app。

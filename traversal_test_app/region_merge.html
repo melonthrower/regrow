@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northstar team hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; color: #263041; background: #f2f5f8; }
+    header { display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 42px; border-bottom: 1px solid #dfe5ec; background: #fff; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; }
+    .mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; color: #fff; background: #3b6ce1; }
+    .date { color: #687386; font-size: 14px; }
+    main { width: min(1120px, calc(100% - 56px)); margin: 32px auto 46px; }
+    .intro { display: flex; align-items: end; justify-content: space-between; min-height: 78px; margin-bottom: 24px; }
+    h1 { margin: 0 0 7px; font-size: 30px; letter-spacing: -.03em; }
+    .intro p { margin: 0; color: #687386; }
+    .page-chip { padding: 8px 12px; border-radius: 999px; color: #3658a8; background: #e7eeff; font-size: 13px; font-weight: 700; }
+    .board { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 250px); gap: 22px; }
+    .region { position: relative; min-width: 0; padding: 22px; overflow: hidden; border: 1px solid #dce3eb; border-radius: 18px; background: #fff; box-shadow: 0 9px 28px rgba(34, 48, 70, .06); }
+    .region::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: var(--accent); }
+    .region-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
+    .icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: var(--accent); background: var(--tint); font-weight: 800; }
+    h2 { margin: 15px 0 5px; font-size: 18px; }
+    .region p { margin: 0; color: #748094; font-size: 13px; line-height: 1.45; }
+    .metric { padding: 5px 8px; border-radius: 8px; color: #586477; background: #f0f3f6; font-size: 12px; font-weight: 700; }
+    .region button { position: absolute; left: 22px; bottom: 22px; width: calc(100% - 44px); height: 42px; border: 0; border-radius: 11px; color: #fff; background: var(--accent); font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; }
+    .region button:hover { filter: brightness(.96); }
+    .slot-1 { grid-column: 1; grid-row: 1; }
+    .slot-2 { grid-column: 2; grid-row: 1; }
+    .slot-4 { grid-column: 1; grid-row: 2; }
+    .slot-6 { grid-column: 3; grid-row: 2; }
+    @media (max-width: 900px) {
+      .board { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 250px); }
+      .slot-1 { grid-column: 1; grid-row: 1; }
+      .slot-2 { grid-column: 2; grid-row: 1; }
+      .slot-4 { grid-column: 1; grid-row: 2; }
+      .slot-6 { grid-column: 2; grid-row: 3; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">N</span><span>Northstar</span></div>
+    <div class="date">Team hub · Wednesday</div>
+  </header>
+  <main>
+    <section class="intro">
+      <div><h1 id="page-title"></h1><p id="page-summary"></p></div>
+      <span class="page-chip" id="page-chip"></span>
+    </section>
+    <section class="board" id="board"></section>
+  </main>
+  <script>
+    const regions = {
+      inbox: {
+        id: "merge.inbox",
+        title: "Team inbox",
+        summary: "Questions and decisions waiting for a short review.",
+        metric: "3 items",
+        icon: "IN",
+        accent: "#3b6ce1",
+        tint: "#e7eeff",
+        actionId: "merge.inbox.open_review",
+        action: "Open weekly review",
+        destination: "/review"
+      },
+      project: {
+        id: "merge.project",
+        title: "Launch workspace",
+        summary: "Milestones, owners, and the latest delivery notes.",
+        metric: "81%",
+        icon: "LW",
+        accent: "#8a58d6",
+        tint: "#f0e8ff",
+        actionId: "merge.project.open_workspace",
+        action: "Open workspace",
+        destination: "/workspace"
+      },
+      today: {
+        id: "merge.today",
+        title: "Today’s focus",
+        summary: "The three commitments that need attention before close.",
+        metric: "3 tasks",
+        icon: "TF",
+        accent: "#16876b",
+        tint: "#e0f5ef",
+        actionId: "merge.today.open_overview",
+        action: "Open today overview",
+        destination: "/overview"
+      },
+      library: {
+        id: "merge.library",
+        title: "Team library",
+        summary: "Reusable briefs, interview notes, and delivery templates.",
+        metric: "24 files",
+        icon: "TL",
+        accent: "#c06a27",
+        tint: "#fff0e3",
+        actionId: "merge.library.open_review",
+        action: "Browse review library",
+        destination: "/review"
+      }
+    };
+
+    const pages = {
+      "/overview": {
+        id: "merge.overview",
+        title: "Today overview",
+        summary: "A compact view of what needs attention across the team.",
+        chip: "Daily view",
+        layout: [["inbox", 1], ["project", 6]]
+      },
+      "/workspace": {
+        id: "merge.workspace",
+        title: "Project workspace",
+        summary: "Current delivery context and the material supporting it.",
+        chip: "Project view",
+        layout: [["today", 2], ["library", 4], ["inbox", 6]]
+      },
+      "/review": {
+        id: "merge.review",
+        title: "Weekly review",
+        summary: "Look back at progress and choose the next useful move.",
+        chip: "Review view",
+        layout: [["project", 1], ["today", 6]]
+      }
+    };
+
+    const visits = [];
+    const route = () => {
+      const value = location.hash.replace(/^#/, "") || "/overview";
+      return pages[value] ? value : "/overview";
+    };
+
+    function render() {
+      const current = route();
+      const page = pages[current];
+      visits.push(page.id);
+      document.getElementById("page-title").textContent = page.title;
+      document.getElementById("page-summary").textContent = page.summary;
+      document.getElementById("page-chip").textContent = page.chip;
+      document.getElementById("board").innerHTML = page.layout.map(([key, slot]) => {
+        const region = regions[key];
+        return `<article class="region slot-${slot}" data-region-id="${region.id}" style="--accent:${region.accent};--tint:${region.tint}">
+          <div class="region-head"><span class="icon">${region.icon}</span><span class="metric">${region.metric}</span></div>
+          <h2>${region.title}</h2><p>${region.summary}</p>
+          <button data-action-id="${region.actionId}" data-route="${region.destination}">${region.action}</button>
+        </article>`;
+      }).join("");
+      document.body.dataset.pageId = page.id;
+      scrollTo(0, 0);
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-route]");
+      if (!button) return;
+      location.hash = button.dataset.route;
+    });
+    addEventListener("hashchange", render);
+    window.__fixture = {
+      snapshot: () => ({ pageId: pages[route()].id, visits: [...visits] })
+    };
+    render();
+  </script>
+</body>
+</html>

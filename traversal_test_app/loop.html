@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parcel</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #202433; background: #f4f5f7; }
+    header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; height: 68px; padding: 0 28px; border-bottom: 1px solid #e0e2e7; background: #fff; }
+    header strong { font-size: 20px; }
+    main { width: min(760px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 50px; }
+    h1 { margin: 0 0 8px; }
+    p { color: #6f7581; line-height: 1.55; }
+    .card { margin-top: 18px; padding: 22px; border: 1px solid #e0e2e7; border-radius: 15px; background: #fff; }
+    .spacer { min-height: 230px; }
+    button { padding: 12px 16px; border: 0; border-radius: 10px; color: #fff; background: #6256d9; font: inherit; font-weight: 700; cursor: pointer; }
+    .target { display: flex; align-items: center; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <header><strong>Parcel</strong></header>
+  <div id="app"></div>
+  <script>
+    const app = document.getElementById("app");
+    const visits = [];
+    const pages = {
+      "/1": () => `<main data-page-signature="orders-page-stable-v1"><h1>My orders</h1><p>Track current deliveries and revisit recent purchases.</p><section class="card target"><div><strong>Studio desk lamp</strong><p>Order EV-2048 · Arrives tomorrow</p></div><button data-action-id="loop.page1.next" data-route="/2">Track order</button></section></main>`,
+      "/2": () => `<main><h1>Studio desk lamp</h1><p>Order EV-2048 · Northline priority delivery</p>${[["Out for delivery", "The parcel left the local hub at 9:42 this morning."], ["Home address", "The courier will use the covered entrance on Maple Street."], ["Inside the box", "The lamp shade and base are wrapped separately with assembly notes."]].map(([title, note]) => `<section class="card spacer"><strong>${title}</strong><p>${note}</p></section>`).join("")}<section class="card target"><div><strong>Delivery journey</strong><p>See every checkpoint from dispatch to the final route.</p></div><button data-action-id="loop.page2.next" data-route="/3">View journey</button></section></main>`,
+      "/3": () => `<main><h1>Delivery journey</h1><p>Your parcel has reached the local courier and remains on schedule.</p><section class="card target"><div><strong>Maya Chen</strong><p>Northline courier · Route 18</p></div><button data-action-id="loop.page3.next" data-route="/4">View courier</button></section></main>`,
+      "/4": () => `<main><h1>Maya Chen</h1><p>Maya has completed 1,240 neighborhood deliveries with a 4.9 rating.</p><section class="card target"><div><strong>Today’s route</strong><p>18 stops · On schedule</p></div><button data-action-id="loop.page4.return" data-route="/1">View my orders</button></section></main>`
+    };
+    function route() { const value = location.hash.replace(/^#/, "") || "/1"; return pages[value] ? value : "/1"; }
+    function render() {
+      const current = route();
+      app.innerHTML = pages[current]();
+      app.dataset.pageId = ({"/1":"loop.orders","/2":"loop.order_detail","/3":"loop.delivery_journey","/4":"loop.courier_profile"})[current];
+      visits.push(app.dataset.pageId);
+      scrollTo(0, 0);
+    }
+    document.addEventListener("click", event => { const button = event.target.closest("[data-route]"); if (button) location.hash = button.dataset.route; });
+    addEventListener("hashchange", render);
+    render();
+    window.__fixture = { snapshot: () => ({ pageId: app.dataset.pageId, visits: [...visits] }) };
+  </script>
+</body>
+</html>

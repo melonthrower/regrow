@@ -1,0 +1,334 @@
+{
+  "type": "object",
+  "properties": {
+    "foreground": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "uncertainty": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "evidence",
+        "uncertainty"
+      ],
+      "additionalProperties": false
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parent_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "本轮regions数组0起始父行号；无父级为null。不是跨图身份ID。"
+          },
+          "description": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_ref": {
+            "type": "string",
+            "enum": [
+              "",
+              "r0001",
+              "r0002"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "parent_index",
+          "description",
+          "reason",
+          "bbox",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region_index": {
+            "type": "integer",
+            "description": "唯一直接所属Region的0起始行号"
+          },
+          "text": {
+            "type": "string"
+          },
+          "icon_appearance": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "possible_operation": {
+            "type": "string"
+          },
+          "uncertainty": {
+            "type": "string"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "识别身份的框，包含相关标签与控件；整屏坐标。"
+          },
+          "icon_bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_ref": {
+            "type": "string",
+            "enum": [
+              "",
+              "c0001",
+              "c0002",
+              "c0003",
+              "c0004",
+              "c0005",
+              "c0006",
+              "c0007"
+            ]
+          },
+          "click_bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "实际可操作区域的框；整屏坐标。不把旁边的说明文字当点击位置，无法确定填null。"
+          }
+        },
+        "required": [
+          "region_index",
+          "text",
+          "icon_appearance",
+          "state",
+          "possible_operation",
+          "uncertainty",
+          "bbox",
+          "icon_bbox",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_result": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "observed_effect",
+            "no_effect",
+            "uncertain"
+          ]
+        },
+        "evidence": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "previous_regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region_ref": {
+            "type": "string",
+            "enum": [
+              "r0001",
+              "r0002"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "retained_interactive",
+              "changed_interactive",
+              "visible_background_blocked",
+              "not_visible",
+              "uncertain"
+            ]
+          },
+          "evidence": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "region_ref",
+          "state",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "foreground",
+    "regions",
+    "controls",
+    "excluded",
+    "uncertainties",
+    "action_result",
+    "previous_regions"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,79 @@
+{
+  "type": "object",
+  "properties": {
+    "functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "unconfirmed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "object": {
+            "type": "string"
+          },
+          "completion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "tasks",
+          "constraints",
+          "unconfirmed",
+          "object",
+          "completion"
+        ],
+        "additionalProperties": false
+      },
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "string"
+    },
+    "region_role": {
+      "type": "string",
+      "enum": [
+        "navigation",
+        "functional",
+        "mixed",
+        "undetermined"
+      ]
+    },
+    "role_evidence": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "functions",
+    "evidence",
+    "region_role",
+    "role_evidence"
+  ],
+  "additionalProperties": false
+}

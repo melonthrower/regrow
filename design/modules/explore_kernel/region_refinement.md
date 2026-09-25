@@ -1,0 +1,27 @@
+# 显式旧分区修正
+
+2026-09-10。实现位于`region_refinement.py`，由主回复可选字段`region_refinement`接入；不是新增MCP/function-call服务，也没有新增模型角色。
+
+## 何时使用
+
+新截图/跨State证据表明旧Region把独立功能组件与其他内容混在一起时，主Agent可提出摘出已有具体控件。普通回复为null。首次定位、resume定位未完成、存在pending动作时禁止；必须包含已确认的当前State。screen可为null沿用运行时已确认的位置；若填写，必须known且Page/State与当前位置相同。修正轮不能同时提交GUI动作、普通page_report、任务切换或代表试验。
+
+字段包含name、summary、reason及sources。每个source提供旧occurrence_ref与完整element_refs；一个来源State至多选一个occurrence。多个source表示同一独立组件在不同State的实例，首项为操作配对的比较基准。候选卡提供当前occurrence引用（控件沿用当前目录）及缺少当前绑定时焦点历史来源的控件目录；历史引用不是当前可执行证据。
+
+## 审核与更新
+
+1. 先检查引用、重复控件、来源一致性、pending和现有共享身份。已有CanonicalOperation若还包含未选的绑定，则拒绝局部迁移，要求完整明确的来源；不静默切断原共享身份。当前版本只抽取具体Element及其local Operations，不迁移Region整体scroll，不做任意历史图重分区。
+2. 既有Region角色按专用修正格式审核当前及来源完整截图，判断所选控件是否完整组成独立组件、多个来源是否同一组件。拒绝/不确定时原账本不改。修正不是GUI变化，不新增显露/消失因果边。
+3. Region角色仅提出Operation候选。存在候选时，既有Operation角色再按各操作真正的来源State、Page及图号确认；只允许identity，不复制另一Variant成功结果。候选在单一来源内必须一对一，并且不能将已有同一CanonicalOperation映射到冲突身份。显式代表试验不在此配对路径合并。
+4. 全部必要审核通过后，在副本中创建一个共享Region、各来源自己的Variant/子Occurrence；原Region仍保留为父容器，未选择的控件/子区不动。选中Element和local Operation的ID不变，更新当前工作图归属及来源Occurrence；观测文字、参数证据、真实Attempt/Transition及截图均保留。
+5. 仅已批准的操作配对共享CanonicalOperation；复用现有Task收敛，累计尝试预算不清零。旧失败本地结果不伪改verified，共享功能已有其他入口成功时使用既有任务抑制规则。记录`region_refinement_applied`的来源/目标Occurrence、控件列表、操作配对与截图引用；原始源账本不改。
+
+普通轮不增加模型调用。发生修正时增加1次Region审核，有操作候选时再增加1次Operation审核；非法审核回复沿原共享三轮纠正预算，所有实际HTTP仍计原预算。主Agent提出修正使用已有决策轮。修正本身是观察处理，不增加GUI动作计数或覆盖。
+
+## 验证与边界
+
+聚焦测试在`tests/test_explore_region_refinement.py`：解析/混合动作拒绝、confirmed位置、原子拒收、提取后层级与当前绑定、共享任务与预算、真实局部结果保留、来源与配对检查、runtime持久化。普通任务12次上限仍含导航/准备动作，提示改为“操作探索任务”，不再描述为目标操作点击次数。相关缺owner校验也使用当前共享绑定，而非只读旧来源。
+
+保存案例：`artifacts/traversal_goal_20260909/region_refinement_saved_frame_20260910_v4`。Luna原始候选从s57/r106与s24/r53各摘出8个顶部菜单控件，Region和Operation审核通过，工作副本Region110→111，Task325→317；202个Attempt除既有Task别名映射外字段不变。r53/r106主体保留，未选r86尚未细化。初版强制重复screen造成1次拒收，随后纠正回复清空候选；最终允许已确认位置上的观察修正省略screen，原始候选未修改即通过。失败记录保留。
+
+这属于保存帧Luna调用加离线落账验证，不是当前实机的自主分区修正或连续遍历验收。全量旧粗区块迁移、任意共享Variant局部拆分及全应用完成均未宣称。最终v5按各操作实际来源Page/State补齐审核文字标签后，两角色再次批准同8对；两次接口试验和两轮双角色审核合计6HTTP/0GUI。后续保持相同边界从最新实机截图验证，不能把保存帧选定的s57当作当前View菜单的实际位置。

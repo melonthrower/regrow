@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mosaic Music</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; min-width: 1000px; color: #f4f4f4; background: #000; }
+    button { font: inherit; }
+    .shell { display: grid; grid-template-rows: minmax(0, 1fr) 96px; min-height: 100vh; gap: 8px; padding: 8px; }
+    .workspace { display: grid; grid-template-columns: 280px minmax(0, 1fr) auto; gap: 8px; min-height: 0; }
+    .surface { border-radius: 10px; background: #121212; }
+    .sidebar { padding: 18px; overflow: auto; }
+    .brand { display: flex; align-items: center; gap: 11px; margin-bottom: 20px; font-weight: 760; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #111; background: #72df83; }
+    .sidebar button { display: flex; align-items: center; gap: 12px; width: 100%; margin: 5px 0; padding: 10px 8px; border: 0; color: #b7b7b7; background: transparent; text-align: left; cursor: pointer; }
+    .sidebar button[aria-current="page"] { color: #fff; font-weight: 720; }
+    .library-head { display: flex; justify-content: space-between; margin: 22px 0 12px; color: #c4c4c4; }
+    .filter { display: inline-block; margin: 3px; padding: 7px 10px; border-radius: 99px; color: #eee; background: #2b2b2b; font-size: 12px; }
+    .playlist { display: grid; grid-template-columns: 45px minmax(0, 1fr); gap: 11px; align-items: center; margin-top: 13px; }
+    .playlist-art { width: 45px; height: 45px; border-radius: 5px; background: linear-gradient(135deg, #745ad1, #d78578); }
+    .playlist small { color: #a8a8a8; }
+    .main { min-width: 0; overflow: auto; background: linear-gradient(#38314c 0, #181818 250px); }
+    .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; }
+    .history { display: flex; gap: 8px; }
+    .circle { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; color: #fff; background: rgba(0,0,0,.55); }
+    .profile { padding: 8px 12px; border-radius: 99px; background: rgba(0,0,0,.6); }
+    .content { padding: 4px 24px 36px; }
+    h1 { margin: 10px 0 20px; font-size: 34px; }
+    h2 { margin: 26px 0 14px; font-size: 22px; }
+    .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .card { min-height: 205px; padding: 14px; border-radius: 8px; background: #202020; }
+    .cover { aspect-ratio: 1; border-radius: 7px; background: linear-gradient(145deg, #d19975, #534779); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+    .card strong { display: block; margin-top: 13px; }
+    .card p { color: #adadad; font-size: 12px; line-height: 1.45; }
+    .search-box { width: min(540px, 100%); padding: 14px 17px; border: 0; border-radius: 24px; color: #222; background: #fff; }
+    .genres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .genre { min-height: 130px; padding: 18px; border: 0; border-radius: 9px; color: #fff; background: #6950a0; font-size: 21px; font-weight: 740; text-align: left; cursor: pointer; }
+    .suggestions { margin: 16px 0; padding: 15px 18px; border-radius: 9px; background: #252525; }
+    .track-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 180px 80px; align-items: center; min-height: 58px; border-bottom: 1px solid #2b2b2b; color: #c5c5c5; }
+    .track-row strong { color: #fff; }
+    .now-playing { width: 285px; padding: 18px; overflow: auto; }
+    .now-playing .cover { margin: 15px 0; }
+    .primary, .secondary { border-radius: 99px; cursor: pointer; }
+    .primary { padding: 10px 15px; border: 0; color: #101010; background: #72df83; font-weight: 760; }
+    .secondary { padding: 9px 13px; border: 1px solid #606060; color: #fff; background: transparent; }
+    .player { display: grid; grid-template-columns: 260px minmax(0, 1fr) 260px; align-items: center; padding: 0 18px; }
+    .playing { display: flex; align-items: center; gap: 12px; }
+    .mini-cover { width: 56px; height: 56px; border-radius: 5px; background: linear-gradient(145deg, #d19975, #534779); }
+    .controls { text-align: center; }
+    .bar { width: min(520px, 80%); height: 4px; margin: 12px auto 0; border-radius: 4px; background: linear-gradient(90deg, #eee 45%, #555 45%); }
+    .player-action { justify-self: end; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="workspace">
+      <nav class="sidebar surface" data-region-id="music.sidebar"><div class="brand"><span class="brand-mark">♫</span><span>Mosaic Music</span></div><button data-route="/home" data-action-id="music.nav.home">⌂ Home</button><button data-route="/search" data-action-id="music.nav.search">⌕ Search</button><button data-route="/library" data-action-id="music.nav.library">▤ Your Library</button><div class="library-head"><strong>Your Library</strong><span>＋</span></div><span class="filter">Playlists</span><span class="filter">Podcasts</span><div class="playlist"><span class="playlist-art"></span><div><strong>Focus flow</strong><br><small>Playlist · 24 tracks</small></div></div><div class="playlist"><span class="playlist-art"></span><div><strong>Product stories</strong><br><small>Podcast · 12 episodes</small></div></div></nav>
+      <main class="main surface" id="main"></main>
+      <aside class="now-playing surface" id="now-playing" data-region-id="music.now-playing" hidden><h2>Now playing</h2><div class="cover"></div><h2>Northbound</h2><p>Studio Signals</p><button class="secondary" data-action-id="music.now.hide">Close Now Playing</button><h2>About the artist</h2><p>Electronic sketches recorded between long train journeys.</p></aside>
+    </div>
+    <footer class="player surface" data-region-id="music.player"><div class="playing"><span class="mini-cover"></span><div><strong>Northbound</strong><br><small>Studio Signals</small></div></div><div class="controls"><strong>↶　◀　●　▶　↷</strong><div class="bar"></div></div><div class="player-action" id="player-action"></div></footer>
+  </div>
+  <script>
+    const pages = { "/home": { id: "music.home", title: "Home" }, "/search": { id: "music.search", title: "Search" }, "/library": { id: "music.library", title: "Your Library" } };
+    const state = { now: false, suggestions: "" };
+    const visits = [], actions = [];
+    const route = () => { const value = location.hash.replace(/^#/, "") || "/home"; return pages[value] ? value : "/home"; };
+    const visibleRegions = () => ["music.sidebar", route() === "/home" ? "music.home.content" : route() === "/search" ? "music.search.content" : "music.library.content", ...(route() === "/search" && state.suggestions ? ["music.search.suggestions"] : []), ...(state.now ? ["music.now-playing"] : []), "music.player"];
+    const pageTop = (title, regionId) => `<div class="top"><div class="history"><span class="circle">‹</span><span class="circle">›</span></div><span class="profile">Demo listener</span></div><section class="content" data-region-id="${regionId}"><h1>${title}</h1>`;
+    const cards = names => `<div class="cards">${names.map(name => `<article class="card"><div class="cover"></div><strong>${name}</strong><p>Made for focused work and calm listening.</p></article>`).join("")}</div>`;
+    function home() { return `${pageTop("Good afternoon", "music.home.content")}<h2>Made for the team</h2>${cards(["Deep focus", "Morning mix", "Design radio", "Quiet hours"])}</section>`; }
+    function search() { return `${pageTop("Search", "music.search.content")}<input class="search-box" data-action-id="music.search.focus" aria-label="Search music" placeholder="What do you want to play?">${state.suggestions ? `<section class="suggestions" data-region-id="music.search.suggestions"><strong>${state.suggestions}</strong><p>Suggested artists, playlists, and episodes now appear here.</p></section>` : ""}<h2>Browse all</h2><div class="genres"><button class="genre" data-action-id="music.search.podcasts">Podcasts</button><button class="genre" data-action-id="music.search.made-for-you" style="background:#387a78">Made for you</button><button class="genre" data-action-id="music.search.new-releases" style="background:#a04c65">New releases</button></div></section>`; }
+    function library() { return `${pageTop("Your Library", "music.library.content")}<h2>Recently added</h2><div class="track-row"><span>1</span><strong>Focus flow</strong><span>Playlist</span><span>24 tracks</span></div><div class="track-row"><span>2</span><strong>Product stories</strong><span>Podcast</span><span>12 episodes</span></div><div class="track-row"><span>3</span><strong>Design radio</strong><span>Playlist</span><span>38 tracks</span></div><button class="primary" data-action-id="music.library.return-home">Return Home</button></section>`; }
+    const renderers = { "/home": home, "/search": search, "/library": library };
+    function render() { const current = route(); visits.push(pages[current].id); document.body.dataset.pageId = pages[current].id; document.body.dataset.stateKey = `${pages[current].id}|${state.now ? "now" : "no-now"}|${state.suggestions || "no-suggestions"}`; document.querySelectorAll("[data-route]").forEach(button => button.setAttribute("aria-current", button.dataset.route === current ? "page" : "false")); document.getElementById("main").innerHTML = renderers[current](); document.getElementById("now-playing").hidden = !state.now; document.getElementById("player-action").innerHTML = state.now ? `<span class="filter">Now Playing open</span>` : `<button class="primary" data-action-id="music.now.show">Show Now Playing</button>`; }
+    function record(id) { actions.push({ actionId: id, pageId: pages[route()].id, regions: visibleRegions() }); }
+    function navigate(target) { state.suggestions = ""; location.hash = target; }
+    document.addEventListener("click", event => { const target = event.target.closest("[data-action-id]"); if (!target) return; const id = target.dataset.actionId; record(id); if (target.dataset.route) navigate(target.dataset.route); else if (id === "music.now.show") { state.now = true; render(); } else if (id === "music.now.hide") { state.now = false; render(); } else if (id === "music.search.focus") { state.suggestions = "Search suggestions"; render(); } else if (id === "music.search.podcasts") { state.suggestions = "Podcasts"; render(); } else if (id === "music.search.made-for-you") { state.suggestions = "Made for you"; render(); } else if (id === "music.search.new-releases") { state.suggestions = "New releases"; render(); } else if (id === "music.library.return-home") navigate("/home"); });
+    addEventListener("hashchange", render);
+    window.__fixture = { snapshot: () => ({ pageId: pages[route()].id, stateKey: document.body.dataset.stateKey, regions: visibleRegions(), visits: [...visits], actions: [...actions] }) };
+    render();
+  </script>
+</body>
+</html>

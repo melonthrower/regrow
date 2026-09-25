@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick traversal tests</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #202433; background: #f4f5f7; }
+    main { width: min(860px, calc(100% - 40px)); margin: 56px auto; }
+    h1 { margin-bottom: 8px; }
+    p { color: #6c7280; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 28px; }
+    a { min-height: 180px; padding: 22px; border: 1px solid #e0e2e8; border-radius: 16px; color: inherit; background: #fff; text-decoration: none; }
+    a:hover { border-color: #675bd8; box-shadow: 0 10px 28px rgba(43,43,70,.08); }
+    strong { display: block; margin: 30px 0 8px; font-size: 18px; }
+    span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #fff; background: #675bd8; font-weight: 700; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Quick traversal tests</h1>
+    <p>Each page tests one framework behavior. Open a page and start immediately.</p>
+    <section class="grid">
+      <a href="scroll.html"><span>1</span><strong>Multi-region scroll</strong><small>Three independent scroll areas.</small></a>
+      <a href="loop.html#/1"><span>2</span><strong>Multi-hop loop</strong><small>Page 1 → 2 → 3 → 4 → 1.</small></a>
+      <a href="back.html#/1"><span>3</span><strong>History return</strong><small>Three fully connected screens with source-aware back.</small></a>
+      <a href="region_merge.html#/overview"><span>4</span><strong>Shared Region matching</strong><small>Repeated content Regions move between three screens.</small></a>
+      <a href="panel_combinations.html#/home"><span>5</span><strong>Page and panel combinations</strong><small>Four Pages share optional panels and a foreground review sheet.</small></a>
+      <a href="notion_like_desktop.html#/projects"><span>6</span><strong>Notion-like desktop</strong><small>Database Peek, full pages, details, wiki, and calendar.</small></a>
+      <a href="gmail_like_desktop.html#/inbox"><span>7</span><strong>Gmail-like desktop</strong><small>Inbox, Compose, thread, AI panel, Starred, and Chat context.</small></a>
+      <a href="spotify_like_desktop.html#/home"><span>8</span><strong>Spotify-like desktop</strong><small>Home, Search, Library, player, and Now Playing panel.</small></a>
+      <a href="maps_like_mobile.html#/explore"><span>9</span><strong>Maps-like mobile</strong><small>Map, result sheets, directions, saved places, and details.</small></a>
+    </section>
+  </main>
+</body>
+</html>

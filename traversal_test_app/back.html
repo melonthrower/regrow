@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pantry</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; color: #202433; background: #f4f5f7; }
+    header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 28px; border-bottom: 1px solid #e0e2e7; background: #fff; }
+    header strong { font-size: 20px; }
+    main { width: min(760px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 50px; }
+    h1 { margin: 0 0 8px; }
+    p { color: #6f7581; line-height: 1.55; }
+    .block { min-height: 250px; margin-top: 14px; padding: 22px; border: 1px solid #e0e2e7; border-radius: 15px; background: #fff; }
+    .entries { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .entry { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 150px; padding: 20px; border: 1px solid #d8d3fa; border-radius: 15px; background: #eeecff; }
+    button { padding: 11px 15px; border: 0; border-radius: 10px; color: #fff; background: #6256d9; font: inherit; font-weight: 700; cursor: pointer; }
+    .back { min-width: 112px; color: #202433; background: #eceef2; }
+    .back:disabled { color: #999da7; background: #dfe1e5; cursor: default; }
+  </style>
+</head>
+<body>
+  <header><button id="back" class="back" disabled>← Back</button><strong>Pantry</strong></header>
+  <div id="app"></div>
+  <script>
+    const app = document.getElementById("app");
+    const back = document.getElementById("back");
+    const visits = [];
+    history.scrollRestoration = "manual";
+
+    const pages = {
+      "/1": {
+        id: "back.recipes",
+        title: "Recipe collection",
+        intro: "Simple favorites saved for the week ahead.",
+        blocks: [
+          ["Garden bowl", "Chickpeas, crisp greens, and lemon dressing."],
+          ["Ginger vegetable soup", "A light broth with noodles and seasonal vegetables."],
+          ["Roasted sweet potato tacos", "Smoky beans, avocado, and lime crema."]
+        ],
+        entries: [
+          ["back.1_to_2", "/2", "Sunday tomato pasta", "Open recipe"],
+          ["back.1_to_3", "/3", "Saved kitchen notes", "Open notes"]
+        ]
+      },
+      "/2": {
+        id: "back.recipe_detail",
+        title: "Sunday tomato pasta",
+        intro: "Slow tomatoes, basil, and a glossy finish.",
+        blocks: [
+          ["Ingredients", "Spaghetti, whole tomatoes, garlic, basil, and olive oil."],
+          ["Method", "Simmer the sauce slowly and reserve a cup of pasta water."],
+          ["Serving", "Finish with torn basil and black pepper at the table."]
+        ],
+        entries: [
+          ["back.2_to_1", "/1", "Recipe collection", "Browse recipes"],
+          ["back.2_to_3", "/3", "Personal kitchen notes", "Open notes"]
+        ]
+      },
+      "/3": {
+        id: "back.notes",
+        title: "Kitchen notes",
+        intro: "Small reminders saved from the last time this meal was made.",
+        blocks: [
+          ["Start earlier", "Give the tomatoes ten quiet minutes before boiling the pasta."],
+          ["Family variation", "Stir in one spoonful of mascarpone for a softer sauce."],
+          ["Next time", "Keep extra pasta water because the sauce tightens at the table."]
+        ],
+        entries: [
+          ["back.3_to_1", "/1", "Recipe collection", "Browse recipes"],
+          ["back.3_to_2", "/2", "Sunday tomato pasta", "Open recipe"]
+        ]
+      }
+    };
+
+    function route() {
+      const value = location.hash.replace(/^#/, "") || "/1";
+      return pages[value] ? value : "/1";
+    }
+
+    function savePosition() {
+      history.replaceState({ ...(history.state || {}), route: route(), scrollY }, "", location.href);
+    }
+
+    function navigate(next) {
+      const current = route();
+      savePosition();
+      history.pushState({ route: next, scrollY: 0, from: current }, "", `#${next}`);
+      render(0);
+    }
+
+    function render(restore = 0) {
+      const current = route();
+      const page = pages[current];
+      const source = history.state?.from || null;
+      back.disabled = !source;
+      back.textContent = "← Back";
+      app.innerHTML = `<main><h1>${page.title}</h1><p>${page.intro}</p>${page.blocks.map(([title, note]) => `<section class="block"><strong>${title}</strong><p>${note}</p></section>`).join("")}<section class="entries">${page.entries.map(([id, target, title, label]) => `<article class="entry"><strong>${title}</strong><button data-action-id="${id}" data-route="${target}">${label}</button></article>`).join("")}</section></main>`;
+      app.dataset.pageId = page.id;
+      visits.push(page.id);
+      scrollTo(0, restore);
+      requestAnimationFrame(() => scrollTo(0, restore));
+    }
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-route]");
+      if (button) navigate(button.dataset.route);
+    });
+    back.addEventListener("click", () => {
+      if (back.disabled) return;
+      savePosition();
+      history.back();
+    });
+    addEventListener("popstate", event => render(event.state?.scrollY || 0));
+
+    if (!history.state?.route || history.state.route !== route()) {
+      history.replaceState({ route: route(), scrollY: 0, from: null }, "", location.href);
+    }
+    render(history.state?.scrollY || 0);
+    window.__fixture = {
+      snapshot: () => ({
+        pageId: app.dataset.pageId,
+        visits: [...visits]
+      })
+    };
+  </script>
+</body>
+</html>

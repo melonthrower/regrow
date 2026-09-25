@@ -1,0 +1,58 @@
+*** Begin Patch
+*** Update File: OSWorld/desktop_env/server/main.py
+@@
+     elif user_platform == "Linux":
+-        cursor_obj = Xcursor()
+-        imgarray = cursor_obj.getCursorImageArrayFast()
+-        cursor_img = Image.fromarray(imgarray)
+-        screenshot = pyautogui.screenshot()
+-        cursor_x, cursor_y = pyautogui.position()
+-        screenshot.paste(cursor_img, (cursor_x, cursor_y), cursor_img)
+-        screenshot.save(file_path)
++        errors = []
++        screenshot = None
++        try:
++            screenshot = pyautogui.screenshot()
++        except Exception as e:
++            errors.append(f"pyautogui.screenshot: {e}")
++            logger.warning("pyautogui screenshot failed; trying ImageGrab. Error: %s", e)
++
++        if screenshot is None:
++            try:
++                screenshot = ImageGrab.grab(bbox=None)
++            except Exception as e:
++                errors.append(f"ImageGrab.grab: {e}")
++                logger.warning("ImageGrab screenshot failed; trying command-line tools. Error: %s", e)
++
++        if screenshot is not None:
++            try:
++                cursor_obj = Xcursor()
++                imgarray = cursor_obj.getCursorImageArrayFast()
++                cursor_img = Image.fromarray(imgarray)
++                cursor_x, cursor_y = pyautogui.position()
++                screenshot.paste(cursor_img, (cursor_x, cursor_y), cursor_img)
++            except Exception as e:
++                logger.warning("Failed to capture cursor on Linux, screenshot will not have a cursor. Error: %s", e)
++            screenshot.save(file_path)
++        else:
++            captured = False
++            for command in (["gnome-screenshot", "-f", file_path], ["scrot", file_path]):
++                try:
++                    result = subprocess.run(
++                        command,
++                        stdout=subprocess.PIPE,
++                        stderr=subprocess.PIPE,
++                        timeout=15,
++                    )
++                    if result.returncode == 0 and os.path.exists(file_path) and os.path.getsize(file_path) > 0:
++                        captured = True
++                        break
++                    stderr = result.stderr.decode("utf-8", errors="replace")[:500]
++                    errors.append(f"{' '.join(command)}: rc={result.returncode} stderr={stderr}")
++                except Exception as e:
++                    errors.append(f"{' '.join(command)}: {e}")
++            if not captured:
++                message = "Linux screenshot capture failed: " + " | ".join(errors)
++                logger.error(message)
++                return jsonify({"status": "error", "message": message}), 500
+*** End Patch

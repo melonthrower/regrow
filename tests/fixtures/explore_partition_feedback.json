@@ -1,0 +1,319 @@
+[
+  {
+    "source_main": "0010",
+    "source_review": "0011",
+    "page_report": {
+      "regions": [
+        {
+          "region_ref": "r106",
+          "parent_ref": null,
+          "name": "Playlist interface",
+          "summary": "播放列表前景接管主要内容区域；左侧显示Playlist、Media Library、本地计算机、设备和本地网络来源，右侧显示媒体列表。",
+          "memory": "播放列表界面支持本地查看型导航；网络来源保持未进入。",
+          "elements": [],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r107",
+          "parent_ref": "r106",
+          "name": "Playlist navigation",
+          "summary": "左侧导航包含Playlist、Media Library、My Videos、My Music、My Pictures、Screen capture、Audio capture、MTP devices、Video capture、Discs、Network streams和Zeroconf network等入口。",
+          "memory": "本地查看入口可继续探索；网络来源可能涉及外部内容或设备访问。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "当前选中Playlist。",
+              "name": "Playlist navigation entry",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "左侧Playlist导航入口",
+                  "handling": "record",
+                  "reason": "可切换播放列表来源。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r108",
+          "parent_ref": "r106",
+          "name": "Playlist media card view",
+          "summary": "右侧当前以卡片/图标式视图显示单个媒体成员“VLC traversal fixture [03:00]”；搜索文本VLC仍可见。",
+          "memory": "视图模式切换已确认至少支持表格列视图和图标/卡片式视图；未穷举其他模式。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "当前显示VLC traversal fixture [03:00]卡片，未执行媒体项操作。",
+              "name": "VLC traversal fixture media card",
+              "operations": [
+                {
+                  "action": "double_click",
+                  "target": "VLC traversal fixture媒体卡片",
+                  "handling": "record",
+                  "reason": "可能开始或切换媒体播放，但当前探索不需要重复操作媒体成员。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r109",
+          "parent_ref": "r106",
+          "name": "Playlist search and view controls",
+          "summary": "右上方包含视图模式按钮和搜索框；搜索框当前为VLC，右侧有清除图标。",
+          "memory": "搜索按文本筛选列表；视图模式按钮可在至少两种列表表示之间切换，具体完整值域未知。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "搜索框当前显示VLC，列表保留匹配媒体。",
+              "name": "Playlist search field",
+              "operations": [
+                {
+                  "action": "input_text",
+                  "target": "Playlist search field",
+                  "handling": "record",
+                  "reason": "可按文本筛选播放列表，已观察ASCII输入能力。",
+                  "operation_ref": "co556",
+                  "parameter_status": "observed",
+                  "parameter_summary": "文本输入；已确认ASCII文本VLC可用，其他字符范围未知。"
+                }
+              ]
+            },
+            {
+              "element_ref": "",
+              "observation": "按钮仍可见；当前结果为图标/卡片式媒体视图。",
+              "name": "Playlist view mode button",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "Playlist view mode button",
+                  "handling": "record",
+                  "reason": "已确认可切换播放列表视图；当前至少已观察表格视图与图标/卡片视图。",
+                  "operation_ref": "co557",
+                  "parameter_status": "observed",
+                  "parameter_summary": "视图切换；已观察表格列视图和图标/卡片视图，其他模式未知。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r55",
+          "parent_ref": "r106",
+          "name": "Playback control bar",
+          "summary": "底部播放控制栏保持媒体加载状态，进度约01:34/03:00，未因视图切换改变播放状态。",
+          "memory": "控制栏可操作但不属于本轮视图模式探索。",
+          "elements": [],
+          "region_operations": []
+        }
+      ],
+      "survey_complete": true,
+      "coverage_note": "当前播放列表图标/卡片视图的可见前景已清点；已确认视图切换结果，但未穷举可能存在的其他视图模式。"
+    },
+    "review": {
+      "decision": "different",
+      "reason": "存在明确遗漏：1) /regions/1 仅登记了当前选中的 Playlist，未将可见且彼此独立的 Media Library、My Videos、My Music、My Pictures、Screen capture、Audio capture、MTP devices、Video capture、Discs、Network streams、Zeroconf network 等导航入口分别登记为控件；左侧导航滚动条也未登记。2) /regions/3 的 summary 明确提到搜索框右侧清除图标，但未登记对应的独立 click 控件。3) /regions/4 包含多个当前可直接交互的播放控件，却 elements 和 region_operations 均为空；至少应登记播放/暂停、停止、前后切换、进度拖动、全屏、播放列表/设置、循环/随机、音量等可见控件及其动作。4) 当前无弹层接管输入，顶部 VLC 菜单栏 Media、Playback、Audio、Video、Subtitle、Tools、View、Help 也是可见的持久交互入口，清单完全遗漏；应补充菜单栏分区或将这些菜单控件登记到合适的子区。"
+    }
+  },
+  {
+    "source_main": "0012",
+    "source_review": "0013",
+    "page_report": {
+      "regions": [
+        {
+          "region_ref": "r106",
+          "parent_ref": null,
+          "name": "Playlist interface",
+          "summary": "播放列表前景接管主要内容区域；左侧为播放列表导航，右侧为媒体内容区，底部保留播放控制栏。",
+          "memory": "本地播放列表界面可安全观察；网络来源和可能触发外部访问的入口不在本轮范围内。",
+          "elements": [],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r107",
+          "parent_ref": "r106",
+          "name": "Playlist navigation",
+          "summary": "左侧导航显示Playlist（当前选中）、Media Library、My Computer下的My Videos、My Music、My Pictures、Devices下的Screen capture、Audio capture、MTＰ devices、Video capture、Discs，以及Local Network下的Network streams和Zeroconf network sources。",
+          "memory": "导航入口用于切换本地播放列表及其他来源；本轮保持Playlist选中。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "Playlist当前选中。",
+              "name": "Playlist navigation entry",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "左侧Playlist导航入口",
+                  "handling": "record",
+                  "reason": "可切换回当前播放列表视图。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r108",
+          "parent_ref": "r106",
+          "name": "Playlist media card view",
+          "summary": "右侧媒体内容区当前为图标卡片视图，显示一个带VLC图标的媒体卡片“VLC traversal fixture [03:00]”。",
+          "memory": "视图模式按钮可在至少表格视图和图标卡片视图之间切换；媒体卡片可作为本地播放列表项目继续调查。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "当前显示VLC traversal fixture [03:00]媒体卡片。",
+              "name": "VLC traversal fixture media card",
+              "operations": [
+                {
+                  "action": "double_click",
+                  "target": "VLC traversal fixture媒体卡片",
+                  "handling": "record",
+                  "reason": "可对具体本地媒体项目执行打开或播放类操作；本轮不重复执行。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r109",
+          "parent_ref": "r106",
+          "name": "Playlist search and view controls",
+          "summary": "右上方包含视图模式按钮和搜索框；搜索框当前为VLC，视图模式按钮当前对应图标卡片视图。",
+          "memory": "搜索框支持ASCII文本输入并筛选列表；视图模式按钮已确认可在表格视图与图标卡片视图间切换，其他模式值域未知。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "搜索框当前内容为VLC，列表显示匹配的VLC traversal fixture。",
+              "name": "Playlist search field",
+              "operations": [
+                {
+                  "action": "input_text",
+                  "target": "Playlist search field",
+                  "handling": "record",
+                  "reason": "可按文本筛选播放列表内容。",
+                  "operation_ref": "",
+                  "parameter_status": "observed",
+                  "parameter_summary": "ASCII文本输入；已观察输入VLC，完整字符和匹配规则未调查。"
+                }
+              ]
+            },
+            {
+              "element_ref": "",
+              "observation": "按钮当前使媒体内容显示为图标卡片视图。",
+              "name": "Playlist view mode button",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "Playlist view mode button",
+                  "handling": "record",
+                  "reason": "已确认点击会切换播放列表显示模式；当前图标卡片模式已可见，其他模式未调查。",
+                  "operation_ref": "",
+                  "parameter_status": "observed",
+                  "parameter_summary": "已观察表格视图和图标卡片视图；其他可能模式未知。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        },
+        {
+          "region_ref": "r55",
+          "parent_ref": "r106",
+          "name": "Playback control bar",
+          "summary": "底部控制栏显示播放/暂停、上一项、停止、下一项、全屏、调整、播放列表、循环、随机及前后导航等控件，并显示当前进度约01:34/03:00和音量100%。",
+          "memory": "控制栏保持已加载媒体状态；本轮未改变播放状态。",
+          "elements": [
+            {
+              "element_ref": "",
+              "observation": "播放控制栏左侧播放按钮可见。",
+              "name": "Play or pause button",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "底部播放或暂停按钮",
+                  "handling": "record",
+                  "reason": "可改变媒体播放状态；本轮不重复操作。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            },
+            {
+              "element_ref": "",
+              "observation": "上一项、停止和下一项按钮可见。",
+              "name": "Playback navigation controls",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "底部上一项、停止或下一项控制",
+                  "handling": "record",
+                  "reason": "可控制当前播放列表项目；本轮不改变播放状态。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            },
+            {
+              "element_ref": "",
+              "observation": "全屏按钮可见。",
+              "name": "Fullscreen button",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "底部全屏按钮",
+                  "handling": "record",
+                  "reason": "可切换播放器显示状态；本轮不执行。",
+                  "operation_ref": "",
+                  "parameter_status": "none",
+                  "parameter_summary": "无参数。"
+                }
+              ]
+            },
+            {
+              "element_ref": "",
+              "observation": "调整、播放列表、循环和随机按钮可见。",
+              "name": "Playback utility controls",
+              "operations": [
+                {
+                  "action": "click",
+                  "target": "底部调整、播放列表、循环或随机控制",
+                  "handling": "record",
+                  "reason": "可打开或改变本地播放控制功能；本轮不重复探索。",
+                  "operation_ref": "",
+                  "parameter_status": "unknown",
+                  "parameter_summary": "各按钮的具体参数和子界面未在本轮展开。"
+                }
+              ]
+            }
+          ],
+          "region_operations": []
+        }
+      ],
+      "survey_complete": true,
+      "coverage_note": "当前图2的播放列表前景、左侧导航、媒体卡片、搜索与视图控制及底部控制栏已清点。视图模式已确认两个可见模式，其他潜在模式未展开。"
+    },
+    "review": {
+      "decision": "different",
+      "reason": "明确存在以下问题：1) /regions/1/elements/0 将左侧多个独立导航入口仅登记为一个“Playlist navigation entry”，遗漏了可见且独立的 Media Library、My Videos、My Music、My Pictures、Screen capture、Audio capture、MTP devices、Video capture、Discs、Network streams 和 Zeroconf network sources 入口；应分别登记，或至少按独立功能入口分别列出。2) /regions/4/elements/1 将上一项、停止、下一项三个独立按钮合并为一个控件，应拆分为三个Element。3) /regions/4/elements/3 将调整、播放列表、循环、随机四个独立按钮合并为一个控件，应分别登记。4) 底部可见的进度滑块和音量控制未登记，属于独立可交互控件，应补充。5) 搜索框右侧可见的清除按钮未登记，应作为独立控件补充。"
+    }
+  }
+]

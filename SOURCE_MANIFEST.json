@@ -6,8 +6,8 @@
   },
   {
     "path": "AGENTS.md",
-    "sha256": "efe7c3d681acd8b239ef8c7288457a9fef2e5aacce8cc3ec66537ff4c84b665e",
-    "bytes": 14069
+    "sha256": "354e2a147fef69dd486fed94f9cd18606f2dee3621efa85ee8abd42b27697015",
+    "bytes": 15277
   },
   {
     "path": "CONTRIBUTING.md",
@@ -41,8 +41,8 @@
   },
   {
     "path": "SNAPSHOT.md",
-    "sha256": "05c69bfb669adc6db1538949257996e32acf31984e9ebe4d7487bc6a2681e669",
-    "bytes": 914
+    "sha256": "5e198bb4605a22b5eac3dd1d65abbba28f6a1a4f26af9ec85c08efdc1fc3af55",
+    "bytes": 1029
   },
   {
     "path": "aliyun.env.example",
@@ -61,8 +61,8 @@
   },
   {
     "path": "design/CURRENT_FRAMEWORK.md",
-    "sha256": "d02b38d1d95e0e4c6c79c666d1d6820655966c2a2f52f3564d676622cceb46d1",
-    "bytes": 285146
+    "sha256": "f73cb6dfe65e8a22dfc0cce29f44d135c009f2aff82b100bac0f8728693df4d1",
+    "bytes": 285402
   },
   {
     "path": "design/E1_BASELINE.md",
@@ -91,8 +91,8 @@
   },
   {
     "path": "design/REGION_TRAVERSAL_ALIGNMENT.md",
-    "sha256": "fd9d2c6b30af776ce4fb79b8a66330f41fb3acd124d881217caa4b280d37923b",
-    "bytes": 66981
+    "sha256": "4a7bd7c1e20dbab39abb9537101b05350576155871c26c4112496440c18ced05",
+    "bytes": 67351
   },
   {
     "path": "design/RESEARCH_GOAL.md",
@@ -201,8 +201,8 @@
   },
   {
     "path": "design/changelog/2026-09.md",
-    "sha256": "8c1db83bae5057808ca0642288c854f721b34fb43fb551613d0834b8577bba59",
-    "bytes": 521179
+    "sha256": "928a68b011a46bee0ea5c9b9b0218a95e2753cbd0e5fca2398cfeac63d31d4c0",
+    "bytes": 522603
   },
   {
     "path": "design/changelog/framework_history_through_2026-07-19.md",
@@ -456,8 +456,8 @@
   },
   {
     "path": "design/modules/stepwise_debug_loop.md",
-    "sha256": "ec537a18370e3f1d35fccc9a7c1f9d842bf2a4c21b60f3ad967f0dde024be7a5",
-    "bytes": 24388
+    "sha256": "e08a959703b5d3edcff92ba24e96a28f6186b9d1b65065c54a31cc01d3440047",
+    "bytes": 25469
   },
   {
     "path": "design/modules/stepwise_discovery_completion.md",
@@ -871,8 +871,8 @@
   },
   {
     "path": "experiments/clock_manual_20260919/region_tasks.py",
-    "sha256": "a45b74c61c70b7f977069470c80a5939c5135b62364d2c33144ce443ad2be084",
-    "bytes": 30966
+    "sha256": "30909613d693e3e7fca799dacbf622bb1b10966b822ae89add8abd5d63450dc0",
+    "bytes": 30988
   },
   {
     "path": "experiments/clock_manual_20260919/register_update.py",
@@ -966,8 +966,8 @@
   },
   {
     "path": "experiments/clock_manual_20260919/task_prerequisites.py",
-    "sha256": "3820036eb30c1998f5f0ef9327b86f27cd797473571292478085f04e09186144",
-    "bytes": 8303
+    "sha256": "13959e925c31cb876181ce6a577532d534bdbf7dc75888d5bdeb1987924136a5",
+    "bytes": 9660
   },
   {
     "path": "experiments/clock_manual_20260919/task_record_repair.py",
@@ -976,8 +976,8 @@
   },
   {
     "path": "experiments/clock_manual_20260919/task_result_review.py",
-    "sha256": "857fe031364ec0668e0dbed8b356cdbb0211bab12f52af92668a3bfaf2fb386c",
-    "bytes": 13598
+    "sha256": "98bef89abb2db22f364717ceb2da9b664513e6f2b090c1cac9de2bab542cc54f",
+    "bytes": 13620
   },
   {
     "path": "experiments/clock_manual_20260919/task_routing.py",
@@ -1041,8 +1041,8 @@
   },
   {
     "path": "experiments/clock_manual_20260919/遍历prompt/任务/前置条件与恢复.prompt",
-    "sha256": "291895a4081c51ab5f921c2717e4a1277d0322d5d6247918464dccc1458ee778",
-    "bytes": 2165
+    "sha256": "e448b03721e37ee63a2f0c0db68230b8738269093e4c1edcb15da47736158e32",
+    "bytes": 2726
   },
   {
     "path": "experiments/clock_manual_20260919/遍历prompt/任务/动作后Region增量.prompt",
@@ -1056,8 +1056,8 @@
   },
   {
     "path": "experiments/clock_manual_20260919/遍历prompt/任务/区块探索任务.prompt",
-    "sha256": "be6aa5db9374726ee1f816eb7d0a50575a0a53d2264b44289ca39e6899798590",
-    "bytes": 4490
+    "sha256": "ad58ceb909d54f40b4e81627a25b5548efa09df9b09669ef15bc47e8d60132fa",
+    "bytes": 5309
   },
   {
     "path": "experiments/clock_manual_20260919/遍历prompt/任务/历史入口与共享复用.prompt",
@@ -1131,8 +1131,8 @@
   },
   {
     "path": "experiments/clock_manual_20260919/遍历prompt/共享/任务结束条件.prompt",
-    "sha256": "b652a04b679f0fa5c2dc61b0bb0e6902d16e8ec329f9cdef872df634d2c4f9b6",
-    "bytes": 3747
+    "sha256": "223ad6a711ec510aa888c8d92cf8c6279a7e8b0f1bba9da2ad5d32d598fe2ce0",
+    "bytes": 4151
   },
   {
     "path": "experiments/clock_manual_20260919/遍历prompt/共享/区块身份复用.prompt",
@@ -3688,6 +3688,11 @@
     "path": "tests/test_popup_surface_guard.py",
     "sha256": "674178ed7f8c2ab86e948806e3dc87de2ce5d7ff0bfc2c5ea2ec3a9ff54da78d",
     "bytes": 19426
+  },
+  {
+    "path": "tests/test_preparation_completion.py",
+    "sha256": "44279dfef531dddd50c0e27dac22fee48b6e14cdcda46490262709ee335eae06",
+    "bytes": 4298
   },
   {
     "path": "tests/test_prerequisite_runtime.py",

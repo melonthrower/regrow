@@ -1,13 +1,10 @@
 # regrow
 
-GUI 遍历框架当前代码包，2026-09-24。
+当前 GUI 遍历研究代码快照。保留主框架、逐步遍历器、独立 prompt、测试及当前设计文档；不含运行截图/账本、模型凭据或虚拟机镜像。
 
-- [下载完整源码 ZIP](regrow-source-20260924.zip)
-- [文件清单与 SHA-256](SOURCE_MANIFEST.json)
-- [ZIP 校验值](SHA256SUMS)
+- [逐步遍历器](experiments/clock_manual_20260919/README.md)
+- [当前框架与模块索引](design/CURRENT_FRAMEWORK.md)
+- [原项目说明](README.upstream.md)
+- [本次快照说明](SNAPSHOT.md)
 
-解压后包含主框架、逐步遍历器、独立三步 prompt、测试和设计文档，共 1030 个清单文件。入口说明见压缩包中的 README.md 与 experiments/clock_manual_20260919/README.md。
-
-不含运行截图、探索账本、虚拟机、外部依赖、模型凭据或旧 Git 历史。导出副本中发现的凭据及私网主机值已脱敏，原工作区保持不变。
-
-该包是研究中的工作区快照，不是全框架回归认证版本。相关身份匹配64项及状态显示24项聚焦检查通过；框架内Luna保存帧验证和网页实测记录保留在原工作区。全部导出Python文件语法、文件SHA和ZIP完整性检查通过。
+这是研究中的工作区快照，不是经过全框架回归的发布版本。外部 OSWorld/Android 环境和模型认证需自行配置，不在代码包内。

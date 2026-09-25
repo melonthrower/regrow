@@ -1,0 +1,130 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>区块跳转图 · GUI-ReWalk</title>
+<style>
+:root{font:14px/1.65 system-ui,sans-serif;color:#203b38;background:#f1f5f3}*{box-sizing:border-box}body{margin:0}header{padding:18px 24px;background:#fff;border-bottom:1px solid #dae5df;display:flex;align-items:center;gap:20px;justify-content:space-between}h1{margin:0;font-size:22px}small,.muted{color:#6b7d76}button,a,input{font:inherit}button,.link{border:1px solid #cbdcd3;background:white;padding:7px 12px;border-radius:9px;color:#265d4d;cursor:pointer}button:hover,.link:hover{background:#e4f3eb}button.active{background:#196f55;color:white}a{color:#196f55}main{display:grid;grid-template-columns:minmax(460px,1fr) 420px;height:calc(100vh - 86px)}.map{padding:20px;min-width:0;display:flex;flex-direction:column;gap:10px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}input{border:1px solid #cadcd0;padding:9px 12px;border-radius:9px;width:240px}.canvas{position:relative;background:radial-gradient(#dce6e0 1px,transparent 1px);background-size:20px 20px;border:1px solid #d4e0d9;border-radius:16px;flex:1;min-height:240px;overflow:auto}.canvas svg{position:absolute;top:0;left:0;display:block;width:100%;height:100%;min-height:420px}aside{padding:22px;background:#fff;border-left:1px solid #dae5df;overflow:auto}h2{font-size:21px;margin:0 0 8px}h3{font-size:15px;margin:18px 0 8px}p{margin:8px 0}.chip{display:inline-block;padding:2px 9px;font-size:12px;background:#eef4f0;border-radius:20px;margin:2px}.crop{width:100%;max-height:220px;object-fit:contain;background:#f3f5f3;border-radius:10px;border:1px solid #e0e7e2;cursor:zoom-in}.control{padding:12px;border:1px solid #dce6de;border-radius:12px;margin:10px 0}.control.selected{border-color:#168369;background:#f0faf5}.control-head{display:flex;gap:10px;align-items:center}.icon{width:64px;height:52px;object-fit:contain;background:#f1f4f0;border-radius:6px;cursor:zoom-in}.control-head button{border:0;text-align:left;padding:0;background:transparent;font-weight:650;flex:1}.route{display:block;width:100%;text-align:left;margin:7px 0;font-size:13px}.fact{font-size:12px;color:#61746c;border-left:2px solid #d4e6db;padding-left:9px;margin-top:9px}.warning{color:#95621c}.node{cursor:pointer}.node rect{fill:#fff;stroke:#c4d6cc;stroke-width:1.5;filter:drop-shadow(0 3px 4px #15342d0b)}.node.current rect{fill:#edf9f2}.node.working rect{stroke:#c29740;stroke-width:2.5}.node.selected rect{stroke:#147759;stroke-width:3;fill:#dbf3e6}.node text{pointer-events:none;fill:#25413a;font-size:14px}.node .sub{fill:#70857a;font-size:11px}.edge{fill:none;stroke:#aebfb5;stroke-width:1.6}.edge.focus{stroke:#238465;stroke-width:2.7}.edge.dim{opacity:.12}.legend{display:flex;gap:18px;font-size:12px;color:#60776d}#search-results{display:flex;gap:6px;flex-wrap:wrap;max-height:86px;overflow:auto}#error{color:#a54a32}dialog{border:0;border-radius:15px;padding:16px;max-width:90vw;max-height:95vh}dialog::backdrop{background:#10251dc4}dialog img{display:block;max-width:83vw;max-height:80vh;object-fit:contain}dialog button{float:right;margin-bottom:8px}@media(max-width:950px){main{grid-template-columns:1fr;height:auto}.canvas{height:58vh;flex:auto}aside{border-left:0;border-top:1px solid #ddd}header{flex-wrap:wrap}input{width:200px}}
+
+.node .card{fill:#fff;stroke:#bed2c8;stroke-width:1.5}.node.selected .card{fill:#f4fcf7;stroke:#147759;stroke-width:2.5}
+.node .shot{pointer-events:none}.node .control-anchor rect{fill:#e6f3ed;stroke:#bcd9cc;filter:none}.node .control-anchor text{font-size:12px}
+.node .control-anchor.active rect{fill:#c0e9d7;stroke:#147759}.edge.incoming{stroke:#8397b8;stroke-dasharray:6 5}.edge.outgoing{stroke:#238465}.edge{stroke-linejoin:round;cursor:pointer;stroke-width:2;pointer-events:stroke}.edge.focus{stroke-width:3.5}.edge.dim{opacity:.25}.node:focus-visible .card{stroke:#cf8223;stroke-width:4}
+</style>
+<header><div><small>GUI-ReWalk · 已登记知识</small><h1>区块跳转图</h1></div><div><span id="app" class="chip"></span> <a class="link" href="/">实时投屏与遍历进度</a></div></header>
+<main><section class="map"><div class="toolbar"><input id="search" placeholder="搜索区块或控件" aria-label="搜索区块或控件"><button id="refresh">刷新</button><button id="zoom-in" aria-label="放大">＋</button><button id="zoom-out" aria-label="缩小">－</button><button id="fit">适应窗口</button><button id="working">当前工作区块</button></div><div id="search-results"></div><div class="legend"><span>浅绿：最近可交互</span><span>金框：当前工作区块</span><span>实线：控件出向 · 虚线：区块入向</span></div><div id="error" role="status"></div><div class="canvas"><svg id="graph" role="img" aria-label="可点击的区块跳转关系图"></svg></div><small id="summary">正在读取已提交的图记录…</small><small>点击周围截图移到中心；点击控件突出其跳转。仅显示中心的直接邻居。未探索到的路径不会补画。截图是登记时的历史证据，不是实时投屏。</small></section><aside id="details"><h2>选择一个区块</h2><p>查看内容、控件和跳转来源。</p></aside></main>
+<dialog id="preview"><button id="close">关闭</button><img id="preview-image" alt="登记时的截图原图"></dialog>
+<script>
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';let data=null,selected=null,control=null,scale=1;
+const op={click:'点击',tap:'点击',double_click:'双击',long_press:'长按',back:'返回',scroll:'滚动',input_text:'输入'};
+const status={done:'已完成',pending:'待探索',blocked:'暂挂',record_only:'仅记录'};
+function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+function svg(tag,attrs){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e}
+function node(id){return data.nodes.find(n=>n.id===id)}
+function preview(url){$('preview-image').src=url;$('preview').showModal()}
+function picture(url,cls,alt){const i=el('img');i.src=url;i.className=cls;i.alt=alt;i.loading='lazy';i.onclick=()=>preview(url);return i}
+function select(id,cid=null){selected=id;control=cid;draw();details();search()}
+function routeButton(edge,incoming=false){const other=node(incoming?edge.source:edge.target);const b=el('button',(incoming?'← ':'→ ')+other.name+' · '+(op[edge.operation]||edge.operation)+'「'+edge.control_name+'」','route');b.onclick=()=>select(other.id);b.title=edge.description+'（'+edge.attempts.length+'次记录）';return b}
+// Keep keyed SVG nodes alive so navigation has continuous, interruptible motion.
+const cards=new Map();let frame=0,view={w:1200,h:900};
+function exits(n){return n.controls.filter(c=>data.edges.some(e=>e.source===n.id&&e.control===c.id&&e.target!==n.id))}
+function cardHeight(n){return 252+exits(n).length*28}
+function textAt(parent,text,x,y,cls){const t=svg('text',{x,y,...(cls?{class:cls}:{})});t.textContent=text;parent.append(t);return t}
+function cardContent(group,n){
+ group.replaceChildren();const h=cardHeight(n);
+ group.append(svg('rect',{class:'card',width:300,height:h,rx:14}));
+ textAt(group,n.name.length>20?n.name.slice(0,19)+'…':n.name,12,26);
+ if(n.image)group.append(svg('image',{class:'shot',href:n.image,x:12,y:40,width:276,height:180,preserveAspectRatio:'xMidYMid meet'}));
+ else textAt(group,'尚无登记截图',85,135,'sub');
+ textAt(group,`${n.controls.length} 个控件 · ${n.progress.complete?'已完成':'尚有探索/登记缺口'}`,12,242,'sub');
+ exits(n).forEach((c,i)=>{
+  const a=svg('g',{class:'control-anchor'+(n.id===selected&&control===c.id?' active':''),'data-control':c.id,tabindex:n.id===selected?0:-1,role:'button','aria-label':c.name});
+  a.append(svg('rect',{x:12,y:252+i*28,width:276,height:24,rx:6}));if(c.image)a.append(svg('image',{href:c.image,x:17,y:254+i*28,width:30,height:20,preserveAspectRatio:'xMidYMid meet'}));textAt(a,c.name.length>24?c.name.slice(0,23)+'…':c.name,c.image?54:22,269+i*28);
+  a.onclick=e=>{e.stopPropagation();select(n.id,control===c.id?null:c.id)};
+  a.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();a.onclick(e)}};
+  group.append(a);
+ });
+ const tip=svg('title',{});tip.textContent=n.name+' · 点击移到中心';group.append(tip);
+}
+function boundary(p,h,toward){
+ const dx=toward.x-p.x,dy=toward.y-p.y;
+ const k=1/Math.max(Math.abs(dx)/(150*p.s),Math.abs(dy)/(h*p.s/2),.001);
+ return {x:p.x+dx*k,y:p.y+dy*k};
+}
+function draw(){
+ cancelAnimationFrame(frame);const g=$('graph');if(!data)return;
+ g.style.width=(scale*100)+'%';g.style.height=(scale*100)+'%';
+ if(!g.firstChild){
+  const defs=svg('defs',{});
+  for(const [id,color] of [['out','#238465'],['in','#8397b8']]){
+   const m=svg('marker',{id:'arrow-'+id,markerWidth:8,markerHeight:8,refX:8,refY:4,orient:'auto',markerUnits:'strokeWidth'});
+   m.append(svg('path',{d:'M0,0 L8,4 L0,8 Z',fill:color}));defs.append(m);
+  }
+  g.append(defs,svg('g',{id:'edges'}),svg('g',{id:'cards'}));
+ }
+ const center=node(selected),related=data.edges.filter(e=>e.source!==e.target&&(e.source===selected||e.target===selected));
+ const ids=new Set(center?[selected]:[]);for(const e of related){ids.add(e.source);ids.add(e.target)}
+ const neighbours=data.nodes.filter(n=>ids.has(n.id)&&n.id!==selected),targets=new Map();
+ const maxH=Math.max(280,...data.nodes.filter(n=>ids.has(n.id)).map(cardHeight));
+ const ry=maxH/2+130;
+ if(center)targets.set(selected,{x:0,y:0,s:1,o:1});
+ neighbours.forEach((n,i)=>{const ring=Math.floor(i/8),count=Math.min(8,neighbours.length-ring*8),angle=(count<=2?0:-Math.PI/2)+(i%8)*2*Math.PI/count;
+  targets.set(n.id,{x:Math.cos(angle)*(460+ring*230),y:Math.sin(angle)*(ry+ring*(maxH*.58+65)),s:.58,o:1});
+ });
+ let w=780,h=maxH+120;
+ for(const [id,p] of targets){w=Math.max(w,2*(Math.abs(p.x)+150*p.s+45));h=Math.max(h,2*(Math.abs(p.y)+cardHeight(node(id))*p.s/2+45))}
+ const nextView={w,h},oldView={...view};
+ for(const id of ids){
+  const n=node(id);if(!n)continue;
+  if(!cards.has(id)){
+   const group=svg('g',{'data-id':id,tabindex:0,role:'button','aria-label':n.name});
+   group.onclick=()=>select(id);group.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(id)}};
+   $('cards').append(group);const t=targets.get(id);
+   cards.set(id,{group,p:{...t,x:t.x*1.55,y:t.y*1.55,o:0}});
+  }
+  const c=cards.get(id);cardContent(c.group,n);c.group.setAttribute('class','node'+(n.current?' current':'')+(n.working?' working':'')+(id===selected?' selected':''));
+  c.group.style.pointerEvents='auto';c.group.removeAttribute('aria-hidden');
+ }
+ const motions=[];
+ for(const [id,c] of cards){
+  const target=targets.get(id)||{...c.p,x:c.p.x?c.p.x*1.65:nextView.w*.7,y:c.p.y*1.65,o:0,s:c.p.s*.8};
+  if(!ids.has(id)){c.group.style.pointerEvents='none';c.group.setAttribute('aria-hidden','true');c.group.setAttribute('tabindex','-1')}
+  else c.group.setAttribute('tabindex','0');
+  motions.push({id,c,from:{...c.p},to:target});
+ }
+ // Direction and anchors come only from the selected Region's recorded relationships.
+ $('edges').replaceChildren();const paths=[];
+ for(const e of related){
+  if(!cards.has(e.source)||!cards.has(e.target))continue;
+  const outgoing=e.source===selected,focused=outgoing&&e.control===control;
+  const path=svg('path',{class:'edge '+(outgoing?'outgoing':'incoming')+(focused?' focus':control?' dim':''),'data-source':e.source,'data-target':e.target,'data-control':e.control||'','marker-end':'url(#arrow-'+(outgoing?'out':'in')+')'});
+  const title=svg('title',{});title.textContent=node(e.source).name+' → '+node(e.target).name+' · '+e.control_name;path.append(title);
+  path.onclick=()=>select(e.source,e.control);$('edges').append(path);paths.push({e,path,outgoing});
+ }
+ const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:650,start=performance.now();
+ function tick(now){
+  const raw=duration?Math.min(1,(now-start)/duration):1,t=1-Math.pow(1-raw,3);
+  for(const {c,from,to} of motions){for(const k of ['x','y','s','o'])c.p[k]=from[k]+(to[k]-from[k])*t;
+   const n=node(c.group.dataset.id),height=n?cardHeight(n):280;
+   c.group.setAttribute('transform',`translate(${c.p.x-150*c.p.s},${c.p.y-height*c.p.s/2}) scale(${c.p.s})`);c.group.style.opacity=c.p.o;
+  }
+  view={w:oldView.w+(nextView.w-oldView.w)*t,h:oldView.h+(nextView.h-oldView.h)*t};
+  g.setAttribute('viewBox',`${-view.w/2} ${-view.h/2} ${view.w} ${view.h}`);
+  for(const {e,path,outgoing} of paths){
+   const a=cards.get(e.source).p,b=cards.get(e.target).p,ah=cardHeight(node(e.source)),bh=cardHeight(node(e.target));
+   let p=boundary(a,ah,b);const q=boundary(b,bh,a);
+   const index=exits(node(e.source)).findIndex(c=>c.id===e.control);
+   if(outgoing&&index>=0)p={x:a.x+(b.x>=a.x?138:-138)*a.s,y:a.y+(-ah/2+264+index*28)*a.s};
+   const bend=(q.x-p.x)*.5,side=b.x>=a.x?1:-1,endX=q.x+(q.x-b.x)*.3,endY=q.y+(q.y-b.y)*.3,rail=a.x+side*(150*a.s+45);
+   path.setAttribute('d',outgoing?`M${p.x},${p.y} L${rail},${p.y} L${rail},${endY} L${endX},${endY} L${q.x},${q.y}`:`M${p.x},${p.y} C${p.x+bend},${p.y} ${endX},${endY} ${q.x},${q.y}`);
+   path.style.opacity=Math.min(a.o,b.o);
+  }
+  if(raw<1)frame=requestAnimationFrame(tick);
+  else for(const {id,c} of motions)if(!ids.has(id)){c.group.remove();cards.delete(id)}
+ }
+ frame=requestAnimationFrame(tick);
+}
+function details(){const box=$('details');box.replaceChildren();const n=node(selected);if(!n){box.append(el('h2','选择一个区块'));return}box.append(el('h2',n.name),el('p',n.description,'muted'));const badges=el('div');for(const text of [n.working?'当前工作目标':null,n.current?'最近可交互':null,n.progress.complete?'区块任务已完成':'探索/登记尚未完成'])if(text)badges.append(el('span',text,'chip'));box.append(badges);if(n.image){box.append(el('h3','区块截图 · 点击放大'),picture(n.image,'crop',n.name+'的登记截图'))}
+const outgoing=data.edges.filter(e=>e.source===n.id),incoming=data.edges.filter(e=>e.target===n.id);box.append(el('h3',`区块跳转 · ${outgoing.length} 条`));if(!outgoing.length)box.append(el('p','尚无已登记的区块跳转，不表示没有出口。','muted'));for(const edge of outgoing)box.append(routeButton(edge));box.append(el('h3',`控件 · ${n.controls.length}`));if(!n.controls.length)box.append(el('p','该区块尚未登记控件。','muted'));
+for(const c of n.controls){const card=el('div',undefined,'control'+(c.id===control?' selected':'')),head=el('div',undefined,'control-head');if(c.image)head.append(picture(c.image,'icon',c.name));const b=el('button',c.name);b.onclick=()=>select(n.id,control===c.id?null:c.id);head.append(b);card.append(head);if(c.description)card.append(el('p',c.description,'muted'));for(const edge of outgoing.filter(e=>e.control===c.id))card.append(routeButton(edge));for(const t of c.tasks)card.append(el('div',(status[t.status]||t.status)+' · '+t.name,'fact'));const latest=c.actions.slice(-3);for(const a of latest)card.append(el('p',(a.exception==='external_app'?'应用外跳转 · ':'')+(op[a.operation]||a.operation||'动作')+'：'+a.description,'fact'+(a.exception==='external_app'?' warning':'')));if(!c.actions.length)card.append(el('small','尚无该控件的动作结果'));box.append(card)}
+if(incoming.length){const fold=el('details'),summary=el('summary',`从哪里到这里 · ${incoming.length} 条`);fold.append(summary);for(const edge of incoming)fold.append(routeButton(edge,true));box.append(fold)}}
+function search(){const query=$('search').value.trim().toLowerCase(),box=$('search-results');box.replaceChildren();if(!query||!data)return;const hits=data.nodes.filter(n=>[n.name,n.description,...n.controls.map(c=>c.name)].join(' ').toLowerCase().includes(query));for(const n of hits){const b=el('button',n.name);b.onclick=()=>select(n.id);box.append(b)}if(!hits.length)box.append(el('small','没有匹配的区块或控件'))}
+async function refresh(){try{const r=await fetch('/graph.json');if(!r.ok)throw Error('图记录暂时不可用');const v=await r.json();$('error').textContent='';if(data&&data.snapshot===v.snapshot&&data.app===v.app)return;data=v;$('app').textContent=v.app;$('summary').textContent=`${v.nodes.length} 个区块 · ${v.edges.length} 条已登记关系 · 每 10 秒检查最新记录`;if(!v.nodes.some(n=>n.id===selected)){selected=v.working||v.nodes[0]?.id;control=null}draw();details();search()}catch(e){$('error').textContent='读取失败，保留上次图记录。点击刷新重试。'}}
+$('search').oninput=search;$('refresh').onclick=refresh;$('zoom-in').onclick=()=>{scale=Math.min(3,scale+.25);draw()};$('zoom-out').onclick=()=>{scale=Math.max(.5,scale-.25);draw()};$('fit').onclick=()=>{scale=1;draw()};$('working').onclick=()=>{if(data?.working)select(data.working)};$('close').onclick=()=>$('preview').close();refresh();setInterval(refresh,10000);
+</script></html>

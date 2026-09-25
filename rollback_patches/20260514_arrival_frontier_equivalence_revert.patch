@@ -1,0 +1,46 @@
+*** Begin Patch
+*** Update File: C:\Users\Admin\Desktop\GUI agent\mywork\gui_rewalk\src\core\graph\traversal.py
+@@
+-            arrived_id = _compute_current_state_id(obs, app_name, env=env)
+-            arrived_matches_target = bool(
+-                arrived_id
+-                and (
+-                    arrived_id == next_state
+-                    or graph.visual_state_matches(arrived_id, next_state)
+-                    or _frontier_equivalent_options_accessible(
+-                        graph, memory, obs, app_name, next_state, window_rect,
+-                    )
+-                )
+-            )
+-            if arrived_id and not arrived_matches_target:
++            arrived_id = _compute_current_state_id(obs, app_name, env=env)
++            if arrived_id and arrived_id != next_state and not graph.visual_state_matches(
++                arrived_id, next_state
++            ):
+                 consecutive_arrival_mismatches += 1
+                 logger.warning(
+                     "BFS dequeue arrival mismatch #%d: expected %s, got %s",
+@@
+                     reset_ok, obs = _hard_reset_and_replay(
+                         graph, env, app_name, next_state,
+                     )
+                     if reset_ok:
+                         post_id = _compute_current_state_id(obs, app_name, env=env)
+-                        post_matches_target = bool(
+-                            post_id
+-                            and (
+-                                post_id == next_state
+-                                or graph.visual_state_matches(post_id, next_state)
+-                                or _frontier_equivalent_options_accessible(
+-                                    graph, memory, obs, app_name, next_state, window_rect,
+-                                )
+-                            )
+-                        )
+-                        if post_matches_target:
++                        if post_id and (post_id == next_state or graph.visual_state_matches(
++                            post_id, next_state
++                        )):
+                             logger.info("Hard reset reached target %s", next_state[:8])
+                             consecutive_arrival_mismatches = 0
+                             current_state_id = next_state
+*** End Patch

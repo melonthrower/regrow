@@ -1,0 +1,276 @@
+{
+  "schema_version": "rewalk.synthetic_mobile_app.oracle.v1",
+  "app": {
+    "id": "mingle_mobile",
+    "name": "Mingle",
+    "package": "com.guirewalk.mingle",
+    "start_page": "inbox",
+    "viewport": {"width": 412, "height": 915},
+    "purpose": "Deterministic Android communication-app fixture for mobile visual traversal."
+  },
+  "pages": [
+    {
+      "id": "inbox",
+      "title": "Chats",
+      "anchors": ["Recent chats", "Weekend Plan", "New chat"],
+      "identity_anchors": ["Recent chats"],
+      "variants": [
+        {"id": "default", "facts": {"search_open": false}},
+        {"id": "search_open", "facts": {"search_open": true}},
+        {"id": "menu_open", "facts": {"surface": "bottom_sheet"}}
+      ],
+      "blocks": [
+        {"id": "inbox.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "inbox.chat_list", "role": "conversation_list", "scrollable": true},
+        {"id": "inbox.fab", "role": "floating_action", "scrollable": false},
+        {"id": "inbox.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "inbox.search", "label": "Search chats", "alternate_label": "Close search", "block": "inbox.app_bar", "type": "button", "category": "stateful", "effect_scope": "function_set", "reversible": true},
+        {"id": "inbox.new_chat", "label": "New chat", "block": "inbox.fab", "type": "button", "category": "navigation"},
+        {"id": "inbox.open_weekend", "label": "Open Weekend Plan", "block": "inbox.chat_list", "type": "button", "category": "navigation", "group": "conversation_item", "coverage": "group_once"},
+        {"id": "inbox.open_alex", "label": "Open Alex Chen chat", "block": "inbox.chat_list", "type": "button", "category": "navigation", "group": "conversation_item", "coverage": "group_once"},
+        {"id": "inbox.nav_contacts", "label": "Contacts", "block": "inbox.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "inbox.nav_explore", "label": "Explore", "block": "inbox.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "inbox.nav_profile", "label": "Me", "block": "inbox.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {"classification": "scrollable", "scope": "page", "min_scroll_steps": 2, "bottom_anchor": "Project Aurora", "must_restore_top": true}
+    },
+    {
+      "id": "conversation",
+      "title": "Weekend Plan",
+      "anchors": ["Weekend Plan", "Pinned: Riverside picnic at 10:30", "Message"],
+      "identity_anchors": ["Pinned: Riverside picnic at 10:30"],
+      "variants": [
+        {"id": "default", "facts": {"message_sent": false}},
+        {"id": "sent", "facts": {"message_sent": true}},
+        {"id": "attach_open", "facts": {"surface": "bottom_sheet"}}
+      ],
+      "blocks": [
+        {"id": "conversation.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "conversation.pinned", "role": "pinned_message", "scrollable": false},
+        {"id": "conversation.messages", "role": "message_thread", "scrollable": true},
+        {"id": "conversation.composer", "role": "composer", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "conversation.back", "label": "Back to chats", "block": "conversation.app_bar", "type": "button", "category": "navigation"},
+        {"id": "conversation.call", "label": "Voice call", "block": "conversation.app_bar", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "external_action"},
+        {"id": "conversation.info", "label": "Chat info", "block": "conversation.app_bar", "type": "button", "category": "navigation"},
+        {"id": "conversation.attach", "label": "Add attachment", "block": "conversation.composer", "type": "button", "category": "navigation"},
+        {"id": "conversation.message", "label": "Message", "block": "conversation.composer", "type": "textbox", "category": "input"},
+        {"id": "conversation.send", "label": "Send message", "block": "conversation.composer", "type": "button", "category": "dangerous", "enabled": false, "blocked_reason": "external_action"}
+      ],
+      "scroll": {"classification": "scrollable", "scope": "page", "min_scroll_steps": 3, "bottom_anchor": "See you by the north gate", "must_restore_top": true}
+    },
+    {
+      "id": "contacts",
+      "title": "Contacts",
+      "anchors": ["All contacts", "New friends", "Alex Chen"],
+      "identity_anchors": ["All contacts"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "contacts.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "contacts.shortcuts", "role": "shortcuts", "scrollable": false},
+        {"id": "contacts.list", "role": "contact_list", "scrollable": true},
+        {"id": "contacts.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "contacts.add", "label": "Add contact", "block": "contacts.app_bar", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "permission_required"},
+        {"id": "contacts.new_friends", "label": "New friends", "block": "contacts.shortcuts", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "permission_required"},
+        {"id": "contacts.open_alex", "label": "Open Alex Chen", "block": "contacts.list", "type": "button", "category": "navigation", "group": "contact_item", "coverage": "group_once"},
+        {"id": "contacts.nav_inbox", "label": "Chats", "block": "contacts.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "contacts.nav_explore", "label": "Explore", "block": "contacts.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "contacts.nav_profile", "label": "Me", "block": "contacts.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {"classification": "scrollable", "scope": "page", "min_scroll_steps": 2, "bottom_anchor": "Zoe Wu", "must_restore_top": true}
+    },
+    {
+      "id": "contact_profile",
+      "title": "Alex Chen",
+      "anchors": ["Alex Chen", "alex.chen@example.com", "Send message"],
+      "identity_anchors": ["alex.chen@example.com"],
+      "variants": [
+        {"id": "favorite_off", "facts": {"favorite": false}},
+        {"id": "favorite_on", "facts": {"favorite": true}}
+      ],
+      "blocks": [
+        {"id": "contact.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "contact.identity", "role": "profile_header", "scrollable": false},
+        {"id": "contact.actions", "role": "actions", "scrollable": false},
+        {"id": "contact.preferences", "role": "preferences", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "contact.back", "label": "Back to contacts", "block": "contact.app_bar", "type": "button", "category": "navigation"},
+        {"id": "contact.message", "label": "Send message", "block": "contact.actions", "type": "button", "category": "navigation"},
+        {"id": "contact.favorite", "label": "Add to favorites", "alternate_label": "Remove from favorites", "block": "contact.preferences", "type": "switch", "category": "stateful", "effect_scope": "data_only", "reversible": true}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "explore",
+      "title": "Explore",
+      "anchors": ["Everyday tools", "Moments", "Saved messages"],
+      "identity_anchors": ["Everyday tools"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "explore.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "explore.services", "role": "service_list", "scrollable": false},
+        {"id": "explore.updates", "role": "content", "scrollable": false},
+        {"id": "explore.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "explore.moments", "label": "Moments", "block": "explore.services", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "explore.saved", "label": "Saved messages", "block": "explore.services", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "explore.scan", "label": "Scan", "block": "explore.services", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "camera_permission"},
+        {"id": "explore.nav_inbox", "label": "Chats", "block": "explore.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "explore.nav_contacts", "label": "Contacts", "block": "explore.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "explore.nav_profile", "label": "Me", "block": "explore.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "profile",
+      "title": "Me",
+      "anchors": ["Alex Lee", "Mingle ID: alex.lee", "Settings"],
+      "identity_anchors": ["Mingle ID: alex.lee"],
+      "variants": [{"id": "default", "facts": {"surface": "page"}}],
+      "blocks": [
+        {"id": "profile.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "profile.account", "role": "profile_header", "scrollable": false},
+        {"id": "profile.menu", "role": "menu_list", "scrollable": false},
+        {"id": "profile.bottom_nav", "role": "primary_navigation", "scrollable": false, "shared": true}
+      ],
+      "controls": [
+        {"id": "profile.saved", "label": "Saved messages", "block": "profile.menu", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "profile.settings", "label": "Settings", "block": "profile.menu", "type": "button", "category": "navigation"},
+        {"id": "profile.nav_inbox", "label": "Chats", "block": "profile.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "profile.nav_contacts", "label": "Contacts", "block": "profile.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"},
+        {"id": "profile.nav_explore", "label": "Explore", "block": "profile.bottom_nav", "type": "tab", "category": "navigation", "coverage": "per_source"}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "anchors": ["Message notifications", "Privacy", "About Mingle"],
+      "identity_anchors": ["Message notifications"],
+      "variants": [
+        {"id": "notifications_on", "facts": {"message_notifications": true}},
+        {"id": "notifications_off", "facts": {"message_notifications": false}}
+      ],
+      "blocks": [
+        {"id": "settings.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "settings.notifications", "role": "preferences", "scrollable": false},
+        {"id": "settings.privacy", "role": "menu_list", "scrollable": false},
+        {"id": "settings.about", "role": "about", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "settings.back", "label": "Back to me", "block": "settings.app_bar", "type": "button", "category": "navigation"},
+        {"id": "settings.notifications_toggle", "label": "Message notifications", "block": "settings.notifications", "type": "switch", "category": "stateful", "effect_scope": "data_only", "reversible": true},
+        {"id": "settings.privacy_open", "label": "Privacy", "block": "settings.privacy", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "settings.about_open", "label": "About Mingle", "block": "settings.about", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"}
+      ],
+      "scroll": {"classification": "static"}
+    },
+    {
+      "id": "chat_info",
+      "title": "Chat info",
+      "anchors": ["Chat info", "4 members", "Clear chat history"],
+      "identity_anchors": ["Clear chat history"],
+      "variants": [
+        {"id": "mute_off", "facts": {"muted": false}},
+        {"id": "mute_on", "facts": {"muted": true}},
+        {"id": "clear_open", "facts": {"surface": "dialog"}}
+      ],
+      "blocks": [
+        {"id": "chat_info.app_bar", "role": "top_app_bar", "scrollable": false},
+        {"id": "chat_info.members", "role": "member_list", "scrollable": false},
+        {"id": "chat_info.preferences", "role": "preferences", "scrollable": false},
+        {"id": "chat_info.history", "role": "menu_list", "scrollable": false},
+        {"id": "chat_info.danger", "role": "danger_zone", "scrollable": false}
+      ],
+      "controls": [
+        {"id": "chat_info.back", "label": "Back to conversation", "block": "chat_info.app_bar", "type": "button", "category": "navigation"},
+        {"id": "chat_info.add_member", "label": "Add member", "block": "chat_info.members", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "permission_required"},
+        {"id": "chat_info.mute", "label": "Mute notifications", "block": "chat_info.preferences", "type": "switch", "category": "stateful", "effect_scope": "data_only", "reversible": true},
+        {"id": "chat_info.search_history", "label": "Search chat history", "block": "chat_info.history", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "chat_info.clear", "label": "Clear chat history", "block": "chat_info.danger", "type": "button", "category": "navigation"}
+      ],
+      "scroll": {"classification": "static"}
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "inbox.new_chat_sheet",
+      "kind": "bottom_sheet",
+      "host_pages": ["inbox"],
+      "anchors": ["Start a conversation"],
+      "scrollable": false,
+      "controls": [
+        {"id": "new_chat.direct", "label": "New direct message", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "new_chat.group", "label": "New group", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "demo_unavailable"},
+        {"id": "new_chat.close", "label": "Close new chat menu", "type": "button", "category": "navigation"}
+      ]
+    },
+    {
+      "id": "conversation.attach_sheet",
+      "kind": "bottom_sheet",
+      "host_pages": ["conversation"],
+      "anchors": ["Share with Weekend Plan"],
+      "scrollable": false,
+      "controls": [
+        {"id": "attach.photo", "label": "Photo", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "media_permission"},
+        {"id": "attach.camera", "label": "Camera", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "camera_permission"},
+        {"id": "attach.location", "label": "Location", "type": "button", "category": "navigation", "enabled": false, "blocked_reason": "location_permission"},
+        {"id": "attach.close", "label": "Close attachment menu", "type": "button", "category": "navigation"}
+      ]
+    },
+    {
+      "id": "chat_info.clear_dialog",
+      "kind": "dialog",
+      "host_pages": ["chat_info"],
+      "anchors": ["Delete local messages?"],
+      "scrollable": false,
+      "controls": [
+        {"id": "clear.cancel", "label": "Cancel", "type": "button", "category": "navigation"},
+        {"id": "clear.confirm", "label": "Clear history", "type": "button", "category": "dangerous"}
+      ]
+    }
+  ],
+  "transitions": [
+    {"id": "inbox.search", "source_page": "inbox", "action_labels": ["Search chats", "Close search"], "target_page": "inbox", "effect": "state_change", "required": true},
+    {"id": "inbox.open_weekend", "source_page": "inbox", "action_label": "Open Weekend Plan", "target_page": "conversation", "effect": "forward", "required": true},
+    {"id": "inbox.open_alex", "source_page": "inbox", "action_labels": ["Open Weekend Plan", "Open Alex Chen chat"], "target_page": "conversation", "effect": "forward", "coverage": "group_once", "required": true},
+    {"id": "inbox.new_chat", "source_page": "inbox", "action_label": "New chat", "target_page": "inbox", "target_surface": "inbox.new_chat_sheet", "effect": "open_sheet", "required": true},
+    {"id": "new_chat.close", "source_page": "inbox", "source_surface": "inbox.new_chat_sheet", "action_label": "Close new chat menu", "target_page": "inbox", "effect": "dismiss_overlay", "required": true},
+    {"id": "conversation.back", "source_page": "conversation", "action_label": "Back to chats", "target_page": "inbox", "effect": "return", "required": true},
+    {"id": "conversation.info", "source_page": "conversation", "action_label": "Chat info", "target_page": "chat_info", "effect": "forward", "required": true},
+    {"id": "conversation.attach", "source_page": "conversation", "action_label": "Add attachment", "target_page": "conversation", "target_surface": "conversation.attach_sheet", "effect": "open_sheet", "required": true},
+    {"id": "attach.close", "source_page": "conversation", "source_surface": "conversation.attach_sheet", "action_label": "Close attachment menu", "target_page": "conversation", "effect": "dismiss_overlay", "required": true},
+    {"id": "conversation.send", "source_page": "conversation", "action_label": "Send message", "target_page": "conversation", "effect": "state_change", "required": false},
+    {"id": "contacts.open_alex", "source_page": "contacts", "action_label": "Open Alex Chen", "target_page": "contact_profile", "effect": "forward", "coverage": "group_once", "required": true},
+    {"id": "contact.back", "source_page": "contact_profile", "action_label": "Back to contacts", "target_page": "contacts", "effect": "return", "required": true},
+    {"id": "contact.message", "source_page": "contact_profile", "action_label": "Send message", "target_page": "conversation", "effect": "forward", "required": true},
+    {"id": "contact.favorite", "source_page": "contact_profile", "action_labels": ["Add to favorites", "Remove from favorites"], "target_page": "contact_profile", "effect": "state_change", "required": true},
+    {"id": "profile.settings", "source_page": "profile", "action_label": "Settings", "target_page": "settings", "effect": "forward", "required": true},
+    {"id": "settings.back", "source_page": "settings", "action_label": "Back to me", "target_page": "profile", "effect": "return", "required": true},
+    {"id": "settings.notifications", "source_page": "settings", "action_label": "Message notifications", "target_page": "settings", "effect": "state_change", "required": true},
+    {"id": "chat_info.back", "source_page": "chat_info", "action_label": "Back to conversation", "target_page": "conversation", "effect": "return", "required": true},
+    {"id": "chat_info.mute", "source_page": "chat_info", "action_label": "Mute notifications", "target_page": "chat_info", "effect": "state_change", "required": true},
+    {"id": "chat_info.clear", "source_page": "chat_info", "action_label": "Clear chat history", "target_page": "chat_info", "target_surface": "chat_info.clear_dialog", "effect": "open_dialog", "required": true},
+    {"id": "clear.cancel", "source_page": "chat_info", "source_surface": "chat_info.clear_dialog", "action_label": "Cancel", "target_page": "chat_info", "effect": "dismiss_overlay", "required": true},
+    {"id": "clear.confirm", "source_page": "chat_info", "source_surface": "chat_info.clear_dialog", "action_label": "Clear history", "target_page": "inbox", "effect": "forward", "required": false},
+    {"id": "inbox.nav_contacts", "source_page": "inbox", "action_label": "Contacts", "target_page": "contacts", "effect": "peer_navigation", "required": true},
+    {"id": "inbox.nav_explore", "source_page": "inbox", "action_label": "Explore", "target_page": "explore", "effect": "peer_navigation", "required": true},
+    {"id": "inbox.nav_profile", "source_page": "inbox", "action_label": "Me", "target_page": "profile", "effect": "peer_navigation", "required": true},
+    {"id": "contacts.nav_inbox", "source_page": "contacts", "action_label": "Chats", "target_page": "inbox", "effect": "peer_navigation", "required": true},
+    {"id": "contacts.nav_explore", "source_page": "contacts", "action_label": "Explore", "target_page": "explore", "effect": "peer_navigation", "required": true},
+    {"id": "contacts.nav_profile", "source_page": "contacts", "action_label": "Me", "target_page": "profile", "effect": "peer_navigation", "required": true},
+    {"id": "explore.nav_inbox", "source_page": "explore", "action_label": "Chats", "target_page": "inbox", "effect": "peer_navigation", "required": true},
+    {"id": "explore.nav_contacts", "source_page": "explore", "action_label": "Contacts", "target_page": "contacts", "effect": "peer_navigation", "required": true},
+    {"id": "explore.nav_profile", "source_page": "explore", "action_label": "Me", "target_page": "profile", "effect": "peer_navigation", "required": true},
+    {"id": "profile.nav_inbox", "source_page": "profile", "action_label": "Chats", "target_page": "inbox", "effect": "peer_navigation", "required": true},
+    {"id": "profile.nav_contacts", "source_page": "profile", "action_label": "Contacts", "target_page": "contacts", "effect": "peer_navigation", "required": true},
+    {"id": "profile.nav_explore", "source_page": "profile", "action_label": "Explore", "target_page": "explore", "effect": "peer_navigation", "required": true}
+  ]
+}

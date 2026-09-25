@@ -1,0 +1,67 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "enum",
+            "integer",
+            "time",
+            "text"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "max": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "values",
+        "min",
+        "max"
+      ],
+      "additionalProperties": false
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "domain",
+    "conditions",
+    "evidence"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,14 @@
+## 本轮平台：OSWorld Linux桌面
+
+鼠标与键盘执行，坐标仍是整张截图像素。普通探索、导航和异常恢复共用动作：click、double_click、long_press、right_click、hover、drag、input_text、scroll、key_press、hotkey、back、wait、none。input_text点击目标、全选后替换可打印ASCII文字，不等待屏幕键盘。
+back在桌面发送Esc，只用于截图支持的取消/关闭菜单或弹层；不等于返回上一个应用页面，更不是Alt+Left。页面返回优先使用可见返回按钮。scroll在起点位置滚动鼠标滚轮，终点只表达方向与大致幅度，不拖动控件。
+
+目标应用以本轮任务给出的名称为准。目标本身是系统设置工具时，在其窗口内浏览/配置系统选项属于应用内；只有离开目标进入浏览器、商店或其他应用才是应用外。不要仅因选项涉及设备设置就跳过整款目标应用。
+
+## 桌面键盘与鼠标
+key_press 的 text 使用单个按键名，如 ENTER、ESC、TAB、F11、LEFT；hotkey 使用以 + 连接的按键名，如 CTRL+SHIFT+P。两者坐标和终点填 null，作用于当前焦点，不输入命令代码。可用字母、数字、F1–F24、方向键、HOME/END/PAGEUP/PAGEDOWN/INSERT/DELETE/SPACE，以及 CTRL/ALT/SHIFT/SUPER。
+hover 是移动鼠标到 x/y，不点击；right_click 在 x/y 右击；drag 从 x/y 按住左键拖到 end_x/end_y。每次执行后观察实际效果。
+正例：当前界面显示可用快捷键时，用对应按键打开入口；将鼠标移向隐藏工具栏所在边缘，观察是否出现；已输入命令后另一步按 ENTER，再观察输出。
+反例：为了寻找一个隐藏按钮反复返回 none；把文字输入当作已提交；无视当前焦点向别的窗口发送快捷键。退出全屏只是可选方法，不是探索其他区块的前提。
+
+桌面scroll在x/y位置发送滚轮。end_x/end_y只表达方向和幅度，不是鼠标拖动终点，不要求落在同一内容区内。按当前截图选择实际接收滚轮的区域；展开内容被底部裁切时滚动查看，不要把已展开按钮再次收起。Android滑动和drag不适用此说明。

@@ -1,0 +1,188 @@
+{
+  "app_id": "quick_traversal_tests",
+  "scenarios": [
+    {
+      "id": "multi_region_scroll",
+      "file": "scroll.html",
+      "page_id": "scroll.workspace",
+      "outer_page_scrolls": false,
+      "regions": [
+        {"id": "scroll.today", "entry_id": "scroll.today.open_notes", "depth_rank": 1},
+        {"id": "scroll.projects", "entry_id": "scroll.projects.open_plan", "depth_rank": 2},
+        {"id": "scroll.files", "entry_id": "scroll.files.open_archive", "depth_rank": 3}
+      ]
+    },
+    {
+      "id": "multi_hop_regression",
+      "file": "loop.html",
+      "page_chain": ["loop.orders", "loop.order_detail", "loop.delivery_journey", "loop.courier_profile", "loop.orders"],
+      "page_titles": ["My orders", "Studio desk lamp", "Delivery journey", "Maya Chen", "My orders"],
+      "page1_signature": "orders-page-stable-v1",
+      "scroll_required_entry": "loop.page2.next"
+    },
+    {
+      "id": "history_return",
+      "file": "back.html",
+      "pages": [
+        {"route": "/1", "page_id": "back.recipes", "title": "Recipe collection"},
+        {"route": "/2", "page_id": "back.recipe_detail", "title": "Sunday tomato pasta"},
+        {"route": "/3", "page_id": "back.notes", "title": "Kitchen notes"}
+      ],
+      "direct_edges": [
+        {"entry_id": "back.1_to_2", "source": "/1", "target": "/2"},
+        {"entry_id": "back.1_to_3", "source": "/1", "target": "/3"},
+        {"entry_id": "back.2_to_1", "source": "/2", "target": "/1"},
+        {"entry_id": "back.2_to_3", "source": "/2", "target": "/3"},
+        {"entry_id": "back.3_to_1", "source": "/3", "target": "/1"},
+        {"entry_id": "back.3_to_2", "source": "/3", "target": "/2"}
+      ],
+      "return_contract": {
+        "initial_back": "disabled",
+        "action": "browser_history_back",
+        "target": "actual_entry_source",
+        "restore": "source_scroll_position"
+      }
+    },
+    {
+      "id": "shared_region_reposition",
+      "file": "region_merge.html",
+      "pages": [
+        {"key": "A", "route": "/overview", "page_id": "merge.overview", "title": "Today overview", "regions": ["A", "B"]},
+        {"key": "B", "route": "/workspace", "page_id": "merge.workspace", "title": "Project workspace", "regions": ["C", "D", "A"]},
+        {"key": "C", "route": "/review", "page_id": "merge.review", "title": "Weekly review", "regions": ["B", "C"]}
+      ],
+      "regions": [
+        {"key": "A", "stable_id": "merge.inbox", "title": "Team inbox", "entry_id": "merge.inbox.open_review", "entry": "Open weekly review", "destination": "/review", "occurrences": [{"page": "A", "slot": 1}, {"page": "B", "slot": 6}]},
+        {"key": "B", "stable_id": "merge.project", "title": "Launch workspace", "entry_id": "merge.project.open_workspace", "entry": "Open workspace", "destination": "/workspace", "occurrences": [{"page": "A", "slot": 6}, {"page": "C", "slot": 1}]},
+        {"key": "C", "stable_id": "merge.today", "title": "Today’s focus", "entry_id": "merge.today.open_overview", "entry": "Open today overview", "destination": "/overview", "occurrences": [{"page": "B", "slot": 2}, {"page": "C", "slot": 6}]},
+        {"key": "D", "stable_id": "merge.library", "title": "Team library", "entry_id": "merge.library.open_review", "entry": "Browse review library", "destination": "/review", "occurrences": [{"page": "B", "slot": 4}]}
+      ],
+      "contract": {
+        "shared_region_semantics_stable": true,
+        "shared_region_absolute_position_changes": true,
+        "button_relative_position_equal": true,
+        "expected_stable_region_count": 4,
+        "expected_region_occurrence_count": 7
+      }
+    },
+    {
+      "id": "page_region_combinations",
+      "file": "panel_combinations.html",
+      "pages": [
+        {"route": "/home", "page_id": "combo.home", "title": "Team overview", "main_region": "combo.main.home"},
+        {"route": "/records", "page_id": "combo.records", "title": "Project records", "main_region": "combo.main.records"},
+        {"route": "/analytics", "page_id": "combo.analytics", "title": "Performance analytics", "main_region": "combo.main.analytics"},
+        {"route": "/settings", "page_id": "combo.settings", "title": "Workspace settings", "main_region": "combo.main.settings"}
+      ],
+      "shared_regions": ["combo.toolbar", "combo.navigation", "combo.library", "combo.inspector", "combo.status"],
+      "foreground_regions": ["combo.review-sheet"],
+      "guided_sequence": [
+        {"action_id": "combo.home.begin", "target_page": "combo.records", "regions": ["combo.toolbar", "combo.navigation", "combo.library", "combo.main.records", "combo.status"]},
+        {"action_id": "combo.records.continue", "target_page": "combo.analytics", "regions": ["combo.toolbar", "combo.navigation", "combo.library", "combo.main.analytics", "combo.inspector", "combo.status"]},
+        {"action_id": "combo.analytics.review", "target_page": "combo.analytics", "regions": ["combo.toolbar", "combo.navigation", "combo.library", "combo.main.analytics", "combo.inspector", "combo.status", "combo.review-sheet"]},
+        {"action_id": "combo.sheet.continue", "target_page": "combo.settings", "regions": ["combo.toolbar", "combo.navigation", "combo.library", "combo.main.settings", "combo.inspector", "combo.status"]},
+        {"action_id": "combo.settings.finish", "target_page": "combo.home", "regions": ["combo.toolbar", "combo.navigation", "combo.library", "combo.main.home", "combo.inspector", "combo.status"]}
+      ],
+      "contract": {
+        "expected_page_count": 4,
+        "expected_canonical_region_count": 10,
+        "home_reused_after_long_route": true,
+        "home_region_composition_changes": true,
+        "shared_shell_regions_stable": true,
+        "foreground_sheet_is_independent": true,
+        "oracle_never_enters_model_prompt": true
+      }
+    },
+    {
+      "id": "notion_like_desktop",
+      "file": "notion_like_desktop.html",
+      "start_hash": "#/projects",
+      "initial_regions": ["notes.titlebar", "notes.sidebar", "notes.projects.database"],
+      "pages": [
+        {"page_id": "notes.projects", "title": "Projects"},
+        {"page_id": "notes.project-item", "title": "Website refresh"},
+        {"page_id": "notes.wiki", "title": "Team wiki"},
+        {"page_id": "notes.calendar", "title": "Calendar"}
+      ],
+      "guided_sequence": [
+        {"action_id": "notes.projects.open-peek", "target_page": "notes.projects", "regions": ["notes.titlebar", "notes.sidebar", "notes.projects.database", "notes.project.peek"]},
+        {"action_id": "notes.peek.full-page", "target_page": "notes.project-item", "regions": ["notes.titlebar", "notes.sidebar", "notes.project.content"]},
+        {"action_id": "notes.project.show-details", "target_page": "notes.project-item", "regions": ["notes.titlebar", "notes.sidebar", "notes.project.content", "notes.project.details"]},
+        {"action_id": "notes.project.wiki", "target_page": "notes.wiki", "regions": ["notes.titlebar", "notes.sidebar", "notes.wiki.content"]},
+        {"action_id": "notes.wiki.open-research", "target_page": "notes.wiki", "regions": ["notes.titlebar", "notes.sidebar", "notes.wiki.content", "notes.wiki.preview"]},
+        {"action_id": "notes.wiki.preview-close", "target_page": "notes.wiki", "regions": ["notes.titlebar", "notes.sidebar", "notes.wiki.content"]},
+        {"action_id": "notes.wiki.calendar", "target_page": "notes.calendar", "regions": ["notes.titlebar", "notes.sidebar", "notes.calendar.grid"]},
+        {"action_id": "notes.calendar.return-projects", "target_page": "notes.projects", "regions": ["notes.titlebar", "notes.sidebar", "notes.projects.database", "notes.project.peek"]}
+      ],
+      "expected_page_sequence": ["notes.projects", "notes.projects", "notes.project-item", "notes.project-item", "notes.wiki", "notes.wiki", "notes.wiki", "notes.calendar", "notes.projects"],
+      "contract": {"expected_page_count": 4, "expected_canonical_region_count": 9, "peek_details_and_wiki_preview_stay_on_page": true, "long_return_reuses_projects": true, "oracle_never_enters_model_prompt": true}
+    },
+    {
+      "id": "gmail_like_desktop",
+      "file": "gmail_like_desktop.html",
+      "start_hash": "#/inbox",
+      "initial_regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.inbox.list", "mail.side-tools"],
+      "pages": [
+        {"page_id": "mail.inbox", "title": "Inbox"},
+        {"page_id": "mail.starred", "title": "Starred"},
+        {"page_id": "mail.thread", "title": "Weekly launch update"},
+        {"page_id": "mail.chat", "title": "Product launch"}
+      ],
+      "guided_sequence": [
+        {"action_id": "mail.compose.open", "target_page": "mail.inbox", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.inbox.list", "mail.compose.modal", "mail.side-tools"]},
+        {"action_id": "mail.compose.close", "target_page": "mail.inbox", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.inbox.list", "mail.side-tools"]},
+        {"action_id": "mail.inbox.open-thread", "target_page": "mail.thread", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.thread.content", "mail.side-tools"]},
+        {"action_id": "mail.thread.open-ai", "target_page": "mail.thread", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.thread.content", "mail.ai.panel", "mail.side-tools"]},
+        {"action_id": "mail.thread.back", "target_page": "mail.inbox", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.inbox.list", "mail.side-tools"]},
+        {"action_id": "mail.folder.starred", "target_page": "mail.starred", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.starred.list", "mail.side-tools"]},
+        {"action_id": "mail.folder.inbox", "target_page": "mail.inbox", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.inbox.list", "mail.side-tools"]},
+        {"action_id": "mail.app.chat", "target_page": "mail.chat", "regions": ["mail.appbar", "mail.workspace-rail", "chat.navigation", "chat.conversation", "mail.side-tools"]},
+        {"action_id": "mail.app.mail", "target_page": "mail.inbox", "regions": ["mail.appbar", "mail.workspace-rail", "mail.folder-nav", "mail.inbox.list", "mail.side-tools"]}
+      ],
+      "expected_page_sequence": ["mail.inbox", "mail.inbox", "mail.inbox", "mail.thread", "mail.thread", "mail.inbox", "mail.starred", "mail.inbox", "mail.chat", "mail.inbox"],
+      "contract": {"expected_page_count": 4, "expected_canonical_region_count": 11, "compose_and_ai_are_foreground_regions": true, "mail_shell_reused": true, "app_rail_and_context_navigation_change_independently": true, "oracle_never_enters_model_prompt": true}
+    },
+    {
+      "id": "spotify_like_desktop",
+      "file": "spotify_like_desktop.html",
+      "start_hash": "#/home",
+      "initial_regions": ["music.sidebar", "music.home.content", "music.player"],
+      "pages": [
+        {"page_id": "music.home", "title": "Good afternoon"},
+        {"page_id": "music.search", "title": "Search"},
+        {"page_id": "music.library", "title": "Your Library"}
+      ],
+      "guided_sequence": [
+        {"action_id": "music.now.show", "target_page": "music.home", "regions": ["music.sidebar", "music.home.content", "music.now-playing", "music.player"]},
+        {"action_id": "music.nav.search", "target_page": "music.search", "regions": ["music.sidebar", "music.search.content", "music.now-playing", "music.player"]},
+        {"action_id": "music.search.focus", "target_page": "music.search", "regions": ["music.sidebar", "music.search.content", "music.search.suggestions", "music.now-playing", "music.player"]},
+        {"action_id": "music.nav.library", "target_page": "music.library", "regions": ["music.sidebar", "music.library.content", "music.now-playing", "music.player"]},
+        {"action_id": "music.library.return-home", "target_page": "music.home", "regions": ["music.sidebar", "music.home.content", "music.now-playing", "music.player"]}
+      ],
+      "expected_page_sequence": ["music.home", "music.home", "music.search", "music.search", "music.library", "music.home"],
+      "contract": {"expected_page_count": 3, "expected_canonical_region_count": 7, "now_playing_persists_across_pages": true, "search_suggestions_stay_on_search_page": true, "long_return_reuses_home": true, "oracle_never_enters_model_prompt": true}
+    },
+    {
+      "id": "maps_like_mobile",
+      "file": "maps_like_mobile.html",
+      "start_hash": "#/explore",
+      "initial_regions": ["maps.search", "maps.canvas", "maps.bottom-nav"],
+      "pages": [
+        {"page_id": "maps.explore", "title": "Explore map"},
+        {"page_id": "maps.directions", "title": "Directions"},
+        {"page_id": "maps.saved", "title": "Saved"},
+        {"page_id": "maps.place", "title": "Harbor Cafe"}
+      ],
+      "guided_sequence": [
+        {"action_id": "maps.search.open", "target_page": "maps.explore", "regions": ["maps.search", "maps.canvas", "maps.results.sheet", "maps.bottom-nav"]},
+        {"action_id": "maps.results.harbor", "target_page": "maps.explore", "regions": ["maps.search", "maps.canvas", "maps.place.sheet", "maps.bottom-nav"]},
+        {"action_id": "maps.place.directions", "target_page": "maps.directions", "regions": ["maps.search", "maps.canvas", "maps.directions.panel", "maps.bottom-nav"]},
+        {"action_id": "maps.nav.saved", "target_page": "maps.saved", "regions": ["maps.saved.list", "maps.bottom-nav"]},
+        {"action_id": "maps.saved.open-harbor", "target_page": "maps.place", "regions": ["maps.place.content", "maps.bottom-nav"]},
+        {"action_id": "maps.place.return-map", "target_page": "maps.explore", "regions": ["maps.search", "maps.canvas", "maps.place.sheet", "maps.bottom-nav"]}
+      ],
+      "expected_page_sequence": ["maps.explore", "maps.explore", "maps.explore", "maps.directions", "maps.saved", "maps.place", "maps.explore"],
+      "contract": {"expected_page_count": 4, "expected_canonical_region_count": 8, "sheets_stay_on_explore_page": true, "long_return_reuses_explore": true, "oracle_never_enters_model_prompt": true}
+    }
+  ]
+}

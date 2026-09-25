@@ -75,9 +75,49 @@ def advance(records,previous,state,source,binding,attempt):
     if active:
         task=records[active['region']].get('tasks',{}).get(active['name'])
         if task and task['status']=='pending':state['active_task']=active
+    if active and task and task.get('status')=='done':state['active_task']=active
+    handoff(records,state)
+    if active and records.get(active['region'],{}).get('tasks',{}).get(active['name'],{}).get('status')!='pending':
+        state.pop('active_task',None)
     # Finished task evidence belongs to its original owner even if it crossed Regions.
     if binding.get('task_name'):
         task=records[binding.get('task_region',source)]['tasks'][binding['task_name']]
         task.setdefault('visited_regions',[])
         for rid in refs:
             if rid not in task['visited_regions']:task['visited_regions'].append(rid)
+
+
+def foreground_work(records,state):
+    """Choose independent observed work only after a continuous goal is settled."""
+    observation=state.get('observation') or {}
+    if state.get('next_action_mode')!='explore' or not observation:return None
+    if observation.get('foreground',{}).get('exception','none')!='none':return None
+    if state.get('execution_pending') or state.get('reason')=='verify_prepared_dependency':return None
+    active=state.get('active_task') or {}
+    task=records.get(active.get('region'),{}).get('tasks',{}).get(active.get('name'),{})
+    if task.get('status')=='pending':return None
+    last=state.get('last_action_result') or {}
+    completed=task.get('status')=='done' or any(
+        t.get('status')=='done' and last.get('action') in t.get('attempts',[])
+        for t in records.get(last.get('region'),{}).get('tasks',{}).values())
+    if not completed:return None
+    target=state.get('deferred_routing_target')
+    refs=state.get('interactive_regions',[])
+    if target:return None
+    import region_tasks
+    choices=[rid for rid in refs if rid in records and not records[rid].get('out_of_scope_reason')
+             and not region_tasks.coverage(records[rid],records)['complete']
+             and not records[rid].get('registration_gaps')]
+    if not choices:return None
+    return min(choices,key=lambda rid:(bool(records[rid].get('task_inventory')),
+                                      rid!=state.get('working_region')))
+
+
+def handoff(records,state):
+    target=foreground_work(records,state)
+    if not target or target==state.get('working_region'):return False
+    state['working_region']=target
+    state.pop('navigation_handoff',None);state.pop('visual_navigation',None)
+    state.pop('active_task',None)
+    if state.get('deferred_routing_target')==target:state.pop('deferred_routing_target',None)
+    return True

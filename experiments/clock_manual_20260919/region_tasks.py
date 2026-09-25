@@ -185,6 +185,10 @@ def commit_plan(root,run,call):
 def attach(root,records,state,working,base):
     """Route a local obligation or continuation; return to observed entry parent."""
     if state.get('next_action_mode')!='explore':return base
+    routing=helper('task_routing')
+    if routing.handoff(records,state):
+        working=state['working_region']
+        base=helper('stepwise_flow')._assemble_action_context(root,records,state,working)
     if base.get('navigation_advice') and state.get('reason')=='navigation_from_foreground':return base
     refs=state['interactive_regions']
     rid=refs[0] if len(refs)==1 else (working if working in refs else None)

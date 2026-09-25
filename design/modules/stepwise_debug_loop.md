@@ -122,3 +122,12 @@ run_progress_session持久start_call/end_call边界，不将此前累计混入�
 任务清点先判断未知内容/具体问题；共享结束条件不能反向授权常识验证。准备只做到目标操作之前的可观察条件，不包含原任务。task_prerequisites 集中处理：新增准备使用 single_action，旧 prepares 不受参数事实门槛；普通 parameter 仍须真实 findings。真实 observation_update 也追加 dependency_updates。当前目标控件已在本次观察确认且 ready=true 时，成对准备按 observed_prerequisite 结束，保留历史/阻塞依据；父任务仅恢复 pending，不虚构执行或参数。跨对象、异常和范围保护保留。
 
 30项聚焦测试通过；真实Clock记录的原生任务清点两案及动作更新一案，各1HTTP/0GUI正常登记，确认常规播放/暂停不新增验证、旧准备能按观察结算。累计核对原报错场景亦1HTTP/0GUI正常登记done，合计4HTTP/0GUI，完整结论见 records/task_settlement_20260925_01/REPORT.md。以上为隔离保存帧，原运行未部署/未续跑。
+
+
+## 2026-09-25 已完成入口后的前景交接（离线补丁）
+
+仅修改 `experiments/clock_manual_20260919` 的工作交接。正常更新、动作上下文组装及续跑安全点复用 `task_routing.handoff`：只有已登记的 active task 为 done，或最近动作已被原任务的 attempts 引用且该任务为 done，才考虑将工作区切到当前可交互的未完成区块。键盘动作、无控件绑定、准备动作标记本身不阻止已完成任务交接；不据此替任务判定 done。
+
+仍为 pending 的跨区目标、显式 deferred_routing_target、准备条件复核、异常前景及待结算动作保持原路径。修改 working_region 不迁移任务、动作归属或伪造导航边；其他区块待办保留。此补丁不改变功能整理、身份核对、历史迁移、预算或提示词。
+
+真实 0038 快照经正常 `assemble_current_context` 离线回放：基线要求返回 r0007，补丁选择 r0008 的待办；正常 `retire_completed_goal` 在副本持久化同一交接，原始 11 份受检文件哈希不变。34 项聚焦检查通过；一项旧导航测试在基线也失败，单列未修。无新 Luna/GUI 调用，不代表现场推进通过；旧污染图未续跑。设计及边界见 `design/archive/clock_foreground_20260925/DESIGN.md`。

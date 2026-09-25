@@ -417,6 +417,9 @@ def retire_completed_goal(run):
     if state.get('next_action_mode') not in ('explore','discover'):return False
     rid=state.get('working_region')
     if rid not in records:return False
+    if not (Path(run)/'execution_pending.json').exists() and registration().sibling('task_routing').handoff(records,state):
+        publish(run,'foreground-work-'+__import__('uuid').uuid4().hex,lambda r,s,*args: registration().sibling('task_routing').handoff(r,s))
+        return True
     tasks=registration().sibling('region_tasks')
     active=state.get('active_task') or {}
     task=records.get(active.get('region'),{}).get('tasks',{}).get(active.get('name'),{})

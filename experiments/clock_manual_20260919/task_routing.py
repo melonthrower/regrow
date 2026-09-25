@@ -65,7 +65,7 @@ def advance(records,previous,state,source,binding,attempt):
             task['status']='done'
             task['result_evidence']='入口动作当时已执行，观察到区块：'+ '、'.join('「'+records[r]['name']+'」' for r in refs)+'。'
             task['completion_basis']={'attempt':attempt,'destination_region':dest,'destination_regions':list(refs),'rule':'single_action_destination_observed'}
-            state['working_region']=dest
+            state['working_region']=binding.get('task_region',source)
             state['region_path']=path[:path.index(dest)+1] if dest in path else path+[dest]
             state.pop('deferred_routing_target',None)
             state.pop('active_task',None)

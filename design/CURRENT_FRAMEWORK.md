@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-09-25 最新逐步遍历规则：原任务结束后保留原工作区，剩余探索优先返航；普通历史整理限当前工作区。更新控件增加identity_evidence及局部对应核对。取代未部署的5c023ad前景接管方案；2次原生Luna保存帧通过，0GUI。见stepwise_debug_loop与stepwise_region_identity对应节。
+
 2026-09-25：复制遍历器候选修正准备任务结算及 observation_update 前置核对接线；常识功能缺少执行历史不构成探索理由。原运行未部署，保存帧与范围见 stepwise_debug_loop“常识任务与准备结算”。
 
 2026-09-24：复制遍历器区块身份改由前景独立控件召回与 Luna 文字核对；移除整块图自动覆盖。局部定位仅复用同帧已登记边界，原始观察保留；见 stepwise_region_identity“控件级历史身份核对”。

@@ -112,6 +112,10 @@ def collect(stage,q,p,records,binding=None):
                         p['regions'][idx]['name'],'已找到旧控件，但新归属尚未确认；进入实地归属复查，不改名绕过、不凭当前标签猜其他标签的归属。')
                 else:
                     add('unknown_candidate_control',path+'/previous_name',obj,previous,list(ctx.get('control_names',{})) if stage=='discovery' else [v['name'] for v in controls.values()],'只用本轮绑定名称；历史存在但未披露时补充候选核对，不能为绕过错误重复新建。')
+            if stage=='update' and cid in controls:
+                import control_continuity
+                conflict=control_continuity.diagnostic(controls[cid],c)
+                if conflict:add('control_continuity',path+'/previous_name',obj,conflict,'有前后对象对应依据的身份继承',conflict['question'])
             if cid:
                 if cid in bound:add('duplicate_binding',path+'/previous_name',obj,previous,bound[cid],'同一旧对象只绑定一次。')
                 bound[cid]=path

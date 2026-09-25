@@ -17,6 +17,7 @@ def request(root,snapshot,records,state):
     pending=tasks.helper('shared_control_review').inventory_request(root,snapshot,records,state)
     if pending:return pending
     for rid,region in records.items():
+        if rid!=state.get('working_region'):continue
         if region.get('out_of_scope_reason'):continue
         if region.get('task_inventory',{}).get('review',{}).get('kind')!='function_support':continue
         observed=next((o for o in reversed(region.get('observations',[])) if o.get('source_image')),None)
@@ -32,7 +33,8 @@ def request(root,snapshot,records,state):
         return q
     # Knowledge-only finishing work must not depend on returning to its surface.
     # Keep the active GUI task and current observation untouched.
-    for candidate in sorted(records.values(),key=lambda r:r['id']!=state.get('working_region')):
+    for candidate in records.values():
+        if candidate['id']!=state.get('working_region'):continue
         if (tasks.coverage(candidate,records)['complete']
                 and not candidate.get('registration_gaps',{}).get('function_registration')
                 and not functions.review_current(candidate,records)):

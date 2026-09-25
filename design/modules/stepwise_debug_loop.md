@@ -122,3 +122,12 @@ run_progress_session持久start_call/end_call边界，不将此前累计混入�
 任务清点先判断未知内容/具体问题；共享结束条件不能反向授权常识验证。准备只做到目标操作之前的可观察条件，不包含原任务。task_prerequisites 集中处理：新增准备使用 single_action，旧 prepares 不受参数事实门槛；普通 parameter 仍须真实 findings。真实 observation_update 也追加 dependency_updates。当前目标控件已在本次观察确认且 ready=true 时，成对准备按 observed_prerequisite 结束，保留历史/阻塞依据；父任务仅恢复 pending，不虚构执行或参数。跨对象、异常和范围保护保留。
 
 30项聚焦测试通过；真实Clock记录的原生任务清点两案及动作更新一案，各1HTTP/0GUI正常登记，确认常规播放/暂停不新增验证、旧准备能按观察结算。累计核对原报错场景亦1HTTP/0GUI正常登记done，合计4HTTP/0GUI，完整结论见 records/task_settlement_20260925_01/REPORT.md。以上为隔离保存帧，原运行未部署/未续跑。
+
+
+## 2026-09-25 原工作区闭环（最新用户规则）
+
+此规则取代未部署的5c023ad前景接管方案。task_routing.advance在入口任务完成后仍保留task_region为工作区，不把落点自动变成工作区；region_tasks.attach在原工作区不在前景、且无进行中跨区目标时先按原导航返回，再考虑落点的独立清点。已有pending跨区任务仍继续；新控件可在更新步登记，不因此转移工作目标。原区已完成时沿既有收尾/选择下一目标路径，不强制制造无任务的往返。
+
+historical_inventory的普通补依据和功能整理限当前working_region，其他区块不在每轮插队；共享冲突入口保留。原功能签名/过期核对不变，不新增全局知识库扫尾或语义有效性体系，旧非工作区摘要不因此自动变最新。
+
+真实0038正常请求回放保留working_region=r0007、return_to=r0007；未执行GUI返航。31项聚焦检查通过，1项旧夹具失败明确排除，详见本月日志与本轮设计。

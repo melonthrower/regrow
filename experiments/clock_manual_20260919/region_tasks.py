@@ -194,6 +194,9 @@ def attach(root,records,state,working,base):
     if state.get('visual_navigation') and base.get('navigation_advice') and base.get('navigation_path') and not in_progress:return base
     multi_continuation=rid is None and refs and in_progress
     if multi_continuation:rid=refs[0]
+    # A completed entry does not finish its owner's Region. Return before
+    # inventorying independent work on the destination surface.
+    if working not in refs and not in_progress and base.get('navigation_advice'):return base
     if rid is None:return base
     region=records[rid];progress=coverage(region,records)
     if progress.get('excluded'):

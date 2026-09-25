@@ -27,6 +27,9 @@ def build_update_request(root, dynamic, screenshots):
     parts = [{'path':p, 'text':(pr / p).read_text()} for p in stage['parts']]
     schema=json.loads((pr / stage['schema']).read_text())
     templates.extend_schema(schema)
+    import control_continuity
+    control_continuity.extend_schema(schema)
+    parts.append({'path':'更新/控件前后对应.prompt','text':(pr/'更新/控件前后对应.prompt').read_text()})
     import foreground_scope
     foreground_scope.extend_schema(schema)
     parts.append({'path':'共享/身份图准入.prompt','text':(pr/'共享/身份图准入.prompt').read_text()})

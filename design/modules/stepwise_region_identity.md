@@ -235,3 +235,12 @@ interactive_areas明确声明当前可交互前景，优先于与其重叠的exc
 `foreground_scope` 在正常登记后按 source_call/source_field 与已登记观察关联记录本轮区块边界，保留同帧仍在前景内的既有边界，缓存绑定截图 SHA256。`visual_region_locator` 仅在同帧已有模型边界时局部扫描；新帧重新定位，控件命中不推算整块边界。无新模型字段、无额外前景调用。
 
 验证证据：`experiments/clock_manual_20260919/records/control_identity_20260924_01/`；64项聚焦检查通过；陌生代理复审与3次原生更新步保存帧 Luna 接受通过，最终源为source-final。实机0041补登记未重发动作；首续段3HTTP/1GUI打开搜索输入框并复用旧对话框。最终版本继续遍历，未宣称全应用完成。
+
+
+## 2026-09-25 更新步控件前后对应
+
+更新步继续用正常前后图登记增量，独立提示位于更新/控件前后对应.prompt。controls增加字符串identity_evidence：继承旧对象且名称变化、框完全分离时需说明前后对应；无疑点可为空。control_continuity通过registration_diagnostics接已有纠错和materialize预检，位置/名称变化只触发核对，不自动拆分。非空解释不是视觉真值，仍须模型结合前后图核对。
+
+触发者仍独立存在时，新出现对象应previous_name为空并独立登记。无法确认的争议控件可省略并写uncertainties，其余明确增量继续登记；不是对旧污染图自动修复，也不是通用身份隔离或迁移系统。工作区和任务归属不因新增控件改变。
+
+两组真实完整更新请求经build_attempt_update、DesktopRun.call、Runner.perform原生链，实际gpt-6-luna回复不编辑：搜索按钮c0028保持，输入框新建c0035；Start→Pause保持c0015。生成裁图核对通过，共2HTTP/0GUI/0纠错；仅保存帧模型验收，非新GUI、全图无重复证明或长距离布局移动验证。旧污染图未部署/续跑。

@@ -64,6 +64,16 @@ def server(run,mirror,port=0,runner=None,hub=None):
             path=urlsplit(self.path).path
             try:
                 if path=='/':body=Path(__file__).with_name('progress_window.html').read_text().replace('__RUN_TOKEN__',token).encode();mime='text/html; charset=utf-8'
+                elif path=='/replay':
+                    body=Path(__file__).with_name('traversal_replay.html').read_bytes();mime='text/html; charset=utf-8'
+                elif path=='/replay.json':
+                    import traversal_replay
+                    active_run,_=active()
+                    body=json.dumps(traversal_replay.project(active_run),ensure_ascii=False).encode();mime='application/json; charset=utf-8'
+                elif path=='/replay-image':
+                    import traversal_replay
+                    active_run,_=active();args=parse_qs(urlsplit(self.path).query)
+                    body=traversal_replay.asset(active_run,args['path'][0]).read_bytes();mime='image/png'
                 elif path=='/graph':
                     body=Path(__file__).with_name('region_graph.html').read_bytes();mime='text/html; charset=utf-8'
                 elif path=='/graph.json':

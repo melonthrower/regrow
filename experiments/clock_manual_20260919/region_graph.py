@@ -30,8 +30,8 @@ def asset(run,version,rid,cid=None):
     return path
 
 
-def project(run):
-    run,base,version=snapshot(run)
+def project(run,version=None):
+    run,base,version=snapshot(run,version)
     records={p.parent.name:read(p) for p in (base/'regions').glob('*/region.json')}
     state=read(base/'runtime_state.json');nodes=[];edges={}
     def picture(rid,cid=None):

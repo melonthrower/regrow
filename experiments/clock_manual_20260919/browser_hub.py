@@ -122,13 +122,14 @@ class Handler(BaseHTTPRequestHandler):
    parts=path.split('/',3)
    if len(parts)!=4 or parts[2] not in APPS:self.send_error(404);return
    key=parts[2];endpoint=parts[3]
-   if endpoint not in ('progress.json','graph.json','graph','graph-image','frame.png','applications.json'):self.send_error(404);return
+   if endpoint not in ('progress.json','graph.json','graph','graph-image','frame.png','applications.json','replay','replay.json','replay-image'):self.send_error(404);return
    origin=backend(key)
    if not origin:self.send_error(404);return
    response=requests.get(origin+endpoint+('?' + parsed.query if parsed.query else ''),timeout=15)
    if not response.ok:self.send_error(response.status_code);return
    mime=response.headers.get('Content-Type','application/octet-stream');data=response.content
-   if endpoint=='graph':data=panel_html(key,response.text).encode()
+   if endpoint in ('graph','replay'):data=panel_html(key,response.text).encode()
+   elif endpoint=='replay.json':data=response.text.replace('/replay-image?','/panel/'+key+'/replay-image?').replace('/graph-image?','/panel/'+key+'/graph-image?').encode()
    elif endpoint=='graph.json':data=response.text.replace('/graph-image?','/panel/'+key+'/graph-image?').encode()
   else:self.send_error(404);return
   self.send_response(200);self.send_header('Content-Type',mime);self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(data)));self.end_headers()

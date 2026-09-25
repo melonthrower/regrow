@@ -110,7 +110,7 @@ def run(root,transport,out,call,repair=None):
                 else:
                     x,y=proposal['x'],proposal['y']
                     if not (0<=x<before.width and 0<=y<before.height):raise ValueError('target outside frame')
-                    if proposal['action'] in ('scroll','drag') and not(0<=proposal['end_x']<before.width and 0<=proposal['end_y']<before.height):raise ValueError('endpoint outside frame')
+                    if (proposal['action']=='drag' or (proposal['action']=='scroll' and getattr(transport,'platform','android')!='desktop')) and not(0<=proposal['end_x']<before.width and 0<=proposal['end_y']<before.height):raise ValueError('endpoint outside frame')
                     box=(max(0,x-48),max(0,y-48),min(before.width,x+49),min(before.height,y+49))
                 changed=bool(ImageChops.difference(before.convert('RGB').crop(box),after.convert('RGB').crop(box)).getbbox())
         if changed:

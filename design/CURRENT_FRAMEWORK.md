@@ -2444,3 +2444,5 @@ nor falsely retired. Exhausting all other work produces
 复制遍历器 `correction_prompts.py` 为 `step_repair.request` 选择公共手册及对应专项模块；共享行为核对仍走独立专用请求。模块选择依据当前阶段、结构化诊断和证据，混合错误组合加载，旧无结构诊断保留阶段指引。详见 `design/modules/stepwise_region_identity.md`。
 
 2026-09-25：复制逐步遍历器网页新增只读 `/replay` 探索动画，上方真实保存帧、下方历史时点地图，保留原图详情入口；不改变遍历执行或模型合同。接口及边界见 [监督与展示](modules/stepwise_debug_loop.md#2026-09-25-只读探索动画)。
+
+2026-09-25：复制逐步遍历器桌面scroll改用OSWorld滚轮dx/dy，普通、纠错与恢复同合同，拒绝旧起终点滚轮；Android滑动不变。详见[桌面滚轮合同](modules/stepwise_debug_loop.md#2026-09-25-桌面滚轮合同)。

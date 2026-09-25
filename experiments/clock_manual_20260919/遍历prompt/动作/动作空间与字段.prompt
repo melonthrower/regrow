@@ -7,7 +7,7 @@
 | click / double_click / long_press | 点击 / 双击 / 长按；x、y为目标点 |
 | input_text | x、y为输入目标点，text为输入文字；底层先点击聚焦再输入，无需另发聚焦点击 |
 | key_press | 向当前焦点发送一个按键；Android的text为ENTER、TAB、ESC或BACKSPACE；桌面还支持平台手册中的按键，坐标为null |
-| scroll | target描述滚动区域；x、y为起点，end_x、end_y为终点 |
+| scroll | target描述滚动区域；Android用x/y与end_x/end_y表示滑动；桌面用x/y与dx/dy表示滚轮，详见平台说明 |
 | back | 系统返回；target说明返回意图，坐标为null |
 | wait | 等待；target说明等待对象，坐标为null |
 | none | 普通动作步本轮不投递，说明原因，坐标为null；异常恢复的act不能使用它 |
@@ -17,7 +17,8 @@
 - action：上表中的动作。
 - x、y：整屏像素点；back、wait、none、key_press和桌面hotkey使用null。
 - text：input_text填写输入文字；key_press填写支持的按键名称；桌面hotkey填写按键组合；其他动作填null。
-- end_x、end_y：仅scroll填写，其他动作填null。
+- end_x、end_y：Android scroll或桌面drag填写，桌面scroll及其他动作填null。
+- dx、dy：仅桌面schema提供；桌面scroll填写OSWorld滚轮刻度，其他动作填null。
 - reason：说明为什么此动作推进本轮目标，以及位置依据；不写成已执行成功。
 
 正例：输入任务已确认目标位置，选择input_text并填写一个代表性值；输入后由更新步观察反馈。
@@ -27,7 +28,7 @@ Android触屏不支持hover；桌面动作解释见本轮平台说明。文字�
 
 input_text由工具完成聚焦、全选和替换；text=""表示全选后删除，清空文本框，不是缺参数。它也可能只完成打开输入界面，尚未发送文字；下一轮依据实际执行记录和截图判断，不因提出了输入就认为文本已经送达。正例：允许清空的表单字段用空字符串测试，随后观察空值；反例：为验证必填而擅自提交禁止发送的表单。
 
-完整回复示例（名称、坐标仅为示例，以本轮图为准）：
+Android回复示例（桌面还须按schema提供dx/dy，非scroll填null；名称、坐标仅为示例，以本轮图为准）：
 {"target":"搜索框","action":"input_text","x":120,"y":80,"text":"London","end_x":null,"end_y":null,"skip_task":false,"request_task_review":false,"reason":"用一个代表词观察搜索反馈，图中顶部搜索框位置已核对"}
 {"target":"搜索框","action":"none","x":null,"y":null,"text":null,"end_x":null,"end_y":null,"skip_task":false,"request_task_review":false,"reason":"无法区分顶部搜索框与中央同名提示，需要补充定位"}
 

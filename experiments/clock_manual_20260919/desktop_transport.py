@@ -16,6 +16,9 @@ def receipt(body):
 def commands(p):
     from action_commands import normalize,commands as android_validate
     p=normalize(p)
+    if p['action']=='scroll':
+        from desktop_scroll import commands as wheel_commands
+        return wheel_commands(p)
     extended=p['action'] in ('key_press','hotkey','hover','right_click','drag')
     if not extended:android_validate(p)
     k=p['action'];x,y=p.get('x'),p.get('y')
@@ -40,11 +43,7 @@ def commands(p):
     if k=='double_click':return [f'pyautogui.doubleClick({x},{y},interval=0.1)']
     if k=='long_press':return [f'pyautogui.moveTo({x},{y}); pyautogui.mouseDown(); time.sleep(0.8); pyautogui.mouseUp()']
     if k=='input_text':return [f'pyautogui.click({x},{y})',"pyautogui.hotkey('ctrl','a')",f'pyautogui.write({p["text"]!r},interval=0.03)' if p['text'] else "pyautogui.press('backspace')"]
-    dx,dy=p['end_x']-x,p['end_y']-y
-    delta=dy if abs(dy)>=abs(dx) else dx
-    ticks=(1 if delta>0 else -1)*max(1,min(8,round(abs(delta)/100)))
-    method='scroll' if abs(dy)>=abs(dx) else 'hscroll'
-    return [f'pyautogui.moveTo({x},{y}); pyautogui.{method}({ticks})']
+    raise ValueError('unsupported desktop action')
 
 
 def prepare_request(root,request):

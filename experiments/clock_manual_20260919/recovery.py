@@ -23,17 +23,18 @@ def schema():
         'required':['exception','decision','action','framework_tool','reason','handoff'],'additionalProperties':False}
 
 
-def action_defaults(reply):
+def action_defaults(reply,platform="android"):
     # Match action_commands.validate's defaults when reading an older local reply.
     result=deepcopy(reply)
     if isinstance(result.get('action'),dict):
-        result['action']={'skip_task':False,'request_task_review':False,**result['action']}
+        defaults={'dx':None,'dy':None} if platform=='desktop' else {}
+        result['action']={'skip_task':False,'request_task_review':False,**defaults,**result['action']}
     return result
 
 
 def validate(reply,platform="android"):
-    reply=action_defaults(reply)
-    jsonschema.validate(reply,schema())
+    reply=action_defaults(reply,platform)
+    jsonschema.validate(reply,helper('action_commands').platform_request({'response_schema':schema()},platform)['response_schema'])
     action,tool=reply['action'],reply['framework_tool']
     if action:helper('action_commands').validate(action,platform)
     if reply['decision']=='act':
@@ -47,8 +48,8 @@ def validate(reply,platform="android"):
 
 def resolve(reply,platform="android"):
     """A cleared exception ends recovery; normal app navigation is not recovery."""
-    reply=action_defaults(reply)
-    jsonschema.validate(reply,schema())
+    reply=action_defaults(reply,platform)
+    jsonschema.validate(reply,helper('action_commands').platform_request({'response_schema':schema()},platform)['response_schema'])
     result=dict(reply)
     if result['exception']=='none':
         result.update(decision='resume_exploration',action=None,framework_tool=None,

@@ -1,6 +1,6 @@
 一次选择一个动作，返回target、action、x、y、reason。使用共享Android动作空间：click、double_click、long_press、input_text、scroll、back、wait；none表示本轮不投递。target原样使用控件文字或图标描述。动作是建议，不表示已执行。
-仍须遵守本轮路由任务范围：不为凑动作改变业务目标。back用于正常返回，target说明返回意图，坐标null；wait的target说明等待对象，坐标null。输入需text和控件坐标；scroll的target为当前区块名，x/y为起点，end_x/end_y为终点。其他动作不附加输入或终点。不确定目标时none、坐标null。Android不支持hover；当前文字适配器支持可打印ASCII，不能静默改写中文。
+仍须遵守本轮路由任务范围：不为凑动作改变业务目标。back用于正常返回，target说明返回意图，坐标null；wait的target说明等待对象，坐标null。输入需text和控件坐标；scroll的target为当前区块名；Android用起终点，桌面用x/y接收点和dx/dy滚轮刻度，遵守平台说明。其他动作不附加输入或终点。不确定目标时none、坐标null。Android不支持hover；当前文字适配器支持可打印ASCII，不能静默改写中文。
 
-共享动作输出包含text、end_x、end_y；当前动作不使用的字段填null，无关参数由框架忽略。
+共享动作输出包含text、end_x、end_y，桌面还包含dx、dy；当前动作不使用的字段填null，无关参数由框架忽略。
 
 本Android环境不显示屏幕键盘，使用ADB输入。input_text会先点击(x,y)对应文本框，再输入text，因此它已经包含聚焦和输入两步底层操作；无需另起一轮click来等待键盘。允许输入且目标是核对文本反馈时，可直接选择input_text。是否输入成功根据文本内容、搜索结果或错误提示判断，不以软键盘是否出现判断。

@@ -10,7 +10,7 @@ def repeated_attempt(episode, proposal):
         action = value.get('action') or {}
         if not action.get('action'):
             return None
-        return tuple(action.get(key) for key in ('action', 'x', 'y', 'end_x', 'end_y', 'text'))
+        return tuple(action.get(key) for key in ('action', 'x', 'y', 'end_x', 'end_y', 'dx', 'dy', 'text'))
 
     candidate = signature(proposal)
     return candidate is not None and any(

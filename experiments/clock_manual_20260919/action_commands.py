@@ -27,6 +27,9 @@ def platform_request(request,platform):
         elif isinstance(node,list):
             for child in node:restrict(child)
     restrict(q.get('response_schema',{}))
+    if platform=='desktop':
+        from desktop_scroll import extend_schema
+        extend_schema(q.get('response_schema',{}))
     return q
 
 
@@ -35,13 +38,18 @@ def normalize(proposal):
     if p['action']=='back':p['target']='系统返回'
     if p['action'] not in ('input_text','key_press','hotkey'):p['text']=None
     if p['action'] not in ('scroll','drag'):p.update(end_x=None,end_y=None)
+    if p['action']!='scroll':
+        for key in ('dx','dy'):
+            if key in p:p[key]=None
     if p['action'] in ('back','wait','none','key_press','hotkey'):p.update(x=None,y=None)
     return p
 
 
 def validate(proposal,platform="android"):
     import jsonschema
-    jsonschema.validate({'skip_task':False,'request_task_review':False,**proposal},schema())
+    contract=platform_request({'response_schema':schema()},platform)['response_schema']
+    defaults={'dx':None,'dy':None} if platform=='desktop' else {}
+    jsonschema.validate({'skip_task':False,'request_task_review':False,**defaults,**proposal},contract)
     if proposal.get("skip_task") and (proposal["action"]!="none" or not proposal.get("reason","").strip()):
         raise ValueError("跳过任务使用none，并说明违反哪项当前限制")
     if proposal.get('request_task_review') and (proposal['action']!='none' or proposal.get('skip_task') or not proposal.get('reason','').strip()):

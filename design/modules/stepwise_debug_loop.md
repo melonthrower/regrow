@@ -135,3 +135,7 @@ historical_inventory的普通补依据和功能整理限当前working_region，�
 ## 2026-09-25 只读探索动画
 
 网页 /replay 上方显示动作前后真实历史截图，下方显示当时已提交的区块地图。traversal_replay.py 独立投影快照父链、调用和执行回执；无call的本地调度保持父链顺序，不提前披露未来区块。提案、投递前核对、执行后未登记、知识登记分开显示。traversal_replay.html 保留已经出现的节点位置，镜头随当前观察区块移动；提供跟随、回放、时间轴及拖动缩放。没有新图的事件明确沿用旧图。原 /graph 仍提供控件身份图和任务详情。只读端点不调用模型、GUI或改写账本；复用 browser_hub 单端口代理。
+
+## 2026-09-25 桌面滚轮合同
+
+桌面scroll使用x/y接收点及dx/dy整数滚轮刻度（dy正上负下、dx正右负左），end_x/end_y为null。desktop_scroll.py集中平台schema扩展、有效性检查、命令映射和绑定；不接受旧起终点滚动重放。action_commands与recovery消费同一平台schema，普通/导航/恢复共用，非scroll的dx/dy为null。Android触屏滑动和桌面drag不变。恢复停滞比较与历史动作投影保留dx/dy；双轴各按一次底层命令计账。

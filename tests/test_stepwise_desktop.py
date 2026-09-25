@@ -18,7 +18,7 @@ def test_desktop_commands_are_not_adb_and_back_is_escape():
  code=m.commands(action('input_text',text="a'b"))
  assert len(code)==3 and "hotkey('ctrl','a')" in code[1]
  compile(code[2],'<input>','exec')
- assert 'scroll(' in m.commands(action('scroll',end_x=12,end_y=4))[0]
+ assert 'scroll(' in m.commands(action('scroll',dx=0,dy=2))[0]
 
 
 def test_desktop_receipt_checks_process_exit():

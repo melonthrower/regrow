@@ -41,7 +41,7 @@ def handoff(records, state, run=None):
                 dispatch=json.loads((folder/'dispatch.json').read_text()).get('action',{})
                 receipt=json.loads((folder/'receipt.json').read_text())
                 if receipt.get('exit_code')==0 and dispatch.get('action')==action.get('operation'):
-                    row['实际投递']= {k:dispatch[k] for k in ('action','target','x','y','end_x','end_y') if k in dispatch}
+                    row['实际投递']= {k:dispatch[k] for k in ('action','target','x','y','end_x','end_y','dx','dy') if k in dispatch}
         recent.append(row)
     summary=state.get('handoff_summary','');gaps=observation.get('uncertainties',[])
     if not summary and not gaps and not recent:return {}

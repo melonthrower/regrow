@@ -581,6 +581,9 @@ def _bind_action_target(request, proposal):
         return {**base,'status':'matched','basis':'Region-owned observation wait'}
     if proposal.get('action') == 'none':
         return {**base, 'status':'no_action'}
+    if proposal.get('action')=='scroll' and request.get('platform')=='desktop':
+        from desktop_scroll import bind
+        return {**base,**bind(request,proposal)}
     if proposal.get('action') in ('hover','drag') or (proposal.get('action')=='scroll' and request.get('navigation_advice')):
         from PIL import Image
         from pathlib import Path

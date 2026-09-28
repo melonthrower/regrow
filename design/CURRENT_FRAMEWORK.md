@@ -2440,3 +2440,8 @@ nor falsely retired. Exhausting all other work produces
 ### 普通纠错提示模块选择（2026-09-24）
 
 复制遍历器 `correction_prompts.py` 为 `step_repair.request` 选择公共手册及对应专项模块；共享行为核对仍走独立专用请求。模块选择依据当前阶段、结构化诊断和证据，混合错误组合加载，旧无结构诊断保留阶段指引。详见 `design/modules/stepwise_region_identity.md`。
+
+
+## 2026-09-28 逐步遍历只读质量检查
+
+新增 `tools/check_stepwise_quality.py`，支持冻结逐步图、Codex逐调用/整图检查、Luna单原图整图检查及浏览器复核。独立输出和额度，不修改遍历图；未接常驻监督。用户指定本轮零付费，只有离线/网页验证，没有模型准确率验收。当前合同见 [质量检查](modules/stepwise_quality.md)。

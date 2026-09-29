@@ -172,3 +172,9 @@ run_progress_session在本轮账目结算后识别review_pending，auto与step�
 仅显式监督索引触发，没有默认自动Reviewer、新CLI、GUI或额外重试。65项聚焦通过。原09耗尽分支完整保留；独立完整10副本重放原0863正常请求及未改回复，通过原Runner调用真实0866纠错、审核和登记，1新增HTTP/0GUI。最终a0231-0866-8ce6eac57df2，42区块不变、原任务不变、来源r0035仅登记a0231，interactive为r0020/r0002，pending两项清除。新Pause alarm控件使r0020控件23→24。9:00完整上下文因遮挡标occluded，按既有准入不写身份模板；独立click图保留。铃声括号末约3像素截断仍可辨，记录轻微瑕疵，不称完美裁图。
 
 这是保存帧语义与登记验收；现场Cancel证据来自09，并非10执行新GUI。当前修复候选图需下次核对现场后明确选用；不自动覆盖旧运行，不将1次通过宣称跨应用稳定或速度改善。0866输入113388tokens（含缓存），上下文压缩仍未实现。
+
+## 2026-09-29 等价任务选择与实例身份
+
+region_tasks.attach先取非equivalent真实义务，再按自身control可见性调度。代表隐藏时，不再用可见成员的control配代表名称/reason；有其他可见独立任务先推进，否则沿原流程定位代表。活动任务接续、coverage单向继承和原对象结算门槛不变，成员不获得虚构执行记录。这是有意收紧旧选择合同：旧test_equivalent_visible_binding_can_finish_shared_task只验文本，未证明跨成员结算可行；不能把原实现简单归因为漏同步cid。
+
+新增5项离线检查通过（旧代码其中2项失败）。聚焦与邻接组合44项：39通过、5既有失败；5项在修改前冻结副本独立复现。真实task-plan-0867完整图经正常assemble_current_context及Runner.perform，实际Luna0871选可见独立Pause任务c0184并正确识别8:30，1HTTP/0GUI。绑定仍model_grounded、control_ref=null、association=unconfirmed、preparatory_action=true；只通过动作请求/提案的保存帧语义核验，未证明模板身份、实际点击或任务结果登记。证据records/equivalent_task_20260929_12。候选未现场部署，连续效果待验证；原11现场图不改。

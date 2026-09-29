@@ -290,3 +290,9 @@ knowledge_current仍functions-0861-4fe0313f96a4，图的interactive r0035是旧�
 `experiments/clock_manual_20260919/records/correction_crop_feedback_20260929_10/run`为09完整独立副本。旧09 blocked episode与pending留在ancestry/原09，未给旧episode续次数；正常框架原0863请求/未改回复重放，新Runner最多2次纠错，实际0866一次Luna修订后正常审核登记。knowledge_current=a0231-0866-8ce6eac57df2，interactive=r0020/r0002、working=r0020，无pending_step/execution_pending。新增1HTTP/0GUI，累计46HTTP/3GUI。
 
 设备最后实际动作仍09的a0231 Cancel返回Alarm，10没有操作；禁止重放a0231/a0230。下一次现场续跑先核对设备与真实进程，再明确选用此已修复图的独立续跑副本及冻结源码。旧09保持失败证据，不能把其旧图当当前现场。65聚焦及本例保存帧通过，不代表跨应用连续遍历。交付to_astra/correction_crop_feedback_20260929_10，当前代码范围为09导航优先与10监督裁图反馈。
+
+## 2026-09-29 现场11与等价选择保存帧12
+
+最新现场为records/supervised_live_20260929_11/run，指针a0232-0870-bd1eddb13f36，无待处理请求/执行登记。a0232实际收起8:30，7:15仍pending且保留错对象尝试，Pause c0184待调查；本轮4HTTP/1GUI，累计50/4。不要重放a0232或更早动作。设备emulator-5554，最后现场证据为action_attempts/a0232/after.png。
+
+records/equivalent_task_20260929_12是独立完整副本，指针选回task-plan-0867-fc7374b16bbe仅作保存帧动作选择，不可按它续跑设备。0871实际Luna选Pause，1HTTP/0GUI，累计51/4；模板身份未确认，未执行或结果登记。现场仍采用11冻结16ba8fa，候选未部署。共享/data反复ENOSPC；已逐文件核验压缩已停止的pytest final_tests临时目录，真实运行证据保留。新现场操作前先确认足够写入空间。

@@ -235,13 +235,16 @@ def attach(root,records,state,working,base):
     q['task_progress']=progress
     if continuation or progress['pending']:
         visible=set(state['observation']['control_refs'])
+        # Equivalence inherits coverage, not another control's execution identity.
+        # Choose actual obligations before testing which entry is visible.
+        pending=[n for n in progress['pending'] if region['tasks'][n]['handling']!='equivalent']
         if continuation:
             task_region,name,task=continuation;cid=task['control']
         else:
-            names=[n for n in progress['pending'] if region['tasks'][n]['handling'] in ('explore','equivalent')
+            names=[n for n in pending if region['tasks'][n]['handling']=='explore'
                    and (region['tasks'][n]['control'] in visible or region['tasks'][n]['control'] is None)]
             if not names:
-                unlocated=list(progress['pending'])
+                unlocated=list(pending)
                 if not unlocated:
                     q.update(action_ready=False,stage='task_blocked')
                     choice=helper('task_deferral').choose(records,state)
@@ -252,7 +255,6 @@ def attach(root,records,state,working,base):
                 names=unlocated
             names.sort(key=lambda n:not bool(region['tasks'][n].get('prepares')))
             name=names[0];task=region['tasks'][name];cid=task['control'];task_region=rid
-            if task['handling']=='equivalent':name=task['equivalent_to'];task=region['tasks'][name]
         kind=task.get('task_type','single_action')
         if rid!=task_region and kind=='single_action' and not in_progress:
             q=flow._assemble_action_context(root,records,state,task_region)

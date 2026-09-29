@@ -94,14 +94,46 @@ def test_deferred_task_is_not_completion():
     assert m.coverage(region)['blocked']==['查看内容']
 
 
-def test_equivalent_visible_binding_can_finish_shared_task():
+@pytest.mark.parametrize('visible,extra,active,expected', [
+    (['alias'], False, False, '查看内容'),
+    (['alias', 'direct'], True, False, '独立调查'),
+    (['open', 'alias'], False, False, '查看内容'),
+    (['alias', 'direct'], True, True, '查看内容'),
+])
+def test_equivalence_selects_coherent_task_before_visibility(visible,extra,active,expected):
+    flow,r,s=fixture();m=tasks();region=r['menu'];s['interactive_regions']=['menu']
+    region['controls']['alias']={'name':'另一入口','observations':[], 'action_refs':[]}
+    operations=[row(),row('等价入口',control='另一入口',handling='equivalent',equivalent_to='查看内容')]
+    if extra:
+        region['controls']['direct']={'name':'独立入口','observations':[], 'action_refs':[]}
+        operations.append(row('独立调查',control='独立入口'))
+    m.apply_plan(region,proposal(operations),'1')
+    s['observation']['control_refs']=visible
+    if active:
+        s['active_task']={'region':'menu','name':'查看内容'}
+        region['tasks']['查看内容']['attempts']=['earlier']
+    original=deepcopy(region)
+    q=m.attach(ROOT,r,s,'menu',flow.assemble_context(ROOT,r,s,'menu'))
+    assert q['source']['task_name']==expected
+    assert q['source']['task_control']==('direct' if expected=='独立调查' else 'open')
+    assert region==original
+
+
+def test_equivalent_coverage_does_not_claim_alias_execution():
     flow,r,s=fixture();m=tasks();region=r['menu'];s['interactive_regions']=['menu']
     region['controls']['alias']={'name':'另一入口','observations':[], 'action_refs':[]}
     m.apply_plan(region,proposal([row(),row('等价入口',control='另一入口',handling='equivalent',equivalent_to='查看内容')]),'1')
     s['observation']['control_refs']=['alias']
     q=m.attach(ROOT,r,s,'menu',flow.assemble_context(ROOT,r,s,'menu'))
-    assert q['source']['task_name']=='查看内容'
-    assert '入口：另一入口' in q['user_prompt']
+    binding={'task_name':q['source']['task_name'],'region_ref':'menu','control_ref':'alias'}
+    reply={'action_result':{'exception':'none'},'task_result':{'name':'查看内容','status':'done','evidence':'只有另一入口的结果'}}
+    m.settle_task(region,binding,reply,'wrong')
+    assert region['tasks']['查看内容']['status']=='pending'
+    binding['control_ref']='open'
+    reply['task_result']['evidence']='原入口已有实际操作结果'
+    m.settle_task(region,binding,reply,'correct')
+    assert set(m.coverage(region)['done'])=={'查看内容','等价入口'}
+    assert region['tasks']['等价入口']['attempts']==[]
 
 
 def test_partial_commit_routes_to_discovery_without_inventing_control(tmp_path):

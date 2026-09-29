@@ -464,9 +464,19 @@ def observe(runner,job):
     ref,reply=runner.call(q)
     # A supplemental call has its own sent contract, not the original step's.
     q=runner.sent_request(job,q,ref,repairing=True)
-    jsonschema.validate(reply,q['response_schema'])
-    if job['stage']!='update':discovery.validate_identity(reply)
-    job['supplements'].append({'source_call':ref,'image':str(frame.resolve()),'reply':reply})
+    # Evidence must survive rejection; preserving it does not register identities.
+    evidence={'source_call':ref,'image':str(frame.resolve()),'reply':reply,
+              'validation':{'status':'pending'}}
+    job['supplements'].append(evidence)
+    runner.save(job)
+    try:
+        jsonschema.validate(reply,q['response_schema'])
+        if job['stage']!='update':discovery.validate_identity(reply)
+    except (ValueError,jsonschema.ValidationError) as error:
+        evidence['validation']={'status':'rejected','error':helper('step_repair').diagnostic(error)}
+        runner.save(job)
+        raise
+    evidence['validation']={'status':'validated'}
     runner.save(job)
     if job['stage']!='update':
         def await_frame(records,state,snapshot,temp):

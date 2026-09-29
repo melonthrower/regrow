@@ -122,3 +122,9 @@ run_progress_session持久start_call/end_call边界，不将此前累计混入�
 任务清点先判断未知内容/具体问题；共享结束条件不能反向授权常识验证。准备只做到目标操作之前的可观察条件，不包含原任务。task_prerequisites 集中处理：新增准备使用 single_action，旧 prepares 不受参数事实门槛；普通 parameter 仍须真实 findings。真实 observation_update 也追加 dependency_updates。当前目标控件已在本次观察确认且 ready=true 时，成对准备按 observed_prerequisite 结束，保留历史/阻塞依据；父任务仅恢复 pending，不虚构执行或参数。跨对象、异常和范围保护保留。
 
 30项聚焦测试通过；真实Clock记录的原生任务清点两案及动作更新一案，各1HTTP/0GUI正常登记，确认常规播放/暂停不新增验证、旧准备能按观察结算。累计核对原报错场景亦1HTTP/0GUI正常登记done，合计4HTTP/0GUI，完整结论见 records/task_settlement_20260925_01/REPORT.md。以上为隔离保存帧，原运行未部署/未续跑。
+
+## 2026-09-29 失败补观察证据保留
+
+`repair_stages.observe` 在收到可解析回复后，先将原回复、截图、调用来源存入 episode.supplements，再做原格式/身份校验。每项 validation 标明 pending、rejected（含原诊断）或 validated；validated 仅表示该阶段适用的补观察校验通过，不表示身份已登记。拒绝仍抛回原纠错，原请求和一次补观察上限不变；下一次 `step_repair.request` 可看到失败补图及原始回复。action/task_proposal/function_registration 的 observe_registered 分流未改，网络/解析失败不属于此修复。
+
+Clock 原生保存帧验证采用实际运行冻结源码加此单项补丁，完整隔离运行及原任务/历史保留。首次新观察0828因输出上限截断，未覆盖新增分支；随后将历史实际0826回复原样重放，补丁保留身份拒绝，新纠错0829明确核对两张图后仍要求观察，正常Runner保持correction_blocked。合计2新HTTP/0GUI；未修改原图或部署原运行。失败证据传递已验证，遮挡取证、同图补全停滞和输出截断仍未解决，不能宣称导航或连续探索成功。记录见 records/supplement_evidence_20260929_01。

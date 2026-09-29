@@ -268,3 +268,11 @@ Android设备emulator-5554已由真实scroll a0229向上滚动，现可见8:30 A
 独立reflink续跑副本`experiments/clock_manual_20260919/records/supervised_live_20260929_06/run`，冻结source对应私有导出0efe892。live-round-01终止于ready_next_round，0859仅整理功能，1HTTP/0GUI；累计34HTTP/2GUI。最新pointer见该run/knowledge_current.json（frontier-1017f3a8057d47b5afd4457e44c4a16b-78fb33110ef9），非0858原指针。preflight.png实机仍Select time08:30AM及键盘，本轮未改变设备、无待结算GUI。
 
 本轮发现r0035/c0131在历史0809已混合表盘与时钟模式按钮；0858及0859沿用污染身份。暂停此图的进一步GUI使用，先修复/验证有效观察及任务引用。不要整条合并c0131/c0132，不重放a0230；旧运行全部保留。运行已结束，继续前仍须重新确认进程和现场。详见模块末节及to_astra/supervised_live_20260929_06。
+
+## 2026-09-29 控件来源纠正07c（保存帧候选，未继续GUI）
+
+`experiments/clock_manual_20260919/records/control_observation_repair_20260929_07c/run`是从监督06复制的完整独立修复候选，冻结source；knowledge_current=task-plan-0860-020d205622fa，正常纠错已结束，无pending_step/execution_pending。c0131模拟时钟盘、c0132输入模式切换，两条误挂观察已迁移，旧任务/动作保留。该最终版1HTTP/0GUI，本批含先前部分结果4HTTP/0GUI，累计38HTTP/2GUI；未在设备上操作。
+
+这是保存帧修复候选，不把旧06污染图自动替换为正式现场。下一次明确选用新独立续跑图及其冻结源码，重新核对设备前景、实际截图和预算；不得重放a0230，也不把历史a0227保存帧验证当设备回退。旧07/07b的名称未修完整结果保留，不能沿用为已验证图。
+
+另有07d原a0227的保存帧预防验证（非现场续跑），2HTTP/0GUI，最终a0227-0861-5eafa027f7c2；它对应历史07:15，不是当前设备08:30，禁止把它选作现场图。总计本批6HTTP/0GUI、累计40HTTP/2GUI。下一次现场候选仍是上述07c的08:30修复图。

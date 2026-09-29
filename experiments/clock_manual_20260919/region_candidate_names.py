@@ -1,3 +1,4 @@
+import control_history_context
 """Per-request readable identity labels, shared by disclosure and binding."""
 from collections import Counter
 from copy import deepcopy
@@ -27,7 +28,7 @@ def candidates(records, rows):
         used.add(label);mapping[label]=rid
         row=deepcopy(selected[rid]);row.pop('region_ref',None)
         row.update(name=label,description=r.get('description',''),
-            controls=[{'name':c['name']} for c in r.get('controls',{}).values()])
+            controls=[control_history_context.describe(r,cid) for cid in r.get('controls',{})])
         entered=incoming_results(r,records)
         if entered:
             row['历史进入记录（不证明当前可见或行为等价）']=entered

@@ -168,7 +168,8 @@ def related(run,job):
 
 
 def record_capabilities():
-    return ['edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原前后图及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。',
+    return ['edit_record观察归属纠正：仅本轮control_observation_candidates披露的region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence；只迁移指定观察，不迁移任务或动作，不能整条合并。retained_name必须描述迁移后来源控件剩余观察的职责，不能沿用被移走对象的名称。',
+            'edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原前后图及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。',
             'edit_record / task_control或suspend_task：在发现/任务清点中用task选择任务；无历史pending可改到披露的唯一控件，有历史只暂挂保留旧事实并重新清点。',
             'edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。',
             'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。',
@@ -300,6 +301,10 @@ def edit_record(root,run,job,edit):
         migrations={};merges=[]
         for item in edits:
             if not item['evidence'].strip():raise ValueError('记录修订需要证据')
+            if 'observations' in item:
+                bound=helper('control_observation_repair').validate_scope(run,job,item,records,scope)
+                helper('control_observation_repair').apply(records,state,bound,job['call'])
+                continue
             if 'attempt' in item:
                 if job.get('attempt') or (Path(run)/'execution_pending.json').exists():
                     raise ValueError('先完成待结算动作，不能借历史纠正改写当前执行')
@@ -539,7 +544,7 @@ def edit_proposal(run,job,edits):
     candidate=deepcopy(job.get('candidate') or {})
     if not candidate.get('regions'):return False
     for edit in edits if isinstance(edits,list) else [edits]:
-        if not edit or edit['field'] not in ('name','description','list_group') or not edit['evidence'].strip():return False
+        if not edit or edit.get('field') not in ('name','description','list_group') or not edit['evidence'].strip():return False
         matches=[(i,r) for i,r in enumerate(candidate['regions']) if r['name']==edit['region']]
         if len(matches)!=1:return False
         index,region=matches[0]

@@ -1,3 +1,4 @@
+import control_history_context
 """Read-only history: select related evidence, project provenance, render it.
 No visibility inference, task mutation or navigation scheduling belongs here.
 """
@@ -131,7 +132,7 @@ def identity_candidates(records,state,binding,visual_hits,source_destinations=No
         if rid in hit_ids:why.append('截图外观匹配候选（不等于前景）')
         return why or ['相关历史去向或返回路径']
     return [{'region_ref':rid,'name':r['name'],'description':r['description'],'提供原因':reasons(rid,r),'当前状态':'未由这份历史记录确认',
-             'controls':[{'name':c['name']} for c in r['controls'].values()],
+             'controls':[control_history_context.describe(r,cid) for cid in r['controls']],
              **({'行为适用上下文':r['behavior_context']} if r.get('behavior_context') else {}),
              **({'不可共享区块':[records[x['region']]['name'] for x in r['distinct_regions'] if x.get('region') in records]} if r.get('distinct_regions') else {})}
             for rid,r in records.items() if rid in selected or rid in hit_ids]

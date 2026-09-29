@@ -96,7 +96,7 @@ def request(root,job,context):
           'required':['region','control','field','before','after','evidence'],'additionalProperties':False}
     task_edit={'type':'object','properties':{n:{'type':'string'} for n in ('region','task','field','before','after','evidence')},'required':['region','task','field','before','after','evidence'],'additionalProperties':False}
     task_edit['properties']['field']={'type':'string','enum':['task_control','suspend_task']}
-    edit={'anyOf':[edit,task_edit,helper('action_owner_correction').schema()]}
+    edit={'anyOf':[edit,task_edit,helper('action_owner_correction').schema(),helper('control_observation_repair').schema()]}
     fields={'blocked_by':{'type':'string','enum':['none','blocking_popup','system_error','unexpected_exit','external_app','control_not_visible','binding_conflict','region_ownership_review','shared_control_conflict','model_response_parse_error','review_required']},'reason':{'type':'string'},'resolution':{'type':'string','enum':['revise','observe','edit_record','defer','blocked']},
             'proposal':{'anyOf':[deepcopy(original['response_schema']),{'type':'null'}]},
             'record_edit':{'anyOf':[edit,{'type':'array','items':edit},{'type':'null'}]}}

@@ -254,3 +254,5 @@ Android设备emulator-5554已由真实scroll a0229向上滚动，现可见8:30 A
 运行入口仍为冻结源码run_task_step.py run-v5 新输出目录（不可覆盖live-round-*）。继续前核对实际进程、设备前景与剩余额度；本条记录不代替实时状态检查。单次取证通过不等于完整应用或跨应用验收。
 
 同日续跑live-round-07已正常结束，1HTTP/0GUI；0852处理历史区块功能整理，尚未重新清点当前Alarm列表。最新knowledge_current为`knowledge_snapshots/functions-0852-426047ddb77b`，设备未新增动作；累计含续跑25HTTP/1GUI。后续以该指针继续，实际进程与设备须再次核对。
+
+同日live-round-08已正常结束：0853对r0039历史功能重整，1HTTP/0GUI，待历史功能整理32→31，当前Alarm清点尚未推进。最新指针`knowledge_snapshots/functions-0853-66ebd86289a0`，pending_step和execution_pending均无；设备无新增动作。累计26HTTP/1GUI。当前调度尚未修改；诊断及未实现提议见`to_astra/clock_historical_audit_20260929_01/REPORT.md`、DESIGN.md。

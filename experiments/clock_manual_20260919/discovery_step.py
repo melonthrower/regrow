@@ -80,6 +80,8 @@ def prepare(root,records,state,frame,foreground=None):
         names[label]=rid
         anchors=[{'名称':r['controls'][h['control']]['name'],'位置':h['box']} for h in candidate['anchors']]
         candidates.append({'名称':label,'历史描述':r['description'],'身份依据':'前景控件匹配线索，身份由本轮视觉核对确认','定位锚点':anchors})
+        entered=reg.sibling('region_functions').incoming_results(r,records)
+        if entered:candidates[-1]['历史进入记录（不证明当前可见或行为等价）']=entered
         if r.get('behavior_context'):candidates[-1]['行为适用上下文']=r['behavior_context']
     controls=[]
     if plan['mode']=='local':

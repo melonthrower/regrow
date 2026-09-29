@@ -156,10 +156,11 @@ def request(root,job,context):
 
 
 class Runner:
-    def __init__(self,root,run,call,screenshot,available,pointer_name='pending_step.json'):
+    def __init__(self,root,run,call,screenshot,available,pointer_name='pending_step.json',review_update=None):
         self.root=Path(root);self.run=Path(run);self.call=call;self.screenshot=screenshot;self.available=available
         self.adapters=helper('repair_stages')
         self.pointer_name=pointer_name
+        self.review_update=review_update
 
     def save(self,job):atomic(self.run/job['path'],job)
 
@@ -231,6 +232,8 @@ class Runner:
                 job.update(status='repair',blocked_by='shared_control_conflict',error='共享关系有实际结果冲突，请核对共享范围')
             self.save(job);atomic(self.run/self.pointer_name,{'episode':job['path']})
         elif stage!=job['stage']:raise Paused('correction_blocked','必须先处理尚未完成的步骤：'+job['stage'])
+        if stage=='update' and self.review_update is not None and not job.get('requires_update_review'):
+            job['requires_update_review']=True;self.save(job)
         if job['stage']=='function_registration' and job.get('status') in ('repair','blocked') and not job.get('attempt') and not (self.run/'execution_pending.json').exists() and not job.get('service_failure'):
             rid=job['request'].get('source',{}).get('region')
             if helper('region_functions').request_support_review(self.run,rid,job.get('call')):
@@ -265,6 +268,17 @@ class Runner:
                     job['error']=diagnostic(error);job['history'].append({'observation_error':diagnostic(error)})
                 job['status']='repair';self.save(job);continue
             if job['status']=='accept':
+                if job['stage']=='update' and (self.review_update or job.get('requires_update_review')):
+                    job['requires_update_review']=True;self.save(job)
+                    review=helper('update_semantic_review')
+                    try:
+                        review.check(self.run,job,self.review_update)
+                    except review.Pending as error:
+                        raise Paused('review_pending',str(error))
+                    except review.Rejected as error:
+                        job.update(error=str(error),blocked_by=error.blocked_by,status='repair')
+                        job['history'].append({'call':job['call'],'error':str(error),'source':'supervisor_review'})
+                        self.save(job);continue
                 try:
                     result=self.adapters.accept(self.root,self.run,job)
                 except (ValueError,jsonschema.ValidationError) as error:

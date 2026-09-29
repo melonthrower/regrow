@@ -1,6 +1,7 @@
 """Per-request readable identity labels, shared by disclosure and binding."""
 from collections import Counter
 from copy import deepcopy
+from region_functions import incoming_results
 
 
 def candidates(records, rows):
@@ -27,6 +28,9 @@ def candidates(records, rows):
         row=deepcopy(selected[rid]);row.pop('region_ref',None)
         row.update(name=label,description=r.get('description',''),
             controls=[{'name':c['name']} for c in r.get('controls',{}).values()])
+        entered=incoming_results(r,records)
+        if entered:
+            row['历史进入记录（不证明当前可见或行为等价）']=entered
         if r.get('behavior_context'):row['行为适用上下文']=r['behavior_context']
         if r.get('distinct_regions'):
             row['不可共享区块']=[records[x['region']]['name'] for x in r['distinct_regions'] if x.get('region') in records]

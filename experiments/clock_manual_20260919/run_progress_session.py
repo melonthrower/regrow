@@ -44,6 +44,8 @@ def run_session(root,run,out,mode,step=run_step):
             account['rounds'].append(str(folder.name));save()
         result=json.loads((folder/'result.json').read_text())
         if pause.exists():account['status']='paused_by_user';break
+        if result['status']=='review_pending':
+            account.update(status='review_pending',last_result='review_pending');break
         if mode=='step':account['status']='paused_after_step';break
         if result['status'] not in ('updated','paused_after_recovery_discovery','task_proposal','ready_next_round','repair_pending','task_deferred'):
             account.update(status='needs_review_or_complete',last_result=result['status']);break

@@ -79,8 +79,8 @@ def round_status(run,out):
 
 def tracked(fn):
     @wraps(fn)
-    def wrapped(root,run,out):
-        with round_status(run,out):return fn(root,run,out)
+    def wrapped(root,run,out,**kwargs):
+        with round_status(run,out):return fn(root,run,out,**kwargs)
     return wrapped
 
 

@@ -127,7 +127,7 @@ def resume_update_request(root,transport,folder):
     return build_attempt_update(root,transport,folder)
 
 
-def _run_step(root,run,out):
+def _run_step(root,run,out,*,review_update=None):
     root,run,out=Path(root).resolve(),Path(run).resolve(),Path(out).resolve()
     out.mkdir(parents=True,exist_ok=False)
     manifest=read(run/"run_manifest.json")
@@ -177,7 +177,7 @@ def _run_step(root,run,out):
             q.update(screenshots=[str((out/'current.png').resolve())],image_refs=[str((out/'current.png').resolve())])
             step_repair.helper('region_scroll').attach(run,discovery_step.load(run)[2],q)
         return q
-    repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'])
+    repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'],review_update=review_update)
     if (run/'ownership_review.json').exists():
         result=step_repair.helper('ownership_review').run(root,transport,out,call)
         write_json(out/'result.json',{**result,'gui_actions':transport.account['gui_started']})
@@ -348,8 +348,8 @@ def _run_step(root,run,out):
 
 
 @progress.tracked
-def run_step(root,run,out):
-    try:return _run_step(root,run,out)
+def run_step(root,run,out,*,review_update=None):
+    try:return _run_step(root,run,out,review_update=review_update)
     except step_repair.Paused as error:
         out=Path(out);budget=read(out/'budget.json');budget['status']=error.status
         write_json(out/'budget.json',budget)

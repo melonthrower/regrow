@@ -48,6 +48,7 @@ def classify(session,result,http_status,device_error=False):
     if http_status in (408,429,500,502,503,504):return {'kind':'service_wait','reason':f'HTTP {http_status}'}
     if http_status in (401,402,403):return {'kind':'service_blocked','reason':f'HTTP {http_status}'}
     if device_error:return {'kind':'device_wait','reason':'device/transport unavailable'}
+    if result.get('status')=='review_pending':return {'kind':'review_pending','reason':result.get('reason','update awaits supervisor review')}
     if result.get('status')=='scope_idle':return {'kind':'scope_idle','reason':'no actionable work; coverage gaps preserved'}
     if result.get('status') in CONTINUE:return {'kind':'continue','reason':result['status']}
     if result.get('status') in ('region_complete','task_blocked','return_blocked'):
@@ -246,6 +247,7 @@ class Supervisor:
         if issue['kind']=='paused':app.update(status='paused',pause_reason='user' if issue['reason']=='paused_by_user' else 'budget')
         elif issue['kind'] in ('service_wait','device_wait'):
             app.update(status='waiting',retry_after=time.time()+30);self.notify(app,'waiting',issue)
+        elif issue['kind']=='review_pending':app['status']='awaiting_review';self.notify(app,'awaiting_review',issue)
         elif issue['kind']=='environment_blocked':self.block_environment(app,issue)
         elif issue['kind']=='scope_idle':
             app['status']='complete' if app['graph']['complete'] else 'scope_idle'
@@ -292,6 +294,7 @@ class Supervisor:
                             else:
                                 app['status']='queued'
                                 if trial['kind']=='paused':app.update(status='paused',pause_reason='user' if trial['reason']=='paused_by_user' else 'budget')
+                                elif trial['kind']=='review_pending':app['status']='awaiting_review'
                                 elif trial['kind']=='environment_blocked':self.block_environment(app,trial)
                                 elif trial['kind']=='service_blocked':app['status']='service_blocked'
                                 elif trial['kind'] in ('device_wait','service_wait'):app.update(status='waiting',retry_after=time.time()+30)

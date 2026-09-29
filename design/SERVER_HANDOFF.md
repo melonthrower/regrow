@@ -256,3 +256,9 @@ Android设备emulator-5554已由真实scroll a0229向上滚动，现可见8:30 A
 同日续跑live-round-07已正常结束，1HTTP/0GUI；0852处理历史区块功能整理，尚未重新清点当前Alarm列表。最新knowledge_current为`knowledge_snapshots/functions-0852-426047ddb77b`，设备未新增动作；累计含续跑25HTTP/1GUI。后续以该指针继续，实际进程与设备须再次核对。
 
 同日live-round-08已正常结束：0853对r0039历史功能重整，1HTTP/0GUI，待历史功能整理32→31，当前Alarm清点尚未推进。最新指针`knowledge_snapshots/functions-0853-66ebd86289a0`，pending_step和execution_pending均无；设备无新增动作。累计26HTTP/1GUI。当前调度尚未修改；诊断及未实现提议见`to_astra/clock_historical_audit_20260929_01/REPORT.md`、DESIGN.md。
+
+## 2026-09-29 当前Region优先验证续跑点
+
+完整副本`experiments/clock_manual_20260919/records/current_region_priority_20260929_01/run`，冻结`source`，live-round-01已正常结束。knowledge_current为`knowledge_snapshots/a0230-0856-e676f8ece3d7`；3HTTP/1GUI，累计含此前29HTTP/2GUI。设备emulator-5554实际显示Select time 08:30 AM及数字键盘，未修改或保存时间。pending_step/execution_pending均无，不得重放a0230。旧run-v5指针不动，但旧截图不是当前设备。
+
+当前working/interactive为新增r0043，下一请求task_proposal；31历史功能待办完整保留。先核对身份问题：r0035历史名Wake-up时间选择器，0809却在Alarm 07:15入口复用；0856另建Alarm时间选择器。没有自动合并，调度单例可接受，身份复用及持续准确遍历未验收。继续前核对实际进程、前景、预算，正常入口仍为冻结source/run_task_step.py；不要按旧交接重放动作或重置设备。

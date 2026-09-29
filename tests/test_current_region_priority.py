@@ -1,0 +1,67 @@
+"""Keep current Region progress ahead of unrelated historical function finishing."""
+from copy import deepcopy
+import pytest
+from tests.test_inventory_scroll_progress import plan_scroll
+from tests.test_stepwise_region_tasks import ROOT
+
+
+def case(tmp_path):
+    m, run, records, state, _, _ = plan_scroll(tmp_path)
+    records['r1']['tasks'][state['active_task']['name']]['status'] = 'done'
+    state['active_task'] = None
+    records['r2'] = deepcopy(records['r1'])
+    records['r2'].update(id='r2', name='Other completed Region', controls={}, tasks={}, actions={},
+                         task_inventory={'inventory': 'complete', 'controls': []})
+    snapshot = m.helper('discovery_step').load(run)[0]
+    return m, snapshot, records, state
+
+
+def test_normal_current_inventory_precedes_history_without_settling_it(tmp_path):
+    m, snapshot, records, state = case(tmp_path)
+    original = deepcopy(records)
+    def current():
+        q = m.attach(ROOT, records, state, 'r1', {'progress': {}})
+        assert q['stage'] == 'task_proposal' and not q['action_ready']
+        return q
+    assert m.helper('historical_inventory').request(ROOT, snapshot, records, state, current_request=current) is None
+    assert records == original
+    # A blocked local request must still allow the old finishing obligation.
+    q = m.helper('historical_inventory').request(ROOT, snapshot, records, state,
+        current_request=lambda: {'stage': 'task_blocked', 'action_ready': False, 'source': {'region': 'r1'}})
+    assert q['stage'] == 'function_registration' and q['source']['region'] == 'r2'
+
+
+@pytest.mark.parametrize('change', ['not_interactive', 'exception', 'recover', 'navigation', 'other_owner'])
+def test_unconfirmed_or_nonlocal_work_does_not_hide_history(tmp_path, change):
+    m, snapshot, records, state = case(tmp_path)
+    q = {'stage': 'task_proposal', 'action_ready': False, 'source': {'region': 'r1'}}
+    if change == 'not_interactive': state['interactive_regions'] = []
+    elif change == 'exception': state['observation'].setdefault('foreground', {})['exception'] = 'blocking_popup'
+    elif change == 'recover': state['next_action_mode'] = 'recover'
+    elif change == 'navigation': q['navigation_advice'] = True
+    else: q['source']['region'] = 'r2'
+    result = m.helper('historical_inventory').request(ROOT, snapshot, records, state, current_request=lambda: q)
+    assert result['stage'] == 'function_registration'
+
+
+def test_current_local_action_precedes_history_but_other_task_does_not(tmp_path):
+    m, snapshot, records, state = case(tmp_path)
+    q = {'stage': 'action_selection', 'action_ready': True, 'source': {'region': 'r1', 'task_region': 'r1'}}
+    history = m.helper('historical_inventory')
+    assert history.request(ROOT, snapshot, records, state, current_request=lambda: q) is None
+    q['source']['task_region'] = 'r2'
+    assert history.request(ROOT, snapshot, records, state, current_request=lambda: q)['stage'] == 'function_registration'
+
+
+def test_support_review_is_not_bypassed_or_eagerly_building_current(tmp_path):
+    m, snapshot, records, state = case(tmp_path)
+    records['r1']['task_inventory']['review'] = {'kind': 'function_support', 'reason': 'Missing support'}
+    region = records['r1']
+    image = snapshot/'regions/r1/history.png'
+    image.parent.mkdir(parents=True, exist_ok=True)
+    image.write_bytes(b'evidence path only; request construction does not decode')
+    region['observations'].append({'source_image': 'history.png', 'evidence': {'observation': 'old'}})
+    def current():
+        raise AssertionError('mandatory support review must run before constructing current request')
+    q = m.helper('historical_inventory').request(ROOT, snapshot, records, state, current_request=current)
+    assert q['function_support_review'] and q['source']['region'] == 'r1'

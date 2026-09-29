@@ -154,9 +154,15 @@ def _run_step(root,run,out):
         if discovery_step.load(run)[2].get('reason')=='verify_prepared_dependency' and discovery_step.load(run)[2].get('next_action_mode')=='discover':
             raise step_repair.Paused('ready_next_round','准备任务已完成；下一轮观察目标是否解锁')
         snapshot,known,state=discovery_step.load(run)
-        historical=discovery_step.registration().sibling('historical_inventory').request(root,snapshot,known,state)
+        candidate=None
+        def current_request():
+            nonlocal candidate
+            if candidate is None:candidate=assemble_current_context(root,run)
+            return candidate
+        historical=discovery_step.registration().sibling('historical_inventory').request(
+            root,snapshot,known,state,current_request=current_request)
         if historical:return historical
-        q=assemble_current_context(root,run)
+        q=current_request()
         if q['stage'] in ('region_complete','task_blocked','return_blocked') and not q.get('needs_task_inspection'):
             if discovery_step.registration().sibling('task_deferral').advance_unfinished(run):
                 q=assemble_current_context(root,run)

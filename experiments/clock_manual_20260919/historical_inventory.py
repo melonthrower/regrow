@@ -9,7 +9,7 @@ def digest(region):
     return hashlib.sha256(json.dumps(region,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 
-def request(root,snapshot,records,state):
+def request(root,snapshot,records,state,current_request=None):
     import importlib.util
     spec=importlib.util.spec_from_file_location('region_tasks',Path(root)/'region_tasks.py')
     tasks=importlib.util.module_from_spec(spec);spec.loader.exec_module(tasks)
@@ -35,6 +35,19 @@ def request(root,snapshot,records,state):
         q['user_prompt']=q['dynamic_prompt']=json.dumps(dynamic,ensure_ascii=False,indent=2)
         q['historical_inventory']={'evidence_digest':digest(region)};q['function_support_review']=True
         return q
+    # Mandatory reviews above keep their priority. Only defer unrelated
+    # finishing when the normal request can advance this visible Region.
+    rid=state.get('working_region')
+    foreground=(state.get('observation') or {}).get('foreground',{})
+    if (current_request is not None and state.get('next_action_mode')=='explore'
+            and rid in state.get('interactive_regions',[])
+            and foreground.get('exception','none')=='none'):
+        current=current_request()
+        source=current.get('source',{})
+        if (source.get('region')==rid and not current.get('navigation_advice')
+                and (current.get('stage')=='task_proposal'
+                     or (current.get('action_ready') and source.get('task_region')==rid))):
+            return None
     # Knowledge-only finishing work must not depend on returning to its surface.
     # Keep the active GUI task and current observation untouched.
     for candidate in sorted(records.values(),key=lambda r:r['id']!=state.get('working_region')):

@@ -167,7 +167,9 @@ def _run_step(root,run,out):
                     q.update(stage='scope_idle',action_ready=False,reason='当前无可执行任务；保留暂挂及登记缺口，不声明全图完成')
         if discovery_step.locate_task_control(run,q,out/'current.png'):
             q=assemble_current_context(root,run)
-        if q['stage']!='function_registration':q.update(screenshots=[str(out/'current.png')],image_refs=[str(out/'current.png')])
+        if q['stage']!='function_registration':
+            q.update(screenshots=[str((out/'current.png').resolve())],image_refs=[str((out/'current.png').resolve())])
+            step_repair.helper('region_scroll').attach(run,discovery_step.load(run)[2],q)
         return q
     repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'])
     if (run/'ownership_review.json').exists():
@@ -254,7 +256,12 @@ def _run_step(root,run,out):
         write_json(out/'result.json',{**navigation,'calls':calls})
         transport.account['status']=navigation['status'];transport.save();return
     q['role']='action_selection'
-    accepted=resumed if resumed and resumed['stage']=='action' else repair.perform('action',q)
+    if resumed and resumed['stage']=='action':accepted=resumed
+    elif (q.get('source',{}).get('task_type')=='scroll'
+            and q.get('response_schema',{}).get('properties',{}).get('action',{}).get('enum')==['scroll','none']
+            and not q.get('region_scroll_bounds')):
+        accepted=repair.repair_unlocated(q,'当前区块滚动缺少本帧已登记边界；需要正常补观察确认前景范围，再继续原滚动任务。当前尚未请求或执行动作，不必先提出必然无法绑定的滚动坐标。')
+    else:accepted=repair.perform('action',q)
     result=accepted['result'];q=result['request'];ref=result['call'];proposal=result['proposal'];binding=result['binding']
     write_json(out/'binding.json',binding)
     if traversal_scope.skip_prohibited(run,q,proposal,ref):

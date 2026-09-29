@@ -244,3 +244,13 @@ VLC5006原窗口从Draw后台激活，仍有暂停1:34的测试媒体；Draw文�
 Save确已点击并关闭偏好窗口；提交前媒体提示仍When minimized、自动置前已Never。本次未重新打开或播放核验，不重放最后Save。
 证据artifacts/traversal_goal_20260909/instruction_collection_pilot_20260914_01/REPORT.md及status.json；runner已退出，原图不变，无人工补操作。
 Markor5690仅截图/前景读取，未新增GUI；用户本次选的是旧VLC图。源代码前置修改保留，下一步需讨论阶段完成误判的修正及失败恢复，不能把本条算自主成功。
+
+## 2026-09-29 Clock滚动取证续跑点
+
+Android设备emulator-5554已由真实scroll a0229向上滚动，现可见8:30 AM、9:00 AM及GUITRAVERSE_Seed_Evening 6:40 PM卡片。原正式luna_runs/com.google.android.deskclock_20260922T183405_3a03c783图仍停在task-plan-0823，不能把其旧屏幕当当前现场。
+
+后续使用 `experiments/clock_manual_20260919/records/scroll_bounds_20260929_01/run-v5`，冻结源码 `source-live-v5`；live-round-06提交时knowledge_current为`knowledge_snapshots/a0229-0851-ebf1402aafc2`。live-round-06已结束，5HTTP/1GUI，pending_step和execution_pending均无，scroll任务done、清点仍partial，下一请求task_proposal。不得重放a0229。此修复累计24HTTP/1GUI，保留此前失败分支与独立验证分支来源；旧设备数据未重置，未涉及其他应用。
+
+运行入口仍为冻结源码run_task_step.py run-v5 新输出目录（不可覆盖live-round-*）。继续前核对实际进程、设备前景与剩余额度；本条记录不代替实时状态检查。单次取证通过不等于完整应用或跨应用验收。
+
+同日续跑live-round-07已正常结束，1HTTP/0GUI；0852处理历史区块功能整理，尚未重新清点当前Alarm列表。最新knowledge_current为`knowledge_snapshots/functions-0852-426047ddb77b`，设备未新增动作；累计含续跑25HTTP/1GUI。后续以该指针继续，实际进程与设备须再次核对。

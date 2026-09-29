@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-09-29 局部滚动取证：partial清点可推进明确选中的本区块scroll，绑定已正式登记的同帧区块边界（内部region_scroll_bounds），无需先辨认被遮挡控件；缺口保留，缺边界沿原补观察。Clock单次真实滚动与后图更新通过，尚非跨应用连续验收；见stepwise_region_identity“同帧边界滚动绑定”和stepwise_debug_loop。
+
 2026-09-25：复制遍历器候选修正准备任务结算及 observation_update 前置核对接线；常识功能缺少执行历史不构成探索理由。原运行未部署，保存帧与范围见 stepwise_debug_loop“常识任务与准备结算”。
 
 2026-09-24：复制遍历器区块身份改由前景独立控件召回与 Luna 文字核对；移除整块图自动覆盖。局部定位仅复用同帧已登记边界，原始观察保留；见 stepwise_region_identity“控件级历史身份核对”。

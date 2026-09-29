@@ -329,8 +329,14 @@ class Runner:
                     resolution=reply['resolution']
                     job['blocked_by']=reply['blocked_by']
                     if not reply['reason'].strip():raise ValueError('需要说明修复依据')
-                    if (resolution=='revise')!=(reply['proposal'] is not None) or (resolution=='edit_record' and reply['record_edit'] is None) or (resolution not in ('revise','edit_record') and reply['record_edit'] is not None):
-                        raise ValueError('修复方式与内容不一致')
+                    if resolution!='revise' and reply['proposal'] is not None:
+                        raise ValueError(f'resolution={resolution}要求proposal=null；保留你的修复方式，将proposal改为null，观察对象或原因写在reason。动作none也属于提案，不能代替null。')
+                    if resolution=='revise' and reply['proposal'] is None:
+                        raise ValueError('resolution=revise需要完整proposal；若需要补观察应选择observe并保持proposal=null。')
+                    if resolution=='edit_record' and reply['record_edit'] is None:
+                        raise ValueError('resolution=edit_record需要record_edit说明具体修订。')
+                    if resolution not in ('revise','edit_record') and reply['record_edit'] is not None:
+                        raise ValueError(f'resolution={resolution}要求record_edit=null；保留修复方式，不混入记录修订。')
                     if resolution in ('blocked','defer'):
                         job['blocked_by']=reply['blocked_by']
                         self.stop(job,reply['reason'])

@@ -128,3 +128,11 @@ run_progress_session持久start_call/end_call边界，不将此前累计混入�
 `repair_stages.observe` 在收到可解析回复后，先将原回复、截图、调用来源存入 episode.supplements，再做原格式/身份校验。每项 validation 标明 pending、rejected（含原诊断）或 validated；validated 仅表示该阶段适用的补观察校验通过，不表示身份已登记。拒绝仍抛回原纠错，原请求和一次补观察上限不变；下一次 `step_repair.request` 可看到失败补图及原始回复。action/task_proposal/function_registration 的 observe_registered 分流未改，网络/解析失败不属于此修复。
 
 Clock 原生保存帧验证采用实际运行冻结源码加此单项补丁，完整隔离运行及原任务/历史保留。首次新观察0828因输出上限截断，未覆盖新增分支；随后将历史实际0826回复原样重放，补丁保留身份拒绝，新纠错0829明确核对两张图后仍要求观察，正常Runner保持correction_blocked。合计2新HTTP/0GUI；未修改原图或部署原运行。失败证据传递已验证，遮挡取证、同图补全停滞和输出截断仍未解决，不能宣称导航或连续探索成功。记录见 records/supplement_evidence_20260929_01。
+
+## 2026-09-29 局部清点滚动取证
+
+inventory_scroll与region_tasks允许task_inventory仍partial时，推进本轮operations明确提出的可执行本区块pending scroll。无未满足前置条件、异常或范围限制时才选择；动作仅scroll/none，原区块不在前景则回原导航。已选任务优先于无关历史功能整理，共享身份核对仍优先。后续清点披露原partial/uncertain依据，滚动任务完成不自动消除缺口。
+
+仅允许scroll/none却缺当前帧边界时，正常动作入口直接走repair_unlocated。observe_registered正式登记全局区块后，原任务匹配、状态为locate_local_controls、无discovery_completion.pending、前景正常且已有同帧区块边界时，可恢复原scroll，不要求先清点被遮挡控件。控制清点partial和原身份缺口保留。纠错方式与proposal/record_edit冲突时明确指出字段要求，不替模型改答，原纠错次数和补观察上限不变。
+
+54项聚焦离线通过；Clock完整记录与真实实机正常入口验证见records/scroll_bounds_20260929_01。成功轮live-round-06为5HTTP/1GUI，a0229后图揭露9:00 AM和6:40 PM卡片，0851正常登记scroll done；控件23→23无新ID，task_inventory仍partial，后续请求为task_proposal，无待结算动作。该修复含此前试验累计24HTTP/1GUI，失败版本、脚本缺图尝试和循环保护均保留。只证明此Clock案例的取证闭环，不证明跨应用连续遍历、所有异常恢复或整个应用完成。原正式图未改，实际设备已滚动；后续从SERVER_HANDOFF指定验证续跑图继续。

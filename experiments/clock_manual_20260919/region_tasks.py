@@ -65,6 +65,10 @@ def plan_request(root,records,state,rid):
         '已有任务':region.get('tasks',{}),
         '其他区块（历史记录，不表示本图可见，不在本轮清点范围）':[{'名称':r['name'],'描述':r['description']} for other,r in records.items() if other!=rid],
         '说明':'只清点本区块，control逐字使用给定控件名称；其他区块入口不影响本区块清点。本区块内仍有未辨认或未登记入口时用partial，仅说明缺口，不为未知入口编造任务。入口及任务已列齐就用complete；尚未执行的explore任务不影响清点完整性，完成进度由框架另算。空任务不自动表示清点完成。'}
+    inventory=region.get('task_inventory',{})
+    if inventory.get('inventory') in ('partial','uncertain'):
+        dynamic['上次清点缺口']={key:inventory.get(key) for key in ('inventory','evidence','source_call')}
+        dynamic['上次清点缺口']['说明']='这是历史缺口，需按当前截图和已有观察重新核对；滚动任务结束不自动证明缺口已解决。'
     # Backend control IDs are absent from the model's task catalog.
     dynamic['已有任务']=[{'name':n,'control':region['controls'][t['control']]['name'] if t['control'] else region['name'],
                          '知识来源':'历史共享任务，不是本地执行或当前状态' if t.get('shared_task_ref') else '本区块任务',
@@ -175,6 +179,12 @@ def commit_plan(root,run,call):
                     task['blocker']={'condition':'foreground_exception','exception':exception,'source_call':call}
         records[rid].get('registration_gaps',{}).pop('task_proposal',None)
         if reply['inventory']!='complete' and not q.get('historical_inventory'):
+            scroll=helper('inventory_scroll').select(records[rid],reply) if exception=='none' else None
+            if scroll:
+                state.update(next_action_mode='explore',phase='ready_for_next_action',
+                    active_task={'region':rid,'name':scroll})
+                state.pop('required_control',None)
+                return
             state.update(next_action_mode='discover',phase='awaiting_discovery',interactive_regions=[],observation=None,
                 pending_frame=q['screenshots'][0],discovery_mode='local',inspection_region=rid,reason='task_inventory_incomplete',
                 correction_context='任务清点反馈（来源区块：'+records[rid]['name']+'）：\n'+reply['evidence']+'\n请结合截图核对上述缺口；补充可见但未登记的控件，已登记的控件复用原身份。反馈只是待核对线索，不据此虚构控件、改挂旧任务或宣布探索完成。')
@@ -188,6 +198,11 @@ def attach(root,records,state,working,base):
     if base.get('navigation_advice') and state.get('reason')=='navigation_from_foreground':return base
     refs=state['interactive_regions']
     rid=refs[0] if len(refs)==1 else (working if working in refs else None)
+    scroll_target=helper('inventory_scroll').target(records,state)
+    if scroll_target:
+        if scroll_target not in refs:
+            return helper('stepwise_flow')._assemble_action_context(root,records,state,scroll_target)
+        rid=scroll_target
     active=state.get('active_task')
     continuing=records.get((active or {}).get('region'),{}).get('tasks',{}).get((active or {}).get('name'),{})
     in_progress=helper('task_prerequisites').in_scope(records.get((active or {}).get('region'),{}),continuing,records) and continuing.get('status')=='pending' and (bool(continuing.get('attempts')) or continuing.get('task_type') in ('parameter','scroll'))
@@ -207,7 +222,8 @@ def attach(root,records,state,working,base):
         if task and task['status']=='pending' and helper('task_prerequisites').in_scope(records[active['region']],task,records):continuation=(active['region'],active['name'],task)
     if state.get('deferred_routing_target')==working and working not in refs and not in_progress:return base
     gap=region.get('registration_gaps',{}).get('task_proposal',{})
-    if not progress['inventory_complete'] and (not gap or gap.get('recheck_after')):
+    inventory_scroll=helper('inventory_scroll').active(records,state,rid)
+    if not progress['inventory_complete'] and not inventory_scroll and (not gap or gap.get('recheck_after')):
         q=plan_request(root,records,state,rid);q['progress']=base.get('progress',{});return q
     if base.get('navigation_advice') and not in_progress and not progress['complete']:return base
     q=flow._assemble_local_context(root,records,state,rid)
@@ -275,6 +291,7 @@ def attach(root,records,state,working,base):
         q.update(action_ready=False,stage='task_blocked');return q
     text+='\n\n若原任务控件本轮未定位，而已有另一入口的实际结果可能覆盖同一直接去向，可用none并申请request_task_review核对；未定位不等于消失，不能直接跳过或记完成。参数、创建保存目标不能用打开窗口代替。'
     q['user_prompt']=q['dynamic_prompt']=text;q['task_progress']=progress
+    if inventory_scroll:helper('inventory_scroll').restrict(q)
     return q
 
 

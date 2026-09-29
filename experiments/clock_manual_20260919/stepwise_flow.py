@@ -547,6 +547,7 @@ def assemble_current_context(root, run, region_ref=None, task_ref=None):
     if state.get('navigation_handoff') and result.get('action_ready'):
         result['user_prompt']=result['dynamic_prompt']=result['user_prompt']+'\n\n自动回溯交接：'+json.dumps(state['navigation_handoff'],ensure_ascii=False)
     result['source']['snapshot']=pointer['snapshot']
+    tasks.helper('region_scroll').attach(run,state,result)
     return result
 
 
@@ -599,23 +600,8 @@ def _bind_action_target(request, proposal):
             return {**base,'status':'matched','model_grounded':True,'basis':'navigation scroll uses model coordinates in current screenshot'}
         # Hover and drag still need the same target association as a click.
     if proposal.get('action')=='scroll':
-        if not request.get('allow_scroll'):
-            return {**base,'status':'unresolved','reason':'scroll is outside the routed task'}
-        import importlib.util
-        from pathlib import Path
-        spec=importlib.util.spec_from_file_location('scroll_match',Path(__file__).with_name('image_match.py'))
-        matcher=importlib.util.module_from_spec(spec);spec.loader.exec_module(matcher)
-        template=request.get('region_image');frames=request.get('image_refs',[])
-        if not templates.usable({'image':template,**request.get('region_image_assessment',{})}) or len(frames)!=1:return {**base,'status':'unresolved','reason':'Region identity template missing or not admitted'}
-        match=matcher.locate(template,frames[0])
-        coords=[proposal.get(k) for k in ('x','y','end_x','end_y')]
-        if not match['accepted'] or any(type(v) is not int for v in coords):return {**base,'status':'unresolved','reason':'scroll Region not localized'}
-        left,top,right,bottom=match['box'];x,y,ex,ey=coords
-        desktop=request.get('platform')=='desktop'
-        endpoints_ok=(left<=x<right and top<=y<bottom) and (desktop or (left<=ex<right and top<=ey<bottom))
-        if not endpoints_ok or (x,y)==(ex,ey):
-            return {**base,'status':'unresolved','reason':'swipe leaves Region or has no displacement'}
-        return {**base,'status':'matched','basis':'desktop wheel origin lies in matched Region; endpoint describes wheel direction' if desktop else 'both swipe endpoints lie in matched Region'}
+        import region_scroll
+        return region_scroll.bind(request,proposal,base)
     if proposal.get('action')=='input_text' and (not (request.get('allow_input') or request.get('navigation_advice')) or not isinstance(proposal.get('text'),str)):
         return {**base,'status':'unresolved','reason':'input is outside the routed task'}
     if proposal.get('action') not in ('tap','click','double_click','long_press','right_click','input_text','hover','drag'):

@@ -235,3 +235,11 @@ interactive_areas明确声明当前可交互前景，优先于与其重叠的exc
 `foreground_scope` 在正常登记后按 source_call/source_field 与已登记观察关联记录本轮区块边界，保留同帧仍在前景内的既有边界，缓存绑定截图 SHA256。`visual_region_locator` 仅在同帧已有模型边界时局部扫描；新帧重新定位，控件命中不推算整块边界。无新模型字段、无额外前景调用。
 
 验证证据：`experiments/clock_manual_20260919/records/control_identity_20260924_01/`；64项聚焦检查通过；陌生代理复审与3次原生更新步保存帧 Luna 接受通过，最终源为source-final。实机0041补登记未重发动作；首续段3HTTP/1GUI打开搜索输入框并复用旧对话框。最终版本继续遍历，未宣称全应用完成。
+
+## 2026-09-29 同帧边界滚动绑定
+
+region_scroll从正常foreground_scope登记读取当前可交互Region的同帧边界。内部region_scroll_bounds保存region/observation/frame_sha256/box；绑定核对来源与截图，Android两端须在区块内，桌面滚轮起点在区块内、终点表示方向。本区块滚动不再使用整区模板回退；缺边界沿原补观察，不推算未知边界。导航滚动路径及模型输出字段不变。
+
+assemble_current_context接入边界；repair_stages.refresh使用绝对图路径重读；run_task_step.current切换到本轮实际图后重读。选择阶段坐标绑定不证明投递瞬间身份或动作成功，投递前仍沿原窗口/画面变化核对，实际后图结算效果。仅用于partial滚动取证的区块级观察结束条件见stepwise_debug_loop。
+
+54项聚焦离线通过；Clock正常实机0847/0848纠错后0849正式登记当前区块边界、0850选择并实际滚动、0851正常更新，5HTTP/1GUI。原底部遮挡卡片在后图明确显示9:00 AM及6:40 PM，23个控件身份未增减；清点仍partial。保存帧及先前失败全部保留，不宣称跨应用或所有投递前暂停分支通过。冻结source-live-v5和完整运行见records/scroll_bounds_20260929_01。

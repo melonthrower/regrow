@@ -16,6 +16,11 @@ def request(root,snapshot,records,state):
     functions=tasks.helper('region_functions')
     pending=tasks.helper('shared_control_review').inventory_request(root,snapshot,records,state)
     if pending:return pending
+    # Finish the selected visible evidence-gathering task before unrelated
+    # historical summaries. Its unresolved inventory and old obligations remain.
+    active=state.get('active_task') or {}
+    if tasks.helper('inventory_scroll').active(records,state,active.get('region')):
+        return None
     for rid,region in records.items():
         if region.get('out_of_scope_reason'):continue
         if region.get('task_inventory',{}).get('review',{}).get('kind')!='function_support':continue

@@ -274,8 +274,9 @@ def refresh(root,run,job):
         for key in ('task_name','task_region'):
             if q.get('source',{}).get(key)!=old.get('source',{}).get(key):raise ValueError('补观察改变了原动作任务；保留原任务等待定位')
         if not q.get('action_ready'):raise ValueError('原动作任务仍未定位')
-        frame=state['observation']['image']
+        frame=str((Path(run)/state['observation']['image']).resolve())
         q.update(role='action_selection',screenshots=[frame],image_refs=[frame])
+        helper('region_scroll').attach(run,state,q)
         return q
     # Preserve original before/after frames, source binding, task and receipt.
     q=deepcopy(old)
@@ -524,6 +525,9 @@ def observe_registered(runner,job):
         result=child.perform('discovery',q)
         job['supplements'].append({'source_call':result['call'],'image':str(frame.resolve()),'reply':result['candidate']})
         runner.save(job);q=None
+        if job['stage']=='action' and helper('inventory_scroll').resume_after_region_observation(
+                runner.run,job['request'],result['call']):
+            break
     job['request']=refresh(runner.root,runner.run,job)
     job.pop('requires_observation',None)
     job['error']='补充定位已登记；使用刷新后的候选继续原任务。'

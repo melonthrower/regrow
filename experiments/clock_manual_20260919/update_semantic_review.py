@@ -56,13 +56,19 @@ def check(run, job, reviewer):
             or submission_files(run,job.get('call')) != evidence['submission_files']
             or any(hashlib.sha256(Path(frame['path']).read_bytes()).hexdigest() != frame['sha256'] for frame in frames)):
         raise Pending('审核期间图记录或截图发生变化，需要重新审核')
+    indices=verdict.get('identity_controls',[]) if isinstance(verdict,dict) else []
+    controls=(job.get('candidate') or {}).get('controls',[])
     if (not isinstance(verdict, dict) or type(verdict.get('accepted')) is not bool
             or not isinstance(verdict.get('reason'), str) or not verdict['reason'].strip()
             or not isinstance(verdict.get('evidence'), list) or not verdict['evidence']
-            or any(not isinstance(item, str) or not item.strip() for item in verdict['evidence'])):
+            or any(not isinstance(item, str) or not item.strip() for item in verdict['evidence'])
+            or not isinstance(indices,list)
+            or any(type(i) is not int or not 0<=i<len(controls) for i in indices)):
         saved.setdefault('invalid_verdicts',[]).append(verdict)
         saved['verdict']=None
         temp=path.with_suffix('.tmp');temp.write_text(json.dumps(saved,ensure_ascii=False,indent=2)+'\n');temp.replace(path)
         raise RuntimeError('更新审核结果格式不完整，不能发布或当作模型回复错误')
     if not verdict['accepted']:
-        raise Rejected('监督审核拒绝：'+verdict['reason']+'；依据：'+'；'.join(verdict['evidence']))
+        error=Rejected('监督审核拒绝：'+verdict['reason']+'；依据：'+'；'.join(verdict['evidence']))
+        error.identity_controls=list(dict.fromkeys(indices))
+        raise error

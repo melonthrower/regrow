@@ -277,6 +277,7 @@ class Runner:
                         raise Paused('review_pending',str(error))
                     except review.Rejected as error:
                         job.update(error=str(error),blocked_by=error.blocked_by,status='repair')
+                        job['identity_controls']=error.identity_controls
                         job['history'].append({'call':job['call'],'error':str(error),'source':'supervisor_review'})
                         self.save(job);continue
                 try:
@@ -310,6 +311,7 @@ class Runner:
             elif repairing:
                 if job['repairs']>=2:self.stop(job,'纠错次数已用完；保留原任务和未解决记录')
                 q=request(self.root,job,self.adapters.context(self.run,job))
+                helper('correction_crop_feedback').attach(self.run,job,q)
                 job['repairs']+=1;self.save(job)
             else:q=job['request']
             try:

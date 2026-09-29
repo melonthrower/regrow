@@ -36,17 +36,23 @@ def request(root,snapshot,records,state,current_request=None):
         q['historical_inventory']={'evidence_digest':digest(region)};q['function_support_review']=True
         return q
     # Mandatory reviews above keep their priority. Only defer unrelated
-    # finishing when the normal request can advance this visible Region.
+    # finishing when the normal request can advance visible work or navigate
+    # from the observed foreground to the retained working Region.
     rid=state.get('working_region')
+    visible=state.get('interactive_regions',[])
     foreground=(state.get('observation') or {}).get('foreground',{})
     if (current_request is not None and state.get('next_action_mode')=='explore'
-            and rid in state.get('interactive_regions',[])
+            and visible
             and foreground.get('exception','none')=='none'):
         current=current_request()
         source=current.get('source',{})
-        if (source.get('region')==rid and not current.get('navigation_advice')
+        if (rid in visible and source.get('region')==rid and not current.get('navigation_advice')
                 and (current.get('stage')=='task_proposal'
                      or (current.get('action_ready') and source.get('task_region')==rid))):
+            return None
+        if (current.get('stage')=='action_selection' and current.get('action_ready')
+                and current.get('navigation_advice') and source.get('region') in visible
+                and source.get('return_to')==rid and source.get('working_region')==rid):
             return None
     # Knowledge-only finishing work must not depend on returning to its surface.
     # Keep the active GUI task and current observation untouched.

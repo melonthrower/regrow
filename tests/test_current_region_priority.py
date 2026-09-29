@@ -65,3 +65,34 @@ def test_support_review_is_not_bypassed_or_eagerly_building_current(tmp_path):
         raise AssertionError('mandatory support review must run before constructing current request')
     q = m.helper('historical_inventory').request(ROOT, snapshot, records, state, current_request=current)
     assert q['function_support_review'] and q['source']['region'] == 'r1'
+
+
+def test_navigation_from_foreground_to_work_precedes_unrelated_finishing(tmp_path):
+    m, snapshot, records, state = case(tmp_path)
+    state['working_region'] = 'r2'
+    state['interactive_regions'] = ['r1']
+    original = deepcopy((records, state))
+    q = m.helper('stepwise_flow')._assemble_action_context(ROOT, records, state, 'r2')
+    assert q['action_ready'] and q['navigation_advice']
+    assert q['source']['region'] == 'r1' and q['source']['return_to'] == 'r2'
+    assert m.helper('historical_inventory').request(
+        ROOT, snapshot, records, state, current_request=lambda: q) is None
+    assert (records, state) == original
+
+
+@pytest.mark.parametrize('change', ['no_foreground', 'unobserved_source', 'different_goal', 'different_work', 'not_ready', 'recover', 'exception'])
+def test_navigation_priority_requires_observed_source_and_original_goal(tmp_path, change):
+    m, snapshot, records, state = case(tmp_path)
+    state['working_region'] = 'r2'
+    state['interactive_regions'] = ['r1']
+    q = m.helper('stepwise_flow')._assemble_action_context(ROOT, records, state, 'r2')
+    if change == 'no_foreground': state['interactive_regions'] = []
+    elif change == 'unobserved_source': state['interactive_regions'] = ['r2']
+    elif change == 'different_goal': q['source']['return_to'] = 'r1'
+    elif change == 'different_work': q['source']['working_region'] = 'r1'
+    elif change == 'not_ready': q['action_ready'] = False
+    elif change == 'recover': state['next_action_mode'] = 'recover'
+    else: state['observation'].setdefault('foreground', {})['exception'] = 'blocking_popup'
+    result = m.helper('historical_inventory').request(
+        ROOT, snapshot, records, state, current_request=lambda: q)
+    assert result['stage'] == 'function_registration'

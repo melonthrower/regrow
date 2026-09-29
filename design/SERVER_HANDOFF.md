@@ -276,3 +276,17 @@ Android设备emulator-5554已由真实scroll a0229向上滚动，现可见8:30 A
 这是保存帧修复候选，不把旧06污染图自动替换为正式现场。下一次明确选用新独立续跑图及其冻结源码，重新核对设备前景、实际截图和预算；不得重放a0230，也不把历史a0227保存帧验证当设备回退。旧07/07b的名称未修完整结果保留，不能沿用为已验证图。
 
 另有07d原a0227的保存帧预防验证（非现场续跑），2HTTP/0GUI，最终a0227-0861-5eafa027f7c2；它对应历史07:15，不是当前设备08:30，禁止把它选作现场图。总计本批6HTTP/0GUI、累计40HTTP/2GUI。下一次现场候选仍是上述07c的08:30修复图。
+
+
+## 2026-09-29 导航调度候选09：实际返回，更新受阻
+
+唯一新现场证据根`experiments/clock_manual_20260919/records/navigation_priority_20260929_09`。完整08独立reflink图，冻结source为b403024加historical_inventory导航优先候选。0862选择Cancel，a0231真实点击后设备回Alarm列表，后图仍显示8:30，未见本次Cancel改变设置的证据；0863更新、0864/0865纠错因裁图截断等被监督拒绝，resume-update-03已退出correction_blocked。4HTTP/1GUI，累计45HTTP/3GUI。
+
+knowledge_current仍functions-0861-4fe0313f96a4，图的interactive r0035是旧时刻，不能当当前现场；实际after.png是Alarm。pending_step及execution_pending保留，a0231有真实receipt/after但无commit。禁止重放a0231或a0230，禁止重置纠错次数或手改原回复。下一步先修复/验证纠错视觉反馈再通过原登记路径处理受阻更新。42聚焦通过不能替代失败的原生验收；09轮当时源码/文档候选未提交/推送，GitHub仍为b403024；后续10验证及合并交付见下节。证据交付to_astra/navigation_priority_20260929_09。
+
+
+## 2026-09-29 裁图反馈10：独立保存帧登记通过
+
+`experiments/clock_manual_20260919/records/correction_crop_feedback_20260929_10/run`为09完整独立副本。旧09 blocked episode与pending留在ancestry/原09，未给旧episode续次数；正常框架原0863请求/未改回复重放，新Runner最多2次纠错，实际0866一次Luna修订后正常审核登记。knowledge_current=a0231-0866-8ce6eac57df2，interactive=r0020/r0002、working=r0020，无pending_step/execution_pending。新增1HTTP/0GUI，累计46HTTP/3GUI。
+
+设备最后实际动作仍09的a0231 Cancel返回Alarm，10没有操作；禁止重放a0231/a0230。下一次现场续跑先核对设备与真实进程，再明确选用此已修复图的独立续跑副本及冻结源码。旧09保持失败证据，不能把其旧图当当前现场。65聚焦及本例保存帧通过，不代表跨应用连续遍历。交付to_astra/correction_crop_feedback_20260929_10，当前代码范围为09导航优先与10监督裁图反馈。

@@ -139,7 +139,7 @@ inventory_scroll与region_tasks允许task_inventory仍partial时，推进本轮o
 
 ## 2026-09-29 当前工作先于无关历史重整
 
-historical_inventory.request保持原共享身份核对、活动partial-scroll例外及全历史function_support的先后顺序。之后，若当前working_region在已观察前景、无异常、处于explore，且正常请求属于本区块非导航的task_proposal或action_ready本区块任务，则暂缓其他区块功能重整。task_proposal不要求action_ready=true；受阻、导航、其他归属、恢复不获此优先。run_task_step.current延迟构造并缓存正常请求一次；不修改历史功能摘要、待办或循环计数。
+historical_inventory.request保持原共享身份核对、活动partial-scroll例外及全历史function_support的先后顺序。之后，若当前working_region在已观察前景、无异常、处于explore，且正常请求属于本区块非导航的task_proposal或action_ready本区块任务，则暂缓其他区块功能重整。task_proposal不要求action_ready=true。正常导航也可获优先：action_selection且action_ready/navigation_advice，来源在已确认交互区块，return_to及working_region均指向原工作目标；不要求背景中的工作目标本身可交互。受阻、未确认来源、不同目标和恢复不获此优先。run_task_step.current延迟构造并缓存正常请求一次；不修改历史功能摘要、待办或循环计数。
 
 34项聚焦检查通过；完整运行副本原生0854清点、0855点击、0856后图正常登记，3HTTP/1GUI。当前Alarm清点依真实新图由partial变complete；原0797入口任务done且只有a0230，r0020控件23→23，31历史功能待办记录完全保留，后图为08:30 AM时间选择器。陌生代理认可本例调度效果及任务依据。
 
@@ -160,3 +160,15 @@ run_task_step.run_step与_run_step增加可选review_update关键字，传入同
 run_progress_session在本轮账目结算后识别review_pending，auto与step均停止。debug_loop把此结果标为awaiting_review，不计代码故障、不触发修复、不自动重试。Supervisor尚无内置审核完成恢复路径；监督小试通过直接调用run_step恢复，不能声称debug服务自动闭环。审核回调异常/非法返回仍按已有异常传播，不能声称所有审核服务故障均转等待。付费提供者的计账和服务异常处理尚未接入，不部署默认自动审核。
 
 57项聚焦离线检查通过。真实完整运行副本原样采用实际Luna0858回复，经普通run_step进入review_pending，未发布、未重放a0230；陌生读者核对原始前后图与完整候选后批准，同一普通入口恢复并正式登记到a0230-0858-0eadcee70724，清除两项待结算指针；原回执/前后图/回复字节未变，旧运行指针保持。证据见records/supervised_step_20260929_05的审阅及audit。此次使用保存帧且禁止新HTTP/GUI，验证接线，不是新模型行为或现场连续遍历验收。副本通过reflink独立写入，历史原始运行未改。
+
+
+2026-09-29 前景导航候选续测09：扩展普通导航优先条件（来源已交互、两个目标字段均指原工作区块），42项聚焦通过。完整08图独立副本正常0862点击Cancel，a0231后图真实返回Alarm；0863更新及0864/0865两次纠错均未通过登记审核，最终9:00身份框bottom1740截断数字和AM仍报clear。4HTTP/1GUI，原任务/图未变；实际设备已返回，但图仍0858的时间选择器观察，pending保留。09轮当时尚未行为接受、未提交导出（后续10见下节）；不得据离线绿灯或返回成功宣称完整链通过，也不得重放a0231。
+
+
+## 2026-09-29 监督纠错的身份裁图反馈
+
+审核verdict可选identity_controls（当前候选controls的0基索引），无该字段沿旧路径。update_semantic_review校验范围并随绑定审核抛出；Runner保留选择，只在下一次正常update纠错前调用correction_crop_feedback.attach。模块从该已执行attempt的原after图生成真实bbox裁图和48像素邻域（红框为旧框），附一张拼图及源hash/候选hash/原尺寸/框清单；原前后图、原任务及完整动态上下文保留。无合法框不附图并说明原因；不把拼图坐标当原屏坐标，不修改原回复或自动修正语义。
+
+仅显式监督索引触发，没有默认自动Reviewer、新CLI、GUI或额外重试。65项聚焦通过。原09耗尽分支完整保留；独立完整10副本重放原0863正常请求及未改回复，通过原Runner调用真实0866纠错、审核和登记，1新增HTTP/0GUI。最终a0231-0866-8ce6eac57df2，42区块不变、原任务不变、来源r0035仅登记a0231，interactive为r0020/r0002，pending两项清除。新Pause alarm控件使r0020控件23→24。9:00完整上下文因遮挡标occluded，按既有准入不写身份模板；独立click图保留。铃声括号末约3像素截断仍可辨，记录轻微瑕疵，不称完美裁图。
+
+这是保存帧语义与登记验收；现场Cancel证据来自09，并非10执行新GUI。当前修复候选图需下次核对现场后明确选用；不自动覆盖旧运行，不将1次通过宣称跨应用稳定或速度改善。0866输入113388tokens（含缓存），上下文压缩仍未实现。

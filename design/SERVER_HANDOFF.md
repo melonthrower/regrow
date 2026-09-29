@@ -262,3 +262,9 @@ Android设备emulator-5554已由真实scroll a0229向上滚动，现可见8:30 A
 完整副本`experiments/clock_manual_20260919/records/current_region_priority_20260929_01/run`，冻结`source`，live-round-01已正常结束。knowledge_current为`knowledge_snapshots/a0230-0856-e676f8ece3d7`；3HTTP/1GUI，累计含此前29HTTP/2GUI。设备emulator-5554实际显示Select time 08:30 AM及数字键盘，未修改或保存时间。pending_step/execution_pending均无，不得重放a0230。旧run-v5指针不动，但旧截图不是当前设备。
 
 当前working/interactive为新增r0043，下一请求task_proposal；31历史功能待办完整保留。先核对身份问题：r0035历史名Wake-up时间选择器，0809却在Alarm 07:15入口复用；0856另建Alarm时间选择器。没有自动合并，调度单例可接受，身份复用及持续准确遍历未验收。继续前核对实际进程、前景、预算，正常入口仍为冻结source/run_task_step.py；不要按旧交接重放动作或重置设备。
+
+## 2026-09-29 监督续跑06：历史控件污染待修
+
+独立reflink续跑副本`experiments/clock_manual_20260919/records/supervised_live_20260929_06/run`，冻结source对应私有导出0efe892。live-round-01终止于ready_next_round，0859仅整理功能，1HTTP/0GUI；累计34HTTP/2GUI。最新pointer见该run/knowledge_current.json（frontier-1017f3a8057d47b5afd4457e44c4a16b-78fb33110ef9），非0858原指针。preflight.png实机仍Select time08:30AM及键盘，本轮未改变设备、无待结算GUI。
+
+本轮发现r0035/c0131在历史0809已混合表盘与时钟模式按钮；0858及0859沿用污染身份。暂停此图的进一步GUI使用，先修复/验证有效观察及任务引用。不要整条合并c0131/c0132，不重放a0230；旧运行全部保留。运行已结束，继续前仍须重新确认进程和现场。详见模块末节及to_astra/supervised_live_20260929_06。

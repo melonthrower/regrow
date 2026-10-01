@@ -195,7 +195,6 @@ def commit_plan(root,run,call):
 def attach(root,records,state,working,base):
     """Route a local obligation or continuation; return to observed entry parent."""
     if state.get('next_action_mode')!='explore':return base
-    if base.get('navigation_advice') and state.get('reason')=='navigation_from_foreground':return base
     refs=state['interactive_regions']
     rid=refs[0] if len(refs)==1 else (working if working in refs else None)
     scroll_target=helper('inventory_scroll').target(records,state)
@@ -206,6 +205,8 @@ def attach(root,records,state,working,base):
     active=state.get('active_task')
     continuing=records.get((active or {}).get('region'),{}).get('tasks',{}).get((active or {}).get('name'),{})
     in_progress=helper('task_prerequisites').in_scope(records.get((active or {}).get('region'),{}),continuing,records) and continuing.get('status')=='pending' and (bool(continuing.get('attempts')) or continuing.get('task_type') in ('parameter','scroll'))
+    if (base.get('navigation_advice') and state.get('reason')=='navigation_from_foreground'
+            and not (in_progress and continuing.get('task_type') in ('parameter','scroll'))):return base
     if state.get('visual_navigation') and base.get('navigation_advice') and base.get('navigation_path') and not in_progress:return base
     multi_continuation=rid is None and refs and in_progress
     if multi_continuation:rid=refs[0]

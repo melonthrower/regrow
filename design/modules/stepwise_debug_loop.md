@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-01 参数任务跨区继续：`region_tasks.attach` 在返回来源区块前核对活动任务。仍在允许范围、状态为pending的parameter/scroll任务可沿既有接续路径在当前前景继续；其他任务保留原导航优先级。此次修正不修改任务结束、身份、重复尝试或动作绑定规则。Clock时区弹窗的原请求曾被提前换成返回设置页的导航请求；6项新增离线检查通过，74项相关检查中71项通过，另外3项在修改前冻结源中同样失败。真实0051完整副本的0063原答通过正常动作绑定（1HTTP/0GUI）；监督重入子滚动及选回原父goal后，正常自动轮0071–0076补观察、真实滚动a0014及结果登记通过。仅此跨前景参数场景得到现场证据；父任务仍pending，不表示自主选回父goal或Clock遍历完成。原source保留，运行选用只改region_tasks.py的source-v2。
+
 入口：`experiments/clock_manual_20260919/debug_loop.py <apps.json> <output>`，使用现有 guiwalk-android Python。完整当前说明见 [DEBUG_LOOP](../../experiments/clock_manual_20260919/DEBUG_LOOP.md)。这是复制的研究遍历器外围监督，不接入主 `gui_rewalk` 的 Router，也不修改采集模块。
 
 监督器用两个运行槽公平轮转现有 run，每轮复用 `run_progress_session.py step`，同设备互斥、不抢占现有遍历；候选修复串行。STOP请求在当前步骤收尾后生效，取消STOP并重新运行同入口可恢复用户暂停。预算暂停、服务拒绝和needs_attention不自动视为恢复。

@@ -1,5 +1,7 @@
 # 临时逐步遍历器：共享区块的行为分离
 
+2026-10-02 身份图原始提示补齐纯色控件模板边界说明：保留本对象特征/可辨边界，无法确认则uncertain/null，不统一扩框、不改变Region/click合同。真实完整发现/更新保存帧3HTTP/0GUI完成正常登记，但发现首次仍因单色失败并纠错；只接受合同说明一致及本例无新增回归，不称错误率改善。27聚焦通过，既有1排除；见archive/clock_template_guidance_20261002/DESIGN.md。
+
 2026-10-02 完全单色控件身份/图标模板：identity_templates.check_control_crop在register_update.save_region_images保存前检查clear裁图，原纠错文本携带控件索引和字段；不追加裁图拼图、不检查Region或click图。历史reject_uniform_history由显式publish调用，追加template_rejections逐字段原因/来源/SHA；usable/assessment和当前/历史描述投影遵守限定。纯色不证明不存在，非纯色不证明正确。实际0119原答被拒，2次正常Luna纠错后移除不存在加号、扩大最小化图标边界，原图像素核对通过；0新GUI。历史副本6项资格撤销，原观察/动作/任务保留。详见archive/clock_evidence_quality_20261002/DESIGN.md。
 
 2026-10-02 同点竞争：自由措辞点位回退若唯一强命中还与另一对象的实际match.candidates投影同点，返回unresolved；弱精确名命中（披露候选或原best-box分支）若另有强对象同点，也返回unresolved，经正常BindingConflict纠错。无候选的遗留best box不用于第一条；不选最小框、不改变强名字/无竞争弱名字及原unconfirmed执行合同。当前外观证据不能由候选框、名称、分数、点内关系或历史代替。最终真实完整上下文4HTTP/0GUI及59聚焦有限通过，旧两次幻觉回复保留为不接受；未实际补观察或执行替代动作，可能保守拒绝合法弱子控件。设计与范围见archive/clock_binding_ambiguity_20261002/DESIGN.md。

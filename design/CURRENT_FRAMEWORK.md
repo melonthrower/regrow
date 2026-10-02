@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-02 截止停止检查点：clock_complete_20261002_01/session-15已结算，最后调用0170；本目标实机续跑累计144HTTP/36GUI命令。图18区域/11账面完成整理，7处清点/功能缺口、0pending/0blocked，complete=false；账面整理不等于语义验收。停止记录UTC 2026-10-02T19:55:51.289351+00:00，专属VM已暂停，无活动GUI驱动；未处理指针：无。现场源为clock_visibility_conflict_20261002_01/source-v2，hash3739d9ff31dccf3530826d0aef2195f7c8b7a722eaa2c4401a411b6eb7bb1c85，批准97df04ceb47de7dd4ef7fbc01ddb31f38c83f89d加已披露parent-runnable差异。最后批次max_rounds=2是截止前会话边界，总HTTP/GUI仍不限；额度未进入Luna提示。 公开三应用五例18HTTP/0GUI仍为辅助诊断，未获跨应用稳定验收；最新可见性门禁的实际错误拒绝证据仅来自完整保存帧，现场部署不等于触发该分支。详见SERVER_HANDOFF和本月日志。
+
 2026-10-02 当前控件/可见性一致性：复用区域直接登记本轮控件时，不允许同一身份又被previous_regions标为不可见、被接管或未知；普通准入及来源拆分后的最终ID共用检查，无控件父引用保持。45聚焦通过/16既有基线失败排除；真实0152原答自动拒绝，0153正常纠正登记1HTTP/0GUI（先前监督失败另1HTTP），原现场不改，非通用身份或跨应用验收。现场截至session13累计129HTTP/31GUI命令，17区域/11整理完成，仍6缺口；B9已部署、B11从session12选源，新门禁尚未现场部署。见对应模块、本月日志及archive/clock_visibility_conflict_20261002/DESIGN.md。
 
 2026-10-02 证据资格：clear控件身份/图标的完全单色裁图经原纠错拒绝，Region/click图不拦；历史显式维护仅追加逐字段不可用资格，原观察/图/任务/动作保留，投影附视觉限制。同区支持任务关联的未确认owner真实动作结果和参数事实现在进入功能请求/摘要，不补身份。83聚焦、3HTTP/0GUI真实完整保存帧有限验证；已于session10部署并完成6项历史模板资格维护，原记录保留，最新现场见页首，非纯色错框等仍开放。见stepwise_region_identity、stepwise_discovery_completion及本月日志。

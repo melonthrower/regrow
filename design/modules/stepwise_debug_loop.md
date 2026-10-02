@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-02 最终有限续跑：session14为11HTTP/3GUI，实际收起Ring、展开Snooze并看到六值/当前10；随后Remove点击只收起菜单，0166明确移除未确认。session15使用97df04源，4HTTP/2GUI：a0035真实后图及0169支持当前列表移除，随后历史边导航只打开新建表单；仅两轮截止批次；最终合计144HTTP/36GUI命令。停止/现场图见clock_complete_20261002_01/deadline-stop-01，VM暂停、pending=无，Clock未完整。可见性门禁来源拆分仍只离线/静态，保存帧0153不是现场图修复；0165可见/可操作错误P2仍未修。
+
 2026-10-02 可见性冲突沿原Runner纠错：完整真实保存副本中0152未经改动的有效请求/候选由普通accept触发region_visibility_conflict，原repairs=1保留，真实0153修订后repairs=2并正常登记；1HTTP/0GUI。新独立默认入口实验不携带自定义监督器，原监督案例仍review_pending，非绕过原审核或实机恢复。原任务/截图/回执保留，未重发a0030。现场session10–13累计新增30HTTP/5GUI命令，本目标累计129/31；实际创建闹钟、打开编辑和Ring下拉，session12/13仅功能整理，Clock未完成。各阶段包与保存帧候选分别保留。
 
 2026-10-02 Clock session08/09共30HTTP/9GUI；当前目标累计99HTTP/26GUI。实际Timer1m启动后58秒，通知到期经wait→hover→close恢复；随后Stopwatch启动及Lap有真实后图。09之后因0119纯色模板及0117功能投影问题停止，原运行未回滚/改图。B9完整保存帧正常Runner修正3HTTP/0GUI，历史副本仅派生资格维护；不将这批模型验证称新GUI。阶段08/09包与修复包分别保留。

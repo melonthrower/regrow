@@ -1,5 +1,7 @@
 # 服务器续接工作
 
+2026-10-02 新桌面Clock停点：artifacts/runs/desktop_clock_fresh_20261002_01，run org.gnome.clocks_20261002T134236_807ada52，专属容器rewalk-clock-fresh-20261002-01已暂停保留；旧设备/图未恢复或修改。22HTTP/8GUI、6轮完成，无在途请求及活动execution_pending/suspended_updates；Cancel后World空页，未添加城市。Alarms/Stopwatch/Timer/menu四任务pending，World新入口未派任务。冻结源hash 203ba20d96af8c1021cad09dd078d8f549bdd0e50fb8167b6ec4a063ffe35f49；共享依赖前后hash不变但仍从主仓库导入。续跑须核对该run的vm.json/config及累计账、恢复本容器并fresh取图，不以旧帧投递。原生会话额度按session，外层本次脚本扣除已用量；单轮追加结束不表示全图完成。
+
 2026-10-02 独立接线验证已停止：Tasks保存帧只在records/framework_wiring_fix_20261002_01完整副本登记，原运行指针/manifest/指定原答hash不变；5HTTP/0GUI。Clock城市查询使用artifacts/runs/framework_wiring_collection_20261002_01内只读图和新AVD overlays，所有本次所属模拟器均已关闭，累计12HTTP/3GUI。没有恢复/部署旧遍历，不把历史London勾选当本次添加。源码/证据/失败轮版本及范围见本月日志。
 
 2026-09-19 本轮最终停点：`artifacts/traversal_continue_20260919_01`至`_06`已全部停止，29候选中27项本轮尝试、2项（桌面VLC/Joplin）原累计HTTP余量不足启动预留；无后台运行/排队。总新增550HTTP、79遍历GUI、34激活GUI、1独立启动恢复GUI。原生遍历结果{'success': 70, 'uncertain': 9}，不是全图验收。逐应用最新账本、原源、停止原因和未重置的剩余额度见`_01/final_summary.json`，不能从旧历史段选择当前位置。新额度问题未答复，未使用额外授权。

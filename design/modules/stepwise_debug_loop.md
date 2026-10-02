@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-02 新桌面Clock有限现场：新VM/新图经正常run_source.session_command→run_progress_session→run_task_step，22HTTP/8底层GUI、6轮；原答不改、默认review_update=None。0016任务漏覆盖由0017一次正常纠正后继续；通知恢复2GUI，四个业务/导航动作6GUI。最终3done/6record_only/4pending、3Region/14控件/1功能；Add未执行，功能明确未验证实际添加，非全图验收。一般服务失败可写suspended_updates而普通续跑未见消费者；特定402恢复不能替代此路径（静态审计，未现场触发）。contains定义interactive优先，整屏excluded表达含糊不直接视为误操作。冻结源、真实原答与图在artifacts/runs/desktop_clock_fresh_20261002_01；用户报告包to_astra/desktop_clock_fresh_20261002_01。
+
 ## 2026-10-02 结果结算与运行源码
 
 `task_routing.advance` 只为已经由原结果核对判定 done 的 single_action 交接；成功投递、来源消失或出现其他区块不能把 pending/blocked 改成 done。真实 `result_evidence` 与 `completion_basis` 保留，目的区块仅补充路由信息。`history_context.attempts` 同时披露原结算依据与动作后区块，后者不能替代结果。

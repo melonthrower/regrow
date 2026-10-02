@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-02 新桌面Clock小样本：独立VM/新图原生22HTTP、8GUI命令，任务覆盖遗漏一次自动纠正、系统通知一次恢复；仅World搜索/选择及功能整理，未点Add、未遍历其他核心页。静态审计确认一般服务失败归档的suspended_updates缺少普通续跑消费者，默认CLI语义审核与跨session累计硬额度仍有边界；未在本次触发该失败。未改框架代码，详见stepwise_debug_loop、本月日志与archive/desktop_clock_fresh_20261002/DESIGN.md。
+
 2026-10-02 接线修复：任务完成保留原语义判定，路由/历史入口不自动done；维护启动入口按运行选择会话及解析源码。普通生成/采集共用冻结逐步图，严格摘要、身份图依赖与固定matcher、单次输出；输入点位合同与执行器一致。批准导出158项聚焦离线通过；3场景原生Luna保存帧＋日期裁图2次监督纠错共5HTTP/0GUI；单功能城市查询重跑成功8HTTP/2GUI，含生成和失败轮共12HTTP/3GUI。旧图混合身份、普通CLI独立HTTP/GUI硬额度、跨应用/全遍历仍未解决，不代表全门禁或无人监督验收。入口与限制见 stepwise_debug_loop / visual_collection / region_function_collection_research。
 
 2026-10-02 复制遍历器局部清点增加同帧只读区块划分与其他owner的匹配控件；写入仍限focus，越界/争用位置进入原纠错。任务结果不被目的区块摘要覆盖，功能整理包含原动作及带出处的观察事实，事实变化使整理失效。同图补全保留范围上下文。69项聚焦通过；2次真实Luna保存帧原答正常登记，Settings六控件ID保持、返回仍归导航，颜色确认效果被正确整理并保留精确色值/HEX输入未确认。0新GUI，非现场/全应用验收；范围见stepwise_discovery_completion、stepwise_region_identity及本月日志，旧冻结运行未自动部署。

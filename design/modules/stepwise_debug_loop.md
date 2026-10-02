@@ -4,8 +4,10 @@
 
 44项聚焦检查通过，独立审阅指出并修复能力表和刷新旧图指针两项问题。冻结源6fe76f4f273cb97f8c19b08617e5eecab89d5af98391d9628d56d0a2f4d009b0：完整真实0078检查点正常run_session，5HTTP/0GUI经历绑定拒绝、单图纠错、原生发现登记、新动作接受；旧20260925 Clock真实取图序列重放2HTTP/0GUI，通知变化由原same_surface检查发现，单当前图0047取得confirmed_call。实际原答未改，均止于GUI边界。刷新后撤销资格的组合路径仅离线覆盖，非现场动态界面/全遍历验收。
 
-当前现场第6段仍用滚轮源3e9bc2e，8HTTP/0GUI：4轮action申请核对与task_result_review pending重复，无新证据。本目标累计68HTTP/17GUI；a0019实际matched c0036名单，新drag任务control=c0037，严格同控件核对拿不到历史。已停止继续盲跑，原证据待已有历史归属入口核对；不能声称已修复现场循环或改过历史绑定。
+历史现场第6段使用滚轮源3e9bc2e，8HTTP/0GUI：4轮action申请核对与task_result_review pending重复，无新证据。本目标累计68HTTP/17GUI；a0019实际matched c0036名单，新drag任务control=c0037，严格同控件核对拿不到历史。已停止继续盲跑，原证据待已有历史归属入口核对；不能声称已修复现场循环或改过历史绑定。
 
+
+2026-10-02 session-07：选择已验action单图源6fe76f4/批准f345f9b，监督触发已有action_owner_correction.request及原Runner；实际0095原答正常改挂a0019有效对象到c0037、核对原前后图结算drag任务，1HTTP/0GUI，不再重拖。此前完整副本同路径另1HTTP/0GUI通过陌生读解，原答未编辑。原派发/绑定/截图不变，control=null的区块scroll任务及其历史findings保留；不把事实搬给新drag任务。现场累计69HTTP/17GUI；0pending仅指已登记任务，核心页缺清点与首次对象/运行态。通用宽容器绑定和自动识别此类循环尚未修复，不能据监督解堵宣称全自动鲁棒。
 
 2026-10-02 桌面垂直滚轮方向：`平台/桌面执行.prompt`明确end_y<y查看下方/后续内容，end_y>y查看上方/先前内容；保持desktop_transport的ticks符号、幅度、坐标与Android合同。无变化不等于末尾。32聚焦通过，原生保存帧03版0075/0082检查点各1HTTP（0GUI），原答均转换为scroll(-2)，实际名单区域绑定matched。停于执行边界；源码3e9bc2e...已接入session-06，该段8HTTP/0GUI，没有新滚轮执行验证。首次harness误读不存在的before_window为0HTTP准备失败，修订后使用真实selection_window，失败保留。
 

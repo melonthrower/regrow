@@ -1,6 +1,6 @@
 # 临时逐步遍历器：共享区块的行为分离
 
-2026-10-02 action纠错当前只附唯一执行依据图；不再以附加历史图要求模型输出新坐标。历史动作/观察迁移从此阶段的能力/schema/执行端一并移除，非action专门核对保留真实多图及全部校验。投递前资格刷新后转存历史，不能用旧帧确认新动作。7HTTP保存帧有限验证/0GUI；现场未部署。原update及其裁图反馈仍多图，不属于本批改动。
+2026-10-02 action纠错当前只附唯一执行依据图；不再以附加历史图要求模型输出新坐标。历史动作/观察迁移从此阶段的能力/schema/执行端一并移除，非action专门核对保留真实多图及全部校验。投递前资格刷新后转存历史，不能用旧帧确认新动作。7HTTP保存帧有限验证/0GUI；session-07已选择该源，但本段只有历史任务核对，没有新的动作纠错/GUI。原update及其裁图反馈仍多图，不属于本批改动。
 
 
 2026-10-02 图片合同核对：现场0064/0067的双图更新及身份/点击裁图未见错配，仅为两个正例。0079普通action纠错由step_repair.request追加原任务尝试前后图，schema仍允许坐标；其实际回复observe，没有新坐标/GUI。因此“action_selection使用单图”不代表所有动作纠错单图，该action分支现有上文单图候选，原update多图定位质量仍开放。滚轮方向提示候选不改变图片/裁框规则。
@@ -28,7 +28,9 @@
 
 ## 已登记单笔动作的对象纠正（2026-09-23）
 
-`action_owner_correction.request`为诊断明确的历史动作构建既有步骤纠错请求；record_edit增加attempt/from_region/from_control/to_region/to_control/evidence变体。候选不是身份结论，必须提供原前后图及动作前观察中的目标身份；提交核对当前快照、已披露候选、原有效归属与执行状态。不会修改原dispatch/截图或迁移整个控件。当前仅支持无参数事实的单步入口证据；多步/参数证据不凭改挂转移结论。
+`action_owner_correction.request`为诊断明确的历史动作构建既有步骤纠错请求；record_edit增加attempt/from_region/from_control/to_region/to_control/evidence变体。候选不是身份结论，必须提供原前后图及动作前观察中的目标身份；提交核对当前快照、已披露候选、原有效归属与执行状态。不会修改原dispatch/截图或迁移整个控件。对绑定旧控件且引用该动作的任务，若有findings或非single_action则拒绝仅靠改挂迁移结论；此检查不覆盖control=null的区块任务或动作自身parameter_findings。它们保留原历史出处，不能声称所有事实来源随有效动作对象同步。
+
+桌面Clock个案：session-06的a0019实际拖动滚动条却被点位回退绑定名单c0036，新c0037任务因严格同控件召回拿不到原证据。完整副本保存帧1HTTP/0GUI及监督触发现有入口后的现场session-07 1HTTP/0GUI均正常修订有效对象到c0037并用原前后图结算，原dispatch/binding/事实保留。不是自动诊断/自动触发，也未修复一般宽容器绑定；名单内容变化支持代表性后续内容，不证明末尾。实际请求保留正文原前后图说明，但helper返回wire中的逐图标题未沿Runner重建保留，不以参考wire冒充实际发送材料。
 
 在原快照事务修正该动作、control.action_refs及由它支持的已有边；ownership_history保存原归属与原完成结论。旧任务原attempts保留审计，失效引用不再作为完成依据；completion_basis消费者也复核。只有该笔证据的旧任务暂挂，有独立其余证据时回pending核对，原有其他blocker不覆盖。equivalent沿canonical状态，功能审核摘要因任务变化失效。
 

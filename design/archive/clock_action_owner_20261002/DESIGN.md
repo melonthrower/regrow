@@ -1,0 +1,13 @@
+# Clock 历史动作归属核对
+
+本批复用既有入口，不修改遍历代码或提示。session-06四轮8HTTP/0GUI重复：action知道a0019曾拖出后续名单，c0037任务的严格同控件历史却为空，因为动作已绑定c0036大名单。
+
+从完整真实run调用action_owner_correction.request，保留任务、实际投递、目标动作前观察、原前后图及当前图，经普通Runner处理Luna未编辑原答。新episode是明确监督诊断的入口，不冒充框架自动发现。它只给候选，不预写control或done。
+
+保存帧1HTTP/0GUI、现场session-07 1HTTP/0GUI均由正常修订事务将有效action.control改为c0037，再用reviewed_control_history结算drag任务。原0085/0086及a0019的71文件与保存副本逐字一致；任务attempts不伪造。原control=null区块scroll任务及其findings保持历史c0036出处，不把名单事实移给滚动条。旧模块过窄描述按实际检查范围澄清，未放宽实现。
+
+直接效果依据是名单出现代表性后续行；a0019前图滑块不明显，其原位置另有update:0083身份依据。Seif Lotfy前图已有，不称新增；没有证明末尾或新导航。actual请求正文说明最后两张原前后图，参考wire的明确逐图标题未进入Runner重建，本例未因此误读，保留该材料边界。
+
+已选择批准f345f9b对应运行冻结源6fe76f4；含此前披露的parent-runnable差异，批准导出不含。现场累计69HTTP/17GUI、11Region、核心页仍缺任务清点。不能用0pending宣称完整遍历。
+
+待解决：宽区域点位匹配被当作具体对象确认；此类证据冲突尚无自动核对触发；update多图坐标仍开放。需分别验证材料供给、模型原答和框架接受，不能把监督个案恢复当作通用鲁棒性已完成。

@@ -313,7 +313,7 @@ def _run_step(root,run,out,*,review_update=None):
         confirmed=step_repair.confirmed_dispatch_review(run,accepted,calls,dispatch_window,out/'current.png')
         write_json(folder/'pre_dispatch_check.json',{'window':dispatch_window,'changed_window':changed_window,'confirmed_call':ref if confirmed else None})
         if changed_window or (not confirmed and not same_surface(folder/'before.png',folder/'pre_dispatch.png')):
-            repair.reject_action(fresh,proposal,ref,'投递前窗口或画面发生变化；动作未执行，请比较两图核对目标，而非仅因动态内容变化反复刷新。',
+            repair.reject_action(fresh,proposal,ref,'投递前窗口或画面发生变化；动作未执行，请按唯一最新投递前图重新确认目标与坐标，而非仅因动态内容变化反复刷新。',
                 pre_dispatch_review={'before':str(folder/'before.png'),'current':str(folder/'pre_dispatch.png'),'window':dispatch_window})
         write_json(folder/'pre_dispatch_binding.json',binding)
     elif proposal['action'] in ('back','key_press','hotkey') and system_action_changed(proposal['action'],folder/'before.png',folder/'pre_dispatch.png',selection_window,foreground_window(transport)):

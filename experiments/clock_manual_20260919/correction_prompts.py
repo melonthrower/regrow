@@ -54,7 +54,7 @@ def select(job, context):
     if codes & RECORD_CODES or (not codes and stage!='action'):modules.append('登记修订')
     if codes & OWNER_CODES or job.get('blocked_by')=='region_ownership_review' or (not codes and stage in ('discovery','update')):
         modules.append('区块归属')
-    if q.get('action_owner_candidates'):modules.append('动作归属')
+    if stage!='action' and q.get('action_owner_candidates'):modules.append('动作归属')
     if context.get('最近尝试原始证据'):modules.append('重复无进展')
     return list(dict.fromkeys(modules))
 

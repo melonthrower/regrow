@@ -170,9 +170,10 @@ def related(run,job):
     return result
 
 
-def record_capabilities():
-    return ['edit_record观察归属纠正：仅本轮control_observation_candidates披露的region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence；只迁移指定观察，不迁移任务或动作，不能整条合并。retained_name必须描述迁移后来源控件剩余观察的职责，不能沿用被移走对象的名称。',
-            'edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原前后图及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。',
+def record_capabilities(stage=None):
+    historical=['edit_record观察归属纠正：仅本轮control_observation_candidates披露的region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence；只迁移指定观察，不迁移任务或动作，不能整条合并。retained_name必须描述迁移后来源控件剩余观察的职责，不能沿用被移走对象的名称。',
+                'edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原前后图及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。']
+    return ([] if stage=='action' else historical)+[
             'edit_record / task_control或suspend_task：在发现/任务清点中用task选择任务；无历史pending可改到披露的唯一控件，有历史只暂挂保留旧事实并重新清点。',
             'edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。',
             'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。',
@@ -203,7 +204,7 @@ def context(run,job):
                    '控件':[{'名称':c['name'],'说明':c.get('description',''),'列表分组':c.get('list_group',''),'视觉描述':c.get('icon_description') or (c.get('observations') or [{}])[-1].get('icon_description',''),'目标观察':target(c,observation),'已登记动作数':len(c.get('action_refs',[]))} for c in r['controls'].values()],
                    '任务':[task_view(r,n,t) for n,t in r.get('tasks',{}).items()]} for r in records.values()],
             '开放能力':['修正本轮完整提案','补充一次观察，之后回原步骤','defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务',
-                     *record_capabilities()]}
+                     *record_capabilities(job['stage'])]}
 
     source=job['request'].get('source',{});owner=source.get('task_region') or source.get('region');name=source.get('task_name')
     region=records.get(owner,{})
@@ -281,6 +282,9 @@ def refresh(root,run,job):
         frame=str((Path(run)/state['observation']['image']).resolve())
         q.update(role='action_selection',screenshots=[frame],image_refs=[frame])
         helper('region_scroll').attach(run,state,q)
+        if job.get('pre_dispatch_review'):
+            job.setdefault('pre_dispatch_review_history',[]).append({
+                'evidence':job.pop('pre_dispatch_review'),'invalidated_by':'action_request_refresh'})
         return q
     # Preserve original before/after frames, source binding, task and receipt.
     q=deepcopy(old)
@@ -297,6 +301,8 @@ def edit_record(root,run,job,edit):
         return helper('discovery_step').publish(run,'shared-review-'+job['call'],revise)
     edits=edit if isinstance(edit,list) else [edit]
     if not edits:raise ValueError('empty record edits')
+    if job['stage']=='action' and any('attempt' in item or 'observations' in item for item in edits):
+        raise ValueError('单图动作纠错不能迁移历史动作或观察归属；保留原证据，进入历史核对')
     if not (job['request'].get('screenshots') or job.get('supplements')):raise ValueError('无图像依据时不开放视觉记录修订')
     allowed=related(run,job)
     def mutate(records,state,snapshot,temp):

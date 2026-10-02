@@ -1,6 +1,13 @@
 # 临时逐步遍历器的监督修复闭环
 
-2026-10-02 桌面垂直滚轮方向：`平台/桌面执行.prompt`明确end_y<y查看下方/后续内容，end_y>y查看上方/先前内容；保持desktop_transport的ticks符号、幅度、坐标与Android合同。无变化不等于末尾。32聚焦通过，原生保存帧03版0075/0082检查点各1HTTP（0GUI），原答均转换为scroll(-2)，实际名单区域绑定matched。停于执行边界；源码3e9bc2e...，未接现场。首次harness误读不存在的before_window为0HTTP准备失败，修订后使用真实selection_window，失败保留。
+2026-10-02 action纠错的执行图：`step_repair.request`只发送original_request中唯一当前图，历史/补观察图留路径与文字；非action保留原多图链。`confirmed_dispatch_review`改为核验单张指定当前图，仍要求同轮、同窗口、一次repair、无observe/record_edit、未投递及原答候选一致。`repair_stages.refresh(action)`成功后把旧pre_dispatch_review转存pre_dispatch_review_history并撤销快捷确认；原计数不变。能力表、schema与edit_record入口同时禁用action阶段历史动作/观察迁移，当前记录修订和专用历史核对仍可用。新拒绝诊断及重复操作提示同步单图语义。
+
+44项聚焦检查通过，独立审阅指出并修复能力表和刷新旧图指针两项问题。冻结源6fe76f4f273cb97f8c19b08617e5eecab89d5af98391d9628d56d0a2f4d009b0：完整真实0078检查点正常run_session，5HTTP/0GUI经历绑定拒绝、单图纠错、原生发现登记、新动作接受；旧20260925 Clock真实取图序列重放2HTTP/0GUI，通知变化由原same_surface检查发现，单当前图0047取得confirmed_call。实际原答未改，均止于GUI边界。刷新后撤销资格的组合路径仅离线覆盖，非现场动态界面/全遍历验收。
+
+当前现场第6段仍用滚轮源3e9bc2e，8HTTP/0GUI：4轮action申请核对与task_result_review pending重复，无新证据。本目标累计68HTTP/17GUI；a0019实际matched c0036名单，新drag任务control=c0037，严格同控件核对拿不到历史。已停止继续盲跑，原证据待已有历史归属入口核对；不能声称已修复现场循环或改过历史绑定。
+
+
+2026-10-02 桌面垂直滚轮方向：`平台/桌面执行.prompt`明确end_y<y查看下方/后续内容，end_y>y查看上方/先前内容；保持desktop_transport的ticks符号、幅度、坐标与Android合同。无变化不等于末尾。32聚焦通过，原生保存帧03版0075/0082检查点各1HTTP（0GUI），原答均转换为scroll(-2)，实际名单区域绑定matched。停于执行边界；源码3e9bc2e...已接入session-06，该段8HTTP/0GUI，没有新滚轮执行验证。首次harness误读不存在的before_window为0HTTP准备失败，修订后使用真实selection_window，失败保留。
 
 现场session-04/05使用首次状态提示源19f845：分别11HTTP/3GUI与18HTTP/3GUI，累计本次续跑60HTTP/17GUI。04真实hover清除菜单提示、打开About和Credits；05清单漏覆盖及前景框冲突沿正常纠错恢复，两次正向滚轮仍在名单顶部，随后a0019拖动滑块取得后续名单。0086结算原滚动目标；新拖动目标仍pending，11Region仅1完成清点/功能整理（新增观察使原整理失效），核心创建/运行态尚未观察。0079 action纠错实际3图但选择observe、未输出新坐标；不能据此证明多图导致误点。GUI执行与保存帧候选分开。
 

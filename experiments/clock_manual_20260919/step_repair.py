@@ -124,7 +124,7 @@ def confirmed_dispatch_review(run,job,current_calls,window,current_frame):
     if sent.get('role')!='step_correction' or reply.get('resolution')!='revise' or reply.get('blocked_by')!='none':return False
     frames=sent.get('screenshots',[])
     current=evidence['current']
-    return (evidence['before'] in frames and current in frames
+    return (frames==[current]
             and job['request'].get('screenshots')==[current]
             and sent.get('original_request',{}).get('screenshots')==[current]
             and reply.get('proposal')==job.get('candidate'))
@@ -153,7 +153,10 @@ def request(root,job,context):
           'required':['region','control','field','before','after','evidence'],'additionalProperties':False}
     task_edit={'type':'object','properties':{n:{'type':'string'} for n in ('region','task','field','before','after','evidence')},'required':['region','task','field','before','after','evidence'],'additionalProperties':False}
     task_edit['properties']['field']={'type':'string','enum':['task_control','suspend_task']}
-    edit={'anyOf':[edit,task_edit,helper('action_owner_correction').schema(),helper('control_observation_repair').schema()]}
+    edits=[edit,task_edit]
+    if job['stage']!='action':
+        edits.extend([helper('action_owner_correction').schema(),helper('control_observation_repair').schema()])
+    edit={'anyOf':edits}
     fields={'blocked_by':{'type':'string','enum':['none','blocking_popup','system_error','unexpected_exit','external_app','control_not_visible','binding_conflict','region_ownership_review','shared_control_conflict','model_response_parse_error','review_required']},'reason':{'type':'string'},'resolution':{'type':'string','enum':['revise','observe','edit_record','defer','blocked']},
             'proposal':{'anyOf':[deepcopy(original['response_schema']),{'type':'null'}]},
             'record_edit':{'anyOf':[edit,{'type':'array','items':edit},{'type':'null'}]}}
@@ -194,17 +197,23 @@ def request(root,job,context):
         choice_prompt=Path(root)/'遍历prompt/纠错/控件候选消歧.prompt'
         parts.append({'path':'纠错/控件候选消歧.prompt','text':choice_prompt.read_text()})
     text=json.dumps(dynamic,ensure_ascii=False,indent=2)
-    frames=list(original.get('screenshots',[]))+[s['image'] for s in job.get('supplements',[])]
-    image_roles=[{'图片':i+1,'用途':'原请求或补充观察'} for i in range(len(frames))]
-    if dispatch_review:
-        frames.insert(0,dispatch_review['before'])
-        image_roles=[{'图片':i+1,'用途':'旧选择依据，动作尚未执行' if i==0 else '最新投递前画面' if frame==dispatch_review['current'] else '补充观察'} for i,frame in enumerate(frames)]
-    for item in context.get('最近尝试原始证据',[]):
-        for key in ('动作前图','动作后图'):
-            if item.get(key) and item[key] not in frames:
-                frames.append(item[key]);image_roles.append({'图片':len(frames),'用途':'历史尝试 '+item['尝试']+' '+key+'，不是当前状态'})
+    frames=list(original.get('screenshots',[]))
+    if job['stage']=='action':
+        if len(frames)!=1:raise ValueError('动作纠错需要唯一当前执行依据图；先沿正常发现刷新原任务')
+        if dispatch_review and frames!=[dispatch_review['current']]:
+            raise ValueError('动作纠错当前图不是指定的最新投递前画面')
+        image_roles=[{'图片':1,'用途':'最新投递前画面' if dispatch_review else '当前动作执行依据'}]
+        dynamic['图片说明']='唯一图片是本次选点依据。历史及补充观察中的图片路径仅为审计引用，图片未附入本请求；历史文字描述不能证明当前坐标。'
+        dynamic['历史视觉修订']='单图动作纠错不提供历史图，不能迁移历史动作或控件观察归属；需要历史视觉核对时保留缺口，沿已有观察或任务结果核对处理。'
+    else:
+        frames.extend(s['image'] for s in job.get('supplements',[]))
+        image_roles=[{'图片':i+1,'用途':'原请求或补充观察'} for i in range(len(frames))]
+        for item in context.get('最近尝试原始证据',[]):
+            for key in ('动作前图','动作后图'):
+                if item.get(key) and item[key] not in frames:
+                    frames.append(item[key]);image_roles.append({'图片':len(frames),'用途':'历史尝试 '+item['尝试']+' '+key+'，不是当前状态'})
+        dynamic['图片说明']='依图片顺序逐张核对用途；历史尝试前后图仅解释过去的投递与效果，不代表当前状态。补充观察也不能替代原动作后图。'
     dynamic['图片顺序']=image_roles
-    dynamic['图片说明']='依图片顺序逐张核对用途；历史尝试前后图仅解释过去的投递与效果，不代表当前状态。补充观察也不能替代原动作后图。'
     text=json.dumps(dynamic,ensure_ascii=False,indent=2)
     return {**original,'role':'step_correction','stage':'step_correction','original_request':deepcopy(original),
             'system_prompt':'\n\n'.join(p['text'] for p in parts),'user_prompt':text,'dynamic_prompt':text,

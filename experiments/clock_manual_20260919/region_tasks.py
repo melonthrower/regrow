@@ -91,12 +91,13 @@ def plan_request(root,records,state,rid):
         '任务/前置条件与恢复.prompt',
     )
     parts=[{'path':path,'text':(Path(root)/'遍历prompt'/path).read_text()} for path in paths]
-    return {'pipeline_step':'discovery','stage':'task_proposal','role':'task_proposal','action_ready':False,
+    request={'pipeline_step':'discovery','stage':'task_proposal','role':'task_proposal','action_ready':False,
         'system_prompt':'\n\n'.join(part['text'] for part in parts),'user_prompt':json.dumps(dynamic,ensure_ascii=False,indent=2),
         'dynamic_prompt':json.dumps(dynamic,ensure_ascii=False,indent=2),
         'screenshots':[state['observation']['image']],'image_refs':[state['observation']['image']],
         'response_schema':schema,'fixed_parts':parts,
         'source':{'region':rid,'observation':state['observation']['id']}}
+    return helper('parameter_evidence_review').augment(request,region)
 
 
 def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
@@ -160,6 +161,11 @@ def commit_plan(root,run,call):
     rid=q['source']['region']
     if q.get('role')=='task_correction':reply=reply['proposal']
     def mutate(records,state,snapshot,temp):
+        fact_review=q['source'].get('parameter_fact_review')
+        if fact_review:
+            current=records[rid].get('task_inventory',{}).get('review',{})
+            if current.get('kind')!='parameter_facts' or any(current.get(k)!=v for k,v in fact_review.items()):
+                raise ValueError('参数事实补登记依据已变化，需刷新原任务清点')
         if q.get('historical_inventory'):
             # publish rebases image paths for the new snapshot. Validate the
             # frozen evidence against the current persisted source, before rebasing.

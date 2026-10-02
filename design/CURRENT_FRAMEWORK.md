@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-02 参数事实补登记：复制遍历器的input_text现复用唯一强视觉点位匹配；参数累计复核缺事实时，保留原episode/次数，由正常task_proposal依据原前后图补findings，再正常核对完成。同组证据只交接一次；不修改历史动作身份、不重做GUI。补事实不输出坐标，动作选择保持当前单图。58项聚焦通过；8HTTP/0GUI原生保存帧验证了新输入关联及旧搜索任务补登记/结算。未部署现场；Timer点击区域、创建后/运行中界面覆盖及原update多图裁图坐标质量仍待验证。见stepwise_debug_loop与本月日志。
+
 2026-10-02 历史补登记恢复：普通run_task_step现消费归档的已执行未登记update，复用原episode/回执/前后图，不重发GUI、不重置纠错次数；相关Region已有后续变化则暂停。登记与解除本次归档阻塞同一次发布，保留当前工作、新blocked及失败历史，下一轮用该轮截图重新定位。51项聚焦检查及3次原生Luna保存帧（0GUI）通过；两次503为明确辅助注入，并非真实接口故障。另4HTTP/2GUI现场进入Alarms和Stopwatch并正常登记，未完整遍历。现场及独立审阅边界见stepwise_debug_loop、本月日志、archive/desktop_clock_fresh_20261002/RECOVERY_DEVELOPMENT.md。
 
 2026-10-02 新桌面Clock小样本：独立VM/新图原生22HTTP、8GUI命令，任务覆盖遗漏一次自动纠正、系统通知一次恢复；仅World搜索/选择及功能整理，未点Add、未遍历其他核心页。当时静态审计发现一般服务失败归档的suspended_updates缺少普通续跑消费者（已由上条修复），默认CLI语义审核与跨session累计硬额度仍有边界；未在本次触发该失败。未改框架代码，详见stepwise_debug_loop、本月日志与archive/desktop_clock_fresh_20261002/DESIGN.md。

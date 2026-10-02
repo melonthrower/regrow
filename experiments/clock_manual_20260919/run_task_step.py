@@ -174,7 +174,9 @@ def _run_step(root,run,out,*,review_update=None):
         if discovery_step.locate_task_control(run,q,out/'current.png'):
             q=assemble_current_context(root,run)
         if q['stage']!='function_registration':
-            q.update(screenshots=[str((out/'current.png').resolve())],image_refs=[str((out/'current.png').resolve())])
+            history=q.get('screenshots',[])[1:] if q.get('source',{}).get('parameter_fact_review') else []
+            frames=[str((out/'current.png').resolve()),*history]
+            q.update(screenshots=frames,image_refs=list(frames))
             step_repair.helper('region_scroll').attach(run,discovery_step.load(run)[2],q)
         return q
     repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'],review_update=review_update)

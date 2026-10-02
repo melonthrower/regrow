@@ -623,7 +623,7 @@ def _bind_action_target(request, proposal):
     hits=[];selected={};model_grounded=set();diagnostics=[];matches={}
     named=[c for c in request['backend_candidates'] if target and target in
            [str(c.get(k,'')).strip().casefold() for k in ('name','icon_description')]]
-    point_binding=bool(target) and not named and proposal.get('action') in ('tap','click','double_click','long_press','right_click','hover','drag')
+    point_binding=bool(target) and not named and proposal.get('action') in ('tap','click','double_click','long_press','right_click','hover','drag','input_text')
     for c in (request['backend_candidates'] if point_binding else named):
         if not c.get('image') or not Path(c['image']).is_file():
             diagnostics.append(c['name']+'：缺少记录图片');continue

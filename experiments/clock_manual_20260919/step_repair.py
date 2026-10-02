@@ -289,6 +289,12 @@ class Runner:
                 '纠错已解决本次循环判断；重新发现后按新办法继续' if decision.get('resumed') else '纠错已暂挂当前分支；重新发现后继续独立区块')
         raise Paused('correction_blocked','当前分支未切换；保留未完成记录')
 
+    def handoff_parameter_facts(self,job):
+        if helper('parameter_evidence_review').request_review(self.run,job):
+            job.update(status='superseded_by_parameter_review');self.save(job)
+            (self.run/self.pointer_name).unlink(missing_ok=True)
+            raise Paused('ready_next_round','参数事实尚未登记，返回任务提出步骤核对原观察；原动作与纠错次数保留')
+
     def perform(self,stage,q=None,attempt=None):
         job=pending(self.run,self.pointer_name)
         if job is None:
@@ -303,6 +309,8 @@ class Runner:
         elif stage!=job['stage']:raise Paused('correction_blocked','必须先处理尚未完成的步骤：'+job['stage'])
         if stage=='update' and self.review_update is not None and not job.get('requires_update_review'):
             job['requires_update_review']=True;self.save(job)
+        if job.get('status') in ('repair','blocked'):
+            self.handoff_parameter_facts(job)
         if job['stage']=='function_registration' and job.get('status') in ('repair','blocked') and not job.get('attempt') and not (self.run/'execution_pending.json').exists() and not job.get('service_failure'):
             rid=job['request'].get('source',{}).get('region')
             if helper('region_functions').request_support_review(self.run,rid,job.get('call')):
@@ -367,6 +375,10 @@ class Runner:
                         job.update(status='superseded_by_support_review',error=diagnostic(error));self.save(job)
                         (self.run/self.pointer_name).unlink(missing_ok=True)
                         raise Paused('ready_next_round','功能缺少任务依据，返回任务提出步骤补充仅观察记录')
+                    if str(error)=='参数任务缺少已登记参数事实，需先补观察登记':
+                        job.update(error=diagnostic(error),status='repair')
+                        job['history'].append({'call':job['call'],'error':diagnostic(error)})
+                        self.save(job);self.handoff_parameter_facts(job)
                     if helper('ownership_review').begin(self.run,job,diagnostic(error)):
                         raise Paused('repair_pending','区块归属需实地复查；原记录与提案已保存')
                     if getattr(error,'defer_task',False):self.stop(job,str(error))

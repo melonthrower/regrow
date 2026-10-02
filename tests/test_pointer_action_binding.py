@@ -42,3 +42,24 @@ def test_wording_fallback_preserves_actual_ambiguous_visual_hits(action_request)
     assert {c['control'] for c in candidates}=={'gateway','duplicate'}
     assert all(c['position']==[70,40,110,64] and c['basis'] for c in candidates)
     assert result['control_ref'] is None
+
+
+@pytest.mark.parametrize('ambiguous',[False,True])
+def test_input_wording_uses_only_unique_strong_match(action_request,ambiguous):
+    action_request['allow_input']=True
+    if ambiguous:
+        action_request['backend_candidates'].append({**action_request['backend_candidates'][0],'id':'duplicate'})
+    result=mod('stepwise_flow').bind_action_target(action_request,{'action':'input_text','target':'visible search field',
+        'text':'Reset','x':85,'y':50,'reason':'type into the visible field'})
+    assert result['control_ref']==(None if ambiguous else 'gateway')
+    if not ambiguous:assert result['region_ref']=='form' and result['working_region']=='work'
+
+
+@pytest.mark.parametrize('change',['weak','outside','unauthorized'])
+def test_input_wording_does_not_relax_input_or_visual_requirements(action_request,change):
+    action_request['allow_input']=change!='unauthorized'
+    if change=='weak':action_request['backend_candidates'][0]['image_quality']='uncertain'
+    result=mod('stepwise_flow').bind_action_target(action_request,{'action':'input_text','target':'visible search field',
+        'text':'Reset','x':5 if change=='outside' else 85,'y':50,'reason':'type'})
+    assert result['control_ref'] is None
+    if change=='unauthorized':assert result['status']=='unresolved'

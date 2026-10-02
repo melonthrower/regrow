@@ -9,7 +9,7 @@ from pathlib import Path
 RECORD_CODES={'duplicate_submission','duplicate_binding','existing_control_conflict',
               'list_representative','task_owner','inventory_coverage'}
 OWNER_CODES={'owner','control_owner_surface','duplicate_control_owner','region_ownership_review',
-             'parent_region','parent_cycle'}
+             'parent_region','parent_cycle','local_region_bounds','local_control_owner','local_control_duplicate'}
 
 
 def current_parse_failure(job):

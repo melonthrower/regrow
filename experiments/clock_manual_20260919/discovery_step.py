@@ -108,6 +108,8 @@ def prepare(root,records,state,frame,foreground=None):
              '未检查范围':'其他区块控件未枚举；本轮局部控件也不代表完整清单。',
              '省略的候选数量':plan.get('omitted_candidates',0)}
     if plan['mode']=='local':
+        if plan.get('partition_context'):
+            dynamic['同帧已确认区块划分']=reg.sibling('local_partition').prompt(plan['partition_context'])
         reg.sibling('discovery_inventory').supplement(root,records[focus],dynamic,parts)
     if state.get('recovery_handoff'):
         dynamic['恢复交接（历史观察，不代表任务完成）']=state['recovery_handoff']
@@ -130,7 +132,8 @@ def prepare(root,records,state,frame,foreground=None):
     request={'pipeline_step':'discovery','role':'observation','stage':'discovery','system_prompt':'\n\n'.join(p['text'] for p in parts),
         'user_prompt':json.dumps(dynamic,ensure_ascii=False,indent=2),'screenshots':[frame],
         'response_schema':response_schema,'fixed_parts':parts,
-        'discovery_context':{'mode':plan['mode'],'focus':focus,'region_names':names,'control_names':cnames,'visual_plan':plan}}
+        'discovery_context':{'mode':plan['mode'],'focus':focus,'region_names':names,'control_names':cnames,'visual_plan':plan,
+                             'partition_context':plan.get('partition_context')}}
     return reg.sibling('history_matching').attach(request,records,plan['regions'],names)
 
 

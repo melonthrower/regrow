@@ -10,7 +10,8 @@ def action_request(tmp_path,monkeypatch):
     frame=np.zeros((120,200,3),dtype=np.uint8);frame[40:64,70:110]=crop
     Image.fromarray(frame).save(tmp_path/'frame.png');Image.fromarray(crop).save(tmp_path/'control.png')
     return {'source':{'region':'navigation','observation':'obs','working_region':'work'},'image_refs':[str(tmp_path/'frame.png')],
-            'backend_candidates':[{'id':'gateway','region_ref':'form','name':'Gateway','image':str(tmp_path/'control.png')} ]}
+            'backend_candidates':[{'id':'gateway','region_ref':'form','name':'Gateway','image':str(tmp_path/'control.png'),
+                'image_quality':'clear','image_quality_reason':'unobscured fixture'} ]}
 
 @pytest.mark.parametrize('action',['hover','drag','click'])
 def test_pointer_actions_bind_actual_control_owner(action_request,action):
@@ -31,3 +32,13 @@ def test_unknown_pointer_target_keeps_association_gap(action_request,action):
 def test_drag_invalid_endpoint_is_not_dispatched(action_request,end_x,end_y):
     result=mod('stepwise_flow').bind_action_target(action_request,{'action':'drag','target':'Gateway','x':85,'y':50,'end_x':end_x,'end_y':end_y,'reason':'visible'})
     assert result['status']=='unresolved'
+
+
+def test_wording_fallback_preserves_actual_ambiguous_visual_hits(action_request):
+    first=action_request['backend_candidates'][0]
+    action_request['backend_candidates'].append({**first,'id':'duplicate','name':'Other','region_ref':'other'})
+    result=mod('stepwise_flow').bind_action_target(action_request,{'action':'click','target':'visible arrow','x':85,'y':50,'reason':'visible'})
+    candidates=result['association']['candidates']
+    assert {c['control'] for c in candidates}=={'gateway','duplicate'}
+    assert all(c['position']==[70,40,110,64] and c['basis'] for c in candidates)
+    assert result['control_ref'] is None

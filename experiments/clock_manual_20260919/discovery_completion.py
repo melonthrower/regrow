@@ -156,6 +156,9 @@ def supplement(root,records,state,frame):
         '相关历史候选':rows,'本区块控件身份候选':list(ctx['control_names']),
         '检索边界':('重定位包含全部历史身份；局部补全仅提供缺口相关身份。均不证明当前可见，不能凭名称自动认定身份。'),
         '用途':'沿用原截图补交未登记内容，并检查原观察范围是否还有遗漏；已登记内容只需在作为容器或消除重复缺口时以same引用，不是重新提交整屏。'}
+    if ctx.get('partition_context'):
+        from local_partition import prompt
+        dynamic['同帧已确认区块划分']=prompt(ctx['partition_context'],completion=True)
     for part in q.get('fixed_parts',[]):
         part['text']=(Path(root)/'遍历prompt'/part['path']).read_text()
     if q.get('fixed_parts'):q['system_prompt']='\n\n'.join(p['text'] for p in q['fixed_parts'])

@@ -55,7 +55,7 @@ def alarm_region():
     for name,kind,values,value in facts:
         reply={'action_result':{'exception':'none'},'task_result':{'name':name,'status':'done','evidence':'测试夹具中的已观察参数',
             'findings':[{'name':name,'description':'已观察'+name,'domain':{'type':kind,'values':values,'min':None,'max':None},'conditions':[], 'evidence':'明确的控件输入或选项观察'}]}}
-        m.settle_task(region,{'task_name':name,'task_region':'menu','region_ref':'menu'},reply,'attempt_'+name)
+        m.settle_task(region,{'task_name':name,'task_region':'menu','region_ref':'menu','control_ref':region['tasks'][name]['control']},reply,'attempt_'+name)
     return m,region,facts
 
 

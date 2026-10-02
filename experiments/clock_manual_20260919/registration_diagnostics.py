@@ -22,6 +22,9 @@ def collect(stage,q,p,records,binding=None):
             add('schema','/'+ '/'.join(map(str,e.absolute_path)),stage,e.instance,e.message,'按该字段格式修订，不修改其他真实证据。')
         if errors:return {'errors':errors,'unchecked':['结构不合格，依赖这些字段的身份、归属和结果校验尚未执行。']}
     if stage in ('discovery','update'):
+        if stage=='discovery':
+            import local_partition
+            errors.extend(local_partition.errors(q,p))
         ctx=q.get('discovery_context',{});rids=[]
         for i,r in enumerate(p.get('regions',[])):
             previous=r.get('previous_name');rid=None

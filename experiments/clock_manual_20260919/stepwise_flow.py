@@ -620,7 +620,7 @@ def _bind_action_target(request, proposal):
     from PIL import Image
     with Image.open(frames[0]) as frame:width,height=frame.size
     if not (0<=x<width and 0<=y<height):return {**base,'status':'unresolved','reason':'coordinates outside screenshot'}
-    hits=[];selected={};model_grounded=set();diagnostics=[]
+    hits=[];selected={};model_grounded=set();diagnostics=[];matches={}
     named=[c for c in request['backend_candidates'] if target and target in
            [str(c.get(k,'')).strip().casefold() for k in ('name','icon_description')]]
     point_binding=bool(target) and not named and proposal.get('action') in ('tap','click','double_click','long_press','right_click','hover','drag')
@@ -628,6 +628,7 @@ def _bind_action_target(request, proposal):
         if not c.get('image') or not Path(c['image']).is_file():
             diagnostics.append(c['name']+'：缺少记录图片');continue
         match=matcher.match_control(c,frames[0])
+        matches[c['id']]=match
         diagnostics.append(c['name']+'：候选范围'+str(match.get('box'))+'，模型位置'+str((x,y))+'，图片判断'+str(match.get('reason',match.get('accepted'))))
         if not match['accepted']:
             if point_binding:continue  # A wording fallback must not lower visual confidence.
@@ -658,5 +659,7 @@ def _bind_action_target(request, proposal):
     return {**base,'status':'matched','model_grounded':True,
             'basis':'execute model coordinates; recorded control association remains unconfirmed',
             'association':{'status':'unconfirmed','target':proposal['target'],'x':x,'y':y,
-                           'candidates':[{'region':c.get('region_ref',base['region_ref']),'control':c['id']} for c in named],
+                           'candidates':[{'region':c.get('region_ref',base['region_ref']),'control':c['id'],
+                               'position':selected.get(c['id'],matches.get(c['id'],{})).get('box'),
+                               'basis':'current visual candidate at model point' if c in hits else 'target wording candidate; not visually confirmed'} for c in (hits or named)],
                            'reason':reason}}

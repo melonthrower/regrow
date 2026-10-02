@@ -7,6 +7,7 @@ CONTROL_BATCH=8
 CANDIDATES=8
 import identity_templates as templates
 import history_matching as history
+import local_partition
 
 
 def matcher():
@@ -66,7 +67,8 @@ def plan(records,focus,frame,*,force_relocate=False,required_control=None,offset
   surface=(frame,tuple(local['bounds']))
   controls=[{'control':cid,'match':match(image(records[focus]['controls'][cid]),surface)} for cid in chosen]
   return {'mode':'local','focus':focus,'focus_status':'candidate','regions':[local],'controls':controls,'next_offset':offset+len(chosen),
-          'unchecked_controls':max(0,len(ids)-offset-len(chosen)),'attempts':attempts}
+          'unchecked_controls':max(0,len(ids)-offset-len(chosen)),'attempts':attempts,
+          'partition_context':local_partition.build(records,focus,frame,foreground,scoped)}
  candidates=[];weak=[];focus_candidate=None
  for rid in records:
   candidate=local if local and rid==focus else region(rid)

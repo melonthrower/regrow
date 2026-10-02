@@ -60,15 +60,18 @@ def attribute_context(region):
 
 
 def action_results(region):
-    """Completed tasks may predate later actions performed for another owner task."""
+    """Task summaries and their original executed action results complement each other."""
     controls={t.get('control') for t in supported_tasks(region).values()}
-    covered={aid for t in supported_tasks(region).values() for aid in t.get('attempts',[])}
     rows=[]
     for aid,action in region.get('actions',{}).items():
         cid=action.get('control');result=action.get('result',{})
-        if (aid in covered or cid not in controls or cid not in region['controls']
+        if (cid not in controls or cid not in region['controls']
                 or action.get('delivery')!='executed_receipt_zero' or not result.get('description')):continue
-        row={'控件':region['controls'][cid]['name'],'动作':action.get('operation',''),
+        row={'动作记录':aid,'结果调用':action.get('result_call') or action.get('evidence',{}).get('result_call'),
+             '动作前观察':action.get('evidence',{}).get('before_observation'),
+             '动作后观察':action.get('evidence',{}).get('after_observation'),
+             '关联任务':[name for name,t in supported_tasks(region).items() if aid in t.get('attempts',[])],
+             '控件':region['controls'][cid]['name'],'动作':action.get('operation',''),
              '结果':result['description'],'依据':result.get('evidence',''),
              '异常':result.get('exception','')}
         if row not in rows:rows.append(row)
@@ -93,16 +96,30 @@ def incoming_results(region,records=None):
     return rows
 
 
+def evidence_projection(region,records=None):
+    """Build once for the request and its invalidation digest; keep observation provenance."""
+    controls=[]
+    for c in region['controls'].values():
+        observation=(c.get('observations') or [{}])[-1]
+        source={**observation.get('evidence',{}),**observation}
+        controls.append({'名称':c['name'],**{k:v for k,v in observation.items() if k in ('text','state','possible_operation','uncertainty')},
+            '观察出处':{k:source[k] for k in ('source_call','observation','source_field') if k in source}})
+    return {'已观察控件':controls,
+        '已登记操作':[{'任务':n,'依据':t.get('result_evidence',t['reason']),
+                     '结果动作记录':list(t.get('attempts',[])),
+                     '登记方式':'本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '依据本任务探索结果登记'} for n,t in supported_tasks(region).items()],
+        '已记录属性（待甄别）':attribute_context(region),
+        '同区块已执行动作结果':action_results(region),
+        '进入本区块的已观察结果':incoming_results(region,records)}
+
+
 def signature(region,records=None):
-    # Observers may rephrase the same surface; tasks and findings carry new knowledge.
+    evidence=evidence_projection(region,records)
+    # Reobserving unchanged facts does not require another catalog call.
+    for c in evidence['已观察控件']:c.pop('观察出处',None)
     data={'extraction_rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],
-          'name':region['name'],
-          'tasks':region.get('tasks',{}),'inventory':region.get('task_inventory'),
-          'controls':{cid:c['name'] for cid,c in region['controls'].items()}}
-    extra=action_results(region)
-    if extra:data['action_results']=extra
-    incoming=incoming_results(region,records)
-    if incoming:data['incoming_results']=incoming
+          'name':region['name'],'tasks':region.get('tasks',{}),'inventory':region.get('task_inventory'),
+          'evidence':evidence}
     return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 
@@ -189,14 +206,8 @@ def request(root,region,state,records=None):
     paths=PROMPT_PATHS
     parts=[{'path':path,'text':(pr/path).read_text()} for path in paths]
     text='\n\n'.join(part['text'] for part in parts)
-    tasks=supported_tasks(region)
     user={'区块':region['name'],'描述':region['description'],
-        '已观察控件':[{'名称':c['name'],**{k:v for k,v in (c.get('observations') or [{}])[-1].items() if k in ('text','state','possible_operation','uncertainty')}} for c in region['controls'].values()],
-        '已登记操作':[{'任务':n,'依据':t.get('result_evidence',t['reason']),
-                     '登记方式':'本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '依据本任务探索结果登记'} for n,t in tasks.items()],
-        '已记录属性（待甄别）':attribute_context(region),
-        '同区块已执行动作结果':action_results(region),
-        '进入本区块的已观察结果':incoming_results(region,records),
+        **evidence_projection(region,records),
         '已有功能名称（仅供命名复用）':list(region.get('functions',{})),
         '要求':'整理可复用功能，引用操作任务和属性的完整名称。属性目录只是原始事实，不保证可设置；仅将证据支持可由用户设置的属性选作constraints，标题等只读事实不选。只登记能力，不选择目标值、不生成指令、不执行。'}
     dynamic=json.dumps(user,ensure_ascii=False,indent=2)

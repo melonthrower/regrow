@@ -56,7 +56,7 @@ def load(run,frame):
     path=Path(run)/'foreground_scopes'/(fingerprint(frame)+'.json')
     if not path.exists():return None
     value=json.loads(path.read_text())
-    return value['scope'] if value.get('frame_sha256')==fingerprint(frame) else None
+    return {**value['scope'],'source_call':value.get('source_call')} if value.get('frame_sha256')==fingerprint(frame) else None
 
 
 def validate_control_boxes(reply,scope):

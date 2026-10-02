@@ -63,7 +63,8 @@ def advance(records,previous,state,source,binding,attempt):
                 and action.get('result',{}).get('exception')=='none'):
             dest=destination_work(records,refs)
             task['status']='done'
-            task['result_evidence']='入口动作当时已执行，观察到区块：'+ '、'.join('「'+records[r]['name']+'」' for r in refs)+'。'
+            if not task.get('result_evidence'):
+                task['result_evidence']='入口动作当时已执行，观察到区块：'+ '、'.join('「'+records[r]['name']+'」' for r in refs)+'。'
             task['completion_basis']={'attempt':attempt,'destination_region':dest,'destination_regions':list(refs),'rule':'single_action_destination_observed'}
             state['working_region']=dest
             state['region_path']=path[:path.index(dest)+1] if dest in path else path+[dest]

@@ -57,7 +57,7 @@ def test_three_step_triggers_and_completed_function_inventory_does_not_repeat():
     m.apply_plan(r['menu'],proposal([row()]),'p')
     q=m.attach(ROOT,r,state,'menu',base)
     assert q['pipeline_step']=='action' and q['source']['task_name']=='查看内容'
-    m.settle_task(r['menu'],{'task_name':'查看内容'}, {'action_result':{'exception':'none'},'task_result':{'name':'查看内容','status':'done','evidence':'已观察菜单内容','findings':[]}},'a')
+    m.settle_task(r['menu'],{'task_name':'查看内容','region_ref':'menu','control_ref':r['menu']['tasks']['查看内容']['control']}, {'action_result':{'exception':'none'},'task_result':{'name':'查看内容','status':'done','evidence':'已观察菜单内容','findings':[]}},'a')
     q=m.attach(ROOT,r,state,'menu',base)
     assert (q['pipeline_step'],q['stage'])==('discovery','function_registration')
     assert not q['action_ready'] and q['screenshots']==[]
@@ -231,7 +231,7 @@ def test_function_context_includes_later_same_control_results():
     assert m.signature(region)==signature
     assert '虚构结果' not in m.request(ROOT,region,{'observation':{'id':'current'}})['user_prompt']
     region['tasks']['时间'].setdefault('attempts',[]).append('later')
-    assert m.action_results(region)==[]
+    assert m.action_results(region)[0]['结果']=='确认编辑后设置面板显示08:15'
 
 
 def test_function_context_separates_completed_evidence_from_initial_motivation():

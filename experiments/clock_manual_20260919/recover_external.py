@@ -35,8 +35,10 @@ def with_run_scope(request,run):
     manifest=Path(run)/'run_manifest.json'
     scope=read(manifest).get('exploration_scope') if manifest.exists() else None
     if not scope:return request
+    block='\n\n本轮遍历允许范围（运行发起者提供，不由任务生成扩大）：\n'+scope
+    if block in request['user_prompt']:return request
     request=deepcopy(request)
-    request['user_prompt']+='\n\n本轮遍历允许范围（运行发起者提供，不由任务生成扩大）：\n'+scope
+    request['user_prompt']+=block
     return request
 
 
@@ -49,7 +51,8 @@ def with_frame_context(request,run):
         with Image.open(Path(run)/frame) as image:width,height=image.size
         lines.append(f'第{index}张：{width}×{height} 像素；框边界 0≤left<right≤{width}，0≤top<bottom≤{height}。')
     if lines:
-        request['user_prompt']+='\n\n截图坐标说明（按图片发送顺序）：\n'+'\n'.join(lines)+'\n坐标使用对应原图像素；显示缩放不改变坐标范围，不要猜测设备分辨率。'
+        block='\n\n截图坐标说明（按图片发送顺序）：\n'+'\n'.join(lines)+'\n坐标使用对应原图像素；显示缩放不改变坐标范围，不要猜测设备分辨率。'
+        if block not in request['user_prompt']:request['user_prompt']+=block
     return request
 
 

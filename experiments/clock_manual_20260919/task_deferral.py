@@ -55,10 +55,13 @@ def defer(run,job,reason):
     def mutate(records,state,snapshot,temp):
         region=records[rid]
         evidence={'reason':reason,'episode':episode,'observation':obs['id'],'source_call':job.get('call')}
+        failure=job.get('service_failure')
+        if failure:
+            evidence.update(source_call=failure['call'],trigger={'kind':'model_service_error',**deepcopy(failure)})
         if stage in ('action','task_result_review'):
             task=region['tasks'][name]
-            task.update(status='blocked',deferral={**evidence,'retry_when':'new_localized_control_observation'},
-                        blocker={'condition':condition,'source_call':job.get('call'),'episode':episode,**({'exception':exception} if exception else {})})
+            task.update(status='blocked',deferral={**evidence,'retry_when':'explicit_service_retry' if failure else 'new_localized_control_observation'},
+                        blocker={'condition':condition,'source_call':evidence['source_call'],'episode':episode,**({'exception':exception} if exception else {})})
             if state.get('active_task')=={'region':rid,'name':name}:state.pop('active_task',None)
         else:
             region.setdefault('registration_gaps',{})[stage]=evidence

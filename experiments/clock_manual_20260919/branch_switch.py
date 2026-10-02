@@ -150,7 +150,9 @@ def commit(run, job, q, reply, call):
             region=records[rid]
             region.setdefault('registration_gaps',{})['suspended_branch']=evidence
             for task in region.get('tasks',{}).values():
-                if task.get('status')=='pending':task.update(status='blocked',deferral=evidence,blocker={'condition':'review_required'})
+                if (task.get('status')=='pending' and not (cause.get('kind')=='model_service_error'
+                        and helper('step_repair').content_rejection(cause['error']))):
+                    task.update(status='blocked',deferral=evidence,blocker={'condition':'review_required'})
         task=records.get(ctx['work'],{}).get('tasks',{}).get(ctx['task'])
         if task and task.get('status')=='pending':task.update(status='blocked',deferral=evidence,blocker={'condition':'review_required'})
         state.setdefault('suspended_updates',[]).append(evidence)

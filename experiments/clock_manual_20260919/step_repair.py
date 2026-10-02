@@ -28,6 +28,61 @@ def atomic(path,value):
     tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n');os.replace(tmp,path)
 
 
+def content_rejection(failure):
+    """Identify the provider's recorded content refusal, not every HTTP 402."""
+    if failure.get('status')!=402:return False
+    try:error=json.loads(failure.get('body','')).get('error',{})
+    except (ValueError,TypeError):return False
+    return error.get('type')=='param_error' and '敏感词' in error.get('message','')
+
+
+def resume_service_failure(run,episode=None,frame=None):
+    """Explicitly retry one retained refusal; automatic rounds never call this."""
+    run=Path(run)
+    current=pending(run)
+    if episode is None:
+        if not current:raise ValueError('没有待重试的服务失败步骤')
+        episode=current['path']
+    if current and current['path']!=episode:raise ValueError('先结算当前待处理步骤')
+    path=(run/episode).resolve()
+    if not path.is_relative_to(run.resolve()):raise ValueError('步骤不属于当前运行')
+    job=read(path)
+    failure=job.get('service_failure')
+    if not failure or not content_rejection(failure['error']):raise ValueError('不是已记录的内容拒绝')
+    execution=run/'execution_pending.json'
+    if (run/'visual_navigation_pending.json').exists():raise ValueError('先结算待导航动作')
+    if job.get('attempt'):
+        if not execution.exists() or read(execution).get('attempt')!=job['attempt']:
+            raise ValueError('原动作的待结算记录缺失或不匹配')
+    elif execution.exists():raise ValueError('已有其他待结算动作')
+    discovery=helper('discovery_step')
+    source=job['request'].get('source',{})
+    rid=source.get('task_region') or source.get('region');name=source.get('task_name')
+    if job['stage']=='action' and not job.get('attempt') and job.get('status') in ('deferred','suspended'):
+        _,records,_=discovery.load(run)
+        task=records.get(rid,{}).get('tasks',{}).get(name,{})
+        if (task.get('status')!='blocked' or task.get('deferral',{}).get('episode')!=episode
+                or task.get('blocker',{}).get('condition')!='review_required'
+                or task.get('blocker',{}).get('exception')):
+            raise ValueError('原任务的暂挂来源不匹配')
+        def reopen(records,state,*args):
+            task=records[rid]['tasks'][name]
+            task.setdefault('deferral_history',[]).append(task.pop('deferral'))
+            if task.get('blocker'):task.setdefault('blocker_history',[]).append(task.pop('blocker'))
+            task.update(status='pending')
+            state.update(working_region=rid,active_task={'region':rid,'name':name})
+        discovery.publish(run,'service-retry-'+Path(episode).parent.name+'-'+str(len(job.get('service_resume_history',[]))),reopen)
+    if frame is not None and job['stage']=='discovery':
+        discovery.await_discovery(run,str(Path(frame).resolve()),'service-retry-'+failure['call'])
+        job['request']=discovery.request_from_run(Path(__file__).parent,run)
+    job.setdefault('service_resume_history',[]).append({'failure':failure,'previous_status':job['status'],'explicit_retry':True})
+    job.pop('service_failure',None)
+    for key in ('branch_switch_attempted','branch_review_signature','switch_trigger'):job.pop(key,None)
+    job.update(status='initial',candidate=None)
+    atomic(path,job);atomic(run/'pending_step.json',{'episode':episode})
+    return job
+
+
 class Paused(Exception):
     def __init__(self,status,reason):self.status=status;self.reason=reason;super().__init__(reason)
 
@@ -78,6 +133,7 @@ def reopen_blocked(run,frame):
     """A new run may reobserve an unexecuted blocked proposal, keeping its audit."""
     job=pending(run)
     if not job or job['status']!='blocked' or job.get('attempt'):return False
+    if job.get('service_failure') and content_rejection(job['service_failure']['error']):return False
     if job['stage'] not in ('action','discovery','task_proposal','function_registration','task_result_review'):return False
     if any((Path(run)/p).exists() for p in ('execution_pending.json','visual_navigation_pending.json')):return False
     helper('discovery_step').await_discovery(run,str(Path(frame).resolve()),'blocked-'+Path(job['path']).parent.name)
@@ -212,6 +268,14 @@ class Runner:
         raise Paused('repair_pending',reason)
 
     def switch_branch(self,job):
+        failure=job.get('service_failure',{}).get('error',{})
+        if content_rejection(failure):
+            reason='服务拒绝请求：检测到敏感词；有限重试已结束，保留原请求与未完成结果。'
+            if job.get('attempt') or (self.run/'execution_pending.json').exists():
+                job.update(status='blocked',error=reason);self.save(job)
+                raise Paused('correction_blocked',reason+'原GUI已执行，只能重试登记。')
+            if job['stage'] in ('action','task_proposal','function_registration','task_result_review'):
+                self.stop(job,reason)
         if self.available()<1:
             raise Paused('repair_pending','本轮调用额度已用完；下一轮继续原纠错请求')
         decision=helper('branch_switch').correct(self,job)
@@ -326,7 +390,7 @@ class Runner:
                 if not evidence.exists():raise
                 failure=read(evidence)
                 job.setdefault('service_error_history',[]).append({'call':failed,'error':failure})
-                if failure.get('status') in (429,500,502,503,504) and not job.get('service_retry_used'):
+                if (failure.get('status') in (429,500,502,503,504) or content_rejection(failure)) and not job.get('service_retry_used'):
                     job['service_retry_used']=True;job['service_retry_request']=deepcopy(q);self.save(job)
                     continue  # Retry only the same model request, never a GUI dispatch.
                 job['service_failure']={'call':failed,'error':failure};self.save(job)

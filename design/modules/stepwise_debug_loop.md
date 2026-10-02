@@ -1,6 +1,16 @@
 # 临时逐步遍历器的监督修复闭环
 
-2026-10-01 参数任务跨区继续：`region_tasks.attach` 在返回来源区块前核对活动任务。仍在允许范围、状态为pending的parameter/scroll任务可沿既有接续路径在当前前景继续；其他任务保留原导航优先级。此次修正不修改任务结束、身份、重复尝试或动作绑定规则。Clock时区弹窗的原请求曾被提前换成返回设置页的导航请求；6项新增离线检查通过，74项相关检查中71项通过，另外3项在修改前冻结源中同样失败。真实0051完整副本的0063原答通过正常动作绑定（1HTTP/0GUI）；监督重入子滚动及选回原父goal后，正常自动轮0071–0076补观察、真实滚动a0014及结果登记通过。仅此跨前景参数场景得到现场证据；父任务仍pending，不表示自主选回父goal或Clock遍历完成。原source保留，运行选用只改region_tasks.py的source-v2。
+## 2026-10-02 服务内容拒绝的有限处理
+
+`step_repair.content_rejection`只识别HTTP402且正文error.type为param_error、message包含“敏感词”的已知服务回复；裸402或余额错误不据此分类。正常Runner对原请求最多追加一次同内容重试，两次失败均保留并计账。`recover_external`的运行范围及原图尺寸说明只追加一次，重试不累加这些文字。
+
+未执行动作时，已有明确任务的失败沿`task_deferral`仅暂挂该任务，标记explicit_service_retry并保留实际失败调用；无可定位任务的发现失败保留阶段缺口，通过原分支切换继续独立工作，不批量阻塞同Region任务。已执行动作的失败保留attempt、execution_pending及原登记请求，暂停等待补登记，禁止重做GUI。一般服务错误继续原处理。
+
+自动新截图不重开此类服务失败。显式Python入口`step_repair.resume_service_failure(run, episode=None, frame=None)`保留原错误、修复次数及已用重试；仅当原任务确为本episode的服务暂挂且无其他阻塞时恢复pending，不能直接done。动作登记保持原attempt/request；发现可用真实新帧通过正常发现入口重建请求。该入口不增加CLI开关，也不改Luna提示中的预算。
+
+辅助聚焦检查37通过，发送/环境邻接检查23通过及1既有失败；其他扩大检查另有5既有失败，均在未修改的导出基线复现。完整真实运行副本经原生上下文组装、实际Luna原答和Runner验证：0167将底部Alarm正确绑定r0002/c0008，未投递GUI；0168/0169原样请求被拒绝后，Timer blocked、Stopwatch/Bedtime pending，原失败保留。此为保存帧模型/登记路径验证，0GUI，不证明新导航或完整Clock遍历。证据在`records/clock_fresh_stepwise_20261001_01/service-policy-fix-01/`；当前服务拒绝仍可能阻止必要探索。
+
+现场`full-traversal-08`选择仅四文件变化的source-v3，通过显式入口重试发现，并监督恢复被旧整Region暂挂误伤、尚未尝试的Bedtime；Timer/Stopwatch原拒绝不解除。0171/0172局部拒绝后保留Alarm四项pending并切导航区，0175正常登记导航控件，0176/0177 Bedtime动作拒绝后仅暂挂Bedtime，0179/0180再次局部拒绝后0181选择stop。12新HTTP/0GUI，无新导航成功；14区块中7完成，覆盖图仍partial，待发现步骤保留，服务需恢复接受正常请求。该轮验证了拒绝后的有限重试及独立任务调度，不代表Clock完整遍历通过。
 
 入口：`experiments/clock_manual_20260919/debug_loop.py <apps.json> <output>`，使用现有 guiwalk-android Python。完整当前说明见 [DEBUG_LOOP](../../experiments/clock_manual_20260919/DEBUG_LOOP.md)。这是复制的研究遍历器外围监督，不接入主 `gui_rewalk` 的 Router，也不修改采集模块。
 

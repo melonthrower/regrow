@@ -407,7 +407,7 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
 def save_region_images(records, region_refs, reply, call_ref, run, image_ref, snapshot, temp, *, image_tag=None, observation=None):
     # Existing images remain referenced. New reliable boxes are saved below
     # their Region, with source metadata in that same Region JSON.
-    def crop(r, name, box):
+    def crop(r, name, box, *, identity_field=None, source_field=None):
         if box is None:return None
         from PIL import Image
         source_image=run/image_ref
@@ -415,8 +415,10 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
             xy=[box[k] for k in ('left','top','right','bottom')]
             if not (0<=xy[0]<xy[2]<=image.width and 0<=xy[1]<xy[3]<=image.height):
                 raise ValueError('crop box outside source frame')
+            pixels=image.crop(xy)
+            if identity_field:templates.check_control_crop(pixels,identity_field,source_field)
             relative=f'images/{image_tag or call_ref}/{name}.png';dest=temp/f"regions/{r['id']}"/relative
-            dest.parent.mkdir(parents=True,exist_ok=True);image.crop(xy).save(dest)
+            dest.parent.mkdir(parents=True,exist_ok=True);pixels.save(dest)
         return {'image':relative,'source_image':os.path.relpath(source_image,snapshot/f"regions/{r['id']}"),'source_call':call_ref}
     for ref in region_refs:
         r=records[ref];v=r['observations'][-1]
@@ -429,7 +431,8 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
             if v['evidence'].get('source_call')==call_ref and (observation is None or v['evidence'].get('observation')==observation):
                 proposal=reply['controls'][int(v['evidence']['source_field'].split('/')[-1])]
                 v['source_image']=os.path.relpath(run/image_ref,snapshot/f"regions/{r['id']}")
-                visual=crop(r,cid,templates.admitted_box(proposal));icon=crop(r,cid+'_icon',templates.admitted_box(proposal,'icon_bbox'))
+                visual=crop(r,cid,templates.admitted_box(proposal),identity_field='image',source_field=v['evidence']['source_field'])
+                icon=crop(r,cid+'_icon',templates.admitted_box(proposal,'icon_bbox'),identity_field='icon_image',source_field=v['evidence']['source_field'])
                 if visual:v.update(image=visual['image'],source_image=visual['source_image'])
                 if icon:v.update(icon_image=icon['image'],source_image=icon['source_image'])
                 if 'click_bbox' in proposal:

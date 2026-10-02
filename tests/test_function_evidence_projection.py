@@ -36,3 +36,29 @@ def test_changed_observation_fact_invalidates_review_but_repeated_fact_does_not(
     assert m.signature(r)==current
     request=json.loads(m.request(ROOT,r,{})['user_prompt'])
     assert request['已观察控件'][0].get('观察出处') or any(c.get('观察出处') for c in request['已观察控件'])
+
+
+def test_executed_unconfirmed_task_action_keeps_facts_without_owner_claim():
+    _,r,_=alarm_region();m=mod('region_functions')
+    r['tasks']['时间']['attempts']=['a8']
+    fact={'name':'代表配置','description':'选1m后显示00:01:00','evidence':'实际后图'}
+    r['actions']={'a8':{'control':None,'operation':'click','delivery':'executed_receipt_zero',
+        'association':{'status':'unconfirmed','target':'1m预设'},'parameter_findings':[fact],
+        'evidence':{'selection_call':'0010','result_call':'0011'},
+        'result':{'description':'变为00:01:00，播放可用','evidence':'真实前后图','exception':'none'}}}
+    before=deepcopy(r)
+    row=m.action_results(r)[0]
+    assert row['动作记录']=='a8' and row['控件']=='' and row['控件关联']=='未确认'
+    assert row['提案目标']=='1m预设' and row['关联任务']==['时间']
+    assert row['已记录参数事实']==[fact] and row['结果调用']=='0011'
+    assert r==before
+    signature=m.signature(r)
+    r['actions']['a8']['parameter_findings'][0]['description']='选2m后显示00:02:00'
+    assert m.signature(r)!=signature
+
+
+def test_unconfirmed_proposal_or_unrelated_action_does_not_enter_function_evidence():
+    _,r,_=alarm_region();m=mod('region_functions');r['tasks']['时间']['attempts']=['proposal']
+    r['actions']={'proposal':{'control':None,'delivery':'dispatching','result':{'description':'未执行提案'}},
+        'other':{'control':None,'delivery':'executed_receipt_zero','result':{'description':'无本轮已支持任务引用'}}}
+    assert m.action_results(r)==[]

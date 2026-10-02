@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-02 证据资格：clear控件身份/图标的完全单色裁图经原纠错拒绝，Region/click图不拦；历史显式维护仅追加逐字段不可用资格，原观察/图/任务/动作保留，投影附视觉限制。同区支持任务关联的未确认owner真实动作结果和参数事实现在进入功能请求/摘要，不补身份。83聚焦、3HTTP/0GUI真实完整保存帧有限验证；当前现场仍session09原源，修复尚未部署，非纯色错框等仍开放。见stepwise_region_identity、stepwise_discovery_completion及本月日志。
+
 2026-10-02 同点竞争绑定：自由措辞唯一强匹配不再忽略另一对象的同点候选；弱精确名字与另一强对象同点也进入既有BindingConflict。候选位置/历史不能证明当前可见，保留单当前图纠错及原次数。59聚焦通过（2既有失败在d39复现后排除）；最终源原生4HTTP/0GUI分别验证歧义→补观察、输入邻接和旧错误原答被新门禁拒绝。早期3HTTP案例含两次语义失败，完整保留。未部署/未实际补新图执行，强精确名及原unconfirmed路径仍有边界；见stepwise_region_identity和本月日志。
 
 2026-10-02 公开多应用截图诊断：三张GNOME官方原图、五例18HTTP/0GUI，冻结d39bd3e代码；Calculator密集区截断经正常纠错恢复，52控件/104裁图局部登记通过。但Text Editor标签组点击框/任务判定，以及Papers前景不确定性保留仍有缺口，尚不能称跨应用稳定可用。图片未交互，不是导航或真实运行原生验收；见stepwise_discovery_completion与archive/web_screenshot_probe_20261002/DESIGN.md。

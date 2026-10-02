@@ -446,9 +446,11 @@ def _assemble_action_context(root, records, state, region_ref):
             for edge in path[1:]:
                 if edge['operation'] not in ('click','tap'):continue
                 owner=records[edge['source_region']];control=owner['controls'][edge['source_control']]
-                appearance=next((o.get('icon_description') or o.get('text') for o in reversed(control.get('observations',[])) if o.get('icon_description') or o.get('text')), '')
+                described=next((o for o in reversed(control.get('observations',[])) if o.get('icon_description') or o.get('text')), {})
+                appearance=described.get('icon_description') or described.get('text','')
                 current=(edge['source_region'] in state['interactive_regions'] and edge['source_control'] in state['observation'].get('control_refs',[]))
                 status='本轮已有定位，仍需核对当前截图' if current else '历史入口，尚未确认当前可操作'
+                if templates.evidence_limit(described):status+='；该次视觉身份依据因纯色模板不足，不能据原描述确认可见或可操作'
                 lines.append(f"- 「{control['name']}」｜所属：{owner['name']}｜已知去向：{records[edge['target_region']]['name']}｜{status}"+(f"｜外观：{appearance}" if appearance else ''))
             lines.append('后续入口不是必做顺序；当前截图中目标位置与作用可靠时可直接选择，不要求已登记。只看见相似图标、无法确认对象或作用时，用none请求发现，不猜坐标。')
 

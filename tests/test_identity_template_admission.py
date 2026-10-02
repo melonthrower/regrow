@@ -40,7 +40,8 @@ def test_unapproved_history_is_evidence_only(tmp_path, quality):
 
 
 def test_writer_rejects_nonnull_occluded_crop_but_preserves_click_evidence(tmp_path):
-    frame = tmp_path / 'frame.png'; Image.new('RGB', (40, 40), 'red').save(frame)
+    frame = tmp_path / 'frame.png'; pixels=Image.new('RGB', (40, 40), 'red')
+    pixels.putpixel((5,5),(0,0,0));pixels.save(frame)
     box = dict(left=0, top=0, right=10, bottom=10)
     region_proposal = dict(bbox=box, image_quality='occluded', image_quality_reason='dialog covers tabs')
     control_proposal = dict(bbox=box, icon_bbox=box, click_bbox=box,
@@ -175,3 +176,61 @@ def test_scroll_admission_including_old_cached_request(tmp_path, quality, expect
     result = mod('stepwise_flow').bind_action_target(request,
         {'action': 'scroll', 'x': 20, 'y': 20, 'end_x': 20, 'end_y': 40})
     assert result['status'] == expected
+
+
+def test_uniform_control_template_is_rejected_without_rejecting_click_or_region(tmp_path):
+    frame=tmp_path/'frame.png';Image.new('RGB',(40,40),(235,235,235)).save(frame)
+    box=dict(left=0,top=0,right=20,bottom=20)
+    proposal={'bbox':box,'image_quality':'clear','image_quality_reason':'visible plus'}
+    control={**proposal,'icon_bbox':None,'icon_quality':'uncertain','click_bbox':box}
+    flow=mod('stepwise_flow');region={'id':'r','observations':[flow.region_observation(proposal,{'source_call':'n','source_field':'regions/0'})],
+        'controls':{'c':{'observations':[flow.control_observation(control,{'source_call':'n','source_field':'controls/0'})]}}}
+    with pytest.raises(ValueError,match='单色'):
+        mod('register_update').save_region_images({'r':region},['r'],{'regions':[proposal],'controls':[control]},'n',tmp_path,'frame.png',tmp_path/'snapshot',tmp_path/'temp')
+    control['image_quality']='uncertain'
+    region['controls']['c']['observations']=[flow.control_observation(control,{'source_call':'n','source_field':'controls/0'})]
+    mod('register_update').save_region_images({'r':region},['r'],{'regions':[proposal],'controls':[control]},'n',tmp_path,'frame.png',tmp_path/'snapshot',tmp_path/'temp2')
+    assert region['observations'][-1]['image']
+    assert region['controls']['c']['observations'][-1]['image'] is None
+    assert region['controls']['c']['observations'][-1]['click_image']
+
+
+@pytest.mark.parametrize('flat_field',['image','icon_image'])
+def test_historical_uniform_rejection_is_field_specific_and_preserves_original_evidence(tmp_path,flat_field):
+    base=tmp_path/'regions/r';base.mkdir(parents=True)
+    im=Image.new('RGB',(20,20),'white');im.putpixel((10,10),(0,0,0));im.save(base/'full.png')
+    Image.new('RGB',(10,10),'gray').save(base/'icon.png')
+    observed={**row('full.png','clear','old'),'icon_image':'icon.png','icon_quality':'clear','state':'可见'}
+    if flat_field=='image':observed.update(image='icon.png',icon_image='full.png')
+    region={'id':'r','controls':{'c':{'observations':[observed]}},'tasks':{'keep':{'status':'done'}},'actions':{'a':{'control':'c'}}}
+    before=deepcopy(region);templates=mod('identity_templates')
+    audit=templates.reject_uniform_history({'r':region},tmp_path,'pixel-audit')
+    assert len(audit)==1 and audit[0]['field']==flat_field
+    assert templates.usable(observed)==(flat_field!='image')
+    assert templates.usable(observed,'icon_image')==(flat_field!='icon_image')
+    rejected=observed.pop('template_rejections');assert region==before;observed['template_rejections']=rejected
+    assert templates.reject_uniform_history({'r':region},tmp_path,'second-audit')==[]
+    assert '视觉依据限定' in mod('target_observation').describe(region['controls']['c'],'old')
+    assert templates.assessment(observed)['template_rejections']==rejected
+
+
+def test_rejected_history_description_keeps_limit_after_a_new_observation():
+    old={**row('old.png','clear','old'),'icon_description':'旧加号',
+         'template_rejections':{'image':{'reason':'纯色身份图'}}}
+    current={**row('new.png','clear','new'),'icon_description':''}
+    result=mod('target_observation').describe({'observations':[old,current]},'new')
+    assert result['历史外观参考']=='旧加号'
+    assert result['历史外观参考限定']['未获资格的模板']=={'image':'纯色身份图'}
+    assert '视觉依据限定' not in result
+
+
+def test_historical_audit_resolves_rebased_path_before_unpublished_snapshot_exists(tmp_path):
+    import os
+    frame=tmp_path/'old.png';Image.new('RGB',(4,4),'gray').save(frame)
+    future=tmp_path/'not-published'
+    observation=row(os.path.relpath(frame,future/'regions/r'),'clear','old')
+    records={'r':{'controls':{'c':{'observations':[observation]}}}}
+    assert not future.exists()
+    result=mod('identity_templates').reject_uniform_history(records,future,'audit')
+    assert len(result)==1 and result[0]['field']=='image'
+    assert not future.exists()

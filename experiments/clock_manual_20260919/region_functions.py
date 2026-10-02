@@ -3,6 +3,7 @@ from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
+import identity_templates as templates
 
 
 def task_module():
@@ -61,19 +62,27 @@ def attribute_context(region):
 
 def action_results(region):
     """Task summaries and their original executed action results complement each other."""
-    controls={t.get('control') for t in supported_tasks(region).values()}
+    tasks=supported_tasks(region)
+    controls={t.get('control') for t in tasks.values()}
     rows=[]
     for aid,action in region.get('actions',{}).items():
         cid=action.get('control');result=action.get('result',{})
-        if (cid not in controls or cid not in region['controls']
-                or action.get('delivery')!='executed_receipt_zero' or not result.get('description')):continue
+        related=[name for name,t in tasks.items() if aid in t.get('attempts',[])]
+        unconfirmed=cid is None and bool(related)
+        if (not unconfirmed and (cid not in controls or cid not in region['controls'])):continue
+        if action.get('delivery')!='executed_receipt_zero' or not result.get('description'):continue
         row={'动作记录':aid,'结果调用':action.get('result_call') or action.get('evidence',{}).get('result_call'),
+             '选择调用':action.get('evidence',{}).get('selection_call'),'动作目的':action.get('purpose',''),
              '动作前观察':action.get('evidence',{}).get('before_observation'),
              '动作后观察':action.get('evidence',{}).get('after_observation'),
-             '关联任务':[name for name,t in supported_tasks(region).items() if aid in t.get('attempts',[])],
-             '控件':region['controls'][cid]['name'],'动作':action.get('operation',''),
+             '关联任务':related,
+             '控件':'' if unconfirmed else region['controls'][cid]['name'],'动作':action.get('operation',''),
              '结果':result['description'],'依据':result.get('evidence',''),
              '异常':result.get('exception','')}
+        if unconfirmed:
+            row.update(控件关联='未确认',提案目标=action.get('association',{}).get('target',''),
+                       归属边界='以下是关联任务的真实动作结果；提案目标未成为已确认控件，不补做身份绑定。')
+        if action.get('parameter_findings'):row['已记录参数事实']=deepcopy(action['parameter_findings'])
         if row not in rows:rows.append(row)
     return rows
 
@@ -104,6 +113,7 @@ def evidence_projection(region,records=None):
         source={**observation.get('evidence',{}),**observation}
         controls.append({'名称':c['name'],**{k:v for k,v in observation.items() if k in ('text','state','possible_operation','uncertainty')},
             '观察出处':{k:source[k] for k in ('source_call','observation','source_field') if k in source}})
+        if templates.evidence_limit(observation):controls[-1]['视觉依据限定']=templates.evidence_limit(observation)
     return {'已观察控件':controls,
         '已登记操作':[{'任务':n,'依据':t.get('result_evidence',t['reason']),
                      '结果动作记录':list(t.get('attempts',[])),

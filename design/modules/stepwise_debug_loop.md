@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-02 Clock session08/09共30HTTP/9GUI；当前目标累计99HTTP/26GUI。实际Timer1m启动后58秒，通知到期经wait→hover→close恢复；随后Stopwatch启动及Lap有真实后图。09之后因0119纯色模板及0117功能投影问题停止，原运行未回滚/改图。B9完整保存帧正常Runner修正3HTTP/0GUI，历史副本仅派生资格维护；不将这批模型验证称新GUI。阶段08/09包与修复包分别保留。
+
 2026-10-02 同点竞争纠错有限验收：正常原0085接受边界触发BindingConflict，最终保存帧原答正确保留当前不可辨认滑块的缺口；改提负滚轮后缺当前Region边界，沿原observe收口，不复用旧图冒充新观察。旧错误0096弱名字原答亦沿正常submission/accept拒绝，保持repairs=1，最后一次新Luna回复请求observe。最终4HTTP/0GUI（含1输入邻接），59聚焦通过、2旧测试基线复现后排除；未部署现场、未执行替代GUI、未接入自动历史owner修复。
 
 2026-10-02 action纠错的执行图：`step_repair.request`只发送original_request中唯一当前图，历史/补观察图留路径与文字；非action保留原多图链。`confirmed_dispatch_review`改为核验单张指定当前图，仍要求同轮、同窗口、一次repair、无observe/record_edit、未投递及原答候选一致。`repair_stages.refresh(action)`成功后把旧pre_dispatch_review转存pre_dispatch_review_history并撤销快捷确认；原计数不变。能力表、schema与edit_record入口同时禁用action阶段历史动作/观察迁移，当前记录修订和专用历史核对仍可用。新拒绝诊断及重复操作提示同步单图语义。

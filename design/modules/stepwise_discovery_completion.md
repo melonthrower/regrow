@@ -1,5 +1,7 @@
 # 临时逐步遍历器：同图增量登记
 
+2026-10-02 功能证据补齐：region_functions.action_results保留已支持任务attempts引用的control=null已执行结果，标owner未确认，附目标/来源/参数事实；未执行或无任务关联仍排除，不补绑定或done。evidence_projection/signature共用动作证据与模板资格限制，新增证据使旧整理失效。真实0117完整父检查点新正常请求/原答/登记1HTTP0GUI，保留00:01:00配置反馈并区分未确认身份、暂停/自定义范围未实测。实际Clock08/09已启动Timer和Stopwatch、记录Lap；仍有未知核心页和质量问题，不能以pending=0判完整。
+
 2026-10-02 公开截图辅助诊断：GNOME三张官方原图、五例18HTTP/0GUI。正常发现/任务/动作请求与实际原答沿既有校验登记，所有执行边界停止。Calculator另以已登记同帧边界监督清点可见密集区：首次输出截断，正常纠错后52控件/104裁图核对通过；仅发现登记，不含任务/动作效果。Text Editor同图标签分组点击框包含关闭入口、Open处理选择不同，Papers同图扩大interactive范围且不再保留输入层级不确定，均作为未解决问题，不能称稳定输出已验收。详情见 archive/web_screenshot_probe_20261002/DESIGN.md；不替代真实运行原生测试。
 
 范围：仅 `experiments/clock_manual_20260919` 的发现步，不更改主框架、动作结算或原运行图。

@@ -8,23 +8,21 @@ def region():
       'tasks':{'不同名称的入口任务':{'task_type':'single_action','handling':'explore','status':'pending','control':'entry','action':'click','attempts':[]}}}
 
 
-def test_new_task_name_does_not_erase_verified_entry():
-    r=region();old=deepcopy(r['actions'])
-    mod('entry_evidence').reuse(r)
+def test_entry_history_is_disclosed_without_completing_new_goal():
+    r=region();old=deepcopy(r)
+    hits=mod('entry_evidence').known_entries(r,'entry','click')
     t=r['tasks']['不同名称的入口任务']
-    assert t['status']=='done' and t['attempts']==['old'] and r['actions']==old
-    assert '退出未探索' in t['result_evidence']
+    assert t['status']=='pending' and t['attempts']==[] and r==old
+    assert '退出未探索' in hits[0]['description'] and hits[0]['attempt']=='old'
 
 
-def test_parameters_unconfirmed_effects_and_variable_destinations_not_completed():
-    for case in ['parameter','unconfirmed','external','return','multiple']:
+def test_unconfirmed_external_and_return_actions_are_not_entry_evidence():
+    for case in ['unconfirmed','external','return']:
         r=region();a=r['actions']['old']
-        if case=='parameter':r['tasks']['不同名称的入口任务']['task_type']='parameter'
         if case=='unconfirmed':a['delivery']='unknown'
         if case=='external':a['result']['exception']='external_app'
         if case=='return':a['result']['returns_to_previous']=True
-        if case=='multiple':r['actions']['other']={**deepcopy(a),'interactive_regions':['different']}
-        assert mod('entry_evidence').reuse(r)==[]
+        assert mod('entry_evidence').known_entries(r,'entry','click')==[]
         assert r['tasks']['不同名称的入口任务']['status']=='pending'
 
 

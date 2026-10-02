@@ -22,7 +22,7 @@ def build_parser():
 
 
 def main(argv=None):
-    from gui_rewalk.src.core.explore.ledger import ExplorationLedger
+    from gui_rewalk.src.core.scenario.collection_graph import load_collection_graph
     from gui_rewalk.src.core.scenario.function_collection_research import (
         build_region_model_agent, design_region_instruction)
     args = build_parser().parse_args(argv)
@@ -31,11 +31,13 @@ def main(argv=None):
     try:
         if source == output:
             raise ValueError("Task output must not overwrite the exploration ledger")
-        ledger = ExplorationLedger.load(source)
+        if output.exists():
+            raise ValueError('Task output already exists; choose a new output path')
+        ledger, digest = load_collection_graph(source)
         agent = build_region_model_agent("openai_api", None, str(output.parent))
         task = design_region_instruction(ledger, agent, args.request)
         task["source_ledger"] = os.path.relpath(source, output.parent)
-        task["source_ledger_digest"] = hashlib.sha256(source.read_bytes()).hexdigest()
+        task["source_ledger_digest"] = digest
         task["instruction_id"] = output.stem
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(task, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

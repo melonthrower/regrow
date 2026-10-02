@@ -50,15 +50,6 @@ def test_review_without_history_cannot_claim_done():
  assert r['tasks']['Music']['status']=='pending'
 
 
-def test_suspended_ownership_not_completed_by_entry_reuse(monkeypatch):
- r,s=fixture();r['tasks']['Music']['attempts']=['a1']
- mod('task_record_repair').apply(r,s,{'task':'Music','field':'suspend_task','before':'Recent','after':'','evidence':'wrong owner'},'review')
- m=mod('entry_evidence')
- monkeypatch.setattr(m,'known_entries',lambda *args:[{'description':'opened Recent','destination_region':'other'}])
- m.reuse(r)
- assert r['tasks']['Music']['status']=='blocked'
-
-
 def test_review_commit_uses_existing_update_repair_without_attempt(tmp_path):
  import json
  from tests.test_recovery_discovery import seeded_run, ROOT
@@ -76,13 +67,6 @@ def test_review_commit_uses_existing_update_repair_without_attempt(tmp_path):
  assert result['status']=='complete' and after['tasks']['inspect']['status']=='done'
  assert after['actions']==before['actions'] and after['tasks']['inspect']['attempts']==['a1']
  assert 'active_task' not in state and not (run/'execution_pending.json').exists()
-
-
-@pytest.mark.parametrize('retry',['explicit_task_ownership_review','explicit_result_review'])
-def test_explicit_review_blockers_survive_entry_reuse(retry,monkeypatch):
- r,s=fixture();t=r['tasks']['Music'];t.update(status='blocked',deferral={'retry_when':retry})
- m=mod('entry_evidence');monkeypatch.setattr(m,'known_entries',lambda *a:[{'attempt':'a1','description':'old destination','destination_region':'other'}])
- m.reuse(r);assert t['status']=='blocked'
 
 
 def test_suspended_equivalent_keeps_coverage_gap():

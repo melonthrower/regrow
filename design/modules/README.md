@@ -10,7 +10,7 @@
 | StateGraph、schema、attempt、completion | `state_graph.md` |
 | 环境、provider、VLM、生命周期、fixture | `env_and_config.md` |
 | capability synthesis | `capability_synthesizer.md` |
-| M13 visual collection | `visual_collection.md` |
+| Region 图指导实时采集（旧 M13 说明已归档） | `visual_collection.md` |
 | graph quality | `graph_quality_agent.md` |
 | Region-function 研究 | `region_function_collection_research.md` |
 | 跨 App capability 组合 | `crossapp_composition_design.md` |

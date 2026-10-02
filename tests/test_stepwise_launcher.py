@@ -7,6 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]/'experiments/clock_manual_20260919'
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT))
     import app_launcher,progress
+    monkeypatch.setattr(app_launcher, "configured_model", lambda: "offline-fixture-model")
     return app_launcher,progress
 
 

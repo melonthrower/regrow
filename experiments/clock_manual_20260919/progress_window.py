@@ -13,6 +13,7 @@ from urllib.parse import urlsplit, parse_qs
 from urllib.request import urlopen
 import progress
 import region_graph
+from run_source import session_command, source_hash, launcher_identity
 
 
 class RoundRunner:
@@ -42,13 +43,16 @@ class RoundRunner:
         with self.lock:
             if self.status()['running'] or progress.snapshot(self.run)['status']=='running':
                 raise RuntimeError('已有遍历回合正在运行')
-            parent=self.run/'step_rounds';parent.mkdir(exist_ok=True)
+            parent=self.run/'step_rounds'
             name=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:8]
             self.output=parent/name
-            argv=[sys.executable,str(Path(__file__).with_name('run_progress_session.py')),str(self.run),str(self.output),mode]
-            (parent/(name+'.launch.json')).write_text(json.dumps({'argv':argv,'cwd':str(Path(__file__).parent)},ensure_ascii=False,indent=2))
+            argv=session_command(self.run,self.output,mode)
+            source=Path(argv[1]).parent
+            parent.mkdir(exist_ok=True)
+            (parent/(name+'.launch.json')).write_text(json.dumps({'argv':argv,'cwd':str(source),
+                'framework_source':str(source),'source_hash':source_hash(source)},ensure_ascii=False,indent=2))
             with (parent/(name+'.log')).open('xb') as log:
-                self.child=self.launch(argv,stdout=log,stderr=subprocess.STDOUT,cwd=Path(__file__).parent,start_new_session=True)
+                self.child=self.launch(argv,stdout=log,stderr=subprocess.STDOUT,cwd=source,start_new_session=True)
             return self.status()
 
 
@@ -58,6 +62,7 @@ def server(run,mirror,port=0,runner=None,hub=None):
         raise ValueError('mirror must be a local HTTP origin')
     mirror=f'http://127.0.0.1:{parsed.port or 80}'
     runner=runner or (RoundRunner(run) if run else None);token=secrets.token_urlsafe(32)
+    identity=launcher_identity(Path(__file__).parent,hub.parent) if hub else None
     def active():return (hub.run,hub.runner) if hub else (run,runner)
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -77,7 +82,7 @@ def server(run,mirror,port=0,runner=None,hub=None):
                 elif path=='/applications.json':
                     value=hub.catalog() if hub else {'apps':[]};body=json.dumps(value,ensure_ascii=False).encode();mime='application/json; charset=utf-8'
                 elif path=='/health':
-                    body=json.dumps({'service':'stepwise_launcher','root':str(hub.parent.resolve()) if hub else None}).encode();mime='application/json'
+                    body=json.dumps(identity or {'service':'stepwise_launcher','root':None}).encode();mime='application/json'
                 elif path=='/progress.json':
                     active_run,active_runner=active()
                     value=progress.snapshot(active_run) if active_run else {'no_run':True,'status':'idle'}

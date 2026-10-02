@@ -1,5 +1,7 @@
 # 环境、VLM 与应用生命周期
 
+2026-10-02：`ops/coverage100_environment.py` 的独立 Android 启动用 `_free_port(even=True)`：若内核给出奇数临时端口，在持有它时探测相邻偶数控制端口，不再等待 bind(0) 随机返回偶数。gRPC 独立取空闲端口并避开控制/ADB端口，不用 console+3000。默认只读 AVD overlay、原有启动等待和所属进程清理不变。4项聚焦检查通过；本次独立 AVD 实际启动、控制器附着与关闭已验证，采集业务结果单独见采集模块。
+
 2026-09-19：Android环境初始化（含attach）和reset后统一写入并读回show_ime_with_hard_keyboard=0；失败明确报错，不静默沿用允许软键盘的设置。仅抑制有硬键盘环境的默认弹出，不卸载/禁用输入法，不修改历史截图或图。授权实例5690/5692本次均由1改为0并读回确认；默认AVD已为hw.keyboard=yes。
 
 ## 专用VLC实验的前景重绘
@@ -66,7 +68,7 @@
 ```yaml
 version: 1
 explore_api:
-  base_url: https://api.zhizengzeng.com/v1
+  base_url: https://api.example.invalid/v1
   api_key: ""
   model: gpt-5.6-luna
   reasoning_effort: medium

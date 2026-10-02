@@ -1,9 +1,11 @@
 # Phase 1 capability induction
 
+当前普通生成/采集入口已采用 Region 目标合同，见 [visual_collection](visual_collection.md)。下文独立 capability graph 的归纳/API仍须与当前 CLI 区分；其中旧 `--capability-graph`、recipe 选取和 M13 入口描述不代表普通 CLI 可执行参数。
+
 ## 2026-09-06 发现目录的直接消费路径
 
 modular bundle 现在同时导出 function_inventory.json，直接投影 Region/CanonicalOperation 与 memory、
-参数说明和已观察结果，包含未执行操作。run_capability_task_synthesis.py --region-ledger 使用该投影生成任务，
+参数说明和已观察结果，包含未执行操作。run_capability_task_synthesis.py <ledger或knowledge_current.json> 使用该投影生成任务，
 无需先调用下面的 effect induction。旧能力等级仍描述历史证据，不作为新 Region 任务的准入条件。
 下面的效果归纳与 recipe 合同继续用于旧 capability-graph 路径，不应据此限制 Region-guided 采集。
 

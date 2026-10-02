@@ -69,10 +69,10 @@ class RegionGuidedCollector:
         self.visual_guard = visual_guard
 
     def _guidance(self, visible, target):
-        from ..explore.region_routes import region_relations
+        from .collection_graph import collection_relations
         if target in visible:
             return []
-        relations = region_relations(self.ledger)
+        relations = collection_relations(self.ledger)
         graph = nx.DiGraph()
         for edge in relations:
             for revealed in edge["revealed_region_refs"]:
@@ -167,11 +167,11 @@ class RegionGuidedCollector:
                                    "若current_goal是定位、展开或观察准备，达到其要求的可见状态即可complete；"
                                    "若是业务目标，须实现所写结果。当前目标完成立即complete=true、action=null，将控制交回框架。"
                                    "完成后来源区块可消失或变为结果区块，按真实结果确认complete，不为保持旧区块可见而回退。"
-                                   "所有点击用当前图0至1000坐标；采集中的新控件owner_ref可为空。"
+                                   "click、input_text、long_press、scroll都必须给当前图0至1000的point_1000；输入框已聚焦也不能省略输入点位或填null。只有back、wait无需点位。采集中的新控件owner_ref可为空。"
                                    "不能用未显示的功能、输入凭据或执行超出用户目标的危险动作。"
                                    "完成目标或条件时action=null；否则至多一个动作。"
                                    + ("已知目标visual_target_ref复制known_visual_controls中的ref，未登记目标填null；"
-                                      "不能把目标换成坐标附近的其他控件来通过核对。已知目标action.target复制该ref的name，未知目标写实际控件和必要对象。"
+                                      "不能把目标换成坐标附近的其他控件来通过核对。已知目标action.target复制该ref的name，不填ref或内部ID；未知目标写实际控件和必要对象。"
                                       "action_intent写这一个动作期待的直接可见效果；无动作填空。"
                                       "grounding_feedback拒绝的提议未执行，不是上一动作，不要报告它的结果；"
                                       "根据最新截图重新定位，不盲重发。反馈box为像素，动作仍用0..1000。"

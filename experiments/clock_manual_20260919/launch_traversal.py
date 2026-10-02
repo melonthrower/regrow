@@ -8,18 +8,19 @@ from urllib.request import urlopen
 import webbrowser
 from app_launcher import ApplicationHub,Device,repository,write
 from progress_window import RoundRunner,server
+from run_source import launcher_identity
 
 PORT=39595
 
 
 def main():
     here=Path(__file__).resolve().parent
-    base=Path(json.loads((here/'current_source.json').read_text())['source']) if (here/'current_source.json').exists() else here
-    runs=base/'luna_runs';url=f'http://127.0.0.1:{PORT}/'
+    runs=here/'luna_runs';url=f'http://127.0.0.1:{PORT}/'
     try:
         with urlopen(url+'health',timeout=2) as response:health=json.load(response)
-        if health=={'service':'stepwise_launcher','root':str(runs.resolve())}:
+        if health==launcher_identity(here,runs):
             print(url,flush=True);webbrowser.open_new_tab(url);return
+        raise RuntimeError('该端口已有不同源码的遍历服务；请先结束旧服务，保留其运行记录后重启。')
     except (OSError,ValueError):pass
     initial=None;serial=None
     saved=runs/'launcher_current.json'

@@ -61,6 +61,10 @@ def test_task_stage_then_return_with_no_control_and_no_fake_edge():
     base=flow.assemble_context(ROOT,r,s,'menu')
     q=m.attach(ROOT,r,s,'menu',base);assert q['stage']=='task_proposal'
     m.apply_plan(r['middle'],proposal([]),'1')
+    assert m.attach(ROOT,r,s,'menu',base)['stage']=='function_registration'
+    m.helper('region_functions').register(r['middle'],{
+        'region_role':'navigation','role_evidence':'Empty local surface',
+        'functions':[],'evidence':'No local functions remain'},'functions')
     q=m.attach(ROOT,r,s,'menu',base);assert q['allow_back'] and q['action_ready']
     binding=flow.bind_action_target(q,{'target':'系统返回','action':'back','x':None,'y':None})
     assert binding['status']=='matched' and binding['control_ref'] is None

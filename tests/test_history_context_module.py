@@ -3,7 +3,14 @@ from tests.test_recovery_discovery import mod
 
 def test_historical_navigation_has_no_current_directive():
  task={'status':'done','result_evidence':'当前可交互区块为菜单；后续优先探索菜单','completion_basis':{'destination_regions':['menu']}}
- assert mod('history_context').attempts(task,{'menu':{'name':'菜单'}})==['历史结果：该入口当时打开「菜单」。']
+ lines=mod('history_context').attempts(task,{'menu':{'name':'菜单'}})
+ assert lines[0]=='历史结算（当时的判断，不是本轮指令）：'+task['result_evidence']
+ assert lines[1]=='动作后观察到的区块（不替代原任务结果）：「菜单」。'
+
+
+def test_handoff_keeps_business_effect_in_task_history():
+ task={'status':'done','result_evidence':'确认后背景变为深色','completion_basis':{'destination_regions':['canvas']}}
+ assert '确认后背景变为深色' in '\n'.join(mod('history_context').attempts(task,{'canvas':{'name':'画布'}}))
 
 
 def test_findings_only_follow_task_or_same_control():

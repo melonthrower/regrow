@@ -1,4 +1,4 @@
-"""Reuse observed entry effects across task names without replaying the GUI."""
+"""Disclose observed entry effects; task-result review decides applicability."""
 
 
 def known_entries(region,control,operation):
@@ -15,22 +15,6 @@ def known_entries(region,control,operation):
         hits.append({'attempt':aid,'destination_region':targets[0],
                      'description':action['result'].get('description','')})
     return hits
-
-
-def reuse(region):
-    """Single-action navigation is already known; target exploration stays separate."""
-    reused=[]
-    for name,task in region.get('tasks',{}).items():
-        if task.get('deferral',{}).get('retry_when')in ('explicit_task_ownership_review','explicit_result_review'):continue
-        if task.get('task_type')!='single_action' or task.get('handling')!='explore' or task.get('status')=='done':continue
-        hits=known_entries(region,task.get('control'),task.get('action'))
-        if not hits or len({h['destination_region'] for h in hits})!=1:continue
-        task['status']='done'
-        task['result_evidence']='入口直接结果已有记录：'+hits[-1]['description']+'；目的区块内部探索另行登记，不重复验证入口。'
-        task['completion_basis']={'rule':'reuse_observed_entry','evidence':hits}
-        task['attempts']=list(dict.fromkeys(task.get('attempts',[])+[h['attempt'] for h in hits]))
-        reused.append(name)
-    return reused
 
 
 import importlib.util

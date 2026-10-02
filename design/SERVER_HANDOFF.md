@@ -1,5 +1,7 @@
 # 服务器续接工作
 
+2026-10-02 独立接线验证已停止：Tasks保存帧只在records/framework_wiring_fix_20261002_01完整副本登记，原运行指针/manifest/指定原答hash不变；5HTTP/0GUI。Clock城市查询使用artifacts/runs/framework_wiring_collection_20261002_01内只读图和新AVD overlays，所有本次所属模拟器均已关闭，累计12HTTP/3GUI。没有恢复/部署旧遍历，不把历史London勾选当本次添加。源码/证据/失败轮版本及范围见本月日志。
+
 2026-09-19 本轮最终停点：`artifacts/traversal_continue_20260919_01`至`_06`已全部停止，29候选中27项本轮尝试、2项（桌面VLC/Joplin）原累计HTTP余量不足启动预留；无后台运行/排队。总新增550HTTP、79遍历GUI、34激活GUI、1独立启动恢复GUI。原生遍历结果{'success': 70, 'uncertain': 9}，不是全图验收。逐应用最新账本、原源、停止原因和未重置的剩余额度见`_01/final_summary.json`，不能从旧历史段选择当前位置。新额度问题未答复，未使用额外授权。
 
 本轮现有设备复用5006/5007、emulator-5690/5692，没有新设备、重置或清理。5006最后GIMP纠正失败，须fresh核对；5007最后标为Impress但截图实际VS Code，不能盲投Impress操作。5690最后Clock Help触发前景门禁停止；5692最后Draw，现场以该目录final.png/fresh观察为准。第四段两次启动STOP与一次队列STOP、第五段显式有限Writer启动恢复均另记；Writer菜单已关闭但a11仍uncertain，不得改算成功或重放。

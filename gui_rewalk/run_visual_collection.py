@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
+import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -31,7 +31,7 @@ def build_parser():
 
 
 def load_region_task(instruction_path):
-    from gui_rewalk.src.core.explore.ledger import ExplorationLedger
+    from gui_rewalk.src.core.scenario.collection_graph import load_collection_graph
     from gui_rewalk.src.core.scenario.function_collection_research import validate_region_instruction
     path = Path(instruction_path).expanduser().resolve()
     task = json.loads(path.read_text(encoding="utf-8"))
@@ -39,10 +39,9 @@ def load_region_task(instruction_path):
     if not isinstance(source, str) or not source:
         raise ValueError("Instruction needs source_ledger; regenerate it from the exploration ledger")
     source_path = (path.parent / source).resolve()
-    digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
-    if task.get("source_ledger_digest") not in (None, digest):
-        raise ValueError("Instruction belongs to a different exploration ledger")
-    ledger = ExplorationLedger.load(source_path)
+    ledger, digest = load_collection_graph(source_path)
+    if task.get("source_ledger_digest") != digest:
+        raise ValueError("Instruction source_ledger_digest is missing or belongs to a different exploration ledger")
     return ledger, validate_region_instruction(task, ledger), source_path, digest
 
 
@@ -58,7 +57,18 @@ def run_region_collection(args):
     mobile = args.vm_provider == "android"
     if not mobile and not args.path_to_vm:
         raise ValueError("Desktop collection requires --path-to-vm")
-    agent = build_region_model_agent("openai_api", None, args.output_root)
+    stamp = datetime.now()
+    episode_id = stamp.strftime('%H%M%S')+'-'+uuid.uuid4().hex[:8]
+    run_output = Path(args.output_root).resolve() / 'runs' / (stamp.strftime('%Y%m%d')+'-'+episode_id)
+    run_output.mkdir(parents=True, exist_ok=False)
+    from gui_rewalk.src.core.scenario.collection_visual_guard import build_visual_guard
+    guard = build_visual_guard(ledger, run_output)
+    (run_output/'configuration.json').write_text(json.dumps({
+        'instruction':str(Path(args.instruction).resolve()),'source_ledger':str(source_path),
+        'source_ledger_digest':digest,'initial_app':args.initial_app,
+        'vm_provider':args.vm_provider,'max_turns':args.max_turns,
+        'visual_guard':guard is not None},ensure_ascii=False,indent=2)+'\n')
+    agent = build_region_model_agent("openai_api", None, str(run_output))
     if mobile:
         from gui_rewalk.env.android_gui_gen_env import AndroidGUIGenEnv
         from gui_rewalk.src.config.config import ANDROID_DEFAULT_AVD
@@ -83,12 +93,11 @@ def run_region_collection(args):
         platform = "android" if mobile else "desktop"
         scope = ScopeGuard(env=env, app_name=args.initial_app, platform=platform, desktop_window_owner=owner)
         result = RegionGuidedCollector(ledger, agent, env, scope, platform=platform,
-                                      max_turns=args.max_turns).execute(instruction)
+                                      max_turns=args.max_turns, visual_guard=guard).execute(instruction)
         result["graph_provenance"] = [{"source_ledger": str(source_path), "source_ledger_digest": digest}]
-        stamp = datetime.now()
         app = re.sub(r"[^0-9A-Za-z._-]+", "_", args.initial_app).strip("._") or "app"
-        writer = CollectionWriter(args.output_root, platform, stamp.strftime("%Y%m%d"), app)
-        episode = writer.write_visual_episode(result, stamp.strftime("%H%M%S"), instruction_meta=instruction)
+        writer = CollectionWriter(str(run_output), platform, stamp.strftime("%Y%m%d"), app)
+        episode = writer.write_visual_episode(result, episode_id, instruction_meta=instruction)
         writer.finalize()
         print(json.dumps({"success": result["success"], "final_status": result["final_status"],
                           "branch_taken": result["branch_taken"], "episode_dir": episode,

@@ -49,23 +49,21 @@ def advance(records,previous,state,source,binding,attempt):
     state['region_path']=path
     target=previous.get('deferred_routing_target')
     if target and target not in refs:state['deferred_routing_target']=target
-    # A single entry action ends at its observed destination. The destination
-    # owns its own inventory; do not turn opening a menu into testing every item.
+    # Result assessment owns completion. Once it has finished a single action,
+    # hand off to destination work without changing the task's semantic result.
     if binding.get('task_name') and refs and source not in refs:
         owner=records[binding.get('task_region',source)]
         task=owner.get('tasks',{}).get(binding['task_name'],{})
         action=records[source].get('actions',{}).get(attempt,{})
-        if (task.get('task_type')=='single_action' and task.get('status') in ('pending','done')
+        if (task.get('task_type')=='single_action' and task.get('status')=='done'
                 and not binding.get('preparatory_action') and binding.get('task_region',source)==source
                 and task.get('control')==binding.get('control_ref')
                 and action.get('operation') in ('click','tap')
                 and action.get('delivery')=='executed_receipt_zero'
                 and action.get('result',{}).get('exception')=='none'):
             dest=destination_work(records,refs)
-            task['status']='done'
-            if not task.get('result_evidence'):
-                task['result_evidence']='入口动作当时已执行，观察到区块：'+ '、'.join('「'+records[r]['name']+'」' for r in refs)+'。'
-            task['completion_basis']={'attempt':attempt,'destination_region':dest,'destination_regions':list(refs),'rule':'single_action_destination_observed'}
+            task.setdefault('completion_basis',{}).update(
+                destination_region=dest,destination_regions=list(refs))
             state['working_region']=dest
             state['region_path']=path[:path.index(dest)+1] if dest in path else path+[dest]
             state.pop('deferred_routing_target',None)

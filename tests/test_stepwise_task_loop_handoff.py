@@ -5,7 +5,7 @@ from tests.test_recovery_discovery import mod
 
 
 def test_opened_region_owns_remaining_exploration():
-    m=mod('task_routing');task={'task_type':'single_action','control':'open','status':'pending'}
+    m=mod('task_routing');task={'task_type':'single_action','control':'open','status':'done','result_evidence':'菜单已观察，入口目标完成'}
     records={'page':{'tasks':{'open menu':task},'reached_by':[],'actions':{'a':{'operation':'click','delivery':'executed_receipt_zero','result':{'exception':'none'}}}},
              'menu':{'name':'菜单','reached_by':[],'actions':{}}}
     old={'working_region':'page','active_task':{'region':'page','name':'open menu'},'deferred_routing_target':'page'}

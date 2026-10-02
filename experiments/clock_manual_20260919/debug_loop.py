@@ -95,12 +95,7 @@ def freeze(source,destination):
     return destination
 
 
-def source_hash(source):
-    source=Path(source)
-    files=[p for p in source.iterdir() if p.is_file() and p.suffix in ('.py','.md')]
-    files += [p for p in (source/'遍历prompt').rglob('*') if p.is_file()]
-    rows=[(str(p.relative_to(source)),hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(files)]
-    return hashlib.sha256(json.dumps(rows,ensure_ascii=False).encode()).hexdigest()
+from run_source import source_hash, session_command
 
 
 class Supervisor:
@@ -145,10 +140,10 @@ class Supervisor:
         logdir=self.out/'rounds'/app['key']/output.name;logdir.mkdir(parents=True)
         manifest=read(run/'run_manifest.json');write(logdir/'source_before.json',{'framework_source':manifest.get('framework_source')})
         manifest['framework_source']=str(source);write(run/'run_manifest.json',manifest)
-        command=[sys.executable,str(Path(source)/'run_progress_session.py'),str(run),str(output),'step']
+        command=session_command(run,output,'step')
         write(logdir/'invocation.json',{'argv':command,'source_hash':source_hash(source),'output':str(output)})
         with (logdir/'runner.log').open('w') as log:
-            process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
+            process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,cwd=Path(command[1]).parent,start_new_session=True)
             app.update(status='running',pid=process.pid,session=str(output));self.save()
             while process.poll() is None:
                 if self.stopped():output.with_suffix('.pause').touch()

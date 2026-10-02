@@ -28,7 +28,7 @@ def test_fresh_desktop_uses_seed_image_new_storage_and_cleans(monkeypatch, tmp_p
 
 def test_fresh_android_is_read_only_and_terminates(monkeypatch):
     from ops import coverage100_environment as environment
-    monkeypatch.setattr(environment, '_free_port', lambda: 5600)
+    monkeypatch.setattr(environment, '_free_port', lambda **kwargs: 5600 if kwargs.get('even') else 8601)
     calls = []
     class Process:
         def terminate(self): calls.append('terminate')
@@ -65,3 +65,16 @@ def test_desktop_waits_for_controller_and_preserves_failed_launch(monkeypatch, t
         environment.start_fresh_desktop(name='test', qcow=str(seed), log_path=tmp_path/'failed.log')
     failure = json.loads((tmp_path/'failed.log').read_text())
     assert failure['returncode'] == 125 and failure['stderr'] == 'seed mount failed'
+
+
+def test_android_even_port_allocation_handles_odd_ephemeral_ports(monkeypatch):
+    from ops import coverage100_environment as environment
+    bindings=[]
+    class Socket:
+        def __enter__(self):return self
+        def __exit__(self,*args):pass
+        def bind(self,address):bindings.append(address)
+        def getsockname(self):return ('127.0.0.1',40001)
+    monkeypatch.setattr(environment.socket,'socket',lambda:Socket())
+    assert environment._free_port(even=True)==40000
+    assert ('127.0.0.1',40000) in bindings

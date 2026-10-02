@@ -11,6 +11,9 @@ def setup_chain():
     r['menu']['reached_by']=[{'source_region':'middle','source_control':'open','attempt':'a2'}]
     s['interactive_regions']=['menu'];s['working_region']='menu'
     tasks().apply_plan(r['menu'],proposal([]),'inventory')
+    tasks().helper('region_functions').register(r['menu'],{
+        'region_role':'navigation','role_evidence':'No local functions remain',
+        'functions':[],'evidence':'Empty control inventory'},'functions')
     return flow,r,s
 
 
@@ -61,17 +64,21 @@ def alarm_region():
 
 def test_parameter_done_requires_facts_and_command_input_does_not_fake_unicode():
     flow,r,s=fixture();m=tasks();p=row();p['task_type']='parameter';m.apply_plan(r['menu'],proposal([p]),'p')
-    with pytest.raises(ValueError):m.settle_task(r['menu'],{'task_name':'查看内容'},
+    with pytest.raises(ValueError,match='parameter task needs observed parameter facts'):m.settle_task(r['menu'],
+        {'task_name':'查看内容','region_ref':'menu','control_ref':r['menu']['tasks']['查看内容']['control']},
         {'action_result':{'exception':'none'},'task_result':{'name':'查看内容','status':'done','evidence':'clicked','findings':[]}},'a')
     commands=m.helper('action_commands').commands
-    assert len(commands({'action':'input_text','x':1,'y':2,'text':'Breakfast'}))==2
+    assert commands({'action':'input_text','x':1,'y':2,'text':'Breakfast'})==[
+        ['shell','input','tap','1','2'],['shell','input','keycombination','113','29'],
+        ['shell','input','text','Breakfast']]
     with pytest.raises(ValueError):commands({'action':'input_text','x':1,'y':2,'text':'早饭'})
 
 
 def test_scroll_binding_requires_both_endpoints_in_matched_region(tmp_path):
-    from tests.test_region_stepwise_context import module,visual_graph
-    flow=module();g=visual_graph(tmp_path);q=flow.assemble_region_choice(ROOT,g,'o2','r2')
-    q.update(allow_scroll=True,region_target='Menu',region_image=str(tmp_path/'screen.png'))
+    from tests.test_region_scroll_bounds import scene,mod
+    q,state,_=scene(tmp_path)
+    mod('region_scroll').attach(tmp_path,state,q)
+    flow=mod('stepwise_flow')
     p={'target':'Menu','action':'scroll','x':30,'y':70,'end_x':30,'end_y':30,'reason':'inspect'}
     assert flow.bind_action_target(q,p)['status']=='matched'
     assert flow.bind_action_target(q,{**p,'end_y':500})['status']=='unresolved'
@@ -79,6 +86,9 @@ def test_scroll_binding_requires_both_endpoints_in_matched_region(tmp_path):
 
 def test_parent_completion_returns_home_not_same_menu():
     flow,r,s=setup_chain();m=tasks();r['middle']['controls']={};m.apply_plan(r['middle'],proposal([]),'plan')
-    s.update(interactive_regions=['middle'],region_path=['main','middle'],working_region='menu')
-    q=m.attach(ROOT,r,s,'menu',flow.assemble_context(ROOT,r,s,'menu'))
+    m.helper('region_functions').register(r['middle'],{
+        'region_role':'navigation','role_evidence':'No local functions remain',
+        'functions':[],'evidence':'Empty control inventory'},'functions')
+    s.update(interactive_regions=['middle'],region_path=['main','middle'],working_region='middle')
+    q=m.attach(ROOT,r,s,'middle',flow.assemble_context(ROOT,r,s,'middle'))
     assert q['source']['return_to']=='main'

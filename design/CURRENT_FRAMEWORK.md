@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-02 接线修复：任务完成保留原语义判定，路由/历史入口不自动done；维护启动入口按运行选择会话及解析源码。普通生成/采集共用冻结逐步图，严格摘要、身份图依赖与固定matcher、单次输出；输入点位合同与执行器一致。批准导出158项聚焦离线通过；3场景原生Luna保存帧＋日期裁图2次监督纠错共5HTTP/0GUI；单功能城市查询重跑成功8HTTP/2GUI，含生成和失败轮共12HTTP/3GUI。旧图混合身份、普通CLI独立HTTP/GUI硬额度、跨应用/全遍历仍未解决，不代表全门禁或无人监督验收。入口与限制见 stepwise_debug_loop / visual_collection / region_function_collection_research。
+
 2026-10-02 复制遍历器局部清点增加同帧只读区块划分与其他owner的匹配控件；写入仍限focus，越界/争用位置进入原纠错。任务结果不被目的区块摘要覆盖，功能整理包含原动作及带出处的观察事实，事实变化使整理失效。同图补全保留范围上下文。69项聚焦通过；2次真实Luna保存帧原答正常登记，Settings六控件ID保持、返回仍归导航，颜色确认效果被正确整理并保留精确色值/HEX输入未确认。0新GUI，非现场/全应用验收；范围见stepwise_discovery_completion、stepwise_region_identity及本月日志，旧冻结运行未自动部署。
 
 2026-10-02 服务内容拒绝：复制遍历器仅按402错误正文中的param_error/敏感词识别，原请求最多追加一次重试；未执行动作只暂挂可定位的当前任务，发现缺口不批量阻塞同Region任务，已执行动作保留待登记。显式Python入口resume_service_failure重试原步骤，不重置累计额度。原生保存帧0167接受动作绑定、0168/0169拒绝后只暂挂Timer（0GUI）；现场08继续独立Bedtime后仍因服务拒绝暂停，12HTTP/0GUI，Clock未完成。见stepwise_debug_loop与本月日志。
@@ -301,8 +303,8 @@ Luna仍逐次判断操作效果和受阻原因。无可执行任务且无pending
 主 Agent 的 region_effects 明确变化与 cause，框架不再把集合差自动归为动作效果；
 next_operation_ref 可依据经验改选当前可见开放待办，原 Task 不丢失。同 Region 近期结果进入已有上下文。
 modular bundle 新增 function_inventory.json，零动作发现可直接用于任务生成。
-run_capability_task_synthesis.py --region-ledger 生成 before/condition/if_true/if_false/after；
-run_visual_collection.py --region-ledger 使用 RegionGuidedCollector，图关系指导到区块，Agent 在实时界面
+run_capability_task_synthesis.py <ledger或knowledge_current.json> 生成 before/condition/if_true/if_false/after；
+run_visual_collection.py --instruction <生成物> 使用 RegionGuidedCollector，图关系指导到区块，Agent 在实时界面
 选择分支并完成目标，未知中间 State 不阻止执行。原动作执行、模型 transport 和 CollectionWriter 复用。
 新模式是单应用；失去前景则 partial，不执行 seed/delta setup；旧 M13 模式保留。
 当前只有离线接线验证，没有新增 Luna/API/VM 实机验收，不宣称任意应用覆盖和成本提升。
@@ -318,8 +320,8 @@ run_visual_collection.py --region-ledger 使用 RegionGuidedCollector，图关�
   -> 执行并保存 before/action/after -> Luna 报告结果 -> 校验通过后写 ledger/Transition
   -> 新内容继续清点，已知内容复用；预算或失败留下 partial/gap
 输出：ledger -> bundle.py -> State/Region/Operation 证据 + Region 关系 + function_inventory + 旧 Capability 图
-指令：--region-ledger 从已发现功能提出 Region 目标与分支 -> instruction
-采集：--region-ledger 由 Region 关系提供历史指导 -> Agent 根据当前截图到达并完成目标
+指令：普通生成入口从已发现功能提出 Region 目标与分支 -> instruction
+采集：普通采集入口由 Region 关系提供历史指导 -> Agent 根据当前截图到达并完成目标
   -> 实时判断条件、执行选中分支与共同后续 -> 验证结果 -> 写轨迹
 ```
 
@@ -339,7 +341,7 @@ run_visual_collection.py --region-ledger 使用 RegionGuidedCollector，图关�
 | 同 Task/源 State/规范操作累计 2 次 no_effect；报告与身份审核共用 3 次失败；连续动作拒绝 4 次 | 固定停止策略，会留下 gap；不是通用 GUI 定律 |
 | 操作任务/清点各 12 次动作上限，以及全局动作/轮次预算 | 防止不结束，也可能中断有效探索 |
 | 指令与采集接收 discovered/executable | 本轮已解除事前重复执行要求；状态不晋升，本次成功仍须验证 |
-| 旧独立能力图路径仍需 recipe、参数历史样例 | 新 --region-ledger 路径以 Region goal 为目标，不套用旧门禁 |
+| 旧独立能力图路径仍需 recipe、参数历史样例 | 当前 RegionGuidedCollector 路径以 Region goal 为目标，不套用旧门禁 |
 | 路线偏航可重规划；轨迹被标为 route_tainted 后默认完整重采一次 | 与两份效果证据无关；不是每个成功任务都执行两遍 |
 
 研究目标是根据图中发现的功能设计指令，图提供执行依据与经验，由本次真实采集验证结果。
@@ -1308,9 +1310,9 @@ Region、entry、temporary-state 和最近 trace；旧帧 bbox 及旧 current pa
 | `gui_rewalk/run_visual_traversal.py` | 桌面、Android、Local HTML 的视觉遍历与单图 perception-only |
 | `gui_rewalk/run_capability_synth.py` | 可选离线 capability 归一或旧图补录；不能替代真实动作验证 |
 | `gui_rewalk/run_capability_induction.py` | 从真实 attempt/effect 证据离线生成独立能力图 |
-| `gui_rewalk/run_capability_task_synthesis.py` | 从能力图选择一个已发现功能或已验证 cleanup relation，并生成 M13 instruction |
+| `gui_rewalk/run_capability_task_synthesis.py` | 从 ledger 或冻结逐步图的功能生成 Region 目标/分支，固定来源摘要 |
 | `gui_rewalk/run_graph_quality.py` | 只读图质量检查与可选证据标注 |
-| `gui_rewalk/run_visual_collection.py` | M13 capability-backed 视觉轨迹执行与落盘 |
+| `gui_rewalk/run_visual_collection.py` | 校验生成物及来源，Region 图指导实时采集；逐步图自动接视觉 guard，独立运行目录落盘 |
 | `run_local_visual.ps1` | 本地 VMware 桌面遍历入口 |
 | `ops/run_guitraverse_seeded_mobile.ps1` | 从版本化 GUITRAVERSE whole-AVD snapshot 启动一次只读 overlay 的模块化 Android 遍历；`-PlanOnly` 只输出 argv |
 | `ops/pull_remote_run_evidence.ps1` | 白名单回收远端结果/日志；拒绝符号链接、超限证据与 `repo/OSWorld` |
@@ -1462,7 +1464,7 @@ Attempt 链、相反 State 路径以及可验证参数对应时，才在能力�
 
 任务生成与采集入口接受 `discovered|executable|effect_verified|composable`，不要求先执行或重复验证。
 原证据状态保持不变，正式采集仍校验图引用、执行信息及本次实际结果；尝试不等于成功。
-旧独立能力图仍从效果归纳；新 function_inventory 投影零动作发现，--region-ledger 可直接生成和采集 Region 目标。
+旧独立能力图仍从效果归纳；新 function_inventory 投影零动作发现；当前普通 Region 生成/采集用法见 visual_collection.md，旧 --region-ledger 开关已不适用。
 普通选择生成单能力 instruction；
 `cleanup_cycle` 仍要求已验证成员，生成现有格式的两个 `capability_refs`，保持固定顺序，并让 cleanup ref
 依赖 creation ref。M13 不增加 cleanup 专用执行器：它要求 capability digest 精确匹配
@@ -1474,45 +1476,7 @@ legacy capability 的落点检查不放宽。离线 compile 不调用 live VLM�
 执行。具体 Clock World 四 Variant 目标 fixture 与当前拒绝边界见
 `design/modules/capability_induction.md`。
 
-M13 模型传输默认仍是 `qwen_api`；显式
-`--model-backend codex_cli --model-version gpt-5.6-luna` 时，只替换截图/VLM
-传输，继续使用同一规划、grounding、动作、effect 和写盘合同。外部拷贝的 annotated
-graph 若保留失效的绝对截图路径，入口只在内存中按
-`node-dir/screenshots/<basename>` 重绑定；缺失的 fingerprint 也只从该本地证据图
-重算，不改源 graph 文件或 capability digest。live State 先按 Page 候选缩小范围，再由
-页内 `KnownPageStateLocator` 选择精确 State；同一真实 GUI 动作前复用一次结论，动作后
-必须重判。一个 capability 有多个 `entry_surfaces` 时，调度按当前 State 到各入口的有向
-route cost 选最近可达 binding，而不是固定走主 `node_id`。2026-08-25 的本地桌面
-Clock Luna 验收从 World 出发，以 3 个动作完成
-`World -> Alarms -> Stopwatch -> Start`，最终截图显示计时运行和 Pause；具体证据与当前
-调用成本见 `design/modules/visual_collection.md`。
-
-M13 Android 入口现在可显式从 named whole-AVD snapshot 启动，并在 `env.reset()` 后应用一个
-严格 typed 的 per-task scenario delta；delta setup、GUI trajectory 和 deterministic evaluator
-分开落盘。delta 的 `base_snapshot` 和 `task_id` 分别必须精确匹配 CLI snapshot 与 instruction ID；
-失败 evaluation 仍保存 delta digest。跨应用值传递只开放显式
-`output_slot -> query_result scalar -> from_slot`：来源 ref
-必须完成可见验收，目标 ref 必须显式依赖唯一 producer；capability-graph 参数还须是具有至少两个
-真实字符串样例、且 recipe 实际消费的唯一参数。全部 output slot 在执行前保留，prerequisite binding
-不得预写或覆盖。缺值、非 scalar、类型不符或断言失败均 fail closed。
-该实现不改变遍历图、Capability induction、自动任务合成或 cleanup 合同；当前只有离线测试，不能
-写成短信到文档 live collection 已通过。
-
-M13 当前另有一个只属于采集执行器的连续 workflow；遍历入口和 `explore/` 不导入它。
-实机启动仍完整定位一次，之后框架把预计 State 投影成一行自然语言（Page、主要 Region
-及可见操作），并附剩余路线和最近三步。每个真实动作后的同一次 workflow Agent 调用
-同时结算上一步、确认预计落点，并在清楚看到下一条已知安全 CLICK 时给出当前帧
-normalized bbox/point。框架只接受目标文字精确对应计划、坐标位于自身 bbox 和活动窗口内
-的结果；普通 verified graph edge 与 `effect_verified|composable + normal|safe` capability
-可直接执行，其他动作继续走原 grounding/Reviewer。Agent 报 mismatch、no-effect、输出
-缺失或几何无效时，旧 Page/State 定位和 grounding 自动接管。没有
-`desired_outcome` 的最后一个 workflow 结论已直接证明 effect State 时，同一结论也作为
-ref/final verdict，不再对同一截图重复验收；方向性 outcome 仍走原 verifier。
-若完整 Stage 不匹配但后续仍有一条已知 graph edge，workflow 同轮只比较该边来源 Region
-的角色、已有控件和精确目标。活动 Region 匹配时最多允许一次 Region-only 安全 CLICK；
-该 step 保存 `workflow_region_only=true` 且不写 `arrived_node_id/current State`，下一动作后
-必须重新进入已知 Stage。连续第二次仍只能局部匹配时，旧 live locator 接管并在无法定位
-时停止；collection 不创建 State/Region，也不改完成图。
+上述能力归纳层及旧 M13 recipe 合同不代表当前普通采集 CLI。普通入口现为 RegionGuidedCollector，模型读取本地 API 配置，支持 ledger 与冻结逐步图，自动接逐步视觉 guard，并按单次 run 目录写盘。当前参数、来源摘要和验证边界见 [采集模块](modules/visual_collection.md)；旧 M13 模型开关、scenario delta 和连续 workflow 说明已移到该模块链接的历史归档。
 
 During ordinary autonomous settlement, the same Qwen main-Agent call must return
 `previous_action.business_effect=null` or one directly consumed visible
@@ -2431,7 +2395,7 @@ nor falsely retired. Exhausting all other work produces
 
 ### 2026-09-22 采集侧视觉核对接线
 
-采集独立使用冻结 stepwise 图与固定外观匹配实现；RegionGuidedCollector 的 visual_guard 在投递前核对当前点击区域并保存拒绝/纠正证据，Writer 保留 action_intent。普通旧ledger CLI尚未自动加载新图。遍历不改、原图只读；两轮Settings小试各10HTTP/4GUI、各拦截1错点并导出4条SFT，不代表跨应用保证。当前接口和验证边界见 [采集模块](modules/region_function_collection_research.md#2026-09-22-独立采集的视觉坐标核对)。
+采集独立使用冻结 stepwise 图与固定外观匹配实现；RegionGuidedCollector 的 visual_guard 在投递前核对当前点击区域并保存拒绝/纠正证据，Writer 保留 action_intent。普通生成/采集入口已通过collection_graph接入冻结逐步图，详见采集模块的2026-10-02合同。遍历不改、原图只读；两轮Settings小试各10HTTP/4GUI、各拦截1错点并导出4条SFT，不代表跨应用保证。当前接口和验证边界见 [采集模块](modules/region_function_collection_research.md)。
 
 ## 2026-09-23 — 临时逐步遍历器监督入口
 

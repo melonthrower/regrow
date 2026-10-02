@@ -63,10 +63,11 @@ def attempts(task, records):
     attempts = list(dict.fromkeys(task.get('attempts', [])))
     outcome = task.get('result_evidence')
     if task.get('status') == 'done':
+        lines=['历史结算（当时的判断，不是本轮指令）：'+(outcome or '任务已登记完成，未提供结果说明')]
         destinations=task.get('completion_basis',{}).get('destination_regions',[])
         if destinations:
-            return ['历史结果：该入口当时打开'+ '、'.join('「'+records[r]['name']+'」' for r in destinations if r in records)+'。']
-        return ['历史结算（当时的判断，不是本轮指令）：'+(outcome or '任务已登记完成，未提供结果说明')]
+            lines.append('动作后观察到的区块（不替代原任务结果）：'+ '、'.join('「'+records[r]['name']+'」' for r in destinations if r in records)+'。')
+        return lines
     if not attempts:
         return ['当前图中尚未执行此任务的动作']
     lines = []

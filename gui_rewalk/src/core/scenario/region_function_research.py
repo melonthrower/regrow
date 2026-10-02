@@ -2,6 +2,9 @@
 
 def region_function_inventory(ledger):
     """Project discovered functions, including unexecuted operations, from the ledger."""
+    from .collection_graph import StepwiseCollectionGraph
+    if isinstance(ledger, StepwiseCollectionGraph):
+        return ledger.inventory()
     result = []
     for region in ledger.regions.values():
         operations = []

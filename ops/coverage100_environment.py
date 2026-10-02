@@ -22,10 +22,21 @@ EMULATOR = ANDROID_SDK / "emulator/emulator"
 ADB = ANDROID_SDK / "platform-tools/adb"
 
 
-def _free_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return int(sock.getsockname()[1])
+def _free_port(*, even: bool = False) -> int:
+    while True:
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            port = int(sock.getsockname()[1])
+            if not even or port % 2 == 0:
+                return port
+            # Linux may always allocate odd ephemeral ports. Probe the adjacent
+            # console port while its odd ADB peer is still held by this socket.
+            with socket.socket() as console:
+                try:
+                    console.bind(("127.0.0.1", port - 1))
+                except OSError:
+                    continue
+                return port - 1
 
 
 def _wait(predicate, timeout: float, description: str):
@@ -118,10 +129,10 @@ def start_fresh_desktop(*, name: str, qcow: str = "/tmp/System_seeded_v2.qcow2",
 def start_fresh_android(*, avd: str = "guitraverse_mobile_seed", feature_vulkan: bool = True,
                         timeout: float = 180, log_path: Optional[Path] = None) -> FreshEnvironment:
     """Start a disposable read-only emulator process from the seeded AVD."""
-    port = _free_port()
-    while port % 2:
-        port = _free_port()
-    grpc = port + 3000
+    port = _free_port(even=True)
+    grpc = _free_port()
+    while grpc in (port, port + 1):
+        grpc = _free_port()
     command = [str(EMULATOR), "-avd", avd, "-read-only", "-no-snapshot-save",
                "-no-window", "-no-audio", "-no-boot-anim", "-gpu", "swiftshader_indirect",
                "-port", str(port), "-grpc", str(grpc)]

@@ -1,5 +1,16 @@
 # 临时逐步遍历器的监督修复闭环
 
+## 2026-10-02 结果结算与运行源码
+
+`task_routing.advance` 只为已经由原结果核对判定 done 的 single_action 交接；成功投递、来源消失或出现其他区块不能把 pending/blocked 改成 done。真实 `result_evidence` 与 `completion_basis` 保留，目的区块仅补充路由信息。`history_context.attempts` 同时披露原结算依据与动作后区块，后者不能替代结果。
+
+`region_tasks.apply_plan` 不再调用历史入口自动完成；`entry_evidence` 只披露可复用历史。新目标需要按自己的 reason 经正常结果/累计核对结算；可复用原图而无需重做动作。single_action 不等于单纯入口目标，结果示例也按 reason 限定完成条件。
+
+维护 `启动遍历.sh` 进入同目录 launcher。`run_source.resolve_source/session_command` 统一网页 RoundRunner 与 Supervisor：显式 framework_source 必须有效，缺失时取调用方所在源码；启动前将选定绝对路径写入 manifest，使会话和 call_once 回复解析使用同一来源。维护 launcher 的缺省是维护源，从冻结副本运行的缺省仍是该副本。旧运行已有选择不自动升级。健康检查核对服务入口、根目录、运行目录及源码摘要，遇到其他旧服务明确停止启动并保留现场。
+
+来源选择用真实最小子进程检查了入口/兄弟解析模块；属于离线进程验证，未启动生产网页服务或旧设备。实际 Luna 用正常builder在3个完整真实运行副本构造请求，经原Runner校验/纠错/登记：原对象反馈缺失保持pending；新增入口出现可done；长按无明显变化的有限调查可done但不证明拖动有效。3HTTP/0GUI；入口日期裁图另经2HTTP的正常监督纠错修齐并登记，原失败均保留。旧r0026双弹窗历史身份混合未清理。见本月日志，不代表持续 GUI 遍历验收。
+
+
 ## 2026-10-02 服务内容拒绝的有限处理
 
 `step_repair.content_rejection`只识别HTTP402且正文error.type为param_error、message包含“敏感词”的已知服务回复；裸402或余额错误不据此分类。正常Runner对原请求最多追加一次同内容重试，两次失败均保留并计账。`recover_external`的运行范围及原图尺寸说明只追加一次，重试不累加这些文字。
@@ -76,7 +87,7 @@ Settings现场补记：原监督排空后记账0460并恢复；新现场0461确�
 Tasks保存帧验收：累计Luna按有限直接反馈done、保留提交/保存未知，原6次尝试及另2项pending不改；分支Luna已不再声称未点击。后者提出Open map的导航/外跳未经验证，旧时点回复仅回归不提交。a0057前后都无加载图标，“较晚图已不见”不等于等待造成消失。两调用0272/0273均入账2HTTP/0GUI，正式只提交0272；队列7监督4007480已恢复Tasks，新现场效果另记。
 Tasks现场后续：0274重新发现触发旧区块归属复查，0275给出确认行/已有地点内容的拆分；登记阶段报partition name collides with existing Region，尚未完成该拆分或新增GUI，已由监督器进入独立ownership_review纠错。累计调查结算成功不表示此后遍历无阻塞。
 
-2026-09-23 旧入口暂挂的后续证据核对：保留entry_evidence自动结算门槛，不用不完整before清单的差集推定新目的。原累计核对新增无blocker/deferral的blocked探索型单步任务准入，仅当同控件同操作另有已投递、无异常、非返回历史；Luna核对原前后图和结束条件。旧判断与各次独立历史分开披露，不把相隔多轮的尝试拼成连续因果链。结算保留旧失败history；仍blocked沿原explicit_result_review止重。34项聚焦检查及真实保存帧0642、隔离提交通过，原其他任务/动作不变；1HTTP/0GUI已记账。尚未移植桌面Clock冻结源、未提交现场图或恢复该路。证据records/clock_entry_reuse_20260923。
+2026-09-23 旧入口暂挂的后续证据核对：当前entry_evidence只披露历史证据，不自动结算；不从不完整before清单的差集推定新目的。原累计核对新增无blocker/deferral的blocked探索型单步任务准入，仅当同控件同操作另有已投递、无异常、非返回历史；Luna核对原前后图和结束条件。旧判断与各次独立历史分开披露，不把相隔多轮的尝试拼成连续因果链。结算保留旧失败history；仍blocked沿原explicit_result_review止重。34项聚焦检查及真实保存帧0642、隔离提交通过，原其他任务/动作不变；1HTTP/0GUI已记账。尚未移植桌面Clock冻结源、未提交现场图或恢复该路。证据records/clock_entry_reuse_20260923。
 Clock冻结部署补记：原function_keys源定点移植累计核对及原图/历史投影依赖，补齐自动next_deferred请求的task_result_review分发，避免误读action_ready。候选冻结34项通过，真实分发语句段原版复现KeyError、候选一次核对后0GUI返回；冻结请求逐字段等同已验证0642。部署经陌生读者复审，在设备锁内确认监督/worker已退出、无pending且指针未变后提交0642、保留旧失败与计数，仅Clock恢复（监督4161265），Settings不动。现场0643已发起r0004功能整理，尚无新GUI成功或全图验收声明。
 Clock现场结局：0643功能整理已正式提交，blocked由2降为1；随后返回region_complete，仍有Timer小时调节器任务及历史登记缺口，queue1监督退出并needs_attention。没有发生新GUI动作，不是完整图。此次历史入口缺口已结算，但其他缺口恢复仍待后续修复。
 

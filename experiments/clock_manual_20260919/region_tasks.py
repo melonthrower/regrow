@@ -147,7 +147,6 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
     if reply['inventory']=='complete' and covered!=set(region['controls']):
         raise ValueError('complete inventory omitted registered controls')
     region['tasks']=tasks
-    helper('entry_evidence').reuse(region)
     region['external_entry_policy']='record_only'
     for cid,control in region['controls'].items():
         control['task_refs']=[n for n,t in tasks.items() if t['control']==cid]

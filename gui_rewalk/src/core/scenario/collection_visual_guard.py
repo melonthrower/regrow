@@ -96,7 +96,63 @@ def snapshot_controls(snapshot):
                 continue
             observation = observations[-1]
             image = (path.parent / observation['image']).resolve()
-            if image.is_file():
-                controls[f'{path.parent.name}.{ref}'] = {
-                    **observation, 'name': control['name'], 'image': str(image)}
+            if not image.is_file():
+                raise ValueError(f'Collection identity image is missing: {image}')
+            controls[f'{path.parent.name}.{ref}'] = {
+                **observation, 'name': control['name'], 'image': str(image)}
     return controls
+
+
+def build_visual_guard(graph, output_root):
+    """Pin the existing matcher for this collection, leaving traversal untouched."""
+    from .collection_graph import StepwiseCollectionGraph, load_collection_graph
+    if not isinstance(graph, StepwiseCollectionGraph):
+        return None
+    from copy import deepcopy
+    import hashlib
+    import importlib.util
+    import shutil
+    import sys
+    if load_collection_graph(graph.source)[1] != graph.digest:
+        raise ValueError('Collection graph changed after instruction validation')
+    assets = Path(output_root) / 'graph_images'
+    assets.mkdir(parents=True, exist_ok=False)
+    controls = deepcopy(graph.controls)
+    copied = {}
+    for control in controls.values():
+        path = Path(control['image'])
+        relative = str(path.relative_to(graph.source.parent))
+        data = path.read_bytes()
+        digest = hashlib.sha256(data).hexdigest()
+        if graph.dependencies[relative] != digest:
+            raise ValueError('Collection image changed during freezing')
+        destination = assets / (digest + path.suffix)
+        destination.write_bytes(data)
+        control['image'] = str(destination)
+        copied[relative] = {'sha256': digest, 'copy': str(destination.relative_to(output_root))}
+    (assets / 'source.json').write_text(json.dumps(copied, indent=2)+'\n')
+    source = Path(__file__).resolve().parents[4] / 'experiments/clock_manual_20260919'
+    frozen = Path(output_root) / 'matcher'
+    frozen.mkdir(parents=True, exist_ok=False)
+    hashes = {}
+    for name in ('identity_templates.py', 'image_match.py', 'visual_choices.py'):
+        shutil.copyfile(source / name, frozen / name)
+        hashes[name] = hashlib.sha256((frozen / name).read_bytes()).hexdigest()
+    (frozen / 'source.json').write_text(json.dumps({'source': str(source), 'files': hashes}, indent=2)+'\n')
+    def load(name):
+        spec = importlib.util.spec_from_file_location('collection_'+name, frozen / (name+'.py'))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    # visual_choices imports this module once; keep its object pinned without
+    # leaving a traversal module replacement in the process import table.
+    prior = sys.modules.get('identity_templates')
+    try:
+        sys.modules['identity_templates'] = load('identity_templates')
+        matcher = load('visual_choices')
+    finally:
+        if prior is None:
+            sys.modules.pop('identity_templates', None)
+        else:
+            sys.modules['identity_templates'] = prior
+    return CollectionVisualGuard(controls, matcher.match_control, Path(output_root) / 'grounding')

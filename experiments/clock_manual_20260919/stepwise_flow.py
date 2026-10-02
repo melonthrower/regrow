@@ -620,7 +620,7 @@ def _bind_action_target(request, proposal):
     from PIL import Image
     with Image.open(frames[0]) as frame:width,height=frame.size
     if not (0<=x<width and 0<=y<height):return {**base,'status':'unresolved','reason':'coordinates outside screenshot'}
-    hits=[];selected={};model_grounded=set();diagnostics=[];matches={}
+    hits=[];selected={};model_grounded=set();diagnostics=[];matches={};competing=[]
     named=[c for c in request['backend_candidates'] if target and target in
            [str(c.get(k,'')).strip().casefold() for k in ('name','icon_description')]]
     point_binding=bool(target) and not named and proposal.get('action') in ('tap','click','double_click','long_press','right_click','hover','drag','input_text')
@@ -631,7 +631,13 @@ def _bind_action_target(request, proposal):
         matches[c['id']]=match
         diagnostics.append(c['name']+'：候选范围'+str(match.get('box'))+'，模型位置'+str((x,y))+'，图片判断'+str(match.get('reason',match.get('accepted'))))
         if not match['accepted']:
-            if point_binding:continue  # A wording fallback must not lower visual confidence.
+            if point_binding:
+                # An admitted alternative at this point prevents certainty about another object.
+                # It does not make this weaker object the correct target.
+                if any(v['box'][0]<=x<v['box'][2] and v['box'][1]<=y<v['box'][3]
+                       for v in match.get('candidates',[]) if v.get('box')):
+                    competing.append(c)
+                continue
             disclosed=request.get('visual_choices',{}).get(c['id'],[])
             alternatives=[v for v in match.get('candidates',[]) if any(v['box']==d['box'] for d in disclosed)
                           and v['box'][0]<=x<v['box'][2] and v['box'][1]<=y<v['box'][3]]
@@ -645,6 +651,23 @@ def _bind_action_target(request, proposal):
         left,top,right,bottom=match['box']
         if left<=x<right and top<=y<bottom:hits.append(c)
     if len(hits)==1:
+        if not point_binding and not matches[hits[0]['id']]['accepted']:
+            # Renaming a weak proposal cannot resolve a different strong object at its point.
+            for other in request['backend_candidates']:
+                if other['id']==hits[0]['id'] or not other.get('image') or not Path(other['image']).is_file():continue
+                match=matcher.match_control(other,frames[0])
+                if match.get('accepted') and match.get('box'):
+                    left,top,right,bottom=match['box']
+                    if left<=x<right and top<=y<bottom:
+                        return {**base,'status':'unresolved',
+                                'reason':'目标 '+hits[0]['name']+' 只有弱图片依据，而同一点另有强匹配对象 '+other['name']+
+                                '。改写目标名称或重复声明可见不能解除此跨对象歧义；请补充观察，或依据当前图选择必要准备动作，无法核实时保留缺口。'}
+        if point_binding and competing:
+            names='、'.join(c['name'] for c in hits+competing)
+            return {**base,'status':'unresolved',
+                    'reason':'点位同时有不同登记对象的当前图片候选：'+names+
+                    '。其他对象匹配较弱不证明唯一强匹配就是实际操作对象。请按单张当前图核对对象，'
+                    '改用弱对象名称不能解除它与强对象的同点竞争；可补观察或选择有当前依据的必要准备动作，不能确认则保留缺口。'}
         base['region_ref']=hits[0].get('region_ref',base['region_ref'])
         if hits[0]['id'] in model_grounded:
             return {**base,'status':'matched','control_ref':hits[0]['id'],'model_grounded':True,

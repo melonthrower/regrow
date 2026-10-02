@@ -63,3 +63,69 @@ def test_input_wording_does_not_relax_input_or_visual_requirements(action_reques
         'text':'Reset','x':5 if change=='outside' else 85,'y':50,'reason':'type'})
     assert result['control_ref'] is None
     if change=='unauthorized':assert result['status']=='unresolved'
+
+
+@pytest.mark.parametrize('competitor',['at_point','outside','no_candidates','unusable'])
+def test_point_fallback_does_not_discard_competing_object(action_request,monkeypatch,competitor):
+    """A weaker child match is uncertainty, not proof that the container owns a drag."""
+    broad=action_request['backend_candidates'][0]
+    child={**broad,'id':'child','name':'Scrollbar'}
+    action_request['backend_candidates'].append(child)
+    box=[80,40,90,65] if competitor!='outside' else [120,40,130,65]
+    def match(c,frame):
+        if c['id']=='gateway':return {'accepted':True,'box':[70,40,110,64],'candidates':[]}
+        return {'accepted':False,'box':None if competitor=='unusable' else box,
+                'candidates':[{'box':box}] if competitor in ('at_point','outside') else []}
+    flow=mod('stepwise_flow')
+    # The binder independently loads the matcher module.
+    import importlib.util
+    original_loader=importlib.util.spec_from_file_location
+    def loader(name,path,*args,**kwargs):
+        spec=original_loader(name,path,*args,**kwargs)
+        if name=='stepwise_image_match':
+            execute=spec.loader.exec_module
+            def load(module):execute(module);module.match_control=match
+            spec.loader.exec_module=load
+        return spec
+    monkeypatch.setattr(importlib.util,'spec_from_file_location',loader)
+    proposal={'action':'drag','target':'right side thumb','x':85,'y':50,'end_x':85,'end_y':85,'reason':'drag the visible thumb'}
+    result=flow.bind_action_target(action_request,proposal)
+    if competitor=='at_point':
+        assert result['status']=='unresolved'
+        assert result['control_ref'] is None
+        assert 'Scrollbar' in result['reason'] and 'Gateway' in result['reason']
+    else:assert result['status']=='matched' and result['control_ref']=='gateway'
+    # An explicit object name follows its existing validation path.
+    named=flow.bind_action_target(action_request,{**proposal,'target':'Gateway'})
+    assert named['status']=='matched' and named['control_ref']=='gateway'
+
+
+@pytest.mark.parametrize('weak_path',['disclosed','best_box'])
+@pytest.mark.parametrize('other',['strong_at_point','strong_elsewhere','weak','missing'])
+def test_weak_named_target_cannot_override_strong_other_object(action_request,monkeypatch,weak_path,other):
+    broad=action_request['backend_candidates'][0]
+    child={**broad,'id':'child','name':'Scrollbar'}
+    action_request['backend_candidates'].append(child)
+    if other=='missing':broad['image']=None
+    box=[80,40,90,65]
+    action_request['visual_choices']={'child':[{'box':box}]} if weak_path=='disclosed' else {}
+    def match(c,frame):
+        if c['id']=='gateway':
+            return {'accepted':other!='weak','box':[120,40,160,64] if other=='strong_elsewhere' else [70,40,110,64],'candidates':[]}
+        return {'accepted':False,'box':box,'candidates':[{'box':box}] if weak_path=='disclosed' else []}
+    import importlib.util
+    original_loader=importlib.util.spec_from_file_location
+    def loader(name,path,*args,**kwargs):
+        spec=original_loader(name,path,*args,**kwargs)
+        if name=='stepwise_image_match':
+            execute=spec.loader.exec_module
+            def load(module):execute(module);module.match_control=match
+            spec.loader.exec_module=load
+        return spec
+    monkeypatch.setattr(importlib.util,'spec_from_file_location',loader)
+    result=mod('stepwise_flow').bind_action_target(action_request,{'action':'drag','target':'Scrollbar',
+        'x':85,'y':50,'end_x':85,'end_y':85,'reason':'I see a scrollbar'})
+    if other=='strong_at_point':
+        assert result['status']=='unresolved' and result['control_ref'] is None
+        assert 'Gateway' in result['reason'] and 'Scrollbar' in result['reason']
+    else:assert result['status']=='matched' and result['control_ref']=='child'

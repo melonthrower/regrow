@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-02 同点竞争纠错有限验收：正常原0085接受边界触发BindingConflict，最终保存帧原答正确保留当前不可辨认滑块的缺口；改提负滚轮后缺当前Region边界，沿原observe收口，不复用旧图冒充新观察。旧错误0096弱名字原答亦沿正常submission/accept拒绝，保持repairs=1，最后一次新Luna回复请求observe。最终4HTTP/0GUI（含1输入邻接），59聚焦通过、2旧测试基线复现后排除；未部署现场、未执行替代GUI、未接入自动历史owner修复。
+
 2026-10-02 action纠错的执行图：`step_repair.request`只发送original_request中唯一当前图，历史/补观察图留路径与文字；非action保留原多图链。`confirmed_dispatch_review`改为核验单张指定当前图，仍要求同轮、同窗口、一次repair、无observe/record_edit、未投递及原答候选一致。`repair_stages.refresh(action)`成功后把旧pre_dispatch_review转存pre_dispatch_review_history并撤销快捷确认；原计数不变。能力表、schema与edit_record入口同时禁用action阶段历史动作/观察迁移，当前记录修订和专用历史核对仍可用。新拒绝诊断及重复操作提示同步单图语义。
 
 44项聚焦检查通过，独立审阅指出并修复能力表和刷新旧图指针两项问题。冻结源6fe76f4f273cb97f8c19b08617e5eecab89d5af98391d9628d56d0a2f4d009b0：完整真实0078检查点正常run_session，5HTTP/0GUI经历绑定拒绝、单图纠错、原生发现登记、新动作接受；旧20260925 Clock真实取图序列重放2HTTP/0GUI，通知变化由原same_surface检查发现，单当前图0047取得confirmed_call。实际原答未改，均止于GUI边界。刷新后撤销资格的组合路径仅离线覆盖，非现场动态界面/全遍历验收。

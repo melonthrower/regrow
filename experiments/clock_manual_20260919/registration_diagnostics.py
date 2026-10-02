@@ -10,6 +10,24 @@ class Rejected(ValueError):
         super().__init__(json.dumps(report,ensure_ascii=False))
 
 
+def visibility_errors(reply,region_refs,changes):
+    current={region_refs[c['region_index']] for c in reply.get('controls',[])
+             if isinstance(c.get('region_index'),int) and 0<=c['region_index']<len(region_refs)}-{None}
+    errors=[]
+    for i,change in enumerate(changes):
+        if change.get('region') not in current or change.get('state') not in ('not_visible','visible_background_blocked','uncertain'):continue
+        errors.append(dict(code='region_visibility_conflict',path=f'/previous_regions/{i}/state',
+            object=reply['previous_regions'][i]['name'],actual=change['state'],
+            expected='本轮登记当前控件的同一区块与其可交互状态一致',
+            repair='按当前图核对复用身份、可交互状态及控件观察；不能同时登记该区块当前控件又称其不可见、被接管或状态未知。修正有误字段或撤回无依据观察，不为通过校验直接改成可交互。仅归属引用且无本轮直接控件的父区块可保留原状态。'))
+    return errors
+
+
+def check_visibility(reply,region_refs,changes):
+    errors=visibility_errors(reply,region_refs,changes)
+    if errors:raise Rejected({'errors':errors,'unchecked':[]})
+
+
 def collect(stage,q,p,records,binding=None):
     errors=[];unchecked=[]
     def add(code,path,obj,actual,expected,repair):
@@ -47,16 +65,19 @@ def collect(stage,q,p,records,binding=None):
                 add('region_context',f'/regions/{i}/context_matches',r['name'],r.get('context_matches'),
                     records[rid]['behavior_context'],
                     '根据当前截图核对历史适用上下文。匹配才复用；不同则选择正确候选或登记有依据的新区块；不清楚则补观察，不因外观相似填写true。')
-        # Every submitted parent edge must form a forest, not just avoid self-parenting.
+        changes=[]
         for i,previous in enumerate(p.get('previous_regions',[])):
             ids=([q['region_names'][previous['name']]] if previous['name'] in q.get('region_names',{})
                  else [rid for rid,r in records.items() if r['name']==previous['name']])
+            changes.append({'region':ids[0] if len(ids)==1 and ids[0] in records else None,'state':previous.get('state')})
             if (len(ids)==1 and records[ids[0]].get('behavior_context')
                     and previous.get('state') in ('retained_interactive','changed_interactive')
                     and previous.get('context_matches') is not True):
                 add('region_context',f'/previous_regions/{i}/context_matches',previous['name'],previous.get('context_matches'),
                     records[ids[0]]['behavior_context'],
                     '保留旧区块可交互也必须核对当前适用上下文；不匹配不要恢复旧控件，按图2报告实际区块。背景或不可见状态无需此确认。')
+        if stage=='update':errors.extend(visibility_errors(p,rids,changes))
+        # Every submitted parent edge must form a forest, not just avoid self-parenting.
         reported=set()
         for start in range(len(rids)):
             chain=[];node=start

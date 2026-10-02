@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-02 可见性冲突沿原Runner纠错：完整真实保存副本中0152未经改动的有效请求/候选由普通accept触发region_visibility_conflict，原repairs=1保留，真实0153修订后repairs=2并正常登记；1HTTP/0GUI。新独立默认入口实验不携带自定义监督器，原监督案例仍review_pending，非绕过原审核或实机恢复。原任务/截图/回执保留，未重发a0030。现场session10–13累计新增30HTTP/5GUI命令，本目标累计129/31；实际创建闹钟、打开编辑和Ring下拉，session12/13仅功能整理，Clock未完成。各阶段包与保存帧候选分别保留。
+
 2026-10-02 Clock session08/09共30HTTP/9GUI；当前目标累计99HTTP/26GUI。实际Timer1m启动后58秒，通知到期经wait→hover→close恢复；随后Stopwatch启动及Lap有真实后图。09之后因0119纯色模板及0117功能投影问题停止，原运行未回滚/改图。B9完整保存帧正常Runner修正3HTTP/0GUI，历史副本仅派生资格维护；不将这批模型验证称新GUI。阶段08/09包与修复包分别保留。
 
 2026-10-02 同点竞争纠错有限验收：正常原0085接受边界触发BindingConflict，最终保存帧原答正确保留当前不可辨认滑块的缺口；改提负滚轮后缺当前Region边界，沿原observe收口，不复用旧图冒充新观察。旧错误0096弱名字原答亦沿正常submission/accept拒绝，保持repairs=1，最后一次新Luna回复请求observe。最终4HTTP/0GUI（含1输入邻接），59聚焦通过、2旧测试基线复现后排除；未部署现场、未执行替代GUI、未接入自动历史owner修复。

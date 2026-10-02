@@ -161,6 +161,7 @@ def test_rediscovery_rename_preserves_control_history_and_effect(tmp_path):
     m=module();run,g,r=fixture(tmp_path);first=invoke(m,run)
     r['action_result']['exception']='none'
     r['regions']=[{'name':'Menu','previous_name':'Menu','parent_index':None,'description':'updated menu','reason':'returned','bbox':None}]
+    r['previous_regions'][0]['state']='changed_interactive'
     r['controls']=[{'text':'Privacy','previous_name':'Policy','region_index':0,'icon_appearance':'','state':'visible','possible_operation':'open','uncertainty':'','bbox':None,'icon_bbox':None}]
     (run/'calls/0002').mkdir();(run/'calls/0002/response.json').write_text(json.dumps(r))
     p=m.commit_update(ROOT,run,'graph_snapshots/0001.json','0002','a1')
@@ -390,6 +391,7 @@ def test_unassociated_coordinate_click_keeps_evidence_without_wrong_control(tmp_
         for name in ['before.png','after.png']:Image.new('RGB',(200,200),'white').save(run/name)
         r['action_result']['exception']='none'
         r['regions']=[{'name':'Menu','previous_name':'Menu','parent_index':None,'description':'menu','reason':'visible','bbox':None}]
+        r['previous_regions'][0]['state']='changed_interactive'
         r['controls']=[{'text':'outside blank','previous_name':'','region_index':0,'icon_appearance':'','state':'visible','possible_operation':'close','uncertainty':'','bbox':{'left':70,'top':70,'right':110,'bottom':110},'icon_bbox':None}]
         (run/'calls/0001/response.json').write_text(json.dumps(r))
     p=invoke(m,run);region=read_region(run,p)

@@ -1,5 +1,7 @@
 # 临时逐步遍历器：共享区块的行为分离
 
+2026-10-02 当前直接控件与可见性一致性：registration_diagnostics.visibility_errors按已解析ID检查本轮直接控件所属区块，拒绝同时not_visible/visible_background_blocked/uncertain；保留无直接控件的父归属引用。collect早诊断与register_update物化/来源拆分后check_visibility共用规则，后者使用最终delta_refs及已重绑region_changes，避免旧名/旧ID漏拦。不自动决定身份或改写状态，不放宽context_matches。真实监督0152失败保留；另完整默认入口副本自动拒绝原答、0153一次正常纠正登记，六设置控件复用及前景保留。1新增HTTP/0GUI，45聚焦/16基线失败排除；来源拆分本批只离线/静态验证，未现场部署。
+
 2026-10-02 身份图原始提示补齐纯色控件模板边界说明：保留本对象特征/可辨边界，无法确认则uncertain/null，不统一扩框、不改变Region/click合同。真实完整发现/更新保存帧3HTTP/0GUI完成正常登记，但发现首次仍因单色失败并纠错；只接受合同说明一致及本例无新增回归，不称错误率改善。27聚焦通过，既有1排除；见archive/clock_template_guidance_20261002/DESIGN.md。
 
 2026-10-02 完全单色控件身份/图标模板：identity_templates.check_control_crop在register_update.save_region_images保存前检查clear裁图，原纠错文本携带控件索引和字段；不追加裁图拼图、不检查Region或click图。历史reject_uniform_history由显式publish调用，追加template_rejections逐字段原因/来源/SHA；usable/assessment和当前/历史描述投影遵守限定。纯色不证明不存在，非纯色不证明正确。实际0119原答被拒，2次正常Luna纠错后移除不存在加号、扩大最小化图标边界，原图像素核对通过；0新GUI。历史副本6项资格撤销，原观察/动作/任务保留。详见archive/clock_evidence_quality_20261002/DESIGN.md。

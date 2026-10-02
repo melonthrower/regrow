@@ -237,6 +237,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
         if working_ref==original_source:working_ref=source
 
     delta_refs=materialize_regions(records,reply,call_ref,edge['after_observation'],request.get('region_names'))
+    sibling('registration_diagnostics').check_visibility(reply,delta_refs,region_changes)
     visibility=sibling('update_visibility')
     region_refs=visibility.regions(delta_refs,region_changes,reply['action_result']['exception'])
     old_control_refs=visibility.locate_retained(records,[{'region':rid,'state':'changed_interactive'} for rid in region_refs],call_ref,snapshot,

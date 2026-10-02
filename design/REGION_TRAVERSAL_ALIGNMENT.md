@@ -543,3 +543,6 @@ collection_visual_guard.py 从冻结图外观定位当前控件，再映射点�
 2026-09-25 复制遍历器候选：准备状态与业务完成分开，task_prerequisites 以本次目标可用观察结算成对准备，父任务仍待办；常识用途仅记录，未知功能内容仍探索。4项原生保存帧已登记，非新GUI执行；原运行未部署。当前合同见 stepwise_debug_loop。Gmail条件任务与下游采集验收不变。
 
 2026-09-29 复制遍历器等价边界：region_tasks.attach新任务候选只取非equivalent真实义务，不因成员可见而替换代表控件。原对象证据结算和单向coverage不变，成员不伪造执行。保存帧选择已核验，未执行或结算新动作；见stepwise_debug_loop末节。Gmail条件任务及下游采集验收不变。
+
+
+2026-10-02 首次对象/运行态的内容发现：复制遍历器普通任务提示在创建、启动或选择确认将产生尚未观察的交互结构时，保留一个代表状态的发现目标。仅为数值/文案/同类实例变化不重复创建，明确效果仍可record；旧任务结束条件不扩大成用户权限。旧完整清单不自动重审，已有task_inventory.review可承接监督覆盖复核。真实后续观察前不生成新Region/控件、不算业务成功。Gmail月报if/else仍必须实际观察分支条件并验证业务结果，不能以建立任务替代。代码入口region_tasks.plan_request/commit_plan，历史复核用historical_inventory.region_request或实际检查点正常assemble_current_context；保存帧及失败边界见stepwise_debug_loop。

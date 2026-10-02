@@ -1,8 +1,14 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-02 首次状态的任务清点：任务提示区分“已知添加/开始用途”与“已见创建后条目/运行态控件”。后者未知时安排一个代表状态的发现目标，设置真实前置条件；已有同类结构可复用，不重复验证保存/计时效果。旧任务“只观察选择、不提交”的结束条件不等于用户禁止提交，但真正用户权限不被新任务绕过。旧record不改handling；有不同发现目标时同控件新增不同任务。动作图片上下文未改。
+
+保存帧source-v2（19f84543bc45aab16773a84b60a086c9dd8b3db9e7ddd27cc86e5891b3837015）：正常完整0013首次清点1HTTP新增World条目目标，Stopwatch历史首次清点1HTTP新增运行态及一次Lap后内容目标。0016旧清单仅换提示2HTTP仍未补目标并显式暂挂旧搜索任务，保持不接受；早期提示另2HTTP失败保留。显式discovery.publish设置既有task_inventory.review后，正常0016构建/纠错/登记2HTTP保留旧Add/Cancel record并补目标；监督标记及原答保留，不当作自动发现旧遗漏。共8HTTP/0GUI，35辅助通过，未创建城市或启动秒表。最新r0003末次controls_complete=false，历史清点入口正确拒绝0HTTP；验收改用真实早期检查点，没有放宽其门禁或手改模型回复。
+
+另clock_complete现场session-03使用已验输入修复source-v2，8HTTP/2GUI：0052补事实、0054正常done；0056关闭Shortcuts/0057登记Timer，随后图导航点击菜单并保留未确认落点交接。该现场与本段提示保存帧实验分开；累计本目标现场31HTTP/11GUI，仍未完整遍历。
+
 2026-10-02 参数任务缺事实交接：`parameter_evidence_review.request_review`仅处理已登记执行证据完整、pending parameter、累计done候选被缺findings规则拒绝的任务。原episode以superseded_by_parameter_review留存，repairs/observations/原答不变；task_inventory.review经原清点调度补事实，parameter_review_keys按任务对象及原动作证据防止重复交接。不重新执行GUI、不把动作上的findings自动抄入任务，也不改unconfirmed关联。存在其他清点审核、服务失败、待登记GUI或缺原图时不交接。普通run_task_step替换本轮首图时为此请求保留原前后图；该task_proposal schema无坐标，action_selection仍使用单张当前图。
 
-原生完整Clock副本saved-parameter-01：0050/0051正常发现，0052原答补Reset两项事实到r0008/c0030原任务，0053 none，0054累计核对done，0055功能登记；0056下一动作在GUI边界前停止。7HTTP/0GUI。a0013原control=null及0049失败原答/次数保留，新增事实来源为0052；不表示程序已纠正历史动作身份。saved-input-01另1HTTP，正常builder→Runner接受自由措辞input_text并唯一强匹配c0030，执行前停止。58项聚焦通过，扩展检查7项旧失败在未改baseline复现；非全门禁、非新GUI执行，现场暂未部署。
+原生完整Clock副本saved-parameter-01：0050/0051正常发现，0052原答补Reset两项事实到r0008/c0030原任务，0053 none，0054累计核对done，0055功能登记；0056下一动作在GUI边界前停止。7HTTP/0GUI。a0013原control=null及0049失败原答/次数保留，新增事实来源为0052；不表示程序已纠正历史动作身份。saved-input-01另1HTTP，正常builder→Runner接受自由措辞input_text并唯一强匹配c0030，执行前停止。58项聚焦通过，扩展检查7项旧失败在未改baseline复现；以上为保存帧阶段，非全门禁或新GUI执行；之后已在本页session-03现场接入，阶段范围分开。
 
 2026-10-02 历史补登记恢复：`suspended_updates.restore_next`在普通回合新GUI之前读取不可变归档，重接原episode与attempt；只有原成功投递回执、原before/after及对应请求齐全才恢复，缺证据保留未知。即使runtime队列曾被后续更新替换，仍可从归档恢复。中断恢复写盘后继续同一episode；再次服务失败留活动pending并沿显式resume_service_failure恢复，不重新归档或清零累计纠错。历史补登记不允许以当前截图替换原后图，也不走edit_record改写历史。
 

@@ -48,7 +48,8 @@ def resume_service_failure(run,episode=None,frame=None):
     if not path.is_relative_to(run.resolve()):raise ValueError('步骤不属于当前运行')
     job=read(path)
     failure=job.get('service_failure')
-    if not failure or not content_rejection(failure['error']):raise ValueError('不是已记录的内容拒绝')
+    if not failure or not (content_rejection(failure['error']) or job.get('suspended_recovery')):
+        raise ValueError('不是已记录的内容拒绝或归档更新服务失败')
     execution=run/'execution_pending.json'
     if (run/'visual_navigation_pending.json').exists():raise ValueError('先结算待导航动作')
     if job.get('attempt'):
@@ -268,6 +269,10 @@ class Runner:
         raise Paused('repair_pending',reason)
 
     def switch_branch(self,job):
+        if job.get('suspended_recovery'):
+            job.update(status='blocked',error='归档结果恢复仍失败；保留原待登记动作，不再次归档或重复GUI')
+            self.save(job)
+            raise Paused('correction_blocked',job['error'])
         failure=job.get('service_failure',{}).get('error',{})
         if content_rejection(failure):
             reason='服务拒绝请求：检测到敏感词；有限重试已结束，保留原请求与未完成结果。'
@@ -309,6 +314,8 @@ class Runner:
         if job.get('service_failure') or job.get('switch_trigger'):
             self.switch_branch(job)
         if job['status']=='blocked':
+            if job.get('suspended_recovery'):
+                raise Paused('historical_update_conflict',job['error'])
             last=read(self.run/'calls'/job['call']/'response.json') if job.get('call') else {}
             if last.get('resolution')=='edit_record' and self.adapters.edit_proposal(self.run,job,last.get('record_edit')):
                 self.save(job)
@@ -421,9 +428,13 @@ class Runner:
                         job['blocked_by']=reply['blocked_by']
                         self.stop(job,reply['reason'])
                     if resolution=='observe':
+                        if job.get('suspended_recovery'):
+                            self.stop(job,'历史补登记只能核对原动作证据；当前补观察不能替代历史后图')
                         if job['observations']>=1:self.stop(job,'本次纠错已补观察，仍缺少依据')
                         job.update(status='observe',observation_question=reply['reason']);self.save(job);continue
                     if resolution=='edit_record':
+                        if job.get('suspended_recovery'):
+                            self.stop(job,'历史补登记不能顺带改写当前身份或任务；保留原证据待核对')
                         if self.adapters.edit_proposal(self.run,job,reply['record_edit']):
                             self.save(job);continue
                         self.adapters.edit_record(self.root,self.run,job,reply['record_edit'])

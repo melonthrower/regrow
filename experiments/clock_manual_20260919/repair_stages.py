@@ -40,6 +40,9 @@ def accept(root,run,job):
 
 def accept_with_edits(root,run,job):
     reg=helper('register_update')
+    if job.get('suspended_recovery') and job.get('record_edit'):
+        from step_repair import Paused
+        raise Paused('historical_update_conflict','历史补登记不能顺带改写当前身份或任务；保留原证据待核对')
     if job.get('record_edit'):
         with reg.sibling('knowledge_transaction').transaction(run):
             if job['request'].get('historical_inventory'):

@@ -188,6 +188,8 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
     else:
         records={ref:rebase(r,run,snapshot/f'regions/{ref}') for ref,r in flow.region_records(graph).items()}
 
+    suspended=sibling('suspended_updates')
+    historical=suspended.validate_commit(run,attempt_ref,reply,request,binding,snapshot,records)
     coordinate_action=control is None and binding.get('association',{}).get('status')=='unconfirmed'
     if source not in records or (not coordinate_action and not ordinary_back and not ordinary_scroll and control not in records[source]['controls']):
         raise ValueError('action source control is missing from its Region')
@@ -316,12 +318,16 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
             'evidence':'retained controls matched against current after-image'}
 
     previous_state=read(prior/'runtime_state.json') if current.exists() else {}
-    sibling('task_routing').advance(records,previous_state,state,source,binding,attempt_ref)
+    if not historical:
+        sibling('task_routing').advance(records,previous_state,state,source,binding,attempt_ref)
+        for key in ('suspended_updates','suspended_update_history'):
+            if key in previous_state:state[key]=deepcopy(previous_state[key])
     if reply['action_result']['exception']=='none' and reply['regions'] and not region_refs and edge.get('after_image'):
         state.update(next_action_mode='discover',phase='awaiting_discovery',discovery_mode='relocate',
                      pending_frame=edge['after_image'],reason='observed_region_interactivity_unconfirmed')
     state['exception']=reply['action_result']['exception']
     state['recovery_handoff']=reply['action_result'].get('recovery_handoff','')
+    if historical:suspended.complete(records,previous_state,state,historical,call_ref,attempt_ref)
 
     snapshot.parent.mkdir(parents=True,exist_ok=True)
     temp=Path(tempfile.mkdtemp(prefix='.pending-',dir=snapshot.parent))

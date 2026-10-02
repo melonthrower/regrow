@@ -183,6 +183,7 @@ def _run_step(root,run,out,*,review_update=None):
         write_json(out/'result.json',{**result,'gui_actions':transport.account['gui_started']})
         transport.account['status']=result['status'];transport.save();return
     resumed=None
+    step_repair.helper('suspended_updates').restore_next(run,out/'current.png')
     step_repair.reopen_blocked(run,out/'current.png')
     pending=step_repair.pending(run)
     if pending:
@@ -213,6 +214,9 @@ def _run_step(root,run,out,*,review_update=None):
             write_json(out/'result.json',{'status':'updated','calls':calls,'attempt':attempt,'gui_actions':0})
             transport.account['status']='paused_after_update';transport.save();return
         else:raise step_repair.Paused('execution_unconfirmed','已有动作投递记录，但结算证据尚不齐全；禁止重复执行')
+    state=discovery_step.load(run)[2]
+    if state.get('reason')=='historical_update_registered' and state.get('next_action_mode')=='discover':
+        discovery_step.await_discovery(run,str(out/'current.png'),'historical-update-'+out.name)
     navigation=visual_backtrack.resume_pending(transport,out/'current.png')
     if navigation:
         write_json(out/'result.json',{**navigation,'calls':calls});return

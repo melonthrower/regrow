@@ -1,6 +1,8 @@
 # GUI-ReWalk 当前框架索引
 
-2026-10-02 新桌面Clock小样本：独立VM/新图原生22HTTP、8GUI命令，任务覆盖遗漏一次自动纠正、系统通知一次恢复；仅World搜索/选择及功能整理，未点Add、未遍历其他核心页。静态审计确认一般服务失败归档的suspended_updates缺少普通续跑消费者，默认CLI语义审核与跨session累计硬额度仍有边界；未在本次触发该失败。未改框架代码，详见stepwise_debug_loop、本月日志与archive/desktop_clock_fresh_20261002/DESIGN.md。
+2026-10-02 历史补登记恢复：普通run_task_step现消费归档的已执行未登记update，复用原episode/回执/前后图，不重发GUI、不重置纠错次数；相关Region已有后续变化则暂停。登记与解除本次归档阻塞同一次发布，保留当前工作、新blocked及失败历史，下一轮用该轮截图重新定位。51项聚焦检查及3次原生Luna保存帧（0GUI）通过；两次503为明确辅助注入，并非真实接口故障。另4HTTP/2GUI现场进入Alarms和Stopwatch并正常登记，未完整遍历。现场及独立审阅边界见stepwise_debug_loop、本月日志、archive/desktop_clock_fresh_20261002/RECOVERY_DEVELOPMENT.md。
+
+2026-10-02 新桌面Clock小样本：独立VM/新图原生22HTTP、8GUI命令，任务覆盖遗漏一次自动纠正、系统通知一次恢复；仅World搜索/选择及功能整理，未点Add、未遍历其他核心页。当时静态审计发现一般服务失败归档的suspended_updates缺少普通续跑消费者（已由上条修复），默认CLI语义审核与跨session累计硬额度仍有边界；未在本次触发该失败。未改框架代码，详见stepwise_debug_loop、本月日志与archive/desktop_clock_fresh_20261002/DESIGN.md。
 
 2026-10-02 接线修复：任务完成保留原语义判定，路由/历史入口不自动done；维护启动入口按运行选择会话及解析源码。普通生成/采集共用冻结逐步图，严格摘要、身份图依赖与固定matcher、单次输出；输入点位合同与执行器一致。批准导出158项聚焦离线通过；3场景原生Luna保存帧＋日期裁图2次监督纠错共5HTTP/0GUI；单功能城市查询重跑成功8HTTP/2GUI，含生成和失败轮共12HTTP/3GUI。旧图混合身份、普通CLI独立HTTP/GUI硬额度、跨应用/全遍历仍未解决，不代表全门禁或无人监督验收。入口与限制见 stepwise_debug_loop / visual_collection / region_function_collection_research。
 

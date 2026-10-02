@@ -1,6 +1,14 @@
 # 临时逐步遍历器的监督修复闭环
 
-2026-10-02 新桌面Clock有限现场：新VM/新图经正常run_source.session_command→run_progress_session→run_task_step，22HTTP/8底层GUI、6轮；原答不改、默认review_update=None。0016任务漏覆盖由0017一次正常纠正后继续；通知恢复2GUI，四个业务/导航动作6GUI。最终3done/6record_only/4pending、3Region/14控件/1功能；Add未执行，功能明确未验证实际添加，非全图验收。一般服务失败可写suspended_updates而普通续跑未见消费者；特定402恢复不能替代此路径（静态审计，未现场触发）。contains定义interactive优先，整屏excluded表达含糊不直接视为误操作。冻结源、真实原答与图在artifacts/runs/desktop_clock_fresh_20261002_01；用户报告包to_astra/desktop_clock_fresh_20261002_01。
+2026-10-02 历史补登记恢复：`suspended_updates.restore_next`在普通回合新GUI之前读取不可变归档，重接原episode与attempt；只有原成功投递回执、原before/after及对应请求齐全才恢复，缺证据保留未知。即使runtime队列曾被后续更新替换，仍可从归档恢复。中断恢复写盘后继续同一episode；再次服务失败留活动pending并沿显式resume_service_failure恢复，不重新归档或清零累计纠错。历史补登记不允许以当前截图替换原后图，也不走edit_record改写历史。
+
+`register_update`在正常发布前按归档decision快照比较受影响Region（包含任务/工作/依赖关联）；相关内容已改变或涉及来源拆分则historical_update_conflict暂停，保留原结果，不自动合并。无关Region变化不阻塞。发布同时清理本归档的gap/deferral，保留此次判定的新blocked和其他缺口；保留当前工作目标及原last_action，归档结果进入suspended_update_history。成功后只要求重新定位，下一轮run_task_step用本轮current.png调用既有await_discovery，历史after不当作当前前景。
+
+本批51项辅助检查通过；真实Clock完整上下文走普通Runner及会话入口：0023分支暂挂、0024原答补登记、0025下一轮保存帧发现登记，共3HTTP/0GUI。两个503是隔离副本里的辅助注入；原执行/失败记录保留，回复未改，候选/勾选/Add身份裁图和任务完成范围已独立核对。0025明确模态框仍接管输入，未声称已返回导航；其截图复用真实保存帧，不能算现场新定位。默认CLI独立语义审核、真实跨分支进展后的冲突、跨应用连续恢复仍未获得此例证明。
+
+另在原专属VM上使用原图副本及冻结source-v2正常现场续跑2轮，4HTTP/2GUI；Alarms空页和Stopwatch初始页正式登记，公共导航保持r0001，任务共5done/6record_only/2pending，5Region/17控件。done仅含各标签直接内容调查，未创建闹钟、未启动秒表；新页还未派完任务，不能从2pending推断剩余覆盖。旧原图和原运行未改，VM停在Stopwatch并暂停。现场未注入服务故障，不作为历史补登记现场成功。证据及源码差异在to_astra/suspended_update_recovery_20261002_01。
+
+2026-10-02 新桌面Clock有限现场：新VM/新图经正常run_source.session_command→run_progress_session→run_task_step，22HTTP/8底层GUI、6轮；原答不改、默认review_update=None。0016任务漏覆盖由0017一次正常纠正后继续；通知恢复2GUI，四个业务/导航动作6GUI。最终3done/6record_only/4pending、3Region/14控件/1功能；Add未执行，功能明确未验证实际添加，非全图验收。当时一般服务失败可写suspended_updates而普通续跑未见消费者（本页上条已修复）；特定402恢复不能替代此路径（静态审计，未现场触发）。contains定义interactive优先，整屏excluded表达含糊不直接视为误操作。冻结源、真实原答与图在artifacts/runs/desktop_clock_fresh_20261002_01；用户报告包to_astra/desktop_clock_fresh_20261002_01。
 
 ## 2026-10-02 结果结算与运行源码
 

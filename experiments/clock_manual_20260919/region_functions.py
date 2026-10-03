@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import identity_templates as templates
+from function_evidence import action_results, incoming_results, coverage as action_evidence_coverage
 
 
 def task_module():
@@ -56,53 +57,10 @@ def attribute_context(region):
     """Keep full binding keys and facts, grouped under the supporting task."""
     result={}
     for key,fact in catalog(region).items():
-        result.setdefault(fact['task'],{})[key]={k:v for k,v in fact.items() if k not in ('source','sources')}
+        item={k:v for k,v in fact.items() if k not in ('source','sources')}
+        item['事实来源']=deepcopy(fact.get('sources') or ([fact['source']] if fact.get('source') else []))
+        result.setdefault(fact['task'],{})[key]=item
     return result
-
-
-def action_results(region):
-    """Task summaries and their original executed action results complement each other."""
-    tasks=supported_tasks(region)
-    controls={t.get('control') for t in tasks.values()}
-    rows=[]
-    for aid,action in region.get('actions',{}).items():
-        cid=action.get('control');result=action.get('result',{})
-        related=[name for name,t in tasks.items() if aid in t.get('attempts',[])]
-        unconfirmed=cid is None and bool(related)
-        if (not unconfirmed and (cid not in controls or cid not in region['controls'])):continue
-        if action.get('delivery')!='executed_receipt_zero' or not result.get('description'):continue
-        row={'动作记录':aid,'结果调用':action.get('result_call') or action.get('evidence',{}).get('result_call'),
-             '选择调用':action.get('evidence',{}).get('selection_call'),'动作目的':action.get('purpose',''),
-             '动作前观察':action.get('evidence',{}).get('before_observation'),
-             '动作后观察':action.get('evidence',{}).get('after_observation'),
-             '关联任务':related,
-             '控件':'' if unconfirmed else region['controls'][cid]['name'],'动作':action.get('operation',''),
-             '结果':result['description'],'依据':result.get('evidence',''),
-             '异常':result.get('exception','')}
-        if unconfirmed:
-            row.update(控件关联='未确认',提案目标=action.get('association',{}).get('target',''),
-                       归属边界='以下是关联任务的真实动作结果；提案目标未成为已确认控件，不补做身份绑定。')
-        if action.get('parameter_findings'):row['已记录参数事实']=deepcopy(action['parameter_findings'])
-        if row not in rows:rows.append(row)
-    return rows
-
-
-def incoming_results(region,records=None):
-    """Resolve existing incoming edges to observed results, without inventing persistence."""
-    rows=[]
-    for edge in region.get('reached_by',[]):
-        if edge.get('source_region')==region['id']:continue
-        source=(records or {}).get(edge.get('source_region'),{})
-        action=source.get('actions',{}).get(edge.get('attempt'),{})
-        result=action.get('result',{})
-        if action.get('delivery')!='executed_receipt_zero' or result.get('exception')!='none' or not result.get('description'):continue
-        control=source.get('controls',{}).get(action.get('control'),{})
-        row={'来源区块':source.get('name',''),'入口':control.get('name',''),
-             '归属说明':'这是其他区块的操作，本区块仅接收结果；不能把来源控件名用作本区块任务名。',
-             '来源任务':[n for n,t in source.get('tasks',{}).items() if t.get('control')==action.get('control') and action.get('control')],
-             '结果':result['description'],'依据':result.get('evidence','')}
-        if row not in rows:rows.append(row)
-    return rows
 
 
 def evidence_projection(region,records=None):
@@ -116,15 +74,20 @@ def evidence_projection(region,records=None):
         if templates.evidence_limit(observation):controls[-1]['视觉依据限定']=templates.evidence_limit(observation)
     return {'已观察控件':controls,
         '已登记操作':[{'任务':n,'依据':t.get('result_evidence',t['reason']),
+                     '任务提出调用':t.get('source_call'),
+                     '依据时态':'历史记录：其中当前、本轮、未验证均指对应观察时刻，须与后续动作和恢复观察合看',
                      '结果动作记录':list(t.get('attempts',[])),
                      '登记方式':'本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '依据本任务探索结果登记'} for n,t in supported_tasks(region).items()],
         '已记录属性（待甄别）':attribute_context(region),
-        '同区块已执行动作结果':action_results(region),
+        '同区块已执行动作结果':action_results(region,records),
+        '动作证据覆盖':action_evidence_coverage(region,records),
         '进入本区块的已观察结果':incoming_results(region,records)}
 
 
 def signature(region,records=None):
     evidence=evidence_projection(region,records)
+    # Accounting for unexecuted proposals is diagnostic, not a new observed effect.
+    evidence.pop('动作证据覆盖')
     # Reobserving unchanged facts does not require another catalog call.
     for c in evidence['已观察控件']:c.pop('观察出处',None)
     data={'extraction_rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],

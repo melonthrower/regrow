@@ -1,5 +1,7 @@
 # Region 遍历、经验复用与图指导采集：设计对齐及代码位置
 
+2026-10-03 功能整理事实传递：function_evidence从当前区块账本投影全部已执行且已有结果的动作，任务引用/身份是否确认独立限定；入边、导航与业务效果保持原归属，不按结果出现的位置迁移能力。来源和历史时态进入正常function_registration；42离线、6HTTP/0GUI两批保存记录中最后三个案例有限接受，早期失败保留。旧现场图及采集/指令生成均未改，不据此勾选研究目标或宣称完整遍历。
+
 2026-10-02 当前接线：region_tasks.settle_task／累计核对决定原任务是否完成，task_routing.advance只交接已done任务；entry_evidence不自动完成新目标，历史结果不被目的区块摘要替代。collection_graph直接投影冻结逐步functions与实际可交互候选关系，普通生成→load_region_task→visual_guard→RegionGuidedCollector→Writer已接通。Clock London查询单功能实机通过，图/条件事实保留；Gmail月报if/else示例及其业务前置、条件观察、分支和共同后续要求不变，尚无该例新增验收。
 
 2026-10-02：复制遍历器局部请求提供同帧已确认区块划分及只读跨owner控件参照，越界和争用位置走原纠错；导航结算保留实际任务反馈，功能整理读取原动作和有出处的观察。身份仍由视觉与语义核对确认，不按尺寸/SHA自动合并，不改变Gmail条件任务、业务完成边界或采集器。入口和候选验证范围见stepwise_discovery_completion/stepwise_region_identity与本月日志。

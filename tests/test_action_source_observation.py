@@ -44,12 +44,14 @@ def test_action_refresh_pins_original_task_and_uses_new_frame(monkeypatch,tmp_pa
   seen.update(task_ref=task_ref)
   return {'source':{**src,'region':'actual','observation':'new'},'action_ready':True}
  helpers={'discovery_step':SimpleNamespace(load=lambda run:(None,{}, {'observation':{'image':'new.png'}})),
-          'stepwise_flow':SimpleNamespace(assemble_current_context=assemble)}
+          'stepwise_flow':SimpleNamespace(assemble_current_context=assemble),
+          'region_scroll':SimpleNamespace(attach=lambda *a:None),
+          'target_observation':stages.helper('target_observation')}
  monkeypatch.setattr(stages,'helper',helpers.__getitem__)
  q=stages.refresh(ROOT,tmp_path,{'stage':'action','request':{'source':src}})
  assert seen['task_ref']=={'region':'goal','name':'original'}
  assert q['source']['region']=='actual' and q['source']['observation']=='new'
- assert q['screenshots']==['new.png']
+ assert q['screenshots']==[str((tmp_path/'new.png').resolve())]
 
 def test_stale_action_is_rejected_before_commands_even_after_correction(monkeypatch,tmp_path):
  from types import SimpleNamespace

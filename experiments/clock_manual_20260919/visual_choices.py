@@ -45,14 +45,19 @@ def match_control(control, frame):
     return hit
 
 
+def match_controls(controls,frame):
+    import control_layout
+    hits={c['id']:match_control(c,frame) for c in controls
+          if c.get('image') and Path(c['image']).is_file()}
+    return control_layout.refine(controls,hits,frame,matcher())
+
+
 def prepare(request):
     q=deepcopy(request);q.pop('visual_choices',None)
     frames=q.get('image_refs',[]);choices={}
     if len(frames)!=1 or not frames[0] or not Path(frames[0]).is_file():return q
-    for c in q.get('backend_candidates',[]):
-        if not c.get('image') or not Path(c['image']).is_file():continue
-        hit=match_control(c,frames[0])
-        choices[c['id']]=[hit] if hit.get('accepted') else hit.get('candidates',[])
+    for cid,hit in match_controls(q.get('backend_candidates',[]),frames[0]).items():
+        choices[cid]=[hit] if hit.get('accepted') else hit.get('candidates',[])
     q['visual_choices']=choices
     return q
 

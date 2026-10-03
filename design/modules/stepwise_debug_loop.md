@@ -243,3 +243,9 @@ run_progress_session在本轮账目结算后识别review_pending，auto与step�
 region_tasks.attach先取非equivalent真实义务，再按自身control可见性调度。代表隐藏时，不再用可见成员的control配代表名称/reason；有其他可见独立任务先推进，否则沿原流程定位代表。活动任务接续、coverage单向继承和原对象结算门槛不变，成员不获得虚构执行记录。这是有意收紧旧选择合同：旧test_equivalent_visible_binding_can_finish_shared_task只验文本，未证明跨成员结算可行；不能把原实现简单归因为漏同步cid。
 
 新增5项离线检查通过（旧代码其中2项失败）。聚焦与邻接组合44项：39通过、5既有失败；5项在修改前冻结副本独立复现。真实task-plan-0867完整图经正常assemble_current_context及Runner.perform，实际Luna0871选可见独立Pause任务c0184并正确识别8:30，1HTTP/0GUI。绑定仍model_grounded、control_ref=null、association=unconfirmed、preparatory_action=true；只通过动作请求/提案的保存帧语义核验，未证明模板身份、实际点击或任务结果登记。证据records/equivalent_task_20260929_12。候选未现场部署，连续效果待验证；原11现场图不改。
+
+## 2026-10-03 动作候选清单及换帧刷新
+
+`assemble_current_context` 现在接收 `target_observation.attach` 返回的复制请求，修正原来丢弃返回值、未实际投递目标卡片的接线。卡片含所属区块名称、控件名称、观察来源、当前匹配点击范围与布局依据的限制。入口清单明确包含历史候选，不保证当前可见或可操作。
+
+`target_observation.refresh` 重算候选并替换对应文本表；正常run_task_step当前图、repair_stages换帧及step_repair动作纠正共用它，防止换图后仍展示旧位置。动作坐标仍只使用一张当前图；原始模板和控件组图只在后台匹配，不额外发给Luna。此改动不添加GUI调用、改变原任务结果结算或伪造后图。

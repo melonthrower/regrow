@@ -27,22 +27,27 @@ def _agreement(a,b):
 def _search(template,scene,scene_edges=None):
     te=edges(template).astype(np.float32)/255
     se=edges(scene).astype(np.float32)/255 if scene_edges is None else scene_edges
-    proposals=[]
+    proposals=[];truncated=False
     if np.count_nonzero(te)<8:return {'accepted':False,'reason':'insufficient_edges'}
     for scale in [.95,1,1.05]:
         w=max(3,round(te.shape[1]*scale));h=max(3,round(te.shape[0]*scale))
         if h>se.shape[0] or w>se.shape[1]:continue
         scores=cv2.matchTemplate(se,cv2.resize(te,(w,h)),cv2.TM_CCORR_NORMED)
-        for _ in range(2):
+        for peak in range(32):
             _,score,_,(x,y)=cv2.minMaxLoc(scores)
+            # Keep the original best/runner-up, then recall further plausible
+            # spatial alternatives. A bounded search must disclose truncation.
+            if peak>=2 and score<.55:break
             proposals.append(dict(score=float(score),box=[x,y,x+w,y+h],scale=scale))
             scores[max(0,y-h//2):y+h//2+1,max(0,x-w//2):x+w//2+1]=-1
+        else:
+            truncated=truncated or cv2.minMaxLoc(scores)[1]>=.55
     if not proposals:return {'accepted':False,'reason':'template_outside_surface'}
     proposals.sort(key=lambda p:p['score'],reverse=True);best=proposals[0];x,y,x2,y2=best['box'];cx,cy=(x+x2)/2,(y+y2)/2
     alternatives=[p['score'] for p in proposals[1:] if abs((p['box'][0]+p['box'][2])/2-cx)>(x2-x)/2 or abs((p['box'][1]+p['box'][3])/2-cy)>(y2-y)/2]
     gap=best['score']-max(alternatives,default=0)
     candidate=cv2.resize(crop(scene,best['box']),(template.shape[1],template.shape[0]));halves=_agreement(template,candidate)
-    accepted=gap>=.05 and (best['score']>=.80 or (best['score']>=.55 and min(halves)>=.50 and max(halves)>=.85))
+    accepted=not truncated and gap>=.05 and (best['score']>=.80 or (best['score']>=.55 and min(halves)>=.50 and max(halves)>=.85))
     candidates=[]
     for p in proposals:
         l,t,r,b=p['box'];px,py=(l+r)/2,(t+b)/2
@@ -50,7 +55,8 @@ def _search(template,scene,scene_edges=None):
         agreement=_agreement(template,cv2.resize(crop(scene,p['box']),(template.shape[1],template.shape[0])))
         if p['score']>=.80 or (p['score']>=.55 and min(agreement)>=.50 and max(agreement)>=.85):
             candidates.append({**p,'halves':agreement})
-    return dict(best,gap=gap,halves=halves,accepted=accepted,candidates=candidates,reason='matched' if accepted else 'ambiguous_or_changed')
+    return dict(best,gap=gap,halves=halves,accepted=accepted,candidates=candidates,
+                candidates_truncated=truncated,reason='matched' if accepted else 'ambiguous_or_changed')
 
 
 

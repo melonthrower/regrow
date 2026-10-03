@@ -64,7 +64,8 @@ def test_refresh_revokes_old_dispatch_confirmation_and_preserves_its_evidence(mo
     fresh=deepcopy(value['request']);fresh.update(action_ready=True)
     helpers={'discovery_step':SimpleNamespace(load=lambda run:(tmp_path,{}, {'observation':{'image':'observed.png'}})),
              'stepwise_flow':SimpleNamespace(assemble_current_context=lambda *a,**k:deepcopy(fresh)),
-             'region_scroll':SimpleNamespace(attach=lambda *a:None)}
+             'region_scroll':SimpleNamespace(attach=lambda *a:None),
+             'target_observation':m.helper('target_observation')}
     monkeypatch.setattr(m,'helper',helpers.__getitem__)
     q=m.refresh(ROOT,tmp_path,value)
     assert 'pre_dispatch_review' not in value

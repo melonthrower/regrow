@@ -247,7 +247,6 @@ def _assemble_local_context(root, records, state, region_ref):
     from pathlib import Path
     region=records[region_ref];obs=state['observation']
     interactive=region_ref in state['interactive_regions']
-    visible=set(obs['control_refs']) if interactive else set()
     supplied=state.get('action_history_supplied',True)
     progress={'registered_controls':len(region['controls']), 'controls_with_delivery':0,
               'controls_with_observed_effect':0, 'controls_with_unresolved_attempts':0,
@@ -267,13 +266,15 @@ def _assemble_local_context(root, records, state, region_ref):
         if supplied and not attempts:progress['controls_without_record']+=1
         summary='未提供动作记录，进度未知' if not supplied else ('所提供图中无动作记录' if not attempts else ('有执行回执' if delivered else '执行未确认'))
         statuses[cid]={'attempts':c['action_refs'],'summary':summary}
-        if cid in visible:
+        if interactive:
             matching=[v for v in c['observations'] if v['evidence'].get('observation')==obs['id']]
-            # Current visibility is required; a historical template still needs current matching.
-            if matching:
-                v=matching[-1]
-                appearance=templates.latest(c) or {}
+            # Recall admitted history only inside the observed active Region.
+            # It remains a visual candidate, not a claim of current visibility.
+            appearance=templates.latest(c) or {}
+            if matching or appearance:
+                v=(matching or c['observations'])[-1]
                 backend.append({'id':cid,'name':c['name'],'image':appearance.get('image'),
+                                'region_ref':region_ref,'source_image':appearance.get('source_image'),
                                 **templates.assessment(appearance),
                                 'icon_description':v['icon_description'], 'region_image':templates.image(region),
                                 **{k:appearance[k] for k in ('bbox','click_bbox') if k in appearance}})
@@ -475,7 +476,7 @@ def _assemble_action_context(root, records, state, region_ref):
         pr=Path(root)/'遍历prompt';part='动作/探索导航路线.prompt'
         request['fixed_parts'].append({'path':part,'text':(pr/part).read_text()})
         request['system_prompt']='\n\n'.join(p['text'].strip() for p in request['fixed_parts'])
-        lines.append('当前可选入口：'+('；'.join(records[c['region_ref']]['name']+'：'+c['name'] for c in request['backend_candidates']) or '暂无已定位控件，可结合截图判断系统返回或等待'))
+        lines.append('当前区块内的登记入口候选（含历史记录，不保证当前可见或可操作；以本图及下方匹配位置核对）：'+('；'.join(records[c['region_ref']]['name']+'：'+c['name'] for c in request['backend_candidates']) or '暂无登记候选，可结合截图判断系统返回或等待'))
         for candidate in request['backend_candidates']:
             region=records[candidate['region_ref']];control=region['controls'][candidate['id']]
             results=[region['actions'][a].get('result',{}).get('description')
@@ -532,6 +533,7 @@ def assemble_current_context(root, run, region_ref=None, task_ref=None):
         for c in r['controls'].values():
             for v in c['observations']:
                 if v['image']:v['image']=str((snapshot/f'regions/{ref}'/v['image']).resolve())
+                if v.get('source_image'):v['source_image']=str((snapshot/f'regions/{ref}'/v['source_image']).resolve())
     if state['observation'].get('image'):
         state['observation']['image']=str((run/state['observation']['image']).resolve())
     import importlib.util
@@ -544,7 +546,7 @@ def assemble_current_context(root, run, region_ref=None, task_ref=None):
     spec=importlib.util.spec_from_file_location('region_tasks',Path(__file__).with_name('region_tasks.py'))
     tasks=importlib.util.module_from_spec(spec);spec.loader.exec_module(tasks)
     result=tasks.attach(root,records,state,region_ref,result)
-    tasks.helper('target_observation').attach(result,records)
+    result=tasks.helper('target_observation').attach(result,records)
     tasks.helper('target_observation').attach_handoff(result,records,state,run)
     if state.get('navigation_handoff') and result.get('action_ready'):
         result['user_prompt']=result['dynamic_prompt']=result['user_prompt']+'\n\n自动回溯交接：'+json.dumps(state['navigation_handoff'],ensure_ascii=False)
@@ -623,13 +625,14 @@ def _bind_action_target(request, proposal):
     with Image.open(frames[0]) as frame:width,height=frame.size
     if not (0<=x<width and 0<=y<height):return {**base,'status':'unresolved','reason':'coordinates outside screenshot'}
     hits=[];selected={};model_grounded=set();diagnostics=[];matches={};competing=[]
+    current_matches=matcher.match_controls(request['backend_candidates'],frames[0])
     named=[c for c in request['backend_candidates'] if target and target in
            [str(c.get(k,'')).strip().casefold() for k in ('name','icon_description')]]
     point_binding=bool(target) and not named and proposal.get('action') in ('tap','click','double_click','long_press','right_click','hover','drag','input_text')
     for c in (request['backend_candidates'] if point_binding else named):
         if not c.get('image') or not Path(c['image']).is_file():
             diagnostics.append(c['name']+'：缺少记录图片');continue
-        match=matcher.match_control(c,frames[0])
+        match=current_matches[c['id']]
         matches[c['id']]=match
         diagnostics.append(c['name']+'：候选范围'+str(match.get('box'))+'，模型位置'+str((x,y))+'，图片判断'+str(match.get('reason',match.get('accepted'))))
         if not match['accepted']:
@@ -657,7 +660,7 @@ def _bind_action_target(request, proposal):
             # Renaming a weak proposal cannot resolve a different strong object at its point.
             for other in request['backend_candidates']:
                 if other['id']==hits[0]['id'] or not other.get('image') or not Path(other['image']).is_file():continue
-                match=matcher.match_control(other,frames[0])
+                match=current_matches[other['id']]
                 if match.get('accepted') and match.get('box'):
                     left,top,right,bottom=match['box']
                     if left<=x<right and top<=y<bottom:
@@ -671,6 +674,10 @@ def _bind_action_target(request, proposal):
                     '。其他对象匹配较弱不证明唯一强匹配就是实际操作对象。请按单张当前图核对对象，'
                     '改用弱对象名称不能解除它与强对象的同点竞争；可补观察或选择有当前依据的必要准备动作，不能确认则保留缺口。'}
         base['region_ref']=hits[0].get('region_ref',base['region_ref'])
+        layout=matches[hits[0]['id']].get('layout_evidence')
+        if layout:
+            return {**base,'status':'matched','control_ref':hits[0]['id'],'layout_evidence':layout,
+                    'basis':'current group pixels and relative positions match the recorded controls; functional meaning is not independently verified'}
         if hits[0]['id'] in model_grounded:
             return {**base,'status':'matched','control_ref':hits[0]['id'],'model_grounded':True,
                     'basis':'model position agrees with low-confidence image candidate; no visual contradiction established'}

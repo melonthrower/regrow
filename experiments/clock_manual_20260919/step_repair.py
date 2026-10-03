@@ -148,7 +148,7 @@ def request(root,job,context):
     if job['stage']=='shared_control_review':
         return helper('shared_control_review').correction_request(root,job)
     original=deepcopy(job['request'])
-    if job['stage']=='action' and not original.get('needs_task_inspection'):original=helper('visual_choices').prepare(original)
+    if job['stage']=='action' and not original.get('needs_task_inspection'):original=helper('target_observation').refresh(original)
     edit={'type':'object','properties':{n:{'type':'string'} for n in ('region','control','field','before','after','evidence')},
           'required':['region','control','field','before','after','evidence'],'additionalProperties':False}
     task_edit={'type':'object','properties':{n:{'type':'string'} for n in ('region','task','field','before','after','evidence')},'required':['region','task','field','before','after','evidence'],'additionalProperties':False}

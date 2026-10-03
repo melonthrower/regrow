@@ -281,6 +281,7 @@ def refresh(root,run,job):
         if not q.get('action_ready'):raise ValueError('原动作任务仍未定位')
         frame=str((Path(run)/state['observation']['image']).resolve())
         q.update(role='action_selection',screenshots=[frame],image_refs=[frame])
+        q=helper('target_observation').refresh(q)
         helper('region_scroll').attach(run,state,q)
         if job.get('pre_dispatch_review'):
             job.setdefault('pre_dispatch_review_history',[]).append({

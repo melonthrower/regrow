@@ -64,26 +64,42 @@ def attach_handoff(request, records, state, run=None):
 
 def attach(request,records):
     if not request.get('action_ready'):return request
-    spec=importlib.util.spec_from_file_location('target_choices',Path(__file__).with_name('visual_choices.py'))
-    choices=importlib.util.module_from_spec(spec);spec.loader.exec_module(choices)
-    request=choices.prepare(request)
     source=request.get('source',{});region=records.get(source.get('region'),{})
-    targets=[]
     for candidate in request.get('backend_candidates',[]):
         owner=records.get(candidate.get('region_ref',source.get('region')),region)
         control=owner.get('controls',{}).get(candidate['id'])
         if control is None:continue
-        card=describe(control,source.get('observation'))
-        candidate['target_observation']=card
-        item={'控件':candidate['name'],'目标观察':card}
+        candidate['target_observation']=describe(control,source.get('observation'))
+        candidate['region_name']=owner.get('name','')
+    return refresh(request)
+
+
+def refresh(request):
+    """Rebuild positions after a frame replacement, including the rendered table."""
+    spec=importlib.util.spec_from_file_location('target_choices',Path(__file__).with_name('visual_choices.py'))
+    choices=importlib.util.module_from_spec(spec);spec.loader.exec_module(choices)
+    request=choices.prepare(request)
+    previous=request.get('target_observations',[])
+    targets=[]
+    for candidate in request.get('backend_candidates',[]):
+        card=candidate.get('target_observation')
+        if card is None:continue
+        item={'所属区块':candidate.get('region_name',''),'控件':candidate['name'],'目标观察':card}
         frames=request.get('image_refs',[])
         if candidate.get('image') and Path(candidate['image']).is_file() and len(frames)==1 and frames[0] and Path(frames[0]).is_file():
             boxes=[v['box'] for v in request.get('visual_choices',{}).get(candidate['id'],[])]
             item['整屏候选位置']=boxes
-            item['位置说明']='与后台核对共用的视觉候选；已定位所属区块时仅保留区块内位置，仍需结合截图核对目标'
+            item['位置说明']='与后台核对共用的当前图视觉候选；外观及相对位置匹配不独立证明字段单位或功能，仍需结合截图核对目标'
+            matches=request.get('visual_choices',{}).get(candidate['id'],[])
+            if any(v.get('layout_evidence') for v in matches):
+                item['布局依据']='同源控件组的实际像素与相对位置在本图唯一重匹配；保留原单位/功能的未验证边界'
         targets.append(item)
-    if not targets:return request
+    if not targets and not previous:return request
     request['target_observations']=targets
-    text=request['user_prompt']+'\n\n本轮目标观察（沿用已登记对象，不按同名文字另换目标）：\n'+json.dumps(targets,ensure_ascii=False,indent=2)
-    request['user_prompt']=request['dynamic_prompt']=text
+    marker='\n\n本轮目标观察（沿用已登记对象，不按同名文字另换目标）：\n'
+    old=marker+json.dumps(previous,ensure_ascii=False,indent=2)
+    new=marker+json.dumps(targets,ensure_ascii=False,indent=2) if targets else ''
+    for key in ('user_prompt','dynamic_prompt'):
+        text=request.get(key,request.get('user_prompt',''))
+        request[key]=text.replace(old,new,1) if previous and old in text else text+new
     return request

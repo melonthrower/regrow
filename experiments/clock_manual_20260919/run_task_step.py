@@ -177,6 +177,7 @@ def _run_step(root,run,out,*,review_update=None):
             history=q.get('screenshots',[])[1:] if q.get('source',{}).get('parameter_fact_review') else []
             frames=[str((out/'current.png').resolve()),*history]
             q.update(screenshots=frames,image_refs=list(frames))
+            if q.get('action_ready'):q=step_repair.helper('target_observation').refresh(q)
             step_repair.helper('region_scroll').attach(run,discovery_step.load(run)[2],q)
         return q
     repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'],review_update=review_update)

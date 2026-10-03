@@ -40,7 +40,7 @@ def test_registered_global_observation_continues_local_without_new_observation(t
     job={'stage':'action','path':'repair/episode.json','observations':1,'request':{},'supplements':[{'source_call':'global','image':str(frame.resolve()),'reply':{}}]}
     state={'next_action_mode':'discover'};seen=[]
     discovery=SimpleNamespace(load=lambda run:(None,{},state),request_from_run=lambda *a:{'mode':'local'})
-    repair=SimpleNamespace(pending=lambda *a:None)
+    repair=SimpleNamespace(pending=lambda *a:None,resume_after_region_observation=lambda *a:False)
     monkeypatch.setattr(m,'helper',lambda name:discovery if name=='discovery_step' else repair)
     monkeypatch.setattr(m,'refresh',lambda *a:{'action_ready':True})
     class Runner:

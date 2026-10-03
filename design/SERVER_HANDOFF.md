@@ -1,5 +1,11 @@
 # 服务器续接工作
 
+2026-10-03 最新真实停止点：`artifacts/runs/clock_continue_20261003_01/run`，最后调用0221，`stop-01`于UTC 15:49确认专属VM暂停；无活动GUI会话和pending/execution/navigation指针。原clock_complete_20261002_01/run保持不变，后文此前停点均为历史。当前实际图是Alarms列表中的23:46新闹钟（开启外观）；以stop-01/final.png为准，不能按0219的空列表恢复，也不能重放最后Add补账。虚拟机暂停不是应用内暂停秒表或关闭闹钟。
+
+本次续跑新增51HTTP/13条GUI命令；其中用户要求的50条GUI批次session-04仅39HTTP/10条GUI、26轮、约33.9分钟后scope_idle自然停止，剩余40条未执行，无运行中/排队任务。输入London按click、全选、输入3条实际命令计数。18区域账面complete=true，**语义未验收**：前12次历史功能整理耗时349.94秒，父目标r0002经前景r0003推进未获当前工作优先；末尾回放历史a0029的Add创建23:46闹钟，只更新运行态到达定位，没有新增常规动作结果登记，0221仍是先前记录的整理。这是框架调度/回放接线缺口，非API失败；不为凑50条重置任务或继续盲跑。
+
+实际冻结源为framework_repairs_20261003_01/source-v2，hash `18207fe28ccc1fdceac7ba09b026af1cbe13a05bc31d689c547e20e118bfbb7f`，属于未整体接受的候选；本次未热改框架或导出候选为已验证源码。51份原答与解析结果一致、HTTP均200，原run指针/manifest、冻结源及共享依赖hash保持；正常London搜索/选择/添加/删除有实际后图支持。现有身份上下文裁图等开放问题仍保留。下一步先处理当前前景子区调度、业务提交被当导航及回放结果登记边界，再按正常观察流程恢复；禁止直接用保存帧图替代现场或抹去此次业务写入。完整审核与截图包：`to_astra/clock_continue_20261003_01/REPORT.md`；辅助只读核账命令：`/data/shenghonghui/miniconda3/envs/guiwalk-android/bin/python artifacts/tmp_tests/clock_continue_20261003_01/audit.py`。该命令不新增GUI/API，实机证据来自已结束session及回执。
+
 2026-10-02 截止停止检查点：clock_complete_20261002_01/session-15已结算，最后调用0170；本目标实机续跑累计144HTTP/36GUI命令。图18区域/11账面完成整理，7处清点/功能缺口、0pending/0blocked，complete=false；账面整理不等于语义验收。停止记录UTC 2026-10-02T19:55:51.289351+00:00，专属VM已暂停，无活动GUI驱动；未处理指针：无。现场源为clock_visibility_conflict_20261002_01/source-v2，hash3739d9ff31dccf3530826d0aef2195f7c8b7a722eaa2c4401a411b6eb7bb1c85，批准97df04ceb47de7dd4ef7fbc01ddb31f38c83f89d加已披露parent-runnable差异。最后批次max_rounds=2是截止前会话边界，总HTTP/GUI仍不限；额度未进入Luna提示。
 
 原run/knowledge_current、deadline-stop-01/final.png及各action_attempt后图是恢复依据，不能用保存帧候选图恢复设备。续跑先核对专属容器、当前真实图和pending，不能重放a0034补账：其点击只收起Snooze菜单，未证明删除。session15中a0035经新规划后实际移除当前闹钟，0169登记列表空态；后续导航仅打开New Alarm表单，未创建新闹钟。World创建后结构、暂停后未知内容与当前图缺口仍未完成；0141身份比较、0151关闭结果遗漏、0154菜单功能归属、0165可见误当可操作、Timer±点击区及许可证裁图等开放问题不能由本次停止记录豁免。

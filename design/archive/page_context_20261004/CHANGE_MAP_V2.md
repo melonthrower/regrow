@@ -1,0 +1,36 @@
+# 实时页面树变更图 v2：已实现版本
+
+本图固定到私库 `melonthrower/regrow` 的代码提交 [d20c78753d57](https://github.com/melonthrower/regrow/commit/d20c78753d57e661ce454e07116c2f7b0e0afe89)；比较基线 `6996f285be7950bd89ddaf300de6576c0dcd6c02`。本文件作为后续文档提交发布，不改变所锚定的源码。v1 CHANGE_MAP.md 是基线上的拟议改动，保留历史，不与本版混读。
+
+设计说明见 [DESIGN_V2.md](DESIGN_V2.md)。实现使用原逐步框架，不重建旧模块化遍历器。基线没有统一带时态的三步页面地图；原历史自动回放存在绕过普通登记的路径。本批按下表集中投影并统一新导航的执行链。全部行号来自 `git show d20c78753d57e661ce454e07116c2f7b0e0afe89:<path>`，Python 函数范围经 AST 核对。
+
+| 文件 | 固定版本位置 | 已实现改动 |
+| --- | --- | --- |
+| `experiments/clock_manual_20260919/page_context.py`（新增；基线无该文件，所列为本提交新增行） | [build L109–195](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/page_context.py#L109-L195)；[_origin L61–106](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/page_context.py#L61-L106)；[live L271–284](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/page_context.py#L271-L284)；[refresh L287–309](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/page_context.py#L287-L309)；[attach L312–318](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/page_context.py#L312-L318)；[advances_goal L321–338](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/page_context.py#L321-L338) | 新增统一投影；当前包含结构、连续访问路径、未接续历史入口和工作目标分别表达。根据新帧/待登记状态显示核对中；不写图、不造身份、不添加模型调用。已证明的进入链仅用于原父目标内的调度判断。 |
+| `experiments/clock_manual_20260919/stepwise_flow.py`（既有文件） | [assemble_current_context L508–556](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/stepwise_flow.py#L508-L556) | 正常选择/任务请求附加共享地图。 |
+| `experiments/clock_manual_20260919/discovery_step.py`（既有文件） | [request_from_run L147–164](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/discovery_step.py#L147-L164) | 正常发现请求带历史地图，新截图仍须独立核对。 |
+| `experiments/clock_manual_20260919/historical_inventory.py`（既有文件） | [request L12–69](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/historical_inventory.py#L12-L69) | 借助已证实进入链判断当前前景能否推进原父目标，暂缓无关历史整理；强制审核优先不变。不向所有历史清点请求附加地图。 |
+| `experiments/clock_manual_20260919/target_observation.py`（既有文件） | [refresh L77–107](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/target_observation.py#L77-L107) | 单图动作上下文更新后同步地图时态。 |
+| `experiments/clock_manual_20260919/run_task_step.py`（既有文件） | [build_attempt_update L53–114](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/run_task_step.py#L53-L114)；[_run_step L131–354](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/run_task_step.py#L131-L354) | 结果观察附带动作前地图；移除自动历史动作回放，新导航走原选择、绑定、执行、登记。 |
+| `experiments/clock_manual_20260919/repair_stages.py`（既有文件） | [refresh L258–295](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/repair_stages.py#L258-L295) | 修复后正常任务请求重新附加地图，避免旧请求丢失共享上下文。 |
+| `experiments/clock_manual_20260919/region_graph.py`（既有文件） | [project L34–67](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/region_graph.py#L34-L67) | 图页共用 live 投影；无有效控件身份的边明确写未绑定具体控件。 |
+| `experiments/clock_manual_20260919/region_graph.html`（既有文件） | [function pageMap(view) L20–20](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/region_graph.html#L20-L20)；[async function refresh() L154–154](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/region_graph.html#L154-L154)；[setInterval(refresh,2000) L155–155](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/region_graph.html#L155-L155) | 网页每2秒读取；同快照也更新帧核对状态；保留树折叠，区分当前与历史。 |
+| `experiments/clock_manual_20260919/debug_loop.py`（既有文件） | [freeze L90–95](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/debug_loop.py#L90-L95) | 运行冻结包含 HTML。 |
+| `experiments/clock_manual_20260919/run_source.py`（既有文件） | [source_hash L8–13](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/run_source.py#L8-L13) | HTML 纳入源码指纹，图页与运行版本可追溯。 |
+| `experiments/clock_manual_20260919/visual_backtrack.py`（既有文件） | [same_surface L15–22](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/visual_backtrack.py#L15-L22)；[choose_position L25–32](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/visual_backtrack.py#L25-L32)；[handoff L35–46](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/visual_backtrack.py#L35-L46)；[resume_pending L49–52](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/visual_backtrack.py#L49-L52)；[project L55–65](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/visual_backtrack.py#L55-L65) | 删除自动回放执行捷径；保留普通输入定位共享函数及旧 pending 交接/只读展示。 |
+| `experiments/clock_manual_20260919/遍历prompt/任务/选择探索入口.prompt`（既有文件） | [业务 L3–3](https://github.com/melonthrower/regrow/blob/d20c78753d57e661ce454e07116c2f7b0e0afe89/experiments/clock_manual_20260919/遍历prompt/任务/选择探索入口.prompt#L3-L3) | 历史路径为建议，不为返回页面重复业务提交；无应用按钮名特判。 |
+
+## 验收案例与边界
+
+- 当前截图里的前景区域、控件及其包含关系只接受对应观察；未知/缺失/循环关系保留问题，不能补造父节点。原任务与控件身份保持原记录。
+- 父页→弹层→同页输入保留进入路径。重新发现造成断链时仅列完整目标 Region 组合一致的历史入口，不声称本次来路、不据此执行。返回已访页面仅收拢显示路径，业务结果仍留账本；“直接进入来源”不是最近物理动作。
+- 发现、单图动作选择、结果观察使用同一个投影，分别标注历史/当前/动作前。新截图未登记、待执行登记时图页显示核对中；不是持续从设备独立采集视频，每2秒同步框架已有实机观察。
+- 最终相关检查 63 项通过；最后未知控件标签修订的图页 5 项通过。两组范围重叠，不相加。16 项扩大检查中的旧失败已在不改动的基线复现，未解决；未运行全框架门禁。
+- 完整真实记录经正常入口构造、真实 Luna 原答及正常校验/纠错/登记：10 次 HTTP、0 新 GUI，覆盖发现/任务/动作/结果及断链历史。保留模型纠错及2次 HTTP 前 harness 缺字段失败，不作为模型错误。
+- 新独立 Clock 真实短链：25 次 HTTP、8 条 GUI 命令、6 笔实际动作，经过世界时钟、城市搜索/选择、Add、London 详情与返回。第2个尝试因本批误删输入共享函数在投递前失败，修复并监督恢复；不宣称无监督完整运行。
+- 实际运行冻结源为 v5/v6/v7，最终 v8 仅改旧图边未知控件标注，做了离线/浏览器验证；未冒充 v8 新 GUI 执行。旧 v5/v6 网页证据采样有时错位，v7 等待树签名一致；不保证侧栏历史裁图或另外复制的设备帧同一时刻。
+- 最终只有已观察的4区域/17控件，4项导航任务 pending，London 详情未清点完；a0006真实进入详情但控件身份未确认。不是 Clock 全遍历、跨应用稳定性或发布验收。
+
+证据包 `to_astra/current_surface_tree_20261004_01/` 的 REPORT.md、VERSION.json、verification/、review/、saved-frame/、live/ 保存命令、原始回复的脱敏副本、失败、监督恢复、真实截图和分开的独立阅读/意图比较。运行文件不上传源码私库。当前模块合同见 design/modules/stepwise_debug_loop.md、stepwise_region_identity.md、stepwise_discovery_completion.md；逐项命令与验证边界见 design/changelog/2026-10.md 的本批条目。
+
+本版无待实现改动；完整应用遍历和跨应用扩展仍未验证。具体运行状态与源版本以证据包为准，不由结构树的外观推断覆盖率。

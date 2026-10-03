@@ -64,7 +64,6 @@ def test_runner_continues_after_skip_without_rediscovery_or_gui(tmp_path,monkeyp
     result={'stage':'action','result':{'request':q,'call':'call','proposal':proposal,'binding':{'status':'no_action'}}}
     monkeypatch.setattr(runner.step_repair,'Runner',lambda *a:SimpleNamespace(perform=lambda *a:result))
     monkeypatch.setattr(runner,'assemble_current_context',lambda *a:q)
-    monkeypatch.setattr(runner.visual_backtrack,'try_step',lambda *a:None)
     skipped=[]
     monkeypatch.setattr(runner.traversal_scope,'skip_prohibited',lambda *a:skipped.append(a) or True)
     runner._run_step(ROOT,run,tmp_path/'round')

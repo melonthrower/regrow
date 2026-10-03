@@ -1,5 +1,11 @@
 # 服务器续接工作
 
+2026-10-04 最新独立Clock结构树试验：`artifacts/runs/clock_live_map_20261004_01/runs/org.gnome.clocks_20261003T185136_edccbc63`，最后调用0025，指针 `knowledge_snapshots/a0007-0025-f914b2239d80`。UTC 2026-10-03T19:23:32.082446+00:00，专属VM `rewalk-clock-map-20261004-01` 已暂停；原 `rewalk-clock-fresh-20261002-01` 及旧clock_continue图未改且仍暂停。无活动GUI驱动，无pending_step/execution_pending/visual_navigation_pending。最新实际截图 `stop-01/final.png` 为World列表的一条London时钟，禁止重放a0007返回或a0005添加补账。
+
+本轮25HTTP/8条GUI命令（6笔实际动作；输入占3命令），会话执行合计约15.1分钟，不含中间开发暂停。4区域/17控件，仍有Alarms/Stopwatch/Timer/应用菜单4个pending及详情清点缺口，不是完整遍历。a0002因本批误删choose_position在execute_action之前ImportError：GUI=0、无execution/receipt/after，但已写pending。原证据保留，`input-import-recovery-01` 在独立审阅后监督归档确证未投递的pending，再用正常发现/选择继续；没有改答或假回执，不把该恢复称框架自动鲁棒性。
+
+实际会话源依次v5、v6、v7（`artifacts/runs/current_surface_tree_20261004_01`）；最终GUI驱动v7 hash `f7c4426933cdb1003e3670a4c1474d09d64a1036ef4d0e3db738c2e51629d7a2`。最新待后续选择源v8 hash `f0aa95c0d866ecaa7a9efbfacd660f53996633594736a80a61bbeb13a31eb407`，仅将旧图边的空控件标签改“未绑定具体控件”，与v7的prompt/执行逻辑相同；v8仅只读网页复核，未新增GUI/API、未偷偷改运行manifest。续跑先核对新VM/实际图/停止进程，再明确选用冻结源并走正常session入口。旧v5/v6采样有JSON/网页滞后错位，不作为成对新状态证据；v7签名对齐及v8只读图页另存。完整源码、请求/原答、截图、审核和失败记录见 `to_astra/current_surface_tree_20261004_01/REPORT.md`。
+
 2026-10-03 最新真实停止点：`artifacts/runs/clock_continue_20261003_01/run`，最后调用0221，`stop-01`于UTC 15:49确认专属VM暂停；无活动GUI会话和pending/execution/navigation指针。原clock_complete_20261002_01/run保持不变，后文此前停点均为历史。当前实际图是Alarms列表中的23:46新闹钟（开启外观）；以stop-01/final.png为准，不能按0219的空列表恢复，也不能重放最后Add补账。虚拟机暂停不是应用内暂停秒表或关闭闹钟。
 
 本次续跑新增51HTTP/13条GUI命令；其中用户要求的50条GUI批次session-04仅39HTTP/10条GUI、26轮、约33.9分钟后scope_idle自然停止，剩余40条未执行，无运行中/排队任务。输入London按click、全选、输入3条实际命令计数。18区域账面complete=true，**语义未验收**：前12次历史功能整理耗时349.94秒，父目标r0002经前景r0003推进未获当前工作优先；末尾回放历史a0029的Add创建23:46闹钟，只更新运行态到达定位，没有新增常规动作结果登记，0221仍是先前记录的整理。这是框架调度/回放接线缺口，非API失败；不为凑50条重置任务或继续盲跑。

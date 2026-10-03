@@ -109,6 +109,7 @@ def build_attempt_update(root,transport,folder):
     u=source_candidates.attach(u,reference,labels)
     u=history_matching.attach(u,records,ranking,region_names,snapshot)
     u['region_names']=region_names
+    step_repair.helper('page_context').attach(u,records,state,usage='before_action',run=run)
     write_json(folder/'update_request.json',u)
     return u
 
@@ -177,6 +178,7 @@ def _run_step(root,run,out,*,review_update=None):
             history=q.get('screenshots',[])[1:] if q.get('source',{}).get('parameter_fact_review') else []
             frames=[str((out/'current.png').resolve()),*history]
             q.update(screenshots=frames,image_refs=list(frames))
+            step_repair.helper('page_context').refresh(q)
             if q.get('action_ready'):q=step_repair.helper('target_observation').refresh(q)
             step_repair.helper('region_scroll').attach(run,discovery_step.load(run)[2],q)
         return q
@@ -264,10 +266,8 @@ def _run_step(root,run,out,*,review_update=None):
     if transport.account['max_http']-transport.account['http_started']<2:
         write_json(out/'result.json',{'status':'ready_next_round','calls':calls,'gui_actions':0})
         transport.account['status']='ready_next_round';transport.save();return
-    navigation=visual_backtrack.try_step(transport,q,out/'current.png') if resumed is None else None
-    if navigation:
-        write_json(out/'result.json',{**navigation,'calls':calls})
-        transport.account['status']=navigation['status'];transport.save();return
+    # Historical routes advise selection; every new GUI operation uses the
+    # normal binding, dispatch and semantic result registration below.
     q['role']='action_selection'
     if resumed and resumed['stage']=='action':accepted=resumed
     elif (q.get('source',{}).get('task_type')=='scroll'

@@ -7,7 +7,7 @@ import sys
 
 def source_hash(source):
     source=Path(source)
-    files=[p for p in source.iterdir() if p.is_file() and p.suffix in ('.py','.md')]
+    files=[p for p in source.iterdir() if p.is_file() and p.suffix in ('.py','.md','.html')]
     files += [p for p in (source/'遍历prompt').rglob('*') if p.is_file()]
     rows=[(str(p.relative_to(source)),hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(files)]
     return hashlib.sha256(json.dumps(rows,ensure_ascii=False).encode()).hexdigest()

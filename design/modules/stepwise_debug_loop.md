@@ -1,5 +1,9 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-04 共享地图及单一动作路径：`page_context.build/attach/refresh/live/advances_goal` 在独立文件内派生视图；`stepwise_flow.assemble_current_context`、`discovery_step.request_from_run`、`run_task_step.build_attempt_update` 分别接入选择、发现、动作前上下文，普通任务清点及纠错刷新共用。发现明确历史，结果步明确动作前；换帧立即降为待核对，不额外添加图片/API，动作坐标仍单当前图。调度仅在已记录连续进入链、原pending父目标和当前前景任务相符时让其优先于无关历史整理，强制审核不跳过。
+
+`run_task_step` 删除独立 `visual_backtrack.try_step` 执行捷径，历史路线交正常Luna选择、绑定、执行、结果登记；不按按钮名硬编码安全性。`visual_backtrack` 保留已发生旧pending的交接和历史投影，不能重投既有receipt。图页 `/graph.json` 同源提供 page_context，网页2秒轮询最新观察及live_frame，核对中/仅定位/已登记分别呈现，保留用户折叠。这是随框架每次实机截图/登记刷新的已观察局部树，不是每2秒重新调用视觉模型，也不保证列全整屏；冻结器及source_hash包含HTML，运行图页与代码版本共同固定。实际验收范围及当前运行点见本月日志和SERVER_HANDOFF。
+
 2026-10-02 最终有限续跑：session14为11HTTP/3GUI，实际收起Ring、展开Snooze并看到六值/当前10；随后Remove点击只收起菜单，0166明确移除未确认。session15使用97df04源，4HTTP/2GUI：a0035真实后图及0169支持当前列表移除，随后历史边导航只打开新建表单；仅两轮截止批次；最终合计144HTTP/36GUI命令。停止/现场图见clock_complete_20261002_01/deadline-stop-01，VM暂停、pending=无，Clock未完整。可见性门禁来源拆分仍只离线/静态，保存帧0153不是现场图修复；0165可见/可操作错误P2仍未修。
 
 2026-10-02 可见性冲突沿原Runner纠错：完整真实保存副本中0152未经改动的有效请求/候选由普通accept触发region_visibility_conflict，原repairs=1保留，真实0153修订后repairs=2并正常登记；1HTTP/0GUI。新独立默认入口实验不携带自定义监督器，原监督案例仍review_pending，非绕过原审核或实机恢复。原任务/截图/回执保留，未重发a0030。现场session10–13累计新增30HTTP/5GUI命令，本目标累计129/31；实际创建闹钟、打开编辑和Ring下拉，session12/13仅功能整理，Clock未完成。各阶段包与保存帧候选分别保留。

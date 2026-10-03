@@ -60,6 +60,18 @@ def test_shell_entry_selects_maintained_launcher():
     assert '"$launcher_dir/launch_traversal.py"' in script
 
 
+def test_frozen_source_serves_the_same_map_and_pins_its_ui(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT))
+    from debug_loop import freeze
+    from run_source import source_hash
+    frozen = freeze(ROOT, tmp_path/'frozen')
+    page = frozen/'region_graph.html'
+    assert page.read_bytes() == (ROOT/'region_graph.html').read_bytes()
+    before = source_hash(frozen)
+    page.write_text(page.read_text() + '\n<!-- different map UI -->\n')
+    assert source_hash(frozen) != before
+
+
 def test_selected_source_is_loaded_by_real_session_process(tmp_path, monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT))
     import progress_window

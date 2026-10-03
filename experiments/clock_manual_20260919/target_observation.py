@@ -76,6 +76,8 @@ def attach(request,records):
 
 def refresh(request):
     """Rebuild positions after a frame replacement, including the rendered table."""
+    import page_context
+    page_context.refresh(request)
     spec=importlib.util.spec_from_file_location('target_choices',Path(__file__).with_name('visual_choices.py'))
     choices=importlib.util.module_from_spec(spec);spec.loader.exec_module(choices)
     request=choices.prepare(request)

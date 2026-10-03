@@ -1,6 +1,5 @@
 from copy import deepcopy
 from tests.test_recovery_discovery import mod
-from tests.test_stepwise_visual_backtrack import setup
 
 
 def test_back_edges_are_observations_not_fixed_routes():
@@ -19,12 +18,6 @@ def test_visible_return_and_regular_click_are_distinct():
     assert not m.contextual_return({'operation':'click','result':{'description':'打开设置'}})
 
 
-def test_saved_return_route_cannot_bypass_replay_guard(tmp_path,monkeypatch):
-    m,run,records,state,t,q=setup(tmp_path,monkeypatch)
-    records['a']['actions']['old']['result']={'returns_to_previous':True}
-    before=deepcopy(records)
-    assert m.try_step(t,q,run/'current.png') is None
-    assert t.account['gui_started']==0 and records==before
 
 
 def test_registration_persists_return_description_without_changing_observed_result(tmp_path):

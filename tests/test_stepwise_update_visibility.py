@@ -52,7 +52,6 @@ def test_normal_none_routes_to_discovery_without_gui(tmp_path,monkeypatch,supple
     monkeypatch.setattr(runner,'RecoveryRun',Transport)
     monkeypatch.setattr(runner,'assemble_current_context',lambda *args:q.copy())
     monkeypatch.setattr(runner.visual_backtrack,'resume_pending',lambda *args:None)
-    monkeypatch.setattr(runner.visual_backtrack,'try_step',lambda *args:None)
     accepted={'result':{'request':q,'call':'test-none','proposal':{'action':'none','reason':'输入控件缺少定位'},'binding':{'status':'no_action'}}}
     monkeypatch.setattr(runner.step_repair,'Runner',lambda *args:SimpleNamespace(perform=lambda *args:accepted))
     out=tmp_path/'round';runner._run_step(ROOT,run,out)

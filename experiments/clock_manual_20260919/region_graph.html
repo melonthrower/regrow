@@ -6,15 +6,41 @@
 .node .card{fill:#fff;stroke:#bed2c8;stroke-width:1.5}.node.selected .card{fill:#f4fcf7;stroke:#147759;stroke-width:2.5}
 .node .shot{pointer-events:none}.node .control-anchor rect{fill:#e6f3ed;stroke:#bcd9cc;filter:none}.node .control-anchor text{font-size:12px}
 .node .control-anchor.active rect{fill:#c0e9d7;stroke:#147759}.edge.incoming{stroke:#8397b8;stroke-dasharray:6 5}.edge.outgoing{stroke:#238465}.edge{stroke-linejoin:round;cursor:pointer;stroke-width:2;pointer-events:stroke}.edge.focus{stroke-width:3.5}.edge.dim{opacity:.25}.node:focus-visible .card{stroke:#cf8223;stroke-width:4}
+.page-map{background:#fff;border:1px solid #d4e0d9;border-radius:12px;padding:12px;max-height:42vh;overflow:auto}.page-map summary{cursor:pointer;font-weight:600}.page-map ul{margin:4px 0;padding-left:24px}.page-map details{margin:5px 0}.page-map p{font-size:13px}.page-map .warning{background:#fff7e8;padding:6px;border-radius:5px}
 </style>
 <header><div><small>GUI-ReWalk · 已登记知识</small><h1>区块跳转图</h1></div><div><span id="app" class="chip"></span> <a class="link" href="/">实时投屏与遍历进度</a></div></header>
-<main><section class="map"><div class="toolbar"><input id="search" placeholder="搜索区块或控件" aria-label="搜索区块或控件"><button id="refresh">刷新</button><button id="zoom-in" aria-label="放大">＋</button><button id="zoom-out" aria-label="缩小">－</button><button id="fit">适应窗口</button><button id="working">当前工作区块</button></div><div id="search-results"></div><div class="legend"><span>浅绿：最近可交互</span><span>金框：当前工作区块</span><span>实线：控件出向 · 虚线：区块入向</span></div><div id="error" role="status"></div><div class="canvas"><svg id="graph" role="img" aria-label="可点击的区块跳转关系图"></svg></div><small id="summary">正在读取已提交的图记录…</small><small>点击周围截图移到中心；点击控件突出其跳转。仅显示中心的直接邻居。未探索到的路径不会补画。截图是登记时的历史证据，不是实时投屏。</small></section><aside id="details"><h2>选择一个区块</h2><p>查看内容、控件和跳转来源。</p></aside></main>
+<main><section class="map"><div class="toolbar"><input id="search" placeholder="搜索区块或控件" aria-label="搜索区块或控件"><button id="refresh">刷新</button><button id="zoom-in" aria-label="放大">＋</button><button id="zoom-out" aria-label="缩小">－</button><button id="fit">适应窗口</button><button id="working">当前工作区块</button></div><div id="search-results"></div><div class="legend"><span>浅绿：最近可交互</span><span>金框：当前工作区块</span><span>实线：控件出向 · 虚线：区块入向</span></div><div id="error" role="status"></div><details class="page-map" open><summary>实时页面结构与来路</summary><div id="page-map" aria-live="polite">等待实机观察…</div></details><div class="canvas"><svg id="graph" role="img" aria-label="可点击的区块跳转关系图"></svg></div><small id="summary">正在读取已提交的图记录…</small><small>点击周围截图移到中心；点击控件突出其跳转。仅显示中心的直接邻居。未探索到的路径不会补画。截图是登记时的历史证据，不是实时投屏。</small></section><aside id="details"><h2>选择一个区块</h2><p>查看内容、控件和跳转来源。</p></aside></main>
 <dialog id="preview"><button id="close">关闭</button><img id="preview-image" alt="登记时的截图原图"></dialog>
 <script>
 const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';let data=null,selected=null,control=null,scale=1;
 const op={click:'点击',tap:'点击',double_click:'双击',long_press:'长按',back:'返回',scroll:'滚动',input_text:'输入'};
 const status={done:'已完成',pending:'待探索',blocked:'暂挂',record_only:'仅记录'};
 function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+let pageMapSignature='';
+function pageMap(view){
+ const box=$('page-map');if(!view){box.textContent='尚无页面观察';return}
+ const signature=JSON.stringify(view);if(signature===pageMapSignature)return;pageMapSignature=signature;
+ const openStates=new Map([...box.querySelectorAll('details')].map(e=>[e.dataset.key,e.open]));
+ box.replaceChildren();const current=view.sync_status==='observed',names=view.names||{},name=ref=>names[ref]||ref||'未绑定具体控件';
+ box.append(el('p',current?'已同步到最近一次实机观察':view.sync_status==='localized'?'仅视觉定位；结构与控件状态仍待核对':'正在核对新画面；下面保留上次已登记结构',current?'muted':'warning'));
+ if(view.goal?.name)box.append(el('p','保留目标：'+name(view.goal.region)+' / '+view.goal.name));
+ function fold(key,title,open=false){const d=el('details');d.dataset.key=key;d.open=openStates.has(key)?openStates.get(key):open;d.append(el('summary',title));return d}
+ function tree(nodes,parent){for(const n of nodes){const d=fold('region:'+n.ref,n.name,true),items=el('ul');
+  for(const c of n.controls){items.append(el('li',c.name+(c.evidence!=='current_observation'?'（状态待核对）':c.state?'（'+c.state+'）':'')))}
+  d.append(items);tree(n.children||[],d);parent.append(d)}}
+ tree(view.current_tree||[],box);
+ if(!view.current_tree?.length)box.append(el('p','当前前景尚未确认','muted'));
+ if(view.background_regions?.length)box.append(el('p','该次观察的受阻背景：'+view.background_regions.map(n=>n.name).join('、'),'muted'));
+ const origin=view.origin||{},known=origin.known_entries||[],path=origin.entries?.length?origin.entries:origin.historical_entries||[],entries=[...path,...known],confirmed=!!origin.entries?.length;
+ if(entries.length)box.append(el('p','访问来路不是页面包含层级；历史分支不代表当前可操作。','muted'));
+ entries.forEach((entry,i)=>{const historical=i>=path.length,direct=confirmed&&!historical&&i===path.length-1;
+  const d=fold('entry:'+entry.via.attempt,(historical?'已登记历史入口（未证明是本次来路）：':direct?'直接进入来源：':confirmed?'更早经过：':'先前来路（与本轮连接未确认）：')+entry.from_regions.map(name).join('、')+' → '+name(entry.via.control)+' → '+entry.to_regions.map(name).join('、'),direct);
+  for(const b of entry.parent_branches){const branch=fold('branch:'+entry.via.attempt+':'+b.ref,b.name+' · 已知分支（折叠不等于完成）');
+   const lines=el('ul');for(const e of b.entries||[])lines.append(el('li',name(e.control)+' → '+name(e.target_region)));
+   for(const task of b.pending_tasks||[])lines.append(el('li','待探索：'+task));branch.append(lines);d.append(branch)}
+  box.append(d)});
+ if(view.issues?.length)box.append(el('p','部分包含关系缺少依据或成环，已保留为独立区块。','warning'));
+}
 function svg(tag,attrs){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e}
 function node(id){return data.nodes.find(n=>n.id===id)}
 function preview(url){$('preview-image').src=url;$('preview').showModal()}
@@ -125,6 +151,6 @@ const outgoing=data.edges.filter(e=>e.source===n.id),incoming=data.edges.filter(
 for(const c of n.controls){const card=el('div',undefined,'control'+(c.id===control?' selected':'')),head=el('div',undefined,'control-head');if(c.image)head.append(picture(c.image,'icon',c.name));const b=el('button',c.name);b.onclick=()=>select(n.id,control===c.id?null:c.id);head.append(b);card.append(head);if(c.description)card.append(el('p',c.description,'muted'));for(const edge of outgoing.filter(e=>e.control===c.id))card.append(routeButton(edge));for(const t of c.tasks)card.append(el('div',(status[t.status]||t.status)+' · '+t.name,'fact'));const latest=c.actions.slice(-3);for(const a of latest)card.append(el('p',(a.exception==='external_app'?'应用外跳转 · ':'')+(op[a.operation]||a.operation||'动作')+'：'+a.description,'fact'+(a.exception==='external_app'?' warning':'')));if(!c.actions.length)card.append(el('small','尚无该控件的动作结果'));box.append(card)}
 if(incoming.length){const fold=el('details'),summary=el('summary',`从哪里到这里 · ${incoming.length} 条`);fold.append(summary);for(const edge of incoming)fold.append(routeButton(edge,true));box.append(fold)}}
 function search(){const query=$('search').value.trim().toLowerCase(),box=$('search-results');box.replaceChildren();if(!query||!data)return;const hits=data.nodes.filter(n=>[n.name,n.description,...n.controls.map(c=>c.name)].join(' ').toLowerCase().includes(query));for(const n of hits){const b=el('button',n.name);b.onclick=()=>select(n.id);box.append(b)}if(!hits.length)box.append(el('small','没有匹配的区块或控件'))}
-async function refresh(){try{const r=await fetch('/graph.json');if(!r.ok)throw Error('图记录暂时不可用');const v=await r.json();$('error').textContent='';if(data&&data.snapshot===v.snapshot&&data.app===v.app)return;data=v;$('app').textContent=v.app;$('summary').textContent=`${v.nodes.length} 个区块 · ${v.edges.length} 条已登记关系 · 每 10 秒检查最新记录`;if(!v.nodes.some(n=>n.id===selected)){selected=v.working||v.nodes[0]?.id;control=null}draw();details();search()}catch(e){$('error').textContent='读取失败，保留上次图记录。点击刷新重试。'}}
-$('search').oninput=search;$('refresh').onclick=refresh;$('zoom-in').onclick=()=>{scale=Math.min(3,scale+.25);draw()};$('zoom-out').onclick=()=>{scale=Math.max(.5,scale-.25);draw()};$('fit').onclick=()=>{scale=1;draw()};$('working').onclick=()=>{if(data?.working)select(data.working)};$('close').onclick=()=>$('preview').close();refresh();setInterval(refresh,10000);
+async function refresh(){try{const r=await fetch('/graph.json',{cache:'no-store'});if(!r.ok)throw Error('图记录暂时不可用');const v=await r.json();$('error').textContent='';pageMap(v.page_context);if(data&&data.snapshot===v.snapshot&&data.app===v.app)return;data=v;$('app').textContent=v.app;$('summary').textContent=`${v.nodes.length} 个区块 · ${v.edges.length} 条已登记关系 · 每 2 秒同步实机观察`;if(!v.nodes.some(n=>n.id===selected)){selected=v.working||v.nodes[0]?.id;control=null}draw();details();search()}catch(e){$('error').textContent='读取失败，保留上次图记录。点击刷新重试。'}}
+$('search').oninput=search;$('refresh').onclick=refresh;$('zoom-in').onclick=()=>{scale=Math.min(3,scale+.25);draw()};$('zoom-out').onclick=()=>{scale=Math.max(.5,scale-.25);draw()};$('fit').onclick=()=>{scale=1;draw()};$('working').onclick=()=>{if(data?.working)select(data.working)};$('close').onclick=()=>$('preview').close();refresh();setInterval(refresh,2000);
 </script></html>

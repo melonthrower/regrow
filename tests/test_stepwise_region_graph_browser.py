@@ -65,3 +65,39 @@ def test_focus_neighbours_and_animated_navigation(tmp_path):
         page.screenshot(path=str(tmp_path/'isolated.png'))
         assert not errors
         browser.close()
+
+
+def test_page_tree_polls_frame_status_before_snapshot_changes(tmp_path):
+    from playwright.sync_api import sync_playwright, expect
+    view = {'sync_status': 'observed', 'names': {}, 'goal': {}, 'origin': {},
+            'current_tree': [{'ref': 'dialog', 'name': '添加城市弹窗', 'controls': [], 'children': []}]}
+    value = {'nodes': [], 'edges': [], 'app': 'test', 'snapshot': 'unchanged', 'page_context': view}
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True, executable_path=os.environ.get('PLAYWRIGHT_CHROMIUM_EXECUTABLE'), args=['--no-sandbox'])
+        page = browser.new_page(viewport={'width': 1440, 'height': 1000})
+        errors = []; page.on('pageerror', lambda e: errors.append(str(e)))
+        page.route('http://graph.test/', lambda r: r.fulfill(body=HTML.read_text(), content_type='text/html'))
+        page.route('**/graph.json', lambda r: r.fulfill(json=value))
+        page.goto('http://graph.test/')
+        expect(page.locator('#page-map')).to_contain_text('已同步到最近一次实机观察')
+        page.locator('#page-map details summary').first.click()
+        view['sync_status'] = 'checking'
+        expect(page.locator('#page-map')).to_contain_text('正在核对新画面', timeout=5000)
+        assert not page.locator('#page-map details').first.evaluate('(e)=>e.open')
+        assert value['snapshot'] == 'unchanged'
+        view['sync_status'] = 'localized'
+        view['current_tree'][0]['controls'] = [{'name': '搜索框', 'state': '', 'evidence': 'needs_recheck'}]
+        expect(page.locator('#page-map')).to_contain_text('仅视觉定位', timeout=5000)
+        expect(page.locator('#page-map')).to_contain_text('搜索框（状态待核对）')
+        view['origin'] = {'known_entries': [{'from_regions': ['World'], 'to_regions': ['dialog'],
+            'via': {'attempt': 'old', 'control': 'Add'}, 'parent_branches': []}]}
+        expect(page.locator('#page-map')).to_contain_text('已登记历史入口（未证明是本次来路）', timeout=5000)
+        expect(page.locator('#page-map')).not_to_contain_text('直接进入来源')
+        value['snapshot'] = 'after-add'
+        view['sync_status'] = 'observed'
+        view['current_tree'] = [{'ref': 'world', 'name': 'World 城市列表', 'controls': [], 'children': []}]
+        expect(page.locator('#page-map')).to_contain_text('World 城市列表', timeout=5000)
+        expect(page.locator('#page-map')).not_to_contain_text('添加城市弹窗')
+        page.screenshot(path=str(tmp_path/'live-map.png'))
+        assert not errors
+        browser.close()

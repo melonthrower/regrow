@@ -46,6 +46,8 @@ def request(root,snapshot,records,state,current_request=None):
             and foreground.get('exception','none')=='none'):
         current=current_request()
         source=current.get('source',{})
+        if tasks.helper('page_context').advances_goal(current,records,state):
+            return None
         if (rid in visible and source.get('region')==rid and not current.get('navigation_advice')
                 and (current.get('stage')=='task_proposal'
                      or (current.get('action_ready') and source.get('task_region')==rid))):

@@ -270,7 +270,9 @@ def refresh(root,run,job):
             q['user_prompt']=q['dynamic_prompt']=q['user_prompt']+'\n材料是原历史截图；记录已按本次显式修订刷新，不表示当前可见。'
             return q
         if rid not in state['interactive_regions']:raise ValueError('原任务区块当前未确认可交互，不能将修复转成其他任务')
-        if stage=='task_proposal':return helper('region_tasks').plan_request(root,records,state,rid)
+        if stage=='task_proposal':
+            q=helper('region_tasks').plan_request(root,records,state,rid)
+            return helper('page_context').attach(q,records,state,run=run)
         return helper('region_functions').request(root,records[rid],state,records)
     if stage=='action':
         src=old.get('source',{})

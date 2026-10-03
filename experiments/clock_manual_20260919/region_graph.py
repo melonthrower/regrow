@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 from region_tasks import coverage
 from stepwise_flow import contextual_return, navigation_description
+import page_context
 
 
 def read(path):return json.loads(Path(path).read_text())
@@ -59,8 +60,8 @@ def project(run):
             if dest not in a.get('interactive_regions',[]) or a.get('result',{}).get('exception','none')!='none':continue
             op=a.get('operation','click');key=(rid,cid,dest,op)
             if key not in edges:
-                edges[key]={'source':rid,'target':dest,'control':cid,'control_name':r['controls'].get(cid,{}).get('name','系统操作')+('（返回目标依赖进入路径）' if contextual_return(a) else ''),
+                edges[key]={'source':rid,'target':dest,'control':cid,'control_name':r['controls'].get(cid,{}).get('name','未绑定具体控件')+('（返回目标依赖进入路径）' if contextual_return(a) else ''),
                             'operation':op,'attempts':[],'description':navigation_description(a)}
             if aid not in edges[key]['attempts']:edges[key]['attempts'].append(aid)
     return {'snapshot':version,'app':read(run/'run_manifest.json').get('app',run.name),'working':state.get('working_region'),
-            'nodes':nodes,'edges':list(edges.values())}
+            'nodes':nodes,'edges':list(edges.values()), 'page_context':page_context.live(records,state,run)}

@@ -90,7 +90,7 @@ def device_lock(run):
 def freeze(source,destination):
     destination=Path(destination);destination.mkdir(parents=True,exist_ok=False)
     for p in Path(source).iterdir():
-        if p.is_file() and p.suffix in ('.py','.md'):shutil.copy2(p,destination/p.name)
+        if p.is_file() and p.suffix in ('.py','.md','.html'):shutil.copy2(p,destination/p.name)
     shutil.copytree(Path(source)/'遍历prompt',destination/'遍历prompt')
     return destination
 

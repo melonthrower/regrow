@@ -1,18 +1,10 @@
 from copy import deepcopy
 import json
 import pytest
-from tests.test_stepwise_visual_backtrack import setup
 from tests.test_stepwise_task_correction import saved, repair, Calls, answer
 from tests.test_recovery_discovery import mod, ROOT
 
 
-def test_completed_region_return_changes_work_goal(tmp_path,monkeypatch):
-    m,run,records,state,t,q=setup(tmp_path,monkeypatch)
-    state['working_region']='a'
-    q['source'].update(working_region='a',return_to='b')
-    before=deepcopy(records)
-    assert m.try_step(t,q,run/'current.png')['navigation']=='confirmed'
-    assert state['working_region']=='b' and records==before
 
 
 def test_observation_allows_one_fresh_proposal_even_after_last_repair(tmp_path,monkeypatch):

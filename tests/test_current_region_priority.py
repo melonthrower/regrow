@@ -96,3 +96,21 @@ def test_navigation_priority_requires_observed_source_and_original_goal(tmp_path
     result = m.helper('historical_inventory').request(
         ROOT, snapshot, records, state, current_request=lambda: q)
     assert result['stage'] == 'function_registration'
+
+
+@pytest.mark.parametrize('confirmed', [True, False])
+def test_parent_goal_foreground_inventory_uses_real_current_entry(tmp_path, confirmed):
+    m, snapshot, records, state = case(tmp_path)
+    state.update(working_region='r1', interactive_regions=['child'],
+                 active_task={'region': 'r1', 'name': 'parent-goal'})
+    records['r1']['tasks']['parent-goal'] = {'status': 'pending', 'handling': 'explore', 'attempts': []}
+    state['observation']['id'] = 'current'
+    records['r1']['actions']['entry'] = {'delivery': 'executed_receipt_zero',
+        'interactive_regions': ['child'], 'evidence': {'before_observation': 'before',
+        'after_observation': 'current' if confirmed else 'old', 'before_regions': ['r1']}}
+    q = {'stage': 'task_proposal', 'source': {'region': 'child'}}
+    result = m.helper('historical_inventory').request(ROOT, snapshot, records, state, current_request=lambda: q)
+    if confirmed:
+        assert result is None
+    else:
+        assert result['stage'] == 'function_registration'

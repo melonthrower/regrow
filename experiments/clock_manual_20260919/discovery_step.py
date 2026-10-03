@@ -160,6 +160,7 @@ def request_from_run(root, run):
     if target:
         dynamic=json.loads(request['user_prompt']);dynamic['目标应用']=target
         request['user_prompt']=json.dumps(dynamic,ensure_ascii=False,indent=2)
+    registration().sibling('page_context').attach(request,records,state,usage='discovery',run=run)
     return request
 
 

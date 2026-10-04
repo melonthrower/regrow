@@ -46,19 +46,6 @@ class StepwiseFlow:
             self.phase = 'paused'
         return result
 
-    def choose_from_run(self, root, run, region_ref):
-        self._require('choose')
-        request=assemble_current_context(root,run,region_ref)
-        if not request['action_ready']:
-            raise ValueError('current Region is not ready for an exploration action')
-        self.record('choose_request',deepcopy(request))
-        public={k:request[k] for k in ('stage','system_prompt','user_prompt','response_schema','image_refs')}
-        result=self.choose(public)
-        self.binding=bind_action_target(request,result)
-        self.record('action_binding',deepcopy(self.binding))
-        if self.binding['status']!='matched':self.phase='paused'
-        return result
-
     def execute(self, check):
         self._require('execute')
         if not check(deepcopy(self.proposal)):

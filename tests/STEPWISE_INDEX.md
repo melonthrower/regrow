@@ -79,7 +79,6 @@
 - [test_action_correction_single_frame.py](test_action_correction_single_frame.py)
 - [test_action_owner_correction.py](test_action_owner_correction.py)
 - [test_action_source_observation.py](test_action_source_observation.py)
-- [test_compact_update_prompt.py](test_compact_update_prompt.py)
 - [test_control_layout_matching.py](test_control_layout_matching.py)
 - [test_current_page_context.py](test_current_page_context.py)
 - [test_history_context_module.py](test_history_context_module.py)

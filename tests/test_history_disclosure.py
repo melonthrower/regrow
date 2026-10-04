@@ -39,7 +39,8 @@ def test_action_groups_only_exact_source_headers_without_losing_facts():
 
 
 def test_unparseable_context_and_unrecognized_role_remain_verbatim():
-    for q in [{'role':'unknown','user_prompt':'{"x":1}'}, {'role':'recovery','user_prompt':'plain\nhistory'}]:
+    for q in [{'role':'unknown','user_prompt':'{"x":1}'}, {'role':'recovery','user_prompt':'plain\nhistory'},
+              {'role':'observation_update','user_prompt':'本轮平台：桌面。\n{}'}]:
         assert mod('history_disclosure').project(q)==q
 
 
@@ -50,3 +51,21 @@ def test_malformed_rejected_task_result_can_still_reach_correction():
         value=json.loads(result['user_prompt'])
         assert value['被拒绝回复']['task_result']==rejected
         assert value['任务名称对照']=={'原任务':'Task','回复任务':None}
+
+
+def test_update_wire_keeps_values_chains_unknowns_and_suffix():
+    value={'任务目标':{'已有参数发现':{'状态':{'description':'最新 B','最新来源动作':'a0003'}},
+        '相关历史动作与观察':[{'记录':ref,'观察':note,'参数观察':[{'属性':'状态','conditions':[],
+            '原观察缺失字段':['evidence'],'来源对象':{'region':'旧区块','control':None}}]}
+            for ref,note in [('a0001','A selected'),('a0002','other action'),('a0003','B selected')]]},
+        '当前':{'text':'引号"、换行\n、反斜线\\都保留'}}
+    suffix='\n\n截图坐标说明：原图像素。'
+    q={'role':'observation_update','pipeline_step':'update','user_prompt':json.dumps(value,ensure_ascii=False,indent=2)+suffix,
+       'screenshots':['before.png','after.png'],'response_schema':{'type':'object'}}
+    before=deepcopy(q);result=mod('history_disclosure').project(q)
+    decoded,end=json.JSONDecoder().raw_decode(result['user_prompt'])
+    assert decoded==value and result['user_prompt'][end:]==suffix
+    assert len(result['user_prompt'])<len(q['user_prompt'])
+    assert q==before
+    assert {k:v for k,v in result.items() if k!='user_prompt'}=={k:v for k,v in q.items() if k!='user_prompt'}
+    assert mod('history_disclosure').project(result)==result

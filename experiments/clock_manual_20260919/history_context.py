@@ -253,34 +253,6 @@ def task_goal(task, records, run=None):
     return result
 
 
-def compact_update_prompt(request):
-    """Change wire layout only; keep the complete decoded context and suffix.
-
-    One historical fact/event per line avoids deeply indented repeated JSON
-    scaffolding without selecting evidence or inventing semantic summaries.
-    Called after platform decoration, so adapters cannot undo the layout.
-    """
-    if request.get('pipeline_step') != 'update':
-        return request
-    text=request.get('user_prompt','')
-    try:
-        value,end=json.JSONDecoder().raw_decode(text)
-    except (ValueError,TypeError):
-        return request
-    if not isinstance(value,dict):
-        return request
-    def render(value,depth=0):
-        compact=lambda item:json.dumps(item,ensure_ascii=False,separators=(',',':'))
-        if depth>=3 or not isinstance(value,(dict,list)) or not value:
-            return compact(value)
-        pad='  '*(depth+1);close='  '*depth
-        if isinstance(value,dict):
-            rows=[pad+compact(key)+': '+render(item,depth+1) for key,item in value.items()]
-            return '{\n'+',\n'.join(rows)+'\n'+close+'}'
-        return '[\n'+',\n'.join(pad+render(item,depth+1) for item in value)+'\n'+close+']'
-    return {**request,'user_prompt':render(value)+text[end:]}
-
-
 def action_context(records,state,task_region,name,task):
     lines=['当前目标：'+name,'原任务目标与结束条件（仍用于本轮核对，其中界面描述属于建立时观察）：'+task['reason']]
     lines.append('任务合同：'+json.dumps({'动作':task.get('action'),'类型':task.get('task_type'),

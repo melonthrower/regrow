@@ -1,5 +1,7 @@
 # 当前模块文档索引
 
+当前逐步开发进入[逐步模块目录](stepwise/README.md)，关联源码、prompt与测试；工作方式见[开发入口](../../DEVELOPMENT.md)。下表保留其他实现及研究模块的现行文档，不是逐步遍历器的替代入口。
+
 修改框架代码时，先读 `design/CURRENT_FRAMEWORK.md`，再按下表读取相关当前文档。
 `design/changelog/` 仅用于追溯历史，不属于默认阅读集合。
 

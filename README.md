@@ -2,6 +2,7 @@
 
 当前 GUI 遍历研究代码快照。保留主框架、逐步遍历器、独立 prompt、测试及当前设计文档；不含运行截图/账本、模型凭据或虚拟机镜像。
 
+- [开发入口：按问题找代码、设计与测试](DEVELOPMENT.md)
 - [逐步遍历器](experiments/clock_manual_20260919/README.md)
 - [当前框架与模块索引](design/CURRENT_FRAMEWORK.md)
 - [原项目说明](README.upstream.md)

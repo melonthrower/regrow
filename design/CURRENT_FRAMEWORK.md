@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-04 局部遮挡按本步所需信息判断：发现/动作/更新/任务核对/恢复统一允许当前露出信息、布局与适用历史支持辨认，不仅为清晰模板强制清理；受挡图仍不得作为清晰身份模板。普通控件state无特殊状态可空，选中/禁用/值保留。最终源保存帧6HTTP/0GUI：旧菜单r0007/c0024复识别及原模板保留、入口任务续进、Stopwatch状态有限通过；首次受挡首项命名不稳、遮挡正文仍重复，后续动作control_ref为空且落点可操作性未验证。并非完整动作链或通用鲁棒性验收，未部署实机。见stepwise_region_identity、stepwise_debug_loop与本月日志。
+
 2026-10-04 文字图5步现场：fc7abbe冻结源正常Clock续跑5click/12HTTP，7Region/27控件，全部动作已结算，无在途请求；城市输入仅暂挂。文字图可读，但实际发送地图仍把历史添加入口列在Stopwatch/Timer当前控件中（旧加号模板同帧复算误中菜单按钮，逐控件needs_recheck未显示），菜单入口pending可能受子项遮挡扩大条件。本轮未改框架；不能称完整准确当前可执行图。最新现场/版本见SERVER_HANDOFF和stepwise_debug_loop。
 
 2026-10-04 更新记录可读性：沿已有action_result写简短对象/动作/变化和依据，减少exploration_update/交接重复；schema、存储与调度不改。简短不合并已有控件。18项相邻检查通过；本批8HTTP/0GUI，v3 VLC更新及下游有限通过，v2 Clock信息传递成立但下游重复输入被原门禁拦截、纠错后仍暂停。v2 VLC混组未接受，v3恢复独立Preamp更新；频段图右缘截字仍有边界。完整局部树持久化、长输入上下文及通用决策鲁棒性未实现。见stepwise_debug_loop、本月日志与archive/readable_update_20261004。

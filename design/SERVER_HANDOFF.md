@@ -1,5 +1,7 @@
 # 服务器续接工作
 
+2026-10-04 局部遮挡提示候选已做完整保存帧验证，未部署现场：artifacts/runs/luna_map_decision_20261004_01/v3/source，hash6b59046ba213337072e476de28a21fb3737d1b7b2a23099a1ef986f5ced5f1a2。新增6HTTP/0GUI，旧菜单复识别、普通状态和任务续进有限通过，首遇受挡控件的准确绑定/执行仍未验收。menu、stopwatch、known_menu均历史完整run的隔离副本，只用于重算既有帧；不得作为当前VM恢复点。实机仍以下方文字图5步现场为准，本轮没有新动作或后图。
+
 2026-10-04 文字地图5步现场：最新续跑图为artifacts/runs/clock_text_map_5gui_20261004_01/run，源fc7abbe冻结hash359e244d834e7780cc3b1adebc3792f19c494b1e18c3b7842520720a61cb0195。同一专属Clock prompt VM保留运行，GUI/model已停止；原clock_prompt_live图pointer/manifest未动。真实Cancel→Alarms→Stopwatch→Timer→菜单共5click/12HTTP，最后a0010/0027，pointer=knowledge_snapshots/a0010-0027-596a3de85362，无pending_step/execution_pending/visual_navigation_pending。stop/final.png为真实当前菜单画面，第一项有Menu提示遮挡；不得重放a0010补账。最终图7Region/27控件，非完整遍历。旧浏览器服务指原图，不代表新图；新报告to_astra/clock_text_map_5gui_20261004_01。下一次从此完整图和fresh截图恢复，不从保存帧修复样本恢复。
 
 城市输入分支正常暂挂后继续，未恢复输入。文字图仍将历史添加入口混入Stopwatch/Timer当前列表（旧模板同帧复算误中右侧菜单按钮），菜单入口pending与原答一致但可能扩大了子项清点结束条件；这些未在本轮修复。最后地图为下一请求预览，未再发送Luna；12原答与API原文解析一致，5结果原样登记，验证不等于全部身份或当前可操作性通过。

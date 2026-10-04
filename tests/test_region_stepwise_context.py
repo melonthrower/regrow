@@ -18,7 +18,8 @@ def module():
 def test_action_reply_requires_only_decision_fields(action, x, y):
     q = module().assemble_region_choice(ROOT, graph(), 'o2', 'r2')
     reply = {'target': 'Settings', 'action': action, 'x': x, 'y': y,
-             'reason': '继续探索' if action == 'click' else '位置无法确认','text':None,'end_x':None,'end_y':None}
+             'reason': '继续探索' if action == 'click' else '位置无法确认','text':None,'end_x':None,'end_y':None,
+             'skip_task':False,'request_task_review':False}
     jsonschema.validate(reply, q['response_schema'])
     assert set(q['response_schema']['required']) == set(reply)
     for field in ('data_effect', 'expected_change', 'uncertainty', 'executed'):
@@ -92,18 +93,41 @@ def test_driver_uses_generated_request_without_gui():
     assert f.phase=='paused'
 
 
-def test_backend_binding_does_not_guess_or_modify_model_reply(tmp_path):
+def test_backend_binding_preserves_reply_and_unconfirmed_associations(tmp_path):
     m=module();g=visual_graph(tmp_path);c=g['controls'][1]
     c['proposal']['bbox']={'left':10,'top':10,'right':30,'bottom':30}
     q=m.assemble_region_choice(ROOT,g,'o2','r2')
-    p={'target':'Settings','action':'tap','x':20,'y':20}
+    p={'target':'Settings','action':'click','x':20,'y':20}
     original=deepcopy(p)
     assert m.bind_action_target(q,p)['control_ref']=='c2'
     assert p==original
-    assert m.bind_action_target(q,{**p,'target':'Help'})['status']=='unresolved'
-    assert m.bind_action_target(q,{**p,'x':80})['status']=='unresolved'
+    # Wording may differ when the current point has one strong visual identity.
+    assert m.bind_action_target(q,{**p,'target':'visible menu item'})['control_ref']=='c2'
+    outside=m.bind_action_target(q,{**p,'x':80})
+    assert outside['status']=='matched' and outside['control_ref'] is None
+    assert outside['association']['status']=='unconfirmed'
+    assert (outside['association']['x'],outside['association']['y'])==(80,20)
     q['backend_candidates'].append({**deepcopy(q['backend_candidates'][0]),'id':'c3'})
-    assert m.bind_action_target(q,p)['status']=='unresolved'
+    ambiguous=m.bind_action_target(q,p)
+    assert ambiguous['status']=='matched' and ambiguous['control_ref'] is None
+    assert ambiguous['association']['status']=='unconfirmed'
+    assert {c['control'] for c in ambiguous['association']['candidates']}=={'c2','c3'}
+    assert all(c['position']==[10,10,30,30] for c in ambiguous['association']['candidates'])
+    assert p==original
+
+
+@pytest.mark.parametrize('quality',[None,'occluded'])
+def test_unadmitted_crop_does_not_confirm_saved_graph_identity(tmp_path,quality):
+    m=module();g=visual_graph(tmp_path)
+    if quality is None:
+        g['controls'][1]['proposal'].pop('image_quality')
+        g['controls'][1]['proposal'].pop('image_quality_reason')
+    else:
+        g['controls'][1]['proposal'].update(image_quality=quality,image_quality_reason='partly covered fixture')
+    q=m.assemble_region_choice(ROOT,g,'o2','r2')
+    binding=m.bind_action_target(q,{'target':'Settings','action':'click','x':20,'y':20})
+    assert binding['control_ref'] is None
+    assert binding['association']['status']=='unconfirmed'
 
 
 def test_unresolved_binding_pauses_before_delivery():
@@ -137,26 +161,38 @@ def test_same_name_controls_still_bind_by_their_own_observed_position(tmp_path):
     g['controls'].append(other);g['observations'][1]['control_refs'].append('c3')
     q=m.assemble_region_choice(ROOT,g,'o2','r2')
     assert len(q['backend_candidates'])==2
-    assert m.bind_action_target(q,{'target':'Settings','action':'tap','x':50,'y':20})['control_ref']=='c3'
+    for x,cid in [(20,'c2'),(50,'c3')]:
+        assert m.bind_action_target(q,{'target':'Settings','action':'click','x':x,'y':20})['control_ref']==cid
 
 
-def test_image_binding_relocates_shifted_control_without_stored_box(tmp_path):
+def test_historical_crop_relocates_without_binding_old_or_ambiguous_positions(tmp_path):
     import numpy as np
     from PIL import Image
     m=module();g=graph()
     rng=np.random.default_rng(42)
     crop=rng.integers(0,256,(28,48,3),dtype=np.uint8)
+    source=np.zeros((140,220,3),dtype=np.uint8);source[10:38,10:58]=crop
     frame=np.zeros((140,220,3),dtype=np.uint8);frame[70:98,120:168]=crop
+    Image.fromarray(source).save(tmp_path/'source.png')
     Image.fromarray(crop).save(tmp_path/'control.png');Image.fromarray(frame).save(tmp_path/'screen.png')
-    g['controls'][1]['control_crop']=str(tmp_path/'control.png')
-    g['controls'][1]['proposal']['bbox']={'left':10,'top':10,'right':58,'bottom':38}
-    g['observations'][1]['frame']=str(tmp_path/'screen.png')
-    q=m.assemble_region_choice(ROOT,g,'o2','r2')
-    assert m.bind_action_target(q,{'target':'Settings','action':'tap','x':140,'y':80})['status']=='matched'
-    assert m.bind_action_target(q,{'target':'Settings','action':'tap','x':20,'y':20})['status']=='unresolved'
+    g['controls'][1].update(control_crop=str(tmp_path/'control.png'),observation='o2')
+    g['controls'][1]['proposal'].update(bbox={'left':10,'top':10,'right':58,'bottom':38},
+        image_quality='clear',image_quality_reason='unobscured synthetic crop in source.png')
+    g['observations'][1]['frame']=str(tmp_path/'source.png')
+    g['observations'].append({'id':'o3','region_refs':['r2'],'control_refs':[],
+                              'frame':str(tmp_path/'screen.png')})
+    q=m.assemble_region_choice(ROOT,g,'o3','r2')
+    assert m.bind_action_target(q,{'target':'Settings','action':'click','x':140,'y':80})['control_ref']=='c2'
+    old=m.bind_action_target(q,{'target':'Settings','action':'click','x':20,'y':20})
+    assert old['control_ref'] is None and old['association']['status']=='unconfirmed'
+    assert (old['association']['x'],old['association']['y'])==(20,20)
     frame[15:43,15:63]=crop
-    Image.fromarray(frame).save(tmp_path/'screen.png')
-    assert m.bind_action_target(q,{'target':'Settings','action':'tap','x':140,'y':80})['status']=='unresolved'
+    Image.fromarray(frame).save(tmp_path/'repeated.png')
+    g['observations'].append({'id':'o4','region_refs':['r2'],'control_refs':[],
+                              'frame':str(tmp_path/'repeated.png')})
+    q=m.assemble_region_choice(ROOT,g,'o4','r2')
+    repeated=m.bind_action_target(q,{'target':'Settings','action':'click','x':140,'y':80})
+    assert repeated['control_ref'] is None and repeated['association']['status']=='unconfirmed'
 
 
 def visual_graph(tmp_path,second=False):
@@ -171,5 +207,6 @@ def visual_graph(tmp_path,second=False):
         frame[10:30,40:60]=other;Image.fromarray(other).save(tmp_path/'second.png')
     Image.fromarray(frame).save(tmp_path/'screen.png')
     g['controls'][1]['control_crop']=str(tmp_path/'control.png')
+    g['controls'][1]['proposal'].update(image_quality='clear',image_quality_reason='unobscured synthetic crop')
     g['observations'][1]['frame']=str(tmp_path/'screen.png')
     return g

@@ -10,7 +10,13 @@
 
 主要接口：`launch_traversal；run_source；run_progress_session；desktop_transport.DesktopRun`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
+公共发送顺序在 `model_transport.ModelTransport.call`：平台 → 前置条件 → 环境范围 → 运行范围 → 截图尺寸 → 历史投影 → schema必填兼容 → 进度/预算检查 → 请求落盘与计数 → 发送及保存原答。桌面先经 `DesktopRun.call/prepare_request`，Android与恢复共用这一个发送实现。
+
+正常会话通过所选源码的新子进程运行；不支持在一个动作进程中混用两份源码。冻结器按顶层Python文件收集源码，新增职责文件沿同一规则进入新冻结源。旧run不随整理自动部署。`render_region_context`中的两份.snapshot.py仅是入口审计摘录，不是自足运行源码；复现使用run_manifest指定的冻结源。
+
 ## 源码与提示入口
+
+- [model_transport.py](../../../experiments/clock_manual_20260919/model_transport.py)
 
 - [launch_traversal.py](../../../experiments/clock_manual_20260919/launch_traversal.py)
 - [app_launcher.py](../../../experiments/clock_manual_20260919/app_launcher.py)

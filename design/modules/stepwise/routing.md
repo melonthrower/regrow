@@ -8,9 +8,11 @@
 
 任务状态、当前前景、已观察跳转关系 → 下一个工作目标或导航/准备义务。进入目的区块不自动完成原目标；旧暂挂不得因重新命名而解除。
 
-主要接口：`task_routing.advance；task_prerequisites；region_tasks.attach / coverage`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
+主要接口：`task_routing.advance；task_prerequisites；task_selection.attach；region_tasks.coverage`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
 ## 源码与提示入口
+
+- [task_selection.py](../../../experiments/clock_manual_20260919/task_selection.py)
 
 - [task_routing.py](../../../experiments/clock_manual_20260919/task_routing.py)
 - [task_prerequisites.py](../../../experiments/clock_manual_20260919/task_prerequisites.py)

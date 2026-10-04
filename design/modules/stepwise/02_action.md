@@ -2,14 +2,14 @@
 
 [流程入口](README.md) · [第一步：发现](01_discovery.md) · [第三步：更新](03_update.md) · [测试索引](../../../tests/STEPWISE_INDEX.md#execution)
 
-本页按本批整理前已提交源码连接调用流程；工作树候选和有限验收边界见[当前索引](../../CURRENT_FRAMEWORK.md)及[详细合同](../stepwise_debug_loop.md)。三步是职责阶段，不是固定三次模型调用；清点、恢复、核对或纠错可能增加调用，也可能本轮不执行动作。
+本页按职责整理后的源码连接调用流程；工作树候选和有限验收边界见[当前索引](../../CURRENT_FRAMEWORK.md)及[详细合同](../stepwise_debug_loop.md)。三步是职责阶段，不是固定三次模型调用；清点、恢复、核对或纠错可能增加调用，也可能本轮不执行动作。
 
 ## 读入当前目标，决定是否进入动作
 
 [run_task_step.py](../../../experiments/clock_manual_20260919/run_task_step.py) 的 `run_step / _run_step` 读运行清单、当前知识快照及本轮截图，先续接待修复步骤和待结算动作，再处理发现、恢复或任务清点。
 
 `_run_step.current` 核对前置条件，调用 [stepwise_flow.assemble_current_context](../../../experiments/clock_manual_20260919/stepwise_flow.py)；后者从 `knowledge_current.json` 指向的快照读取 Region、观察和运行状态。
-[region_tasks.attach](../../../experiments/clock_manual_20260919/region_tasks.py) 用清点进度、已有任务和当前可交互区块选择原任务续进、普通导航、任务提出、功能整理或暂停。入口未定位可选择有当前依据的准备动作；历史路线只提供建议，每个新 GUI 动作仍走正常选择、绑定、投递和登记。
+[task_selection.attach](../../../experiments/clock_manual_20260919/task_selection.py) 用清点进度、已有任务和当前可交互区块选择原任务续进、普通导航、任务提出、功能整理或暂停。入口未定位可选择有当前依据的准备动作；历史路线只提供建议，每个新 GUI 动作仍走正常选择、绑定、投递和登记。
 
 `working_region` 是工作目标，`source.region` 是动作请求的来源上下文，`task_region / task_name` 保留任务归属；前景子区块和实际动作对象可与任务 owner 不同。准备动作不能凭相似去向完成原控件任务。调度职责详见[调度与前置条件](routing.md)。
 
@@ -23,7 +23,7 @@
 ## 校验提案、关联对象，处理无动作
 
 普通运行用 [step_repair.Runner.perform](../../../experiments/clock_manual_20260919/step_repair.py) 的 `action` 阶段调用模型；不是用 `StepwiseFlow.choose` 绕开修复入口。
-[repair_stages.accept_candidate](../../../experiments/clock_manual_20260919/repair_stages.py) 读取实际提交，执行请求 schema、`action_commands.validate`、`stepwise_flow.bind_action_target`、观察来源及 `attempt_guard` 检查，返回提案、绑定和来源 call。
+[repair_stages.accept_candidate](../../../experiments/clock_manual_20260919/repair_stages.py) 读取实际提交，执行请求 schema、`action_commands.validate`、`action_binding.bind_action_target`、观察来源及 `attempt_guard` 检查，返回提案、绑定和来源 call。
 
 绑定用本轮坐标与登记外观候选关联控件；同点竞争等歧义进入 `BindingConflict`。现行路径也允许模型坐标执行但保留 `association.status=unconfirmed`，不能写成已确认身份。观察来源过期时刷新原任务请求，不能悄悄换成另一任务。
 
@@ -48,7 +48,7 @@
 
 | 连接内容 | 生产者 → 消费者 | 必须同时核对的异常路径 |
 |---|---|---|
-| `next_action_mode / observation / interactive_regions / active_task` | 发现、更新及 `task_routing.advance` → `assemble_current_context / region_tasks.attach / _run_step` | 待发现、恢复、任务暂挂、无可执行工作；不能以空待办宣布全图完成。 |
+| `next_action_mode / observation / interactive_regions / active_task` | 发现、更新及 `task_routing.advance` → `assemble_current_context / task_selection.attach / _run_step` | 待发现、恢复、任务暂挂、无可执行工作；不能以空待办宣布全图完成。 |
 | 请求 `source` 的观察、工作区块及任务归属 | `stepwise_flow / region_tasks` → `bind_action_target / attempt_guard` → 第三步 `settle_task / task_routing.advance` | 过期观察刷新必须保留原任务；准备动作与未确认对象不得借用其他控件的完成证据。 |
 | `action / target / x / y / text / end_x / end_y` 与无动作标记 | 流程提示/schema、模型提案 → `repair_stages.accept_candidate / action_commands` → 更新的实际动作说明 | `none`、核对申请、范围跳过、平台不支持、坐标歧义；变更须覆盖普通与纠错 proposal。 |
 | 当前图、`backend_candidates`、目标观察与滚动边界 | `_run_step.current / assemble_current_context` → 绑定和投递前检查 | 单图动作纠错、补发现后刷新、窗口变化；候选位置不能充当当前身份或动作成功证据。 |

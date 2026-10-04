@@ -6,6 +6,10 @@
 
 同一测试涉及多个模块时在相应栏目均列出；这是共用检查，不复制测试实现。无法从直接模块引用归类的文件放在综合栏目，按实际修改再检查依赖。
 
+## 代码整理的连接检查
+
+[test_stepwise_module_boundaries.py](test_stepwise_module_boundaries.py)检查新模块的独立导入、旧公共入口指向同一实现及正常冻结源码包含拆出的文件；[发送合同测试](test_stepwise_transport_new_fields.py)保留正常知识快照依赖。它们不替代模型语义或GUI验收。
+
 ## 先按流程选择相关栏目
 
 | 修改位置 | 本步检查入口 | 需要时补相邻连接 |

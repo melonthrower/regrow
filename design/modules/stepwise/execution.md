@@ -8,11 +8,13 @@
 
 当前目标、单张执行依据图及候选 → 动作提案、绑定与真实回执。坐标不证明存在或执行成功；参数输入的实际投递独立于文字提案。
 
-主要接口：`run_task_step；stepwise_flow.assemble_current_context；action_commands`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
+主要接口：`run_task_step；stepwise_flow.assemble_current_context；action_binding.bind_action_target；action_commands`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
 正常入口由 `run_task_step._run_step` 组装请求，经 `Runner.perform('action')` 选择与校验绑定，再由 `StepwiseFlow.execute` 投递。未被维护路径调用的 `choose_from_run` 已移除；保存图离线适配器 `choose_from_graph` 及其维护测试保留，冻结基线回放仍使用独立冻结源码。
 
 ## 源码与提示入口
+
+- [action_binding.py](../../../experiments/clock_manual_20260919/action_binding.py)
 
 - [stepwise_flow.py](../../../experiments/clock_manual_20260919/stepwise_flow.py)
 - [run_task_step.py](../../../experiments/clock_manual_20260919/run_task_step.py)

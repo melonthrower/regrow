@@ -8,9 +8,12 @@
 
 真实回执、动作前后图和原任务 → 新观察、动作结果、任务结算与快照指针。提交成功不等于视觉语义正确；原始证据和旧快照保留。
 
-主要接口：`update_step.build_update_request；register_update.commit_update；task_result_review`。详细现行合同见[原模块文档](../stepwise_region_identity.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
+主要接口：`update_step.build_update_request；register_update.commit_update；task_settlement.settle_task；task_result_review`。详细现行合同见[原模块文档](../stepwise_region_identity.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
 ## 源码与提示入口
+
+- [task_settlement.py](../../../experiments/clock_manual_20260919/task_settlement.py)
+- [region_evidence.py](../../../experiments/clock_manual_20260919/region_evidence.py)
 
 - [update_step.py](../../../experiments/clock_manual_20260919/update_step.py)
 - [register_update.py](../../../experiments/clock_manual_20260919/register_update.py)

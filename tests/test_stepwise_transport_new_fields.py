@@ -9,6 +9,10 @@ from tests.test_recovery_discovery import ROOT,mod
 def test_resumed_request_gets_strict_fields_without_rewriting_original(tmp_path,monkeypatch,nested):
     monkeypatch.syspath_prepend(str(ROOT));m=mod('recover_external')
     (tmp_path/'calls').mkdir();(tmp_path/'run_manifest.json').write_text(json.dumps({'device':'fake','app':'Clock','actual_model_calls':0}))
+    # Normal update transport reads the committed knowledge before sending.
+    (tmp_path/'knowledge_current.json').write_text(json.dumps({'snapshot':'initial'}))
+    (tmp_path/'initial/regions').mkdir(parents=True)
+    (tmp_path/'initial/runtime_state.json').write_text('{}')
     runner=m.RecoveryRun(ROOT,tmp_path)
     request=mod('update_step').build_update_request(ROOT,{},[])
     if nested:request['response_schema']={'properties':{'proposal':{'anyOf':[request['response_schema'],{'type':'null'}]}}}

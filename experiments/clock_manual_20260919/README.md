@@ -1,5 +1,7 @@
 # 逐步遍历器
 
+[全部代码职责与位置](../../design/modules/stepwise/CODE_MAP.md)：按流程找入口，再按共享能力找唯一实现；改动前沿输入、校验、登记和下一步核对。
+
 [开发入口](../../DEVELOPMENT.md) · [模块与设计](../../design/modules/stepwise/README.md) · [测试导航](../../tests/STEPWISE_INDEX.md) · [提示入口](遍历prompt/README.md)
 
 当前逐步遍历研究的源码目录；名称保留历史Clock实验日期，不限制应用范围。与其他框架实现分开定位，不能凭同名文件互相替代。

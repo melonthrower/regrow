@@ -1,5 +1,7 @@
 # 开发入口
 
+[全部代码职责与位置](design/modules/stepwise/CODE_MAP.md)：按流程找入口，再按共享能力找唯一实现；改动前沿输入、校验、登记和下一步核对。
+
 当前逐步遍历开发从[三步主流程、异常处理与共享能力](design/modules/stepwise/README.md)进入；先定位问题发生在哪一步，再沿数据连接找到代码、提示、测试与未完成事项。其他框架与采集见[全项目模块索引](design/modules/README.md)。
 
 ## 先确认改的是哪一份

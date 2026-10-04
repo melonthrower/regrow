@@ -10,6 +10,8 @@
 
 主要接口：`region_tasks.plan_request / apply_plan / commit_plan；entry_evidence.disclose`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
+任务选择和任务树在 [task_selection](routing.md)，单步结果结算与参数事实在 [task_settlement](updates.md)。本文件的coverage仍只计算已有记录的覆盖状态；region_tasks中的旧公共函数名直接导入唯一实现，不保留第二套逻辑。
+
 ## 源码与提示入口
 
 - [region_tasks.py](../../../experiments/clock_manual_20260919/region_tasks.py)

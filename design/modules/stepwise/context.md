@@ -10,7 +10,7 @@
 
 主要接口：`page_context.build / attach / refresh；page_history；prompt_delivery.desktop_parts`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
-正常发送由 `RecoveryRun.call` 在平台、范围与截图说明组装后调用 `history_disclosure.project`，统一排版普通与纠错上下文。动作事实由 `task_action_context.build → history_context.action_context → findings` 提供；保留 `known_findings` 证据字段。已移除无人调用的同名转接函数与旧的更新专用排版函数，相关保真断言归入现行发送投影测试。
+正常发送由 `model_transport.ModelTransport.call`（RecoveryRun继承，DesktopRun沿原父类调用） 在平台、范围与截图说明组装后调用 `history_disclosure.project`，统一排版普通与纠错上下文。动作事实由 `task_action_context.build → history_context.action_context → findings` 提供；保留 `known_findings` 证据字段。已移除无人调用的同名转接函数与旧的更新专用排版函数，相关保真断言归入现行发送投影测试。
 
 ## 源码与提示入口
 

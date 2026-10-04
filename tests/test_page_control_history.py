@@ -111,3 +111,15 @@ def test_equal_parameter_baseline_and_receipt_steps_have_single_body():
     a['parameter_findings'][0]['conditions']=['different historical condition']
     h=mod('page_history').build(records,{'interactive_regions':['r']},goal=goal)
     assert 'different historical condition' in mod('page_history').render(h)
+
+
+def test_map_reference_exposes_actual_steps_without_inventing_member_identity(tmp_path):
+    records, state, _ = case(tmp_path)
+    a = records['world']['actions']['a1']
+    a.update(operation='input_text', text_delivered=False)
+    a['executed_steps'] = [{'action': 'click', 'target': 'Focus search only'}]
+    history = mod('page_history').build(records, state)
+    ref = mod('page_history').reference(history, 'a1')
+    assert 'click「Focus search only」' in ref
+    assert history['events']['a1']['control'] == 'open'
+    assert history['events']['a1']['文字投递'] == '未发送'

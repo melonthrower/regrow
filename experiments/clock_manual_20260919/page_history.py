@@ -144,7 +144,12 @@ def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=F
 def reference(history, aid):
     event = history.get('events', {}).get(aid)
     if not event:return None
-    return f"共同地图第{list(history['events']).index(aid)+1}条：{event.get('区块')} / {event.get('动作')}「{event.get('入口')}」"
+    label = f"共同地图第{list(history['events']).index(aid)+1}条：{event.get('区块')} / {event.get('动作')}「{event.get('入口')}」"
+    steps = event.get('实际执行') or ([event['实际投递']] if event.get('实际投递') else [])
+    actual = [str(step.get('action') or '动作未记录') + '「' + str(step['target']) + '」'
+              for step in steps if step.get('target')]
+    if actual:label += '；实际执行：' + ' → '.join(actual)
+    return label
 
 
 def _handoff(records, state, run, events):
@@ -216,7 +221,7 @@ def _judgments(history, current_task=None):
 
 def render(history, current_task=None):
     events = history['events']
-    lines = ['历史动作与任务判断，不是当前可见性或完成保证；页面返回不撤销已观察的业务变化。历史执行位置只用于理解，不能直接复用坐标。']
+    lines = ['已登记历史动作与任务判断；其中的状态和坐标属于各自动作时的截图。']
     ordered = list(events)
     sequence = {aid: i + 1 for i, aid in enumerate(ordered)}
     if len(ordered) > 1:

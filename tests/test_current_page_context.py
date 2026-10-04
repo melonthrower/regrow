@@ -50,6 +50,7 @@ def case(tmp_path):
     records['world']['actions']['a1'] = action('base', 'opened', ['world', 'nav'], ['dialog'], 'open', [
         {'region': 'world', 'state': 'visible_background_blocked', 'evidence': 'dimmed'},
         {'region': 'nav', 'state': 'visible_background_blocked', 'evidence': 'dimmed'}])
+    records['dialog']['reached_by'] = [{'source_region': 'world', 'source_control': 'open', 'attempt': 'a1'}]
     records['nav']['actions']['old'] = action('start', 'older', ['nav'], ['alarms'], 'alarm')
     records['nav']['transitions'] = [{'source_control': 'alarm', 'target_region': 'alarms', 'attempt': 'old'}]
     state = {'working_region': 'world', 'interactive_regions': ['dialog'],
@@ -169,7 +170,8 @@ def test_json_task_context_stays_json_and_preserves_catalog(tmp_path):
     assert json.loads(q['user_prompt'])['控件'] == ['Search']
     assert '登记页面组成与访问来路' in json.loads(q['user_prompt'])
     rendered = json.loads(q['user_prompt'])['登记页面组成与访问来路']
-    assert '不是页面包含层级' in rendered and rendered.count('当前区块的直接进入来源') == 1
+    assert rendered.count('上一步记录：') == 1 and '历史来源记录：' in rendered
+    assert 'Add city' in rendered and '历史访问路径' not in rendered
 
 
 def test_parent_goal_can_advance_in_foreground_but_unrelated_or_missing_parent_cannot(tmp_path):
@@ -207,7 +209,8 @@ def test_discovery_gap_retains_only_historical_parent_and_no_priority(tmp_path):
     q['user_prompt'] = 'task'
     module().attach(q, records, state)
     assert '当前区块的直接进入来源' not in q['user_prompt']
-    assert '尚未确认连接到本轮观察' in q['user_prompt']
+    assert '上一步记录：' not in q['user_prompt']
+    assert '历史来源记录：' in q['user_prompt']
     assert q['dynamic_prompt'] == q['user_prompt']
 
 
@@ -295,9 +298,9 @@ def test_known_parent_entries_survive_actions_after_discovery_gap(tmp_path):
     assert (records, state) == before
     q = {'stage': 'task_proposal', 'source': {'region': 'dialog'}, 'user_prompt': 'task'}
     m.attach(q, records, state)
-    assert '已登记历史入口（未证明是本次来路）' in q['user_prompt']
+    assert '历史来源记录：' in q['user_prompt']
     assert '当前区块的直接进入来源' not in q['user_prompt']
-    assert '未绑定具体控件' in q['user_prompt']
+    assert '未绑定控件' in q['user_prompt']
     assert '无控件入口' not in q['user_prompt']
     assert not m.advances_goal(q, records, state)
     # A later transition retains only its proven suffix; the earlier entry stays unconnected.
@@ -307,3 +310,73 @@ def test_known_parent_entries_survive_actions_after_discovery_gap(tmp_path):
     view = m.build(records, state)
     assert [e['via']['attempt'] for e in view['origin']['entries']] == ['a3']
     assert {e['via']['attempt'] for e in view['origin']['known_entries']} == {'a1', 'another_entry'}
+
+
+def test_direct_map_keeps_latest_real_action_after_visit_stack_collapses(tmp_path):
+    records, state, frame = case(tmp_path); m = module()
+    records['dialog']['actions']['a2'] = action('opened', 'closed', ['dialog'], ['world', 'nav'], 'submit')
+    records['dialog']['actions']['a2']['executed_steps'] = [{'action': 'click', 'target': 'Add selected London'}]
+    records['dialog']['actions']['a2']['result']['description'] = 'London is now in the list'
+    state.update(interactive_regions=['world', 'nav'], active_task=None,
+                 last_action_result={'region': 'dialog', 'action': 'a2'})
+    state['observation'].update(id='closed', control_refs=['open', 'alarm'])
+    before = deepcopy((records, state))
+    view = m.build(records, state)
+    assert not view['origin']['entries']
+    assert view['last_action'] == {'region': 'dialog', 'attempt': 'a2'}
+    q = {'stage': 'action_selection', 'action_ready': True, 'user_prompt': 'original task',
+         'screenshots': [str(frame)]}
+    m.attach(q, records, state)
+    head = q['user_prompt'].split('区块控件历史：')[0]
+    assert '上一步记录：' in head and 'Add selected London' in head
+    assert q['user_prompt'].count('London is now in the list') == 1
+    assert not m.advances_goal(q, records, state)
+    assert (records, state) == before
+
+
+def test_direct_map_lists_real_group_members_without_guessing_unbound_control(tmp_path):
+    records, state, frame = case(tmp_path); m = module()
+    for aid, target in [('a2', 'Flat'), ('a3', 'Classical')]:
+        a = action('opened', aid, ['dialog'], ['dialog'], 'search')
+        a['executed_steps'] = [{'action': 'click', 'target': target}]
+        a['result']['description'] = target + ' observed outcome'
+        records['dialog']['actions'][aid] = a
+    records['dialog']['actions']['a4'] = action('a3', 'a4', ['dialog'], ['dialog'], 'search')
+    records['dialog']['actions']['a4']['association'] = {'status': 'unconfirmed', 'target': 'Unknown member'}
+    records['dialog']['actions']['a4']['executed_steps'] = [{'action': 'click', 'target': 'Unknown member'}]
+    q = {'stage': 'task_proposal', 'user_prompt': '{}', 'screenshots': [str(frame)]}
+    before = deepcopy((records, state)); m.attach(q, records, state)
+    head = json.loads(q['user_prompt'])[m.TITLE].split('区块控件历史：')[0]
+    assert 'Flat' in head and 'Classical' in head
+    assert '动作后区块：Add city dialog' in head
+    assert 'Unknown member' not in head
+    assert 'Unknown member' in q['user_prompt']
+    assert q['user_prompt'].count('Flat observed outcome') == 1
+    assert (records, state) == before
+
+
+def test_direct_map_ignores_transition_without_action_and_old_parent_todos(tmp_path):
+    records, state, frame = case(tmp_path); m = module()
+    records['world']['transitions'] = [{'source_control': 'open', 'target_region': 'Ghost destination', 'attempt': 'missing'}]
+    records['world']['tasks']['unrelated old task'] = {'status': 'pending'}
+    q = {'stage': 'task_proposal', 'user_prompt': '{}', 'screenshots': [str(frame)]}
+    m.attach(q, records, state)
+    body = json.loads(q['user_prompt'])[m.TITLE]
+    assert 'Ghost destination' not in body
+    assert 'unrelated old task' not in body
+    assert '来路追溯边界' not in body and '历史边界' not in body
+
+
+def test_direct_map_reads_incoming_graph_even_when_old_visit_path_is_elsewhere(tmp_path):
+    records, state, frame = case(tmp_path); m = module()
+    records['world']['actions']['a1']['executed_steps'] = [{'action': 'click', 'target': 'Open actual current dialog'}]
+    records['dialog']['reached_by'] = [{'source_region': 'world', 'source_control': 'open', 'attempt': 'a1'}]
+    state['observation']['id'] = 'navigation:current'
+    state['last_action_result'] = {'region': 'nav', 'action': 'old'}
+    q = {'stage': 'task_proposal', 'user_prompt': '{}', 'screenshots': [str(frame)]}
+    before = deepcopy((records, state)); m.attach(q, records, state)
+    head = json.loads(q['user_prompt'])[m.TITLE].split('区块控件历史：')[0]
+    assert '历史来源记录：' in head and 'Open actual current dialog' in head
+    assert '历史访问路径' not in head
+    assert '上一步记录：' not in head
+    assert (records, state) == before

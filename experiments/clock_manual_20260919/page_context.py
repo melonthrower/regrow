@@ -188,16 +188,35 @@ def build(records, state, run=None):
     localization_only = (visual.get('observation') == oid
                          and bool(visual.get('replay') or str(oid).startswith('navigation:')))
     import page_history
-    return {'history': page_history.build(records, state, run), 'current_tree': roots, 'background_regions': background, 'names': names,
+    import function_evidence
+    incoming = {rid: [{'region': row['来源区块记录'], 'attempt': row['动作记录']}
+                     for row in function_evidence.incoming_results(records[rid], records)
+                     if row['异常'] in ('', 'none')
+                     and rid in [r['区块'] for r in row['动作后可交互区块']]]
+                for rid in refs if rid in records}
+    last_action = ({'region': matches[0][0], 'attempt': matches[0][1]} if len(matches) == 1
+                   and origin['boundary'] not in ('ambiguous_action_observation', 'cyclic_action_observation') else None)
+    view = {'current_tree': roots, 'background_regions': background, 'names': names,
+            'last_action': last_action, 'incoming_actions': incoming,
             'goal': {**active, 'status': task.get('status', 'unknown')}, 'origin': origin,
             'issues': issues, 'localization_only': localization_only,
             'observation': {'id': oid, 'image': frame, 'sha256': _digest(frame)},
             'usage': 'selection', 'run_root': str(run) if run else None,
             'frame_relation': 'historical_structure_needs_recheck'}
+    view['history'] = page_history.build(records, state, run, extra_attempts=_source_attempts(view))
+    return view
+
+
+def _source_attempts(view):
+    """Keep source references resolvable in the one existing event history."""
+    refs = [entry['attempt'] for rows in view['incoming_actions'].values() for entry in rows]
+    if view.get('last_action'):refs.append(view['last_action']['attempt'])
+    return refs
 
 
 def _display(view, goal_in_task_context=False):
     # IDs live in request metadata. The prompt presents names and evidence roles.
+    import page_history
     names = view.get('names', {})
     name = lambda ref: names.get(ref, ref) or '未绑定具体控件'
     usage = view.get('usage', 'selection')
@@ -205,57 +224,43 @@ def _display(view, goal_in_task_context=False):
         else '动作前地图；动作后结果尚未登记，须依据动作后图核对变化，不把这棵树当作动作后状态。' if usage == 'before_action'
         else '与本次截图一致的已登记观察。' if view['frame_relation'] == 'same_observation_frame'
         else '历史观察；当前截图已更换或来源未核实，须逐项核对，不能据此断言可见或可点击。')
-    lines = ['这是观察记录派生的结构与来路，不是新的视觉判断或固定返回路线。', '结构来源：' + evidence]
+    lines = ['结构来源：' + evidence]
     if view['localization_only']:
         lines.append('本轮仅视觉定位，未登记新的动作效果。')
+    history = view.get('history') or {}
+    events = history.get('events', {})
+    controls = {(group['ref'], control['ref']): control['attempts']
+                for group in history.get('regions', []) for control in group['controls']}
+    last = view.get('last_action') or {}
+    last_ref = page_history.reference(history, last.get('attempt'))
+    if last_ref:lines.append('上一步记录：' + last_ref)
     def tree(nodes, depth=0):
         for node in nodes:
             lines.append('  ' * depth + '- ' + node['name'])
+            for entry in view.get('incoming_actions', {}).get(node['ref'], []):
+                event = events.get(entry['attempt'], {})
+                if event.get('region') == entry['region'] and not event.get('缺口'):
+                    lines.append('  ' * (depth + 1) + '历史来源记录：' + page_history.reference(history, entry['attempt']))
             for control in node['controls']:
-                state = control['state'] if control['evidence'] == 'current_observation' else '状态待核对'
+                state = control['state'] if control['evidence'] == 'current_observation' else ''
                 lines.append('  ' * (depth + 1) + '- ' + control['name'] + (f'（{state}）' if state else ''))
+                for aid in controls.get((node['ref'], control['ref']), []):
+                    event = events[aid]
+                    line = '  ' * (depth + 2) + '历史记录：' + page_history.reference(history, aid)
+                    after = event.get('动作后可交互区块', [])
+                    if after and not event.get('缺口'):
+                        line += '；动作后区块：' + '、'.join(after)
+                    lines.append(line)
             tree(node['children'], depth + 1)
     lines.append(('动作前' if usage == 'before_action' else '先前' if usage == 'discovery' else '') + '登记前景区块与控件：')
     tree(view['current_tree'])
     if view['background_regions']:
         lines.append('该次登记观察的受阻背景：' + '、'.join(n['name'] for n in view['background_regions']))
     goal = view['goal']
-    def pending_names(branch):
-        return '；'.join('本轮当前任务（定义见任务卡）' if goal_in_task_context
-            and branch['ref'] == goal.get('region') and task == goal.get('name') else task
-            for task in branch['pending_tasks'])
     if goal_in_task_context:
         lines.append(f"保留目标：{name(goal.get('region'))} / 本轮当前任务（{goal['status']}）；名称与原结束条件见任务卡，来路分支不改变该目标。")
     elif goal.get('name'):
         lines.append(f"保留目标：{name(goal.get('region'))} / {goal['name']}（{goal['status']}）")
-    origin = view['origin']
-    entries = origin['entries']
-    confirmed_entries = bool(entries)
-    if not entries and origin.get('historical_entries'):
-        lines.append('以下仅为先前来路，尚未确认连接到本轮观察：')
-        entries = origin['historical_entries']
-    if entries:
-        lines.append('历史访问路径（不是页面包含层级；更早经过的页面不等于父页面）：')
-    for index, entry in enumerate(entries):
-        via = entry['via']
-        prefix = '当前区块' if usage == 'selection' else '动作前区块' if usage == 'before_action' else '先前区块'
-        label = prefix + '的直接进入来源：' if confirmed_entries and index == len(entries) - 1 else '更早经过：'
-        lines.append(label + '、'.join(map(name, entry['from_regions'])) + ' → ' +
-                     name(via.get('control')) + ' → ' + '、'.join(map(name, entry['to_regions'])))
-        for branch in entry['parent_branches']:
-            destinations = [name(v.get('control')) + ' → ' + name(v.get('target_region')) for v in branch['entries']]
-            lines.append('  来路页面已知分支 ' + branch['name'] + '（详情折叠，不代表完成或当前可操作）' +
-                         ('；入口：' + '；'.join(dict.fromkeys(destinations)) if destinations else '') +
-                         ('；未完成：' + pending_names(branch) if branch['pending_tasks'] else ''))
-    for entry in origin.get('known_entries', []):
-        lines.append('已登记历史入口（未证明是本次来路）：' + '、'.join(map(name, entry['from_regions'])) +
-                     ' → ' + name(entry['via'].get('control')) + ' → ' + '、'.join(map(name, entry['to_regions'])))
-        for branch in entry['parent_branches']:
-            lines.append('  来源区块 ' + branch['name'] + '（历史分支折叠，不代表完成或当前可操作）' +
-                         ('；未完成：' + pending_names(branch) if branch['pending_tasks'] else ''))
-    lines.append('来路追溯边界：' + {'no_recorded_action_for_observation': '更早观察无可追溯动作',
-        'ambiguous_action_observation': '动作与观察对应有歧义，未选择父路径',
-        'cyclic_action_observation': '观察链成环，未选择父路径'}.get(origin['boundary'], origin['boundary']))
     if view.get('history'):
         import page_history
         current = {'region':goal['region'], 'name':goal['name']} if goal_in_task_context else None
@@ -421,7 +426,7 @@ def attach(request, records, state, *, usage='selection', run=None, extra_region
     source = request.get('source', {})
     view['history'] = page_history.build(records, state, run, goal=goal,
         extra_regions=[*extra_regions, *[source.get(k) for k in ('region','task_region','return_to')]],
-        navigation=bool(request.get('navigation_advice')), extra_attempts=incoming)
+        navigation=bool(request.get('navigation_advice')), extra_attempts=[*incoming, *_source_attempts(view)])
     view['usage'] = usage
     request['page_context'] = view
     return refresh(request)

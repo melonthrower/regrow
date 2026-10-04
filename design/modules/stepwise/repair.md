@@ -10,6 +10,22 @@
 
 主要接口：`step_repair.Runner / request；repair_stages；recover_loop`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
+## 从哪一步进入，回到哪里
+
+三步中的发现、任务清点、动作选择和结果更新，其正常请求和纠错沿 `step_repair.Runner.perform` 及 `repair_stages.accept` 接受/登记；修正回复不另建一套写入器。具体刷新与补观察按stage分流，不保证所有步骤都采用同一种截图或同一重建方式；应用恢复另由下表的 `recover_loop.run` 驱动。
+
+| 入口 | 核对与恢复连接 | 不可混淆的边界 |
+|---|---|---|
+| [第一步](01_discovery.md)发现/任务清点被拒绝 | `repair_stages.refresh` 回到发现或任务请求；接受后调用 `discovery_step.commit` / `region_tasks.commit_plan` | 补充发现可更新观察；清点complete不等于探索完成 |
+| [第二步](02_action.md)动作提案/定位失败 | action分支校验与绑定，必要时刷新请求或补观察；投递前变化由 `Runner.reject_action` 保留原提案并纠错 | 普通动作和动作纠错坐标以唯一当前图为依据；提案被接受仍不是已执行 |
+| [第三步](03_update.md)结果登记失败 | update分支重审原动作结果；`run_task_step.resume_update_request` 补齐待登记证据，经 `register_update.commit_update` 写入 | 保留attempt与原回执；不能因为登记失败重发GUI |
+| 已归档的结果待登记 | `suspended_updates.restore_next` 恢复原episode → 原Runner → `validate_commit / complete` → 新图发现；详见[第三步续接](03_update.md#缺失结果的续接与当前边界) | 相关区块后续变化时暂停，不用旧结果覆盖新记录，不重做GUI |
+| 应用异常/离开范围/受阻 | `recover_loop.run` 按当前状态处理，恢复后的发现沿 `discovery_step.await_discovery` 接回主流程 | 有新观察才可确认恢复；不会自动完成原任务 |
+
+记录修订见 `repair_stages.edit_record`；补观察见 `observe / observe_registered`，更新步的补图还有独立 `update_observation_request`。改动某一步时检查对应分支、共享地图上下文及重启后的pending读取，不把普通路径通过当作这些连接都已验证。
+
+累计结果核对、功能整理本身是正常子流程；它们的请求失败才进入纠错。具体调用与返回位置见[第三步](03_update.md)。连接核对结论写入本批变更记录，格式见[开发入口](../../../DEVELOPMENT.md#change-connections)。
+
 ## 源码与提示入口
 
 - [step_repair.py](../../../experiments/clock_manual_20260919/step_repair.py)

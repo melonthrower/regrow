@@ -6,6 +6,18 @@
 
 同一测试涉及多个模块时在相应栏目均列出；这是共用检查，不复制测试实现。无法从直接模块引用归类的文件放在综合栏目，按实际修改再检查依赖。
 
+## 先按流程选择相关栏目
+
+| 修改位置 | 本步检查入口 | 需要时补相邻连接 |
+|---|---|---|
+| [第一步：发现与准备任务](../design/modules/stepwise/01_discovery.md) | [身份](#identity)、[任务](#tasks) | [上下文](#context)、[调度](#routing)、[纠错](#repair) |
+| [第二步：选择并执行动作](../design/modules/stepwise/02_action.md) | [调度](#routing)、[执行](#execution) | [身份](#identity)、[上下文](#context)、[更新](#updates)、[纠错](#repair) |
+| [第三步：观察结果并更新记录](../design/modules/stepwise/03_update.md) | [更新](#updates)、[知识与完成](#knowledge) | [任务](#tasks)、[上下文](#context)、[纠错](#repair) |
+| [异常处理与恢复](../design/modules/stepwise/repair.md) | [纠错](#repair)及失败原步骤 | [运行](#runtime)中的中断/恢复，以及恢复后的消费步骤 |
+| [共享能力](../design/modules/stepwise/README.md#shared) | 对应职责栏目 | 实际受影响的三步生产者/消费者；不默认全跑 |
+
+选择用例时沿[变更连接核对](../DEVELOPMENT.md#change-connections)确认覆盖关系；下面保留原测试路径和职责分组，不因增加流程导航复制测试或声明通过。
+
 <a id="identity"></a>
 
 ## 观察与身份

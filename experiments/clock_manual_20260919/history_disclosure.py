@@ -1,4 +1,4 @@
-"""Lossless history presentation at the shared model-send boundary.
+"""History presentation and shared-rule references at the model-send boundary.
 
 No evidence selection, task binding, schema changes or state mutation.
 """
@@ -62,8 +62,11 @@ def project(request):
             except ValueError:pass
         rules=value.pop('原任务要求',None)
         if rules is not None:
-            value['原步骤规则位置']='见后附“原步骤完整规则”；它与纠错规则共同适用，内容未删减。'
-            suffix+='\n\n## 原步骤完整规则\n'+rules
+            from prompt_delivery import original_rules
+            rules,shared=original_rules(request,rules)
+            value['原步骤规则位置']='见后附“原步骤专属规则”；与当前 system 中的共同规则一并适用。' if shared else '见后附“原步骤完整规则”；它与纠错规则共同适用，内容未删减。'
+            if shared:value['原步骤共用规则']=shared
+            suffix+='\n\n## '+('原步骤专属规则' if shared else '原步骤完整规则')+'\n'+rules
         first=('具体校验错误','框架错误分类','执行状态','任务名称对照','本次修复历史','失败步骤')
         value={**{k:value[k] for k in first if k in value},**{k:v for k,v in value.items() if k not in first}}
     return {**request,'user_prompt':render(value)+suffix}

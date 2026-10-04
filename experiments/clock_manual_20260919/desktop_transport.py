@@ -49,9 +49,9 @@ def commands(p):
 
 def prepare_request(root,request):
     q=deepcopy(request);q['platform']='desktop'
-    for path in ('平台/桌面执行.prompt','平台/桌面悬停观察.prompt'):
-        text=(Path(root)/'遍历prompt'/path).read_text()
-        q['fixed_parts'].append({'path':path,'text':text});q['system_prompt']+='\n\n'+text
+    from prompt_delivery import desktop_parts
+    for part in desktop_parts(root,q):
+        q['fixed_parts'].append(part);q['system_prompt']+='\n\n'+part['text']
     try:
         d=json.loads(q['user_prompt']);d['平台']='OSWorld Linux桌面';q['user_prompt']=json.dumps(d,ensure_ascii=False,indent=2)
     except (ValueError,TypeError):q['user_prompt']='本轮平台：OSWorld Linux桌面。\n'+q['user_prompt']

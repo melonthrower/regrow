@@ -172,7 +172,7 @@ def task_goal(task, records, run=None):
     """Project evidence once per event; never infer causality or task completion."""
     from copy import deepcopy
     result={'type':task.get('task_type'),'reason':task['reason']}
-    result['历史阅读']='已有参数发现是各属性最后登记的历史摘要，最新来源动作标明其时点；不是当前截图的同时状态，也不表示全部取值在该动作验证。参数观察以已有参数发现为基准，仅列不同字段；未列且不在原观察缺失字段中的字段沿用已有参数发现中的同名属性摘要，不继承上一事件；原观察缺失字段保持未知，不从最新摘要补齐。来源对象保留历史身份引用，不保证与动作入口相同。身份关联unconfirmed仅指后台控件绑定未确认，不否定动作投递或截图观察，须结合执行位置核对对象。按记录核对操作及后续观察；包含所引动作之间已登记的其他动作。没有实际记录的间隙不能视为没有操作。对象身份、适用条件或因果链不清楚时明确缺口，不推断成功。'
+    result['历史阅读']='来源对象保留历史身份引用，不保证与动作入口相同。身份关联unconfirmed仅指后台控件绑定未确认，不否定动作投递或截图观察，须结合执行位置核对对象。按记录核对操作及后续观察；包含所引动作之间已登记的其他动作。没有实际记录的间隙不能视为没有操作。对象身份、适用条件或因果链不清楚时明确缺口，不推断成功。'
     refs=set(task.get('attempts',[])) | set(task.get('completion_basis',{}).get('attempts',[]));observations={};unlinked=[];facts={}
     invalid={h['invalidated_attempt'] for h in task.get('ownership_history',[]) if h.get('invalidated_attempt')}
     fields=('description','domain','conditions','evidence')
@@ -246,6 +246,8 @@ def task_goal(task, records, run=None):
     result['历史分段说明']='先核对最近连续动作，再按需回查此前动作；两段各按时间正序，全部已提供历史仍保留。最近8条只是阅读窗口，不是完整因果链或成功证据的保证。已有参数发现是各事件差异观察的属性基准。'
     result['此前动作与观察']=events[:-8]
     result['已有参数发现']=facts
+    if facts:result['历史阅读']='已有参数发现是各属性最后登记的历史摘要，最新来源动作标明其时点；不是当前截图的同时状态，也不表示全部取值在该动作验证。参数观察以已有参数发现为基准，仅列不同字段；未列且不在原观察缺失字段中的字段沿用已有参数发现中的同名属性摘要，不继承上一事件；原观察缺失字段保持未知，不从最新摘要补齐。'+result['历史阅读']
+    else:result['历史分段说明']=result['历史分段说明'].removesuffix('已有参数发现是各事件差异观察的属性基准。')
     if unlinked:result['未关联动作的历史观察']=unlinked
 
     return result

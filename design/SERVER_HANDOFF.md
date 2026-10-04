@@ -1,5 +1,7 @@
 # 服务器续接工作
 
+2026-10-04 后续分步提示精简：prompt_task_scope_20261004_01/v3/source仅在真实记录副本验证，共8HTTP/0GUI；最终5例有限语义通过、普通动作仍有同值重试依据缺口，旧版与v2重复规划失败保留，v3规划已定向复验。未替换下述现场源、未继续GUI；输入对象保护问题仍未解决。交付to_astra/prompt_task_scope_20261004_01。
+
 2026-10-04 prompt地图现场：`artifacts/runs/clock_prompt_live_20261004_01`的新Clock遍历已暂停（session-02 paused_by_user），无pending_step/execution_pending；VM保留运行仅供查看，现有地图服务仍可读取。实际运行源是prompt_map_dedup_20261004_01/v2/source，15HTTP/3GUI：a0002打开添加对话框，a0003/a0004输入保护未确认目标，仅click、text_delivered=false；a0001/a0005未投递。当前仍空搜索框/Add灰色，没有创建城市。
 
 后续地图/纠错修复冻结v5仅保存帧验证，未热部署或继续原现场。最终保存帧四例采用v4动作/更新/参数与v5纠错，共4HTTP/0GUI；v5请求observe停在取图边界。恢复现场前选择经过验证的source并处理尚未解决的输入对象复核；不能因地图修复假定输入故障已消失。原运行请求、原答、账本和失败制品都保留，导出审查包为to_astra/prompt_map_dedup_20261004_01。

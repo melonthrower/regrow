@@ -409,10 +409,13 @@ def attach(request, records, state, *, usage='selection', run=None, extra_region
             request['_page_history_goal'] = goal
             for key in ('最近连续动作', '此前动作与观察'):
                 dynamic['任务目标'].pop(key, None)
-            note = '下列参数摘要及当时判断中的图号属于其来源历史，不指本轮附图。'
-            if not dynamic['任务目标'].get('历史阅读','').startswith(note):
+            historical = [label for key,label in (('已有参数发现','参数摘要'),('原任务已有判断','当时判断')) if goal.get(key)]
+            note = '下列' + '及'.join(historical) + '中的图号属于其来源历史，不指本轮附图。' if historical else ''
+            if note and not dynamic['任务目标'].get('历史阅读','').startswith(note):
                 dynamic['任务目标']['历史阅读'] = note + dynamic['任务目标'].get('历史阅读','')
-            dynamic['任务目标']['历史分段说明'] = '事件正文及参数差异观察见共同地图的区块控件历史；按登记动作顺序阅读，参数基准仍为本任务已有参数发现。'
+            dynamic['任务目标']['历史分段说明'] = '事件正文见共同地图的区块控件历史；按登记动作顺序阅读。'
+            if goal.get('已有参数发现'):
+                dynamic['任务目标']['历史分段说明'] += '参数差异观察的基准仍为本任务已有参数发现。'
             request['user_prompt'] = request['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     view = build(records, state, run)
     source = request.get('source', {})

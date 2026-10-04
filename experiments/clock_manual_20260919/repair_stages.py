@@ -196,10 +196,11 @@ def context(run,job):
         owner=next((r for r in history_records.values() if r.get('id')==region.get('id') and r.get('name')==region.get('name')),region)
         covered=task.get('equivalent_to') if task.get('handling')=='equivalent' else None
         effective=owner.get('tasks',{}).get(covered,task) if covered else task
-        return {'名称':name,'入口':region['controls'].get(task.get('control'),{}).get('name',region['name']),
+        view={'名称':name,'入口':region['controls'].get(task.get('control'),{}).get('name',region['name']),
                 '状态':effective['status'],'处理方式':task.get('handling'),'覆盖任务':covered,
                 '说明':task['reason'],'动作':task.get('action'),'类型':task.get('task_type'),
                 '尝试事实':describe(effective,history_records)}
+        return helper('map_prompt').task_view(job['request'],owner.get('id'),name,task,view)
     value={'区块':[{'名称':r['name'],'描述':r['description'],
                    '控件':[{'名称':c['name'],'说明':c.get('description',''),'列表分组':c.get('list_group',''),'视觉描述':c.get('icon_description') or (c.get('observations') or [{}])[-1].get('icon_description',''),'目标观察':target(c,observation),'已登记动作数':len(c.get('action_refs',[]))} for c in r['controls'].values()],
                    '任务':[task_view(r,n,t) for n,t in r.get('tasks',{}).items()]} for r in records.values()],
@@ -211,6 +212,8 @@ def context(run,job):
     if job['stage']=='action' and name in region.get('tasks',{}):
         task=region['tasks'][name];control=region['controls'].get(task.get('control'),{})
         value['任务目标']={'区块':region['name'],'任务':name,'控件':control.get('name')}
+        if helper('map_prompt').current_task(job['request'],owner,name,task):
+            value['任务目标']['任务']='本轮当前任务（定义见原动态上下文）'
         proposal=job.get('candidate') or {}
         value['失败对象']={**value['任务目标'],'控件':proposal.get('target') or control.get('name'),
                          '动作':proposal.get('action'),'依据':'被拒绝回复的实际操作对象' if proposal.get('target') else '尚无动作提案，沿用原任务对象'}
@@ -247,6 +250,9 @@ def context(run,job):
             for key,file in [('提案','proposal.json'),('执行回执','receipt.json')]:
                 path=folder/file
                 if path.is_file():item[key]=json.loads(path.read_text())
+            if '执行回执' in item:
+                item['执行回执'], shared = helper('map_prompt').receipt(job['request'],attempt,item['执行回执'])
+                if shared:item['同值回执字段'] = '见'+shared+'；下方保留该地图未覆盖的原始字段。'
             for key,file in [('动作前图','before.png'),('动作后图','after.png')]:
                 path=folder/file
                 if path.is_file():item[key]=str(path.resolve())

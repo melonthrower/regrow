@@ -281,18 +281,21 @@ def compact_update_prompt(request):
 
 def action_context(records,state,task_region,name,task):
     lines=['当前目标：'+name,'原任务目标与结束条件（仍用于本轮核对，其中界面描述属于建立时观察）：'+task['reason']]
+    lines.append('任务合同：'+json.dumps({'动作':task.get('action'),'类型':task.get('task_type'),
+        '处理方式':task.get('handling'),'覆盖任务':task.get('equivalent_to')},ensure_ascii=False))
     lines.append('已有动作与任务历史判断统一见共同地图的区块控件历史；结合登记顺序核对原结束条件，pending不证明必须再点一次。')
     resolved=[item for item in task.get('blocker_history',[]) if item.get('resolved_by')]
     if resolved and not task.get('blocker'):
         lines.append('历史阻塞已在后续观察中解除；当前是否可操作仍以截图为准。')
     ref=state.get('last_action_result') or {}
     recent=records.get(ref.get('region'),{}).get('actions',{}).get(ref.get('action'))
-    evidence={'task':{'region':task_region,'name':name},'recent_action':None,'resolved_blockers':resolved}
+    evidence={'task':{'region':task_region,'name':name},'recent_action':None,'resolved_blockers':resolved,
+              'definition':{k:task.get(k) for k in ('control','reason','action','task_type','handling','equivalent_to')}}
     if recent:evidence['recent_action']=dict(ref)
     facts,evidence['known_findings']=findings(records,state,task_region,name,task)
     if facts:
         lines+=['已登记的相关属性（历史观察，不代表完整范围；用于判断还有什么新信息需要探索）：',*facts]
-    lines.append('尚未完成：'+name if task.get('status')=='pending' else '任务登记状态：'+task.get('status','未提供'))
+    lines.append('任务登记状态：'+task.get('status','未提供'))
     if task_region not in state.get('interactive_regions',[]) and task.get('attempts'):
         lines.append('任务仍归原区块记录，但不要求返回原区块。依据已有结果从当前截图继续核验；不要为再次操作原入口而自动返回。')
     lines.append('先用已有尝试核对原结束条件。历史可能已回答原问题，或实际尝试后效果仍未确认且暂无有依据的新验证动作时，可用none、skip_task=false、request_task_review=true交第三步核对完成、继续或暂挂，说明已知事实和缺口；不为pending重复操作。有允许且有依据的准备或验证方法时继续一步；仅缺定位时用none补发现。')

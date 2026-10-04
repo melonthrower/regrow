@@ -277,7 +277,7 @@ def attach(root,records,state,working,base):
             q['allow_back']=True  # Task ownership is not a command to return to its Region.
         text,q['context_evidence']=helper('task_action_context').build(records,state,task_region,name,task)
         if rid==task_region and cid in visible:text+='\n最近登记的任务入口（仍需核对当前截图）：'+region['controls'][cid]['name']
-        text+='\n\n'+render_current(records,state)
+        text+='\n\n'+render_current(records,state,current_task={'region':task_region,'name':name})
     elif progress['complete']:
         functions=helper('region_functions')
         if not functions.review_current(region,records) and not region.get('registration_gaps',{}).get('function_registration'):
@@ -303,11 +303,11 @@ def attach(root,records,state,working,base):
     return helper('page_history').attach(q,records,state)
 
 
-def render_current(records,state):
-    return '\n\n'.join(render(records[rid],records,include_history=False) for rid in dict.fromkeys(state.get('interactive_regions',[])) if rid in records)
+def render_current(records,state,current_task=None):
+    return '\n\n'.join(render(records[rid],records,include_history=False,current_task=current_task) for rid in dict.fromkeys(state.get('interactive_regions',[])) if rid in records)
 
 
-def render(region,records=None,*,include_history=True):
+def render(region,records=None,*,include_history=True,current_task=None):
     records=records if records is not None else {region["id"]:region}
     describe=helper("task_attempt_context").describe
     lines=[region['name']+'：探索任务']
@@ -322,7 +322,8 @@ def render(region,records=None,*,include_history=True):
             lines.append('- '+name+'：免重复探索（非执行完成）'+'；'+e['evidence']+'；未验证：'+e['unverified'])
             continue
         status='已完成' if name in c['done'] else '仅记录' if name in c['record_only'] else '受阻' if name in c['blocked'] else '待完成'
-        lines.append(f'- {name}：{status}')
+        label='本轮当前任务（定义见任务卡）' if current_task=={'region':region['id'],'name':name} else name
+        lines.append(f'- {label}：{status}')
         if include_history and name not in c['record_only']:
             task=region['tasks'][name]
             effective=region['tasks'].get(task.get('equivalent_to'),task) if task.get('handling')=='equivalent' else task

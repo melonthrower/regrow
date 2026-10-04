@@ -94,7 +94,7 @@ def test_incoming_identity_candidates_reference_map_without_losing_comparison(tm
     mod('page_context').attach(q,records,state,usage='discovery')
     obj=json.loads(q['user_prompt']);entry=obj['已知区块'][0]['历史进入记录（不证明当前可见或行为等价）'][0]
     assert q['user_prompt'].count('Observed actual result')==1
-    assert 'Add city' in entry['结果'] and '共同地图' in entry['结果']
+    assert 'Add city' in entry['动作历史'] and '共同地图' in entry['动作历史']
     assert entry['来源区块']=='World' and entry['控件关联']=='已登记'
 
 

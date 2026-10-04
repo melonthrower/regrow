@@ -175,8 +175,8 @@ def request(root,job,context):
              '本次修复历史':job['history'],'补充观察':job.get('supplements',[]),
              '图片说明':'前面的图片仍为原请求证据；追加图片仅用于稍后的补充观察，不能代替原动作后图。'}
     dynamic.update(helper('correction_prompts').parse_disclosure(job))
-    if context.get('失败对象') and context.get('失败对象',{}).get('控件')==context.get('任务目标',{}).get('控件') and original.get('source',{}).get('region')==original.get('source',{}).get('task_region',original.get('source',{}).get('region')):
-        dynamic['原动态上下文']='继续下方失败对象对应的原任务；遵守所列任务目的、动作类型和本轮约束。无关任务历史已省略。'
+    dynamic['原动态上下文'], shared_map = helper('page_context').separate_map(original)
+    if shared_map:dynamic[helper('page_context').TITLE] = shared_map
     if original.get('needs_task_inspection'):
         dynamic['当前前置缺口']='原任务控件缺少已登记的当前定位，点击坐标或改写名称不能补齐登记。请选择observe定向观察原任务控件，或defer保留缺口；补定位成功后回正常动作选择。'
         dynamic['原任务']=original.get('source',{}).get('task_name')

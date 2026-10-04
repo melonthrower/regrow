@@ -1,5 +1,10 @@
 # 服务器续接工作
 
+2026-10-04 prompt地图现场：`artifacts/runs/clock_prompt_live_20261004_01`的新Clock遍历已暂停（session-02 paused_by_user），无pending_step/execution_pending；VM保留运行仅供查看，现有地图服务仍可读取。实际运行源是prompt_map_dedup_20261004_01/v2/source，15HTTP/3GUI：a0002打开添加对话框，a0003/a0004输入保护未确认目标，仅click、text_delivered=false；a0001/a0005未投递。当前仍空搜索框/Add灰色，没有创建城市。
+
+后续地图/纠错修复冻结v5仅保存帧验证，未热部署或继续原现场。最终保存帧四例采用v4动作/更新/参数与v5纠错，共4HTTP/0GUI；v5请求observe停在取图边界。恢复现场前选择经过验证的source并处理尚未解决的输入对象复核；不能因地图修复假定输入故障已消失。原运行请求、原答、账本和失败制品都保留，导出审查包为to_astra/prompt_map_dedup_20261004_01。
+
+
 2026-10-04 最新独立Clock结构树试验：`artifacts/runs/clock_live_map_20261004_01/runs/org.gnome.clocks_20261003T185136_edccbc63`，最后调用0025，指针 `knowledge_snapshots/a0007-0025-f914b2239d80`。UTC 2026-10-03T19:23:32.082446+00:00，专属VM `rewalk-clock-map-20261004-01` 已暂停；原 `rewalk-clock-fresh-20261002-01` 及旧clock_continue图未改且仍暂停。无活动GUI驱动，无pending_step/execution_pending/visual_navigation_pending。最新实际截图 `stop-01/final.png` 为World列表的一条London时钟，禁止重放a0007返回或a0005添加补账。
 
 本轮25HTTP/8条GUI命令（6笔实际动作；输入占3命令），会话执行合计约15.1分钟，不含中间开发暂停。4区域/17控件，仍有Alarms/Stopwatch/Timer/应用菜单4个pending及详情清点缺口，不是完整遍历。a0002因本批误删choose_position在execute_action之前ImportError：GUI=0、无execution/receipt/after，但已写pending。原证据保留，`input-import-recovery-01` 在独立审阅后监督归档确证未投递的pending，再用正常发现/选择继续；没有改答或假回执，不把该恢复称框架自动鲁棒性。

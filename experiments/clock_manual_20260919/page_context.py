@@ -196,7 +196,7 @@ def build(records, state, run=None):
             'frame_relation': 'historical_structure_needs_recheck'}
 
 
-def _display(view):
+def _display(view, goal_in_task_context=False):
     # IDs live in request metadata. The prompt presents names and evidence roles.
     names = view.get('names', {})
     name = lambda ref: names.get(ref, ref) or '未绑定具体控件'
@@ -220,7 +220,13 @@ def _display(view):
     if view['background_regions']:
         lines.append('该次登记观察的受阻背景：' + '、'.join(n['name'] for n in view['background_regions']))
     goal = view['goal']
-    if goal.get('name'):
+    def pending_names(branch):
+        return '；'.join('本轮当前任务（定义见任务卡）' if goal_in_task_context
+            and branch['ref'] == goal.get('region') and task == goal.get('name') else task
+            for task in branch['pending_tasks'])
+    if goal_in_task_context:
+        lines.append(f"保留目标：{name(goal.get('region'))} / 本轮当前任务（{goal['status']}）；名称与原结束条件见任务卡，来路分支不改变该目标。")
+    elif goal.get('name'):
         lines.append(f"保留目标：{name(goal.get('region'))} / {goal['name']}（{goal['status']}）")
     origin = view['origin']
     entries = origin['entries']
@@ -240,19 +246,20 @@ def _display(view):
             destinations = [name(v.get('control')) + ' → ' + name(v.get('target_region')) for v in branch['entries']]
             lines.append('  来路页面已知分支 ' + branch['name'] + '（详情折叠，不代表完成或当前可操作）' +
                          ('；入口：' + '；'.join(dict.fromkeys(destinations)) if destinations else '') +
-                         ('；未完成：' + '；'.join(branch['pending_tasks']) if branch['pending_tasks'] else ''))
+                         ('；未完成：' + pending_names(branch) if branch['pending_tasks'] else ''))
     for entry in origin.get('known_entries', []):
         lines.append('已登记历史入口（未证明是本次来路）：' + '、'.join(map(name, entry['from_regions'])) +
                      ' → ' + name(entry['via'].get('control')) + ' → ' + '、'.join(map(name, entry['to_regions'])))
         for branch in entry['parent_branches']:
             lines.append('  来源区块 ' + branch['name'] + '（历史分支折叠，不代表完成或当前可操作）' +
-                         ('；未完成：' + '；'.join(branch['pending_tasks']) if branch['pending_tasks'] else ''))
+                         ('；未完成：' + pending_names(branch) if branch['pending_tasks'] else ''))
     lines.append('来路追溯边界：' + {'no_recorded_action_for_observation': '更早观察无可追溯动作',
         'ambiguous_action_observation': '动作与观察对应有歧义，未选择父路径',
         'cyclic_action_observation': '观察链成环，未选择父路径'}.get(origin['boundary'], origin['boundary']))
     if view.get('history'):
         import page_history
-        lines.append(page_history.TITLE + '：\n' + page_history.render(view['history']))
+        current = {'region':goal['region'], 'name':goal['name']} if goal_in_task_context else None
+        lines.append(page_history.TITLE + '：\n' + page_history.render(view['history'], current))
     if view['issues']:
         lines.append('部分包含关系缺少本轮依据或成环；已保留区块并展开为独立节点。')
     return '\n'.join(lines)
@@ -286,13 +293,63 @@ def live(records, state, run):
     return view
 
 
+def compact_observation(card, view, region, observation, *, control=None, name=None):
+    """Only omit a state's exact duplicate from the same registered observation."""
+    result = dict(card)
+    if not view or not observation or observation != view.get('observation', {}).get('id'):
+        return result
+    matches = []
+    def visit(nodes):
+        for node in nodes:
+            if node['ref'] == region:
+                matches.extend(c for c in node['controls'] if
+                    (c['ref'] == control if control is not None else c['name'] == name))
+            visit(node.get('children', []))
+    visit(view['current_tree'])
+    if (len(matches) == 1 and matches[0]['evidence'] == 'current_observation'
+            and result.get('可见状态') and result['可见状态'] == matches[0]['state']):
+        result.pop('可见状态')
+    return result
+
+
+def separate_map(request):
+    """Extract only the controlled map slot; retain every other original field."""
+    text, rendered = request['user_prompt'], request.get('_page_context_text')
+    if not rendered:return text, None
+    try:obj, end = json.JSONDecoder().raw_decode(text)
+    except (ValueError, TypeError):obj, end = None, 0
+    if isinstance(obj, dict) and obj.get(TITLE) == rendered:
+        obj[TITLE] = '见本请求共同地图正文。'
+        return json.dumps(obj, ensure_ascii=False, indent=2) + text[end:], rendered
+    if MARKER + rendered in text:
+        return text.replace(MARKER + rendered, MARKER + '见本请求共同地图正文。', 1), rendered
+    return text, None
+
+
 def refresh(request):
+    if request.get('stage') == 'step_correction' and request.get('original_request'):
+        original = request['original_request']
+        original['screenshots'] = original['image_refs'] = request.get('screenshots', [])[:len(original.get('screenshots', []))]
+        refresh(original)
+        text, rendered = separate_map(original)
+        if rendered:
+            obj, end = json.JSONDecoder().raw_decode(request['user_prompt'])
+            suffix = request['user_prompt'][end:]
+            obj['原动态上下文'], obj[TITLE] = text, rendered
+            request['user_prompt'] = request['dynamic_prompt'] = json.dumps(obj, ensure_ascii=False, indent=2) + suffix
+            request['page_context'], request['_page_context_text'] = original['page_context'], rendered
+        return request
     view = request.get('page_context')
     if view is None:
         return request
     frames = request.get('screenshots') or request.get('image_refs') or []
     _frame_relation(view, frames)
-    rendered = _display(view)
+    source = request.get('source', {})
+    goal = view.get('goal', {})
+    goal_in_task = (request.get('action_ready') and goal.get('name')
+        and source.get('task_region') == goal.get('region') and source.get('task_name') == goal['name']
+        and ('当前目标：' + goal['name'] + '\n') in request.get('user_prompt', ''))
+    rendered = _display(view, goal_in_task_context=bool(goal_in_task))
     previous = request.get('_page_context_text')
     texts = {key: request.get(key, request.get('user_prompt', '')) for key in ('user_prompt', 'dynamic_prompt')}
     import page_history
@@ -301,14 +358,22 @@ def refresh(request):
         if standalone:
             text = text.replace('\n\n' + page_history.TITLE + '：\n' + standalone, '', 1)
         try:
-            obj = json.loads(text)
+            obj, end = json.JSONDecoder().raw_decode(text)
         except (ValueError, TypeError):
             obj = None
         if isinstance(obj, dict):
             obj.pop(page_history.TITLE, None)
             page_history.link_incoming(obj, view['history'])
+            if isinstance(obj.get('上步观察交接'), dict):
+                import target_observation
+                obj['上步观察交接'] = target_observation.compact_handoff(obj['上步观察交接'], view['history'])
+            if request.get('stage') == 'task_proposal':
+                for item in obj.get('控件', []):
+                    if isinstance(item, dict) and isinstance(item.get('目标观察'), dict):
+                        item['目标观察'] = compact_observation(item['目标观察'], view,
+                            source.get('region'), source.get('observation'), name=item.get('name'))
             obj[TITLE] = rendered
-            request[key] = json.dumps(obj, ensure_ascii=False, indent=2)
+            request[key] = json.dumps(obj, ensure_ascii=False, indent=2) + text[end:]
         else:
             if previous and MARKER + previous in text:
                 text = text.replace(MARKER + previous, '', 1)
@@ -316,6 +381,12 @@ def refresh(request):
     request['_page_context_text'] = rendered
     request.pop('page_history', None)
     request.pop('_page_history_text', None)
+    if request.get('observation_handoff'):
+        import target_observation
+        target_observation.render_handoff(request)
+    if request.get('target_observations'):
+        import target_observation
+        target_observation.render(request)
     return request
 
 

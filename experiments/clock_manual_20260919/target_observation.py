@@ -24,10 +24,6 @@ def handoff(records, state, run=None):
     """Carry observation gaps; action evidence is owned by page_history."""
     observation=state.get('observation') or {}
     summary=state.get('handoff_summary','');gaps=observation.get('uncertainties',[])
-    last=state.get('last_action_result') or {}
-    outcome=records.get(last.get('region'),{}).get('actions',{}).get(last.get('action'),{}).get('result',{})
-    if summary and summary in (outcome.get('description'),outcome.get('evidence')):
-        summary='与地图中最近登记动作的观察相同；以下保留尚未确认事项。'
     if not summary and not gaps:return {}
     return {'来源':'最近登记观察，不保证本轮截图仍成立；动作经过见共同地图历史',
             '交接说明':summary,'未确认事项':gaps}
@@ -38,7 +34,30 @@ def attach_handoff(request, records, state, run=None):
     context=handoff(records,state,run)
     if context:
         request['observation_handoff']=context
-        request['user_prompt']=request['dynamic_prompt']=request['user_prompt']+'\n\n上步观察交接：\n'+json.dumps(context,ensure_ascii=False,indent=2)
+        return render_handoff(request)
+    return request
+
+
+def compact_handoff(context, history):
+    handoff=history.get('handoff')
+    if (handoff and context.get('交接说明') == handoff['summary']
+            and context.get('未确认事项') == handoff['uncertainties']):
+        import page_history
+        return {'来源':context['来源'], '交接与未确认事项':'见'+page_history.reference(history,handoff['attempt'])+'；仅为该次更新的交接，不表示缺口已解决。'}
+    return context
+
+
+def render_handoff(request):
+    context=request.get('observation_handoff')
+    if not context:return request
+    history=request.get('page_context',{}).get('history',{})
+    rendered=json.dumps(compact_handoff(context,history),ensure_ascii=False,indent=2)
+    marker='\n\n上步观察交接：\n'
+    previous=request.get('_handoff_text')
+    texts={key:request.get(key,request.get('user_prompt','')) for key in ('user_prompt','dynamic_prompt')}
+    for key,text in texts.items():
+        request[key]=text.replace(marker+previous,marker+rendered,1) if previous and marker+previous in text else text+marker+rendered
+    request['_handoff_text']=rendered
     return request
 
 
@@ -58,14 +77,24 @@ def refresh(request):
     """Rebuild positions after a frame replacement, including the rendered table."""
     import page_context
     page_context.refresh(request)
+    if request.get('stage')=='step_correction':return request
     spec=importlib.util.spec_from_file_location('target_choices',Path(__file__).with_name('visual_choices.py'))
     choices=importlib.util.module_from_spec(spec);spec.loader.exec_module(choices)
     request=choices.prepare(request)
+    return render(request)
+
+
+def render(request):
+    """Render cards from original backend observations, after map/frame refresh."""
+    import page_context
     previous=request.get('target_observations',[])
     targets=[]
     for candidate in request.get('backend_candidates',[]):
         card=candidate.get('target_observation')
         if card is None:continue
+        source=request.get('source',{})
+        card=page_context.compact_observation(card,request.get('page_context'),
+            candidate.get('region_ref',source.get('region')),source.get('observation'),control=candidate['id'])
         item={'所属区块':candidate.get('region_name',''),'控件':candidate['name'],'目标观察':card}
         frames=request.get('image_refs',[])
         if candidate.get('image') and Path(candidate['image']).is_file() and len(frames)==1 and frames[0] and Path(frames[0]).is_file():

@@ -122,12 +122,57 @@ def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=F
         else:
             group['unbound'].append(aid)
     for group in groups.values():group['controls'] = list(group['controls'].values())
+    handoff = _handoff(records, state, run, events)
     history = {'regions': list(groups.values()), 'events': events, 'unresolved': gaps,
+            'handoff': handoff, 'task_contexts': {},
             'event_texts': {a: f'{i+1}. ' + event_text(e) for i, (a, e) in enumerate(events.items())},
             'task_judgments': tasks, 'names': {r: v['name'] for r, v in records.items()}}
     history['chronology'] = ' → '.join(f"{i+1}. {e.get('区块', '记录缺失')} / {e.get('动作') or '未知'}「{e.get('入口', '未绑定')}」" for i, e in enumerate(events.values()))
     history['task_judgment_texts'] = _judgments(history)
+    # Exact source facts for correction's read-only comparison, never sent twice.
+    import history_context
+    for rid in related:
+        for name, task in records.get(rid, {}).get('tasks', {}).items():
+            refs = task.get('attempts', [])
+            if (task.get('status') == 'pending' and refs and not task.get('ownership_history')
+                    and task.get('handling') != 'equivalent'
+                    and all(a in events and not events[a].get('缺口') for a in refs)):
+                history['task_contexts'].setdefault(rid, {})[name] = history_context.attempts(task, records)
     return history
+
+
+def reference(history, aid):
+    event = history.get('events', {}).get(aid)
+    if not event:return None
+    return f"共同地图第{list(history['events']).index(aid)+1}条：{event.get('区块')} / {event.get('动作')}「{event.get('入口')}」"
+
+
+def _handoff(records, state, run, events):
+    """Move original update handoff only after checking its actual reply source."""
+    last = state.get('last_action_result') or {}
+    aid, rid = last.get('action'), last.get('region')
+    action = records.get(rid, {}).get('actions', {}).get(aid, {})
+    evidence = action.get('evidence', {})
+    observation = state.get('observation') or {}
+    call = evidence.get('result_call')
+    if (not run or not call or Path(str(call)).name != str(call) or aid not in events
+            or events[aid].get('region') != rid or events[aid].get('缺口')
+            or not observation.get('id') or observation['id'] != evidence.get('after_observation')):
+        return None
+    path = Path(run)/'calls'/str(call)/'response.json'
+    if not path.is_file():return None
+    reply = json.loads(path.read_text())
+    # Corrected updates are enclosed in the normal correction response.
+    if isinstance(reply.get('proposal'), dict):reply = reply['proposal']
+    summary, gaps = state.get('handoff_summary', ''), observation.get('uncertainties', [])
+    if summary != reply.get('handoff_summary') or gaps != reply.get('uncertainties'):
+        return None
+    if not summary and not gaps:return None
+    event = events[aid]
+    if summary and summary not in (event.get('观察'), event.get('证据')):
+        event['该次更新交接'] = summary
+    if gaps:event['该次更新未确认事项'] = deepcopy(gaps)
+    return {'attempt': aid, 'summary': summary, 'uncertainties': deepcopy(gaps), 'observation': observation['id']}
 
 
 def _historical_text(value):
@@ -153,11 +198,12 @@ def event_text(event):
     return '；'.join(lines)
 
 
-def _judgments(history):
+def _judgments(history, current_task=None):
     events = history['events']; lines = []
     sequence = {a: i+1 for i, a in enumerate(events)}
     for task in history['task_judgments']:
-        line = f"任务历史判断：{history['names'].get(task['region'], task['region'])} / {task['name']}（{task['status']}）"
+        name = '本轮当前任务（定义见任务卡）' if current_task == {'region':task['region'], 'name':task['name']} else task['name']
+        line = f"任务历史判断：{history['names'].get(task['region'], task['region'])} / {name}（{task['status']}）"
         if task['judgment']:
             same = next((a for a in task['attempts'] if task['judgment'] in (events.get(a, {}).get('观察'), events.get(a, {}).get('证据'))), None)
             line += ('；与以上第' + str(sequence[same]) + '条动作观察相同' if same else '；' + _historical_text(task['judgment']))
@@ -168,7 +214,7 @@ def _judgments(history):
     return lines
 
 
-def render(history):
+def render(history, current_task=None):
     events = history['events']
     lines = ['历史动作与任务判断，不是当前可见性或完成保证；页面返回不撤销已观察的业务变化。历史执行位置只用于理解，不能直接复用坐标。']
     ordered = list(events)
@@ -185,7 +231,7 @@ def render(history):
             lines.append('  区块级动作（具体控件归属未确认，不能作为某控件完成的证明）：')
             lines.extend(body(a) for a in group['unbound'])
     lines.extend(body(a) for a in history['unresolved'])
-    lines.extend(history['task_judgment_texts'])
+    lines.extend(_judgments(history, current_task) if current_task else history['task_judgment_texts'])
     if not events:lines.append('范围内没有已登记动作；不推断已经执行或成功。')
     return '\n'.join(lines)
 
@@ -232,6 +278,11 @@ def link_incoming(dynamic, history):
         aid = row.get('动作记录'); event = history['events'].get(aid, {})
         if not event or row.get('来源区块记录') != event.get('region'):continue
         label = f"共同地图第{sequence[aid]}条：{event.get('区块')} / {event.get('动作')}「{event.get('入口')}」"
-        for field, key in (('结果','观察'),('依据','证据')):
-            if row.get(field) and row[field] == event.get(key):row[field] = '见' + label
+        shared = False
+        for field, key in (('动作目的','目的'),('结果','观察'),('依据','证据'),('区块变化','区块变化')):
+            if row.get(field) and row[field] == event.get(key):
+                row.pop(field)
+                shared = True
+        if shared or '动作历史' in row:
+            row['动作历史'] = '见' + label
     return dynamic

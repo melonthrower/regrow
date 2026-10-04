@@ -20,20 +20,20 @@ regions和controls按本轮观察增量登记。仅补新出现或变化的控�
 | 字段 | 填写内容 |
 | --- | --- |
 | foreground | description描述当前前景；evidence为依据；uncertainty为未确认事项 |
-| action_result | exception为异常分类；description为实际变化；evidence为证据；recovery_handoff为恢复需求，无异常可为空 |
+| action_result | exception为异常分类；description简短记录实际对象、动作和变化；evidence补关键依据；recovery_handoff为恢复需求，无异常可为空 |
 | regions | 增量区块；name为名称，description为可见内容，reason为划分依据，bbox为框，previous_name为旧对象名称或空字符串 |
 | regions[].parent_index | 本次regions列表中父区块的位置，从0开始；没有父级填null |
 | controls | 增量控件；text为文字，icon_appearance为外观，state为可见状态，possible_operation为功能推测，uncertainty为疑问；bbox为识别框，click_bbox为点击框，icon_bbox为可选独立图标框；previous_name为旧控件名或空字符串 |
 | controls[].region_index | 直接所属区块在本次regions列表中的位置，从0开始，不是持久编号 |
 | previous_regions | 对本轮提供的相关已有区块填写name、state及evidence，状态见下表；不枚举未提供的全图历史 |
-| exploration_update | 来源控件由框架按实际动作绑定登记，无需输出名称；attempt_status区分executed、not_executed、uncertain，即已执行、未执行、投递情况不明；outcome和evidence记录结果及依据 |
+| exploration_update | 来源控件由框架绑定；attempt_status区分executed、not_executed、uncertain。outcome和evidence填空字符串，实际变化及依据统一写入action_result |
 | excluded | 不纳入清单的对象description及原因reason |
 | uncertainties | 仍待核实的问题列表 |
-| handoff_summary | 简短交接实际动作、结果、当前范围及保留的工作；不建议下一动作，不宣布整个区块完成 |
+| handoff_summary | 只补其他字段尚未交代、继续原任务需要的信息；没有补充时填空字符串。异常时保留恢复所需的简短交接；不建议下一动作，不宣布整个区块完成 |
 
 previous_regions[].state：retained_interactive表示仍可交互；changed_interactive表示变化后仍可交互；visible_background_blocked表示可见但被接管；not_visible表示本图不可见；uncertain表示无法判断。not_visible不是删除指令。
 
-attempt_status回答“本轮实际投递的动作是否执行”，task_result回答“整个探索任务是否完成”，两者不是一回事。先读实际动作与回执，再看截图核对效果；动作执行了但没有效果，仍为executed，outcome如实写无变化。
+attempt_status回答“本轮实际投递的动作是否执行”，task_result回答“整个探索任务是否完成”，两者不是一回事。先读实际动作与回执，再看截图核对效果；动作执行了但没有效果，仍为executed，action_result如实写无变化。
 
 正例：任务是滚动检查侧栏，本轮实际点击关闭了遮挡菜单，回执确认点击已执行。attempt_status填executed；因为尚未滚动，task_result.status填pending。反例：因为整个任务尚未完成，把已经执行的关闭点击写成not_executed。投递失败或无法确认时，按实际回执填写not_executed或uncertain，不把“效果未确认”混为“动作未投递”。
 

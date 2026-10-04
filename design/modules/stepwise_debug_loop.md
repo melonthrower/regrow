@@ -1,5 +1,20 @@
 # 临时逐步遍历器的监督修复闭环
 
+## 2026-10-04 更新记录的自然语言与重复输出
+
+维护要求：合并、改名、删除或调整Luna字段职责时，检查所有相关步骤的prompt/schema（发现、任务清点、动作选择、更新、纠错、累计任务核对、恢复），以及登记、地图与下游读取；按影响修改，记录无需改动的依据，不能只改输出端。
+
+只调整三个既有prompt。action_result.description用一两句说明具体对象、实际动作、可见变化或未确认结果，避免依赖旧图号/代词；evidence补关键依据，必要条件和失败不能省略。exploration_update保留attempt_status，outcome/evidence提示留空；真实结果统一进入已有action_result。handoff_summary只补任务接续或恢复所需的独有信息；task_result.evidence简述原目标满足/缺口。文字精简不授权把已登记不同控件合并，仍分别更新状态、识别框和点击框。
+
+原reply→register_update的action.result→page_history观察/证据→下一正常请求链保持，原答未改；schema、身份/任务/调度、图片合同均未改。字段允许空值是既有schema能力，不新建摘要角色/API或记录字段。本批没有实现区块状态树持久化，也没有删完长输入历史。
+
+18项直接相邻检查通过。真实完整保存帧累计8HTTP/0GUI：v2 VLC更新/下一步2次，记录文字传递成立但频段组混入Preamp，整体未接受；v2 Clock更新2次（首次错误提交未完成关联任务，经原纠错修正），下一步2次（重复input_text被拒，纠错defer→correction_blocked暂停）。v3仅补控件边界后定向VLC更新/下游各1次，恢复原c0090/c0091/c0107独立观察及原task done，未执行导航。Clock仅v2证据，没有宣称v3重跑；下一步策略尚未因记录变清楚而可靠。
+
+主要记录字符数（description/evidence、任务evidence、探索文本与handoff总和）：VLC旧样例603→最终v3 289，登记提案归一JSON（纠错答只计proposal）4825→4605；Clock旧448→v2纠正后170，登记提案3152→1628。比较是同保存案例历史回复，非统计A/B，不保证每次缩短。两例新结果原样登记并在后续实际请求共同地图正文出现一次。v2 Clock初答仍重复exploration文字，说明提示没有硬性保证空值。
+
+实际裁图检查：v3 Preamp与频段组已分开并正确更新12.0dB，频段图最右标签/数值仍截字，不能称所有模板合格；保留为相邻质量缺口。没有新GUI、旧运行部署、输入恢复、全应用或全门禁验收。版本、完整请求/原答/快照与独立审阅在to_astra/readable_update_20261004_01。
+
+
 ## 2026-10-04 直接排列共同地图
 
 `page_context.build`复用`function_evidence.incoming_results`，只引用当前Region已有`reached_by`中有执行/结果、无异常且动作后含该Region的记录；来源不是连续访问路径，也不证明当前可操作。唯一匹配当前观察的真实动作另列上一步，返回导致origin栈折叠时仍可显示。`_origin/advances_goal`保持供原调度使用，prompt不再展示origin链、旧父页待办或追溯边界。控件下只放已确认归属的动作引用及原动作后区块；结果正文仍仅一份。无本轮状态时省略逐控件待核对，顶部保留一次观察/阶段来源说明。

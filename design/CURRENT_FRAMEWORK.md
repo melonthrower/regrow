@@ -1,5 +1,7 @@
 # GUI-ReWalk 当前框架索引
 
+2026-10-04 更新记录可读性：沿已有action_result写简短对象/动作/变化和依据，减少exploration_update/交接重复；schema、存储与调度不改。简短不合并已有控件。18项相邻检查通过；本批8HTTP/0GUI，v3 VLC更新及下游有限通过，v2 Clock信息传递成立但下游重复输入被原门禁拦截、纠错后仍暂停。v2 VLC混组未接受，v3恢复独立Preamp更新；频段图右缘截字仍有边界。完整局部树持久化、长输入上下文及通用决策鲁棒性未实现。见stepwise_debug_loop、本月日志与archive/readable_update_20261004。
+
 2026-10-04 共同地图改为直接账本投影：`page_context`按当前登记区块/控件、唯一上一步、已有进入动作和控件历史排列；`page_history`引用补原回执的实际操作对象。提示不再展示访问链解释、父分支待办或历史边界，内部origin及调度保留。59项直接相关离线检查通过；6次完整保存帧Luna调用/0GUI，五步正常接受、纠错一步准确保留未输入事实，原答defer后Runner以correction_blocked暂停，未登记正式任务暂挂、未恢复输入。VLC新Preamp裁图截字及后方窗口可操作性表述仍有质量缺口；不代表全部身份/前景通过、通用稳定或普遍缩短正文。详见stepwise_debug_loop、本月日志与archive/direct_map_20261004。
 
 2026-10-04 提示规则发送投影：新增独立`prompt_delivery.py`统一桌面分步手册与纠错完整固定段落的同源引用；地图/任务事实、schema、权限与执行路径不变。无参数任务省略参数差异解码说明。当前合同及有限验收见 stepwise_debug_loop、本月日志与 archive/prompt_task_scope_20261004；旧现场冻结源不自动更新。

@@ -281,28 +281,14 @@ def compact_update_prompt(request):
 
 def action_context(records,state,task_region,name,task):
     lines=['当前目标：'+name,'原任务目标与结束条件（仍用于本轮核对，其中界面描述属于建立时观察）：'+task['reason']]
-    owner=records[task_region]
-    lines+=['本任务已尝试什么、观察到什么（含跨区块步骤）：', *attempts(task,records)]
-    lines.append('还缺什么：结合下面的已有事实核对原结束条件；pending只是登记状态，不证明必须再点一次。')
-    history=[a for a in owner.get('actions',{}).values() if a.get('control')==task.get('control') and a.get('delivery')=='executed_receipt_zero']
-    if history:
-        lines.append('同一入口已有动作记录（不因新任务名称而清空）：')
-        lines.extend('- '+a.get('result',{}).get('description','未提供结果') for a in history[-3:])
+    lines.append('已有动作与任务历史判断统一见共同地图的区块控件历史；结合登记顺序核对原结束条件，pending不证明必须再点一次。')
     resolved=[item for item in task.get('blocker_history',[]) if item.get('resolved_by')]
     if resolved and not task.get('blocker'):
         lines.append('历史阻塞已在后续观察中解除；当前是否可操作仍以截图为准。')
     ref=state.get('last_action_result') or {}
     recent=records.get(ref.get('region'),{}).get('actions',{}).get(ref.get('action'))
     evidence={'task':{'region':task_region,'name':name},'recent_action':None,'resolved_blockers':resolved}
-    if recent:
-        source=records[ref['region']]
-        target=source.get('controls',{}).get(recent.get('control'),{}).get('name',source['name'])
-        delivery='已执行' if recent.get('delivery')=='executed_receipt_zero' else '投递未确认'
-        result=recent.get('result',{}).get('description') or '尚无已登记的观察结果'
-        lines+=['最近已登记的尝试：',f"- {delivery} {recent.get('operation','动作')}「{target}」；观察：{result}"]
-        evidence['recent_action']=dict(ref)
-    else:lines.append('最近已登记的尝试：未提供关联的最近动作记录。')
-    if task.get('result_evidence'):lines.append('原任务已有判断：'+task['result_evidence'])
+    if recent:evidence['recent_action']=dict(ref)
     facts,evidence['known_findings']=findings(records,state,task_region,name,task)
     if facts:
         lines+=['已登记的相关属性（历史观察，不代表完整范围；用于判断还有什么新信息需要探索）：',*facts]

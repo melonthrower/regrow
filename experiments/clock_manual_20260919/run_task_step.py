@@ -62,8 +62,8 @@ def build_attempt_update(root,transport,folder):
         '登记说明':'保留工作区块，按实际前后图登记落点；系统返回属于来源区块，无控件，不为它新建控件。'}
     import source_region_candidates as source_candidates
     recalled=source_candidates.recall(records,binding,proposal['action'],folder.name)
-    from region_behavior_split import history as source_history
-    dynamic['来源区块历史行为比较']=source_history(owner,proposal.get('target',''))
+    dynamic['来源区块历史行为比较']={'适用上下文':owner.get('behavior_context','历史描述及结果中的上下文，不能仅凭图标推定'),
+        '用途':'按共同地图中实际来源区块的控件历史，与本次结果比较职责差异；普通值变化和依进入路径返回不代表不同区块。未确认控件不作为稳定行为依据。'}
     if not recalled['confirmed']:
         dynamic['旧入口说明']='这里按旧入口名称提供线索，不证明本次来源身份或历史所在标签。'
     if binding.get('association'):
@@ -109,7 +109,8 @@ def build_attempt_update(root,transport,folder):
     u=source_candidates.attach(u,reference,labels)
     u=history_matching.attach(u,records,ranking,region_names,snapshot)
     u['region_names']=region_names
-    step_repair.helper('page_context').attach(u,records,state,usage='before_action',run=run)
+    step_repair.helper('page_context').attach(u,records,state,usage='before_action',run=run,
+        extra_regions=[binding['region_ref'],binding['working_region'],binding.get('task_region')])
     write_json(folder/'update_request.json',u)
     return u
 

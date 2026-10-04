@@ -44,11 +44,11 @@ def test_handoff_keeps_executed_parent_history_but_not_unexecuted_or_unrelated()
     records['middle']['actions'] = {'a0099': {'operation': 'click', 'delivery': 'executed_receipt_zero',
                                              'result': {'description': '无关窗口结果'}}}
     before = deepcopy((records, state))
-    context = mod('target_observation').handoff(records, state)
+    context = mod('page_history').build(records, state)
     text = json.dumps(context, ensure_ascii=False)
     assert '悬停入口后菜单展开' in text and '移位后子菜单收起' in text
     assert '另一父项' in text and 'unconfirmed' in text
-    assert '尚未执行不能算已恢复' not in text and '无关窗口结果' not in text
+    assert '尚未执行不能算已恢复' not in text and '无关窗口结果' not in text and '没有已执行回执' in text
     assert (records, state) == before
 
 
@@ -98,9 +98,9 @@ def test_failed_move_survives_reopen_with_receipt_backed_coordinates(tmp_path):
     (folder/'dispatch.json').write_text(json.dumps({'action': {'action':'hover','target':'另一父项','x':169,'y':154}}))
     (folder/'proposal.json').write_text(json.dumps({'action':'hover','x':999,'y':999}))
     (folder/'receipt.json').write_text(json.dumps({'exit_code':0}))
-    helper = mod('target_observation')
-    text = json.dumps(helper.handoff(records, state, tmp_path), ensure_ascii=False)
+    helper = mod('page_history')
+    text = json.dumps(helper.build(records, state, tmp_path), ensure_ascii=False)
     assert all(s in text for s in ('移位导致菜单收起','点击恢复菜单','169','154'))
     assert '999' not in text
     (folder/'receipt.json').write_text(json.dumps({'exit_code':1}))
-    assert '169' not in json.dumps(helper.handoff(records, state, tmp_path), ensure_ascii=False)
+    assert '169' not in json.dumps(helper.build(records, state, tmp_path), ensure_ascii=False)

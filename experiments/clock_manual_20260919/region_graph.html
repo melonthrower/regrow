@@ -22,11 +22,11 @@ function pageMap(view){
  const signature=JSON.stringify(view);if(signature===pageMapSignature)return;pageMapSignature=signature;
  const openStates=new Map([...box.querySelectorAll('details')].map(e=>[e.dataset.key,e.open]));
  box.replaceChildren();const current=view.sync_status==='observed',names=view.names||{},name=ref=>names[ref]||ref||'未绑定具体控件';
- box.append(el('p',current?'已同步到最近一次实机观察':view.sync_status==='localized'?'仅视觉定位；结构与控件状态仍待核对':'正在核对新画面；下面保留上次已登记结构',current?'muted':'warning'));
+ box.append(el('p',current?'依据最近一次已登记观察':view.sync_status==='localized'?'已定位当前区块；下方结构依据上次登记观察':'新画面尚未登记；下方结构依据上次登记观察',current?'muted':'warning'));
  if(view.goal?.name)box.append(el('p','保留目标：'+name(view.goal.region)+' / '+view.goal.name));
  function fold(key,title,open=false){const d=el('details');d.dataset.key=key;d.open=openStates.has(key)?openStates.get(key):open;d.append(el('summary',title));return d}
  function tree(nodes,parent){for(const n of nodes){const d=fold('region:'+n.ref,n.name,true),items=el('ul');
-  for(const c of n.controls){items.append(el('li',c.name+(c.evidence!=='current_observation'?'（状态待核对）':c.state?'（'+c.state+'）':'')))}
+  for(const c of n.controls){items.append(el('li',c.name+(c.evidence==='current_observation'&&c.state?'（'+c.state+'）':'')))}
   d.append(items);tree(n.children||[],d);parent.append(d)}}
  tree(view.current_tree||[],box);
  if(!view.current_tree?.length)box.append(el('p','当前前景尚未确认','muted'));
@@ -39,6 +39,15 @@ function pageMap(view){
    const lines=el('ul');for(const e of b.entries||[])lines.append(el('li',name(e.control)+' → '+name(e.target_region)));
    for(const task of b.pending_tasks||[])lines.append(el('li','待探索：'+task));branch.append(lines);d.append(branch)}
   box.append(d)});
+ const history=view.history;
+ if(history){const panel=fold('history','区块与控件历史（登记动作与观察；执行情况见记录，不证明当前状态）',true);
+  if(history.chronology)panel.append(el('p','登记动作顺序：'+history.chronology,'muted'));
+  const event=aid=>el('p',history.event_texts?.[aid]||'记录缺失','muted');
+  for(const r of history.regions||[]){const rd=fold('history:'+r.ref,r.name,true);
+   for(const c of r.controls||[]){const cd=fold('history:'+r.ref+':'+c.ref,c.name);for(const aid of c.attempts)cd.append(event(aid));rd.append(cd)}
+   if(r.unbound?.length){const ud=fold('history:'+r.ref+':unbound','区块级动作 · 控件归属未确认');for(const aid of r.unbound)ud.append(event(aid));rd.append(ud)}panel.append(rd)}
+  for(const aid of history.unresolved||[])panel.append(event(aid));
+  for(const text of history.task_judgment_texts||[])panel.append(el('p',text,'muted'));box.append(panel)}
  if(view.issues?.length)box.append(el('p','部分包含关系缺少依据或成环，已保留为独立区块。','warning'));
 }
 function svg(tag,attrs){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e}

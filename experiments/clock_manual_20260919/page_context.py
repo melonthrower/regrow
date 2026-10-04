@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 
-TITLE = '页面结构与父页面来路'
+TITLE = '登记页面组成与访问来路'
 MARKER = '\n\n' + TITLE + '：\n'
 
 
@@ -187,7 +187,8 @@ def build(records, state, run=None):
     visual = state.get('visual_navigation') or {}
     localization_only = (visual.get('observation') == oid
                          and bool(visual.get('replay') or str(oid).startswith('navigation:')))
-    return {'current_tree': roots, 'background_regions': background, 'names': names,
+    import page_history
+    return {'history': page_history.build(records, state, run), 'current_tree': roots, 'background_regions': background, 'names': names,
             'goal': {**active, 'status': task.get('status', 'unknown')}, 'origin': origin,
             'issues': issues, 'localization_only': localization_only,
             'observation': {'id': oid, 'image': frame, 'sha256': _digest(frame)},
@@ -249,8 +250,9 @@ def _display(view):
     lines.append('来路追溯边界：' + {'no_recorded_action_for_observation': '更早观察无可追溯动作',
         'ambiguous_action_observation': '动作与观察对应有歧义，未选择父路径',
         'cyclic_action_observation': '观察链成环，未选择父路径'}.get(origin['boundary'], origin['boundary']))
-    if origin.get('last_effect'):
-        lines.append('最近登记结果（页面回返不撤销业务变化）：' + json.dumps(origin['last_effect']['result'], ensure_ascii=False))
+    if view.get('history'):
+        import page_history
+        lines.append(page_history.TITLE + '：\n' + page_history.render(view['history']))
     if view['issues']:
         lines.append('部分包含关系缺少本轮依据或成环；已保留区块并展开为独立节点。')
     return '\n'.join(lines)
@@ -293,12 +295,18 @@ def refresh(request):
     rendered = _display(view)
     previous = request.get('_page_context_text')
     texts = {key: request.get(key, request.get('user_prompt', '')) for key in ('user_prompt', 'dynamic_prompt')}
+    import page_history
+    standalone = request.get('_page_history_text')
     for key, text in texts.items():
+        if standalone:
+            text = text.replace('\n\n' + page_history.TITLE + '：\n' + standalone, '', 1)
         try:
             obj = json.loads(text)
         except (ValueError, TypeError):
             obj = None
         if isinstance(obj, dict):
+            obj.pop(page_history.TITLE, None)
+            page_history.link_incoming(obj, view['history'])
             obj[TITLE] = rendered
             request[key] = json.dumps(obj, ensure_ascii=False, indent=2)
         else:
@@ -306,13 +314,40 @@ def refresh(request):
                 text = text.replace(MARKER + previous, '', 1)
             request[key] = text + MARKER + rendered
     request['_page_context_text'] = rendered
+    request.pop('page_history', None)
+    request.pop('_page_history_text', None)
     return request
 
 
-def attach(request, records, state, *, usage='selection', run=None):
+def attach(request, records, state, *, usage='selection', run=None, extra_regions=()):
     if usage == 'selection' and request.get('stage') != 'task_proposal' and not request.get('action_ready'):
         return request
+    import page_history
+    goal = None
+    try:dynamic = json.loads(request['user_prompt'])
+    except (ValueError, TypeError):dynamic = {}
+    incoming = [r['动作记录'] for r in page_history.incoming_entries(dynamic) if r.get('动作记录')]
+    if usage == 'before_action':
+        goal = dynamic.get('任务目标')
+        if goal:
+            # Move only event bodies; keep parameter baselines and historical
+            # judgments in their established task-goal contract.
+            goal = dict(goal)
+            if '最近连续动作' not in goal and request.get('_page_history_goal'):
+                goal = request['_page_history_goal']
+            request['_page_history_goal'] = goal
+            for key in ('最近连续动作', '此前动作与观察'):
+                dynamic['任务目标'].pop(key, None)
+            note = '下列参数摘要及当时判断中的图号属于其来源历史，不指本轮附图。'
+            if not dynamic['任务目标'].get('历史阅读','').startswith(note):
+                dynamic['任务目标']['历史阅读'] = note + dynamic['任务目标'].get('历史阅读','')
+            dynamic['任务目标']['历史分段说明'] = '事件正文及参数差异观察见共同地图的区块控件历史；按登记动作顺序阅读，参数基准仍为本任务已有参数发现。'
+            request['user_prompt'] = request['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     view = build(records, state, run)
+    source = request.get('source', {})
+    view['history'] = page_history.build(records, state, run, goal=goal,
+        extra_regions=[*extra_regions, *[source.get(k) for k in ('region','task_region','return_to')]],
+        navigation=bool(request.get('navigation_advice')), extra_attempts=incoming)
     view['usage'] = usage
     request['page_context'] = view
     return refresh(request)

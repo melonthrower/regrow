@@ -60,8 +60,7 @@ def plan_request(root,records,state,rid):
                  '已有任务':[n for n,t in region.get('tasks',{}).items() if t.get('control')==cid],
                  '已验证入口':helper('entry_evidence').disclose(region,cid,records),
                  '框架已关联共享任务':helper('shared_controls').automatic_tasks(region,cid),
-                 '其他区块的同名入口历史':helper('entry_evidence').related(region,cid,records),
-                 '已登记动作':[region['actions'][a]['result'] for a in c['action_refs']]} for cid,c in region['controls'].items()],
+                 '其他区块的同名入口历史':helper('entry_evidence').related(region,cid,records)} for cid,c in region['controls'].items()],
         '已有任务':region.get('tasks',{}),
         '其他区块（历史记录，不表示本图可见，不在本轮清点范围）':[{'名称':r['name'],'描述':r['description']} for other,r in records.items() if other!=rid],
         '说明':'只清点本区块，control逐字使用给定控件名称；其他区块入口不影响本区块清点。本区块内仍有未辨认或未登记入口时用partial，仅说明缺口，不为未知入口编造任务。入口及任务已列齐就用complete；尚未执行的explore任务不影响清点完整性，完成进度由框架另算。空任务不自动表示清点完成。'}
@@ -97,6 +96,7 @@ def plan_request(root,records,state,rid):
         'screenshots':[state['observation']['image']],'image_refs':[state['observation']['image']],
         'response_schema':schema,'fixed_parts':parts,
         'source':{'region':rid,'observation':state['observation']['id']}}
+    helper('page_history').attach(request,records,state)
     return helper('parameter_evidence_review').augment(request,region)
 
 
@@ -276,7 +276,7 @@ def attach(root,records,state,working,base):
         if rid!=task_region:
             q['allow_back']=True  # Task ownership is not a command to return to its Region.
         text,q['context_evidence']=helper('task_action_context').build(records,state,task_region,name,task)
-        if rid==task_region and cid in visible:text+='\n当前可见的任务入口：'+region['controls'][cid]['name']
+        if rid==task_region and cid in visible:text+='\n最近登记的任务入口（仍需核对当前截图）：'+region['controls'][cid]['name']
         text+='\n\n'+render_current(records,state)
     elif progress['complete']:
         functions=helper('region_functions')
@@ -300,14 +300,14 @@ def attach(root,records,state,working,base):
     text+='\n\n若原任务控件本轮未定位，而已有另一入口的实际结果可能覆盖同一直接去向，可用none并申请request_task_review核对；未定位不等于消失，不能直接跳过或记完成。参数、创建保存目标不能用打开窗口代替。'
     q['user_prompt']=q['dynamic_prompt']=text;q['task_progress']=progress
     if inventory_scroll:helper('inventory_scroll').restrict(q)
-    return q
+    return helper('page_history').attach(q,records,state)
 
 
 def render_current(records,state):
-    return '\n\n'.join(render(records[rid],records) for rid in dict.fromkeys(state.get('interactive_regions',[])) if rid in records)
+    return '\n\n'.join(render(records[rid],records,include_history=False) for rid in dict.fromkeys(state.get('interactive_regions',[])) if rid in records)
 
 
-def render(region,records=None):
+def render(region,records=None,*,include_history=True):
     records=records if records is not None else {region["id"]:region}
     describe=helper("task_attempt_context").describe
     lines=[region['name']+'：探索任务']
@@ -323,7 +323,7 @@ def render(region,records=None):
             continue
         status='已完成' if name in c['done'] else '仅记录' if name in c['record_only'] else '受阻' if name in c['blocked'] else '待完成'
         lines.append(f'- {name}：{status}')
-        if name not in c['record_only']:
+        if include_history and name not in c['record_only']:
             task=region['tasks'][name]
             effective=region['tasks'].get(task.get('equivalent_to'),task) if task.get('handling')=='equivalent' else task
             lines.extend('  '+fact for fact in describe(effective,records))

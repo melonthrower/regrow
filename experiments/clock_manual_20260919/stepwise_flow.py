@@ -426,15 +426,7 @@ def _assemble_action_context(root, records, state, region_ref):
            f"待继续探索区块：{target['name']}", target['description']]
     lines.extend(['当前观察说明：'+str(state.get('observation',{}).get('foreground',{}).get('description','')),
                   '先判断当前前景与目标的关系：包含目标入口或属于到达目标的中间步骤时，操作其中的入口；只有前景与目标无关且妨碍下一步时才关闭或返回。菜单接管输入不等于阻挡探索。正例：目标在设置子菜单中，先操作菜单内的设置入口；反例：刚打开通往目标的菜单，就因为目标区块尚未出现而关闭菜单。历史路径入口当前不可见时，可先切换相关标签或自行寻找其他路径，不必关闭正常编辑窗口。', '', '前往待继续区块的路径：'])
-    recent={}
-    for owner in records.values():
-        for attempt,action in owner.get('actions',{}).items():
-            if action.get('delivery')!='executed_receipt_zero':continue
-            target_name=owner.get('controls',{}).get(action.get('control'),{}).get('name') or action.get('association',{}).get('target') or owner['name']
-            recent[attempt]=f"{owner['name']} / {target_name}：{action.get('result',{}).get('description','结果未确认')}"
-    if recent:
-        lines.extend(['最近已执行动作及实际结果（按执行顺序）：',*[recent[k] for k in sorted(recent)[-6:]],
-                      '若这些动作已经反复打开、关闭同一入口且未接近目标，不再原样重复。选择有新依据的其他导航方式；没有新办法时用none说明循环与缺口。历史一次未跳转仅说明那次观察，不证明入口永久无效。'])
+    lines.append('最近已执行动作及实际结果见共同地图的区块控件历史及登记顺序；若已经反复打开、关闭同一入口且未接近目标，不再原样重复。选择有新依据的其他导航方式；没有新办法时用none说明循环与缺口。历史一次未跳转不证明入口永久无效。')
     if path:
         lines.append(f'最短已知路径（{len(path)} 步）：')
         for i,edge in enumerate(path,1):
@@ -477,19 +469,14 @@ def _assemble_action_context(root, records, state, region_ref):
         request['fixed_parts'].append({'path':part,'text':(pr/part).read_text()})
         request['system_prompt']='\n\n'.join(p['text'].strip() for p in request['fixed_parts'])
         lines.append('当前区块内的登记入口候选（含历史记录，不保证当前可见或可操作；以本图及下方匹配位置核对）：'+('；'.join(records[c['region_ref']]['name']+'：'+c['name'] for c in request['backend_candidates']) or '暂无登记候选，可结合截图判断系统返回或等待'))
-        for candidate in request['backend_candidates']:
-            region=records[candidate['region_ref']];control=region['controls'][candidate['id']]
-            results=[region['actions'][a].get('result',{}).get('description')
-                     for a in control.get('action_refs',[]) if a in region['actions']]
-            results=list(dict.fromkeys(r for r in results if r))
-            if results:lines.append('「'+candidate['name']+'」已有观察：'+'；'.join(results[-2:]))
         lines.append('本轮只寻找通往目标区块的动作；不要为了再次验证已知控件效果而偏离导航目标。没有已知回程时，可结合截图尝试返回，不能把预览、选择等局部状态变化当作通往其他区块的路径。')
 
     lines.append('无动作记录不等于功能未完成；已有尝试也不代表区块探索完成。')
     request['navigation_path']=path
     request['source']['working_region']=region_ref
     request['user_prompt']=request['dynamic_prompt']='\n'.join(lines)
-    return request
+    import page_history
+    return page_history.attach(request,records,state)
 
 
 def assemble_region_choice(root, graph, observation_ref, region_ref):
@@ -552,7 +539,7 @@ def assemble_current_context(root, run, region_ref=None, task_ref=None):
         result['user_prompt']=result['dynamic_prompt']=result['user_prompt']+'\n\n自动回溯交接：'+json.dumps(state['navigation_handoff'],ensure_ascii=False)
     result['source']['snapshot']=pointer['snapshot']
     tasks.helper('region_scroll').attach(run,state,result)
-    tasks.helper('page_context').attach(result,records,state)
+    tasks.helper('page_context').attach(result,records,state,run=run)
     return result
 
 

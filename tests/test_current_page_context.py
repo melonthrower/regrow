@@ -157,7 +157,7 @@ def test_request_refresh_marks_replaced_frame_historical_and_is_idempotent(tmp_p
     q.update(screenshots=[str(fresh)], image_refs=[str(fresh)])
     m.refresh(q)
     assert q['page_context']['frame_relation'] == 'historical_structure_needs_recheck'
-    assert q['user_prompt'].count('页面结构与父页面来路') == 1
+    assert q['user_prompt'].count('登记页面组成与访问来路') == 1
     assert q['screenshots'] == [str(fresh)] and 'original task' in q['user_prompt']
 
 
@@ -167,8 +167,8 @@ def test_json_task_context_stays_json_and_preserves_catalog(tmp_path):
          'dynamic_prompt': '{"控件":["Search"]}', 'screenshots': [str(frame)], 'image_refs': [str(frame)]}
     m.attach(q, records, state); m.attach(q, records, state)
     assert json.loads(q['user_prompt'])['控件'] == ['Search']
-    assert '页面结构与父页面来路' in json.loads(q['user_prompt'])
-    rendered = json.loads(q['user_prompt'])['页面结构与父页面来路']
+    assert '登记页面组成与访问来路' in json.loads(q['user_prompt'])
+    rendered = json.loads(q['user_prompt'])['登记页面组成与访问来路']
     assert '不是页面包含层级' in rendered and rendered.count('当前区块的直接进入来源') == 1
 
 

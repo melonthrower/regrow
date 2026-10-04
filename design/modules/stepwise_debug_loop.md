@@ -1,5 +1,7 @@
 # 临时逐步遍历器的监督修复闭环
 
+2026-10-04 prompt职责诊断：三步地图已接入，但完整最近结果与任务/交接重述；历史裸图号与本轮图片可能失配，换帧后地图与任务/目标卡的可见性口吻未统一。5场景6HTTP/0GUI正常保存帧验证未出现所测目标/落点回退，但发现步漏单列清除按钮且错误complete，完整清点未接受；这是表达风险及有限现状证据，未修改prompt、未证明去重收益。见 archive/page_prompt_overlap_20261004/ANALYSIS.md、DESIGN.md及固定提交的建议变更图。
+
 2026-10-04 共享地图及单一动作路径：`page_context.build/attach/refresh/live/advances_goal` 在独立文件内派生视图；`stepwise_flow.assemble_current_context`、`discovery_step.request_from_run`、`run_task_step.build_attempt_update` 分别接入选择、发现、动作前上下文，普通任务清点及纠错刷新共用。发现明确历史，结果步明确动作前；换帧立即降为待核对，不额外添加图片/API，动作坐标仍单当前图。调度仅在已记录连续进入链、原pending父目标和当前前景任务相符时让其优先于无关历史整理，强制审核不跳过。
 
 `run_task_step` 删除独立 `visual_backtrack.try_step` 执行捷径，历史路线交正常Luna选择、绑定、执行、结果登记；不按按钮名硬编码安全性。`visual_backtrack` 保留已发生旧pending的交接和历史投影，不能重投既有receipt。图页 `/graph.json` 同源提供 page_context，网页2秒轮询最新观察及live_frame，核对中/仅定位/已登记分别呈现，保留用户折叠。这是随框架每次实机截图/登记刷新的已观察局部树，不是每2秒重新调用视觉模型，也不保证列全整屏；冻结器及source_hash包含HTML，运行图页与代码版本共同固定。实际验收范围及当前运行点见本月日志和SERVER_HANDOFF。

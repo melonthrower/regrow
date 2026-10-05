@@ -120,11 +120,17 @@ hover/drag保留原整屏坐标校验，再复用click候选关联；唯一候�
 
 桌面 scroll 的 x/y 是接收滚轮的位置，end_x/end_y 表示方向和幅度，不要求终点在内容框中；导航滚动沿同一规则。Android swipe 和鼠标 drag 仍检查端点。hover/drag 使用普通目标关联，无法确认历史控件时保存 association.unconfirmed，第三步照常观察实际结果，不伪造来源控件。
 
+## 2026-10-05 Region 位置与模板资格
+
+本批单独接纳已确认位置规则，其余未接受地图/任务候选仍不纳入。发现、更新、共享准入及桌面说明统一：Region 外边界能确认就填 bbox，内部遮挡单独写 image_quality；控件身份框与点击框规则不变，未增加 Luna 字段。纠错引用同一原请求与共享手册。
+
+region_evidence.region_observation 保存 bbox，包含图1来源拆分的原位置记录；在线位置缓存仍由 foreground_scope.audit/remember 从本轮普通发现/更新的顶层 regions 建立，不从历史 observation.bbox 反推当前范围。新增几何校验拒绝零面积、倒置或超出当前前景的顶层框；bbox=null 仍表示位置未确认；本批未扩展来源拆分图1几何校验。局部发现复用 visual_region_locator/local_partition；仅同帧可复用，换帧重定位。模板门控和旧清晰观察选择不变。
+
 ## 桌面悬停遮挡的观察交接（2026-09-24）
 
 仅当前复制遍历器，未部署旧运行冻结源。`平台/桌面悬停观察.prompt` 经 `desktop_transport.prepare_request` 加入桌面调用：发现/更新报告遮挡及缺口，动作步在原任务内用一次 `hover` 取得新观察。位置由当前图决定，可为维持展开的父项、菜单内部或其他有依据的位置；不得固定移到空白、关闭目标菜单或重放失败坐标。菜单收起后按已验证入口恢复，再核对真实新帧。
 
-身份已确认但外观受挡时，受影响的 `bbox/icon_bbox` 独立为空；包含遮挡的区块框同样为空。框架直接裁原图，能推断文字或边界不代表模板干净；输出前核对遮挡描述与裁图框是否一致。`click_bbox` 独立判断。`controls_complete` 只表示本次是否列齐可见控件，与模板齐全率及功能是否测试无关。原有保存器跳过空框，旧清晰观察保留；无可靠身份仍沿原发现缺口处理。高亮仍是真实外观，提示消失不证明业务完成，不强制为每个缺图控件新增清理任务。
+身份已确认但外观受挡时，控件受影响的 `bbox/icon_bbox` 独立为空；Region 的 `bbox` 则填写当前能确认的边界，只有边界不确定才为空。框架直接裁原图，Region 有位置不代表可做清晰模板，`image_quality` 为 occluded/uncertain 时仍不保存新模板；输出前独立核对位置与质量。`click_bbox` 独立判断。`controls_complete` 只表示本次是否列齐可见控件，与模板齐全率及功能是否测试无关。原有保存器跳过空框，旧清晰观察保留；无可靠身份仍沿原发现缺口处理。高亮仍是真实外观，提示消失不证明业务完成，不强制为每个缺图控件新增清理任务。
 
 `target_observation.handoff/attach_handoff` 只读投递最近登记的交接说明、未确认事项及最多三笔相关已执行动作；动作请求还从原attempt的dispatch与成功回执披露投递位置，不读取proposal推定执行。历史位置不代表当前可用。`assemble_current_context` 在任务路由后附加，任务清点也接收同一观察说明。没有新增模型角色、动作类型、持久字段或调度循环。
 
@@ -161,7 +167,7 @@ discovery.publish与正常register_update发布前均复核：支持任务/动�
 
 ## 身份图准入（2026-09-24，当前工作区候选）
 
-发现/更新原调用逐图给出 `image_quality=clear|occluded|uncertain` 与非空 `image_quality_reason`，控件图标独立给 `icon_quality`；来源分离沿图1、普通更新沿图2。共享说明见 `共享/身份图准入.prompt`。框架只保存明确 clear 的身份裁图；受挡/不确定即使误填非空框也不裁为模板，原回复、完整截图与 source_image 留存，click_bbox/click_image 独立。可见控件枚举完整性和业务完成不因此改变。
+发现/更新原调用逐图给出 `image_quality=clear|occluded|uncertain` 与非空 `image_quality_reason`，控件图标独立给 `icon_quality`；来源分离沿图1、普通更新沿图2。共享说明见 `共享/身份图准入.prompt`。框架只保存明确 clear 的身份裁图；受挡/不确定即使有非空框也不裁为模板，原回复、完整截图与 source_image 留存，click_bbox/click_image 独立。可见控件枚举完整性和业务完成不因此改变。
 
 `identity_templates.py` 统一准入与历史选择。控件定位、控件候选、滚动、保留控件定位、回访投影、自动输入与同名控件合并只使用获准图；区块身份不再进行像素归一化或附历史参考图；新坏观察不会抢占旧合格图。控件匹配的所属区块图必须显式传入，不再按同目录 region.png 猜测资格。旧观察无评估为未审核，保留证据但不参与这些模板路径；不自动为旧图补 clear，不删除/改写旧快照。没有合格图沿原发现/模型定位重新观察，不新增模型角色、GUI清理循环或业务任务。
 

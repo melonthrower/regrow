@@ -18,7 +18,7 @@
 | name / description | 区块名称 / 当前可见内容及职责 |
 | reason | 为什么这样划分区块 |
 | parent_index | 父区块在本次regions列表中的位置，从0开始；无父级填null |
-| bbox | 整屏边界框，填法见第4部分 |
+| bbox | 当前区块在整屏中的边界；能确认边界时填写，内部遮挡由image_quality另记，不因此清空边界；无法定位才填null |
 | identity / previous_name / identity_evidence | 与旧区块的对应关系，填法见第3部分 |
 
 ### 每个控件

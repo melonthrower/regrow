@@ -40,6 +40,7 @@
 - [test_history_matching.py](test_history_matching.py)
 - [test_identity_entry_context.py](test_identity_entry_context.py)
 - [test_identity_template_admission.py](test_identity_template_admission.py)
+- [test_region_position_evidence.py](test_region_position_evidence.py)：Region 位置、模板资格、同帧范围与无效边界。
 - [test_local_partition_context.py](test_local_partition_context.py)
 - [test_local_region_discovery.py](test_local_region_discovery.py)
 - [test_partial_sharing.py](test_partial_sharing.py)

@@ -46,8 +46,11 @@ def new_region(ref, name, description=''):
 
 
 def region_observation(proposal, evidence, image=None):
+    # Current-frame position is evidence even when the appearance is occluded.
+    # Template admission remains independent in identity_templates.
     return {'description':proposal.get('description',''), 'reason':proposal.get('reason',''),
             'controls_complete':proposal.get('controls_complete',False),
+            'bbox':deepcopy(proposal.get('bbox')),
             'image':image, **templates.assessment(proposal), 'evidence':deepcopy(evidence)}
 
 

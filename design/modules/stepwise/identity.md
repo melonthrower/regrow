@@ -12,12 +12,15 @@
 
 主要接口：`discovery_step.request_from_run / run_stage；region_identity；identity_templates`。详细现行合同见[原模块文档](../stepwise_region_identity.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
+Region 位置与模板资格分开：`region_evidence.region_observation` 保存原回复 `bbox`；`register_update.save_region_images` 仍只为 clear 且有理由的框保存模板。`foreground_scope.audit/remember` 校验普通发现/更新顶层 Region 框并关联登记身份；`visual_region_locator.plan` 只消费同帧缓存进行局部发现，换帧重新定位。受挡控件的身份框与点击范围仍独立，未确认边界保持空；不从前景大框补全。
+
 ## 源码与提示入口
 
 - [discovery_step.py](../../../experiments/clock_manual_20260919/discovery_step.py)
 - [discovery_completion.py](../../../experiments/clock_manual_20260919/discovery_completion.py)
 - [discovery_inventory.py](../../../experiments/clock_manual_20260919/discovery_inventory.py)
 - [foreground_scope.py](../../../experiments/clock_manual_20260919/foreground_scope.py)
+- [region_evidence.py](../../../experiments/clock_manual_20260919/region_evidence.py)
 - [local_partition.py](../../../experiments/clock_manual_20260919/local_partition.py)
 - [region_identity.py](../../../experiments/clock_manual_20260919/region_identity.py)
 - [region_records.py](../../../experiments/clock_manual_20260919/region_records.py)

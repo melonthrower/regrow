@@ -12,7 +12,7 @@ tooltip提供名称或说明；可操作菜单是目标界面。不要把tooltip
 
 更新步及无发现阻塞时：报告本步实际变化，遮挡不影响该结果时不重复说明。只在影响本步判断的uncertainty或恢复交接中写具体缺口；图片受挡的原因写在已有image_quality_reason，不重复填入state、action_result和全局uncertainties。
 
-框架按原图裁图，不会擦除tooltip。已能辨认名称也不代表裁图清晰：受挡的bbox/icon_bbox独立填null，包含遮挡的区块bbox同样为空；旧清晰图保留。click_bbox按当前可靠的可操作范围独立判断。不要缩成丢失身份特征的碎片。完全无法区分对象时保留缺口。
+框架按原图裁图，不会擦除tooltip。区块边界能确认时填写bbox，内部受挡则image_quality填occluded，该框只用于当前定位，不保存新身份模板；边界不明才留null。控件受挡的bbox/icon_bbox独立填null，click_bbox按当前可靠的可操作范围独立判断；旧清晰图保留。不要缩成丢失身份特征的碎片。完全无法区分对象时保留缺口。
 controls_complete只判断本次是否列齐可见控件。已能辨认并列齐时，即使部分身份框为空也填true；仍有无法辨认或漏列项才填false。功能未执行不影响此值。
 
 ### 动作观察

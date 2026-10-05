@@ -85,8 +85,11 @@ def audit(run,job):
     scope=validate(reply['foreground'],frame)
     for region in reply.get('regions',[]):
         box=region.get('bbox')
-        if box and not contains([box[k] for k in ('left','top','right','bottom')],scope):
-            raise ValueError('区块身份框不在本轮声明的可交互前景内；核对前景或移除背景对象')
+        if box:
+            values=[box[k] for k in ('left','top','right','bottom')]
+            # Position checks also apply when no identity crop will be saved.
+            if not (values[0]<values[2] and values[1]<values[3] and contains(values,scope)):
+                raise ValueError('区块边界为空、倒置或不在本轮声明的可交互前景内；核对当前图范围')
     validate_control_boxes(reply,scope)
     snapshot,records,_=discovery_step.load(run)
     ranking=history_matching.scan(records,snapshot,frame,scope=scope)

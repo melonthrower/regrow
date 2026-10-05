@@ -1,5 +1,7 @@
 # Region 遍历、经验复用与图指导采集：设计对齐及代码位置
 
+2026-10-05 Region 观察保存当前 bbox，模板资格仍由 image_quality 独立控制；受挡但边界明确时可供既有同帧局部定位使用。历史框不跨帧定位，不改变 Region 身份、任务完成或 Gmail if/else 条件与冻结图采集边界。接口与验证范围见[身份模块](modules/stepwise/identity.md)。
+
 2026-10-04 局部遮挡提示统一按当前任务所需信息判断，允许真实适用历史辅助识别，受挡模板仍不可入清晰身份图；认识入口不代表观察了内部。6HTTP/0GUI保存帧有限通过已知菜单身份复用、入口续进与状态简化，首次受挡目标的持久动作绑定/执行尚未验收。Region归属、Gmail if/else业务条件和冻结图采集合同不变，源码位置及证据见stepwise_region_identity/debug_loop。
 
 2026-10-04 共同prompt的局部图直接排列已有账本：当前登记区块/控件、实际上一动作、记录的进入动作和控件结果引用；不再把内部访问链/父页待办解释输出为额外地图类别。origin仍用于原调度，图来源不授权当前动作或补业务条件。Gmail月报if/else、Region任务及冻结图采集合同未改。6HTTP/0GUI有限保存帧验证地图语义；纠错defer后Runner以correction_blocked暂停（未登记正式任务暂挂）、裁图及前景质量缺口见stepwise_debug_loop，非全应用验收。

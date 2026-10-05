@@ -2,6 +2,8 @@
 
 项目名称统一为 **regrow**。`GUI-ReWalk`、`gui_rewalk` 和带日期的目录名保留为历史路径或导入名；后续说明使用 regrow，定位源码仍按现有路径。
 
+[每日开发记录](devlog/README.md)：按日期看当天完成、验证、未解决的问题和下一步；详细批次仍查月度日志。
+
 [全部代码职责与位置](design/modules/stepwise/CODE_MAP.md)：按流程找入口，再按共享能力找唯一实现；改动前沿输入、校验、登记和下一步核对。
 
 当前逐步遍历开发从[三步主流程、异常处理与共享能力](design/modules/stepwise/README.md)进入；先定位问题发生在哪一步，再沿数据连接找到代码、提示、测试与未完成事项。其他框架与采集见[全项目模块索引](design/modules/README.md)。
@@ -32,7 +34,7 @@
 2. 在本checkout沿下方连接表定位改动；修改字段时检查所有生产者、消费者及纠错步骤，不只改一段prompt。
 3. 从[测试索引](tests/STEPWISE_INDEX.md)选聚焦检查。只改文档可做链接、差异和静态检查；不为导航整理调用Luna或GUI。
 4. 行为改动按现行要求走完整原生请求验收；原答经正常校验和登记，检查实际身份、任务与图像。
-5. 更新模块及月度日志；陌生读者先独立阅读再对照意图。只提交本批已验证路径/片段，保留其他候选。
+5. 按改动范围更新模块及月度日志，并补记当天的 `devlog/YYYY-MM-DD.md`；陌生读者先独立阅读再对照意图。只提交本批已验证路径/片段，保留其他候选。
 6. 私有源导出只同步本批已验证源码/文档；实验原件不入源仓库。
 
 <a id="change-connections"></a>
@@ -60,6 +62,7 @@
 | 当前职责、接口与状态 | `design/modules/`；逐步入口在 `stepwise/` |
 | 全局入口、跨模块不变量 | `design/CURRENT_FRAMEWORK.md` |
 | 每批改动与验证记录 | `design/changelog/YYYY-MM.md` |
+| 每天做了什么、结果、未解决问题与下一步 | `devlog/YYYY-MM-DD.md`；入口为 `devlog/README.md` |
 | 已取代方案、早期设计 | `design/archive/<主题或日期>/` |
 | 维护测试 | `tests/`，保持原文件名与导入路径 |
 | 临时脚本、pytest临时输出 | `artifacts/tmp_tests/<唯一名称>/` |

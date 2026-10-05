@@ -22,6 +22,14 @@ Before changing framework code:
 3. Read `design/changelog/` or other historical documents only when the task
    depends on an earlier decision, experiment, or regression.
 
+Keep a short daily work record in `devlog/YYYY-MM-DD.md` and add new dates to
+`devlog/README.md`. Update it before each work-batch handoff with what changed,
+verification scope/results, unresolved issues, next steps, and source/evidence
+references. Distinguish proposals and unverified work from accepted changes;
+append later corrections without erasing earlier failures. Daily summaries link
+to module contracts and monthly change logs instead of duplicating them. Do not
+invent missing history or put credentials or runtime evidence in source exports.
+
 For every code change under `gui_rewalk/`, or a behavior-affecting change under
 `ops/` or `tools/`:
 

@@ -156,11 +156,11 @@ def collect(stage,q,p,records,binding=None):
         for i,previous in enumerate(p.get('previous_regions',[])):
             matches=[q['region_names'][previous['name']]] if previous['name'] in q.get('region_names',{}) else [k for k,v in records.items() if v['name']==previous['name']]
             if len(matches)!=1 or matches[0] not in records:add('previous_region',f'/previous_regions/{i}/name',previous['name'],previous['name'],list(q.get('region_names') or [v['name'] for v in records.values()]),'按本轮候选完整名称报告可见性；同名不意味着同一区块。')
-        assessment=p.get('task_result') or {}
+        assessment=p.get('task_update') or p.get('task_result') or {}
         for i,fact in enumerate(assessment.get('findings',[])):
             old=task.get('findings',{}).get(fact['name'])
             if old and (old['domain']['type']!=fact['domain']['type']):
-                add('parameter_fact_conflict',f'/task_result/findings/{i}',fact['name'],{'conditions':fact['conditions'],'type':fact['domain']['type']},{'conditions':old['conditions'],'type':old['domain']['type']},'不同类型的参数使用不同事实名称；条件变化可按新观察保存。')
+                add('parameter_fact_conflict',f'/task_update/findings/{i}',fact['name'],{'conditions':fact['conditions'],'type':fact['domain']['type']},{'conditions':old['conditions'],'type':old['domain']['type']},'不同类型的参数使用不同事实名称；条件变化可按新观察保存。')
     return {'errors':errors,'unchecked':unchecked}
 
 

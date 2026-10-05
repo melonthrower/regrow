@@ -119,6 +119,17 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         seen.add(name)
         if cid is not None:covered.add(cid)
         t={**{k:v for k,v in row.items() if k!='findings'},'control':cid,'status':'pending','source_call':call,'attempts':[]}
+        # Names describe an exploration; the control and operation identify it.
+        # Reuse status/prerequisites/history instead of creating a renamed retry.
+        if name not in tasks:
+            key=helper('task_settlement').task_key(t)
+            same=[n for n,existing in tasks.items() if helper('task_settlement').task_key(existing)==key]
+            if same:
+                name=same[0];seen.add(name)
+                prior=tasks[name]
+                if row.get('findings'):
+                    store_findings(prior,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
+                continue
         if row['handling']=='record':t['status']='record_only'
         if row['handling']=='defer':t.update(status='blocked',blocker={'condition':'review_required','source_call':call})
         if name in old:
@@ -128,7 +139,7 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
                     raise ValueError('范围复核不能更换任务对象或动作')
                 prior=helper('traversal_scope').record_only(prior,row['reason'],{'source_call':call,**({'policy':'task_scope_review'} if scope_review=='task_scope_review' else {})})
             if normalize(prior)['action']!=t['action'] or any(prior[k]!=t[k] for k in ('control','handling','equivalent_to','task_type')):
-                raise ValueError('已有任务归属或操作不匹配：'+json.dumps({'任务名':name,'原控件':region['controls'].get(prior.get('control'),{}).get('name'),'回复控件':row['control'],'说明':'不同控件或不同探索目标应新建不同名称的任务；补充旧任务沿用原归属、动作、类型和处理方式。原记录确实错误时说明冲突并保留缺口；未执行且无事实/依赖的pending任务可用record_edit/task_control显式纠正；有历史则suspend_task保留记录并补建独立任务，不借普通清点改挂。'},ensure_ascii=False))
+                raise ValueError('已有任务归属或操作不匹配：'+json.dumps({'任务名':name,'原控件':region['controls'].get(prior.get('control'),{}).get('name'),'回复控件':row['control'],'说明':'同控件同动作沿用原任务，不因改名或参数值变化新建。不同控件或动作才有独立任务；任务绑定错误沿记录修订处理，不借普通清点改挂。'},ensure_ascii=False))
             t=prior
             if row.get('prerequisite') and row['prerequisite']!={k:v for k,v in (prior.get('prerequisite') or {}).items() if k not in ('scheduled','satisfied','last_check','recheck_requested')}:
                 if prior.get('prerequisite'):t.setdefault('prerequisite_history',[]).append(dict(prior['prerequisite']))

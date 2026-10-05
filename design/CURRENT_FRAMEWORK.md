@@ -9,7 +9,7 @@
 ## 1. 开发范围与主线
 
 当前逐步开发源码在 `experiments/clock_manual_20260919/`，按发现与准备任务 → 选择并执行动作 → 观察结果并更新记录阅读；异常贯穿三步，共享模块由各步调用。实际编排入口是 `run_task_step._run_step`，三步不是每轮固定三次模型调用。
-源码保持原位；本批把任务选择、任务结算、模型发送、动作关联和证据记录拆为五个职责文件，旧入口直接绑定或继承唯一实现。完整 98 个 Python 文件及脚本、页面、prompt、测试连接见 [CODE_MAP](modules/stepwise/CODE_MAP.md)。
+源码保持原位；本批把任务选择、任务结算、模型发送、动作关联和证据记录拆为五个职责文件，旧入口直接绑定或继承唯一实现。Python 文件及脚本、页面、prompt、测试连接见 [CODE_MAP](modules/stepwise/CODE_MAP.md)。
 
 其他实现仍分别维护：guided/autonomous 在 `core/visual_traversal/`，modular explore 在 `core/explore/`，evidence explore 在 `core/evidence_explore/`。它们并存，不用同名概念推定合同相同；[完整主链](CURRENT_FRAMEWORK_DETAILS.md#1-当前主链)保留各自范围。
 
@@ -71,7 +71,7 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 
 ## 6. 当前全局风险
 
-当前地图修复候选仍未接受：Stopwatch 虚报 Add、Timer 单位推测、历史控件被列为当前可操作及裁图/归属缺口仍需实际证据核对。本批结构整理不把这些候选、未实现任务防重或已暂停运行变为已通过；具体范围见[身份](modules/stepwise_region_identity.md)、[监督](modules/stepwise_debug_loop.md)和[任务](modules/stepwise/tasks.md)。
+当前地图修复候选仍未接受：Stopwatch 虚报 Add、Timer 单位推测、历史控件被列为当前可操作及裁图/归属缺口仍需实际证据核对。本批结构整理不把这些候选、跨区块任务语义重复或已暂停运行变为已通过；具体范围见[身份](modules/stepwise_region_identity.md)、[监督](modules/stepwise_debug_loop.md)和[任务](modules/stepwise/tasks.md)。
 各内核还保留模型身份误判、前景/控件漏报、导航/恢复、异常生命周期与大文件职责债务；[原风险表](CURRENT_FRAMEWORK_DETAILS.md#6-当前全局风险)保留对应范围和反例，不以历史测试数宣称当前全图或跨应用稳定。最新机器、源码与停止点读 [SERVER_HANDOFF](SERVER_HANDOFF.md)。
 
 ## 7. 验证策略
@@ -86,3 +86,6 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 ## 8. 显式全框架回归门
 
 只有用户明确要求，或准备发布、基线、认证、正式外部结果时，运行[显式全框架回归门的 19 条命令](CURRENT_FRAMEWORK_DETAILS.md#explicit-framework-regression-gate)。共享合同改动本身不自动触发全门禁。命令集合保留原 Section 8 历史清单；其中 `tests/test_visual_run_state_machine.py` 当前缺失，不能按原清单直接执行全门禁。本批仅核对路径，未执行或重新确认全框架覆盖；运行目录按现行 AGENTS 实例化为唯一临时目录，保存命令/日志，记录明确要求时的漏跑项、原因与验证缺口。门禁通过不代替原生模型与真实 GUI 语义验收。
+
+## 逐步任务进度补充（2026-10-05）
+逐步explore任务以区块内控件+动作复用；done表示该绑定动作已执行并登记直接观察，不能当作业务成功。普通更新用task_update（findings、可空next_action），不再要求task_result状态或独立累计完成核对。前置准备的条件观察、异常暂挂、身份修订和真实地图登记仍保留；详见[任务](modules/stepwise/tasks.md)与[更新](modules/stepwise/updates.md)。当前地图/滚动的其他未接受候选不因这次进度修改获验收。

@@ -28,8 +28,8 @@ Android触屏不支持hover；桌面动作解释见本轮平台说明。文字�
 input_text由工具完成聚焦、全选和替换；text=""表示全选后删除，清空文本框，不是缺参数。它也可能只完成打开输入界面，尚未发送文字；下一轮依据实际执行记录和截图判断，不因提出了输入就认为文本已经送达。正例：允许清空的表单字段用空字符串测试，随后观察空值；反例：为验证必填而擅自提交禁止发送的表单。
 
 完整回复示例（名称、坐标仅为示例，以本轮图为准）：
-{"target":"搜索框","action":"input_text","x":120,"y":80,"text":"London","end_x":null,"end_y":null,"skip_task":false,"request_task_review":false,"reason":"用一个代表词观察搜索反馈，图中顶部搜索框位置已核对"}
-{"target":"搜索框","action":"none","x":null,"y":null,"text":null,"end_x":null,"end_y":null,"skip_task":false,"request_task_review":false,"reason":"无法区分顶部搜索框与中央同名提示，需要补充定位"}
+{"target":"搜索框","action":"input_text","x":120,"y":80,"text":"London","end_x":null,"end_y":null,"skip_task":false,"reason":"用一个代表词观察搜索反馈，图中顶部搜索框位置已核对"}
+{"target":"搜索框","action":"none","x":null,"y":null,"text":null,"end_x":null,"end_y":null,"skip_task":false,"reason":"无法区分顶部搜索框与中央同名提示，需要补充定位"}
 
 ## 仅普通探索动作步：当前任务违反遍历限制时换任务
 
@@ -38,8 +38,4 @@ input_text由工具完成聚焦、全选和替换；text=""表示全选后删除
 正例：任务要求修改熄屏时间，而当前限制是这类设置只读，返回none与skip_task=true，说明限制。
 反例：只是按钮暂时不可见、路径未知或视觉匹配不唯一，却以受禁止为由跳过；这些仍可补观察或导航。也不要因为某个准备动作被禁止，就跳过仍能通过其他允许方法完成的任务。
 
-累计结果核对：request_task_review默认false。已有历史可能满足原结束条件，或者实际尝试后目标效果仍未确认、当前没有有依据的新验证动作时，使用action=none、skip_task=false、request_task_review=true。reason说明已尝试什么、确认了什么、还缺什么，以及为何重复相同操作不能补足证据。第三步再按证据判断done、pending或blocked；提出核对不预设完成或暂挂。
-正例：已看到目标菜单打开，申请核对是否完成；或设置值已改变，但多次相同观察仍无法确认指定动态效果，且没有新的观察依据，申请核对并保留效果缺口。
-反例：第一次效果不明显、仍有允许且有依据的准备操作，却直接放弃；或只是控件暂不可见、身份待定位，就申请暂挂。可定位的问题用none、request_task_review=false补发现，有可行新方法时继续一步动作。
-
-键盘提交：action=key_press时，Android的text填写ENTER、TAB、ESC或BACKSPACE之一；桌面按平台手册填写，x/y/end_x/end_y为null，target描述当前键盘焦点。该动作只向当前焦点发送一个按键，不负责寻找输入框。正例：上一轮已在终端提示符输入只读命令，本轮确认焦点仍在该终端后按ENTER，下一轮核对命令输出。反例：只因历史曾输入过，就在当前未知焦点按ENTER；或把输入命令文字当作已经执行。
+探索进度由框架根据绑定动作及登记结果更新，不申请独立完成复核；定位缺失用none补发现，有依据的准备动作可正常执行。

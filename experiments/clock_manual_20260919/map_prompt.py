@@ -26,7 +26,7 @@ def task_view(request, rid, name, task, view):
         if refs and all(refs):result['尝试事实'] = ['见' + '；'.join(refs) + '；结算依据见同图任务历史判断。']
     if current_task(request, rid, name, task):
         for key in ('名称','说明','动作','类型','处理方式','覆盖任务'):result.pop(key, None)
-        result['定义'] = '见原动态上下文的本轮当前任务及原结束条件。'
+        result['定义'] = '见原动态上下文的本轮当前任务、待执行控件与动作。'
     return result
 
 

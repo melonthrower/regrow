@@ -27,7 +27,7 @@
 
 绑定用本轮坐标与登记外观候选关联控件；同点竞争等歧义进入 `BindingConflict`。现行路径也允许模型坐标执行但保留 `association.status=unconfirmed`，不能写成已确认身份。观察来源过期时刷新原任务请求，不能悄悄换成另一任务。
 
-- `none + request_task_review`：进入已有任务的累计结果核对，核对结果不由动作步直接宣布。
+- 普通动作不再输出request_task_review；none说明当前定位缺口并补发现，已探索由实际绑定动作计算。
 - 普通 `none`：不投递，保存原因并设置 `next_action_mode=discover`，由第一步补发现。
 - `skip_task`：仅按明确范围限制走 `traversal_scope.skip_prohibited`；定位困难不等于可跳过。
 
@@ -50,7 +50,7 @@
 |---|---|---|
 | `next_action_mode / observation / interactive_regions / active_task` | 发现、更新及 `task_routing.advance` → `assemble_current_context / task_selection.attach / _run_step` | 待发现、恢复、任务暂挂、无可执行工作；不能以空待办宣布全图完成。 |
 | 请求 `source` 的观察、工作区块及任务归属 | `stepwise_flow / region_tasks` → `bind_action_target / attempt_guard` → 第三步 `settle_task / task_routing.advance` | 过期观察刷新必须保留原任务；准备动作与未确认对象不得借用其他控件的完成证据。 |
-| `action / target / x / y / text / end_x / end_y` 与无动作标记 | 流程提示/schema、模型提案 → `repair_stages.accept_candidate / action_commands` → 更新的实际动作说明 | `none`、核对申请、范围跳过、平台不支持、坐标歧义；变更须覆盖普通与纠错 proposal。 |
+| `action / target / x / y / text / end_x / end_y` 与无动作标记 | 流程提示/schema、模型提案 → `repair_stages.accept_candidate / action_commands` → 更新的实际动作说明 | `none`、范围跳过、平台不支持、坐标歧义；变更须覆盖普通与纠错 proposal。 |
 | 当前图、`backend_candidates`、目标观察与滚动边界 | `_run_step.current / assemble_current_context` → 绑定和投递前检查 | 单图动作纠错、补发现后刷新、窗口变化；候选位置不能充当当前身份或动作成功证据。 |
 | attempt 的提案、绑定、前后图、回执及执行指针 | `deliver / action_commands.execute` → `build_attempt_update / register_update.commit_update` | 部分输入、投递未确认、更新拒绝与 resume；保留原动作证据，继续结算而非重做 GUI。 |
 

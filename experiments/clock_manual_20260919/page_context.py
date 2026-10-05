@@ -258,7 +258,7 @@ def _display(view, goal_in_task_context=False):
         lines.append('该次登记观察的受阻背景：' + '、'.join(n['name'] for n in view['background_regions']))
     goal = view['goal']
     if goal_in_task_context:
-        lines.append(f"保留目标：{name(goal.get('region'))} / 本轮当前任务（{goal['status']}）；名称与原结束条件见任务卡，来路分支不改变该目标。")
+        lines.append(f"保留目标：{name(goal.get('region'))} / 本轮当前任务（{goal['status']}）；名称与待执行控件、动作见任务卡，来路分支不改变该目标。")
     elif goal.get('name'):
         lines.append(f"保留目标：{name(goal.get('region'))} / {goal['name']}（{goal['status']}）")
     if view.get('history'):

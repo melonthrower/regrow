@@ -88,6 +88,14 @@ def validate_commit(run, attempt, reply, request, binding, snapshot, records):
         rid = names.get(row['region']);affected.add(rid)
         task = records.get(rid, {}).get('tasks', {}).get(row['task'], {})
         affected.add(task.get('prerequisite', {}).get('scheduled', {}).get('region'))
+    from task_settlement import completion_target
+    for rid, region in records.items():
+        if any(completion_target(region,t).get('region')==binding.get('region_ref')
+               and completion_target(region,t).get('control')==binding.get('control_ref')
+               for t in region.get('tasks',{}).values()):
+            affected.add(rid)
+    followup=(reply.get('task_update') or {}).get('next_action')
+    if followup:affected.add(names.get(followup['region']))
     for rid in affected - {None}:
         path = baseline/'regions'/rid/'region.json'
         if not path.exists() or rid not in records:
@@ -97,7 +105,6 @@ def validate_commit(run, attempt, reply, request, binding, snapshot, records):
         if old != current:
             raise repair.Paused('historical_update_conflict', '历史补登记相关区块已有后续变化：'+rid+'；不能用旧结果覆盖')
     settled = [[binding.get('task_region') or binding.get('region_ref'), binding.get('task_name')]]
-    settled += [[binding.get('region_ref'), row['name']] for row in reply.get('related_task_results', [])]
     return {**marker, 'settled_tasks':settled}
 
 
@@ -118,10 +125,10 @@ def complete(records, previous, state, marker, call, attempt):
             task.setdefault('deferral_history', []).append({**task.pop('deferral'), 'resolved_by':call})
             task.setdefault('blocker_history', []).append(task.pop('blocker'))
             if task['status'] == 'blocked':
-                if [region['id'], name] in marker.get('settled_tasks', []):
-                    task['blocker'] = {'condition':'review_required', 'attempt':attempt,
-                        'source_call':call, 'reason':task.get('result_evidence', '结果仍未确认')}
-                else:task['status'] = 'pending'
+                task['status'] = 'pending'
+    # Only tasks released from this archive can newly match its stored action.
+    from task_settlement import reconcile
+    reconcile(records)
     metadata = {key:state[key] for key in ('update_status', 'update_digest')}
     state.clear();state.update(deepcopy(previous));state.update(metadata)
     queue = state.pop('suspended_updates', [])

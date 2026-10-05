@@ -23,27 +23,27 @@ def test_empty_controls_need_explicit_complete_inventory():
     m.apply_plan(region,proposal([]),'2');assert m.coverage(region)['complete']
 
 
-def test_tasks_finish_from_evidence_not_delivery_or_recorded_controls():
-    _,r,s=fixture();m=tasks();region=r['menu']
-    m.apply_plan(region,proposal([row()]),'1')
+def test_tasks_finish_only_after_bound_action_observation_is_registered():
+    _,r,s=fixture();m=tasks();region=r['menu'];m.apply_plan(region,proposal([row()]),'1')
+    binding={'task_name':'查看内容','region_ref':region['id'],'control_ref':'open'}
+    reply={'action_result':{'exception':'none','description':'已打开内容'},
+           'task_update':{'findings':[],'next_action':None}}
+    m.settle_task(region,binding,reply,'a1')
     assert not m.coverage(region)['complete']
-    reply={'action_result':{'exception':'none'},'task_result':{'name':'查看内容','status':'pending','evidence':'尚未到达内容'}}
-    m.settle_task(region,{'task_name':'查看内容','region_ref':region['id'],'control_ref':region['tasks']['查看内容']['control']},reply,'a1');assert not m.coverage(region)['complete']
-    reply['task_result']['status']='done';reply['action_result']['exception']='uncertain'
-    with pytest.raises(ValueError):m.settle_task(region,{'task_name':'查看内容','region_ref':region['id'],'control_ref':region['tasks']['查看内容']['control']},reply,'a2')
-    reply['action_result']['exception']='none';m.settle_task(region,{'task_name':'查看内容','region_ref':region['id'],'control_ref':region['tasks']['查看内容']['control']},reply,'a2')
+    region['actions']['a2']={'control':'open','operation':'click','delivery':'executed_receipt_zero','result':reply['action_result']}
+    m.settle_task(region,binding,reply,'a2')
     assert m.coverage(region)['complete']
-    region['controls']['new']={'name':'新入口'};assert not m.coverage(region)['complete']
+    region['controls']['new']={'name':'新入口'}
+    assert not m.coverage(region)['complete']
 
 
 def test_equivalence_shares_obligation_not_execution_and_record_is_separate():
     _,r,s=fixture();m=tasks();region=r['menu']
-    m.apply_plan(region,proposal([row(),row('同功能入口',handling='equivalent',equivalent_to='查看内容'),row('返回',handling='record')]),'1')
+    region['controls'].update(alias={'name':'另一入口'},back={'name':'返回'})
+    m.apply_plan(region,proposal([row(),row('同功能入口',control='另一入口',handling='equivalent',equivalent_to='查看内容'),row('返回',control='返回',handling='record')]),'1')
     assert m.coverage(region)['record_only']==['返回']
-    assert not m.coverage(region)['complete']
     region['tasks']['查看内容']['status']='done'
-    assert m.coverage(region)['complete']
-    assert region['tasks']['同功能入口']['attempts']==[]
+    assert m.coverage(region)['complete'] and region['tasks']['同功能入口']['attempts']==[]
     with pytest.raises(ValueError):m.apply_plan(region,proposal([row('查看内容',handling='record')]),'2')
 
 
@@ -135,6 +135,7 @@ def test_equivalent_coverage_does_not_claim_alias_execution():
     assert region['tasks']['查看内容']['status']=='pending'
     binding['control_ref']='open'
     reply['task_result']['evidence']='原入口已有实际操作结果'
+    region['actions']['correct']={'control':'open','operation':'click','delivery':'executed_receipt_zero','result':{'exception':'none','description':'原入口已有实际操作结果'}}
     m.settle_task(region,binding,reply,'correct')
     assert set(m.coverage(region)['done'])=={'查看内容','等价入口'}
     assert region['tasks']['等价入口']['attempts']==[]
@@ -209,16 +210,11 @@ def test_direct_entry_can_finish_while_popup_still_requires_recovery():
     _,r,s=fixture();m=tasks();region=r['menu'];m.apply_plan(region,proposal([row()]),'plan')
     binding={'task_name':'查看内容','region_ref':'menu','control_ref':'open'}
     reply={'action_result':{'exception':'blocking_popup','description':'系统权限提示接管输入'},
-           'exploration_update':{'attempt_status':'executed'},
-           'task_result':{'name':'查看内容','status':'done','evidence':'点击入口后出现系统权限提示','findings':[]}}
+           'task_update':{'findings':[],'next_action':None}}
+    region['actions']['attempt']={'control':'open','operation':'click','delivery':'executed_receipt_zero','result':reply['action_result']}
     m.settle_task(region,binding,reply,'attempt')
     assert region['tasks']['查看内容']['status']=='done'
     assert reply['action_result']['exception']=='blocking_popup'
-    # A popup cannot finish a parameter task or a preparation action.
-    region['tasks']['查看内容']['task_type']='parameter'
-    with pytest.raises(ValueError):m.settle_task(region,binding,reply,'parameter')
-    region['tasks']['查看内容']['task_type']='single_action'
-    with pytest.raises(ValueError):m.settle_task(region,{**binding,'preparatory_action':True},reply,'preparation')
 
 
 def test_task_request_discloses_observation_and_relation_instructions():

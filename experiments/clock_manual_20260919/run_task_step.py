@@ -74,10 +74,9 @@ def build_attempt_update(root,transport,folder):
         dynamic['登记说明']+=' 本动作已按模型坐标执行，控件身份尚未确认；不要把候选当事实。仍可见的实际控件按普通更新登记名称及点击框，空白关闭不虚构控件。'
     if binding.get('task_name'):
         dynamic['本轮探索任务']=binding['task_name']
-        if binding.get('preparatory_action'):dynamic['准备动作说明']='本动作与原定控件或动作不同。正常导航和后续操作允许执行；只有原任务对象对应的证据链满足目标时可done，不能因另一入口也打开类似界面就完成原入口任务。'
+        if binding.get('preparatory_action'):dynamic['准备动作说明']='实际操作与任务绑定动作不同，只登记本步变化；框架不会用准备动作完成原任务。'
         task=records[binding.get('task_region',binding['region_ref'])]['tasks'][binding['task_name']]
-        from history_context import task_goal
-        dynamic['任务目标']=task_goal(task,records,run)
+        dynamic['任务目标']={'说明':task['reason'],'type':task['task_type'],'原控件':records[binding.get('task_region',binding['region_ref'])]['controls'].get(task.get('control'),{}).get('name','区块本身'),'原动作':task.get('action')}
         from region_tasks import task_object_context
         dynamic['任务与实际对象核对']=task_object_context(records,binding)
     from region_tasks import coverage
@@ -85,8 +84,6 @@ def build_attempt_update(root,transport,folder):
     dynamic['来源区块已有任务']=[{'name':n,'action':t.get('action'),'control':owner['controls'].get(t.get('control'),{}).get('name'),
         'status':'done' if n in progress_now['done'] else 'record_only' if n in progress_now['record_only'] else t.get('status')}
         for n,t in owner.get('tasks',{}).items()]
-    import related_task_results
-    dynamic['同次动作可核对的其他任务']=related_task_results.candidates(owner,binding.get('control_ref'),proposal['action'],binding.get('task_name') if binding.get('task_region',binding['region_ref'])==binding['region_ref'] else None)
     import history_matching
     ranking=history_matching.scan(records,snapshot,folder/'after.png',scope=history_matching.foreground_scope.load(run,folder/'after.png'))
     dynamic['当前截图视觉匹配到的既有区块']=[{'region_ref':r['region'],'name':records[r['region']]['name'],
@@ -103,9 +100,6 @@ def build_attempt_update(root,transport,folder):
     dynamic['本次入口历史落点']=source_candidates.describe(recalled,labels)
     dynamic['区块名称使用']='身份引用使用已知区块中的完整name；同名区块附描述区别，仅用于本轮关联，不代表新建或合并。'
     u=build_update_request(root,dynamic,[str((folder/n).relative_to(run)) for n in ['before.png','after.png']])
-    if binding.get('task_name'):
-        from history_context import with_task_frames
-        u=with_task_frames(root,run,u,task,binding.get('task_region',binding['region_ref']))
     u=source_candidates.attach(u,reference,labels)
     u=history_matching.attach(u,records,ranking,region_names,snapshot)
     u['region_names']=region_names
@@ -148,6 +142,8 @@ def _run_step(root,run,out,*,review_update=None):
     def call(q):
         ref,reply=transport.call(q);calls.append(ref);return ref,reply
     def current():
+        if not (run/'execution_pending.json').exists() and not step_repair.pending(run):
+            step_repair.helper('task_settlement').reconcile_run(run)
         step_repair.helper('coverage_exemption').refresh(run)
         _,known,state=discovery_step.load(run)
         discovery_step.registration().sibling('traversal_scope').exclude_known_external(run,known,state)
@@ -285,13 +281,7 @@ def _run_step(root,run,out,*,review_update=None):
     # Repairs can consume the reserve; never deliver without result-call capacity.
     if transport.account['http_started']>=transport.account['max_http']:
         raise step_repair.Paused('ready_next_round','动作尚未执行，下一轮重新核对目标后继续')
-    if binding['status']=='no_action' and proposal.get('request_task_review'):
-        from task_result_review import request as review_request
-        review=review_request(root,run,q['source'],q.get('screenshots') or [str(out/'current.png')])
-        review['user_prompt']+='\n\n本次申请核对的理由（动作步判断，须结合证据核实）：'+proposal['reason']
-        reviewed=repair.perform('task_result_review',review)
-        write_json(out/'result.json',{'status':'ready_next_round','calls':calls,'gui_actions':0,'task_result_review':reviewed['result']})
-        transport.account['status']='ready_next_round';transport.save();return
+
     if binding['status']=='no_action':
         def observe_navigation(records,state,*args):
             state.update(next_action_mode='discover',phase='awaiting_discovery',interactive_regions=[],observation=None,

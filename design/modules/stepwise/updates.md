@@ -21,7 +21,6 @@
 - [registration_diagnostics.py](../../../experiments/clock_manual_20260919/registration_diagnostics.py)
 - [task_result_review.py](../../../experiments/clock_manual_20260919/task_result_review.py)
 - [parameter_evidence_review.py](../../../experiments/clock_manual_20260919/parameter_evidence_review.py)
-- [related_task_results.py](../../../experiments/clock_manual_20260919/related_task_results.py)
 - [update_semantic_review.py](../../../experiments/clock_manual_20260919/update_semantic_review.py)
 - [knowledge_transaction.py](../../../experiments/clock_manual_20260919/knowledge_transaction.py)
 
@@ -30,7 +29,7 @@
 - [流程/03_结果核对.json](../../../experiments/clock_manual_20260919/遍历prompt/流程/03_结果核对.json)
 - [更新/动作后观察与状态更新.prompt](../../../experiments/clock_manual_20260919/遍历prompt/更新/动作后观察与状态更新.prompt)
 - [更新/区块变化与字段.prompt](../../../experiments/clock_manual_20260919/遍历prompt/更新/区块变化与字段.prompt)
-- [任务/任务结果核对.prompt](../../../experiments/clock_manual_20260919/遍历prompt/任务/任务结果核对.prompt)
+- [任务/任务动作登记.prompt](../../../experiments/clock_manual_20260919/遍历prompt/任务/任务动作登记.prompt)
 - [输出格式/动作后更新.schema](../../../experiments/clock_manual_20260919/遍历prompt/输出格式/动作后更新.schema)
 
 ## 验证与未完成事项
@@ -38,3 +37,12 @@
 更新步允许必要前后/历史图，不把动作步单图约束套到更新。Stopwatch虚报Add及Timer单位推测写实尚未通过验收，不能因Runner完成宣布修好。
 
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#updates)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
+
+## 绑定动作驱动探索进度（2026-10-05）
+普通更新保留地图和action_result，任务部分改为task_update：findings保存本次参数事实；next_action通常为null，只有新观察证明原绑定不合适才给出region/control/action/reason。Luna不输出普通任务done/pending，也不替同次动作逐个判断其他任务。
+
+commit_update先附实际operation与输入回执，再由task_settlement匹配任务并写completion_basis；同一次确认动作可覆盖历史重复名。只有聚焦、对象未确认、其他控件/动作或缺观察不能完成原任务。参数事实保存实际来源；其他对象事实保留在动作层，不冒充任务控件参数。next_action保留旧绑定和历史，不消费修正前动作。
+
+正常续接的reconcile_run只复用已提交同绑定动作，无模型调用；前置准备及有blocker的任务不被历史点击结束。prepares仍由task_prerequisites的本次条件观察结束；unexpected_exit保留既有异常暂挂。暂挂解锁、归属修订及显式历史修复仍有专门入口，普通调度不再发累计完成复核。
+
+旧未完成请求仍保留原schema/原答，登记只读取其中参数事实，不信任旧task_result.status。归档补登记检查可能受影响的任务区块，不用历史后图替代当前位置。

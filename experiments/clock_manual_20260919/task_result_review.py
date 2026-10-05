@@ -39,7 +39,7 @@ def next_deferred(root,run,frame):
         if region.get('out_of_scope_reason'):continue
         for name,task in region.get('tasks',{}).items():
             if not helper('task_prerequisites').in_scope(region,task,records):continue
-            if reviewable(task,observation) or later_entry_history(region,task):
+            if reviewable(task,observation):
                 return request(root,run,{'task_region':rid,'task_name':name},[str(frame)])
     return None
 

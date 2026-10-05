@@ -147,7 +147,7 @@ def test_interrupted_restore_reuses_original_episode_and_counters(tmp_path):
     assert restored['observations'] == 1 and restored['seen'] == ['rejected']
 
 
-def test_model_blocked_result_is_not_reopened_with_archived_siblings(tmp_path):
+def test_archived_review_blocker_releases_to_execution_based_progress(tmp_path):
     run, _, discovery, frame = archived(tmp_path)
     recovery().restore_next(run, frame)
     snapshot, records, previous = discovery.load(run)
@@ -156,7 +156,7 @@ def test_model_blocked_result_is_not_reopened_with_archived_siblings(tmp_path):
     records['r1']['tasks']['Policy'].update(status='blocked', result_evidence='still unresolved')
     state = {'update_status':'committed','update_digest':'new'}
     recovery().complete(records, previous, state, marker, '0677', 'a1')
-    assert records['r1']['tasks']['Policy']['status'] == 'blocked'
+    assert records['r1']['tasks']['Policy']['status'] == 'pending'
     assert records['r1']['tasks']['Settings']['status'] == 'pending'
 
 

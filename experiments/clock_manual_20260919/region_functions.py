@@ -77,7 +77,7 @@ def evidence_projection(region,records=None):
                      '任务提出调用':t.get('source_call'),
                      '依据时态':'历史记录：其中当前、本轮、未验证均指对应观察时刻，须与后续动作和恢复观察合看',
                      '结果动作记录':list(t.get('attempts',[])),
-                     '登记方式':'本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '依据本任务探索结果登记'} for n,t in supported_tasks(region).items()],
+                     '登记方式':'本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '绑定动作已探索；只采用实际观察，不把done或任务意图当作功能成功'} for n,t in supported_tasks(region).items()],
         '已记录属性（待甄别）':attribute_context(region),
         '同区块已执行动作结果':action_results(region,records),
         '动作证据覆盖':action_evidence_coverage(region,records),

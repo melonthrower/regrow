@@ -41,11 +41,11 @@ def normalize(proposal):
 
 def validate(proposal,platform="android"):
     import jsonschema
-    jsonschema.validate({'skip_task':False,'request_task_review':False,**proposal},schema())
+    if proposal.get('request_task_review'):
+        raise ValueError('普通动作不再申请任务完成复核；按绑定动作执行或补发现')
+    jsonschema.validate({'skip_task':False,**{k:v for k,v in proposal.items() if k!='request_task_review'}},schema())
     if proposal.get("skip_task") and (proposal["action"]!="none" or not proposal.get("reason","").strip()):
         raise ValueError("跳过任务使用none，并说明违反哪项当前限制")
-    if proposal.get('request_task_review') and (proposal['action']!='none' or proposal.get('skip_task') or not proposal.get('reason','').strip()):
-        raise ValueError('累计结果核对使用none、skip_task=false，并说明历史依据')
     commands(normalize(proposal),platform)
 
 

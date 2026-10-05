@@ -107,9 +107,6 @@ def accept_candidate(root,run,job):
         platform='desktop' if manifest.exists() and helper('register_update').read(manifest).get('desktop') else 'android'
         jsonschema.validate(proposal,q['response_schema']);helper('action_commands').validate(proposal,platform)
         proposal=helper('action_commands').normalize(proposal)
-        if proposal.get('request_task_review'):
-            src=q.get('source',{});rid=src.get('task_region') or src.get('region')
-            if records.get(rid,{}).get('tasks',{}).get(src.get('task_name'),{}).get('status')!='pending':raise ValueError('结果核对需要已登记的pending任务')
         binding=helper('stepwise_flow').bind_action_target(q,proposal)
         if binding['status'] not in ('matched','no_action'):raise BindingConflict('动作绑定失败：'+binding.get('reason',binding['status']))
         if binding['status']=='matched':

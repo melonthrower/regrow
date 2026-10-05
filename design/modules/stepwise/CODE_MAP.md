@@ -68,13 +68,12 @@
 |---|---|---|
 | [update_step.py](../../../experiments/clock_manual_20260919/update_step.py) | 组装动作后更新请求及基础校验；最终发布由登记器完成。 | `build_update_request / route_update` |
 | [register_update.py](../../../experiments/clock_manual_20260919/register_update.py) | 固定原动作来源、保存观察/动作/图像及正式快照；不调用模型或 GUI。 | `commit_update / commit_discovery / materialize_regions` |
-| [task_settlement.py](../../../experiments/clock_manual_20260919/task_settlement.py) | 按原 binding 结算任务及参数发现，保留任务对象与事实出处。 | `task_object_context / settle_task / store_findings` |
+| [task_settlement.py](../../../experiments/clock_manual_20260919/task_settlement.py) | 由已登记绑定动作计算探索进度、修正后续绑定并保存参数事实。 | `completion_target / settle_task / reconcile_run / store_findings` |
 | [region_evidence.py](../../../experiments/clock_manual_20260919/region_evidence.py) | 构造/投影 Region、控件、动作和保存图状态，不推断成功或反向路线。 | `region_transitions / region_records / graph_state；new_region / region_observation / control_observation / control_name / action_record / index_actions` |
 | [update_visibility.py](../../../experiments/clock_manual_20260919/update_visibility.py) | 合并本轮明确未变的区块与变化，旧框与裁图保持历史资格。 | `regions / locate_retained` |
 | [registration_diagnostics.py](../../../experiments/clock_manual_20260919/registration_diagnostics.py) | 在发布前集中收集独立错误、身份/归属/可见性诊断。 | `collect / check` |
-| [task_result_review.py](../../../experiments/clock_manual_20260919/task_result_review.py) | 从原任务累计证据核对结果、暂挂复核并发布，不发新 GUI。 | `request / apply / commit` |
+| [task_result_review.py](../../../experiments/clock_manual_20260919/task_result_review.py) | 异常暂挂和显式历史修复；普通流程不再申请累计完成复核。 | `request / apply / commit` |
 | [parameter_evidence_review.py](../../../experiments/clock_manual_20260919/parameter_evidence_review.py) | 参数事实缺失时只按证据集交接一次，回原规划作者补登记。 | `request_review / augment` |
-| [related_task_results.py](../../../experiments/clock_manual_20260919/related_task_results.py) | 只沿显式确认的同控件目标共享实际结果证据。 | `candidates / apply` |
 | [update_semantic_review.py](../../../experiments/clock_manual_20260919/update_semantic_review.py) | 发布前接受调用方的证据绑定监督结论，不默认提供自动语义正确性。 | `check` |
 
 ## 第三步：功能知识与覆盖（3 文件）

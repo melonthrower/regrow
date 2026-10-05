@@ -440,7 +440,7 @@ def retire_completed_goal(run):
 
 def locate_task_control(run,q,frame):
     """Refresh only the chosen task's missing control, using current visual evidence."""
-    source=q.get('source',{});cid=source.get('task_control');rid=source.get('task_region')
+    source=q.get('source',{});cid=source.get('task_control');rid=source.get('completion_region') or source.get('task_region')
     if not cid or not rid:return False
     snapshot,records,state=load(run);obs=state.get('observation') or {}
     if rid not in state.get('interactive_regions',[]):return False

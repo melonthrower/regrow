@@ -116,7 +116,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
     dispatch=read(dispatch_path) if dispatch_path.exists() else {}
     if dispatch.get('recovery'):raise ValueError('recovery actions must not use business update registration')
     ordinary_back=dispatch.get('action',{}).get('action')=='back'
-    ordinary_scroll=dispatch.get('action',{}).get('action') in ('scroll','wait','key_press')
+    ordinary_scroll=dispatch.get('action',{}).get('action') in ('scroll','wait','key_press','hotkey')
     binding={}
     edges = [e for e in graph['action_edges'] if e['attempt']==attempt_ref]
     if len(edges)>1:
@@ -264,7 +264,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                           'evidence':split['evidence']}
     elif association:a['association']=association
     a['result']=deepcopy(reply['action_result'])
-    a['parameter_findings']=deepcopy((reply.get('task_result') or {}).get('findings',[]))
+    a['parameter_findings']=deepcopy((reply.get('task_update') or reply.get('task_result') or {}).get('findings',[]))
     a['evidence'].update(result_call=call_ref,before_regions=before['region_refs'])
     a['interactive_regions']=region_refs
     # Replace the entire assessment together, never retain old region_changes
@@ -286,14 +286,13 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                           'relation':'observed_interactive_candidate'}
                 owner['transitions'].append(relation)
                 records[target]['reached_by'].append({'source_region':source,'source_control':control,'attempt':attempt_ref})
+    # Settlement must see the actual operation and partial-input receipt.
+    attach_execution(records,run)
     if not split:
         effective_binding={**binding,'region_ref':source,'control_ref':control}
-        sibling('region_tasks').settle_task(records[binding.get('task_region',source)],effective_binding,reply,attempt_ref,records)
+        sibling('region_tasks').settle_task(records[binding.get('task_region',source)],effective_binding,reply,attempt_ref,records,receipt=receipt,labels=request.get('region_names'))
     sibling('task_prerequisites').apply(records,reply,call_ref,request.get('dependency_candidates',[]))
-    if not split:
-        sibling('related_task_results').apply(owner,binding,reply,attempt_ref,call_ref,request.get('related_task_names',[]),operation=dispatch.get('action',{}).get('action'))
     flow.index_actions(records)
-    attach_execution(records,run)
     for region in records.values():
         for action in region['actions'].values():
             if flow.contextual_return(action):

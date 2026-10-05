@@ -319,3 +319,8 @@
 - [test_stepwise_launcher.py](test_stepwise_launcher.py)
 - [test_stepwise_region_graph.py](test_stepwise_region_graph.py)
 - [test_system_error_recovery.py](test_system_error_recovery.py)
+
+## 绑定动作与探索进度
+- [test_task_action_binding.py](test_task_action_binding.py)：同绑定执行、错对象/操作、未发送输入、改绑、参数回填、清点去重及新schema。
+- [test_stepwise_related_results.py](test_stepwise_related_results.py)：同次动作复用与历史续接；不再依赖模型related_task_results。
+- 相邻路由、归档恢复、前置条件：test_task_settlement_routing、test_suspended_update_recovery、test_ownership_and_prerequisites、test_prerequisite_runtime。

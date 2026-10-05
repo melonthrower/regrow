@@ -1,5 +1,7 @@
 # 框架细节与批次证据参考
 
+2026-10-05任务进度现行合同：同区块控件+动作复用，第三步以实际动作及观察派生已探索；普通task_result/独立累计完成复核已停用，参数事实与后续改绑见[更新模块](modules/stepwise/updates.md)。下文较早批次保留原证据，不作为新协议。
+
 [短全局索引](CURRENT_FRAMEWORK.md) · [模块地图](modules/README.md) · [开发入口](../DEVELOPMENT.md)
 
 这里完整保留 2026-10-05 拆分前的长文。各实现仍适用的入口、数据与行为合同继续作为现行细节；它不是统一的过时文档。`visual_traversal`、autonomous、modular explore、evidence explore 与逐步遍历各有适用范围，不把一个实现的规则套到另一个实现。

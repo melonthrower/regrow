@@ -1,4 +1,4 @@
-"""A destination observation must not replace the task-result assessment."""
+"""A recorded bound action determines exploration progress; model status is ignored."""
 from copy import deepcopy
 
 import pytest
@@ -27,15 +27,12 @@ def test_routing_preserves_settled_goal_and_evidence(status):
     state = {'working_region': 'dialog', 'interactive_regions': ['outer']}
     mod('region_tasks').settle_task(records['dialog'], binding, reply, 'a1', records)
     mod('task_routing').advance(records, old, state, 'dialog', binding, 'a1')
-    assert task['status'] == status
-    assert task['result_evidence'] == evidence
+    assert task['status'] == 'done'
+    assert task['result_evidence'] == 'Outer dialog visible'
     assert task['reason'] == 'Confirm the setting and observe the original object feedback'
     assert reply == raw_reply
-    if status == 'done':
-        assert state['working_region'] == 'outer' and 'active_task' not in state
-    elif status == 'pending':
-        assert state['active_task'] == old['active_task']
-        assert 'completion_basis' not in task
+    assert state['working_region'] == 'outer' and 'active_task' not in state
+
 
 
 @pytest.mark.parametrize('retry', [None, 'explicit_task_ownership_review', 'explicit_result_review'])

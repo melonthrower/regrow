@@ -254,10 +254,10 @@ def task_goal(task, records, run=None):
 
 
 def action_context(records,state,task_region,name,task):
-    lines=['当前目标：'+name,'原任务目标与结束条件（仍用于本轮核对，其中界面描述属于建立时观察）：'+task['reason']]
+    lines=['当前目标：'+name,'探索说明（建立任务时的观察，不代表效果已实现）：'+task['reason']]
     lines.append('任务合同：'+json.dumps({'动作':task.get('action'),'类型':task.get('task_type'),
         '处理方式':task.get('handling'),'覆盖任务':task.get('equivalent_to')},ensure_ascii=False))
-    lines.append('已有动作与任务历史判断统一见共同地图的区块控件历史；结合登记顺序核对原结束条件，pending不证明必须再点一次。')
+    lines.append('已有动作与观察统一见共同地图。框架根据绑定动作更新进度，done只表示已探索；业务效果以实际观察为准。')
     resolved=[item for item in task.get('blocker_history',[]) if item.get('resolved_by')]
     if resolved and not task.get('blocker'):
         lines.append('历史阻塞已在后续观察中解除；当前是否可操作仍以截图为准。')
@@ -272,5 +272,7 @@ def action_context(records,state,task_region,name,task):
     lines.append('任务登记状态：'+task.get('status','未提供'))
     if task_region not in state.get('interactive_regions',[]) and task.get('attempts'):
         lines.append('任务仍归原区块记录，但不要求返回原区块。依据已有结果从当前截图继续核验；不要为再次操作原入口而自动返回。')
-    lines.append('先用已有尝试核对原结束条件。历史可能已回答原问题，或实际尝试后效果仍未确认且暂无有依据的新验证动作时，可用none、skip_task=false、request_task_review=true交第三步核对完成、继续或暂挂，说明已知事实和缺口；不为pending重复操作。有允许且有依据的准备或验证方法时继续一步；仅缺定位时用none补发现。')
+    from task_settlement import task_object_context
+    lines.append('本任务当前绑定：'+json.dumps(task_object_context(records,{'task_region':task_region,'region_ref':task_region,'task_name':name}),ensure_ascii=False))
+    lines.append('这是前置准备：根据原准备说明和实际反馈继续；条件满足由更新步的dependency_updates登记，点击入口本身不结束准备。' if task.get('prepares') else '执行当前绑定动作并记录直接反馈；不要追加穷举或保存验证。需要到达目标时可先导航，无法定位用none补发现。')
     return '\n'.join(lines),evidence

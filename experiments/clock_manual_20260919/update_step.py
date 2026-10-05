@@ -51,34 +51,17 @@ def build_update_request(root, dynamic, screenshots):
     field['required']=list(dict.fromkeys(field['required']+['recovery_handoff','returns_to_previous']))
     parts.append({'path':'异常处理/异常识别.prompt','text':(pr/'异常处理/异常识别.prompt').read_text()})
     if dynamic.get('本轮探索任务'):
-        schema['properties']['task_result']={'type':'object','properties':{'name':{'type':'string'},'status':{'type':'string','enum':['done','pending','blocked']},'evidence':{'type':'string'}},'required':['name','status','evidence'],'additionalProperties':False}
-        schema['required'].append('task_result')
-        schema['properties']['task_result']['properties']['findings']={'type':'array','items':json.loads((pr/'输出格式/参数发现.schema').read_text())}
-        schema['properties']['task_result']['required'].append('findings')
-        parts.append({'path':'共享/任务结束条件.prompt','text':(pr/'共享/任务结束条件.prompt').read_text()})
-        parts.append({'path':'任务/任务结果核对.prompt','text':(pr/'任务/任务结果核对.prompt').read_text()})
-        task_type=dynamic.get('任务目标',{}).get('type')
-        example='参数与滚动' if task_type in ('parameter','scroll') else '单步入口' if task_type=='single_action' else None
-        example_paths=([f'任务/结果核对示例/{example}.prompt'] if example else [])
-        steps=dynamic.get('实际动作',[])
-        if any(step.get('action')=='input_text' for step in steps) or dynamic.get('回执',{}).get('text_delivered') is False:
-            example_paths.append('任务/结果核对示例/输入与确认.prompt')
-        parts.extend({'path':path,'text':(pr/path).read_text()} for path in example_paths)
+        schema['properties']['task_update'] = {
+            'type':'object','properties':{
+                'findings':{'type':'array','items':json.loads((pr/'输出格式/参数发现.schema').read_text())},
+                'next_action':{'anyOf':[{'type':'null'},{'type':'object','properties':{
+                    'region':{'type':'string'},'control':{'type':'string'},
+                    'action':{'type':'string','enum':['click','double_click','long_press','input_text','scroll','key_press','hotkey','hover','right_click','drag','back','wait']},
+                    'reason':{'type':'string'}},'required':['region','control','action','reason'],'additionalProperties':False}]}},
+            'required':['findings','next_action'],'additionalProperties':False}
+        schema['required'].append('task_update')
+        parts.append({'path':'任务/任务动作登记.prompt','text':(pr/'任务/任务动作登记.prompt').read_text()})
         parts.append({'path':'共享/参数观察值.prompt','text':(pr/'共享/参数观察值.prompt').read_text()})
-        # Follow the manual's reasoning order: cumulative task evidence first,
-        # then this particular action. Do not make current visibility the goal.
-        schema['properties']={'task_result':schema['properties']['task_result'],
-                              **{k:v for k,v in schema['properties'].items() if k!='task_result'}}
-        schema['required']=['task_result',*[k for k in schema['required'] if k!='task_result']]
-    related=dynamic.get('同次动作可核对的其他任务',dynamic.get('同次动作可核对的单步任务',[]))
-    if related:
-        names=[t['name'] for t in related]
-        schema['properties']['related_task_results']={'type':'array','items':{'type':'object','properties':{
-            'name':{'type':'string','enum':names},'evidence':{'type':'string'},
-            'findings':{'type':'array','items':json.loads((pr/'输出格式/参数发现.schema').read_text())}},
-            'required':['name','evidence','findings'],'additionalProperties':False}}
-        schema['required'].append('related_task_results')
-        parts.append({'path':'任务/同次动作关联结果.prompt','text':(pr/'任务/同次动作关联结果.prompt').read_text()})
     identity_module=history().sibling('region_behavior_split')
     identity_module.extend_schema(schema)
     parts.append({'path':'共享/行为差异分离.prompt','text':(pr/'共享/行为差异分离.prompt').read_text()})
@@ -86,7 +69,7 @@ def build_update_request(root, dynamic, screenshots):
             'system_prompt':'\n\n'.join(p['text'] for p in parts),
             'user_prompt':json.dumps(dynamic, ensure_ascii=False, indent=2),
             'screenshots':list(screenshots),
-            'response_schema':schema,'related_task_names':[t['name'] for t in related],
+            'response_schema':schema,
             'fixed_parts':parts}
 
 

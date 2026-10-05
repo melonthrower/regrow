@@ -560,3 +560,5 @@ collection_visual_guard.py 从冻结图外观定位当前控件，再映射点�
 
 
 2026-10-02 首次对象/运行态的内容发现：复制遍历器普通任务提示在创建、启动或选择确认将产生尚未观察的交互结构时，保留一个代表状态的发现目标。仅为数值/文案/同类实例变化不重复创建，明确效果仍可record；旧任务结束条件不扩大成用户权限。旧完整清单不自动重审，已有task_inventory.review可承接监督覆盖复核。真实后续观察前不生成新Region/控件、不算业务成功。Gmail月报if/else仍必须实际观察分支条件并验证业务结果，不能以建立任务替代。代码入口region_tasks.plan_request/commit_plan，历史复核用historical_inventory.region_request或实际检查点正常assemble_current_context；保存帧及失败边界见stepwise_debug_loop。
+
+2026-10-05逐步遍历任务进度：同区块控件+动作复用，普通done由真实执行和结果登记导出，仅表示已探索。前置条件仍须观察满足；Gmail月报if/else的条件与业务结果、指令生成和采集验收均未改变。实现task_settlement/region_tasks，见[更新合同](modules/stepwise/updates.md)；保存帧、实机边界由本月日志逐批记录。

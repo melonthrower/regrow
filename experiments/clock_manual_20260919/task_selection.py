@@ -21,6 +21,8 @@ def attach(root,records,state,working,base):
     if state.get('visual_navigation') and base.get('navigation_advice') and base.get('navigation_path') and not in_progress:return base
     multi_continuation=rid is None and refs and in_progress
     if multi_continuation:rid=refs[0]
+    target=continuing.get('completion_action',{})
+    if in_progress and target.get('region') in refs:rid=target['region']
     if rid is None:return base
     region=records[rid];progress=coverage(region,records)
     if progress.get('excluded'):
@@ -72,7 +74,9 @@ def attach(root,records,state,working,base):
             q=flow._assemble_action_context(root,records,state,task_region)
             q['pipeline_step']='action'
             return q  # A one-step task cannot silently become another Region's work.
-        q['source'].update(task_name=name,task_region=task_region,task_type=kind,task_control=cid,task_action=task.get('action'))
+        target=helper('task_settlement').completion_target(records[task_region],task)
+        cid=target['control']
+        q['source'].update(task_name=name,task_region=task_region,task_type=kind,task_control=cid,task_action=target['action'],completion_region=target['region'])
         q['preparation_allowed']=True
         q['allow_scroll']=True
         q['allow_input']=True
@@ -103,7 +107,7 @@ def attach(root,records,state,working,base):
             if other in refs:return attach(root,records,{**state,'interactive_regions':[other]},other,base)
             return flow._assemble_action_context(root,records,state,other)
         q.update(action_ready=False,stage='task_blocked');return q
-    text+='\n\n若原任务控件本轮未定位，而已有另一入口的实际结果可能覆盖同一直接去向，可用none并申请request_task_review核对；未定位不等于消失，不能直接跳过或记完成。参数、创建保存目标不能用打开窗口代替。'
+    text+='\n\n完成状态由已登记的绑定动作计算，不申请另一次任务完成核对。当前目标未定位可用none补发现；准备动作不代替原动作。'
     q['user_prompt']=q['dynamic_prompt']=text;q['task_progress']=progress
     if inventory_scroll:helper('inventory_scroll').restrict(q)
     return helper('page_history').attach(q,records,state)
@@ -130,7 +134,7 @@ def render(region,records=None,*,include_history=True,current_task=None):
             e=region['tasks'][name]['coverage_exemption']
             lines.append('- '+name+'：免重复探索（非执行完成）'+'；'+e['evidence']+'；未验证：'+e['unverified'])
             continue
-        status='已完成' if name in c['done'] else '仅记录' if name in c['record_only'] else '受阻' if name in c['blocked'] else '待完成'
+        status='已探索（结果见动作记录）' if name in c['done'] else '仅记录' if name in c['record_only'] else '受阻' if name in c['blocked'] else '待完成'
         label='本轮当前任务（定义见任务卡）' if current_task=={'region':region['id'],'name':name} else name
         lines.append(f'- {label}：{status}')
         if include_history and name not in c['record_only']:

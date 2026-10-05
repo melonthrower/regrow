@@ -49,7 +49,7 @@ def test_dependency_preparation_and_evidence_scoped_wakeup(tmp_path):
 
 def test_crash_task_does_not_wake_when_application_returns(tmp_path):
     run,q,d=setup(tmp_path);_,records,state=d.load(run);r=records['r1'];t=r['tasks']['Policy']
-    tasks().settle_task(r,{'task_name':'Policy'}, {'action_result':{'exception':'unexpected_exit'},
+    tasks().settle_task(r,{'task_name':'Policy','region_ref':'r1','control_ref':t['control']}, {'action_result':{'exception':'unexpected_exit'},
         'task_result':{'name':'Policy','status':'pending','evidence':'app exited','findings':[]}},'crash1')
     r['controls']['c1']['observations'].append({'image':'visible.png','evidence':{'source_call':'returned'}})
     tasks().helper('task_deferral').resume_localized(records,['r1'],'returned',foreground={'exception':'none'})

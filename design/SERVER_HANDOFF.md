@@ -1,6 +1,20 @@
 # 服务器续接工作
 
-## 2026-10-05 全新双端 Clock 小批次：已停下复核
+## 2026-10-05 允许局部不完整后续跑：接口中断已补登记，当前停止
+
+用户已明确：局部遗漏、受挡缺口和普通pending不单独阻断；继续清楚可操作的任务，后续自然补充。优先核查错误身份、虚假成功、重复无效操作和实际无法继续；允许现有自动纠错。无可行动入口时只报告有限范围结束，不宣称全应用覆盖。本条取代下节“先处理完整性/恢复结算再扩量”的监督安排，不修改正式研究验收口径。
+
+本次保持原设备、原图与已接受冻结源`0c2211a`/hash`d8d622e347256b9659c875b9bb303db98f34d5f89edbdda9c4c168dff2d45e46`，未改框架/提示。新增87HTTP/21GUI命令（桌面45/12、移动42/9）；其中2次无完整接口响应。先各2轮验证，再连续运行；桌面0048、移动0054传输失败使会话interrupted。日志只留下NoRetry，原始网络异常未保存，不能确定超时或连接故障。监督者各启动一轮原生恢复补齐失败工作，随后收束；不是无人介入自动网络恢复，也未达到每路50GUI上限。
+
+- 桌面：原`rewalk-clock-fresh-20261005-02`、`clock_fresh_20261005_retry02/runs/org.gnome.clocks_20261005T090337_fe302652`（均在artifacts/runs下）。累计53HTTP/16GUI；最后a0014/0053，pointer=`knowledge_snapshots/a0014-0053-84c6e7ce9b1a`。真实完成London添加/详情及三个功能标签访问、计时器启动和结束卡片重启；13任务done、19record_only、1pending，不代表已清点全部区域。最后动作后图为运行00:00:58；11:49 UTC停止取图时已再次自然到时，显示00:01:00、Title、播放和删除按钮及通知。续接以新图核对，不重放a0014。
+- 移动：原`emulator-44744`、`clock_mobile_fresh_20261005_retry04/runs/com.google.android.deskclock_20261005T092213_00b72c04`。累计55HTTP/13GUI；最后a0012/0055，pointer=`knowledge_snapshots/a0012-0055-a5b3ed7a86df`。Screen saver旧任务经复核完成，随后查看Settings/样式/家庭时区，列表实际滚动两次；6任务done、13record_only、4pending。0054失败时a0012已经执行，0055仅补更新、0GUI；当前仍是家庭时区列表至GMT+2:00附近，未选择时区，不重放a0012。
+
+两路驱动已结束、pending_step/execution_pending/visual_navigation_pending均空，设备和查看服务保留运行。停止取图与配置在`artifacts/runs/clock_continue_partial_20261005_01/`；本轮报告/逐动作后图/原请求原答/审核包在`to_astra/clock_continue_partial_20261005_01/`及同名ZIP，仅本地证据、不随源码推送。
+
+运行中确认的后续关注：结果复核遗漏未绑定控件的已执行历史（桌面0041先pending，0043依据动作步转述才done，未重复点击）；新帧滚动边界反复补观察的开销；接口异常不能自动连续续接且首因日志丢失。本轮仅记录，没有修复或验收这些实现。标题栏四标签遗漏已随正常返回自然补录；Screen saver部分图边仍缺，不将旧风险一概写为仍阻塞。逐步展开的新状态和未知区域不作全覆盖承诺。
+
+
+## 此前停止点：2026-10-05 全新双端 Clock 小批次
 
 本轮使用已接受提交 `0c2211aa91f73e61810b20da7944d149616b70b7` 的逐步遍历源码，冻结在 `artifacts/runs/clock_fresh_20261005_01/source`，hash `d8d622e347256b9659c875b9bb303db98f34d5f89edbdda9c4c168dff2d45e46`。共享 API/设备依赖另有 source_manifest 哈希记录；未混入工作区候选，未改框架或提示。两端合计21HTTP/8GUI命令，未完成完整遍历。完整请求、原答、截图与失败环境记录见本地 `to_astra/clock_fresh_20261005_01/REPORT.md` 及同名ZIP；不随源码推送。
 

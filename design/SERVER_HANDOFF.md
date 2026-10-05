@@ -1,5 +1,14 @@
 # 服务器续接工作
 
+## 2026-10-05 全新双端 Clock 小批次：已停下复核
+
+本轮使用已接受提交 `0c2211aa91f73e61810b20da7944d149616b70b7` 的逐步遍历源码，冻结在 `artifacts/runs/clock_fresh_20261005_01/source`，hash `d8d622e347256b9659c875b9bb303db98f34d5f89edbdda9c4c168dff2d45e46`。共享 API/设备依赖另有 source_manifest 哈希记录；未混入工作区候选，未改框架或提示。两端合计21HTTP/8GUI命令，未完成完整遍历。完整请求、原答、截图与失败环境记录见本地 `to_astra/clock_fresh_20261005_01/REPORT.md` 及同名ZIP；不随源码推送。
+
+- 桌面：新容器 `rewalk-clock-fresh-20261005-02`；运行 `artifacts/runs/clock_fresh_20261005_retry02/runs/org.gnome.clocks_20261005T090337_fe302652`，指针 `knowledge_snapshots/a0002-0008-fc7270adce23`。8HTTP/4GUI，最后实际输入 London，四个结果可见、未选择或添加城市；搜索任务done，添加前置仍pending。暂停原因是标题栏中部被通知遮住时任务清点已记complete，后来露出的四个功能标签尚未登记。用户当前要求先看截图示例，尚未决定修复或继续此路；不得重放a0001/a0002。
+- 移动：新独立AVD冷启动，设备 `emulator-44744`，运行 `artifacts/runs/clock_mobile_fresh_20261005_retry04/runs/com.google.android.deskclock_20261005T092213_00b72c04`，指针 `knowledge_snapshots/a0003-0013-1d1c0bb74631`。13HTTP/4GUI，包含原生恢复点击Got it；真实看见全屏时钟，随后a0003顶部下滑回Clock主页。Screen saver入口任务仍pending，恢复观察已追加但未结算，暂停扩量核对；没有观察到重复打开Screen saver，不把风险写成已发生循环。不得重放恢复点击或a0003。
+
+两路会话均已结束，无pending_step/execution_pending/visual_navigation_pending；设备与查看服务保留，继续前核对实时状态。移动启动旧共享盘尝试两次崩溃、独立副本快照恢复超时；最终副本冷启动成功，同一新实例补齐首次清理超时。故障根因未最终确认，不能宣称共享盘历史绝无写入或模拟器普遍稳定。各失败目录保留，不用失败快照替代当前现场。后续先处理上述完整性及恢复后任务结算问题，再决定扩量。
+
 2026-10-04 局部遮挡提示候选已做完整保存帧验证，未部署现场：artifacts/runs/luna_map_decision_20261004_01/v3/source，hash6b59046ba213337072e476de28a21fb3737d1b7b2a23099a1ef986f5ced5f1a2。新增6HTTP/0GUI，旧菜单复识别、普通状态和任务续进有限通过，首遇受挡控件的准确绑定/执行仍未验收。menu、stopwatch、known_menu均历史完整run的隔离副本，只用于重算既有帧；不得作为当前VM恢复点。实机仍以下方文字图5步现场为准，本轮没有新动作或后图。
 
 2026-10-04 文字地图5步现场：最新续跑图为artifacts/runs/clock_text_map_5gui_20261004_01/run，源fc7abbe冻结hash359e244d834e7780cc3b1adebc3792f19c494b1e18c3b7842520720a61cb0195。同一专属Clock prompt VM保留运行，GUI/model已停止；原clock_prompt_live图pointer/manifest未动。真实Cancel→Alarms→Stopwatch→Timer→菜单共5click/12HTTP，最后a0010/0027，pointer=knowledge_snapshots/a0010-0027-596a3de85362，无pending_step/execution_pending/visual_navigation_pending。stop/final.png为真实当前菜单画面，第一项有Menu提示遮挡；不得重放a0010补账。最终图7Region/27控件，非完整遍历。旧浏览器服务指原图，不代表新图；新报告to_astra/clock_text_map_5gui_20261004_01。下一次从此完整图和fresh截图恢复，不从保存帧修复样本恢复。

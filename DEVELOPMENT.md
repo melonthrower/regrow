@@ -1,4 +1,6 @@
-# 开发入口
+# regrow 开发入口
+
+项目名称统一为 **regrow**。`GUI-ReWalk`、`gui_rewalk` 和带日期的目录名保留为历史路径或导入名；后续说明使用 regrow，定位源码仍按现有路径。
 
 [全部代码职责与位置](design/modules/stepwise/CODE_MAP.md)：按流程找入口，再按共享能力找唯一实现；改动前沿输入、校验、登记和下一步核对。
 

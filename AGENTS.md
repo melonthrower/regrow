@@ -1,5 +1,19 @@
 # Repository working rules
 
+## Project identity and development memory
+
+The project is named **regrow**. Use this name in current explanations and new
+documentation. `GUI-ReWalk`, `gui_rewalk`, and dated source directories are
+historical filesystem or import names; this naming decision does not rename them.
+
+For current stepwise traversal work, start with [DEVELOPMENT.md](DEVELOPMENT.md)
+and its [code map](design/modules/stepwise/CODE_MAP.md). Organize changes around
+discovery and task preparation, action selection and execution, result updates,
+and their shared recovery, map/history, identity/evidence, and runtime modules.
+Follow request construction through validation, registration, and the next read;
+keep shared logic in one implementation. Check the active checkout and preserve
+unaccepted working-tree candidates instead of treating every file as verified.
+
 Before changing framework code:
 
 1. Read `design/CURRENT_FRAMEWORK.md` (the short global index and shared

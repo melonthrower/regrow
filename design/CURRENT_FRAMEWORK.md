@@ -1,4 +1,4 @@
-# GUI-ReWalk 当前框架索引
+# regrow 当前框架索引
 
 [开发入口](../DEVELOPMENT.md) · [三步主流程](modules/stepwise/README.md) · [逐文件职责](modules/stepwise/CODE_MAP.md) · [完整细节](CURRENT_FRAMEWORK_DETAILS.md)
 

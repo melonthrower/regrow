@@ -62,6 +62,8 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 
 ## 5. 当前调试开关
 
+逐步流程的共享视觉定位现用原尺寸灰度像素匹配（无边缘提取、缩放或OCR），保留控件组关联；按严格门槛允许漏识别，不能宣称无误识别。默认与相邻输入/整页检查边界见[身份合同](modules/stepwise_region_identity.md#2026-10-03-重复外观控件的位置关联)。旧冻结运行不会自动切换。
+
 本批不新增 CLI 开关或第二条默认执行路径。guided/autonomous/modular 的模型默认、显式实验模式与 fixture 开关见[原第 5 节](CURRENT_FRAMEWORK_DETAILS.md#5-当前调试开关)及对应模块；当前逐步模型配置按[运行模块](modules/stepwise/runtime.md)核对，不沿用其他内核的默认值。
 新运行通常在 `artifacts/runs/`；真实旧 run 保留原位，源码由 `run_manifest.json/framework_source` 指定。临时验证在 `artifacts/tmp_tests/<唯一任务>/`，审阅包在 `to_astra/<唯一名称>/`；冻结源不会随 checkout 自动更新。
 

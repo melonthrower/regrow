@@ -5,6 +5,7 @@ New navigation goes through normal action selection, dispatch and registration.
 from pathlib import Path
 import json
 import uuid
+import numpy as np
 from PIL import Image
 import discovery_step as discovery
 import image_match
@@ -17,8 +18,17 @@ def same_surface(reference, frame):
     try:
         with Image.open(reference) as a, Image.open(frame) as b:
             if a.size != b.size:return False
-        hit=image_match.locate(reference,frame)
-        return hit['accepted'] and hit.get('scale')==1 and hit['box'][:2]==[0,0] and min(hit.get('halves',[0]))>=.85
+            before = np.asarray(a.convert('RGB'))
+            after = np.asarray(b.convert('RGB'))
+        height = len(before)
+        # Preserve the whole-surface and half-surface checks using pixel evidence.
+        # Exact equality also handles untextured areas, which cannot locate a control.
+        for lo, hi in [(0, height), (0, height // 2), (height // 2, height)]:
+            if lo == hi or np.array_equal(before[lo:hi], after[lo:hi]):
+                continue
+            if not image_match._search(before[lo:hi], after[lo:hi])['accepted']:
+                return False
+        return True
     except (OSError,ValueError):return False
 
 

@@ -107,7 +107,8 @@ def test_multiple_focus_clicks_are_not_a_single_replay_edge():
     assert [e['attempt'] for e in path]==['a1','a2']
 
 
-def test_focus_border_change_preserves_input_content(modules,tmp_path):
+@pytest.mark.parametrize('border_width,expected_match', [(4, True), (8, False)])
+def test_focus_border_change_requires_owner_pixel_evidence(modules,tmp_path,border_width,expected_match):
     import numpy as np
     from PIL import Image,ImageDraw
     _,m=modules
@@ -118,11 +119,13 @@ def test_focus_border_change_preserves_input_content(modules,tmp_path):
     pattern=Image.fromarray(np.random.default_rng(21).integers(100,255,(40,50,3),dtype=np.uint8))
     scene.paste(pattern,(135,105))
     scene.save(tmp_path/'before.png');scene.save(tmp_path/'region.png');scene.crop(box).save(tmp_path/'control.png')
-    changed=scene.copy();ImageDraw.Draw(changed).rectangle(box,outline='#60caff',width=8);changed.save(tmp_path/'after.png')
+    changed=scene.copy();ImageDraw.Draw(changed).rectangle(box,outline='#60caff',width=border_width);changed.save(tmp_path/'after.png')
     target={'image':str(tmp_path/'control.png'),'region_image':str(tmp_path/'region.png')}
     hit=m.locate(target,tmp_path/'before.png',tmp_path/'after.png')
-    assert hit is not None
-    assert box[0]<hit['x']<box[2] and box[1]<hit['y']<box[3]
+    # Unchanged field content cannot override an insufficient owner match.
+    assert (hit is not None) == expected_match
+    if hit:
+        assert box[0]<hit['x']<box[2] and box[1]<hit['y']<box[3]
     # A similar container with different field content must still be rejected.
     ImageDraw.Draw(changed).rectangle((120,95,200,155),fill='black');changed.save(tmp_path/'different.png')
     assert m.locate(target,tmp_path/'before.png',tmp_path/'different.png') is None

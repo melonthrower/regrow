@@ -61,6 +61,7 @@
 - [test_stepwise_list_role_reuse.py](test_stepwise_list_role_reuse.py)
 - [test_stepwise_local_failures.py](test_stepwise_local_failures.py)
 - [test_stepwise_match_batch.py](test_stepwise_match_batch.py)
+- [test_stepwise_pixel_matching.py](test_stepwise_pixel_matching.py)：原尺寸像素、阈值下竞争者、无纹理拒绝与整页检查；重复控件另见 [test_control_layout_matching.py](test_control_layout_matching.py)。
 - [test_stepwise_no_route_discovery.py](test_stepwise_no_route_discovery.py)
 - [test_stepwise_pipeline_unblock.py](test_stepwise_pipeline_unblock.py)
 - [test_stepwise_recovery_continuation.py](test_stepwise_recovery_continuation.py)

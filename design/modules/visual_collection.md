@@ -31,3 +31,9 @@ Android 的 initial-app 使用 config.APP_PACKAGE_MAP 中的应用键（如 andr
 ## 验证边界
 
 当前为单应用研究路径，不包含跨应用恢复、任意新任务的可执行证明或完整图认证。真实 Luna 与现场证据及已知失败见 [采集证据](region_function_collection_research.md)；代码及离线接线测试不能代替这些验收。
+
+## 2026-10-05 参数复核边界
+
+生成目录当前只纳入已有非空 functions 的逐步 Region。已记录控件或任务参数、但尚未整理 functions 的区块不会进入生成请求；本次家庭时区 r0010 因此漏出，Cairo 指令生成被正常校验拒绝。不是 Luna 未读懂已提供的时区功能，现有入口也尚无自动筛选参数后重生成任务的流程。
+
+完整冻结图的正常采集入口保存帧小试中，三个请求均保留含 Nairobi 的原任务记忆：模型正确观察 Cairo 可见、Nairobi 当前不可见；固定 Nairobi 且禁止滚动/替代的业务任务保持 partial、无动作。仅证明本例视觉复核与不虚报完成，不证明全列表没有 Nairobi、自动换参或真实设置成功。采集图只读、原回复不编辑；详细证据见同目录 region_function_collection_research.md。

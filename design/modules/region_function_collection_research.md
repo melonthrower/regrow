@@ -19,3 +19,13 @@
 实际验证：冻结Clock图42个Region、178个双框观察、221个消费依赖，源与副本摘要一致。正常CLI生成1条London查询目标（1HTTP）；首轮3HTTP/1GUI后因原答input_text缺点位拒绝，输入未执行。提示补齐输入等动作的必要点位与name/ref区别后，同一指令在新独立AVD重跑8HTTP/2GUI，另wait只取新图；输入、候选显示及终验均通过，Writer保留3个语义步骤和2个实际primitive。两次定位都因旧模板无准入资格走当前图Luna确认，不是实际模板匹配正例。种子已有London，未选择/添加候选；图摘要不变、所属实例已关闭。
 
 使用正常本地模型配置（本次实际gpt-6-luna、medium），试验传输/环境包装仅保存并限制30HTTP/12GUI，未修改请求内容、模型回复或Collector控制流。采集累计12HTTP/3GUI；此前本地缺配置引用、偶数端口循环、初始应用包名误作应用键的准备失败均保留，未发生其余GUI投递。证据在 `artifacts/runs/framework_wiring_collection_20261002_01/`，外部包见 `to_astra/framework_wiring_fix_20261002_01/`。这是一项研究小试，不覆盖任意参数、真实模板正匹配、条件任务、长期稳定性或训练验收。
+
+## 2026-10-05 时区参数复核小试
+
+证据：artifacts/runs/clock_collection_parameter_check_20261005_01；审阅包 to_astra/clock_collection_parameter_check_20261005_01。源码为64bc0e43d8d533bfa68fd051fcf52013c9a81098的采集模块与既有匹配器冻结副本，未改遍历或采集行为。输入保留直接滚动后的完整区块快照和实际消费的历史图片依赖，原图2040份文件哈希未变。
+
+- 正常生成1HTTP：实际目录仅有r0009样式，r0010家庭时区因functions为空被过滤。模型拒绝编造Cairo任务，正常校验以no goals拒绝，生成链未通过。
+- 保存帧5HTTP/0GUI：两项观察（各2HTTP含终验）分别确认Nairobi当前不可见、Cairo可见；一项固定Nairobi业务目标（1HTTP，限制当前屏幕且禁止滚动/替代）返回complete=false/action=null，Writer保存partial。三个请求都有含Nairobi的原region_memory；没有手改原回复。观察任务的success不算设置时区成功。
+- 独立冷启动AVD实机准备约392.7秒后以-11退出，日志有多次虚拟CPU挂起；根因未定位，0HTTP/0GUI，所属进程已退出。原遍历设备未操作，不能声称Cairo实际设置通过。
+
+合计6HTTP/0GUI。三项保存帧检查有限通过，生成接线失败，实机设置未验证；人工编写的测试目标不是自动生成或自动改选参数。陌生Astra独立阅读、意图对照及原请求/截图审阅分开保留。未运行全框架门禁，没有新增已接受行为。

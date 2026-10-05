@@ -11,10 +11,11 @@ def describe(control, observation):
     row=(matching or rows or [{}])[-1]
     prior=rows[:rows.index(row)] if row in rows else []
     old=next((v for v in reversed(prior) if v.get('icon_description')), {})
-    result={'观察来源':('本轮仅图片匹配定位；以下文字、状态和作用对象沿用历史，未重新识别' if row.get('visual_only') else '最近登记观察；是否对应本轮附图以共同地图的结构来源为准，仍需看图核对') if matching else '历史观察，当前是否仍成立需核对',
-            '文字':row.get('text',''),'本次外观':row.get('icon_description',''),
-            '可见状态':row.get('state',''),'功能推测（未验证）':row.get('possible_operation',''),
+    result={'观察来源':('本轮仅图片匹配定位；外观和作用对象沿用历史，未重新识别；当前状态看本轮截图' if row.get('visual_only') else '最近登记观察；是否对应本轮附图以共同地图的结构来源为准，仍需看图核对') if matching else '历史观察，当前是否仍成立需核对',
+            '本次外观':row.get('icon_description',''),
+            '功能推测（未验证）':row.get('possible_operation',''),
             '功能疑问':row.get('uncertainty',''),'历史外观参考':old.get('icon_description','')}
+    result['当前状态依据']='本轮截图；旧观察文字、数值和选中状态不作为当前值'
     if templates.evidence_limit(row):result['视觉依据限定']=templates.evidence_limit(row)
     if templates.evidence_limit(old):result['历史外观参考限定']=templates.evidence_limit(old)
     return result
@@ -89,10 +90,13 @@ def render(request):
     import page_context
     previous=request.get('target_observations',[])
     targets=[]
+    source=request.get('source',{})
+    target=source.get('task_control') or source.get('control')
+    navigation={step.get('source_control') for step in request.get('navigation_path') or [] if isinstance(step,dict)}
     for candidate in request.get('backend_candidates',[]):
+        if target and candidate['id']!=target and candidate['id'] not in navigation:continue
         card=candidate.get('target_observation')
         if card is None:continue
-        source=request.get('source',{})
         card=page_context.compact_observation(card,request.get('page_context'),
             candidate.get('region_ref',source.get('region')),source.get('observation'),control=candidate['id'])
         item={'所属区块':candidate.get('region_name',''),'控件':candidate['name'],'目标观察':card}

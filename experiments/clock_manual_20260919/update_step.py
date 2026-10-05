@@ -33,7 +33,7 @@ def build_update_request(root, dynamic, screenshots):
     names=[r['name'] for r in dynamic.get('已知区块',[])]
     if names and len(names)==len(set(names)):
         field=schema['properties']['previous_regions']['items']['properties']['name']
-        field.update(enum=names,description='使用已知区块表中完整name；带描述的名称不可缩写，否则无法区分同名历史对象。')
+        field.update(enum=names,description='使用已知区块表中完整name；含历史对象序号的同名标签不可缩写，否则无法区分历史对象。')
     schema['properties'].pop('working_context',None)
     schema['required']=[k for k in schema['required'] if k!='working_context']
     import importlib.util
@@ -83,6 +83,10 @@ def route_update(root, reply, receipt, *, schema=None):
         schema = json.loads((Path(root) / '遍历prompt/输出格式/动作后更新.schema').read_text())
     if 'working_context' not in schema.get('properties',{}):
         reply={k:v for k,v in reply.items() if k!='working_context'}
+    if 'exploration_update' not in schema.get('properties',{}):
+        reply={k:v for k,v in reply.items() if k!='exploration_update'}
+    from task_settlement import validation_reply
+    reply=validation_reply(reply)
     try:
         jsonschema.validate(reply, schema)
     except jsonschema.ValidationError as exc:
@@ -90,8 +94,6 @@ def route_update(root, reply, receipt, *, schema=None):
     if receipt.get('exit_code') != 0:
         return {'status':'execution_unconfirmed', 'next_action_mode':'review_execution',
                 'reason':'delivery receipt does not confirm execution'}
-    if reply['exploration_update']['attempt_status'] != 'executed':
-        raise ValueError('update contradicts the confirmed execution receipt')
     exception = reply['action_result']['exception']
     if exception in ('external_app','blocking_popup','system_error','unexpected_exit','unclassified') and (reply['regions'] or reply['controls']):
         raise ValueError('external-only foreground contradicts target-app interactive inventory')

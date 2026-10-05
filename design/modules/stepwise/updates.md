@@ -46,3 +46,8 @@ commit_update先附实际operation与输入回执，再由task_settlement匹配�
 正常续接的reconcile_run只复用已提交同绑定动作，无模型调用；前置准备及有blocker的任务不被历史点击结束。prepares仍由task_prerequisites的本次条件观察结束；unexpected_exit保留既有异常暂挂。暂挂解锁、归属修订及显式历史修复仍有专门入口，普通调度不再发累计完成复核。
 
 旧未完成请求仍保留原schema/原答，登记只读取其中参数事实，不信任旧task_result.status。归档补登记检查可能受影响的任务区块，不用历史后图替代当前位置。
+
+## 回执与补充参数事实
+新请求不含exploration_update：程序读取真实receipt，Luna只观察结果。旧保存请求仍按原schema读取，不批量改写；模型复述状态不覆盖执行回执。task_settlement.partition_findings逐条筛选可分离参数事实，坏行记finding_gaps/parameter_gaps并保留reported及原回复；有效事实与真实动作继续登记。普通与纠错wrapper共用此规则，身份、归属、next_action和action_result错误仍拒绝。
+
+区块name/description写稳定结构职责；时分、日期、临时气泡和这次选中状态留在本次foreground/动作观察，不担当长期身份描述。旧证据不批量改写，也不正则删除数字；合法选项/约束与任务相关的真实结果可保留来源。可选模板拒绝不影响独立可靠动作登记，实际前景、点击框与身份冲突仍严格。

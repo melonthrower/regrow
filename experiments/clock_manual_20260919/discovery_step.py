@@ -61,7 +61,11 @@ def prepare(root,records,state,frame,foreground=None):
     if state.get('discovery_completion'):
         state=deepcopy(state)
         state['discovery_completion']=reg.sibling('discovery_completion').scoped_batch(records,state['discovery_completion'])
-    if state.get('discovery_completion',{}).get('pending'):
+    batch=state.get('discovery_completion') or {}
+    previous=batch.get('request',{}).get('discovery_context',{})
+    local_focus=state.get('inspection_region')
+    if (batch.get('pending') and reg.sibling('discovery_completion').same_frame(batch,frame)
+            and (not local_focus or (previous.get('mode')=='local' and previous.get('focus')==local_focus))):
         return reg.sibling('discovery_completion').supplement(root,records,state,frame)
     focus=state.get('inspection_region') or state.get('working_region')
     plan=locator.plan(records,focus,frame,force_relocate=state.get('discovery_mode')=='relocate',
@@ -79,9 +83,9 @@ def prepare(root,records,state,frame,foreground=None):
         if not labels and sum(x['name']==label for x in records.values())>1:label+=f'（候选{len(names)+1}）'
         names[label]=rid
         anchors=[{'名称':r['controls'][h['control']]['name'],'位置':h['box']} for h in candidate['anchors']]
-        candidates.append({'名称':label,'历史描述':r['description'],'身份依据':'前景控件匹配线索，身份由本轮视觉核对确认','定位锚点':anchors})
-        entered=reg.sibling('region_functions').incoming_results(r,records)
-        if entered:candidates[-1]['历史进入记录（不证明当前可见或行为等价）']=entered
+        candidates.append({'名称':label,'身份依据':'前景控件匹配线索，身份由本轮视觉核对确认','定位锚点':anchors})
+        entered=reg.sibling('region_candidate_names').entry_summary(r,records)
+        if entered:candidates[-1]['已知进入入口（历史依据，不保证本轮可用）']=entered
         if r.get('behavior_context'):candidates[-1]['行为适用上下文']=r['behavior_context']
     controls=[]
     if plan['mode']=='local':
@@ -205,7 +209,9 @@ def await_discovery(run, frame, evidence, handoff=''):
                             if prior.get('trigger',{}).get('source_call')!=evidence:
                                 if prior:task.setdefault('deferral_history',[]).append(prior)
                                 task['deferral']={'trigger':{'kind':'recovery','source_call':evidence},'reason':handoff,'retry_when':'explicit_result_review'}
-        state.pop('discovery_completion',None)
+        batch=state.pop('discovery_completion',None)
+        if batch and batch.get('pending'):
+            state.setdefault('discovery_completion_history',[]).append(batch)
         state.update(next_action_mode='discover',phase='awaiting_discovery',interactive_regions=[],
                      observation=None,pending_frame=frame,discovery_trigger=evidence,
                      reason='recovery_finished_discovery_required',recovery_handoff=handoff,
@@ -228,9 +234,10 @@ def commit(root, run, call_ref):
     if current.get('next_action_mode')!='discover':raise ValueError('not awaiting discovery')
     frame=current['pending_frame']
     if (run/request['screenshots'][0]).resolve()!=(run/frame).resolve():raise ValueError('discovery frame changed')
-    if batch.get('pending') and (completion.fingerprint(run/frame)!=batch['sha256'] or str((run/frame).resolve())!=batch['frame']):
+    if ctx.get('completion') and batch.get('pending') and not completion.same_frame(batch,run/frame):
         raise ValueError('补全截图已变化，不能使用旧回执')
     excluded_gaps=batch.get('excluded_gaps',[])
+    stale_batch=batch if not ctx.get('completion') and batch.get('pending') else None
     if not ctx.get('completion'):batch={}
     exception=reply['foreground'].get('exception','none')
     if exception!='none':
@@ -268,6 +275,9 @@ def commit(root, run, call_ref):
             if cid not in known.get(rid,{}).get('controls',{}):raise ValueError('unknown candidate control')
             c['_matched_id']=cid;c['previous_name']=known[rid]['controls'][cid]['name']
     def mutate(records,state,snapshot,temp):
+        if stale_batch:
+            state.setdefault('discovery_completion_history',[]).append(stale_batch)
+            state.pop('discovery_completion',None)
         obs=batch.get('observation','discovery:'+call_ref)
         retained={rid:deepcopy(records[rid]) for rid in batch.get('regions',[]) if rid in records}
         refs=reg.materialize_regions(records,reply,call_ref,obs,ctx['region_names'])
@@ -291,6 +301,26 @@ def commit(root, run, call_ref):
             new_controls.extend(cid for cid,c in r['controls'].items() if c['observations'][-1]['evidence'].get('source_call')==call_ref)
         refs=list(dict.fromkeys(batch.get('regions',[])+refs))
         all_controls=list(dict.fromkeys(batch.get('controls',[])+new_controls))
+        for rid in refs:
+            pending=[g for g in missing if g.get('owner')==records[rid]['name']]
+            old=records[rid].get('registration_gaps',{}).get('discovery')
+            # A changed frame invalidates positions, not unresolved identities.
+            # Only explicit same-frame completion or a confirmed current item
+            # with the same owner/name resolves the retained gap.
+            if old:
+                confirmed={c['name'] for c in records[rid]['controls'].values()
+                    if any(v.get('evidence',{}).get('source_call')==call_ref for v in c.get('observations',[])[-1:])}
+                addressed={g['item'] for g in batch.get('pending',[])}
+                pending=[g for g in old['pending'] if g['item'] not in addressed and g.get('name') not in confirmed]+pending
+                pending=list({g['item']:g for g in pending}.values())
+            if old:records[rid].setdefault('registration_gap_history',[]).append(deepcopy(old))
+            if pending:
+                records[rid].setdefault('registration_gaps',{})['discovery']={
+                    'pending':[{**deepcopy(g),'source_frame':g.get('source_frame',frame),
+                        'source_observation':g.get('source_observation',obs),
+                        'source_call':g.get('source_call',call_ref)} for g in pending],
+                    'source_call':call_ref,'observation':obs,'frame':frame}
+            else:records[rid].get('registration_gaps',{}).pop('discovery',None)
         if excluded_gaps:state.setdefault('scope_excluded_discovery_gaps',[]).extend(g for g in excluded_gaps if g not in state.get('scope_excluded_discovery_gaps',[]))
         if not missing and not batch:state.pop('discovery_completion',None)
         if missing or batch:
@@ -299,11 +329,6 @@ def commit(root, run, call_ref):
                 'request':batch.get('request') or request}
             reg.write_json(temp/'discovery_receipt.json',{'source_call':call_ref,'registered_regions':refs,
                 'registered_controls':all_controls,'pending':missing,'region_source_indices':region_indices,'control_source_indices':control_indices})
-        if missing:
-            state.update(next_action_mode='discover',phase='awaiting_discovery',reason='discovery_partially_registered',
-                interactive_regions=[],observation=None,pending_frame=frame)
-            return
-
         reg.sibling('task_deferral').resume_localized(records,refs,call_ref,foreground=reply['foreground'])
         state.update(source_call=call_ref,interactive_regions=refs,next_action_mode='explore' if refs else 'review_result',
             phase='ready_for_next_action',observation={'id':obs,'image':frame,
@@ -316,7 +341,8 @@ def commit(root, run, call_ref):
         state.pop('exception',None);state.pop('recovery_handoff',None)
         if not state.get('working_region') and refs:state['working_region']=refs[0]
         if ctx['mode']=='relocate' and refs:
-            schedule_local_inspection(records,state)
+            if not (missing and any(reg.sibling('region_tasks').coverage(records[rid],records)['pending'] for rid in refs)):
+                schedule_local_inspection(records,state)
         elif ctx['mode']=='local':
             state.setdefault('control_scan',{})[ctx['focus']]=ctx['visual_plan']['next_offset']
             state['control_inventory_status']='partial'  # Never interpret a bounded batch as complete.
@@ -433,8 +459,6 @@ def retire_completed_goal(run):
         if rid not in state.get('interactive_regions',[]) and not scheduling.runnable(records[rid],records):
             return bool(scheduling.advance_unfinished(run))
         return False
-    functions=registration().sibling('region_functions')
-    if functions.supported_tasks(records[rid]) and not functions.review_current(records[rid],records):return False
     return bool(registration().sibling('task_deferral').advance_unfinished(run))
 
 

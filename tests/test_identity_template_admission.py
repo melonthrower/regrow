@@ -164,8 +164,8 @@ def test_cached_candidate_without_admission_does_not_reach_matcher(tmp_path, mon
     assert result['accepted'] is False and not result.get('box')
 
 
-@pytest.mark.parametrize('quality,expected', [(None, 'unresolved'), ('occluded', 'unresolved'), ('clear', 'matched')])
-def test_scroll_admission_including_old_cached_request(tmp_path, quality, expected):
+@pytest.mark.parametrize('quality,expected', [(None, 'matched'), ('occluded', 'matched'), ('clear', 'matched')])
+def test_current_frame_scroll_does_not_require_region_template_admission(tmp_path, quality, expected):
     import numpy as np
     frame = tmp_path / 'region.png'
     Image.fromarray(np.random.default_rng(1).integers(0, 256, (60, 60, 3), dtype=np.uint8)).save(frame)
@@ -185,12 +185,14 @@ def test_uniform_control_template_is_rejected_without_rejecting_click_or_region(
     control={**proposal,'icon_bbox':None,'icon_quality':'uncertain','click_bbox':box}
     flow=mod('stepwise_flow');region={'id':'r','observations':[flow.region_observation(proposal,{'source_call':'n','source_field':'regions/0'})],
         'controls':{'c':{'observations':[flow.control_observation(control,{'source_call':'n','source_field':'controls/0'})]}}}
-    with pytest.raises(ValueError,match='单色'):
-        mod('register_update').save_region_images({'r':region},['r'],{'regions':[proposal],'controls':[control]},'n',tmp_path,'frame.png',tmp_path/'snapshot',tmp_path/'temp')
+    mod('register_update').save_region_images({'r':region},['r'],{'regions':[proposal],'controls':[control]},'n',tmp_path,'frame.png',tmp_path/'snapshot',tmp_path/'temp')
+    observed=region['controls']['c']['observations'][-1]
+    assert '单色' in observed['template_rejections']['image']['reason']
+    assert observed['click_image'] and observed['image'] is None
     control['image_quality']='uncertain'
     region['controls']['c']['observations']=[flow.control_observation(control,{'source_call':'n','source_field':'controls/0'})]
     mod('register_update').save_region_images({'r':region},['r'],{'regions':[proposal],'controls':[control]},'n',tmp_path,'frame.png',tmp_path/'snapshot',tmp_path/'temp2')
-    assert region['observations'][-1]['image']
+    assert region['observations'][-1]['image'] is None
     assert region['controls']['c']['observations'][-1]['image'] is None
     assert region['controls']['c']['observations'][-1]['click_image']
 

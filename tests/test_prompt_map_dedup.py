@@ -27,7 +27,7 @@ def test_incoming_history_references_only_matching_fields(tmp_path):
     assert rows[0]==raw[0]
 
 
-def test_cards_keep_unique_details_and_restore_state_when_map_cannot_carry_it(tmp_path):
+def test_cards_keep_unique_details_without_restoring_old_state(tmp_path):
     records,state,frame=case(tmp_path)
     target=mod('target_observation');page=mod('page_context')
     card=target.describe(records['dialog']['controls']['submit'],'opened')
@@ -37,18 +37,19 @@ def test_cards_keep_unique_details_and_restore_state_when_map_cannot_carry_it(tm
     q=target.refresh(q);page.attach(q,records,state)
     sent=q['target_observations'][0]['目标观察']
     assert '可见状态' not in sent
-    assert 'disabled' in q['_page_context_text'] and sent['功能疑问']=='unknown save scope'
+    assert 'disabled' not in q['_page_context_text'] and sent['功能疑问']=='unknown save scope'
+    assert q['image_refs']==[str(frame)]
     assert candidate['target_observation']==card
     text=q['user_prompt'];q=target.refresh(q);assert q['user_prompt']==text
     q['page_context']['current_tree'][0]['controls'][1]['evidence']='needs_recheck'
     q=target.refresh(q)
-    assert q['target_observations'][0]['目标观察']['可见状态']=='disabled'
+    assert '可见状态' not in q['target_observations'][0]['目标观察']
     q['page_context']['current_tree'][0]['controls'][1].update(evidence='current_observation',state='enabled')
     q=target.refresh(q)
-    assert q['target_observations'][0]['目标观察']['可见状态']=='disabled'
+    assert '可见状态' not in q['target_observations'][0]['目标观察']
     q['page_context']['current_tree'][0]['controls'][1]['state']='disabled'
     q['backend_candidates'][0]['region_ref']='another-owner';q=target.refresh(q)
-    assert q['target_observations'][0]['目标观察']['可见状态']=='disabled'
+    assert '可见状态' not in q['target_observations'][0]['目标观察']
 
 
 def test_planning_state_and_same_goal_have_one_body_without_losing_parent_goal(tmp_path):

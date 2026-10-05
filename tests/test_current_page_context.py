@@ -323,7 +323,7 @@ def test_direct_map_keeps_latest_real_action_after_visit_stack_collapses(tmp_pat
     before = deepcopy((records, state))
     view = m.build(records, state)
     assert not view['origin']['entries']
-    assert view['last_action'] == {'region': 'dialog', 'attempt': 'a2'}
+    assert view['last_action'] == {'region': 'dialog', 'attempt': 'a2','changes_surface':True}
     q = {'stage': 'action_selection', 'action_ready': True, 'user_prompt': 'original task',
          'screenshots': [str(frame)]}
     m.attach(q, records, state)
@@ -344,6 +344,8 @@ def test_direct_map_lists_real_group_members_without_guessing_unbound_control(tm
     records['dialog']['actions']['a4'] = action('a3', 'a4', ['dialog'], ['dialog'], 'search')
     records['dialog']['actions']['a4']['association'] = {'status': 'unconfirmed', 'target': 'Unknown member'}
     records['dialog']['actions']['a4']['executed_steps'] = [{'action': 'click', 'target': 'Unknown member'}]
+    records['dialog']['tasks']['group']={'control':'search','status':'pending','attempts':['a2','a3','a4']}
+    state['active_task']={'region':'dialog','name':'group'}
     q = {'stage': 'task_proposal', 'user_prompt': '{}', 'screenshots': [str(frame)]}
     before = deepcopy((records, state)); m.attach(q, records, state)
     head = json.loads(q['user_prompt'])[m.TITLE].split('区块控件历史：')[0]

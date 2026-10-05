@@ -3,7 +3,7 @@ import argparse
 from itertools import count
 import json
 from pathlib import Path
-from run_task_step import run_step
+from run_task_step import run_step, finalize_knowledge
 from progress import CapturePaused
 
 
@@ -49,6 +49,20 @@ def run_session(root,run,out,mode,step=run_step):
         if mode=='step':account['status']='paused_after_step';break
         if result['status'] not in ('updated','paused_after_recovery_discovery','task_proposal','ready_next_round','repair_pending','task_deferred'):
             account.update(status='needs_review_or_complete',last_result=result['status']);break
+    if (account.get('last_result') in ('scope_idle','region_complete') and mode=='auto'
+            and not pause.exists() and (account['max_http'] is None or account['http_started']+6<=account['max_http'])):
+        folder=out/'knowledge'
+        try:
+            result=finalize_knowledge(root,run,folder)
+            account['knowledge_status']=result['status']
+        except BaseException:
+            account['status']='interrupted'
+            raise
+        finally:
+            if (folder/'budget.json').exists():
+                budget=json.loads((folder/'budget.json').read_text())
+                account['http_started']+=budget['http_started'];account['gui_started']+=budget['gui_started']
+            save()
     save();return account
 
 

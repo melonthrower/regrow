@@ -15,14 +15,13 @@ def fixture():
     return task,records
 
 
-def test_projection_preserves_cross_step_chain_intervening_action_and_no_mutation():
+def test_projection_preserves_linked_chain_without_intervening_noise_or_mutation():
     task,records=fixture();before=deepcopy((task,records))
     goal=mod('history_context').task_goal(task,records)
     assert 'sources' not in goal['已有参数发现']['selection']
     assert 'observations' not in goal['已有参数发现']['selection']
     events=(goal['此前动作与观察']+goal['最近连续动作'])
-    assert [x['记录'] for x in events]==['a0001','a0002','a0003']
-    assert events[1]['关联']=='期间其他动作'
+    assert [x['记录'] for x in events]==['a0001','a0003']
     assert events[0]['执行']=='executed_receipt_zero'
     assert 'unconfirmed' in str(events[0])
     assert 'A selected' in str(events[0]) and 'B selected' in str(events[-1])
@@ -37,14 +36,14 @@ def test_missing_action_is_an_explicit_gap_not_assumed_success():
     assert 'A selected' in str((goal['此前动作与观察']+goal['最近连续动作'])[0])
 
 
-def test_recent_reading_window_keeps_all_older_intervening_events():
+def test_reading_keeps_all_linked_attempts_and_not_unrelated_older_events():
     task,records=fixture()
     action=deepcopy(records['r']['actions']['a0002'])
     records['r']['actions'].update({f'a{i:04d}':deepcopy(action) for i in range(4,13)})
     task['attempts'].append('a0012')
     goal=mod('history_context').task_goal(task,records)
-    assert [e['记录'] for e in goal['最近连续动作']]==[f'a{i:04d}' for i in range(5,13)]
-    assert [e['记录'] for e in goal['此前动作与观察']]==[f'a{i:04d}' for i in range(1,5)]
+    assert [e['记录'] for e in goal['最近连续动作']]==['a0001','a0003','a0012']
+    assert goal['此前动作与观察']==[]
     assert list(goal).index('最近连续动作')<list(goal).index('此前动作与观察')
 
 
@@ -56,19 +55,15 @@ def test_old_conditions_and_unlinked_observations_are_not_lost():
     assert '0000' in str(goal)
 
 
-def test_update_manual_separates_history_completion_and_loads_matching_examples():
+def test_update_manual_registers_bound_feedback_without_a_second_completion_claim():
     from tests.test_stepwise_resume_route import ROOT
     builder=mod('update_step')
     q=builder.build_update_request(ROOT,{'本轮探索任务':'Check selection','任务目标':{'type':'parameter'},'实际动作':[{'action':'click'}]},[])
-    assert next(iter(q['response_schema']['properties']))=='task_result'
-    paths=[p['path'] for p in q['fixed_parts']]
-    assert '任务/结果核对示例/参数与滚动.prompt' in paths
-    assert '任务/结果核对示例/输入与确认.prompt' not in paths
-    assert '任务/结果核对示例/单步入口.prompt' not in paths
-    assert '任务完成可以依赖已登记事实' in q['system_prompt']
-    assert '不得把早先的成功归因于本步' in q['system_prompt']
+    assert 'task_result' not in q['response_schema']['properties']
+    assert 'task_update' in q['response_schema']['properties']
+    assert not any('结果核对示例' in p['path'] for p in q['fixed_parts'])
     q=builder.build_update_request(ROOT,{'本轮探索任务':'Check input','任务目标':{'type':'parameter'},'实际动作':[{'action':'click'}],'回执':{'text_delivered':False}},[])
-    assert any(p['path']=='任务/结果核对示例/输入与确认.prompt' for p in q['fixed_parts'])
+    assert not any('结果核对示例' in p['path'] for p in q['fixed_parts'])
 
 
 def test_sparse_observation_does_not_inherit_missing_evidence_or_lose_identity():
@@ -86,6 +81,7 @@ def test_execution_receipt_is_disclosed_separately_from_unconfirmed_binding(tmp_
     task,records=fixture();folder=tmp_path/'action_attempts/a0001';folder.mkdir(parents=True)
     (folder/'receipt.json').write_text(json.dumps({'exit_code':0,'executed_steps':[{'action':'click','x':20,'y':40}]}))
     event=mod('history_context').task_goal(task,records,tmp_path)['最近连续动作'][0]
-    assert event['实际执行']==[{'action':'click','x':20,'y':40}]
+    assert event['实际执行']==[{'action':'click'}]
     assert event['身份关联']=='unconfirmed'
-    assert event['回执']['exit_code']==0
+    assert '回执' not in event
+    assert json.loads((folder/'receipt.json').read_text())['exit_code']==0

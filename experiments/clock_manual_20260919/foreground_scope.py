@@ -60,20 +60,27 @@ def load(run,frame):
 
 
 def validate_control_boxes(reply,scope):
-    """Reject identity crops using another image's coordinate space before saving."""
+    """Click areas are strict; optional identity crops yield local rejections."""
     keys=('left','top','right','bottom')
     regions=reply.get('regions',[])
-    for control in reply.get('controls',[]):
+    issues=[]
+    for index,control in enumerate(reply.get('controls',[])):
         owner=regions[control['region_index']].get('bbox')
+        click=control.get('click_bbox')
+        if click and not contains([click[k] for k in keys],scope):
+            raise ValueError('控件点击范围不在当前可交互前景内；核对实际可操作位置')
         for key in ('bbox','icon_bbox'):
             box=control.get(key)
             if not box:continue
             values=[box[k] for k in keys]
             if not contains(values,scope):
-                raise ValueError('控件身份框不在当前可交互前景内；只按当前截图整屏坐标重新定位，不能使用历史裁图坐标')
-            if owner and (max(box['left'],owner['left'])>=min(box['right'],owner['right']) or
+                issues.append({'source_field':f'/controls/{index}','field':'image' if key=='bbox' else 'icon_image',
+                    'reason':'控件身份框不在当前可交互前景内；不保存该模板，原观察保留'})
+            elif owner and (max(box['left'],owner['left'])>=min(box['right'],owner['right']) or
                           max(box['top'],owner['top'])>=min(box['bottom'],owner['bottom'])):
-                raise ValueError('控件身份框与所属区块完全分离；核对当前图坐标及归属')
+                issues.append({'source_field':f'/controls/{index}','field':'image' if key=='bbox' else 'icon_image',
+                    'reason':'控件身份框与所属区块完全分离；不保存该模板，原观察保留'})
+    return issues
 
 
 def audit(run,job):
@@ -83,17 +90,19 @@ def audit(run,job):
     q,reply=step_repair.submission(run,job['call'])
     frame=Path(run)/q['screenshots'][1 if job['stage']=='update' else 0]
     scope=validate(reply['foreground'],frame)
-    for region in reply.get('regions',[]):
+    identified=[];issues=[]
+    for index,region in enumerate(reply.get('regions',[])):
         box=region.get('bbox')
         if box:
             values=[box[k] for k in ('left','top','right','bottom')]
-            # Position checks also apply when no identity crop will be saved.
             if not (values[0]<values[2] and values[1]<values[3] and contains(values,scope)):
-                raise ValueError('区块边界为空、倒置或不在本轮声明的可交互前景内；核对当前图范围')
-    validate_control_boxes(reply,scope)
+                issues.append({'source_field':f'/regions/{index}','field':'image',
+                    'reason':'区块框为空、倒置或不在本轮前景；不缓存该边界或保存模板'})
+            else:identified.append({'source_field':f'/regions/{index}','bbox':box})
+    issues.extend(validate_control_boxes(reply,scope))
     snapshot,records,_=discovery_step.load(run)
     ranking=history_matching.scan(records,snapshot,frame,scope=scope)
-    value={'identified_regions':[{'source_field':f'/regions/{i}','bbox':r['bbox']} for i,r in enumerate(reply.get('regions',[])) if r.get('bbox')],
+    value={'identified_regions':identified,'template_rejections':issues,
            'source_call':job['call'],'frame_sha256':fingerprint(frame),'scope':scope,
            'ranking':ranking,'basis':'same-call model foreground; counts recomputed only within declared foreground',
            'limitation':'geometry checks do not prove the model selected the correct foreground'}

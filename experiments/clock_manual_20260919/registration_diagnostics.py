@@ -28,8 +28,29 @@ def check_visibility(reply,region_refs,changes):
     if errors:raise Rejected({'errors':errors,'unchecked':[]})
 
 
+def region_surface(reply,index):
+    """Only a qualified current Region box can contradict a true click area."""
+    box=reply['regions'][index].get('bbox')
+    if not box:return None
+    values=[box[k] for k in ('left','top','right','bottom')]
+    if not (0<=values[0]<values[2] and 0<=values[1]<values[3]):return None
+    areas=reply.get('foreground',{}).get('interactive_areas')
+    if areas is not None:
+        import foreground_scope
+        scope={'interactive_areas':[[a['bbox'][k] for k in ('left','top','right','bottom')] for a in areas]}
+        if not foreground_scope.contains(values,scope):return None
+    return box
+
+
 def collect(stage,q,p,records,binding=None):
     errors=[];unchecked=[]
+    if stage=='update':
+        from task_settlement import validation_reply
+        owner=records.get((binding or {}).get('task_region',(binding or {}).get('region_ref')), {})
+        p=validation_reply(p,owner.get('tasks',{}).get((binding or {}).get('task_name')))
+    elif stage=='correction' and q.get('original_stage')=='update' and isinstance(p.get('proposal'),dict):
+        from task_settlement import validation_reply
+        p={**p,'proposal':validation_reply(p['proposal'])}
     def add(code,path,obj,actual,expected,repair):
         errors.append(dict(code=code,path=path,object=obj,actual=actual,expected=expected,repair=repair))
     schema=q.get('response_schema')
@@ -96,14 +117,16 @@ def collect(stage,q,p,records,binding=None):
                 add('owner',path+'/region_index',name,idx,list(range(len(rids))),'归属到本轮实际区块。');continue
             rid=rids[idx];region=records.get(rid,{});controls=region.get('controls',{})
             obj=(region.get('name') or p['regions'][idx]['name'])+' → '+name
-            rb=p['regions'][idx].get('bbox');cb=c.get('click_bbox') or c.get('bbox')
+            rb=region_surface(p,idx)
+            cb=c.get('click_bbox') if 'click_bbox' in c else c.get('bbox')
             if rb and cb and (cb['right']<=rb['left'] or cb['left']>=rb['right']
                               or cb['bottom']<=rb['top'] or cb['top']>=rb['bottom']):
                 add('control_owner_surface',path+'/region_index',obj,{'region_box':rb,'control_box':cb},
                     '同一截图中操作区域与所属区块不应完全分离',
                     '核对区块划分或控件归属。可修正区块范围或挂到实际所属区块；不要改变正确点击位置来迁就旧归属。')
             for j,other in enumerate(p.get('controls',[])[:i]):
-                oi=other.get('region_index');ob=other.get('click_bbox') or other.get('bbox')
+                oi=other.get('region_index')
+                ob=other.get('click_bbox') if 'click_bbox' in other else other.get('bbox')
                 if (oi!=idx and isinstance(oi,int) and 0<=oi<len(rids) and cb and cb==ob
                         and name==(other.get('name') or other.get('text',''))
                         and (p['regions'][idx].get('parent_index')==oi or p['regions'][oi].get('parent_index')==idx)):
@@ -156,11 +179,6 @@ def collect(stage,q,p,records,binding=None):
         for i,previous in enumerate(p.get('previous_regions',[])):
             matches=[q['region_names'][previous['name']]] if previous['name'] in q.get('region_names',{}) else [k for k,v in records.items() if v['name']==previous['name']]
             if len(matches)!=1 or matches[0] not in records:add('previous_region',f'/previous_regions/{i}/name',previous['name'],previous['name'],list(q.get('region_names') or [v['name'] for v in records.values()]),'按本轮候选完整名称报告可见性；同名不意味着同一区块。')
-        assessment=p.get('task_update') or p.get('task_result') or {}
-        for i,fact in enumerate(assessment.get('findings',[])):
-            old=task.get('findings',{}).get(fact['name'])
-            if old and (old['domain']['type']!=fact['domain']['type']):
-                add('parameter_fact_conflict',f'/task_update/findings/{i}',fact['name'],{'conditions':fact['conditions'],'type':fact['domain']['type']},{'conditions':old['conditions'],'type':old['domain']['type']},'不同类型的参数使用不同事实名称；条件变化可按新观察保存。')
     return {'errors':errors,'unchecked':unchecked}
 
 

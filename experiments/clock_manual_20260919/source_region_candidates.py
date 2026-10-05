@@ -60,8 +60,7 @@ def attach(request,reference,labels):
     if label is None:return request
     result=deepcopy(request)
     dynamic=json.loads(result['user_prompt'])
-    dynamic['区块历史文字对照']={'候选':label,
-                            '当时描述':reference['description'],'历史观察':reference['source_call'],
-                            '用途':'历史身份文字参考，不附历史裁图，不证明当前可见、动作或任务完成。'}
+    dynamic['区块历史文字对照']={'候选':label,'历史观察':reference['source_call'],
+                            '用途':'同入口已见落点的身份线索；当前内容依据动作后截图，不展开旧页面实例描述。'}
     result['user_prompt']=json.dumps(dynamic,ensure_ascii=False,indent=2)
     return result

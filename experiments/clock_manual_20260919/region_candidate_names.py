@@ -1,4 +1,3 @@
-import control_history_context
 """Per-request readable identity labels, shared by disclosure and binding."""
 from collections import Counter
 from copy import deepcopy
@@ -21,23 +20,35 @@ def candidates(records, rows):
     for rid in sorted(selected):
         r=records[rid];label=r['name']
         if counts[label]>1:
-            label+=' — '+(r.get('description','').strip() or '描述未提供')
+            # Old screenshot descriptions are not a stable identity label.
+            peers=sorted(k for k,value in records.items() if value['name']==label)
+            label+=f'（历史对象{peers.index(rid)+1}）'
             base=label;index=1
             while label in used:
                 index+=1;label=f'{base}（候选{index}）'
         used.add(label);mapping[label]=rid
         row=deepcopy(selected[rid]);row.pop('region_ref',None)
-        row.update(name=label,description=r.get('description',''),
-            controls=[control_history_context.describe(r,cid) for cid in r.get('controls',{})])
-        entered=incoming_results(r,records)
-        if entered:
-            row['历史进入记录（不证明当前可见或行为等价）']=entered
+        for key in ('description','controls','历史进入记录（不证明当前可见或行为等价）'):
+            row.pop(key,None)
+        row['name']=label
+        if row.get('披露范围')!='仅历史身份索引':
+            row['controls']=[{'name':c['name'],'关联任务':[{'action':t.get('action'),'status':t.get('status')}
+                for t in r.get('tasks',{}).values() if t.get('control')==cid]} for cid,c in r.get('controls',{}).items()]
+            entered=entry_summary(r,records)
+            if entered:row['已知进入入口（历史依据，不保证本轮可用）']=entered
         if r.get('behavior_context'):row['行为适用上下文']=r['behavior_context']
         if r.get('distinct_regions'):
             row['不可共享区块']=[records[x['region']]['name'] for x in r['distinct_regions'] if x.get('region') in records]
         if counts[r['name']]>1:row['历史名称']=r['name']
         out.append(row)
     return out,mapping
+
+
+def entry_summary(region, records):
+    """Navigation identity cues, without replaying unrelated action bodies."""
+    rows=[{k:v[k] for k in ('来源区块','入口','动作','控件关联') if k in v}
+          for v in incoming_results(region,records)]
+    return list({tuple(sorted(row.items())):row for row in rows}.values())
 
 
 def resolve(records,name,mapping=None):

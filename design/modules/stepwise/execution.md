@@ -1,5 +1,7 @@
 # 动作选择与执行
 
+2026-10-06最小遍历修复使用下述直接滚动合同。旧冻结运行仍用各自源码；2026-10-05虚报Nairobi的候选图保留，不作为准确图续跑。各项验证范围见本月日志。
+
 [模块总览](README.md) · [测试索引](../../../tests/STEPWISE_INDEX.md)
 
 选择动作、关联控件、检查投递条件并保留实际回执。
@@ -11,6 +13,11 @@
 主要接口：`run_task_step；stepwise_flow.assemble_current_context；action_binding.bind_action_target；action_commands`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
 正常入口由 `run_task_step._run_step` 组装请求，经 `Runner.perform('action')` 选择与校验绑定，再由 `StepwiseFlow.execute` 投递。未被维护路径调用的 `choose_from_run` 已移除；保存图离线适配器 `choose_from_graph` 及其维护测试保留，冻结基线回放仍使用独立冻结源码。
+
+## 区块滚动
+滚动由本模块的 `region_scroll.bind` 处理，普通探索与导航共用：Luna 根据当前单张截图选择滑动位置；框架保留任务许可、坐标格式和图内范围检查，不要求预先保存 Region 边界或控件模板。Android 起止点在截图内；桌面起点在截图内，终点表示滚轮方向和幅度。区块位置由模型按当前图判断，绑定通过不证明滚动命中或业务成功。
+
+`run_task_step`、`stepwise_flow`、`repair_stages` 不再因缺少边界缓存插入补定位；`inventory_scroll` 在正常观察确认原前景后可恢复原滚动任务，保留 partial 清点与身份缺口。实际滚动后仍走[结果更新与登记](updates.md)，不改模型输出字段或新增调用角色。
 
 ## 源码与提示入口
 

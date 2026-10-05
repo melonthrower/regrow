@@ -61,7 +61,7 @@ def test_task_stage_then_return_with_no_control_and_no_fake_edge():
     base=flow.assemble_context(ROOT,r,s,'menu')
     q=m.attach(ROOT,r,s,'menu',base);assert q['stage']=='task_proposal'
     m.apply_plan(r['middle'],proposal([]),'1')
-    assert m.attach(ROOT,r,s,'menu',base)['stage']=='function_registration'
+    assert m.attach(ROOT,r,s,'menu',base)['stage']=='action_selection'
     m.helper('region_functions').register(r['middle'],{
         'region_role':'navigation','role_evidence':'Empty local surface',
         'functions':[],'evidence':'No local functions remain'},'functions')
@@ -202,7 +202,9 @@ def test_task_proposal_is_bound_to_current_region_controls():
     bad=row(control='另一区块的导航按钮');bad['findings']=[]
     with pytest.raises(jsonschema.ValidationError):jsonschema.validate(proposal([bad]),q['response_schema'])
     context=json.loads(q['user_prompt'])
-    assert records['menu']['name'] not in [r['名称'] for r in context['其他区块（历史记录，不表示本图可见，不在本轮清点范围）']]
+    others=context['其他区块（仅历史名称索引，不表示本图可见，不在本轮清点范围）']
+    assert records['menu']['name'] not in [r['名称'] for r in others]
+    assert all(set(r)=={'名称'} for r in others)
     assert '本区块' in context['说明']
 
 
@@ -224,5 +226,6 @@ def test_task_request_discloses_observation_and_relation_instructions():
     control['observations']=[{'state':'one selected','uncertainty':'switch effect untested','evidence':{'observation':'now'}}]
     q=tasks().plan_request(ROOT,records,state,'menu')
     card=json.loads(q['user_prompt'])['控件'][0]['目标观察']
-    assert card['可见状态']=='one selected' and card['功能疑问']=='switch effect untested'
+    assert '可见状态' not in card and card['功能疑问']=='switch effect untested'
+    assert q['image_refs']==['current.png']
     assert any(p['path']=='任务/参数关系调查.prompt' for p in q['fixed_parts'])

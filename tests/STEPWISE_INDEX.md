@@ -46,7 +46,7 @@
 - [test_partial_sharing.py](test_partial_sharing.py)
 - [test_recovery_discovery.py](test_recovery_discovery.py)
 - [test_recovery_task_context.py](test_recovery_task_context.py)
-- [test_region_scroll_bounds.py](test_region_scroll_bounds.py)
+- [test_region_scroll.py](test_region_scroll.py)
 - [test_registration_fault_recovery.py](test_registration_fault_recovery.py)
 - [test_shared_control_conflict_repair.py](test_shared_control_conflict_repair.py)
 - [test_shared_step_repair.py](test_shared_step_repair.py)
@@ -135,7 +135,7 @@
 - [test_coverage_exemption.py](test_coverage_exemption.py)
 - [test_function_evidence_projection.py](test_function_evidence_projection.py)
 - [test_identity_template_admission.py](test_identity_template_admission.py)
-- [test_region_scroll_bounds.py](test_region_scroll_bounds.py)
+- [test_region_scroll.py](test_region_scroll.py)
 - [test_sent_step_contract.py](test_sent_step_contract.py)
 - [test_stepwise_historical_inventory.py](test_stepwise_historical_inventory.py)
 - [test_stepwise_local_failures.py](test_stepwise_local_failures.py)
@@ -160,7 +160,7 @@
 - [test_pointer_action_binding.py](test_pointer_action_binding.py)
 - [test_recovery_discovery.py](test_recovery_discovery.py)
 - [test_region_registration.py](test_region_registration.py)
-- [test_region_scroll_bounds.py](test_region_scroll_bounds.py)
+- [test_region_scroll.py](test_region_scroll.py)
 - [test_region_stepwise_context.py](test_region_stepwise_context.py)
 - [test_shared_control_conflict_repair.py](test_shared_control_conflict_repair.py)
 - [test_stepwise_control_boxes.py](test_stepwise_control_boxes.py)
@@ -244,7 +244,7 @@
 - [test_recovery_stall_action.py](test_recovery_stall_action.py)
 - [test_recovery_task_context.py](test_recovery_task_context.py)
 - [test_region_registration.py](test_region_registration.py)
-- [test_region_scroll_bounds.py](test_region_scroll_bounds.py)
+- [test_region_scroll.py](test_region_scroll.py)
 - [test_sent_step_contract.py](test_sent_step_contract.py)
 - [test_shared_control_conflict_repair.py](test_shared_control_conflict_repair.py)
 - [test_shared_control_text_prompt.py](test_shared_control_text_prompt.py)
@@ -297,7 +297,7 @@
 - [test_prompt_task_scope.py](test_prompt_task_scope.py)
 - [test_recovery_discovery.py](test_recovery_discovery.py)
 - [test_region_registration.py](test_region_registration.py)
-- [test_region_scroll_bounds.py](test_region_scroll_bounds.py)
+- [test_region_scroll.py](test_region_scroll.py)
 - [test_region_stepwise_context.py](test_region_stepwise_context.py)
 - [test_stepwise_desktop.py](test_stepwise_desktop.py)
 - [test_stepwise_environment_scope.py](test_stepwise_environment_scope.py)
@@ -324,3 +324,7 @@
 - [test_task_action_binding.py](test_task_action_binding.py)：同绑定执行、错对象/操作、未发送输入、改绑、参数回填、清点去重及新schema。
 - [test_stepwise_related_results.py](test_stepwise_related_results.py)：同次动作复用与历史续接；不再依赖模型related_task_results。
 - 相邻路由、归档恢复、前置条件：test_task_settlement_routing、test_suspended_update_recovery、test_ownership_and_prerequisites、test_prerequisite_runtime。
+
+本批跨阶段最小遍历回归：[test_minimal_traversal.py](test_minimal_traversal.py)，覆盖partial可信动作、缺口保留、移动续接及参数局部缺口；具体通过范围见月度日志。
+
+上下文相关性：`tests/test_context_relevance.py`核对身份轻量索引/普通目标卡/显式努力引用/原证据不变/可选模板拒绝与点击范围严格分界；`tests/test_history_current_state.py`核对当前状态看本轮图。

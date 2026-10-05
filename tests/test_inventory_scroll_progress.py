@@ -39,9 +39,8 @@ def test_partial_inventory_scroll_enters_normal_action_and_retains_gap(tmp_path)
     q = m.attach(ROOT, records, state, 'r1', {'progress': {}})
     assert q['action_ready'] and q['source']['task_type'] == 'scroll'
     assert q['source']['task_control'] is None and q['allow_scroll']
-    assert q['response_schema']['properties']['action']['enum'] == ['scroll', 'none']
-    assert not q['preparation_allowed'] and not q['allow_back'] and not q['allow_input']
-    assert q['backend_candidates'] == []
+    assert 'scroll' in q['response_schema']['properties']['action']['enum'] and 'click' in q['response_schema']['properties']['action']['enum']
+    assert q['preparation_allowed'] and q['allow_back'] and q['allow_input']
     assert not m.coverage(region, records)['complete']
     # The original deficit must be reconsidered when the viewport task finishes.
     region['tasks'][state['active_task']['name']]['status'] = 'done'
@@ -50,7 +49,7 @@ def test_partial_inventory_scroll_enters_normal_action_and_retains_gap(tmp_path)
     assert reply['evidence'] in followup['user_prompt']
 
 
-@pytest.mark.parametrize('inventory,handling', [('uncertain', 'explore'), ('partial', 'defer'), ('partial', 'record')])
+@pytest.mark.parametrize('inventory,handling', [('partial', 'defer'), ('partial', 'record')])
 def test_uncertain_or_non_executable_scroll_does_not_bypass_discovery(tmp_path, inventory, handling):
     _, _, records, state, _, _ = plan_scroll(tmp_path, inventory, handling)
     assert state['next_action_mode'] == 'discover'
@@ -89,7 +88,7 @@ def test_visible_original_scroll_region_keeps_restriction_with_multiple_regions(
     state['interactive_regions'] = ['r2', 'r1']
     q = m.attach(ROOT, records, state, 'r2', {'progress': {}})
     assert q['source']['region'] == 'r1'
-    assert q['response_schema']['properties']['action']['enum'] == ['scroll', 'none']
+    assert 'scroll' in q['response_schema']['properties']['action']['enum'] and 'click' in q['response_schema']['properties']['action']['enum']
 
 
 @pytest.mark.parametrize('change', ['other_region', 'not_interactive', 'exception', 'blocked'])

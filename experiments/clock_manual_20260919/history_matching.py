@@ -80,7 +80,7 @@ def with_history(records, rows):
     evidence=[{**row,'region_ref':mapping[row['name']]} for row in rows]
     evidence.extend({'region_ref':rid,'name':r['name'],
         '提供原因':['历史身份索引；未进入本轮视觉或来源候选'],
-        '当前状态':'未定位；仅供身份核对'} for rid,r in records.items() if rid not in selected)
+        '当前状态':'未定位；仅供身份核对','披露范围':'仅历史身份索引'} for rid,r in records.items() if rid not in selected)
     return names.candidates(records,evidence)
 
 
@@ -93,7 +93,8 @@ def attach(request,records,ranking,mapping,snapshot=None):
         rid=candidate['region']
         if rid not in labels:continue
         r=records[rid]
-        rows.append({'候选':labels[rid],'历史描述':r.get('description',''),'行为适用上下文':r.get('behavior_context',''),'前景独立控件命中数':candidate['matched_controls'] if candidate.get('foreground_confirmed') else None,
+        if not candidate.get('anchors') and not candidate.get('matched_controls'):continue
+        rows.append({'候选':labels[rid],'行为适用上下文':r.get('behavior_context',''),'前景独立控件命中数':candidate['matched_controls'] if candidate.get('foreground_confirmed') else None,
             '状态':'已按同帧前景限定' if candidate.get('foreground_confirmed') else '候选位置尚未经前景核对，不是有效票数',
             '有合格模板的控件数':candidate['eligible_controls'],'历史控件总数':candidate['total_controls'],'共享控件不参与区分':candidate.get('shared_controls',0),
             '命中控件':[{'名称':r['controls'][h['control']]['name'],'当前候选位置':h['box']} for h in candidate['anchors']]})

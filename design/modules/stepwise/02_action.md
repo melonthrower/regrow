@@ -9,14 +9,14 @@
 [run_task_step.py](../../../experiments/clock_manual_20260919/run_task_step.py) 的 `run_step / _run_step` 读运行清单、当前知识快照及本轮截图，先续接待修复步骤和待结算动作，再处理发现、恢复或任务清点。
 
 `_run_step.current` 核对前置条件，调用 [stepwise_flow.assemble_current_context](../../../experiments/clock_manual_20260919/stepwise_flow.py)；后者从 `knowledge_current.json` 指向的快照读取 Region、观察和运行状态。
-[task_selection.attach](../../../experiments/clock_manual_20260919/task_selection.py) 用清点进度、已有任务和当前可交互区块选择原任务续进、普通导航、任务提出、功能整理或暂停。入口未定位可选择有当前依据的准备动作；历史路线只提供建议，每个新 GUI 动作仍走正常选择、绑定、投递和登记。
+[task_selection.attach](../../../experiments/clock_manual_20260919/task_selection.py) 用清点进度、已有任务和当前可交互区块选择原任务续进、普通导航、任务提出或暂停。入口未定位可选择有当前依据的准备动作；历史路线只提供建议，每个新 GUI 动作仍走正常选择、绑定、投递和登记。
 
 `working_region` 是工作目标，`source.region` 是动作请求的来源上下文，`task_region / task_name` 保留任务归属；前景子区块和实际动作对象可与任务 owner 不同。准备动作不能凭相似去向完成原控件任务。调度职责详见[调度与前置条件](routing.md)。
 
 ## 组装实际请求与输出合同
 
 `stepwise_flow._assemble_local_context` 通过[02_动作选择.json](../../../experiments/clock_manual_20260919/遍历prompt/流程/02_动作选择.json)加载固定提示及[选择探索入口.schema](../../../experiments/clock_manual_20260919/遍历prompt/输出格式/选择探索入口.schema)；`assemble_current_context` 接上任务目标、控件候选、目标观察与共同地图。
-`_run_step.current` 把普通动作的图片替换成本轮 `current.png`，刷新地图、目标观察及滚动边界。历史控件/动作文字提供线索，不证明本图可操作；上下文生产者见[地图与上下文](context.md)。
+`_run_step.current` 把普通动作的图片替换成本轮 `current.png`，刷新地图和目标观察。历史控件/动作文字提供线索，不证明本图可操作；上下文生产者见[地图与上下文](context.md)。
 
 桌面请求还由 [desktop_transport.prepare_request](../../../experiments/clock_manual_20260919/desktop_transport.py) 调用 [prompt_delivery.desktop_parts](../../../experiments/clock_manual_20260919/prompt_delivery.py) 加入对应平台段落。检查最终发送内容时读取该 call 的 `request.json`，不能只看流程 JSON 或某一张 prompt。
 
@@ -51,7 +51,9 @@
 | `next_action_mode / observation / interactive_regions / active_task` | 发现、更新及 `task_routing.advance` → `assemble_current_context / task_selection.attach / _run_step` | 待发现、恢复、任务暂挂、无可执行工作；不能以空待办宣布全图完成。 |
 | 请求 `source` 的观察、工作区块及任务归属 | `stepwise_flow / region_tasks` → `bind_action_target / attempt_guard` → 第三步 `settle_task / task_routing.advance` | 过期观察刷新必须保留原任务；准备动作与未确认对象不得借用其他控件的完成证据。 |
 | `action / target / x / y / text / end_x / end_y` 与无动作标记 | 流程提示/schema、模型提案 → `repair_stages.accept_candidate / action_commands` → 更新的实际动作说明 | `none`、范围跳过、平台不支持、坐标歧义；变更须覆盖普通与纠错 proposal。 |
-| 当前图、`backend_candidates`、目标观察与滚动边界 | `_run_step.current / assemble_current_context` → 绑定和投递前检查 | 单图动作纠错、补发现后刷新、窗口变化；候选位置不能充当当前身份或动作成功证据。 |
+| 当前图、`backend_candidates`与目标观察 | `_run_step.current / assemble_current_context` → 绑定和投递前检查 | 单图动作纠错、补发现后刷新、窗口变化；候选位置不能充当当前身份或动作成功证据。 |
 | attempt 的提案、绑定、前后图、回执及执行指针 | `deliver / action_commands.execute` → `build_attempt_update / register_update.commit_update` | 部分输入、投递未确认、更新拒绝与 resume；保留原动作证据，继续结算而非重做 GUI。 |
 
-验证从[动作索引](../../../tests/STEPWISE_INDEX.md#execution)及必要的[调度](../../../tests/STEPWISE_INDEX.md#routing)、[纠错](../../../tests/STEPWISE_INDEX.md#repair)相邻检查选择。本文只做代码连接和文档导航核对，不代表新增 Luna、GUI 或全框架验收。
+验证从[动作索引](../../../tests/STEPWISE_INDEX.md#execution)及必要的[调度](../../../tests/STEPWISE_INDEX.md#routing)、[纠错](../../../tests/STEPWISE_INDEX.md#repair)相邻检查选择。各批的离线、保存帧及实机验证结果见月度日志，不由本文导航声明通过。
+
+普通动作每轮只探索绑定动作及直接反馈，必要准备由当前图决定；不顺便验证编辑器其他字段。默认不增加改值—提交—回看业务闭环；显式任务要求保存生效时按真实证据核验，不能以原值确认证明修改成功。

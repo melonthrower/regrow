@@ -11,12 +11,15 @@ def eligible(region, task):
 
 
 def select(region, reply):
-    if reply.get('inventory') != 'partial':
+    if reply.get('inventory') == 'complete':
         return None
     for row in reply.get('operations', []):
-        task = region.get('tasks', {}).get(row['name'], {})
-        if eligible(region, task):
-            return row['name']
+        if row.get('task_type') != 'scroll' or row.get('control'):
+            continue
+        # apply_plan may have merged the reply name into an existing task.
+        for name, task in region.get('tasks', {}).items():
+            if eligible(region, task):
+                return name
     return None
 
 
@@ -36,21 +39,17 @@ def active(records, state, rid):
 
 
 def restrict(request):
-    # The normal acceptance path validates this exact schema before binding.
-    request['response_schema']['properties']['action']['enum'] = ['scroll', 'none']
-    request.update(preparation_allowed=False, allow_back=False, allow_input=False,
-                   backend_candidates=[])
-    request['user_prompt'] += ('\n\n当前清点仍为partial，身份缺口尚未解决。本轮只允许在已确认的'
-        '当前区块内scroll取得缺失上下文，或none说明为何无法滚动；不能点击、输入或返回。'
-        '滚动后必须依据真实新图重新核对缺口，不能仅因投递成功就宣布身份或清点完成。')
+    request.update(preparation_allowed=True, allow_back=True, allow_input=True)
+    request['user_prompt'] += ('\n\n当前清点有缺口，先推进可信滚动目标；允许关闭遮挡等必要准备动作，'
+        '准备动作不完成滚动任务。直接按当前单图选择滚动坐标，不要求预先登记区块框。'
+        '滚动后依据真实新图登记结果，不能因投递成功宣布清点完整。')
     request['dynamic_prompt'] = request['user_prompt']
     return request
 
 
 def resume_after_region_observation(run, request, call):
-    """A Region scroll needs its observed boundary, not a complete control scan."""
+    """Resume the same foreground Region task without waiting for a full scan."""
     import discovery_step
-    import region_scroll
     _, records, state = discovery_step.load(run)
     source = request.get('source', {})
     rid = source.get('task_region')
@@ -58,14 +57,7 @@ def resume_after_region_observation(run, request, call):
     if (source.get('task_type') != 'scroll' or chosen.get('region') != rid
             or chosen.get('name') != source.get('task_name')
             or state.get('reason') != 'locate_local_controls'
-            or state.get('discovery_completion', {}).get('pending')
             or not active(records, state, rid)):
-        return False
-    obs = state['observation']
-    probe = {'allow_scroll': True, 'source': {'region': rid, 'observation': obs['id']},
-             'image_refs': [obs['image']]}
-    region_scroll.attach(run, state, probe)
-    if not probe.get('region_scroll_bounds'):
         return False
     def advance(records, state, *args):
         state.update(next_action_mode='explore', phase='ready_for_next_action',

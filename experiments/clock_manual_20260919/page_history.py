@@ -7,6 +7,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import re
+from history_selection import for_request, related_tasks, task_attempts
 
 TITLE = '区块控件历史'
 
@@ -24,55 +25,51 @@ def _execution(action, aid, run):
     folder = Path(run)/'action_attempts'/aid if run and Path(aid).name == aid else None
     if folder and (folder/'receipt.json').is_file():
         receipt = json.loads((folder/'receipt.json').read_text())
-        detail['回执'] = {k: receipt[k] for k in ('exit_code', 'semantic_result', 'text_delivered') if k in receipt}
         steps = receipt.get('executed_steps', [])
         if steps:
-            detail['实际执行'] = [{k: v for k, v in step.items() if k != 'reason'} for step in steps]
+            detail['实际执行'] = [{k: v for k, v in step.items() if k in ('action','target','text','text_delivered')} for step in steps]
         elif receipt.get('exit_code') == 0 and (folder/'dispatch.json').is_file():
             dispatch = json.loads((folder/'dispatch.json').read_text()).get('action', {})
             if dispatch.get('action') == action.get('operation'):
-                detail['实际投递'] = {k: dispatch[k] for k in ('action','target','x','y','end_x','end_y','text') if k in dispatch}
+                detail['实际投递'] = {k: dispatch[k] for k in ('action','target','text') if k in dispatch}
     elif action.get('executed_steps'):
-        detail['实际执行'] = deepcopy(action['executed_steps'])
+        detail['实际执行'] = [{k:v for k,v in step.items() if k in ('action','target','text','text_delivered')} for step in action['executed_steps']]
     return detail
 
 
-def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=False, extra_attempts=()):
-    """Project relevant ledgers and task-linked intervening actions without a cut."""
+def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=False, extra_attempts=(), planning_region=None):
+    """Project linked efforts; neither a Region nor a time interval implies relevance."""
     import function_evidence
     active = state.get('active_task') or {}
     last = state.get('last_action_result') or {}
     related = set(state.get('interactive_regions', [])) | {
         state.get('working_region'), active.get('region'), last.get('region'), *extra_regions}
+    if planning_region in records and not active:
+        related={planning_region}
     index = {}
     for rid, region in records.items():
         for aid, action in region.get('actions', {}).items():
             index.setdefault(aid, []).append((rid, action))
     selected = set(extra_attempts)
-    for aid, rows in index.items():
-        if any(rid in related or related.intersection(a.get('interactive_regions', [])) for rid, a in rows):
-            selected.add(aid)
+    if last.get('action'):selected.add(last['action'])
+    if planning_region in records:
+        entries=[row['动作记录'] for row in function_evidence.incoming_results(records[planning_region],records)
+                 if row['异常'] in ('','none',None)
+                 and planning_region in [r['区块'] for r in row['动作后可交互区块']]]
+        if entries:selected.add(max(entries,key=_order))
+    # No active obligation: retain direct unassigned local efforts for planning.
+    if not active and not goal:
+        assigned={a for r in records.values() for t in r.get('tasks',{}).values() for a in task_attempts(t)}
+        selected.update(a for a,rows in index.items() if a not in assigned and any(rid in related for rid,_ in rows))
     tasks = []
-    for rid in records:
-        if rid not in related:
-            continue
-        for name, task in records[rid].get('tasks', {}).items():
-            refs = set(task.get('attempts', [])) | set(task.get('completion_basis', {}).get('attempts', []))
-            for fact in task.get('findings', {}).values():
-                refs.update(s['attempt'] for s in [fact.get('source', {}), *fact.get('sources', []),
-                    *[o.get('source', {}) for o in fact.get('observations', [])]] if s.get('attempt'))
-            selected.update(refs)
-            numeric = [_order(a) for a in refs if _order(a)[0] == 0]
-            if numeric:
-                selected.update(a for a in index if min(numeric) <= _order(a) <= max(numeric))
-            invalid = [h['invalidated_attempt'] for h in task.get('ownership_history', []) if h.get('invalidated_attempt')]
-            if task.get('result_evidence') or invalid:
-                tasks.append({'region': rid, 'name': name, 'status': task.get('status'),
-                    'judgment': task.get('result_evidence', ''), 'attempts': sorted(refs, key=_order), 'invalidated': invalid})
+    for rid, name, task in related_tasks(records,state,related):
+        refs=task_attempts(task);selected.update(refs)
+        invalid=[h['invalidated_attempt'] for h in task.get('ownership_history',[]) if h.get('invalidated_attempt')]
+        if task.get('result_evidence') or invalid:
+            tasks.append({'region':rid,'name':name,'status':task.get('status'),
+                'judgment':task.get('result_evidence',''),'attempts':sorted(refs,key=_order),'invalidated':invalid})
     goal_events = {e['记录']: e for e in (goal or {}).get('此前动作与观察', []) + (goal or {}).get('最近连续动作', [])}
     selected.update(goal_events)
-    if navigation:
-        selected.update(sorted((a for a, rows in index.items() if any(v.get('delivery') == 'executed_receipt_zero' for _, v in rows)), key=_order)[-6:])
     events, groups, gaps = {}, {}, []
     for aid in sorted(selected, key=_order):
         matches = index.get(aid, [])
@@ -184,8 +181,12 @@ def _historical_text(value):
     text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, separators=(',', ':'))
     # Do not reinterpret old figure numbers as current before/after frames, or
     # change literal action inputs. Qualify evidence as a whole, leaving it exact.
+    qualifiers=[]
     if re.search(r'(?:图\s*\d|[Ff]ig(?:ure)?\.?\s*\d)', text):
-        return '【历史动作图片引用；图号仅属于此条旧记录，不指本轮附图】' + text
+        qualifiers.append('历史动作图片引用；图号仅属于此条旧记录，不指本轮附图')
+    if re.search(r'共同地图第\s*\d',text):
+        qualifiers.append('旧编号属于原请求的共同地图，不能在本轮按同号寻址')
+    if qualifiers:return '【'+'；'.join(qualifiers)+'】'+text
     return text
 
 
@@ -221,7 +222,7 @@ def _judgments(history, current_task=None):
 
 def render(history, current_task=None):
     events = history['events']
-    lines = ['已登记历史动作与任务判断；其中的状态和坐标属于各自动作时的截图。']
+    lines = ['相关历史努力与任务判断；反映当时尝试及反馈，当前状态依据本轮截图。未展开的其他历史仍留档，不推断期间没有其他动作。']
     ordered = list(events)
     sequence = {aid: i + 1 for i, aid in enumerate(ordered)}
     if len(ordered) > 1:
@@ -244,8 +245,10 @@ def render(history, current_task=None):
 def attach(request, records, state, run=None):
     """Standalone planning/navigation history; full page context folds it in."""
     source = request.get('source', {})
+    state=for_request(records,state,source)
     history = build(records, state, run, extra_regions=[source.get(k) for k in ('region','task_region','return_to')],
-                    navigation=bool(request.get('navigation_advice')))
+                    navigation=bool(request.get('navigation_advice')),
+                    planning_region=source.get('region') if request.get('stage')=='task_proposal' else None)
     rendered = render(history)
     marker = '\n\n' + TITLE + '：\n'
     for key in ('user_prompt','dynamic_prompt'):

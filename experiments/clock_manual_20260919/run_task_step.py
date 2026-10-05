@@ -98,7 +98,7 @@ def build_attempt_update(root,transport,folder):
         {**{k:v for k,v in hit.items() if k!='region_ref'},'name':labels[hit['region_ref']]}
         for hit in dynamic['当前截图视觉匹配到的既有区块']]
     dynamic['本次入口历史落点']=source_candidates.describe(recalled,labels)
-    dynamic['区块名称使用']='身份引用使用已知区块中的完整name；同名区块附描述区别，仅用于本轮关联，不代表新建或合并。'
+    dynamic['区块名称使用']='身份引用使用已知区块中的完整name；同名区块以历史对象序号区别，仅用于本轮关联，不代表新建或合并。'
     u=build_update_request(root,dynamic,[str((folder/n).relative_to(run)) for n in ['before.png','after.png']])
     u=source_candidates.attach(u,reference,labels)
     u=history_matching.attach(u,records,ranking,region_names,snapshot)
@@ -157,9 +157,6 @@ def _run_step(root,run,out,*,review_update=None):
             nonlocal candidate
             if candidate is None:candidate=assemble_current_context(root,run)
             return candidate
-        historical=discovery_step.registration().sibling('historical_inventory').request(
-            root,snapshot,known,state,current_request=current_request)
-        if historical:return historical
         q=current_request()
         if q['stage'] in ('region_complete','task_blocked','return_blocked') and not q.get('needs_task_inspection'):
             if discovery_step.registration().sibling('task_deferral').advance_unfinished(run):
@@ -177,7 +174,6 @@ def _run_step(root,run,out,*,review_update=None):
             q.update(screenshots=frames,image_refs=list(frames))
             step_repair.helper('page_context').refresh(q)
             if q.get('action_ready'):q=step_repair.helper('target_observation').refresh(q)
-            step_repair.helper('region_scroll').attach(run,discovery_step.load(run)[2],q)
         return q
     repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'],review_update=review_update)
     if (run/'ownership_review.json').exists():
@@ -233,6 +229,10 @@ def _run_step(root,run,out,*,review_update=None):
         return True
     if route_recovery():return
     if discovery_step.load(run)[2].get('next_action_mode')=='discover':
+        state=discovery_step.load(run)[2]
+        batch=state.get('discovery_completion') or {}
+        if batch.get('pending') and batch.get('sha256')!=step_repair.helper('discovery_completion').fingerprint(out/'current.png'):
+            discovery_step.await_discovery(run,str(out/'current.png'),'fresh-discovery-'+out.name)
         discovery_step.run_stage(root,run,call,repair=repair)
         if route_recovery():return
     step_repair.helper('shared_control_review').run_pending(repair)
@@ -267,10 +267,6 @@ def _run_step(root,run,out,*,review_update=None):
     # normal binding, dispatch and semantic result registration below.
     q['role']='action_selection'
     if resumed and resumed['stage']=='action':accepted=resumed
-    elif (q.get('source',{}).get('task_type')=='scroll'
-            and q.get('response_schema',{}).get('properties',{}).get('action',{}).get('enum')==['scroll','none']
-            and not q.get('region_scroll_bounds')):
-        accepted=repair.repair_unlocated(q,'当前区块滚动缺少本帧已登记边界；需要正常补观察确认前景范围，再继续原滚动任务。当前尚未请求或执行动作，不必先提出必然无法绑定的滚动坐标。')
     else:accepted=repair.perform('action',q)
     result=accepted['result'];q=result['request'];ref=result['call'];proposal=result['proposal'];binding=result['binding']
     write_json(out/'binding.json',binding)
@@ -353,6 +349,45 @@ def run_step(root,run,out,*,review_update=None):
         write_json(out/'budget.json',budget)
         write_json(out/'result.json',{'status':error.status,'reason':error.reason,'gui_actions':budget['gui_started']})
         progress.detail(error.reason)
+
+
+def finalize_knowledge(root,run,out):
+    """Use existing registration after GUI work is idle, with no GUI delivery."""
+    root,run,out=Path(root).resolve(),Path(run).resolve(),Path(out).resolve()
+    out.mkdir(parents=True,exist_ok=False)
+    manifest=read(run/'run_manifest.json')
+    if manifest.get('platform')=='desktop':
+        from desktop_transport import DesktopRun
+        transport=DesktopRun.__new__(DesktopRun);transport.configure(manifest)
+    else:transport=RecoveryRun.__new__(RecoveryRun)
+    transport.root=root;transport.run=run;transport.ledger=out/'budget.json'
+    transport.device=manifest['device'];transport.package=manifest['app']
+    transport.account={'max_http':6,'max_gui_commands':0,'http_started':0,'gui_started':0,'status':'running'}
+    transport.save()
+    runner=step_repair.Runner(root,run,transport.call,transport.screenshot,
+        lambda:transport.account['max_http']-transport.account['http_started'])
+    status='knowledge_complete'
+    try:
+        for _ in range(6):
+            if step_repair.pending(run) or (run/'execution_pending.json').exists():
+                status='knowledge_pending';break
+            snapshot,records,state=discovery_step.load(run)
+            q=step_repair.helper('historical_inventory').request(root,snapshot,records,state)
+            if not q:break
+            if transport.account['http_started']>=6:
+                status='knowledge_pending';break
+            runner.perform(q['stage'],q)
+        else:status='knowledge_pending'
+    except step_repair.Paused as error:
+        status=error.status
+    except BaseException:
+        status='interrupted'
+        raise
+    finally:
+        transport.account['status']=status;transport.save()
+    result={'status':status,'http_started':transport.account['http_started'],'gui_actions':0}
+    write_json(out/'result.json',result)
+    return result
 
 
 if __name__=='__main__':

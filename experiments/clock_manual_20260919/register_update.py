@@ -264,7 +264,13 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                           'evidence':split['evidence']}
     elif association:a['association']=association
     a['result']=deepcopy(reply['action_result'])
-    a['parameter_findings']=deepcopy((reply.get('task_update') or reply.get('task_result') or {}).get('findings',[]))
+    reported=(reply.get('task_update') or reply.get('task_result') or {}).get('findings',[])
+    task=records.get(binding.get('task_region',source),{}).get('tasks',{}).get(binding.get('task_name'))
+    facts,gaps=sibling('task_settlement').partition_findings(reported,task)
+    a['parameter_findings']=deepcopy(facts)
+    if gaps:
+        a['parameter_gaps']=deepcopy(gaps)
+        a['reported_parameter_findings']=deepcopy(reported)
     a['evidence'].update(result_call=call_ref,before_regions=before['region_refs'])
     a['interactive_regions']=region_refs
     # Replace the entire assessment together, never retain old region_changes
@@ -318,6 +324,11 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
             'evidence':'retained controls matched against current after-image'}
 
     previous_state=read(prior/'runtime_state.json') if current.exists() else {}
+    if previous_state.get('discovery_completion_history'):
+        state['discovery_completion_history']=deepcopy(previous_state['discovery_completion_history'])
+    batch=previous_state.get('discovery_completion')
+    if batch and batch.get('pending'):
+        state.setdefault('discovery_completion_history',[]).append(deepcopy(batch))
     if not historical:
         sibling('task_routing').advance(records,previous_state,state,source,binding,attempt_ref)
         for key in ('suspended_updates','suspended_update_history'):
@@ -407,16 +418,27 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
 def save_region_images(records, region_refs, reply, call_ref, run, image_ref, snapshot, temp, *, image_tag=None, observation=None):
     # Existing images remain referenced. New reliable boxes are saved below
     # their Region, with source metadata in that same Region JSON.
-    def crop(r, name, box, *, identity_field=None, source_field=None):
+    import foreground_scope
+    foreground=reply.get('foreground',{})
+    scope=(foreground_scope.validate(foreground,run/image_ref) if 'interactive_areas' in foreground else None)
+    def crop(r, name, box, *, identity_field=None, observed=None, owner=None):
         if box is None:return None
         from PIL import Image
         source_image=run/image_ref
         with Image.open(source_image) as image:
             xy=[box[k] for k in ('left','top','right','bottom')]
+            if identity_field:
+                reason=templates.crop_rejection(box,image.size,scope,owner)
+                if not reason and templates.uniform_pixels(image.crop(xy)):
+                    reason='身份裁图完全单色，没有可区分外观；不使用该模板，不判定对象不存在'
+                if reason:
+                    observed.setdefault('template_rejections',{})[identity_field]={
+                        'kind':'crop_quality','reason':reason,'source_call':call_ref,
+                        'source_field':observed['evidence']['source_field']}
+                    return None
             if not (0<=xy[0]<xy[2]<=image.width and 0<=xy[1]<xy[3]<=image.height):
                 raise ValueError('crop box outside source frame')
             pixels=image.crop(xy)
-            if identity_field:templates.check_control_crop(pixels,identity_field,source_field)
             relative=f'images/{image_tag or call_ref}/{name}.png';dest=temp/f"regions/{r['id']}"/relative
             dest.parent.mkdir(parents=True,exist_ok=True);pixels.save(dest)
         return {'image':relative,'source_image':os.path.relpath(source_image,snapshot/f"regions/{r['id']}"),'source_call':call_ref}
@@ -424,20 +446,21 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
         r=records[ref];v=r['observations'][-1]
         proposal=reply['regions'][int(v['evidence']['source_field'].split('/')[-1])]
         v['source_image']=os.path.relpath(run/image_ref,snapshot/f"regions/{r['id']}")
-        visual=crop(r,'region',templates.admitted_box(proposal))
+        visual=crop(r,'region',templates.admitted_box(proposal),identity_field='image',observed=v)
         if visual:v.update(image=visual['image'],source_image=visual['source_image'])
         for cid,c in r['controls'].items():
             v=c['observations'][-1]
             if v['evidence'].get('source_call')==call_ref and (observation is None or v['evidence'].get('observation')==observation):
                 proposal=reply['controls'][int(v['evidence']['source_field'].split('/')[-1])]
                 v['source_image']=os.path.relpath(run/image_ref,snapshot/f"regions/{r['id']}")
-                visual=crop(r,cid,templates.admitted_box(proposal),identity_field='image',source_field=v['evidence']['source_field'])
-                icon=crop(r,cid+'_icon',templates.admitted_box(proposal,'icon_bbox'),identity_field='icon_image',source_field=v['evidence']['source_field'])
+                owner=r['observations'][-1].get('bbox')
+                visual=crop(r,cid,templates.admitted_box(proposal),identity_field='image',observed=v,owner=owner)
+                icon=crop(r,cid+'_icon',templates.admitted_box(proposal,'icon_bbox'),identity_field='icon_image',observed=v,owner=owner)
                 if visual:v.update(image=visual['image'],source_image=visual['source_image'])
                 if icon:v.update(icon_image=icon['image'],source_image=icon['source_image'])
                 if 'click_bbox' in proposal:
                     click=crop(r,cid+'_click',proposal['click_bbox'])
-                    v.update(bbox=deepcopy(templates.admitted_box(proposal)),click_bbox=deepcopy(proposal['click_bbox']),
+                    v.update(click_bbox=deepcopy(proposal['click_bbox']),
                              click_image=click['image'] if click else None)
 
 

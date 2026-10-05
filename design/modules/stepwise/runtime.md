@@ -48,3 +48,6 @@
 浏览器入口仍为启动遍历.sh；assemble和replay_stepwise_baseline为离线诊断，不是第二条默认实机路径。恢复现场前读SERVER_HANDOFF并核对run_manifest源码。
 
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#runtime)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
+
+## 空闲后知识阶段
+正常会话在GUI无可执行工作后调用finalize_knowledge，HTTP并入session账本，GUI预算为0。没有后台线程、独立队列或CLI开关；网络中断记录interrupted，不伪报knowledge_complete。新冻结源统一使用本批三步与恢复规则，旧冻结源不热替换。

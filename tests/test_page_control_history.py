@@ -15,6 +15,8 @@ def test_grouped_history_preserves_receipt_effects_and_unconfirmed_identity(tmp_
     unknown['association']={'status':'unconfirmed','target':'另一入口'}
     unknown['result']['description']='关闭后创建内容仍保留'
     records['dialog']['actions']['a3']=unknown
+    records['dialog']['tasks']['search']={'status':'pending','attempts':['a2','a3'],'control':'search'}
+    state['active_task']={'region':'dialog','name':'search'}
     before=deepcopy((records,state))
     h=mod('page_history').build(records,state)
     group=next(r for r in h['regions'] if r['ref']=='dialog')
@@ -28,7 +30,7 @@ def test_grouped_history_preserves_receipt_effects_and_unconfirmed_identity(tmp_
     assert (records,state)==before
 
 
-def test_parameter_goal_events_are_moved_without_losing_gaps_or_intervening_actions(tmp_path):
+def test_parameter_goal_keeps_related_events_and_gaps_without_intervening_noise(tmp_path):
     task,records=parameter_case();records['r'].update(id='r',tasks={},observations=[])
     goal=mod('history_context').task_goal(task,records)
     before=deepcopy(goal)
@@ -37,8 +39,8 @@ def test_parameter_goal_events_are_moved_without_losing_gaps_or_intervening_acti
     mod('page_context').attach(q,records,state,usage='before_action')
     obj=json.loads(q['user_prompt']);m=mod('page_context');text=obj[m.TITLE]
     assert '最近连续动作' not in obj['任务目标'] and '此前动作与观察' not in obj['任务目标']
-    assert text.count('other task changed value')==1
-    assert '期间其他动作' in text and 'A selected' in text and '原观察缺失字段' in text
+    assert 'other task changed value' not in text
+    assert 'A selected' in text and '原观察缺失字段' in text
     assert obj['任务目标']['已有参数发现']==before['已有参数发现']
     assert goal==before
     mod('page_context').refresh(q)
@@ -72,7 +74,7 @@ def test_action_goal_and_task_status_do_not_repeat_map_event(tmp_path):
     assert metadata['recent_action']==state['last_action_result']
 
 
-def test_missing_task_attempt_and_receipt_only_coordinates_survive(tmp_path):
+def test_missing_task_attempt_survives_without_expanding_receipt_coordinates(tmp_path):
     records,state,_=case(tmp_path)
     records['world']['tasks']['inspect']['attempts']+=['a2missing']
     folder=tmp_path/'action_attempts/a1';folder.mkdir(parents=True)
@@ -80,7 +82,8 @@ def test_missing_task_attempt_and_receipt_only_coordinates_survive(tmp_path):
     (folder/'receipt.json').write_text(json.dumps({'exit_code':0}))
     h=mod('page_history').build(records,state,tmp_path)
     text=mod('page_history').render(h)
-    assert '缺失' in text and '169' in text
+    assert '缺失' in text and '169' not in text
+    assert json.loads((folder/'dispatch.json').read_text())['action']['x']==169
     (folder/'receipt.json').write_text(json.dumps({'exit_code':1}))
     assert '169' not in mod('page_history').render(mod('page_history').build(records,state,tmp_path))
 

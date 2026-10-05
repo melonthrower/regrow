@@ -30,6 +30,21 @@ def uniform_pixels(image):
     return all(low == high for low, high in image.convert('RGBA').getextrema())
 
 
+def crop_rejection(box, size, scope=None, owner=None):
+    """Geometry qualifies optional templates, never establishes action success."""
+    if box is None:return None
+    l,t,r,b=[box[k] for k in ('left','top','right','bottom')]
+    if not (0<=l<r<=size[0] and 0<=t<b<=size[1]):
+        return '身份框为空、倒置或超出实际来源图；不使用该模板'
+    if scope:
+        import foreground_scope
+        if not foreground_scope.contains([l,t,r,b],scope):
+            return '身份框不在该次观察的可交互前景内；不使用该模板'
+    if owner and (max(l,owner['left'])>=min(r,owner['right']) or max(t,owner['top'])>=min(b,owner['bottom'])):
+        return '身份框与所属区块完全分离；不使用该模板'
+    return None
+
+
 def check_control_crop(image, field, source_field):
     if not uniform_pixels(image):return
     error=ValueError('控件 '+source_field+' 的 '+field+' 裁图完全单色，不能确认独立身份外观。'

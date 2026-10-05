@@ -372,7 +372,6 @@ def assemble_current_context(root, run, region_ref=None, task_ref=None):
     if state.get('navigation_handoff') and result.get('action_ready'):
         result['user_prompt']=result['dynamic_prompt']=result['user_prompt']+'\n\n自动回溯交接：'+json.dumps(state['navigation_handoff'],ensure_ascii=False)
     result['source']['snapshot']=pointer['snapshot']
-    tasks.helper('region_scroll').attach(run,state,result)
     tasks.helper('page_context').attach(result,records,state,run=run)
     return result
 

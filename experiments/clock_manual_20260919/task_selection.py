@@ -37,7 +37,8 @@ def attach(root,records,state,working,base):
     if state.get('deferred_routing_target')==working and working not in refs and not in_progress:return base
     gap=region.get('registration_gaps',{}).get('task_proposal',{})
     inventory_scroll=helper('inventory_scroll').active(records,state,rid)
-    if not progress['inventory_complete'] and not inventory_scroll and (not gap or gap.get('recheck_after')):
+    if (not progress['inventory_complete'] and not inventory_scroll and not continuation
+            and not progress['pending'] and (not gap or gap.get('recheck_after'))):
         q=plan_request(root,records,state,rid);q['progress']=base.get('progress',{});return q
     if base.get('navigation_advice') and not in_progress and not progress['complete']:return base
     q=flow._assemble_local_context(root,records,state,rid)
@@ -89,9 +90,6 @@ def attach(root,records,state,working,base):
         if rid==task_region and cid in visible:text+='\n最近登记的任务入口（仍需核对当前截图）：'+region['controls'][cid]['name']
         text+='\n\n'+render_current(records,state,current_task={'region':task_region,'name':name})
     elif progress['complete']:
-        functions=helper('region_functions')
-        if not functions.review_current(region,records) and not region.get('registration_gaps',{}).get('function_registration'):
-            request=functions.request(root,region,state,records);request['progress']=progress;return request
         parent=working if working!=rid and working in records else routing.parent_region(records,state,rid)
         if not parent:q.update(action_ready=False,stage='region_complete');return q
         navigation=flow._assemble_action_context(root,records,state,parent)

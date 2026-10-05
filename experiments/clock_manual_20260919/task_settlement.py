@@ -16,6 +16,20 @@ def completion_target(owner, task):
         'region': owner['id'], 'control': task.get('control'), 'action': action_name(task.get('action'))}
 
 
+def refresh_movement(owner,task,state):
+    """A new viewport proposal reuses a movement task, excluding earlier attempts."""
+    observation=(state or {}).get('observation') or {}
+    if (task.get('task_type')!='scroll' or task.get('status')!='done'
+            or not observation.get('id') or task.get('navigation_observation')==observation['id']):
+        return
+    task.setdefault('navigation_history',[]).append({
+        'observation':task.get('navigation_observation'),'completion_basis':task.get('completion_basis')})
+    target=dict(completion_target(owner,task))
+    target['excluded_attempts']=list(owner.get('actions',{}))
+    task.update(status='pending',navigation_observation=observation['id'],completion_action=target)
+    task.pop('completion_basis',None)
+
+
 def task_object_context(records, binding):
     owner = records[binding.get('task_region', binding['region_ref'])]
     task = owner['tasks'][binding['task_name']]
@@ -164,21 +178,51 @@ def reconcile_run(run):
     return True
 
 
-def store_findings(task,findings,source):
-    """Visible facts and action-result facts share validation; provenance stays distinct."""
+def partition_findings(findings,task=None):
+    """Separate supplementary facts; never relax identity or action validation."""
     import jsonschema
     schema=json.loads((Path(__file__).parent/'遍历prompt/输出格式/参数发现.schema').read_text())
+    accepted=[];gaps=[]
+    if not isinstance(findings,list):
+        return [],[{'reported':findings,'reason':'parameter findings must be an array'}]
+    known=dict((task or {}).get('findings',{}))
     for fact in findings:
-        jsonschema.validate(fact,schema)
-        if not fact['name'].strip() or not fact['evidence'].strip():raise ValueError('parameter evidence missing')
+        try:
+            jsonschema.validate(fact,schema)
+            if not fact['name'].strip() or not fact['evidence'].strip():raise ValueError('parameter evidence missing')
+            d=fact['domain']
+            if d['type']=='enum' and not d['values']:raise ValueError('empty observed options')
+            if d['type']=='integer' and d['min'] is not None and d['max'] is not None and d['min']>d['max']:raise ValueError('invalid observed range')
+            previous=known.get(fact['name'])
+            if previous and previous['domain']['type']!=d['type']:raise ValueError('parameter type conflicts with recorded fact')
+        except (jsonschema.ValidationError,ValueError) as error:
+            gaps.append({'reported':fact,'reason':error.message if isinstance(error,jsonschema.ValidationError) else str(error)})
+            continue
+        accepted.append(fact);known[fact['name']]=fact
+    return accepted,gaps
+
+
+def validation_reply(reply,task=None):
+    from copy import deepcopy
+    result=deepcopy(reply)
+    for field in ('task_update','task_result'):
+        value=result.get(field)
+        if isinstance(value,dict) and 'findings' in value:
+            value['findings']=partition_findings(value['findings'],task)[0]
+    return result
+
+
+def store_findings(task,findings,source):
+    """Store independent valid facts and retain rejected rows as explicit gaps."""
+    accepted,gaps=partition_findings(findings,task)
+    for gap in gaps:
+        item={**gap,'source':dict(source)}
+        if item not in task.setdefault('finding_gaps',[]):task['finding_gaps'].append(item)
+    for fact in accepted:
         d=fact['domain']
-        if d['type']=='enum' and not d['values']:raise ValueError('empty observed options')
-        if d['type']=='integer' and d['min'] is not None and d['max'] is not None and d['min']>d['max']:raise ValueError('invalid observed range')
         evidence={**source,'evidence':fact['evidence']}
         previous=task.get('findings',{}).get(fact['name'])
         sources=list(previous.get('sources',[previous['source']])) if previous else []
-        if previous and previous['domain']['type']!=d['type']:
-            raise ValueError('参数类型冲突：任务「'+str(source.get('task',''))+'」事实「'+fact['name']+'」从'+previous['domain']['type']+'变为'+d['type']+'；不同参数应使用不同事实名称')
         if previous and previous['conditions']==fact['conditions'] and d['type']=='enum':
             d={**d,'values':list(dict.fromkeys(previous['domain']['values']+d['values']))}
         if evidence not in sources:sources.append(evidence)

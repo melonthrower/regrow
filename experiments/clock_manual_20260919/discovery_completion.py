@@ -106,6 +106,11 @@ def extend_schema(schema):
 def fingerprint(frame):return hashlib.sha256(Path(frame).read_bytes()).hexdigest()
 
 
+def same_frame(batch,frame):
+    return (str(Path(frame).resolve())==batch.get('frame')
+            and fingerprint(frame)==batch.get('sha256'))
+
+
 def scoped_batch(records,batch):
     batch=deepcopy(batch)
     kept=[]

@@ -12,9 +12,12 @@ def module(name):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 
 
-def test_visual_projection_does_not_promote_historical_semantics(monkeypatch):
+def test_visual_projection_does_not_promote_historical_semantics(monkeypatch, tmp_path):
     monkeypatch.syspath_prepend(str(ROOT))
-    row={'text':'Notifications','possible_operation':'Notify for app A','state':'on','evidence':{'observation':'old','source_call':'old-call'}}
+    from PIL import Image
+    frame=tmp_path/'history.png';im=Image.new('RGB',(40,40),'white');im.putpixel((1,1),(0,0,0));im.save(frame)
+    row={'image':str(frame),'image_quality':'clear','image_quality_reason':'fixture identity pixels',
+         'text':'Notifications','possible_operation':'Notify for app A','state':'on','evidence':{'observation':'old','source_call':'old-call'}}
     records={'r':{'controls':{'c':{'observations':[deepcopy(row)]}}}}
     state={'observation':{'id':'now'},'visual_navigation':{'observation':'now','controls':{'c':'r'}}}
     module('visual_backtrack').project(records,state)
@@ -23,9 +26,11 @@ def test_visual_projection_does_not_promote_historical_semantics(monkeypatch):
     assert control['observations'][0]==row
     assert control['observations'][-1]['semantic_source']==row['evidence']
     assert card['功能推测（未验证）']=='Notify for app A'
-    # A fresh model observation is still disclosed as current.
+    # A registered observation remains a sourced clue; current state comes from the frame.
     control['observations'].append({**deepcopy(row),'evidence':{'observation':'new'}})
-    assert module('target_observation').describe(control,'new')['观察来源']=='本轮输入所对应的登记观察'
+    fresh=module('target_observation').describe(control,'new')
+    assert '最近登记观察' in fresh['观察来源'] and '看图核对' in fresh['观察来源']
+    assert '文字' not in fresh and '可见状态' not in fresh
 
 
 def test_recovery_complete_examples_match_wire_contract():

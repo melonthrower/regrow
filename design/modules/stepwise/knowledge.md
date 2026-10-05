@@ -29,3 +29,6 @@ Region、任务及有效执行证据 → 可复用功能、条件和覆盖说明
 功能整理和共享依据有保存帧验证；完整遍历、跨应用鲁棒性与研究目标未据此全部通过。指令合成/轨迹采集独立消费冻结图。
 
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#knowledge)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
+
+## GUI结束后整理
+离开已探索区块不要求先登记functions。run_progress_session的auto模式在scope_idle/region_complete后，预算允许时调用run_task_step.finalize_knowledge，复用historical_inventory、region_functions及Runner；最多6HTTP、0GUI，正常纠错可取真实新图。暂停、预算结束不自动整理；坏回复/中断保留pending与日志，不能把局部结束或整理完成称为全应用覆盖。

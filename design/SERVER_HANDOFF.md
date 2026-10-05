@@ -1,5 +1,16 @@
 # 服务器续接工作
 
+## 2026-10-06 最小遍历与上下文修订：最新真实停止点
+
+机器为当前个人服务器，工作区根/data/shenghonghui/projects/GUI-ReWalk，活动源码checkout见DEVELOPMENT；不要在根源码/导出候选/冻结源之间交替编辑。真实运行集中artifacts/runs/minimal_fix_20261006_01。
+
+- 安卓沿mobile-context-v11/run续接，设备emulator-44744、com.google.android.deskclock；最后a0020/0078 Cancel，pointer=knowledge_snapshots/a0020-0078-cf0e3038a223。真实返回Settings，未改渐增选项；应用保留。session01为round_limit、2HTTP/1GUI，无pending/execution/navigation和运行中驱动。
+- 桌面沿desktop-context-v11/run续接，容器rewalk-clock-fresh-20261005-02、org.gnome.clocks；最后a0018/0066 Lap，pointer=knowledge_snapshots/a0018-0066-e75982498714。真实有Lap1，应用内秒表仍计时；驱动已停止。session01为round_limit、5HTTP/2GUI，无pending/execution/navigation。不要因新图读数不同重做Start/Lap。
+- 两路上述真实冻结源source-v11/hash a6e967a51f66fa9e13d90784646b76ea4f03ca68b84d5c0a4a7134d045a3182a。最终源码source-v14/hash e7efd409b2615d90b1d52803734e587881359d01bb9fbe46ae47afd6d9454f66补任务清点范围/新选任务相关性，在v13两端2HTTP及mobile-native-v14的1HTTP完整保存帧副本正常模型验证（均0GUI），未自动迁移现场。native副本不是实机续接run；若续跑先显式选源、保存manifest并重新取现场图。
+
+全批49HTTP/12GUI（保存帧11/0，现场38/12），包括v9空路线失败1HTTP/0GUI及其v11恢复；所有历史与失败保留。原clock_mobile_fresh_retry04/clock_fresh_retry02健康run不改；不得使用虚报Nairobi的clock_scroll_direct候选图续跑。旧同名渐增裁图/手势条、可选模板/空闲整理未全实测、前景排除矩形重叠限制见本月日志，不声明Clock完整。审阅包to_astra/minimal_fix_20261006_01含源码版本/真实后图/请求原答/复核日志；下文旧停点为历史。
+
+
 ## 2026-10-05 最新实例清理与冷启动复测
 
 用户授权关闭旧实例后，已停止19个旧Android模拟器与30个旧项目桌面容器。当前只保留本用户的移动`emulator-44744`及桌面`rewalk-clock-fresh-20261005-02`；均重新只读取图可用，原遍历指针不变更。下文其他旧设备的“运行/暂停、可直接续接”描述现为历史，不能再按旧端口恢复。

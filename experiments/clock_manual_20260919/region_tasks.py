@@ -27,7 +27,9 @@ def coverage(region,records=None):
     plan=region.get('task_inventory')
     tasks=region.get('tasks',{})
     missing=set(region['controls'])-set((plan or {}).get('controls',[]))
-    complete=bool(plan and plan['inventory']=='complete' and not plan.get('review') and not missing and not region.get('registration_gaps',{}).get('task_proposal'))
+    complete=bool(plan and plan['inventory']=='complete' and not plan.get('review') and not missing
+        and not region.get('registration_gaps',{}).get('task_proposal')
+        and not region.get('registration_gaps',{}).get('discovery',{}).get('pending'))
     pending=[];blocked=[];done=[];recorded=[]
     for name,t in tasks.items():
         if not helper('task_prerequisites').in_scope(region,t,records):continue
@@ -62,9 +64,12 @@ def plan_request(root,records,state,rid):
                  '框架已关联共享任务':helper('shared_controls').automatic_tasks(region,cid),
                  '其他区块的同名入口历史':helper('entry_evidence').related(region,cid,records)} for cid,c in region['controls'].items()],
         '已有任务':region.get('tasks',{}),
-        '其他区块（历史记录，不表示本图可见，不在本轮清点范围）':[{'名称':r['name'],'描述':r['description']} for other,r in records.items() if other!=rid],
+        '其他区块（仅历史名称索引，不表示本图可见，不在本轮清点范围）':[{'名称':r['name']} for other,r in records.items() if other!=rid],
         '说明':'只清点本区块，control逐字使用给定控件名称；其他区块入口不影响本区块清点。本区块内仍有未辨认或未登记入口时用partial，仅说明缺口，不为未知入口编造任务。入口及任务已列齐就用complete；尚未执行的explore任务不影响清点完整性，完成进度由框架另算。空任务不自动表示清点完成。'}
     inventory=region.get('task_inventory',{})
+    if region.get('registration_gaps',{}).get('discovery',{}).get('pending'):
+        dynamic['发现中尚未确认的事项']=region['registration_gaps']['discovery']['pending']
+        dynamic['发现缺口说明']='未知对象不进入确认地图；已有可信任务可先执行，清点完整性不因已登记子集覆盖就获得确认。位置属于原观察，换帧需按当前图核对。'
     if inventory.get('inventory') in ('partial','uncertain'):
         dynamic['上次清点缺口']={key:inventory.get(key) for key in ('inventory','evidence','source_call')}
         dynamic['上次清点缺口']['说明']='这是历史缺口，需按当前截图和已有观察重新核对；滚动任务结束不自动证明缺口已解决。'
@@ -127,6 +132,7 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if same:
                 name=same[0];seen.add(name)
                 prior=tasks[name]
+                helper('task_settlement').refresh_movement(region,prior,state)
                 if row.get('findings'):
                     store_findings(prior,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
                 continue
@@ -141,11 +147,14 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if normalize(prior)['action']!=t['action'] or any(prior[k]!=t[k] for k in ('control','handling','equivalent_to','task_type')):
                 raise ValueError('已有任务归属或操作不匹配：'+json.dumps({'任务名':name,'原控件':region['controls'].get(prior.get('control'),{}).get('name'),'回复控件':row['control'],'说明':'同控件同动作沿用原任务，不因改名或参数值变化新建。不同控件或动作才有独立任务；任务绑定错误沿记录修订处理，不借普通清点改挂。'},ensure_ascii=False))
             t=prior
+            helper('task_settlement').refresh_movement(region,t,state)
             if row.get('prerequisite') and row['prerequisite']!={k:v for k,v in (prior.get('prerequisite') or {}).items() if k not in ('scheduled','satisfied','last_check','recheck_requested')}:
                 if prior.get('prerequisite'):t.setdefault('prerequisite_history',[]).append(dict(prior['prerequisite']))
                 t['prerequisite']=dict(row['prerequisite'])
         if row.get('findings'):
             store_findings(t,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
+        if t.get('task_type')=='scroll' and state:
+            t.setdefault('navigation_observation',(state.get('observation') or {}).get('id'))
         tasks[name]=t
     if scope_review:
         missing_review={n for n,t in old.items() if t.get('status') in ('pending','blocked') and t.get('handling')!='record'}-seen
@@ -183,7 +192,7 @@ def commit_plan(root,run,call):
             helper('historical_inventory').validate(discovery.load(run)[1][rid],q)
         elif state['observation']['id']!=q['source']['observation'] or rid not in state['interactive_regions']:
             raise ValueError('task inventory belongs to an old observation')
-        apply_plan(records[rid],reply,call,scope_review='task_scope_review' if q.get('task_scope_review') else q.get('external_scope_review',False),records=records,state=state)
+        apply_plan(records[rid],reply,call,scope_review='task_scope_review' if q.get('task_scope_review') else q.get('external_scope_review',False),records=records,state=None if q.get('historical_inventory') else state)
         helper('task_prerequisites').enroll(records,rid,call)
         active=state.get('active_task') or {}
         if active.get('region')==rid and (records[rid].get('tasks',{}).get(active.get('name'),{}).get('handling')=='record' or records[rid].get('tasks',{}).get(active.get('name'),{}).get('status')=='done'):
@@ -199,6 +208,10 @@ def commit_plan(root,run,call):
             if scroll:
                 state.update(next_action_mode='explore',phase='ready_for_next_action',
                     active_task={'region':rid,'name':scroll})
+                state.pop('required_control',None)
+                return
+            if coverage(records[rid],records)['pending']:
+                state.update(next_action_mode='explore',phase='ready_for_next_action')
                 state.pop('required_control',None)
                 return
             state.update(next_action_mode='discover',phase='awaiting_discovery',interactive_regions=[],observation=None,

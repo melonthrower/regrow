@@ -51,13 +51,15 @@ def test_foreground_anchors_cannot_extrapolate_a_background_local_surface(tmp_pa
     assert result['matched_controls']==2 and not result['strong'] and result['bounds'] is None
 
 
-def test_control_identity_boxes_reject_local_coordinates():
+def test_control_identity_boxes_reject_template_locally_and_click_coordinates_strictly():
     m=mod('foreground_scope')
     scope={'interactive_areas':[[239,54,1109,745]],'excluded_areas':[]}
     owner={'bbox':dict(left=239,top=54,right=1109,bottom=101)}
     bad={'region_index':0,'bbox':dict(left=6,top=5,right=42,bottom=41),'icon_bbox':None}
-    with pytest.raises(ValueError,match='控件身份框'):
-        m.validate_control_boxes({'regions':[owner],'controls':[bad]},scope)
+    issues=m.validate_control_boxes({'regions':[owner],'controls':[bad]},scope)
+    assert issues[0]['field']=='image'
+    with pytest.raises(ValueError,match='点击'):
+        m.validate_control_boxes({'regions':[owner],'controls':[{**bad,'click_bbox':bad['bbox']}]},scope)
     good={**bad,'bbox':dict(left=245,top=59,right=281,bottom=95)}
     m.validate_control_boxes({'regions':[owner],'controls':[good]},scope)
     m.validate_control_boxes({'regions':[owner],'controls':[{**bad,'bbox':None}]},scope)

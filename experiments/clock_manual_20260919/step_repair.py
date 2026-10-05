@@ -433,7 +433,7 @@ class Runner:
                         check=hashlib.sha256(json.dumps([repeated,job['request'],job.get('supplements'),reply.get('record_edit')],sort_keys=True).encode()).hexdigest()
                         if check in job['seen']:self.stop(job,'重复提交同一证据下已拒绝的提案')
                     if job['stage']=='shared_control_review':job['last_shared_reply']=deepcopy(reply)
-                    helper('registration_diagnostics').check('correction',{'response_schema':q['response_schema']},reply,{})
+                    helper('registration_diagnostics').check('correction',{'response_schema':q['response_schema'],'original_stage':job['stage']},reply,{})
                     resolution=reply['resolution']
                     job['blocked_by']=reply['blocked_by']
                     if not reply['reason'].strip():raise ValueError('需要说明修复依据')

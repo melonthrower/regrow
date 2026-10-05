@@ -33,7 +33,10 @@ def _bind_action_target(request, proposal):
         return {**base,'status':'matched','basis':'Region-owned observation wait'}
     if proposal.get('action') == 'none':
         return {**base, 'status':'no_action'}
-    if proposal.get('action') in ('hover','drag') or (proposal.get('action')=='scroll' and request.get('navigation_advice')):
+    if proposal.get('action')=='scroll':
+        import region_scroll
+        return region_scroll.bind(request,proposal,base)
+    if proposal.get('action') in ('hover','drag'):
         from PIL import Image
         from pathlib import Path
         frames=request.get('image_refs',[])
@@ -45,14 +48,9 @@ def _bind_action_target(request, proposal):
             return {**base,'status':'unresolved','reason':'scroll needs integer start and end coordinates'}
         with Image.open(frames[0]) as frame:width,height=frame.size
         x,y,ex,ey=coords
-        if not (0<=x<width and 0<=y<height and ((proposal.get('action')=='scroll' and request.get('platform')=='desktop') or (0<=ex<width and 0<=ey<height))) or ((x,y)==(ex,ey) and proposal.get('action')!='hover'):
+        if not (0<=x<width and 0<=y<height and (0<=ex<width and 0<=ey<height)) or ((x,y)==(ex,ey) and proposal.get('action')!='hover'):
             return {**base,'status':'unresolved','reason':'pointer coordinates outside screenshot or no displacement'}
-        if proposal.get('action')=='scroll':
-            return {**base,'status':'matched','model_grounded':True,'basis':'navigation scroll uses model coordinates in current screenshot'}
         # Hover and drag still need the same target association as a click.
-    if proposal.get('action')=='scroll':
-        import region_scroll
-        return region_scroll.bind(request,proposal,base)
     if proposal.get('action')=='input_text' and (not (request.get('allow_input') or request.get('navigation_advice')) or not isinstance(proposal.get('text'),str)):
         return {**base,'status':'unresolved','reason':'input is outside the routed task'}
     if proposal.get('action') not in ('tap','click','double_click','long_press','right_click','input_text','hover','drag'):

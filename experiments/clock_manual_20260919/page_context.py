@@ -194,7 +194,9 @@ def build(records, state, run=None):
                      if row['异常'] in ('', 'none')
                      and rid in [r['区块'] for r in row['动作后可交互区块']]]
                 for rid in refs if rid in records}
-    last_action = ({'region': matches[0][0], 'attempt': matches[0][1]} if len(matches) == 1
+    last_action = ({'region': matches[0][0], 'attempt': matches[0][1],
+                   'changes_surface':bool(matches[0][2].get('evidence',{}).get('before_regions'))
+                       and set(matches[0][2]['evidence']['before_regions']) != set(matches[0][2].get('interactive_regions',[]))} if len(matches) == 1
                    and origin['boundary'] not in ('ambiguous_action_observation', 'cyclic_action_observation') else None)
     view = {'current_tree': roots, 'background_regions': background, 'names': names,
             'last_action': last_action, 'incoming_actions': incoming,
@@ -209,7 +211,11 @@ def build(records, state, run=None):
 
 def _source_attempts(view):
     """Keep source references resolvable in the one existing event history."""
-    refs = [entry['attempt'] for rows in view['incoming_actions'].values() for entry in rows]
+    # Once the real immediate source is known, other historical visits add no
+    # evidence about this arrival. Their routes remain in the backend graph.
+    refs = [] if view.get('last_action') else [entry['attempt'] for rows in view['incoming_actions'].values() for entry in rows]
+    if not (view.get('last_action') or {}).get('changes_surface'):
+        refs.extend(entry['via']['attempt'] for entry in view.get('origin',{}).get('known_entries',[]))
     if view.get('last_action'):refs.append(view['last_action']['attempt'])
     return refs
 
@@ -242,8 +248,8 @@ def _display(view, goal_in_task_context=False):
                 if event.get('region') == entry['region'] and not event.get('缺口'):
                     lines.append('  ' * (depth + 1) + '历史来源记录：' + page_history.reference(history, entry['attempt']))
             for control in node['controls']:
-                state = control['state'] if control['evidence'] == 'current_observation' else ''
-                lines.append('  ' * (depth + 1) + '- ' + control['name'] + (f'（{state}）' if state else ''))
+                qualifier='（历史外观候选；本轮身份未确认）' if control.get('evidence')=='needs_recheck' else ''
+                lines.append('  ' * (depth + 1) + '- ' + control['name']+qualifier)
                 for aid in controls.get((node['ref'], control['ref']), []):
                     event = events[aid]
                     line = '  ' * (depth + 2) + '历史记录：' + page_history.reference(history, aid)
@@ -252,7 +258,7 @@ def _display(view, goal_in_task_context=False):
                         line += '；动作后区块：' + '、'.join(after)
                     lines.append(line)
             tree(node['children'], depth + 1)
-    lines.append(('动作前' if usage == 'before_action' else '先前' if usage == 'discovery' else '') + '登记前景区块与控件：')
+    lines.append(('动作前' if usage == 'before_action' else '先前' if usage == 'discovery' else '') + '登记区块与控件身份线索（标注历史候选者未确认本轮身份；未列出不表示不存在）：')
     tree(view['current_tree'])
     if view['background_regions']:
         lines.append('该次登记观察的受阻背景：' + '、'.join(n['name'] for n in view['background_regions']))
@@ -299,22 +305,8 @@ def live(records, state, run):
 
 
 def compact_observation(card, view, region, observation, *, control=None, name=None):
-    """Only omit a state's exact duplicate from the same registered observation."""
-    result = dict(card)
-    if not view or not observation or observation != view.get('observation', {}).get('id'):
-        return result
-    matches = []
-    def visit(nodes):
-        for node in nodes:
-            if node['ref'] == region:
-                matches.extend(c for c in node['controls'] if
-                    (c['ref'] == control if control is not None else c['name'] == name))
-            visit(node.get('children', []))
-    visit(view['current_tree'])
-    if (len(matches) == 1 and matches[0]['evidence'] == 'current_observation'
-            and result.get('可见状态') and result['可见状态'] == matches[0]['state']):
-        result.pop('可见状态')
-    return result
+    """Keep role and appearance references; current values come from the frame."""
+    return {key: value for key, value in card.items() if key not in ('文字', '可见状态')}
 
 
 def separate_map(request):
@@ -422,11 +414,14 @@ def attach(request, records, state, *, usage='selection', run=None, extra_region
             if goal.get('已有参数发现'):
                 dynamic['任务目标']['历史分段说明'] += '参数差异观察的基准仍为本任务已有参数发现。'
             request['user_prompt'] = request['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
-    view = build(records, state, run)
     source = request.get('source', {})
+    from history_selection import for_request
+    state=for_request(records,state,source)
+    view = build(records, state, run)
     view['history'] = page_history.build(records, state, run, goal=goal,
         extra_regions=[*extra_regions, *[source.get(k) for k in ('region','task_region','return_to')]],
-        navigation=bool(request.get('navigation_advice')), extra_attempts=[*incoming, *_source_attempts(view)])
+        navigation=bool(request.get('navigation_advice')), extra_attempts=[*incoming, *_source_attempts(view)],
+        planning_region=source.get('region') if request.get('stage')=='task_proposal' else None)
     view['usage'] = usage
     request['page_context'] = view
     return refresh(request)

@@ -319,31 +319,6 @@
         "additionalProperties": false
       }
     },
-    "exploration_update": {
-      "type": "object",
-      "properties": {
-        "attempt_status": {
-          "type": "string",
-          "enum": [
-            "executed",
-            "not_executed",
-            "uncertain"
-          ]
-        },
-        "outcome": {
-          "type": "string"
-        },
-        "evidence": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "attempt_status",
-        "outcome",
-        "evidence"
-      ],
-      "additionalProperties": false
-    },
     "handoff_summary": {
       "type": "string"
     }
@@ -356,7 +331,6 @@
     "uncertainties",
     "action_result",
     "previous_regions",
-    "exploration_update",
     "handoff_summary"
   ],
   "additionalProperties": false

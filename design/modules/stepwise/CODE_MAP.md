@@ -57,7 +57,7 @@
 | [action_evidence.py](../../../experiments/clock_manual_20260919/action_evidence.py) | 从投递回执读取实际动作类型，不由标签或截图推断。 | `resolve_operations` |
 | [input_target.py](../../../experiments/clock_manual_20260919/input_target.py) | 只对可靠视觉确认的记录输入对象继续发送文字。 | `locate / resolve` |
 | [attempt_guard.py](../../../experiments/clock_manual_20260919/attempt_guard.py) | 相同失败尝试进入既有纠错边界，避免无依据重复执行。 | `check` |
-| [region_scroll.py](../../../experiments/clock_manual_20260919/region_scroll.py) | 把滚动绑定到本帧已登记 Region 边界。 | `attach / bind` |
+| [region_scroll.py](../../../experiments/clock_manual_20260919/region_scroll.py) | 校验当前图中的模型滚动坐标，保留 Region 动作归属。 | `bind` |
 | [visual_choices.py](../../../experiments/clock_manual_20260919/visual_choices.py) | 提供本轮外观匹配备选，明确身份裁图与点击区域不同。 | `prepare / match_controls / click_box` |
 
 ## 第三步：结果更新与登记（10 文件）
@@ -207,3 +207,9 @@
 | 临时验证/审阅交付 | `artifacts/tmp_tests/<唯一任务>/` / `to_astra/<唯一名称>/`；冻结源与当前源明确区分、脱敏、不覆盖旧版本 |
 
 修改时沿 [连接核对表](../../../DEVELOPMENT.md#change-connections)核对请求→原答校验→登记→下轮读取以及受影响纠错/恢复。共享模块的主要 owner 不排除其他步骤使用；同一事实只能由既有登记路径发布，地图和浏览器投影不能成为第二份事实写入器。
+
+当前最小遍历连接：discovery_completion保留逐项缺口出处；task_settlement.partition_findings负责补充事实局部化，refresh_movement只读新观察重开原移动任务；run_task_step.finalize_knowledge在GUI空闲后由run_progress_session调用。
+
+- `history_selection.py`：当前任务、明确准备、completion/findings及旧scroll努力的引用选择；由history_context/page_history共用，禁止用时间区间补无关动作。
+- `region_candidate_names.entry_summary`：必要历史入口职责，完整进入动作仍在function_evidence后台。
+- `identity_templates.crop_rejection`：可选模板几何资格；register_update只拒绝该模板，foreground_scope保留严格点击/前景边界。

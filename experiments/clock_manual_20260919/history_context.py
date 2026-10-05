@@ -1,10 +1,11 @@
-import control_history_context
 """Read-only history: select related evidence, project provenance, render it.
 No visibility inference, task mutation or navigation scheduling belongs here.
 """
+import control_history_context
 import json
 import importlib.util
 from pathlib import Path
+from history_selection import task_attempts
 
 def sibling(name):
     spec=importlib.util.spec_from_file_location(name,Path(__file__).with_name(name+'.py'))
@@ -172,8 +173,8 @@ def task_goal(task, records, run=None):
     """Project evidence once per event; never infer causality or task completion."""
     from copy import deepcopy
     result={'type':task.get('task_type'),'reason':task['reason']}
-    result['历史阅读']='来源对象保留历史身份引用，不保证与动作入口相同。身份关联unconfirmed仅指后台控件绑定未确认，不否定动作投递或截图观察，须结合执行位置核对对象。按记录核对操作及后续观察；包含所引动作之间已登记的其他动作。没有实际记录的间隙不能视为没有操作。对象身份、适用条件或因果链不清楚时明确缺口，不推断成功。'
-    refs=set(task.get('attempts',[])) | set(task.get('completion_basis',{}).get('attempts',[]));observations={};unlinked=[];facts={}
+    result['历史阅读']='来源对象保留历史身份引用，不保证与动作入口相同。身份关联unconfirmed仅指后台控件绑定未确认，不否定动作投递或截图观察。仅展开任务引用的努力与反馈；未展开的其他历史仍留档，不能推断期间没有其他动作。对象身份、适用条件或因果链不清楚时明确缺口，不推断成功。'
+    refs=task_attempts(task);observations={};unlinked=[];facts={}
     invalid={h['invalidated_attempt'] for h in task.get('ownership_history',[]) if h.get('invalidated_attempt')}
     fields=('description','domain','conditions','evidence')
     for name,fact in task.get('findings',{}).items():
@@ -203,12 +204,8 @@ def task_goal(task, records, run=None):
     index={}
     for region in records.values():
         for ref,action in region.get('actions',{}).items():index.setdefault(ref,[]).append((region,action))
-    # Keep intervening actions even when they served another task. No last-N cut.
+    # References carry causality; numerical intervals do not.
     selected=set(refs)
-    numeric=[ref for ref in refs if order(ref)[0]==0]
-    if numeric:
-        lo,hi=min(map(order,numeric)),max(map(order,numeric))
-        selected.update(ref for ref in index if lo<=order(ref)<=hi)
     events=[]
     for ref in sorted(selected,key=order):
         row={'记录':ref,'关联':'原尝试审计引用：实际作用于其他控件，不支持本控件完成' if ref in invalid else '任务证据' if ref in refs else '期间其他动作'}
@@ -223,16 +220,8 @@ def task_goal(task, records, run=None):
                        观察=outcome.get('description','尚无观察'),证据=outcome.get('evidence',''))
             if association:row['身份关联']=association.get('status','未确认')
             if outcome.get('exception') not in (None,'none'):row['异常']=outcome['exception']
-            if action.get('text_delivered') is False:row['文字投递']='未发送'
-            for key in ('text','executed_steps'):
-                if key in action:row[key]=deepcopy(action[key])
-            receipt_path=Path(run)/'action_attempts'/ref/'receipt.json' if run and Path(ref).name==ref else None
-            if receipt_path and receipt_path.exists():
-                receipt=json.loads(receipt_path.read_text())
-                row['实际执行']=[{k:v for k,v in step.items() if k!='reason'} for step in receipt.get('executed_steps',[])]
-                row['回执']={k:receipt[k] for k in ('exit_code','semantic_result','text_delivered') if k in receipt}
-            elif action.get('executed_steps'):
-                row['实际执行']=deepcopy(action['executed_steps'])
+            import page_history
+            row.update(page_history._execution(action,ref,run))
             if not row.get('实际执行'):row['执行明细缺口']='未提供保存的执行步骤，不能仅从动作意图推断具体投递'
 
         if observations.get(ref):row['参数观察']=observations[ref]
@@ -274,5 +263,5 @@ def action_context(records,state,task_region,name,task):
         lines.append('任务仍归原区块记录，但不要求返回原区块。依据已有结果从当前截图继续核验；不要为再次操作原入口而自动返回。')
     from task_settlement import task_object_context
     lines.append('本任务当前绑定：'+json.dumps(task_object_context(records,{'task_region':task_region,'region_ref':task_region,'task_name':name}),ensure_ascii=False))
-    lines.append('这是前置准备：根据原准备说明和实际反馈继续；条件满足由更新步的dependency_updates登记，点击入口本身不结束准备。' if task.get('prepares') else '执行当前绑定动作并记录直接反馈；不要追加穷举或保存验证。需要到达目标时可先导航，无法定位用none补发现。')
+    lines.append('这是前置准备：根据原准备说明和实际反馈继续；条件满足由更新步的dependency_updates登记，点击入口本身不结束准备。' if task.get('prepares') else '执行当前绑定动作并记录直接反馈；普通探索不默认追加穷举或保存验证，显式目标要求保存生效时按真实证据核验。需要到达目标时可先导航，无法定位用none补发现。')
     return '\n'.join(lines),evidence

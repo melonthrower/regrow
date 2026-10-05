@@ -100,7 +100,8 @@ def test_correction_history_references_exact_snapshot_but_keeps_unique_receipt(t
     assert actual['任务目标']['任务'] == actual['失败对象']['任务'] == '本轮当前任务（定义见原动态上下文）'
     raw = actual['最近尝试原始证据'][0]
     assert raw['提案']['text'] == 'London'
-    assert 'exit_code' not in raw['执行回执'] and raw['执行回执']['input_mode'] == 'replace'
+    # Raw receipt details are relevant to this exceptional correction only.
+    assert raw['执行回执']['exit_code']==0 and raw['执行回执']['input_mode'] == 'replace'
     assert raw['执行回执']['executed_steps'][0]['reason'] == 'focus'
     task['result_evidence'] = 'New judgment from another snapshot'
     changed = m.context(tmp_path, value)['区块'][0]['任务'][0]

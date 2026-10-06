@@ -1,5 +1,17 @@
 # 服务器续接工作
 
+## 2026-10-06 Clock初始数据恢复后整批停止点（优先于下文旧现场）
+
+工作区/设备沿本页既有开发入口；新证据artifacts/runs/clock_restart_20261006_01。本地备份已核验后清初始应用数据，旧run不覆盖；因此旧记录描述的秒表计时/闹钟/城市不再代表现场。两个新原生auto驱动均已结束，max40HTTP/12GUI命令。
+
+- 安卓mobile/run.json指定com.google.android.deskclock_20261006T030435_ca2e12f8；34HTTP/12GUI、末a0012/0034实际Cancel返回Settings，pointer=a0012-0034-9ac300ef34c9。2任务pending，其中旧0032滚动非空控件绑定错误；不要以新源静默迁移或重放。
+- 桌面desktop/run.json指定org.gnome.clocks_20261006T030435_5f8c6074；25HTTP/12GUI命令（10业务动作）、末a0010/0025关闭菜单回Timer，pointer=a0010-0025-0cb95fafc532。World添加London,Kiribati；未建闹钟/启动秒表或计时器。4内容区任务未清点，零pending不代表全覆盖。
+
+两端真实源v7(hash a0ee53582ccf2f9cab638f1b02c33d93788d586d80d4b77913f0c887b3fe89b0、bbc66ba)，无pending_step/execution_pending/visual_navigation_pending。只读dashboard仍显示新批最近真实观察/区块树；服务信息留本地dashboard-service.json，不在文档记录私有端点。
+
+source-v8仅新增任务提案scroll归属校验；完整保存帧副本native-v8/saved-scroll-owner为1HTTP/0GUI，不是现场图或已滚动。旧错任务、前景待办优先级、裁图/Timer字段遗漏、按钮状态误作参数仍开放。未来续跑先明确源/预算、核对实时图和上述任务归属，不重放已执行动作，也不假称旧图完整。完整整批报告/独立审查/便携ZIP见to_astra/clock_restart_20261006_01；本批无新GUI追加。
+
+
 ## 2026-10-06 最小遍历与上下文修订：最新真实停止点
 
 机器为当前个人服务器，工作区根/data/shenghonghui/projects/GUI-ReWalk，活动源码checkout见DEVELOPMENT；不要在根源码/导出候选/冻结源之间交替编辑。真实运行集中artifacts/runs/minimal_fix_20261006_01。

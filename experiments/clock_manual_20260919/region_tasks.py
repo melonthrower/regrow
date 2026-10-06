@@ -116,6 +116,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         names=[cid for cid,c in region['controls'].items() if c['name']==row['control']]
         if row['task_type']=='scroll' and row['control']=='':names=[None]
         if (row['task_type']=='scroll') != (row['action']=='scroll'):raise ValueError('scroll task/action mismatch')
+        if row['task_type']=='scroll' and row['control']:
+            raise ValueError('滚动任务属于本区块，control须为空；不能绑定列表控件，否则与实际滚动记录不匹配')
         if len(names)!=1:
             if reply['inventory']!='complete' and not names:continue
             raise ValueError('task owner ambiguous or missing')

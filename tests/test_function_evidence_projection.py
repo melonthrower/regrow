@@ -38,6 +38,18 @@ def test_changed_observation_fact_invalidates_review_but_repeated_fact_does_not(
     assert request['已观察控件'][0].get('观察出处') or any(c.get('观察出处') for c in request['已观察控件'])
 
 
+def test_visual_navigation_localization_does_not_change_summary_evidence():
+    _,r,_=alarm_region();m=mod('region_functions');cid=r['tasks']['时间']['control']
+    control=r['controls'][cid]
+    control['observations']=[{'state':'已确认','evidence':{'source_call':'0025','observation':'update:0025'}}]
+    original=m.request_signature(r);evidence=m.evidence_projection(r)
+    control['observations'].append({'state':'较早模板状态','visual_only':True,
+        'evidence':{'source_call':'0020','observation':'update:0099'}})
+    assert m.request_signature(r)==original and m.evidence_projection(r)==evidence
+    control['observations'].append({'state':'正式新观察','evidence':{'source_call':'0100','observation':'update:0100'}})
+    assert m.request_signature(r)!=original
+
+
 def test_executed_unconfirmed_task_action_keeps_facts_without_owner_claim():
     _,r,_=alarm_region();m=mod('region_functions')
     r['tasks']['时间']['attempts']=['a8']

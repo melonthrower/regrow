@@ -58,11 +58,9 @@ def request(root,snapshot,records,state,current_request=None):
             return None
     # Knowledge-only finishing work must not depend on returning to its surface.
     # Keep the active GUI task and current observation untouched.
-    for candidate in sorted(records.values(),key=lambda r:r['id']!=state.get('working_region')):
-        if (tasks.coverage(candidate,records)['complete']
-                and not candidate.get('registration_gaps',{}).get('function_registration')
-                and not functions.review_current(candidate,records)):
-            return functions.request(root,candidate,state,records)
+    ready=functions.next_ready(records,state)
+    if ready:
+        return functions.request(root,records[ready],state,records)
     rid=state.get('working_region');region=records.get(rid,{})
     if rid in state.get('interactive_regions',[]) or not region or region.get('out_of_scope_reason'):return None
     if (region.get('task_inventory') and not region['task_inventory'].get('review')) or region.get('registration_gaps'):return None

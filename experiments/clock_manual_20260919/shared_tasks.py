@@ -29,7 +29,7 @@ def synchronize_tasks(records):
                     if local is None:
                         label=name if name not in tasks else name+'（共享：'+region['controls'][cid]['name']+'）'
                         if label in tasks:continue  # never overwrite an independent obligation
-                        t={k:deepcopy(definition[k]) for k in ('action','task_type','reason','source_call') if k in definition}
+                        t={k:deepcopy(definition[k]) for k in ('action','task_type','reason','source_call','registration_kind') if k in definition}
                         t.update(control=cid,status='pending',handling='explore',equivalent_to='',attempts=[],
                             shared_task_ref={'region':rr,'task':name,'control':cc},
                             shared_definition={'handling':definition['handling'],'reason':definition['reason']})
@@ -37,16 +37,20 @@ def synchronize_tasks(records):
                             t['prerequisite']={k:deepcopy(v) for k,v in definition['prerequisite'].items() if k not in ('scheduled','satisfied','last_check','recheck_requested')}
                         tasks[label]=t;local=(label,t)
                     local[1]['shared_task_active']=True
+                    if definition.get('registration_kind'):
+                        local[1]['registration_kind']=definition['registration_kind']
                     members.append((rid,*local))
                 # Only actual member outcomes close shared execution work. A proxy
                 # is never a new source of evidence and cannot form a coverage chain.
                 winner=None
+                from task_settlement import registered_result
                 for rid,n,t in members:
                     if t.get('status')!='done':continue
                     evidence=[aid for aid in effective_attempts(t) if
                         records[rid].get('actions',{}).get(aid,{}).get('control')==t.get('control') and
                         records[rid]['actions'][aid].get('delivery')=='executed_receipt_zero' and
-                        records[rid]['actions'][aid].get('result',{}).get('exception')=='none']
+                        records[rid]['actions'][aid].get('result',{}).get('exception')=='none' and
+                        registered_result(t,records[rid]['actions'][aid])]
                     if evidence:winner={'region':rid,'task':n,'attempts':evidence};break
                 for rid,n,t in members:
                     if rid==rr or t.get('status')=='done':continue

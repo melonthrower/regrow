@@ -67,8 +67,9 @@ def test_cumulative_review_preserves_real_parameter_requirement(tmp_path,prepara
     assessment=dict(name=prep['name'],status='done',evidence='same control observed enabled after action')
     review=tasks().helper('task_result_review')
     if preparation:
-        review.apply(r,{},prep['name'],assessment,'review')
-        assert prep['status']=='done'
+        with pytest.raises(ValueError,match='dependency_updates'):
+            review.apply(r,{},prep['name'],assessment,'review')
+        assert prep['status']=='pending'
     else:
         with pytest.raises(ValueError,match='参数任务缺少'):review.apply(r,{},prep['name'],assessment,'review')
 
@@ -79,10 +80,12 @@ def test_direct_update_preserves_real_parameter_requirement(tmp_path,preparation
     prep['task_type']='parameter'
     if not preparation:prep.pop('prepares')
     binding=dict(task_name=prep['name'],region_ref='r1',control_ref=prep['control'])
-    reply=dict(action_result={'exception':'none'},task_result=dict(
-        name=prep['name'],status='done',evidence='same control observed enabled',findings=[]))
+    reply=dict(action_result={'exception':'none','description':'same control observed enabled'},
+               task_update={'findings':[],'next_action':None,'registration_gap':''})
+    r['actions']['a1']={'operation':'click','control':prep['control'],
+        'delivery':'executed_receipt_zero','result':reply['action_result'],'parameter_findings':[]}
     if preparation:
         tasks().settle_task(r,binding,reply,'a1',records)
-        assert prep['status']=='done'
+        assert prep['status']=='pending'
     else:
-        with pytest.raises(ValueError,match='parameter task'):tasks().settle_task(r,binding,reply,'a1',records)
+        with pytest.raises(ValueError,match='findings参数事实'):tasks().settle_task(r,binding,reply,'a1',records)

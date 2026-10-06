@@ -172,7 +172,8 @@ def related(region,control,records):
 def task_goal(task, records, run=None):
     """Project evidence once per event; never infer causality or task completion."""
     from copy import deepcopy
-    result={'type':task.get('task_type'),'reason':task['reason']}
+    result={'type':task.get('task_type'),'reason':task['reason'],
+            'registration_kind':sibling('task_settlement').registration_kind(task)}
     result['历史阅读']='来源对象保留历史身份引用，不保证与动作入口相同。身份关联unconfirmed仅指后台控件绑定未确认，不否定动作投递或截图观察。仅展开任务引用的努力与反馈；未展开的其他历史仍留档，不能推断期间没有其他动作。对象身份、适用条件或因果链不清楚时明确缺口，不推断成功。'
     refs=task_attempts(task);observations={};unlinked=[];facts={}
     invalid={h['invalidated_attempt'] for h in task.get('ownership_history',[]) if h.get('invalidated_attempt')}
@@ -245,15 +246,16 @@ def task_goal(task, records, run=None):
 def action_context(records,state,task_region,name,task):
     lines=['当前目标：'+name,'探索说明（建立任务时的观察，不代表效果已实现）：'+task['reason']]
     lines.append('任务合同：'+json.dumps({'动作':task.get('action'),'类型':task.get('task_type'),
-        '处理方式':task.get('handling'),'覆盖任务':task.get('equivalent_to')},ensure_ascii=False))
-    lines.append('已有动作与观察统一见共同地图。框架根据绑定动作更新进度，done只表示已探索；业务效果以实际观察为准。')
+        '处理方式':task.get('handling'),'覆盖任务':task.get('equivalent_to'),
+        '所需登记':sibling('task_settlement').registration_kind(task)},ensure_ascii=False))
+    lines.append('已有动作与观察统一见共同地图。框架根据绑定动作及所需信息登记更新进度，done表示本类探索产物已登记；业务效果以实际观察为准。')
     resolved=[item for item in task.get('blocker_history',[]) if item.get('resolved_by')]
     if resolved and not task.get('blocker'):
         lines.append('历史阻塞已在后续观察中解除；当前是否可操作仍以截图为准。')
     ref=state.get('last_action_result') or {}
     recent=records.get(ref.get('region'),{}).get('actions',{}).get(ref.get('action'))
     evidence={'task':{'region':task_region,'name':name},'recent_action':None,'resolved_blockers':resolved,
-              'definition':{k:task.get(k) for k in ('control','reason','action','task_type','handling','equivalent_to')}}
+              'definition':{k:task.get(k) for k in ('control','reason','action','task_type','handling','equivalent_to','registration_kind')}}
     if recent:evidence['recent_action']=dict(ref)
     facts,evidence['known_findings']=findings(records,state,task_region,name,task)
     if facts:

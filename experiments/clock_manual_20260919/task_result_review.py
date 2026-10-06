@@ -121,12 +121,24 @@ def apply(region,state,name,assessment,call,available_history=()):
         return
     if task.get('status')!='pending' and not historical:raise ValueError('原任务已不处于pending，不能覆盖旧结论')
     if assessment['status']=='done':
+        if task.get('prepares'):raise ValueError('准备任务由dependency_updates的实际条件观察结算，复核意见不替代条件登记')
         if not (helper('action_owner_correction').effective_attempts(task) or task.get('findings') or available_history):
             control=region.get('controls',{}).get(task.get('control'),{}).get('name','未登记控件')
             raise ValueError(f'任务「{name}」对应控件「{control}」没有累计尝试或观察事实可用于本次核对，不能结算为done。'
                              '若引用其他控件的历史，先核对身份；确为同一对象的重复记录时，可用record_edit / merge_into显式修订，再核对历史实例与本任务结束条件。'
                              '合并不自动证明完成；身份或适用性不能确认时保留具体缺口，不为通过校验合并或补造历史。')
-        if helper('task_prerequisites').needs_parameter_facts(task) and not task.get('findings'):raise ValueError('参数任务缺少已登记参数事实，需先补观察登记')
+        settlement=helper('task_settlement')
+        target=settlement.completion_target(region,task)
+        # Historical fact authoring registers on the task, with its own source
+        # call. Keep that provenance instead of rewriting the original action.
+        parameter=helper('task_prerequisites').needs_parameter_facts(task)
+        if parameter and not task.get('findings'):
+            raise ValueError('参数任务缺少已登记参数事实，需先补观察登记')
+        if not any(settlement.recorded_match(region,aid,action,target) and
+                   (parameter and bool(task.get('findings')) or settlement.registered_result(task,action))
+                   for aid,action in region.get('actions',{}).items()
+                   if aid in set(task.get('attempts',[]))|set(available_history)):
+            raise ValueError('任务尚缺本类探索产物的实际登记；复核意见不能替代参数事实、入口语义或控件反馈')
     if historical:
         task.setdefault('history',[]).append({'status':task['status'],'result_evidence':task.get('result_evidence',''),'reviewed_by':call})
     if assessment['status']=='done' and available_history:

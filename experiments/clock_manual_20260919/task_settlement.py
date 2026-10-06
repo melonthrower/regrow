@@ -1,4 +1,4 @@
-"""Derive traversal progress from bound, recorded actions; keep observed facts."""
+"""Settle exploration from bound actions and their requested information records."""
 import json
 from pathlib import Path
 
@@ -9,6 +9,63 @@ def action_name(value):
 
 def task_key(task):
     return task.get('control'), action_name(task.get('action'))
+
+
+def registration_kind(task):
+    # Saved tasks keep their historical category; no relabeling of completed work.
+    return task.get('registration_kind') or ('parameter' if task.get('task_type')=='parameter' else 'control_effect')
+
+
+def entry_schema():
+    return {'anyOf':[{'type':'null'},{'type':'object','properties':{
+        'region':{'type':'string','description':'本次实际进入或显露的区块完整名称'},
+        'meaning':{'type':'string','description':'此入口通往什么功能内容'},
+        'conditions':{'type':'array','items':{'type':'string'}},
+        'evidence':{'type':'string','description':'动作前后图支持该去向的具体变化'}},
+        'required':['region','meaning','conditions','evidence'],'additionalProperties':False}]}
+
+
+def register_entry(value,records,actual,attempt,labels=None):
+    """Resolve observed entry semantics against this action's registered surface."""
+    if value is None:return
+    import jsonschema
+    jsonschema.validate(value,entry_schema())
+    rid=(labels or {}).get(value['region'])
+    matches=[rid] if rid in records else [rid for rid,r in records.items() if r['name']==value['region']]
+    if len(matches)!=1:raise ValueError('入口去向需要本轮已登记的唯一完整区块名')
+    target=matches[0];action=actual['actions'][attempt]
+    changed={row['region'] for row in action.get('region_changes',[]) if row['state']=='changed_interactive'}
+    before=set(action.get('evidence',{}).get('before_regions',[]))
+    if (target not in action.get('interactive_regions',[]) or target in before and target not in changed
+            or action.get('result',{}).get('exception')!='none'):
+        raise ValueError('入口去向必须对应本次新出现或发生变化的可交互区块；仅同时可见不足以证明跳转')
+    if not value['meaning'].strip() or not value['evidence'].strip():raise ValueError('入口语义需要用途与前后变化依据')
+    entry={**value,'region':target,'attempt':attempt}
+    action['entry_registration']=entry
+    for edge in actual.get('transitions',[]):
+        if edge['attempt']==attempt and edge['target_region']==target:edge['entry_semantics']=dict(entry)
+
+
+def registered_result(task,action):
+    """An executed click alone does not supply a parameter or entry record."""
+    kind=registration_kind(task)
+    if action.get('registration_gap') and action.get('registration_kind')==kind:return False
+    if kind=='parameter':return bool(action.get('parameter_findings'))
+    if kind=='entry':return bool(action.get('entry_registration'))
+    return bool(action.get('result',{}).get('description'))
+
+
+def require_registration(task,action,update):
+    if update.get('next_action') is not None:return
+    gap=update.get('registration_gap','').strip()
+    action['registration_kind']=registration_kind(task)
+    if gap:
+        action['registration_gap']=gap
+        return
+    action.pop('registration_gap',None)
+    if not registered_result(task,action):
+        needed={'parameter':'findings参数事实','entry':'entry实际去向与跳转语义','control_effect':'action_result直接反馈'}[registration_kind(task)]
+        raise ValueError('本任务需要登记'+needed+'；当前图与已有证据不足时，用registration_gap说明具体缺口，保存尝试并暂挂，而非重做动作')
 
 
 def completion_target(owner, task):
@@ -39,7 +96,8 @@ def task_object_context(records, binding):
             '待执行区块': region['name'],
             '待执行控件': region['controls'].get(target['control'], {}).get('name', '区块本身'),
             '待执行动作': target['action'],
-            '说明': ('这是前置准备，按已知准备目标推进；条件是否满足由本次观察的dependency_updates登记，不因入口点击而结束。' if task.get('prepares') else '') + '框架用实际绑定和执行记录更新探索状态；只登记看到的结果，不另判任务done或业务成功。'}
+            '所需登记':registration_kind(task),
+            '说明': ('这是前置准备，按已知准备目标推进；条件是否满足由本次观察的dependency_updates登记，不因入口点击而结束。' if task.get('prepares') else '') + '框架用实际绑定、执行记录和本任务所需的信息登记更新探索状态；提交观察和具体信息缺口，不另判任务done或业务成功。'}
 
 
 def recorded_match(region, aid, action, target, receipt=None):
@@ -72,9 +130,9 @@ def mark_explored(task, region, aid, action):
     task['status'] = 'done'
     task['result_evidence'] = action['result']['description']
     task['attempts'] = list(dict.fromkeys(task.get('attempts', []) + [aid]))
-    task['completion_basis'] = {'rule': 'bound_action_recorded', 'region': region['id'],
+    task['completion_basis'] = {'rule': 'exploration_result_registered','registration_kind':registration_kind(task), 'region': region['id'],
                                'control': action.get('control'), 'operation': action['operation'],
-                               'attempt': aid, 'meaning': '已执行并登记直接观察，不表示业务效果成功'}
+                               'attempt': aid, 'meaning': '已执行并登记本类探索产物，不表示业务效果成功'}
     task.pop('completion_review', None)
 
 
@@ -117,6 +175,13 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
     findings = update.get('findings', [])
     if task:
         task['attempts'] = list(dict.fromkeys(task.get('attempts', []) + [attempt]))
+        if (not task.get('prepares') and recorded_match(actual,attempt,action,completion_target(owner,task),receipt)):
+            register_entry(update.get('entry'),records,actual,attempt,labels)
+            require_registration(task,action,update)
+            if action.get('registration_gap'):
+                task.update(status='blocked',result_evidence=action['result']['description'],
+                    blocker={'condition':'review_required','reason':action['registration_gap'],'attempt':attempt},
+                    deferral={'reason':action['registration_gap'],'retry_when':'explicit_evidence_registration','attempt':attempt})
         if findings and recorded_match(actual,attempt,action,completion_target(owner,task),receipt):
             store_findings(task,findings,{'region':actual['id'],'task_region':owner['id'],
                 'task':name,'control':action.get('control'),'attempt':attempt})
@@ -138,7 +203,7 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
             if findings:
                 store_findings(candidate, findings, {'region': actual['id'], 'task_region': region['id'],
                     'task': task_name, 'control': action.get('control'), 'attempt': attempt})
-            mark_explored(candidate, actual, attempt, action)
+            if registered_result(candidate,action):mark_explored(candidate, actual, attempt, action)
 
 
 def reconcile(records):
@@ -151,12 +216,33 @@ def reconcile(records):
             target = completion_target(owner, task)
             region = records.get(target['region'], {})
             for aid, action in reversed(list(region.get('actions', {}).items())):
-                if recorded_match(region, aid, action, target):
+                if recorded_match(region, aid, action, target) and registered_result(task,action):
                     if action.get('parameter_findings'):
                         store_findings(task, action['parameter_findings'], {
                             'region':region['id'], 'task_region':owner['id'],
                             'task':name, 'control':action.get('control'), 'attempt':aid})
                     mark_explored(task, region, aid, action)
+                    changed = True
+                    break
+            else:
+                # An already delivered candidate is an ownership gap, not a new
+                # click obligation. Keep its evidence and let other work proceed.
+                for aid in reversed(task.get('attempts', [])):
+                    action = region.get('actions', {}).get(aid, {})
+                    association = action.get('association', {})
+                    if (aid in target.get('excluded_attempts', [])
+                            or action.get('delivery') != 'executed_receipt_zero'
+                            or action.get('result', {}).get('exception') != 'none'
+                            or not action.get('result', {}).get('description')
+                            or action_name(action.get('operation')) != action_name(target['action'])
+                            or association.get('status') != 'unconfirmed'
+                            or not any(c.get('region') == target['region'] and c.get('control') == target['control']
+                                       for c in association.get('candidates', []))):
+                        continue
+                    reason = '已有实际投递及观察，但目标控件归属未确认；保留原尝试，需显式核对关联后再推进原任务'
+                    task.update(status='blocked', result_evidence=action.get('result', {}).get('description', ''),
+                        blocker={'condition':'review_required', 'reason':reason, 'attempt':aid},
+                        deferral={'reason':reason, 'retry_when':'explicit_task_ownership_review', 'attempt':aid})
                     changed = True
                     break
     return changed
@@ -171,7 +257,7 @@ def reconcile_run(run):
     def mutate(records, state, *_):
         reconcile(records)
         active = state.get('active_task') or {}
-        if records.get(active.get('region'), {}).get('tasks', {}).get(active.get('name'), {}).get('status') == 'done':
+        if records.get(active.get('region'), {}).get('tasks', {}).get(active.get('name'), {}).get('status') in ('done', 'blocked'):
             state.pop('active_task', None)
     import uuid
     discovery.publish(run, 'bound-actions-' + uuid.uuid4().hex, mutate)

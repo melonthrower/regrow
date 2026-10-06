@@ -81,7 +81,8 @@
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [region_functions.py](../../../experiments/clock_manual_20260919/region_functions.py) | 从已有控件、任务、属性和实际动作提取本区功能知识。 | `request / commit / evidence_projection` |
+| [region_functions.py](../../../experiments/clock_manual_20260919/region_functions.py) | 从已有控件、任务、属性和实际动作提取本区功能知识。 | `next_ready / request / commit / evidence_projection` |
+| [function_scope.py](../../../experiments/clock_manual_20260919/function_scope.py) | 按真实直接连接和任务/参数关联组织跨区块总结的材料候选，不改身份或图。 | `related_regions` |
 | [function_evidence.py](../../../experiments/clock_manual_20260919/function_evidence.py) | 只读整理本区执行结果和观察来源，独立于任务是否可调度。 | `action_results / incoming_results` |
 | [coverage_exemption.py](../../../experiments/clock_manual_20260919/coverage_exemption.py) | 保存有依据的非执行覆盖决定，未验证缺口保留；不借另一控件成功。 | `apply / reconcile / refresh` |
 
@@ -209,7 +210,7 @@
 
 修改时沿 [连接核对表](../../../DEVELOPMENT.md#change-connections)核对请求→原答校验→登记→下轮读取以及受影响纠错/恢复。共享模块的主要 owner 不排除其他步骤使用；同一事实只能由既有登记路径发布，地图和浏览器投影不能成为第二份事实写入器。
 
-当前最小遍历连接：discovery_completion保留逐项缺口出处；task_settlement.partition_findings负责补充事实局部化，refresh_movement只读新观察重开原移动任务；run_task_step.finalize_knowledge在GUI空闲后由run_progress_session调用。
+当前最小遍历连接：discovery_completion保留逐项缺口出处；task_settlement.partition_findings负责补充事实局部化，refresh_movement只读新观察重开原移动任务；region_functions.next_ready把区块总结接入普通调度；run_task_step.finalize_knowledge在GUI空闲后补历史清点，复用相同总结选择。
 
 - `history_selection.py`：当前任务、明确准备、completion/findings及旧scroll努力的引用选择；由history_context/page_history共用，禁止用时间区间补无关动作。
 - `region_candidate_names.entry_summary`：必要历史入口职责，完整进入动作仍在function_evidence后台。
@@ -228,3 +229,5 @@
 
 普通调用：调度决定→对应组件→原登记发布→重新调度。组件数不等于模型调用数。
 源码路径仍在experiments/clock_manual_20260919，原辅助模块不复制。
+
+2026-10-07候选接线：task_proposer.proposal_schema/plan_request → region_tasks.apply_plan保存registration_kind → action_proposer/history_context传递目标 → result_updater.build_attempt_update/build_update_request → register_update.commit_update → task_settlement.register_entry/require_registration/settle_task。function_evidence向总结披露已登记入口语义和信息缺口。

@@ -104,6 +104,22 @@ def test_shared_pending_task_keeps_local_prerequisite_blocker():
     assert target['status']=='blocked'
 
 
+def test_shared_entry_task_keeps_registration_contract_and_requires_entry_record():
+    from tests.test_coverage_exemption import fixture
+    r,_,_=fixture();r['r2']=mod('stepwise_flow').new_region('r2','New toolbar')
+    r['r2']['controls']={'local':{'name':'World','observations':[],'action_refs':[]}}
+    origin=next(t for t in r['r1']['tasks'].values() if t['control']=='top')
+    origin.update(status='pending',registration_kind='entry')
+    m=mod('shared_controls');m.link(r,'World',[('r1','top'),('r2','local')],'stable',[{'region':'r1','attempt':'a1'}])
+    target=next(iter(r['r2']['tasks'].values()))
+    assert target['registration_kind']=='entry'
+    target.update(status='done',attempts=['a2'])
+    r['r2']['actions']['a2']={**deepcopy(r['r1']['actions']['a1']),'control':'local'}
+    m.refresh(r);assert origin['status']=='pending'
+    r['r2']['actions']['a2']['entry_registration']={'region':'world','meaning':'打开世界时钟','evidence':'本次已观察','conditions':[]}
+    m.refresh(r);assert origin['status']=='record_only' and origin['shared_result']['region']=='r2'
+
+
 def test_member_completion_covers_origin_with_old_failed_attempts():
     from tests.test_coverage_exemption import fixture
     r,_,_=fixture();r['r2']=mod('stepwise_flow').new_region('r2','New toolbar')

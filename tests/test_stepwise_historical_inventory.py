@@ -3,13 +3,14 @@ from tests.test_stepwise_region_tasks import tasks, ROOT, fixture
 from tests.test_recovery_discovery import mod
 
 
-def test_parameter_continuation_still_inventories_new_region():
+def test_parameter_continuation_can_advance_before_inventory_completion():
     flow,records,state=fixture();m=tasks()
     state['interactive_regions']=['middle'];state['active_task']={'region':'menu','name':'配置'}
     records['menu']['tasks']={'配置':{'status':'pending','task_type':'parameter','control':'open','handling':'explore','action':'click','reason':'test'}}
     q=m.attach(ROOT,records,state,'menu',flow.assemble_context(ROOT,records,state,'menu'))
-    assert q['stage']=='task_proposal'
+    assert q['stage']=='action_selection'
     assert q['source']['region']=='middle'
+    assert q['source']['task_region']=='menu'
 
 
 def test_historical_plan_uses_saved_frame_and_does_not_change_current(tmp_path):
@@ -111,18 +112,17 @@ def test_multiple_function_reviews_continue_as_next_round(tmp_path,monkeypatch):
     monkeypatch.setattr(runner,'foreground_window',lambda *a:None)
     monkeypatch.setattr(runner.RecoveryRun,'screenshot',lambda self,p:p.write_bytes(b'frame'))
     monkeypatch.setattr(runner.discovery_step,'load',lambda r:(None,{}, {'next_action_mode':'explore'}))
-    monkeypatch.setattr(runner.discovery_step,'retire_completed_goal',lambda *a:False)
-    monkeypatch.setattr(runner.discovery_step,'locate_task_control',lambda *a:False)
+    monkeypatch.setattr(runner.Locator,'locate_control',lambda *a:False)
     monkeypatch.setattr(runner.exploration_loop,'observe',lambda *a:None)
     monkeypatch.setattr(runner.step_repair,'pending',lambda r:None)
     monkeypatch.setattr(runner.step_repair,'reopen_blocked',lambda *a:None)
     original_helper=runner.step_repair.helper
-    monkeypatch.setattr(runner.step_repair,'helper',lambda name:SimpleNamespace(prioritize=lambda *a:None) if name=='task_prerequisites' else original_helper(name))
+    monkeypatch.setattr(runner.step_repair,'helper',lambda name:SimpleNamespace(run_pending=lambda *a:None) if name=='shared_control_review' else original_helper(name))
     monkeypatch.setattr(runner.visual_backtrack,'resume_pending',lambda *a:None)
     q={'stage':'function_registration','action_ready':False,'source':{'region':'finished'}}
-    monkeypatch.setattr(runner,'assemble_current_context',lambda *a:q)
+    monkeypatch.setattr(runner.Scheduler,'current',lambda *a:q)
     calls=[]
-    monkeypatch.setattr(runner.step_repair,'Runner',lambda *a:SimpleNamespace(perform=lambda *a:calls.append(a)))
+    monkeypatch.setattr(runner.step_repair,'Runner',lambda *a,**kw:SimpleNamespace(perform=lambda *a:calls.append(a)))
     runner._run_step(ROOT,run,tmp_path/'round')
     result=json.loads((tmp_path/'round/result.json').read_text())
     assert result['status']=='ready_next_round' and result['gui_actions']==0
@@ -132,6 +132,7 @@ def test_multiple_function_reviews_continue_as_next_round(tmp_path,monkeypatch):
 def test_historical_merge_and_plan_refresh_in_one_transaction(tmp_path):
     from tests.test_stepwise_task_correction import saved,Calls,answer,repair
     run,q,good=saved(tmp_path);d=mod('discovery_step');h=mod('historical_inventory')
+    for row in good['operations']:row['registration_kind']='control_effect'
     def duplicate(records,state,*args):
         r=records['r1'];cid=next(iter(r['controls']));r['controls']['duplicate']=deepcopy(r['controls'][cid]);r['controls']['duplicate']['id']='duplicate'
         state['interactive_regions']=[]

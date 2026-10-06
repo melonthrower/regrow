@@ -38,7 +38,7 @@ traversal_scheduler选择任务有效目标；action_proposer向动作步提供c
 同区块改名重复由任务模块复用，不绕过blocked。普通续接不调累计结果判断；前置准备不被旧点击结束，当前条件观察仍可解锁主任务。跨区块同业务目标去重未实现。
 
 ## 记录缺口与动作许可
-已有可信pending/续接任务不等待inventory_complete；局部缺口不撤销可信当前观察。滚动任务允许必要点击、返回、输入等准备动作，准备动作不结束滚动。historical_inventory仅在GUI空闲后的知识整理阶段调度；已执行记录的程序reconcile仍在current执行。
+已有可信pending/续接任务不等待inventory_complete；局部缺口不撤销可信当前观察。滚动任务允许必要点击、返回、输入等准备动作，准备动作不结束滚动。历史任务补清点仍由空闲知识阶段承接；区块探索结束后的原子操作总结已接入普通调度；已执行记录的程序reconcile仍在current执行。
 
 
 ## 范围排除与离开前景
@@ -46,7 +46,7 @@ traversal_scheduler选择任务有效目标；action_proposer向动作步提供c
 
 ## 三步组件的程序调度（2026-10-06）
 traversal_scheduler.select_work从已提交records/state选择工作，返回kind、region、
-working_region、可选task和reason，不构造prompt。当前可承接的在途任务优先；
+working_region、可选task和reason，不构造prompt。已提交区块的原子操作总结可先以0GUI登记，当前可承接的在途任务随后继续；
 排除当前区块不阻止离开，排除目标不派业务动作。多区块时按任务有效目标选择，
 不把列表第一项当工作归属。完整区块仍优先回有未完成工作的已观察入口父区块，
 然后复用既有frontier；历史一次back无效不永久封禁回程。
@@ -56,3 +56,7 @@ Scheduler.current负责登记后的程序reconcile和选择；请求构造不再
 pending_work优先续已执行结果；after_round集中会话继续、一次空闲整理和停止解释。
 
 局部检查/导航安排（schedule_local_inspection、offer_foreground_navigation）及已结束目标退出（retire_completed_goal）归traversal_scheduler。discovery_step登记当前观察后调用这些决策；Locator不通过局部完成终止会话。
+
+已有实际回执及观察、关联仍unconfirmed且候选明确包含原任务目标的尝试，由正常reconcile转为ownership review缺口，清理active_task后调度其他工作；不赋予确认控件、完成状态或重新投递许可。不同候选、已排除旧尝试、准备任务和异常仍保留原边界。此改动针对Clock已开编辑页但父任务反复none→发现的实机循环，验收见本批日志。
+
+未确认动作关联的ownership缺口当前没有完整自动补录入口；这只解开其他工作的调度，原任务仍未完成。早期reconcile在待更新/导航续接之后、循环检查之前同步记录，避免沿旧pending状态触发无意义循环纠错。

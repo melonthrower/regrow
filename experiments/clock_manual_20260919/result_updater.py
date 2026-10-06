@@ -61,8 +61,13 @@ def build_update_request(root, dynamic, screenshots):
                 'next_action':{'anyOf':[{'type':'null'},{'type':'object','properties':{
                     'region':{'type':'string'},'control':{'type':'string'},
                     'action':{'type':'string','enum':['click','double_click','long_press','input_text','scroll','key_press','hotkey','hover','right_click','drag','back','wait']},
-                    'reason':{'type':'string'}},'required':['region','control','action','reason'],'additionalProperties':False}]}},
-            'required':['findings','next_action'],'additionalProperties':False}
+                    'reason':{'type':'string'}},'required':['region','control','action','reason'],'additionalProperties':False}]},
+                'registration_gap':{'type':'string','description':'当前证据尚未回答本任务具体未知时，说明缺少什么；所需登记齐全时用空字符串。'}},
+            'required':['findings','next_action','registration_gap'],'additionalProperties':False}
+        if dynamic.get('任务目标',{}).get('registration_kind')=='entry':
+            from task_settlement import entry_schema
+            schema['properties']['task_update']['properties']['entry']=entry_schema()
+            schema['properties']['task_update']['required'].append('entry')
         schema['required'].append('task_update')
         parts.append({'path':'任务/任务动作登记.prompt','text':(pr/'任务/任务动作登记.prompt').read_text()})
         parts.append({'path':'共享/参数观察值.prompt','text':(pr/'共享/参数观察值.prompt').read_text()})
@@ -138,7 +143,8 @@ def build_attempt_update(root,transport,folder):
         dynamic['本轮探索任务']=binding['task_name']
         if binding.get('preparatory_action'):dynamic['准备动作说明']='实际操作与任务绑定动作不同，只登记本步变化；框架不会用准备动作完成原任务。'
         task=records[binding.get('task_region',binding['region_ref'])]['tasks'][binding['task_name']]
-        dynamic['任务目标']={'说明':task['reason'],'type':task['task_type'],'原控件':records[binding.get('task_region',binding['region_ref'])]['controls'].get(task.get('control'),{}).get('name','区块本身'),'原动作':task.get('action')}
+        from task_settlement import registration_kind
+        dynamic['任务目标']={'说明':task['reason'],'type':task['task_type'],'registration_kind':registration_kind(task),'原控件':records[binding.get('task_region',binding['region_ref'])]['controls'].get(task.get('control'),{}).get('name','区块本身'),'原动作':task.get('action')}
         from region_tasks import task_object_context
         dynamic['任务与实际对象核对']=task_object_context(records,binding)
     from region_tasks import coverage

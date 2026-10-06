@@ -8,6 +8,9 @@ def proposal_schema():
     value=json.loads((Path(__file__).parent/'遍历prompt/输出格式/区块探索任务.schema').read_text())
     value['properties']['operations']['items']['properties']['findings']={'type':'array','items':json.loads((Path(__file__).parent/'遍历prompt/输出格式/参数发现.schema').read_text())}
     value['properties']['operations']['items']['properties']['prerequisite']=helper('task_prerequisites').schema()
+    value['properties']['operations']['items']['properties']['registration_kind']={
+        'type':'string','enum':['entry','parameter','control_effect'],
+        'description':'探索产物：entry登记入口去向与用途；parameter登记参数事实；control_effect登记试探控件的直接反馈。'}
     return value
 
 
@@ -16,7 +19,7 @@ def plan_request(root,records,state,rid):
     region=records[rid]
     schema=proposal_schema()
     # Strict API requires every property; local validation still accepts old evidence.
-    schema['properties']['operations']['items']['required']+=['findings','prerequisite']
+    schema['properties']['operations']['items']['required']+=['findings','prerequisite','registration_kind']
     schema['properties']['operations']['items']['properties']['control']['enum']=[c['name'] for cid,c in region['controls'].items() if not helper('shared_tasks').automatic_tasks(region,cid)]+['']
     visible=set(state.get('observation',{}).get('control_refs',[]))
     dynamic={'区块':region['name'],'描述':region['description'],
@@ -43,6 +46,7 @@ def plan_request(root,records,state,rid):
     dynamic['已有任务']=[{'name':n,'control':region['controls'][t['control']]['name'] if t['control'] else region['name'],
                          '知识来源':'历史共享任务，不是本地执行或当前状态' if t.get('shared_task_ref') else '本区块任务',
                          'handling':t['handling'],'status':t['status'],'reason':t['reason'],'action':normalize(t)['action'],'task_type':t['task_type'],
+                         'registration_kind':helper('task_settlement').registration_kind(t),
                          '已登记前置条件':t.get('prerequisite'),
                          '暂挂原因':t.get('deferral',{}).get('reason') or t.get('blocker',{}).get('reason',''),
                          '恢复条件':t.get('deferral',{}).get('retry_when','需显式复核；仅重新定位不解除' if t.get('blocker',{}).get('condition')=='review_required' else '')}

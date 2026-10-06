@@ -57,10 +57,12 @@ Python入口负责读取，配套HTML负责布局。复用 `progress.snapshot`�
 
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#runtime)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
 
-## 空闲后知识阶段
-正常会话在GUI无可执行工作后调用finalize_knowledge，HTTP并入session账本，GUI预算为0。没有后台线程、独立队列或CLI开关；网络中断记录interrupted，不伪报knowledge_complete。新冻结源统一使用本批三步与恢复规则，旧冻结源不热替换。
+## 区块总结与空闲后知识阶段
+区块探索结束后的总结在普通run_step内按需登记并计入小步及会话HTTP预算。正常会话在GUI无可执行工作后仍调用finalize_knowledge补历史清点与遗漏总结，HTTP并入session账本，GUI预算为0。没有后台线程、独立队列或CLI开关；网络中断记录interrupted，不伪报knowledge_complete。新冻结源统一使用本批三步与恢复规则，旧冻结源不热替换。
 
 ## 连续批次与剩余预算
+
+进度页的等价任务状态沿region_tasks.effective_task读取；登记类别不一致的旧引用显示blocked及原因，不把代表任务完成误呈现为本任务已登记。
 
 后续常规实验按用户2026-10-06确认的口径：设置整批模型调用上限，整批GUI次数不限（`session_limits.max_gui_commands=null`）；保留下述小步额度和异常恢复的局部保护。分段续跑从本批实际调用账扣除已用次数，纠错、恢复和知识整理调用一并计入，不能每段重新获得完整额度。调用上限不是必须耗尽的指标，正常无工作、阻塞或保护触发仍应说明原因。
 

@@ -48,6 +48,10 @@ def action_row(region, aid, action, records=None):
                    归属边界='这是本区块账本中的真实动作结果；提案目标未成为已确认控件，不补做身份或任务绑定。')
     if action.get('parameter_findings'):
         row['已记录参数事实'] = deepcopy(action['parameter_findings'])
+    if action.get('entry_registration'):
+        row['已登记入口语义'] = deepcopy(action['entry_registration'])
+    if action.get('registration_gap'):
+        row['探索信息缺口'] = action['registration_gap']
     if action.get('destination_behavior'):
         row['目的地行为'] = action['destination_behavior']
     return row

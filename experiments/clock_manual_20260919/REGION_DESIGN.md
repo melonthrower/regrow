@@ -116,7 +116,7 @@ object和completion是Luna基于已有证据登记的语义描述，框架检查
 
 ## 8. 区块用途与统一异常恢复（当前合同）
 
-功能登记在同一次回复中提供region_role与role_evidence，取navigation / functional / mixed / undetermined；navigation须为空functions，functional/mixed须有已支持的任务能力。用途不作为提前跳过路由探索的依据，也不修改Region身份或跳转。新事实可修订分类，尚未确认不能算纯导航。
+功能登记在同一次回复中提供region_role与role_evidence，取navigation / functional / mixed / undetermined；navigation须为空functions；functional/mixed描述业务或参数用途，可在仅支持参数步骤时返回空functions并说明。用途不作为提前跳过路由探索的依据，也不修改Region身份或跳转。新事实可修订分类，尚未确认不能算纯导航。
 
 发现foreground、更新action_result使用exception=none / blocking_popup / unexpected_exit / external_app / unclassified，并提供recovery_handoff。旧uncertain仅用于读取历史，不在新请求枚举中。明确异常时regions/controls为空，保留原图，进入recover；更新仍登记原控件真实动作及异常，不造外部目的地边。unexpected_exit表示异常退出现象，不能归因于虚拟机或断言崩溃根因；其来源任务由框架暂挂，不由恢复成功解除。
 
@@ -144,7 +144,7 @@ object和completion是Luna基于已有证据登记的语义描述，框架检查
 
 探索覆盖完成与功能整理完成分别判断。`historical_inventory.request` 每轮检查所有已完成且有任务证据的区块，补充未整理、事实变化或固定提取规则变化后的功能登记；不要求区块当前可见，不改变当前 GUI 任务或观察。已有 function_registration 暂挂缺口继续保留，不无限重试。连续多个功能待办每轮处理一个，返回 ready_next_round，自动遍历不会因下一个仍是功能登记而退出。
 
-`region_functions` 请求附已观察控件的名称、状态、用途和不确定项；签名包含实际使用的三个固定 prompt 内容。明确可见的设置能力允许登记，修改效果未验证写 unconfirmed；当前值不冒充完整值域。禁止执行的环境设置仍可只读建档。参数菜单可登记直接设置能力，父子记录不应作为独立业务重复计数；纯导航不挂目的区块功能。
+`region_functions` 请求附已观察控件的名称、状态、用途和不确定项；签名包含实际使用的三个固定 prompt 内容。明确可见的设置能力允许登记，修改效果未验证写 unconfirmed；当前值不冒充完整值域。禁止执行的环境设置仍可只读建档。参数菜单保留参数事实及用途，完整用户目的才登记为原子操作；纯导航不挂目的区块功能。
 
 验证：49 个聚焦测试通过，语法与 diff 检查通过。Settings calls 0194–0199 为真实 Luna 补提取，6 HTTP、0 GUI：Screen 5 条、Connectivity 1 条、三个参数菜单各 1 条，Privacy 导航返回空并撤下旧误挂功能；旧快照保留。仍有当前 Applications 菜单关闭动作绑定阻塞，本修改不处理该执行问题。证据 records/234_function_backfill_20260922/。
 
@@ -328,3 +328,5 @@ Files保存案例自动生成59666→41844文本token估算（o200k_base，约30
 ## 2026-09-23：功能证据的区块归属
 功能tasks只引用本区块已登记操作。其他区块的入边结果补充回显依据，不把来源控件名变成本区块任务；例如格式侧栏控制画布，格式能力属于侧栏，画布仅有滚动任务时可undetermined/空functions。
 真正存在本区块已观察控件却缺任务依据时，功能登记失败可交回原任务提出步骤，按历史截图和动作补record/必要explore；不自动制造任务或点击。历史补清点不代表当前位置，不改当前活动GUI任务。
+
+2026-10-07候选将探索结算与具体产物登记衔接：参数findings、入口entry_registration、试探action_result；registration_gap保存未回答问题，正常纠错不重做已执行GUI。细节及旧证据边界见design/modules/stepwise/updates.md，尚待原生模型和实际续跑验证。

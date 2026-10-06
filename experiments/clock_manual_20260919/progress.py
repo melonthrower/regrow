@@ -149,5 +149,5 @@ def snapshot(run):
             'description':a.get('result',{}).get('description','具体结果尚未观察'),
             'exception':a.get('result',{}).get('exception','none'),'evidence':a.get('result',{}).get('evidence','')}
             for a in actions.values()],
-        'tasks':[{'name':name,'status':(work.get('tasks',{}).get(t.get('equivalent_to'),{}).get('status','pending') if t.get('handling')=='equivalent' else t.get('status')),'handling':t.get('handling'),'purpose':t.get('reason',''),'reason':(t.get('deferral',{}).get('reason') or t.get('result_evidence') or t.get('reason','')) if t.get('status')=='blocked' else ''} for name,t in work.get('tasks',{}).items()],
+        'tasks':[{'name':name,'status':effective.get('status'),'handling':t.get('handling'),'purpose':t.get('reason',''),'reason':(effective.get('deferral',{}).get('reason') or effective.get('result_evidence') or effective.get('reason','')) if effective.get('status')=='blocked' else ''} for name,t in work.get('tasks',{}).items() for effective in [tasks.effective_task(work.get('tasks',{}),t)]],
         'next_mode':state.get('next_action_mode'),'snapshot':pointer['snapshot']}

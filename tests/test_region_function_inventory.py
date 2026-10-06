@@ -57,7 +57,10 @@ def test_three_step_triggers_and_completed_function_inventory_does_not_repeat():
     m.apply_plan(r['menu'],proposal([row()]),'p')
     q=m.attach(ROOT,r,state,'menu',base)
     assert q['pipeline_step']=='action' and q['source']['task_name']=='查看内容'
-    m.settle_task(r['menu'],{'task_name':'查看内容','region_ref':'menu','control_ref':r['menu']['tasks']['查看内容']['control']}, {'action_result':{'exception':'none'},'task_result':{'name':'查看内容','status':'done','evidence':'已观察菜单内容','findings':[]}},'a')
+    r['menu']['actions']['a']={'control':'open','operation':'click','delivery':'executed_receipt_zero',
+        'result':{'description':'已观察菜单内容','exception':'none'}}
+    m.settle_task(r['menu'],{'task_name':'查看内容','region_ref':'menu','control_ref':'open'},
+        {'action_result':r['menu']['actions']['a']['result'],'task_update':{'findings':[],'next_action':None}},'a')
     q=m.attach(ROOT,r,state,'menu',base)
     assert (q['pipeline_step'],q['stage'])==('discovery','function_registration')
     assert not q['action_ready'] and q['screenshots']==[]
@@ -74,7 +77,8 @@ def test_unknown_position_or_unfinished_tasks_do_not_trigger_function_registrati
     with pytest.raises(ValueError):mod.register(region,reply(),'f')
     flow,r,s=fixture();s.update(next_action_mode='discover',interactive_regions=[])
     base={'stage':'discovery','action_ready':False}
-    assert tasks().attach(ROOT,r,s,'menu',base)==base
+    request=tasks().attach(ROOT,r,s,'menu',base)
+    assert request['stage']=='locate' and not request['action_ready']
 
 
 def test_function_commit_preserves_graph_and_rejects_stale_evidence(tmp_path):
@@ -109,7 +113,8 @@ def test_runner_routes_registration_before_exit_without_gui_or_instruction_gener
         def call(self,q):
             stages.append(q['stage']);ref='call_'+str(len(stages));folder=run/'calls'/ref;folder.mkdir()
             if q['stage']=='task_proposal':
-                response=proposal([{**row(name=n,control=n,handling='record'),'findings':[]} for n in ['Policy','Settings']])
+                response=proposal([{**row(name=n,control=n,handling='record'),'findings':[],
+                    'registration_kind':'control_effect'} for n in ['Policy','Settings']])
             else:
                 assert q['stage']=='function_registration' and q['screenshots']==[]
                 response={'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅导航，无业务功能依据'}
@@ -181,11 +186,18 @@ def test_region_role_records_navigation_without_removing_routes_or_tasks():
     module().register(region,data,'f2');assert region['region_role']=='mixed'
 
 
-@pytest.mark.parametrize('role',['navigation','functional','mixed'])
-def test_contradictory_role_and_function_inventory_rejected(role):
-    _,region,_=alarm_region();data=reply();data['region_role']=role
-    if role!='navigation':data['functions']=[]
+def test_navigation_cannot_own_business_atoms():
+    _,region,_=alarm_region();data=reply();data['region_role']='navigation'
     with pytest.raises(ValueError):module().register(region,data,'bad')
+
+
+@pytest.mark.parametrize('role',['functional','mixed'])
+def test_parameter_surface_keeps_facts_without_owning_a_business_atom(role):
+    _,region,_=alarm_region();before=deepcopy(region['tasks']);data=reply()
+    data.update(region_role=role,functions=[],evidence='参数支持所属业务目的')
+    module().register(region,data,'parameters')
+    assert region['functions']=={} and region['tasks']==before
+    assert module().review_current(region)
 
 
 def test_unknown_role_is_not_silently_pure_navigation():
@@ -232,7 +244,7 @@ def test_function_context_includes_later_same_control_results():
     assert m.signature(region)==signature
     assert '虚构结果' not in m.request(ROOT,region,{'observation':{'id':'current'}})['user_prompt']
     region['tasks']['时间'].setdefault('attempts',[]).append('later')
-    assert m.action_results(region)[0]['结果']=='确认编辑后设置面板显示08:15'
+    assert next(row for row in m.action_results(region) if row['动作记录']=='later')['结果']=='确认编辑后设置面板显示08:15'
 
 
 def test_function_context_separates_completed_evidence_from_initial_motivation():
@@ -254,7 +266,7 @@ def test_function_context_separates_completed_evidence_from_initial_motivation()
 
 def test_function_context_uses_real_incoming_results_and_refreshes_on_revisit():
     _,region,_=alarm_region();mod=module();region['reached_by']=[]
-    source={'name':'播放器','controls':{'choose':{'name':'选择其他声音'}},'actions':{}}
+    source={'id':'player','name':'播放器','controls':{'choose':{'name':'选择其他声音'}},'actions':{}}
     records={region['id']:region,'player':source}
     old=mod.signature(region,records)
     source['actions']['visit']={'control':'choose','operation':'click','delivery':'executed_receipt_zero',

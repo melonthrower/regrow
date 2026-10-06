@@ -39,6 +39,15 @@ def test_notice_names_the_missing_control_without_blocking(tmp_path,modules):
     assert result['blocker'] is None
     assert result['localization_notice']=={'region':'溢出菜单','controls':['Settings']}
 
+    r['tasks']['查看设置'].update(status='done',registration_kind='control_effect')
+    r['tasks']['调查入口']={'control':'one','handling':'equivalent','status':'pending',
+        'equivalent_to':'查看设置','registration_kind':'entry'}
+    path.write_text(json.dumps(r))
+    result=progress.snapshot(tmp_path)
+    alias=next(t for t in result['tasks'] if t['name']=='调查入口')
+    assert alias['status']=='blocked' and '登记类别' in alias['reason']
+    assert result['progress']['blocked']==['调查入口']
+
 
 def test_application_selection_preserves_old_runs_and_reobserves_resume(tmp_path,modules):
     from PIL import Image

@@ -86,6 +86,9 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
     navigation=visual_backtrack.resume_pending(transport,out/'current.png')
     if navigation:
         write_json(out/'result.json',{**navigation,'calls':calls});return
+    # Settle registered evidence before deciding that the old task state repeats.
+    if not step_repair.pending(run) and not (run/'execution_pending.json').exists():
+        step_repair.helper('task_settlement').reconcile_run(run)
     loop=exploration_loop.observe(run,str(out))
     if loop:exploration_loop.correct(repair,loop)
     def route_recovery():

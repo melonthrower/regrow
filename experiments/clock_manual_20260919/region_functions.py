@@ -4,7 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 import identity_templates as templates
-from function_evidence import action_results, incoming_results, coverage as action_evidence_coverage
+from function_evidence import action_results, action_row, omitted_reason, incoming_results, coverage as action_evidence_coverage
+from function_scope import related_regions
 
 
 def task_module():
@@ -47,10 +48,20 @@ def supported_tasks(region):
     return {name:t for name,t in region.get('tasks',{}).items() if t['status'] in ('done','record_only') and not t.get('coverage_exemption') and not t.get('shared_result')}
 
 
-def catalog(region):
-    return {task_name+' / '+name:{**deepcopy(fact),'task':task_name}
-            for task_name,task in supported_tasks(region).items()
-            for name,fact in task.get('findings',{}).items()}
+def supporting_tasks(region,records=None):
+    records=records or {region['id']:region}
+    related,_=related_regions(region,records)
+    return {(name if rid==region['id'] else rid+' / '+name):
+            {'region':rid,'name':name,'task':task}
+            for rid in [region['id'],*related]
+            for name,task in supported_tasks(records[rid]).items()}
+
+
+def catalog(region,records=None):
+    return {key+' / '+name:{**deepcopy(fact),'task':key,'task_region':support['region'],
+                           'task_name':support['name']}
+            for key,support in supporting_tasks(region,records).items()
+            for name,fact in support['task'].get('findings',{}).items()}
 
 
 def attribute_context(region):
@@ -63,11 +74,16 @@ def attribute_context(region):
     return result
 
 
+def semantic_observation(control):
+    # Visual navigation adds transient localization rows, not registered meaning.
+    return next((row for row in reversed(control.get('observations',[])) if not row.get('visual_only')), {})
+
+
 def evidence_projection(region,records=None):
     """Build once for the request and its invalidation digest; keep observation provenance."""
     controls=[]
     for c in region['controls'].values():
-        observation=(c.get('observations') or [{}])[-1]
+        observation=semantic_observation(c)
         source={**observation.get('evidence',{}),**observation}
         controls.append({'名称':c['name'],**{k:v for k,v in observation.items() if k in ('text','state','possible_operation','uncertainty')},
             '观察出处':{k:source[k] for k in ('source_call','observation','source_field') if k in source}})
@@ -84,15 +100,66 @@ def evidence_projection(region,records=None):
         '进入本区块的已观察结果':incoming_results(region,records)}
 
 
-def signature(region,records=None):
+def related_projection(region,records):
+    """Keep foreign observations traceable without repeating local binding machinery."""
     evidence=evidence_projection(region,records)
-    # Accounting for unexecuted proposals is diagnostic, not a new observed effect.
+    evidence.pop('已记录属性（待甄别）')  # The shared, fully qualified catalog supplies these once.
+    for key in ('同区块已执行动作结果','进入本区块的已观察结果'):
+        for row in evidence[key]:
+            for field in ('动作前区块','动作后可交互区块','区块变化','观察到的区块连接'):
+                row.pop(field,None)
+    return evidence
+
+
+def summary_projection(region,records=None):
+    records=records or {region['id']:region}
+    related,links=related_regions(region,records)
+    return {**evidence_projection(region,records),
+        '相关区块探索事实':[{'区块引用':rid,'名称':records[rid]['name'],
+            '任务状态':task_module().coverage(records[rid],records),
+            **related_projection(records[rid],records)} for rid in related],
+        '已观察连接（用于组织材料，业务归属由目的判断）':links,
+        '支持任务引用目录':{key:{'区块':support['region'],'任务':support['name']}
+            for key,support in supporting_tasks(region,records).items()},
+        '可引用参数事实':catalog(region,records)}
+
+
+def signature(region,records=None):
+    records=records or {region['id']:region}
+    evidence=evidence_projection(region,records)
     evidence.pop('动作证据覆盖')
-    # Reobserving unchanged facts does not require another catalog call.
     for c in evidence['已观察控件']:c.pop('观察出处',None)
+    # Candidate parameters/task availability are useful new information. Foreign
+    # navigation attempts alone are not a reason to re-summarize every owner.
+    supports=supporting_tasks(region,records)
+    selected={(row['region'],row['task']) for f in region.get('functions',{}).values()
+              for row in f.get('support_tasks',[]) if row['region']!=region['id']}
+    dependencies=[]
+    for rid,name in sorted(selected):
+        source=records.get(rid,{})
+        task=source.get('tasks',{}).get(name)
+        control=source.get('controls',{}).get((task or {}).get('control'),{})
+        observed=semantic_observation(control)
+        dependencies.append({'region':rid,'task_name':name,'task':task,
+            'control':{'name':control.get('name'),**{k:v for k,v in observed.items()
+                if k in ('text','state','possible_operation','uncertainty')}},
+            'results':[action_row(source,aid,action,records) for aid,action in source.get('actions',{}).items()
+                if task and omitted_reason(action) is None and (aid in task.get('attempts',[])
+                    or task.get('control') is not None and action.get('control')==task['control'])]})
+    _,links=related_regions(region,records)
     data={'extraction_rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],
           'name':region['name'],'tasks':region.get('tasks',{}),'inventory':region.get('task_inventory'),
-          'evidence':evidence}
+          'evidence':evidence,'candidate_tasks':sorted(supports),'parameter_facts':catalog(region,records),
+          'connections':sorted({(link['source'],str(link['control']),link['target']) for link in links}),
+          'selected_foreign_support':dependencies}
+    return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+
+
+def request_signature(region,records=None):
+    """Protect every offered fact, including support first selected in this reply."""
+    data={'rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],
+          'name':region['name'],'description':region['description'],
+          'evidence':summary_projection(region,records),'function_names':list(region.get('functions',{}))}
     return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 
@@ -100,14 +167,24 @@ def review_current(region,records=None):
     return bool(region.get('region_role')) and region.get('function_inventory',{}).get('evidence_digest')==signature(region,records)
 
 
+def next_ready(records,state):
+    """Summarize closed Region work once per evidence revision, without navigation."""
+    for region in sorted(records.values(),key=lambda r:r['id']!=state.get('working_region')):
+        if (task_module().coverage(region,records)['complete']
+                and not region.get('registration_gaps',{}).get('function_registration')
+                and not review_current(region,records)):
+            return region['id']
+    return None
+
+
 def schema(root):
     return json.loads((Path(root)/'遍历prompt/输出格式/区块功能登记.schema').read_text())
 
 
-def request_schema(root,region):
+def request_schema(root,region,records=None):
     value=wire_schema(root)
     fields=value['properties']['functions']['items']['properties']
-    names=list(supported_tasks(region));keys=list(catalog(region))
+    names=list(supporting_tasks(region,records));keys=list(catalog(region,records))
     fields['tasks']['minItems']=1
     if names:fields['tasks']['items']['enum']=names
     else:value['properties']['functions']['maxItems']=0
@@ -130,13 +207,15 @@ def register(region,reply,call,records=None):
     if not task_module().coverage(region,records)['complete']:raise ValueError('Region exploration is not complete')
     if not reply['role_evidence'].strip():raise ValueError('region role needs evidence')
     if reply['region_role']=='navigation' and reply['functions']:raise ValueError('navigation cannot claim business functions')
-    if reply['region_role'] in ('functional','mixed') and not reply['functions']:raise ValueError('functional role needs a supported function')
+    # A parameter surface can support business work without owning a complete atom.
     if not reply['evidence'].strip():raise ValueError('function inventory needs evidence')
-    facts=catalog(region);tasks=supported_tasks(region);result={};errors=[]
+    facts=catalog(region,records);tasks=supporting_tasks(region,records);result={};errors=[]
     for proposed in reply['functions']:
         name=proposed['name'].strip();refs=proposed['tasks']
         if not name or name in result or not proposed['description'].strip() or not proposed['object'].strip() or not proposed['completion'].strip() or not refs or any(n not in tasks for n in refs):
             raise ValueError('function needs known supporting tasks')
+        if not any(tasks[n]['region']==region['id'] for n in refs):
+            raise ValueError('原子操作主区块需要本地支持任务：'+name+'的支持任务全部来自相关区块。本区块实际承担同一业务目的时引用对应本地任务；仅显示结果时由实际业务区块登记，不以无关任务凑引用。')
         constraints={};sources=[]
         for key in proposed['constraints']:
             if key not in facts:
@@ -158,9 +237,10 @@ def register(region,reply,call,records=None):
                 'domain':deepcopy(fact['domain']),'conditions':list(fact['conditions']),
                 'locations':locations(evidence),'sources':evidence}
             sources.extend(evidence)
-        entries=[{'region':region['id'],'control':tasks[n]['control']} for n in refs]
+        entries=[{'region':tasks[n]['region'],'control':tasks[n]['task']['control']} for n in refs]
         result[name]={'description':proposed['description'],'object':proposed['object'],'completion':proposed['completion'],
-            'region':region['id'],'task_refs':refs,
+            'region':region['id'],'task_refs':[tasks[n]['name'] for n in refs if tasks[n]['region']==region['id']],
+            'support_tasks':[{'region':tasks[n]['region'],'task':tasks[n]['name']} for n in refs],
             'locations':locations(entries+sources),'constraints':constraints,
             'unconfirmed':list(proposed['unconfirmed']),'source_call':call}
     if errors:
@@ -180,14 +260,14 @@ def request(root,region,state,records=None):
     parts=[{'path':path,'text':(pr/path).read_text()} for path in paths]
     text='\n\n'.join(part['text'] for part in parts)
     user={'区块':region['name'],'描述':region['description'],
-        **evidence_projection(region,records),
+        **summary_projection(region,records),
         '已有功能名称（仅供命名复用）':list(region.get('functions',{})),
-        '要求':'整理可复用功能，引用操作任务和属性的完整名称。属性目录只是原始事实，不保证可设置；仅将证据支持可由用户设置的属性选作constraints，标题等只读事实不选。只登记能力，不选择目标值、不生成指令、不执行。'}
+        '要求':'以本区块为业务主区块，综合相关区块的任务、参数和实际结果，总结最小完整用户目的。原子操作可跨区块，任务与参数从引用目录选择并保留来源。参数步骤组织为所属目的的约束；已有参数事实但尚无独立目的时，可返回空functions并说明用途。保留待确认条件。本轮产出能力及约束槽位，供后续指令生成和执行使用。'}
     dynamic=json.dumps(user,ensure_ascii=False,indent=2)
     return {'pipeline_step':'discovery','stage':'function_registration','role':'function_registration','action_ready':False,
         'system_prompt':text,'user_prompt':dynamic,'dynamic_prompt':dynamic,'screenshots':[],'image_refs':[],
-        'fixed_parts':parts,'response_schema':request_schema(root,region),
-        'source':{'region':region['id'],'observation':(state.get('observation') or {}).get('id'),'evidence_digest':signature(region,records)}}
+        'fixed_parts':parts,'response_schema':request_schema(root,region,records),
+        'source':{'region':region['id'],'observation':(state.get('observation') or {}).get('id'),'evidence_digest':request_signature(region,records)}}
 
 
 def commit(root,run,call):
@@ -196,6 +276,6 @@ def commit(root,run,call):
     rid=q['source']['region']
     def mutate(records,state,snapshot,temp):
         if q.get('stage')!='function_registration':raise ValueError('not a function registration request')
-        if signature(records[rid],records)!=q['source']['evidence_digest']:raise ValueError('function evidence changed since request')
+        if request_signature(records[rid],records)!=q['source']['evidence_digest']:raise ValueError('function evidence changed since request')
         register(records[rid],reply,call,records)
     return discovery.publish(run,'functions-'+call,mutate)

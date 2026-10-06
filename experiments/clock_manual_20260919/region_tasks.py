@@ -13,6 +13,20 @@ def helper(name):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 
 
+def equivalent_source(tasks,task):
+    canonical=tasks.get(task.get('equivalent_to'))
+    kind=helper('task_settlement').registration_kind
+    return canonical if canonical and canonical.get('handling')=='explore' and kind(canonical)==kind(task) else None
+
+
+def effective_task(tasks,task):
+    if task.get('handling')!='equivalent' or task.get('deferral',{}).get('retry_when')=='explicit_task_ownership_review':return task
+    canonical=equivalent_source(tasks,task)
+    if canonical is not None:return canonical
+    # A stale equivalence is a knowledge gap, never evidence for another product.
+    return {**task,'status':'blocked','result_evidence':'等价任务的登记类别不一致或代表任务无效，需复核对应信息产物'}
+
+
 def coverage(region,records=None):
     if region.get('out_of_scope_reason'):
         return {'inventory_complete':True,'complete':False,'excluded':True,'pending':[],'blocked':[],'done':[],'record_only':[]}
@@ -28,8 +42,7 @@ def coverage(region,records=None):
         if t.get('status')=='blocked' and t.get('blocker',{}).get('condition')=='prerequisite':blocked.append(name);continue
         if t.get('coverage_exemption') and not helper('coverage_exemption').valid(records or {region['id']:region},t):pending.append(name);continue
         if t['handling']=='record':recorded.append(name);continue
-        canonical=tasks.get(t['equivalent_to']) if t['handling']=='equivalent' and t.get('deferral',{}).get('retry_when')!='explicit_task_ownership_review' else t
-        status=canonical.get('status') if canonical else 'pending'
+        status=effective_task(tasks,t).get('status')
         if status=='done':done.append(name)
         elif status=='blocked':blocked.append(name)
         else:pending.append(name)
@@ -66,6 +79,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if same:
                 name=same[0];seen.add(name)
                 prior=tasks[name]
+                if row.get('registration_kind') and prior.get('status') in ('pending','blocked'):
+                    prior.setdefault('registration_kind',row['registration_kind'])
                 if prior.get('status')=='record_only' and row['handling']=='explore':
                     raise ValueError('旧record任务遗漏未知交互内容，请用field=reopen_task修订原任务：'+name)
                 helper('task_settlement').refresh_movement(region,prior,state)
@@ -85,12 +100,16 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if normalize(prior)['action']!=t['action'] or any(prior[k]!=t[k] for k in ('control','handling','equivalent_to','task_type')):
                 raise ValueError('已有任务归属或操作不匹配：'+json.dumps({'任务名':name,'原控件':region['controls'].get(prior.get('control'),{}).get('name'),'回复控件':row['control'],'说明':'同控件同动作沿用原任务，不因改名或参数值变化新建。不同控件或动作才有独立任务；任务绑定错误沿记录修订处理，不借普通清点改挂。'},ensure_ascii=False))
             t=prior
+            if row.get('registration_kind') and t.get('status') in ('pending','blocked'):
+                t.setdefault('registration_kind',row['registration_kind'])
             helper('task_settlement').refresh_movement(region,t,state)
             if row.get('prerequisite') and row['prerequisite']!={k:v for k,v in (prior.get('prerequisite') or {}).items() if k not in ('scheduled','satisfied','last_check','recheck_requested')}:
                 if prior.get('prerequisite'):t.setdefault('prerequisite_history',[]).append(dict(prior['prerequisite']))
                 t['prerequisite']=dict(row['prerequisite'])
         if row.get('findings'):
             store_findings(t,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
+        if row.get('registration_kind')=='parameter' and t['handling']=='record' and not t.get('findings'):
+            raise ValueError('参数直接登记需要findings保存已观察的参数；reason保留任务理由，不能替代参数事实：'+name)
         if t.get('task_type')=='scroll' and state:
             t.setdefault('navigation_observation',(state.get('observation') or {}).get('id'))
         tasks[name]=t
@@ -99,9 +118,9 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         if missing_review:raise ValueError('旧任务范围复核遗漏未完成任务：'+'、'.join(sorted(missing_review)))
     for name,t in tasks.items():
         if t['handling']=='equivalent':
-            canonical=tasks.get(t['equivalent_to'])
+            canonical=equivalent_source(tasks,t)
             if not canonical or canonical['handling']!='explore' or normalize(canonical)['action']!=normalize(t)['action'] or canonical['task_type']!=t['task_type'] or name==t['equivalent_to']:
-                raise ValueError('equivalence must name a direct same-action exploration task')
+                raise ValueError('equivalence must name a direct same-action exploration task with the same registration_kind；参数、入口语义与普通控件反馈不能互相替代')
         elif t['equivalent_to']:raise ValueError('unexpected equivalence')
     if reply['inventory']=='complete' and covered!=set(region['controls']):
         raise ValueError('complete inventory omitted registered controls')

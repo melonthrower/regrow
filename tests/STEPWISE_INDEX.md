@@ -134,6 +134,7 @@
 
 - [test_coverage_exemption.py](test_coverage_exemption.py)
 - [test_function_evidence_projection.py](test_function_evidence_projection.py)
+- [test_function_scope.py](test_function_scope.py)
 - [test_identity_template_admission.py](test_identity_template_admission.py)
 - [test_region_scroll.py](test_region_scroll.py)
 - [test_sent_step_contract.py](test_sent_step_contract.py)

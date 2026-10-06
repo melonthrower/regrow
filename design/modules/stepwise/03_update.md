@@ -28,7 +28,7 @@
 
 登记完成后，ResultUpdater.complete 写入 attempt 的 `commit.json`并清除 `execution_pending.json`；traversal_scheduler.preview_next 提供只读下一步预览。会话由 after_round 解释结果，再次进入正常单轮选择。
 
-- **区块功能整理**：auto会话首次GUI空闲后，由 [run_progress_session.run_session](../../../experiments/clock_manual_20260919/run_progress_session.py) 调用 finalize_knowledge；historical_inventory.request 依据任务覆盖、功能证据和登记缺口按需进入 [region_functions.request / commit](../../../experiments/clock_manual_20260919/region_functions.py)。整理读取控件、任务、属性及实际动作证据，不生成指令或新动作。
+- **原子操作总结**：区块有效探索任务结束后，traversal_scheduler.select_work通过region_functions.next_ready安排现有request / commit。读取控件、任务、属性及实际动作证据，整理完整用户目的及约束；其他区块继续探索。auto空闲时仍可补历史清点，复用相同登记入口。
 - 普通任务通过task_settlement.reconcile_run复用旧绑定动作，不发模型复核；异常暂挂仍可复查。知识整理完成后回正常单轮，再次空闲则停止；功能整理是按需子流程；功能/任务账面完成不等于全图实测完成。详细边界见[更新与登记](updates.md)、[知识与完成](knowledge.md)及[原功能合同](../stepwise_discovery_completion.md)。
 
 ## 修改字段时核对这些连接
@@ -51,3 +51,5 @@
 - 当前地图误报及 Timer 单位推测仍按[更新模块的未接受状态](updates.md)保留。此次角色整理不改变探索进度合同；离线、保存帧和实机验证分别记录，不据此宣称地图误报已修好。
 
 聚焦检查从[更新测试](../../../tests/STEPWISE_INDEX.md#updates)、[功能测试](../../../tests/STEPWISE_INDEX.md#knowledge)及[纠错测试](../../../tests/STEPWISE_INDEX.md#repair)选择；索引是定位入口，不是本轮运行或全通过声明。
+
+2026-10-07候选将探索结算与具体产物登记衔接：参数findings、入口entry_registration、试探action_result；registration_gap保存未回答问题，正常纠错不重做已执行GUI。细节及旧证据边界见design/modules/stepwise/updates.md，尚待原生模型和实际续跑验证。

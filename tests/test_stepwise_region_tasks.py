@@ -47,6 +47,27 @@ def test_equivalence_shares_obligation_not_execution_and_record_is_separate():
     with pytest.raises(ValueError):m.apply_plan(region,proposal([row('查看内容',handling='record')]),'2')
 
 
+@pytest.mark.parametrize('kind',['entry','parameter'])
+def test_equivalence_cannot_replace_requested_registration_with_control_feedback(kind):
+    _,r,_=fixture();m=tasks();region=r['menu'];region['controls']['alias']={'name':'另一入口'}
+    original=row();original['registration_kind']='control_effect'
+    alias=row('同功能入口',control='另一入口',handling='equivalent',equivalent_to='查看内容')
+    alias['registration_kind']=kind
+    with pytest.raises(ValueError,match='same registration_kind'):
+        m.apply_plan(region,proposal([original,alias]),'bad')
+    original['registration_kind']=kind
+    m.apply_plan(region,proposal([original,alias]),'valid')
+    region['tasks']['查看内容']['status']='done'
+    assert m.coverage(region)['complete']
+    # Existing inconsistent records are disclosed as gaps without rewriting them.
+    region['tasks']['查看内容']['registration_kind']='control_effect'
+    before=deepcopy(region)
+    assert m.coverage(region)['blocked']==['同功能入口'] and not m.coverage(region)['complete']
+    assert m.effective_task(region['tasks'],region['tasks']['同功能入口'])['status']=='blocked'
+    assert '同功能入口：受阻' in m.render(region)
+    assert region==before
+
+
 def test_no_omissions_or_cyclic_equivalence():
     _,r,s=fixture();m=tasks();region=r['menu']
     with pytest.raises(ValueError):m.apply_plan(region,proposal([]),'1')

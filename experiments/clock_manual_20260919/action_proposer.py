@@ -12,6 +12,8 @@ def render_work(root, records, state, decision):
     working = decision['working_region']
     if kind in ('task_proposal','scope_review'):
         return TaskProposer.request(root, records, state, rid, scope_review=kind=='scope_review')
+    if kind == 'function_registration':
+        return helper('region_functions').request(root, records[rid], state, records)
     if kind == 'navigate':
         return assemble_context(root, records, state, rid)
     if kind != 'action':
@@ -44,7 +46,7 @@ def render_work(root, records, state, decision):
     if rid==task_region and cid in visible:
         text += '\n最近登记的任务入口（仍需核对当前截图）：'+region['controls'][cid]['name']
     text += '\n\n'+render_current(records,state,current_task=selected)
-    text += '\n\n完成状态由已登记的绑定动作计算，不申请另一次任务完成核对。当前目标未定位可用none补发现；准备动作不代替原动作。'
+    text += '\n\n本任务所需登记：'+helper('task_settlement').registration_kind(task)+'。框架按实际绑定动作和所需信息登记计算进度；第三步说明实际反馈与信息缺口，无需另一次任务完成核对。当前目标未定位可用none补发现；准备动作不代替原动作。'
     q['user_prompt'] = q['dynamic_prompt'] = text
     q['task_progress'] = coverage(region, records)
     if helper('inventory_scroll').active(records, state, rid):

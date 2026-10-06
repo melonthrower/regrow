@@ -1,5 +1,7 @@
 # Region 遍历、经验复用与图指导采集：设计对齐及代码位置
 
+2026-10-07当前逐步链：探索任务按新入口功能、功能参数、不确定控件试探收集事实；单区块有效探索结束后总结最小完整用户目的及约束，参数步骤保留为支持事实。实现位置为task_proposer、traversal_scheduler.select_work与region_functions.next_ready/request/commit；验收范围见本月日志。图冻结后的指令组合、Gmail月报if/else实际条件与结果验证、独立采集边界保持原合同，未完成研究目标不据此勾选。
+
 2026-10-05 Region 观察保存当前 bbox，模板资格仍由 image_quality 独立控制；受挡但边界明确时可供既有同帧局部定位使用。历史框不跨帧定位，不改变 Region 身份、任务完成或 Gmail if/else 条件与冻结图采集边界。接口与验证范围见[身份模块](modules/stepwise/identity.md)。
 
 2026-10-04 局部遮挡提示统一按当前任务所需信息判断，允许真实适用历史辅助识别，受挡模板仍不可入清晰身份图；认识入口不代表观察了内部。6HTTP/0GUI保存帧有限通过已知菜单身份复用、入口续进与状态简化，首次受挡目标的持久动作绑定/执行尚未验收。Region归属、Gmail if/else业务条件和冻结图采集合同不变，源码位置及证据见stepwise_region_identity/debug_loop。
@@ -570,3 +572,5 @@ collection_visual_guard.py 从冻结图外观定位当前控件，再映射点�
 2026-10-06三步组件：普通工作选择改由traversal_scheduler.select_work，任务/导航请求由action_proposer渲染，投递和正常/中断登记分别集中在action_executor与result_updater。沿用原Region身份、控件绑定、任务结算及纠错合同；排除前景可离开、partial可信任务可推进、多区块任务归属不取决于排列。Gmail月报if/else示例、研究目标及独立冻结图采集边界未改变。验收范围见本月日志及design/archive/component_scheduler_20261006。
 
 2026-10-06角色归位：发现/任务/更新请求分别由locator、task_proposer、result_updater维护；共享任务的synchronize_tasks/automatic_tasks及解除清理归shared_tasks，shared_controls保留关系及刷新时点。Region身份/行为分离、真实尝试归属、Gmail if/else条件与采集边界不变；旧名称仅直接绑定当前实现。
+
+探索任务按信息产物结算（2026-10-07）：参数事实、入口语义和控件反馈沿真实登记入口形成证据，再支持业务主区块的跨区块原子操作总结。参数事实/缺口登记及跨区块总结已有有限原生证据；新entry产物分支暂未取得原生登记证据，旧done不替代新合同验收。完整计时目的、所有参数值与图下游采集仍未验证，不提升研究结论或集合完整性声明。

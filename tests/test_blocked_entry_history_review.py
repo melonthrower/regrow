@@ -49,6 +49,16 @@ def test_review_remaining_blocked_is_not_automatically_repeated():
     assert m.later_entry_history(r,t)==[]
 
 
+def test_historical_done_verdict_cannot_bypass_entry_registration():
+    r,t=sample();t['registration_kind']='entry';m=mod('task_result_review')
+    result={'name':'open','status':'done','evidence':'Model thinks it opened'}
+    with pytest.raises(ValueError,match='本类探索产物'):m.apply(r,{},'open',result,'review',['later'])
+    assert t['status']=='blocked'
+    r['actions']['later']['entry_registration']={'region':'content','meaning':'打开内容','conditions':[],'evidence':'已登记的真实去向'}
+    m.apply(r,{},'open',result,'review',['later'])
+    assert t['status']=='done'
+
+
 def test_request_keeps_old_judgment_separate_from_later_direct_effects(tmp_path,monkeypatch):
     import json
     from types import SimpleNamespace

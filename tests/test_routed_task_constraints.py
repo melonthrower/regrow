@@ -52,12 +52,18 @@ def alarm_region():
     m=tasks();flow,r,s=fixture();region=r['menu'];region['name']='闹钟编辑'
     operations=[]
     facts=[('时间','time',[], '07:00'),('周期','enum',['每周六','每天'],'每周六'),('振动','enum',['开启','关闭'],'开启'),('标签','text',[],'早饭')]
+    template=deepcopy(region['controls']['open']);region['controls']={}
     for name,kind,values,value in facts:
-        p=row(name=name);p['task_type']='parameter';operations.append(p)
+        region['controls'][name]={**deepcopy(template),'name':name}
+        p=row(name=name,control=name);p['task_type']='parameter';operations.append(p)
     m.apply_plan(region,proposal(operations),'plan')
     for name,kind,values,value in facts:
-        reply={'action_result':{'exception':'none'},'task_result':{'name':name,'status':'done','evidence':'测试夹具中的已观察参数',
-            'findings':[{'name':name,'description':'已观察'+name,'domain':{'type':kind,'values':values,'min':None,'max':None},'conditions':[], 'evidence':'明确的控件输入或选项观察'}]}}
+        reply={'action_result':{'exception':'none','description':'测试夹具中的已观察参数'},'task_update':{
+            'findings':[{'name':name,'description':'已观察'+name,'domain':{'type':kind,'values':values,'min':None,'max':None},'conditions':[], 'evidence':'明确的控件输入或选项观察'}],
+            'next_action':None}}
+        region['actions']['attempt_'+name]={'control':name,'operation':'click',
+            'delivery':'executed_receipt_zero','result':reply['action_result'],
+            'parameter_findings':deepcopy(reply['task_update']['findings'])}
         m.settle_task(region,{'task_name':name,'task_region':'menu','region_ref':'menu','control_ref':region['tasks'][name]['control']},reply,'attempt_'+name)
     return m,region,facts
 

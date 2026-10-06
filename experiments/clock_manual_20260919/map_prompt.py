@@ -10,7 +10,7 @@ import page_history
 
 def current_task(request, rid, name, task):
     contract = request.get('context_evidence', {})
-    definition = {k:task.get(k) for k in ('control','reason','action','task_type','handling','equivalent_to')}
+    definition = {k:task.get(k) for k in ('control','reason','action','task_type','handling','equivalent_to','registration_kind')}
     return (contract.get('task') == {'region':rid, 'name':name} and contract.get('definition') == definition
             and ('当前目标：'+name+'\n') in request['user_prompt'])
 

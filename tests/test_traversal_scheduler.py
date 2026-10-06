@@ -2,7 +2,31 @@
 from copy import deepcopy
 import pytest
 from tests.test_stepwise_resume_route import ROOT, fixture
-from tests.test_stepwise_region_tasks import tasks, proposal
+from tests.test_stepwise_region_tasks import tasks, proposal, row
+
+
+def test_completed_region_summarizes_before_other_work_and_refreshes_on_new_evidence(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT))
+    import traversal_scheduler as scheduler
+    import action_proposer
+    import region_functions
+    _, records, state = fixture()
+    tasks().apply_plan(records['menu'], proposal([row(handling='record')]), 'observed')
+    state.update(working_region='main', interactive_regions=['main'])
+    before = deepcopy((records, state))
+    decision = scheduler.select_work(records, state)
+    assert decision['kind'] == 'function_registration' and decision['region'] == 'menu'
+    request = action_proposer.render_work(ROOT, records, state, decision)
+    assert request['stage'] == 'function_registration' and not request['action_ready']
+    assert (records, state) == before
+    region_functions.register(records['menu'], {'region_role':'navigation',
+        'role_evidence':'已知导航入口','functions':[],'evidence':'入口观察已归纳'}, 'summary', records)
+    assert scheduler.select_work(records, state)['kind'] != 'function_registration'
+    records['menu']['tasks']['查看内容']['result_evidence'] = '新观察补充用途'
+    assert scheduler.select_work(records, state)['kind'] == 'function_registration'
+    records['menu']['registration_gaps'] = {'function_registration':{'reason':'保留本次失败'}}
+    assert scheduler.select_work(records, state)['kind'] != 'function_registration'
+    assert state == before[1]
 
 
 @pytest.mark.parametrize('marker', [None, 'deferred', 'visual', 'reason'])

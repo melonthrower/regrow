@@ -32,6 +32,6 @@ def render(region,records=None,*,include_history=True,current_task=None):
         lines.append(f'- {label}：{status}')
         if include_history and name not in c['record_only']:
             task=region['tasks'][name]
-            effective=region['tasks'].get(task.get('equivalent_to'),task) if task.get('handling')=='equivalent' else task
+            effective=helper('region_tasks').effective_task(region['tasks'],task)
             lines.extend('  '+fact for fact in describe(effective,records))
     return '\n'.join(lines)

@@ -12,7 +12,8 @@ def in_scope(region,task,records=None):
 
 def needs_parameter_facts(task):
     """Legacy preparation labels do not turn a prerequisite into a parameter survey."""
-    return task.get('task_type')=='parameter' and not task.get('prepares')
+    from task_settlement import registration_kind
+    return registration_kind(task)=='parameter' and not task.get('prepares')
 
 
 def schema():

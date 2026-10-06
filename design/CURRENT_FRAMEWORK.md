@@ -76,6 +76,10 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 
 ## 6. 当前全局风险
 
+Clock续跑发现已投递但控件关联unconfirmed的旧父任务会重复none/发现。当前实现将匹配的未确认尝试保留为ownership缺口，继续其他前景工作；此类归属补录尚无完整自动恢复入口，不能宣称原任务已补齐。验证状态见本月日志。Clock末批仍保留r0007/r0008旧摘要登记缺口，不能把修复代码已验称为这些旧失败已补齐。
+
+跨区块总结要求同一目的的本地支持任务，全部外区块支持不能登记为本区块操作；世界时钟列表反例在完整保存帧及实际补录通过；r0016全外区块提案也由正常纠错撤回。结构门槛仍不能自动证明所选本地任务语义相关，不能当作可组合能力质量认证。
+
 当前地图修复候选仍未接受：Stopwatch 虚报 Add、Timer 单位推测、历史控件被列为当前可操作及裁图/归属缺口仍需实际证据核对。本批结构整理不把这些候选、跨区块任务语义重复或已暂停运行变为已通过；具体范围见[身份](modules/stepwise_region_identity.md)、[监督](modules/stepwise_debug_loop.md)和[任务](modules/stepwise/tasks.md)。
 各内核还保留模型身份误判、前景/控件漏报、导航/恢复、异常生命周期与大文件职责债务；[原风险表](CURRENT_FRAMEWORK_DETAILS.md#6-当前全局风险)保留对应范围和反例，不以历史测试数宣称当前全图或跨应用稳定。最新机器、源码与停止点读 [SERVER_HANDOFF](SERVER_HANDOFF.md)。
 
@@ -93,10 +97,10 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 只有用户明确要求，或准备发布、基线、认证、正式外部结果时，运行[显式全框架回归门的 19 条命令](CURRENT_FRAMEWORK_DETAILS.md#explicit-framework-regression-gate)。共享合同改动本身不自动触发全门禁。命令集合保留原 Section 8 历史清单；其中 `tests/test_visual_run_state_machine.py` 当前缺失，不能按原清单直接执行全门禁。本批仅核对路径，未执行或重新确认全框架覆盖；运行目录按现行 AGENTS 实例化为唯一临时目录，保存命令/日志，记录明确要求时的漏跑项、原因与验证缺口。门禁通过不代替原生模型与真实 GUI 语义验收。
 
 ## 逐步任务进度补充（2026-10-05）
-逐步explore任务以区块内控件+动作复用；done表示该绑定动作已执行并登记直接观察，不能当作业务成功。普通更新用task_update（findings、可空next_action），不再要求task_result状态或独立累计完成核对。前置准备的条件观察、异常暂挂、身份修订和真实地图登记仍保留；详见[任务](modules/stepwise/tasks.md)与[更新](modules/stepwise/updates.md)。当前地图的其他未接受候选不因任务进度修改获验收。
+逐步explore任务以区块内控件+动作复用。2026-10-07进一步按registration_kind要求参数事实、入口语义或试探反馈；动作已执行与所需信息已登记分开，done不能当作业务成功。普通更新用task_update（findings、可空next_action、信息缺口及按类别提供的entry），不要求task_result状态或独立累计完成核对。前置准备的条件观察、异常暂挂、身份修订和真实地图登记仍保留；详见[任务](modules/stepwise/tasks.md)与[更新](modules/stepwise/updates.md)。当前地图的其他未接受候选不因任务进度修改获验收。
 
 ## 2026-10-06 最小遍历合同
-本批实现：清点缺口不阻挡无关可信pending；区块内缺口仍参与完整性。滚动按当前单图选点，规范任务复用且允许必要准备。新结果schema删模型投递状态复述，可分离参数坏行局部留缺口。功能/历史整理移到auto会话GUI空闲之后，预算仍计入框架；旧冻结源及无关地图候选不自动切换。验证结论见本月日志与交接，未验证能力不算接受。
+本批实现：清点缺口不阻挡无关可信pending；区块内缺口仍参与完整性。滚动按当前单图选点，规范任务复用且允许必要准备。新结果schema删模型投递状态复述，可分离参数坏行局部留缺口。区块探索结束后的原子操作总结接入普通调度，历史补清点保留在auto会话GUI空闲之后，预算仍计入框架；旧冻结源及无关地图候选不自动切换。验证结论见本月日志与交接，未验证能力不算接受。
 
 状态依据：目标卡及共同地图不复述旧控件显示值/状态；本轮最新截图决定当前状态。历史保存实际探索努力和结果证据，具体合同见[上下文](modules/stepwise/context.md)。
 
@@ -118,3 +122,9 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 当前批次验证范围见月度日志，不接纳原工作树的其他地图候选或宣称跨应用稳定。
 
 2026-10-06角色职责归位：locator持有发现请求/schema及定位；task_proposer持有任务提示/schema/上下文；result_updater持有更新请求及候选校验。发现后的导航/局部检查和目标退出归调度器，shared_tasks独立承接任务共享与失效清理。正式登记仍用discovery_step、region_tasks、register_update；调用方直接进入角色模块，update_step及本轮角色转发出口已清退。原平铺源码根与运行入口不变，较早的11目录方案已归档。验证范围见本月日志。
+
+2026-10-07探索与总结：任务提示按新入口功能、功能参数、不确定控件三类说明探索目的；区块有效探索任务结束后，由调度器安排原子操作总结，沿用region_functions及原校验登记。region_role描述表面用途，参数表面可为functional且functions为空；完整业务目的及其约束才进入原子操作目录。详细合同见[知识模块](modules/stepwise/knowledge.md)，验证范围见本月日志。
+
+原子操作可跨相关区块，仍挂业务主区块：function_scope组织图上的证据候选，region_functions提供跨区块任务/参数引用并校验登记。support_tasks保留结构化region/task来源；本地task_refs、任务身份和真实动作归属保持原合同。相关证据变化触发更新，图连接不自动等于业务归属。
+
+2026-10-07登记结算：TaskProposer指定registration_kind，ResultUpdater沿正常更新登记对应产物，task_settlement据真实绑定与已登记信息结算；缺口保存并暂挂，原动作不重放。旧完成记录不追溯重判。参数登记、缺口保留、跨区块总结与调度已有有限原生/实机证据；新entry产物分支尚未原生验收，详见任务/更新模块及本月日志。

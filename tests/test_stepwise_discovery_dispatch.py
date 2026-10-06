@@ -25,7 +25,8 @@ def test_discovery_routes_before_action_context(tmp_path, monkeypatch, entry, mo
     monkeypatch.setattr(m.step_repair, 'pending', lambda run: None)
     helper=m.step_repair.helper
     monkeypatch.setattr(m.step_repair, 'helper', lambda name:
-        SimpleNamespace(run_pending=lambda runner:None) if name=='shared_control_review' else helper(name))
+        SimpleNamespace(run_pending=lambda runner:None) if name=='shared_control_review' else
+        SimpleNamespace(reconcile_run=lambda run:False) if name=='task_settlement' else helper(name))
     monkeypatch.setattr(m.exploration_loop, 'observe', lambda *args: None)
     def perform(*args): state['next_action_mode'] = 'discover'
     monkeypatch.setattr(m.step_repair, 'Runner', lambda *args, **kwargs: SimpleNamespace(perform=perform))

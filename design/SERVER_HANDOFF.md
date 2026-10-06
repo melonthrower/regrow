@@ -1,5 +1,13 @@
 # 服务器续接工作
 
+## 2026-10-07 目录批次：Clock续跑最新停止点（实际UTC 2026-10-06）
+
+当前个人服务器，工作区/data/shenghonghui/projects/GUI-ReWalk，活动源码仍由DEVELOPMENT定位。容器rewalk-clock-fresh-20261005-02、org.gnome.clocks沿原数据继续，未重置；原99调用run完整保留。最新真实run为artifacts/runs/region_atomic_resume_clock_20261007_01/desktop/run，最后冻结source-v13/hash 3e46016ae6390e4e9cf46eba4c50732cf0533fab7f906645b7845ef4b2a80b13。
+
+新增预算100包含保存帧验证19及实机80，共99；末余1不足下一组选择与更新，session07正常budget_limit。总GUI不限、小步6HTTP/6GUI及恢复保护保持。真实累计179调用45动作，本轮新增10动作；最终 knowledge_snapshots/functions-0179-0de182dbc7be，无pending_step/execution_pending/visual_navigation_pending及活动驱动。最后a0045已打开Add a New World Clock，搜索为空、Add不可用，计时器自然结束通知仍可见；应用状态保留，不重放已执行动作。末段12调用只做总结/清点及纠错，0GUI。
+
+图16区块99控件，23done/63record_only/1pending/4blocked，不是完整探索。旧a0035动作不变，其父任务保留关联缺口；星期多选未确认。r0007/r0008仍有0143–0148的旧摘要登记缺口，当前目录来自0139/0140，不能当作新源已补录。r0002摘要签名故障和全外支持误归属已沿正常入口修复；r0003添加操作正确保留相关区块引用。新entry登记分支尚无原生验收。所有失败、真实截图与原答、冻结源/命令及审查在该批artifacts/runs与artifacts/tmp_tests；脱敏报告和ZIP在to_astra/region_atomic_resume_clock_20261007_01。Android与其他设备未动。
+
 ## 2026-10-06 桌面Clock 100调用上限实测：最新桌面停止点
 
 当前个人服务器，工作区/data/shenghonghui/projects/GUI-ReWalk；活动开发checkout见DEVELOPMENT。本批专用容器rewalk-clock-fresh-20261005-02、org.gnome.clocks，备份核验后仅清空Clock应用数据，新图独立于所有旧run。先前桌面停点不再代表当前应用数据。

@@ -60,3 +60,16 @@ partial/uncertain只描述清点覆盖。当前可信pending优先执行；没�
 ## 角色与共享任务边界
 TaskProposer拥有提示、schema、历史/控件及共享任务上下文；普通、范围复核、历史清点和纠错刷新沿同一plan_request。region_tasks保留正式任务登记、覆盖计算及较早的选择/结算出口；plan_request和proposal_schema只由task_proposer提供，普通纠错与观察修订直接调用它。
 [shared_tasks.py](../../../experiments/clock_manual_20260919/shared_tasks.py)负责已确认共享关系上的任务定义/结果引用及失效清理。shared_controls.refresh先刷新关系再同步任务；shared_control_review.apply随后清理已失效继承。无本地证据的继承任务归档后移除，有本地尝试/发现的保留并阻塞复核，真实动作不迁移。
+
+## 探索与原子操作总结（2026-10-07）
+TaskProposer以三类具体信息需求提出探索：打开新入口认识功能、调查功能参数及条件、试操作用途不确定的控件。reason说明未知点、观察方式及拟收集信息；registration_kind标注产物类别，schema的single_action/parameter/scroll继续描述推进方式。区块探索结束后的原子操作总结另由region_functions承担，沿[知识合同](knowledge.md)组织完整用户目的及约束。提示用职责与产出说明两阶段的工作。
+
+## 按探索产物登记结算（2026-10-07）
+任务提出器用registration_kind区分entry（入口去向与功能语义）、parameter（参数事实）、control_effect（控件试探反馈）；task_type仍描述执行形式。动作提出与结果更新传递同一登记目标。参数事实沿用findings，入口语义在本次action.entry_registration及对应transition.entry_semantics登记，试探反馈沿用action_result。
+结果更新先核对真实动作绑定，再核对本类产物。缺少所需记录且没有明确缺口时走原更新纠错，复用原前后图和回执；registration_gap记录具体信息不足并暂挂任务。next_action仍可据实际观察修正后续绑定，准备动作和异常仍沿原路径。没有新增完成审核调用，也不因补录失败重做GUI。只有本类信息完成登记才写新的completion_basis；模型不输出普通任务done。
+入口语义必须对应本次新显露或变化的实际可交互区块；仅同时可见不足以作为去向。无变化且去向未知保留缺口。控件试探可以登记本次无可见变化；该记录不证明已确定功能含义。参数部分选项可以构成有效观察，不要求穷举；本任务明确未知尚未回答时保留registration_gap。结构校验不能保证模型视觉语义正确，需原生证据验收。
+新参数record任务也需findings，任务reason不能替代参数目录。旧完成记录不批量重判；未标注registration_kind的旧parameter任务按参数产物处理，其他旧任务沿直接反馈结算，后续正常清点可给未完成任务补充明确类别。参数登记、明确缺口及调度已作有限原生/实机验证；新entry产物分支暂只有离线覆盖，旧入口沿用不能代替该分支验收。具体证据见月度记录。
+
+共享任务传递registration_kind，复用结果同样核对对应登记；旧task_result_review入口不能凭模型done绕过新规则。参数依赖范围按registration_kind识别，保留旧parameter任务的默认解释。
+
+等价任务也须具有相同registration_kind；同为click/single_action不足以替代参数或入口产物。region_tasks.equivalent_source/effective_task集中该判断，覆盖统计、任务树、纠错上下文及进度页共用。旧不一致引用投影为blocked并保留原记录，不继承代表任务done或其观察事实。

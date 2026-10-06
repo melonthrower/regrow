@@ -15,6 +15,10 @@ def select_work(records, state, working=None):
         return choice('recover', reason='registered foreground requires recovery')
     if mode != 'explore':
         return choice('wait', reason='registered mode does not permit exploration')
+    summary = helper('region_functions').next_ready(records,state)
+    if summary:
+        return choice('function_registration', summary,
+                      reason='summarize completed Region exploration from its accumulated evidence')
     refs = state.get('interactive_regions', [])
     allowed = [rid for rid in refs if rid in records and not records[rid].get('out_of_scope_reason')]
     active = state.get('active_task') or {}

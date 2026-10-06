@@ -194,7 +194,7 @@ def context(run,job):
         # Use the full owning record: related() may retain only the failed task.
         owner=next((r for r in history_records.values() if r.get('id')==region.get('id') and r.get('name')==region.get('name')),region)
         covered=task.get('equivalent_to') if task.get('handling')=='equivalent' else None
-        effective=owner.get('tasks',{}).get(covered,task) if covered else task
+        effective=helper('region_tasks').effective_task(owner.get('tasks',{}),task)
         view={'名称':name,'入口':region['controls'].get(task.get('control'),{}).get('name',region['name']),
                 '状态':effective['status'],'处理方式':task.get('handling'),'覆盖任务':covered,
                 '说明':task['reason'],'动作':task.get('action'),'类型':task.get('task_type'),
@@ -267,6 +267,8 @@ def refresh(root,run,job):
     if stage=='discovery':return helper('locator').request_from_run(root,run)
     if stage in ('task_proposal','function_registration'):
         rid=old['source']['region']
+        if stage=='function_registration':
+            return helper('region_functions').request(root,records[rid],state,records)
         if stage=='task_proposal' and old.get('historical_inventory'):
             saved=deepcopy(state)
             saved['observation']={'id':old['source']['observation'],'image':old['screenshots'][0],'control_refs':[]}
@@ -278,7 +280,6 @@ def refresh(root,run,job):
         if stage=='task_proposal':
             q=helper('task_proposer').plan_request(root,records,state,rid)
             return helper('page_context').attach(q,records,state,run=run)
-        return helper('region_functions').request(root,records[rid],state,records)
     if stage=='action':
         src=old.get('source',{})
         task_ref={'region':src.get('task_region',src.get('region')),'name':src['task_name']} if src.get('task_name') else None

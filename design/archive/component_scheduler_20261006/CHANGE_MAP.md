@@ -1,7 +1,7 @@
 # 三步组件改动地图 V1
 
 已导出起点：[melonthrower/regrow @ 513cc565fa72853d796197edd2441af7b7845a4a](https://github.com/melonthrower/regrow/tree/513cc565fa72853d796197edd2441af7b7845a4a)。
-下表基线锚点固定该提交；新文件无既有行号。实施锚点为本批工作树，经AST核对；提交后的便携版将固定本批导出提交。
+下表基线锚点固定上述提交；新文件无基线行号。实施锚点经AST核对，固定已导出提交 [6c6345d067a672bf8d80386d155fbdce5e667019](https://github.com/melonthrower/regrow/tree/6c6345d067a672bf8d80386d155fbdce5e667019)。便携包FINAL_SOURCE_MAP.md逐函数链接到该提交，不随后续文档提交改变。
 冻结验收源码hash：`c7754f7a536d1e2045a57c71df23a30ff6d48c1f6034a41475b18872bdce9f37`。
 
 设计见[DESIGN.md](DESIGN.md)。状态：下表修改已实施；验证范围见月度日志。没有待实施的新架构分支。

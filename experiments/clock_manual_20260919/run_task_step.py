@@ -2,125 +2,23 @@
 import argparse
 import json
 from pathlib import Path
-import shutil
 
 from recover_external import RecoveryRun
-from register_update import read,write_json,commit_update
-from stepwise_flow import StepwiseFlow,assemble_current_context,bind_action_target
-from region_tasks import commit_plan
-from update_step import build_update_request
+from register_update import read,write_json
+from stepwise_flow import assemble_current_context
 import discovery_step
-import jsonschema
-from action_commands import commands,execute as execute_action,validate as validate_action
-import region_functions
 import recover_loop
 import progress
 import step_repair
 import visual_backtrack
 import exploration_loop
 import traversal_scope
-
-
-def foreground_window(transport):
-    if hasattr(transport,"foreground_window"):return transport.foreground_window()
-    import re
-    result=transport.adb(['shell','dumpsys','window'])
-    if result.returncode!=0:return None
-    match=re.search(r'mCurrentFocus=Window\{([^}]+)\}',result.stdout.decode(errors='replace'))
-    return match.group(1) if match else None
-
-
-def window_evidence(window, target):
-    """Expose actual window ownership; system overlays still need visual context."""
-    if isinstance(window,dict):return window
-    import re
-    match=re.search(r'\bu\d+\s+([A-Za-z0-9_.]+)/[^\s}]+',window or '')
-    package=match.group(1) if match else None
-    return {'目标应用':target,'前台应用':package,'与目标应用一致':package==target if package else None,
-            '窗口记录':window,'来源':'Android mCurrentFocus；读取失败或不能解析时未知'}
-
-
-def system_action_changed(action, before, after, before_window=None, after_window=None):
-    if action not in ('back','key_press','hotkey'):return False
-    if action in ('key_press','hotkey'):
-        return bool(before_window and after_window and before_window!=after_window) or not visual_backtrack.same_surface(before,after)
-    # Back has no image coordinate. A stable Android window tolerates animations
-    # and live clocks; changed/unknown windows retain the visual check.
-    if before_window and after_window:return before_window!=after_window
-    return not visual_backtrack.same_surface(before,after)
-
-
-def build_attempt_update(root,transport,folder):
-    run=transport.run
-    snapshot,records,state=discovery_step.load(run)
-    binding=read(folder/'binding.json');proposal=read(folder/'proposal.json');receipt=read(folder/'receipt.json')
-    after_window=read(folder/'after_window.json')
-    owner=records[binding['region_ref']];work=records[binding['working_region']]
-    dynamic={'动作后前台应用证据':after_window,'目标应用':transport.package,'工作区块':work['name'],'实际来源区块':owner['name'],
-        '实际入口':'系统返回' if proposal['action']=='back' else owner['name'] if proposal['action'] in ('scroll','wait') else owner['controls'][binding['control_ref']]['name'] if binding.get('control_ref') in owner['controls'] else proposal['target'],
-        '动作意图':proposal,'实际动作':receipt.get('executed_steps', [proposal]),'回执':receipt,
-        '登记说明':'保留工作区块，按实际前后图登记落点；系统返回属于来源区块，无控件，不为它新建控件。'}
-    import source_region_candidates as source_candidates
-    recalled=source_candidates.recall(records,binding,proposal['action'],folder.name)
-    dynamic['来源区块历史行为比较']={'适用上下文':owner.get('behavior_context','历史描述及结果中的上下文，不能仅凭图标推定'),
-        '用途':'按共同地图中实际来源区块的控件历史，与本次结果比较职责差异；普通值变化和依进入路径返回不代表不同区块。未确认控件不作为稳定行为依据。'}
-    if not recalled['confirmed']:
-        dynamic['旧入口说明']='这里按旧入口名称提供线索，不证明本次来源身份或历史所在标签。'
-    if binding.get('association'):
-        dynamic['控件关联待核对']=binding['association']
-        if binding['association'].get('status')=='unconfirmed':
-            dynamic['动作请求来源上下文']=dynamic.pop('实际来源区块')
-            dynamic['来源身份说明']='上列区块只是动作请求的上下文，不证明实际控件属于该区块；按原前后图登记真实归属，不为迎合上下文迁移控件。'
-        dynamic['登记说明']+=' 本动作已按模型坐标执行，控件身份尚未确认；不要把候选当事实。仍可见的实际控件按普通更新登记名称及点击框，空白关闭不虚构控件。'
-    if binding.get('task_name'):
-        dynamic['本轮探索任务']=binding['task_name']
-        if binding.get('preparatory_action'):dynamic['准备动作说明']='实际操作与任务绑定动作不同，只登记本步变化；框架不会用准备动作完成原任务。'
-        task=records[binding.get('task_region',binding['region_ref'])]['tasks'][binding['task_name']]
-        dynamic['任务目标']={'说明':task['reason'],'type':task['task_type'],'原控件':records[binding.get('task_region',binding['region_ref'])]['controls'].get(task.get('control'),{}).get('name','区块本身'),'原动作':task.get('action')}
-        from region_tasks import task_object_context
-        dynamic['任务与实际对象核对']=task_object_context(records,binding)
-    from region_tasks import coverage
-    progress_now=coverage(owner,records)
-    dynamic['来源区块已有任务']=[{'name':n,'action':t.get('action'),'control':owner['controls'].get(t.get('control'),{}).get('name'),
-        'status':'done' if n in progress_now['done'] else 'record_only' if n in progress_now['record_only'] else t.get('status')}
-        for n,t in owner.get('tasks',{}).items()]
-    import history_matching
-    ranking=history_matching.scan(records,snapshot,folder/'after.png',scope=history_matching.foreground_scope.load(run,folder/'after.png'))
-    dynamic['当前截图视觉匹配到的既有区块']=[{'region_ref':r['region'],'name':records[r['region']]['name'],
-        'control_positions':[h['box'] for h in r['anchors']]} for r in ranking if r['anchors']]
-    from update_step import known_regions
-    dynamic['已知区块']=known_regions(records,state,binding,dynamic['当前截图视觉匹配到的既有区块'],source_destinations=recalled['destinations'])
-    reference=source_candidates.reference(records,snapshot,recalled,dynamic['当前截图视觉匹配到的既有区块'],folder/'after.png')
-    from history_matching import with_history as named_candidates
-    dynamic['已知区块'],region_names=named_candidates(records,dynamic['已知区块'])
-    labels={rid:label for label,rid in region_names.items()}
-    dynamic['当前截图视觉匹配到的既有区块']=[
-        {**{k:v for k,v in hit.items() if k!='region_ref'},'name':labels[hit['region_ref']]}
-        for hit in dynamic['当前截图视觉匹配到的既有区块']]
-    dynamic['本次入口历史落点']=source_candidates.describe(recalled,labels)
-    dynamic['区块名称使用']='身份引用使用已知区块中的完整name；同名区块以历史对象序号区别，仅用于本轮关联，不代表新建或合并。'
-    u=build_update_request(root,dynamic,[str((folder/n).relative_to(run)) for n in ['before.png','after.png']])
-    u=source_candidates.attach(u,reference,labels)
-    u=history_matching.attach(u,records,ranking,region_names,snapshot)
-    u['region_names']=region_names
-    step_repair.helper('page_context').attach(u,records,state,usage='before_action',run=run,
-        extra_regions=[binding['region_ref'],binding['working_region'],binding.get('task_region')])
-    write_json(folder/'update_request.json',u)
-    return u
-
-
-def resume_update_request(root,transport,folder):
-    receipt=read(folder/'receipt.json')
-    if receipt.get('exit_code')!=0:raise ValueError('delivery not confirmed; do not retry')
-    if (folder/'update_request.json').exists():return read(folder/'update_request.json')
-    # A confirmed action awaits observation, never another delivery.
-    fresh=not (folder/'after.png').exists()
-    if fresh:transport.screenshot(folder/'after.png')
-    if not (folder/'after_window.json').exists():
-        evidence=window_evidence(foreground_window(transport),transport.package) if fresh else {
-            '与目标应用一致':None,'来源':'已保存动作后截图缺少同期窗口证据，仅依据该截图核验'}
-        write_json(folder/'after_window.json',evidence)
-    return build_attempt_update(root,transport,folder)
+from traversal_scheduler import Scheduler, pending_work, preview_next
+from locator import Locator
+from task_proposer import TaskProposer
+from action_proposer import ActionProposer
+from action_executor import ActionExecutor, foreground_window, window_evidence, system_action_changed
+from result_updater import ResultUpdater, build_attempt_update, resume_update_request
 
 
 def action_capacity_status(account):
@@ -147,41 +45,17 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
     calls=[]
     def call(q):
         ref,reply=transport.call(q);calls.append(ref);return ref,reply
-    def current():
-        if not (run/'execution_pending.json').exists() and not step_repair.pending(run):
-            step_repair.helper('task_settlement').reconcile_run(run)
-        step_repair.helper('coverage_exemption').refresh(run)
-        _,known,state=discovery_step.load(run)
-        discovery_step.registration().sibling('traversal_scope').exclude_known_external(run,known,state)
-        discovery_step.retire_completed_goal(run)
-        step_repair.helper('task_prerequisites').prioritize(run,out/'current.png')
-        if discovery_step.load(run)[2].get('reason')=='verify_prepared_dependency' and discovery_step.load(run)[2].get('next_action_mode')=='discover':
-            raise step_repair.Paused('ready_next_round','准备任务已完成；下一轮观察目标是否解锁')
-        snapshot,known,state=discovery_step.load(run)
-        candidate=None
-        def current_request():
-            nonlocal candidate
-            if candidate is None:candidate=assemble_current_context(root,run)
-            return candidate
-        q=current_request()
-        if q['stage'] in ('region_complete','task_blocked','return_blocked') and not q.get('needs_task_inspection'):
-            if discovery_step.registration().sibling('task_deferral').advance_unfinished(run):
-                q=assemble_current_context(root,run)
-            else:
-                deferred=step_repair.helper('task_result_review').next_deferred(root,run,out/'current.png')
-                if deferred:return deferred
-                if not (run/'execution_pending.json').exists() and not step_repair.pending(run):
-                    q.update(stage='scope_idle',action_ready=False,reason='当前无可执行任务；保留暂挂及登记缺口，不声明全图完成')
-        if discovery_step.locate_task_control(run,q,out/'current.png'):
-            q=assemble_current_context(root,run)
-        if q['stage']!='function_registration':
-            history=q.get('screenshots',[])[1:] if q.get('source',{}).get('parameter_fact_review') else []
-            frames=[str((out/'current.png').resolve()),*history]
-            q.update(screenshots=frames,image_refs=list(frames))
-            step_repair.helper('page_context').refresh(q)
-            if q.get('action_ready'):q=step_repair.helper('target_observation').refresh(q)
-        return q
     repair=step_repair.Runner(root,run,call,transport.screenshot,lambda:transport.account['max_http']-transport.account['http_started'],review_update=review_update)
+    scheduler=Scheduler(root,run,out/'current.png',out)
+    locator=Locator(root,run,out/'current.png',call,repair)
+    proposer=ActionProposer(repair)
+    executor=ActionExecutor(transport,out,repair)
+    updater=ResultUpdater(root,transport,repair)
+    def current():
+        request=scheduler.current()
+        if locator.locate_control(request):
+            request=scheduler.current()
+        return request
     if (run/'ownership_review.json').exists():
         result=step_repair.helper('ownership_review').run(root,transport,out,call)
         write_json(out/'result.json',{**result,'gui_actions':transport.account['gui_started']})
@@ -189,10 +63,14 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
     resumed=None
     step_repair.helper('suspended_updates').restore_next(run,out/'current.png')
     step_repair.reopen_blocked(run,out/'current.png')
-    pending=step_repair.pending(run)
-    if pending:
+    work=pending_work(run)
+    if work and work['kind']=='update':
+        result=updater.resume(work)
+        write_json(out/'result.json',{**result,'calls':calls,'gui_actions':0})
+        transport.account['status']='paused_after_update';transport.save();return
+    if work:
+        pending=work['pending']
         if pending.get('pre_dispatch_review') and pending['stage']=='action':
-            # A paused round must not confirm a historical frame as the current one.
             frame=str(out/'current.png')
             pending['pre_dispatch_review'].update(current=frame,window=selection_window)
             pending['request'].update(screenshots=[frame],image_refs=[frame])
@@ -202,22 +80,6 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
         if resumed['stage'] in ('task_result_review','shared_control_review'):
             write_json(out/'result.json',{'status':'ready_next_round','calls':calls,'gui_actions':0,'task_result_review':resumed['result']})
             transport.account['status']='ready_next_round';transport.save();return
-        if resumed['stage']=='update':
-            attempt=resumed['attempt'];pointer=resumed['result']
-            write_json(run/'action_attempts'/attempt/'commit.json',pointer)
-            (run/'execution_pending.json').unlink(missing_ok=True)
-            write_json(out/'result.json',{'status':'updated','calls':calls,'attempt':attempt,'gui_actions':0,'pointer':pointer})
-            transport.account['status']='paused_after_update';transport.save();return
-    elif (run/'execution_pending.json').exists():
-        receipt=read(run/'execution_pending.json');attempt=receipt['attempt'];folder=run/'action_attempts'/attempt
-        if (folder/'commit.json').exists():
-            (run/'execution_pending.json').unlink()
-        elif (folder/'receipt.json').exists() and read(folder/'receipt.json').get('exit_code')==0:
-            job=repair.perform('update',resume_update_request(root,transport,folder),attempt)
-            write_json(folder/'commit.json',job['result']);(run/'execution_pending.json').unlink()
-            write_json(out/'result.json',{'status':'updated','calls':calls,'attempt':attempt,'gui_actions':0})
-            transport.account['status']='paused_after_update';transport.save();return
-        else:raise step_repair.Paused('execution_unconfirmed','已有动作投递记录，但结算证据尚不齐全；禁止重复执行')
     state=discovery_step.load(run)[2]
     if state.get('reason')=='historical_update_registered' and state.get('next_action_mode')=='discover':
         discovery_step.await_discovery(run,str(out/'current.png'),'historical-update-'+out.name)
@@ -235,18 +97,14 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
         return True
     if route_recovery():return
     if discovery_step.load(run)[2].get('next_action_mode')=='discover':
-        state=discovery_step.load(run)[2]
-        batch=state.get('discovery_completion') or {}
-        if batch.get('pending') and batch.get('sha256')!=step_repair.helper('discovery_completion').fingerprint(out/'current.png'):
-            discovery_step.await_discovery(run,str(out/'current.png'),'fresh-discovery-'+out.name)
-        discovery_step.run_stage(root,run,call,repair=repair)
+        locator.discover()
         if route_recovery():return
     step_repair.helper('shared_control_review').run_pending(repair)
     q=current()
     if q['stage']=='task_proposal':
-        repair.perform('task_proposal',q)
+        TaskProposer.run(repair,q)
         if discovery_step.load(run)[2].get('next_action_mode')=='discover':
-            discovery_step.run_stage(root,run,call,repair=repair)
+            locator.discover()
             if route_recovery():return
         q=current()
         if q['stage']=='task_proposal':
@@ -271,9 +129,7 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
         raise step_repair.Paused(capacity,'当前小步HTTP额度不足以选择动作并登记结果；未执行，保留原任务。已推进的小步可续接；无推进的尾段结束本批。')
     # Historical routes advise selection; every new GUI operation uses the
     # normal binding, dispatch and semantic result registration below.
-    q['role']='action_selection'
-    if resumed and resumed['stage']=='action':accepted=resumed
-    else:accepted=repair.perform('action',q)
+    accepted=proposer.propose(q,resumed)
     result=accepted['result'];q=result['request'];ref=result['call'];proposal=result['proposal'];binding=result['binding']
     write_json(out/'binding.json',binding)
     if traversal_scope.skip_prohibited(run,q,proposal,ref):
@@ -293,59 +149,11 @@ def _run_step(root,run,out,*,review_update=None,limits=None):
     if binding['status']!='matched':
         write_json(out/'result.json',{'status':binding['status'],'calls':calls,'gui_actions':0})
         transport.account['status']='paused_'+binding['status'];transport.save();return
-    snapshot,records,state=discovery_step.load(run)
-    attempt='a'+str(max([int(p.name[1:]) for p in (run/'action_attempts').iterdir() if p.name[1:].isdigit()]+[0])+1).zfill(4)
-    folder=run/'action_attempts'/attempt;folder.mkdir()
-    shutil.copy2(run/q['screenshots'][0],folder/'before.png')
-    write_json(folder/'proposal.json',proposal);write_json(folder/'binding.json',binding)
-    transport.screenshot(folder/'pre_dispatch.png')
-    if proposal['action'] in ('tap','click','double_click','long_press','right_click','hover','drag','scroll','input_text'):
-        fresh={**q,'image_refs':[str(folder/'pre_dispatch.png')],'screenshots':[str(folder/'pre_dispatch.png')]}
-        from visual_backtrack import same_surface
-        dispatch_window=foreground_window(transport)
-        changed_window=bool(selection_window and dispatch_window and selection_window!=dispatch_window)
-        confirmed=step_repair.confirmed_dispatch_review(run,accepted,calls,dispatch_window,out/'current.png')
-        write_json(folder/'pre_dispatch_check.json',{'window':dispatch_window,'changed_window':changed_window,'confirmed_call':ref if confirmed else None})
-        if changed_window or (not confirmed and not same_surface(folder/'before.png',folder/'pre_dispatch.png')):
-            repair.reject_action(fresh,proposal,ref,'投递前窗口或画面发生变化；动作未执行，请按唯一最新投递前图重新确认目标与坐标，而非仅因动态内容变化反复刷新。',
-                pre_dispatch_review={'before':str(folder/'before.png'),'current':str(folder/'pre_dispatch.png'),'window':dispatch_window})
-        write_json(folder/'pre_dispatch_binding.json',binding)
-    elif proposal['action'] in ('back','key_press','hotkey') and system_action_changed(proposal['action'],folder/'before.png',folder/'pre_dispatch.png',selection_window,foreground_window(transport)):
-        repair.reject_action({**q,'screenshots':[str(folder/'pre_dispatch.png')],'image_refs':[str(folder/'pre_dispatch.png')]},proposal,ref,'投递前前景画面变化；键盘动作尚未执行，请重新核对')
-    try:command_list=commands(proposal,getattr(transport,"platform","android"))  # Validate platform support before charging or tapping.
-    except ValueError as error:
-        write_json(out/'result.json',{'status':'unsupported_action','reason':str(error),'calls':calls,'gui_actions':0})
-        transport.account['status']='paused_unsupported_action';transport.save();return
-    if transport.account['gui_started']+len(command_list)>transport.account['max_gui_commands']:
-        from model_transport import BudgetExhausted
-        raise BudgetExhausted('GUI额度不足以投递完整动作；未执行，保留原任务')
-    def deliver(p):
-        if transport.account['gui_started']:raise ValueError('single action already dispatched')
-        write_json(run/'execution_pending.json',{'attempt':attempt})
-        write_json(folder/'dispatch.json',{'source_call':ref,'source_region':binding['region_ref'],'source_control':binding['control_ref'],
-                    'working_region':binding['working_region'],'action':p,'status':'dispatching'})
-        input_context=None
-        if p['action']=='input_text':
-            from input_target import context
-            from register_update import attach_execution
-            attach_execution(records,run)
-            input_context=context(snapshot,records,binding,q)
-        result=execute_action(transport,p,folder/'execution',input_context=input_context)
-        write_json(folder/'receipt.json',result)
-        manifest=read(run/'run_manifest.json');manifest['actual_gui_actions']=manifest.get('actual_gui_actions',0)+1;write_json(run/'run_manifest.json',manifest)
-        return result
-    flow=StepwiseFlow(lambda role,q:call(q)[1],deliver,lambda role,value:write_json(out/(role+'.json'),value))
-    flow.proposal=proposal;flow.phase='execute'
-    receipt=flow.execute(lambda p:True)  # Includes the shared 2-second settling wait.
-    if receipt['exit_code']!=0:raise ValueError('delivery not confirmed; do not retry')
-    transport.screenshot(folder/'after.png')
-    after_window=window_evidence(foreground_window(transport),transport.package)
-    write_json(folder/'after_window.json',after_window)
-    u=build_attempt_update(root,transport,folder)
-    pointer=repair.perform('update',u,attempt)['result']
-    write_json(folder/'commit.json',pointer)
-    (run/'execution_pending.json').unlink(missing_ok=True)
-    nextq=assemble_current_context(root,run);write_json(out/'next_request.json',nextq)
+    folder=executor.execute(accepted,selection_window,calls)
+    if folder is None:return
+    updated=updater.update(folder)
+    attempt,pointer=updated['attempt'],updated['pointer']
+    nextq=preview_next(root,run);write_json(out/'next_request.json',nextq)
     write_json(out/'result.json',{'status':'updated','calls':calls,'attempt':attempt,'gui_actions':1,'pointer':pointer,'next_stage':nextq['stage']})
     transport.account['status']='paused_after_update';transport.save()
 

@@ -2,9 +2,9 @@
 
 [开发入口](../../../DEVELOPMENT.md) · [三步流程](README.md) · [测试索引](../../../tests/STEPWISE_INDEX.md) · [提示入口](../../../experiments/clock_manual_20260919/遍历prompt/README.md)
 
-源码在 `experiments/clock_manual_20260919/`。下面完整列出 98 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
+源码在 `experiments/clock_manual_20260919/`。下面完整列出 104 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
 
-入口连接：`启动遍历.sh → launch_traversal.main → run_source.session_command → run_progress_session.run_session → run_task_step._run_step`。单轮先处理已执行待登记与 pending，再调度发现/任务清点、动作或正常结果/功能核对；三步不等于固定三次 Luna 调用。
+入口连接：`启动遍历.sh → launch_traversal.main → run_source.session_command → run_progress_session.run_session → run_task_step._run_step`。单轮由traversal_scheduler先处理已执行待登记与pending，再选择发现/任务清点、动作或异常复核；三步不等于固定三次 Luna 调用。
 
 | 主体 | 职责及交接 |
 |---|---|
@@ -37,7 +37,7 @@
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [task_selection.py](../../../experiments/clock_manual_20260919/task_selection.py) | 选择继续任务、清点、导航、功能整理或暂停；集中渲染现有任务进度。 | `attach / render / render_current` |
+| [task_selection.py](../../../experiments/clock_manual_20260919/task_selection.py) | 兼容入口委托唯一调度器及请求组件，保留任务进度渲染。 | `attach / render / render_current` |
 | [task_routing.py](../../../experiments/clock_manual_20260919/task_routing.py) | 依据已观察进入链推进原工作目标，来源链不自动成为返回边。 | `advance / destination_work` |
 | [task_prerequisites.py](../../../experiments/clock_manual_20260919/task_prerequisites.py) | 登记有证据的前置条件、准备任务与范围内唤醒。 | `augment / apply / complete_preparation` |
 | [task_deferral.py](../../../experiments/clock_manual_20260919/task_deferral.py) | 保留局部暂挂和已观察路线，选择独立可继续工作。 | `defer / runnable / resume_localized` |
@@ -171,7 +171,7 @@
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [run_task_step.py](../../../experiments/clock_manual_20260919/run_task_step.py) | 贯穿三步及恢复/续登记的唯一单轮编排入口，驱动原 Runner 与实际投递。 | `_run_step / run_step / build_attempt_update / resume_update_request` |
+| [run_task_step.py](../../../experiments/clock_manual_20260919/run_task_step.py) | 贯穿三步及恢复/续登记的单轮编排入口，连接调度器、组件、原Runner及会话预算。 | `_run_step / run_step / build_attempt_update / resume_update_request` |
 | [launch_traversal.py](../../../experiments/clock_manual_20260919/launch_traversal.py) | 浏览器、已安装应用与保存/新运行的统一维护入口。 | `main` |
 | [app_launcher.py](../../../experiments/clock_manual_20260919/app_launcher.py) | 应用与设备选择、模型配置读取和空 run 创建。 | `create_run / Device / ApplicationHub` |
 | [run_source.py](../../../experiments/clock_manual_20260919/run_source.py) | 浏览器与监督会话共用源码选择、冻结源核对和启动命令。 | `resolve_source / source_hash / session_command` |
@@ -213,3 +213,17 @@
 - `history_selection.py`：当前任务、明确准备、completion/findings及旧scroll努力的引用选择；由history_context/page_history共用，禁止用时间区间补无关动作。
 - `region_candidate_names.entry_summary`：必要历史入口职责，完整进入动作仍在function_evidence后台。
 - `identity_templates.crop_rejection`：可选模板几何资格；register_update只拒绝该模板，foreground_scope保留严格点击/前景边界。
+
+## 三步组件与程序调度（2026-10-06）
+
+| 文件 | 真实职责 | 可调用接口 |
+|---|---|---|
+| traversal_scheduler.py | 已提交状态选工作、pending优先、会话续接/停止、决定落盘 | select_work / pending_work / after_round / Scheduler.current |
+| locator.py | 当前帧发现批次与原局部视觉定位 | Locator.discover / locate_control |
+| task_proposer.py | 已选Region任务/范围请求、原Runner登记；提示与schema复用region_tasks | TaskProposer.request / run |
+| action_proposer.py | 已选任务/导航的完整上下文、原动作校验绑定 | request_from_run / render_work / ActionProposer.propose |
+| action_executor.py | 投递前核对、真实执行及回执/前后图 | ActionExecutor.execute |
+| result_updater.py | 原结果请求、校验登记与中断补账 | ResultUpdater.update / resume / complete |
+
+普通调用：调度决定→对应组件→原登记发布→重新调度。组件数不等于模型调用数。
+源码路径仍在experiments/clock_manual_20260919，原辅助模块不复制。

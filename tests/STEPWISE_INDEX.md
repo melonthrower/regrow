@@ -331,3 +331,11 @@
 
 
 本批局部退出/空闲续接：[test_idle_continuation.py](test_idle_continuation.py)，覆盖范围内deferred导航、收尾后正常单步、再次空闲停止、独立知识账本和暂停；相邻预算见test_session_budget_tail.py。此索引不把原有其他测试视为全通过。
+
+## 集中调度与组件交接
+- [test_traversal_scheduler.py](test_traversal_scheduler.py)：范围、无标记导航、多前景续接、
+  任务与请求分离、已执行待登记优先。
+- [test_action_executor_component.py](test_action_executor_component.py)：投递证据顺序、
+  已投递禁止重放、结果额度预留（离线适配器）。
+- 相邻test_idle_continuation、test_session_budget_tail、test_stepwise_capture_pipeline、
+  test_stepwise_discovery_dispatch、test_suspended_update_recovery、test_routed_task_constraints。

@@ -565,3 +565,6 @@ collection_visual_guard.py 从冻结图外观定位当前控件，再映射点�
 
 
 2026-10-06局部退出续接：task_selection.attach保留通往范围内未完成目标的deferred导航；run_progress_session.run_session在空闲整理后重新调用原单步，无法推进则停止。不是扩大范围或增加任务完成核对。Region、Gmail分支条件和独立冻结图采集边界沿原合同，验证范围见本月日志。
+
+
+2026-10-06三步组件：普通工作选择改由traversal_scheduler.select_work，任务/导航请求由action_proposer渲染，投递和正常/中断登记分别集中在action_executor与result_updater。沿用原Region身份、控件绑定、任务结算及纠错合同；排除前景可离开、partial可信任务可推进、多区块任务归属不取决于排列。Gmail月报if/else示例、研究目标及独立冻结图采集边界未改变。验收范围见本月日志及design/archive/component_scheduler_20261006。

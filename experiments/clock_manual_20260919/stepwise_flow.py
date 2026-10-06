@@ -327,53 +327,9 @@ def resolve_action_operations(records, run):
 
 
 def assemble_current_context(root, run, region_ref=None, task_ref=None):
-    import json
-    from pathlib import Path
-    run=Path(run);pointer=json.loads((run/'knowledge_current.json').read_text())
-    snapshot=run/pointer['snapshot']
-    source=json.loads((snapshot/'source.json').read_text())
-    if source.get('record_format')!='region_image_knowledge':
-        raise ValueError('historical record layout; rebuild saved evidence before reading current knowledge')
-    records={p.parent.name:json.loads(p.read_text()) for p in (snapshot/'regions').glob('*/region.json')}
-    state=json.loads((snapshot/'runtime_state.json').read_text())
-    if state.get('next_action_mode')=='discover':raise ValueError('discovery required before action context')
-    if region_ref is None:region_ref=state['working_region']
-    if task_ref:
-        task=records.get(task_ref['region'],{}).get('tasks',{}).get(task_ref['name'])
-        if not task or task.get('status')!='pending':raise ValueError('原动作任务已不可继续，不能切换成其他任务')
-        state['active_task']=dict(task_ref)
-        region_ref=task_ref['region']
-    if (snapshot/'recovery.json').exists():
-        recovery=json.loads((snapshot/'recovery.json').read_text())
-        if recovery['actions']:state['recovery_arrival']=recovery['actions'][-1]
-    resolve_action_operations(records,run)
-    # Resolve references only in this in-memory request, never rewrite knowledge.
-    for ref,r in records.items():
-        for v in r['observations']:
-            if v.get('image'):v['image']=str((snapshot/f'regions/{ref}'/v['image']).resolve())
-        for c in r['controls'].values():
-            for v in c['observations']:
-                if v['image']:v['image']=str((snapshot/f'regions/{ref}'/v['image']).resolve())
-                if v.get('source_image'):v['source_image']=str((snapshot/f'regions/{ref}'/v['source_image']).resolve())
-    if state['observation'].get('image'):
-        state['observation']['image']=str((run/state['observation']['image']).resolve())
-    import importlib.util
-    if state.get('visual_navigation'):
-        nav_spec=importlib.util.spec_from_file_location('visual_backtrack',Path(__file__).with_name('visual_backtrack.py'))
-        navigation=importlib.util.module_from_spec(nav_spec);nav_spec.loader.exec_module(navigation)
-        navigation.project(records,state)
-    result=assemble_context(root,records,state,region_ref)
-    import importlib.util
-    spec=importlib.util.spec_from_file_location('region_tasks',Path(__file__).with_name('region_tasks.py'))
-    tasks=importlib.util.module_from_spec(spec);spec.loader.exec_module(tasks)
-    result=tasks.attach(root,records,state,region_ref,result)
-    result=tasks.helper('target_observation').attach(result,records)
-    tasks.helper('target_observation').attach_handoff(result,records,state,run)
-    if state.get('navigation_handoff') and result.get('action_ready'):
-        result['user_prompt']=result['dynamic_prompt']=result['user_prompt']+'\n\n自动回溯交接：'+json.dumps(state['navigation_handoff'],ensure_ascii=False)
-    result['source']['snapshot']=pointer['snapshot']
-    tasks.helper('page_context').attach(result,records,state,run=run)
-    return result
+    """Public request entry; work selection is owned by traversal_scheduler."""
+    from action_proposer import request_from_run
+    return request_from_run(root, run, region_ref, task_ref)
 
 
 # Stable import surface; implementations live in the responsibility modules above.

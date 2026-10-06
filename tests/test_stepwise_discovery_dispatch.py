@@ -18,17 +18,21 @@ def test_discovery_routes_before_action_context(tmp_path, monkeypatch, entry, mo
     (run / 'knowledge_current.json').write_text('{}')
     state = {'next_action_mode': 'discover' if entry == 'initial' else 'explore'}
     monkeypatch.setattr(m.RecoveryRun, 'screenshot', lambda self,p: p.write_bytes(b'frame'))
+    monkeypatch.setattr(m.RecoveryRun, 'foreground_window', lambda self:None, raising=False)
     monkeypatch.setattr(m.discovery_step, 'load', lambda run: (None, {}, state))
     def discover(*args, **kwargs): state['next_action_mode'] = mode
     monkeypatch.setattr(m.discovery_step, 'run_stage', discover)
     monkeypatch.setattr(m.step_repair, 'pending', lambda run: None)
+    helper=m.step_repair.helper
+    monkeypatch.setattr(m.step_repair, 'helper', lambda name:
+        SimpleNamespace(run_pending=lambda runner:None) if name=='shared_control_review' else helper(name))
     monkeypatch.setattr(m.exploration_loop, 'observe', lambda *args: None)
     def perform(*args): state['next_action_mode'] = 'discover'
-    monkeypatch.setattr(m.step_repair, 'Runner', lambda *args: SimpleNamespace(perform=perform))
+    monkeypatch.setattr(m.step_repair, 'Runner', lambda *args, **kwargs: SimpleNamespace(perform=perform))
     def assemble(*args):
         assert state['next_action_mode'] == 'explore', 'ordinary context assembled after exceptional discovery'
         return {'stage':'task_proposal'}
-    monkeypatch.setattr(m, 'assemble_current_context', assemble)
+    monkeypatch.setattr(m.Scheduler, 'current', assemble)
     routed = []
     def recover(*args, **kwargs):
         routed.append(state['next_action_mode'])

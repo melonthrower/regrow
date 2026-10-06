@@ -108,3 +108,11 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 
 
 2026-10-06空闲续接：当前范围外区块不截断通往范围内未完成目标的既有导航；auto收尾后重进原单步调度，再次空闲则停止。连续知识段保存knowledge、knowledge-0002等独立账本，仍合计HTTP、0GUI；局部结束和知识整理完成均不声明全应用完成。有限验证与开放边界见本月日志及运行/调度模块。
+
+## 2026-10-06 三步组件与集中程序调度
+traversal_scheduler统一普通工作选择、pending优先及会话结果解释；Locator、
+TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发现/任务、
+动作绑定、投递和更新登记。主入口仍为run_task_step/run_progress_session，
+不新增Luna角色或完成审核。round/scheduling.json保存程序决定和来源快照。
+范围外前景可离开；范围外目标不派业务探索；局部空闲不当全应用完成。
+当前批次验证范围见月度日志，不接纳原工作树的其他地图候选或宣称跨应用稳定。

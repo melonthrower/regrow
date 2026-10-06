@@ -34,7 +34,7 @@
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#routing)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
 
 ## 当前绑定与历史续接
-task_selection向动作步提供completion_target（默认原控件/动作，必要时取更新修正的后续绑定）；跨区块修正后的补定位读取completion_region。导航动作仍记录其实际来源，不消费不同对象的原任务。
+traversal_scheduler选择任务有效目标；action_proposer向动作步提供completion_target（默认原控件/动作，必要时取更新修正的后续绑定）；跨区块修正后的补定位读取completion_region。导航动作仍记录其实际来源，不消费不同对象的原任务。
 同区块改名重复由任务模块复用，不绕过blocked。普通续接不调累计结果判断；前置准备不被旧点击结束，当前条件观察仍可解锁主任务。跨区块同业务目标去重未实现。
 
 ## 记录缺口与动作许可
@@ -42,4 +42,15 @@ task_selection向动作步提供completion_target（默认原控件/动作，必
 
 
 ## 范围排除与离开前景
-当前区块被排除只禁止在其中派探索义务。task_selection.attach先保留deferred_routing_target指向范围内runnable目标的既有导航，再检查当前区块是否排除；新增deferred保留分支要求目标仍可调度；该分支不放行排除目标或已无工作的目标，原有其他导航优先分支未扩大审查。仍由正常动作请求、当前截图、绑定与投递流程决定怎样离开，不固定返回动作。
+当前区块被排除只禁止在其中派探索义务。traversal_scheduler.select_work依据范围内剩余工作选择导航目标，无需先有deferred标记；不会派范围外目标的业务动作。随后由动作提出器、当前截图、绑定与投递流程决定怎样离开，不固定返回动作。
+
+## 三步组件的程序调度（2026-10-06）
+traversal_scheduler.select_work从已提交records/state选择工作，返回kind、region、
+working_region、可选task和reason，不构造prompt。当前可承接的在途任务优先；
+排除当前区块不阻止离开，排除目标不派业务动作。多区块时按任务有效目标选择，
+不把列表第一项当工作归属。完整区块仍优先回有未完成工作的已观察入口父区块，
+然后复用既有frontier；历史一次back无效不永久封禁回程。
+无可推进工作返回idle，由请求入口投影为scope_idle，保留缺口，不声明全应用完成。
+task_selection.attach仅兼容调用同一select_work/render_work，原render仍渲染进度。
+Scheduler.current负责登记后的程序reconcile和选择；请求构造不再反向决定换工作。
+pending_work优先续已执行结果；after_round集中会话继续、一次空闲整理和停止解释。

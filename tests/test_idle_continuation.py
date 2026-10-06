@@ -19,8 +19,11 @@ def test_excluded_foreground_preserves_only_in_scope_deferred_navigation(target_
     before = deepcopy((records, state))
     request = tasks().attach(ROOT, records, state, 'menu',
                              flow.assemble_context(ROOT, records, state, 'menu'))
-    assert request['action_ready'] is (not target_excluded)
-    assert request['stage'] == ('region_complete' if target_excluded else 'action_selection')
+    assert request['action_ready']
+    assert request['stage'] == 'action_selection'
+    if target_excluded:
+        # The scheduler moves to the other in-scope unfinished Region.
+        assert request['source']['return_to'] == 'middle'
     if not target_excluded:
         assert request['navigation_advice']
         assert request['source']['return_to'] == 'menu'

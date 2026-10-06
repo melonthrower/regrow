@@ -26,7 +26,7 @@
 | 纠错循环、应用异常、记录修订 | [纠错与恢复](design/modules/stepwise/repair.md) |
 | 多步共用的地图、身份、存储与运行 | [共享能力及写入边界](design/modules/stepwise/README.md#shared) |
 
-三步是阅读和开发的主线，不是每轮固定三次Luna调用。任务清点、异常复查和功能整理是按需正常子流程；实际调度入口仍为 `run_task_step._run_step`。职责模块保留原位，不按三步复制共享实现。
+三步是阅读和开发的主线，不是每轮固定三次Luna调用。任务清点、异常复查和功能整理是按需正常子流程；主程序入口仍为 `run_task_step._run_step`，普通工作选择、待登记优先及会话续接解释集中在 `traversal_scheduler`；五个职责组件见[动作与执行](design/modules/stepwise/execution.md)。职责模块保留原位，不按三步复制共享实现。
 
 ## 一次改动的最短流程
 

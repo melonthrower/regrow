@@ -59,3 +59,10 @@
 从测试索引的[身份](../../../tests/STEPWISE_INDEX.md#identity)、[任务](../../../tests/STEPWISE_INDEX.md#tasks)、[上下文](../../../tests/STEPWISE_INDEX.md#context)与[纠错](../../../tests/STEPWISE_INDEX.md#repair)栏目选择直接相关检查；索引不是全通过声明。文档导航只做链接与静态核对，行为验收另按现行原生请求要求记录。
 
 [返回三步总览](README.md) · [返回开发入口](../../../DEVELOPMENT.md)
+
+## 可调用组件（2026-10-06）
+Locator.discover接收当前帧、run及原Runner，承接跨帧发现批次刷新，再调用原
+discovery_step.run_stage；locate_control复用原视觉定位。TaskProposer.request/run
+承接已选Region的任务请求或范围复核并交原Runner；region_tasks继续唯一维护
+任务上下文、提示/schema、apply_plan/commit_plan。普通工作选择已移到
+traversal_scheduler.select_work；两个组件不自行结束会话，也不是每轮必调。

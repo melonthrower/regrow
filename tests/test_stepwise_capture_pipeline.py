@@ -37,7 +37,7 @@ def test_web_frame_is_cached_and_never_calls_vm(tmp_path,monkeypatch):
  finally:app.shutdown();app.server_close();th.join()
 
 def test_pending_receipt_rebuilds_update_without_action(tmp_path,monkeypatch):
- monkeypatch.syspath_prepend(str(ROOT));import run_task_step as m
+ monkeypatch.syspath_prepend(str(ROOT));import result_updater as m
  folder=tmp_path/'action_attempts/a1';folder.mkdir(parents=True)
  (folder/'receipt.json').write_text(json.dumps({'exit_code':0}))
  (folder/'binding.json').write_text('{}');(folder/'proposal.json').write_text('{}')
@@ -55,7 +55,7 @@ def test_pending_receipt_rebuilds_update_without_action(tmp_path,monkeypatch):
 
 
 def test_resume_preserves_existing_frame_and_window_evidence(tmp_path,monkeypatch):
- monkeypatch.syspath_prepend(str(ROOT));import run_task_step as m
+ monkeypatch.syspath_prepend(str(ROOT));import result_updater as m
  folder=tmp_path/'a1';folder.mkdir()
  for name,value in [('receipt',{'exit_code':0}),('binding',{}),('proposal',{}),('after_window',{'original':True})]:
   (folder/(name+'.json')).write_text(json.dumps(value))

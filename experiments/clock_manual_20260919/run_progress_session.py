@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from run_task_step import run_step, finalize_knowledge
 from progress import CapturePaused
+from traversal_scheduler import after_round
 
 
 def run_session(root,run,out,mode,step=run_step):
@@ -52,7 +53,8 @@ def run_session(root,run,out,mode,step=run_step):
         if result['status']=='budget_limit':
             account.update(status='budget_limit',last_result='budget_limit');break
         if mode=='step':account['status']='paused_after_step';break
-        if (result['status'] in ('scope_idle','region_complete') and not idle_recheck
+        continuation=after_round(result['status'],idle_recheck)
+        if (continuation=='knowledge'
                 and (account['max_http'] is None or account['http_started']<account['max_http'])):
             knowledge_count+=1
             folder=out/('knowledge' if knowledge_count==1 else f'knowledge-{knowledge_count:04d}')
@@ -75,7 +77,7 @@ def run_session(root,run,out,mode,step=run_step):
             # result stops; pending tasks or a new snapshot alone cannot restart finishing.
             idle_recheck=True
             continue
-        if result['status'] not in ('updated','paused_after_recovery_discovery','task_proposal','ready_next_round','repair_pending','task_deferred'):
+        if continuation!='continue':
             account.update(status='needs_review_or_complete',last_result=result['status']);break
         idle_recheck=False
     save();return account

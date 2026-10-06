@@ -1,5 +1,13 @@
 # 服务器续接工作
 
+## 2026-10-06 三步组件验证后的安卓最新停止点
+
+个人服务器、工作区根/data/shenghonghui/projects/GUI-ReWalk；活动源码见根DEVELOPMENT。本批真实run为artifacts/runs/component_scheduler_20261006_01/live-mobile-v3/run，冻结源同批source-v3，hash c7754f7a536d1e2045a57c71df23a30ff6d48c1f6034a41475b18872bdce9f37。旧clock_idle_fix run完整保留，设备当前已由本新副本推进，不能直接把旧停点当现场。
+
+安卓emulator-44744、com.google.android.deskclock；两轮4HTTP/2GUI后正常round_limit停止。最后a0011/0032打开Home time zone列表，pointer=knowledge_snapshots/a0011-0032-a06dc3ef96ba；仍在该对话框、未选择或修改时区。a0010先关闭Style浮层且Digital未改。无pending_step/execution_pending/visual_navigation_pending及运行中驱动，禁止重放这两个动作。原累计28加本次4为32HTTP，原100上限余68；保存帧验证3HTTP另计，不能据此恢复100额度。
+
+桌面本批未操作；desktop-action-v3是clock_watch旧真实停点的保存帧副本，零GUI，不是新的可续跑现场。mobile-navigation/update-v3同属保存帧，不能用于接管设备。最新现场以live-mobile-v3的真实后图和run_manifest为准。有限验证不证明地图身份、全应用覆盖或长跑稳定；原重叠排除框等开放边界未处理。证据与便携报告to_astra/component_scheduler_20261006_01。
+
 ## 2026-10-06 Clock初始数据恢复后整批停止点（优先于下文旧现场）
 
 工作区/设备沿本页既有开发入口；新证据artifacts/runs/clock_restart_20261006_01。本地备份已核验后清初始应用数据，旧run不覆盖；因此旧记录描述的秒表计时/闹钟/城市不再代表现场。两个新原生auto驱动均已结束，max40HTTP/12GUI命令。

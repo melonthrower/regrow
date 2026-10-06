@@ -68,3 +68,12 @@ HTTP不足2次时，已消费调用的小步以ready_next_round续接本会话�
 
 ## 收尾后重新调度
 auto在scope_idle/region_complete后执行一次有界、0GUI的finalize_knowledge，再回到原run_step。若该步仍为空闲即停止，不能仅因pending、knowledge_complete或新快照重复整理；正常动作/发现/清点等推进后，后续空闲可再次整理。每段知识阶段单独保存knowledge、knowledge-0002等目录，HTTP只并入当前session一次。暂停、预算、异常、review_pending和其他受阻结果保留原停止边界。跨会话预算仍由已有续接入口从旧账扣除，不因新session重置本批100额度。
+
+## 主程序与组件（2026-10-06）
+run_task_step保持设备/会话额度、原Runner和三步组件连接；工作选择在
+traversal_scheduler，动作请求构造在action_proposer，投递在action_executor，
+登记/续登记在result_updater。每次current重读已提交状态并保存
+round/scheduling.json（目标、任务、原因、snapshot），再构造请求。
+run_progress_session用after_round解释工作结果；沿原空闲整理和一次重新调度，
+保持知识段独立目录与预算累计，不新增模型完成审核、开关或后台队列。
+旧运行仍由manifest冻结源选择，新模块按现有顶层Python冻结规则进入新源。

@@ -31,7 +31,7 @@ def test_scope_excluded_surface_never_generates_tasks_or_functions(tmp_path):
     snapshot,records,state=d.load(run)
     assert mod('historical_inventory').request(ROOT,snapshot,records,state) is None
     q=mod('stepwise_flow').assemble_current_context(ROOT,run)
-    assert q['stage']=='region_complete' and not q['action_ready']
+    assert q['stage']=='scope_idle' and not q['action_ready']
     assert mod('task_deferral').choose_unfinished(records,state) is None
 
 def test_scope_idle_does_not_invoke_repair_or_mark_incomplete_graph_done(tmp_path,monkeypatch):

@@ -27,6 +27,7 @@ def test_cropped_search_all_candidates_use_full_frame(tmp_path):
 
 
 def test_discovery_discloses_historical_appearance(tmp_path):
+    import locator
     from tests.test_recovery_discovery import seeded_run
     from tests.test_local_region_discovery import mod
     m=mod('discovery_step');run=seeded_run(tmp_path)
@@ -36,7 +37,7 @@ def test_discovery_discloses_historical_appearance(tmp_path):
             for c in r['controls'].values():
                 c['observations'][-1]['icon_description']='distinct old appearance'
     m.publish(run,'appearance',annotate)
-    q=m.request_from_run(ROOT,run)
+    q=locator.request_from_run(ROOT,run)
     import json
     rows=json.loads(q['user_prompt'])['本轮局部控件']
     assert rows and all(x['历史外观']=='distinct old appearance' for x in rows)

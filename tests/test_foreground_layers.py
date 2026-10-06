@@ -15,7 +15,7 @@ def test_original_untyped_dialog_accepts_foreground_only(tmp_path):
 
 
 def test_exclusion_schema_is_unchanged():
-    q=mod('update_step').build_update_request(ROOT,{},['before.png','after.png'])
+    q=mod('result_updater').build_update_request(ROOT,{},['before.png','after.png'])
     row=q['response_schema']['properties']['foreground']['properties']['excluded_areas']['items']
     assert set(row['properties'])=={'bbox','reason'}
     assert set(row['required'])=={'bbox','reason'}

@@ -55,14 +55,16 @@ def test_behavior_limits_survive_entry_context_disclosure():
 
 
 def test_discovery_visual_candidate_keeps_confirmed_entry(monkeypatch):
+    import locator
     import json
     from types import SimpleNamespace
     m = mod('discovery_step'); reg = m.registration(); sibling = reg.sibling
     plan = {'mode': 'relocate', 'regions': [{'region': 'picker', 'anchors': [], 'eligible_controls': 0, 'total_controls': 0}], 'controls': []}
     monkeypatch.setattr(reg, 'sibling', lambda name: SimpleNamespace(plan=lambda *a, **kw: plan)
                         if name == 'visual_region_locator' else sibling(name))
-    monkeypatch.setattr(m, 'registration', lambda: reg)
-    request = m.prepare(ROOT, records(), {}, 'current.png')
+    original_helper=locator.helper
+    monkeypatch.setattr(locator,'helper',lambda name:reg if name=='register_update' else original_helper(name))
+    request = locator.prepare(ROOT, records(), {}, 'current.png')
     dynamic = json.loads(request['user_prompt'])
     candidate = dynamic['程序匹配候选'][0]
     assert candidate['历史进入记录（不证明当前可见或行为等价）'][0]['来源区块'] == 'Alarm page'

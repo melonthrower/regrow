@@ -14,8 +14,9 @@ def strict_reply():
 
 
 def test_discovery_failure_uses_shared_repair_and_original_registration(tmp_path):
+    import locator
     run=seeded_run(tmp_path);d=mod('discovery_step');d.await_discovery(run,'returned.png','repair')
-    q=d.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good);bad['regions'][0]['identity']='uncertain'
+    q=locator.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good);bad['regions'][0]['identity']='uncertain'
     calls=Calls(run,[bad,answer('revise',good)]);m=repair()
     result=m.Runner(ROOT,run,calls,None,lambda:6).perform('discovery',q)
     assert result['status']=='complete' and d.load(run)[2]['interactive_regions']==['r1']
@@ -31,7 +32,7 @@ def update_case(tmp_path):
     binding={'status':'matched','region_ref':'r1','control_ref':'c1','observation_ref':'o2','working_region':'r1'}
     dispatch={'source_call':'selection','source_region':'r1','source_control':'c1','action':{'action':'tap'}}
     for n,v in [('binding',binding),('dispatch',dispatch),('receipt',{'exit_code':0})]:(folder/(n+'.json')).write_text(json.dumps(v))
-    request=mod('update_step').build_update_request(ROOT,{'目标应用':'Clock'},['action_attempts/a2/before.png','action_attempts/a2/after.png'])
+    request=mod('result_updater').build_update_request(ROOT,{'目标应用':'Clock'},['action_attempts/a2/before.png','action_attempts/a2/after.png'])
     source.pop("working_context",None)
     return run,request,source
 
@@ -50,18 +51,19 @@ def test_update_resume_repairs_only_result_and_preserves_original_images(tmp_pat
 
 
 def test_update_supplement_returns_to_update_without_changing_original_frame(tmp_path,monkeypatch):
+    import locator
     run,q,good=update_case(tmp_path);m=repair();bad=deepcopy(good);bad['exploration_update']['entry_name']='wrong'
     calls=Calls(run,[bad,{**answer('observe'),'blocked_by':'control_not_visible'},strict_reply(),answer('revise',good)])
     runner=m.Runner(ROOT,run,calls,lambda p:shutil.copy2(run/'action_attempts/a2/after.png',p),lambda:6)
     # Pin the visual candidate plan, while retaining real schema/registration/transport artifacts.
-    discovery=mod('discovery_step');original_prepare=discovery.prepare
+    discovery=mod('discovery_step');original_prepare=locator.prepare
     def prepare(root,records,state,frame):
         response=original_prepare(root,records,state,frame)
-        response['response_schema']=discovery.schema(root,'local')
+        response['response_schema']=locator.schema(root,'local')
         return response
     original_helper=runner.adapters.helper
-    monkeypatch.setattr(runner.adapters,'helper',lambda name:discovery if name=='discovery_step' else original_helper(name))
-    monkeypatch.setattr(discovery,'prepare',prepare)
+    monkeypatch.setattr(runner.adapters,'helper',lambda name:locator if name=='locator' else original_helper(name))
+    monkeypatch.setattr(locator,'prepare',prepare)
     done=runner.perform('update',q,'a2')
     assert done['stage']=='update' and done['observations']==1
     assert calls.requests[-1]['original_request']['screenshots']==q['screenshots']
@@ -141,8 +143,9 @@ def test_record_revision_then_candidate_uses_refreshed_names(tmp_path):
 
 
 def test_discovery_supplement_keeps_original_step_pending(tmp_path):
+    import locator
     run=seeded_run(tmp_path);d=mod('discovery_step');d.await_discovery(run,'returned.png','repair')
-    q=d.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good);bad['regions'][0]['identity']='uncertain'
+    q=locator.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good);bad['regions'][0]['identity']='uncertain'
     calls=Calls(run,[bad,answer('observe'),good,answer('revise',good)])
     job=repair().Runner(ROOT,run,calls,lambda p:shutil.copy2(run/'returned.png',p),lambda:6).perform('discovery',q)
     assert job['stage']=='discovery' and job['observations']==1
@@ -179,8 +182,9 @@ def test_launcher_resume_does_not_activate_over_pending_step(tmp_path,monkeypatc
 
 
 def test_discovery_bad_owner_index_enters_repair_not_python_crash(tmp_path):
+    import locator
     run=seeded_run(tmp_path);d=mod('discovery_step');d.await_discovery(run,'returned.png','repair')
-    q=d.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good);bad['controls'][0]['region_index']=99
+    q=locator.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good);bad['controls'][0]['region_index']=99
     calls=Calls(run,[bad,answer('revise',good)])
     done=repair().Runner(ROOT,run,calls,None,lambda:6).perform('discovery',q)
     assert done['repairs']==1 and '/controls/0/region_index' in calls.requests[1]['user_prompt']

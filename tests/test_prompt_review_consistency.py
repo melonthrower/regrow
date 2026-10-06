@@ -4,7 +4,7 @@ from tests.test_stepwise_deferral import setup
 
 def test_update_assembled_prompt_and_time_values(tmp_path):
  import jsonschema
- m=mod('update_step');q=m.build_update_request(ROOT,{'本轮探索任务':'时间'},[])
+ m=mod('result_updater');q=m.build_update_request(ROOT,{'本轮探索任务':'时间'},[])
  assert '省略也按 false' not in q['system_prompt']
  assert '非枚举values填[]' not in q['system_prompt']
  assert '实际观察到的值' in q['system_prompt']
@@ -13,8 +13,9 @@ def test_update_assembled_prompt_and_time_values(tmp_path):
 
 
 def test_task_inventory_uses_same_value_rules(tmp_path):
+ import task_proposer
  run,q,d=setup(tmp_path);_,records,state=d.load(run)
- q=mod('region_tasks').plan_request(ROOT,records,state,'r1')
+ q=task_proposer.plan_request(ROOT,records,state,'r1')
  assert '共享/参数观察值.prompt' in [p['path'] for p in q['fixed_parts']]
 
 
@@ -44,11 +45,12 @@ def test_completion_and_empty_field_instructions():
 
 
 def test_task_end_rule_is_shared_by_proposal_action_and_update(tmp_path):
+ import task_proposer
  import json
  pr=ROOT/'遍历prompt';part='共享/任务结束条件.prompt'
  run,_,d=setup(tmp_path);_,records,state=d.load(run)
- proposal=mod('region_tasks').plan_request(ROOT,records,state,'r1')
- update=mod('update_step').build_update_request(ROOT,{'本轮探索任务':'查看选项'},[])
+ proposal=task_proposer.plan_request(ROOT,records,state,'r1')
+ update=mod('result_updater').build_update_request(ROOT,{'本轮探索任务':'查看选项'},[])
  for q in (proposal,update):assert part in [p['path'] for p in q['fixed_parts']]
  assert part in json.loads((pr/'流程/02_动作选择.json').read_text())['parts']
 

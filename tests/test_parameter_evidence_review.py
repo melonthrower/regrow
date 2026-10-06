@@ -27,6 +27,7 @@ def case(tmp_path):
 
 
 def test_exhausted_review_hands_off_without_rewriting_action_or_resetting_counts(tmp_path):
+    import task_proposer
     run,d,job=case(tmp_path);before=deepcopy(d.load(run)[1]['r1'])
     repair=mod('step_repair');repair.atomic(run/job['path'],job)
     repair.atomic(run/'pending_step.json',{'episode':job['path']})
@@ -40,7 +41,7 @@ def test_exhausted_review_hands_off_without_rewriting_action_or_resetting_counts
     assert region['actions']==before['actions'] and region['tasks']==before['tasks']
     assert region['task_inventory']['review']['kind']=='parameter_facts'
     _,records,state=d.load(run)
-    q=mod('region_tasks').plan_request(ROOT,records,state,'r1')
+    q=task_proposer.plan_request(ROOT,records,state,'r1')
     assert q['stage']=='task_proposal' and q['source']['parameter_fact_review']['task']=='Policy'
     assert q['screenshots'][-2:]==['action_attempts/a1/before.png','action_attempts/a1/after.png']
     assert 'unconfirmed' in q['user_prompt'] and 'Reset results visible' in q['user_prompt']

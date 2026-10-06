@@ -153,10 +153,11 @@ def test_auto_session_continues_after_deferral(tmp_path,monkeypatch):
 
 
 def test_targeted_inspection_ignores_exhausted_scan_cursor(tmp_path):
+    import locator
     run,q,d=setup(tmp_path)
     _,records,state=d.load(run)
     state['control_scan']={'r1':99}
-    d.focus_task(records,state,q)
+    locator.focus_task(records,state,q)
     assert state['required_control']=='c1'
     assert state['inspection_region']=='r1'
     assert 'Policy' in state['correction_context']

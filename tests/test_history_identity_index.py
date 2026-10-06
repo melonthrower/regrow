@@ -19,8 +19,9 @@ def records():
 
 
 def test_native_discovery_exposes_unlocated_history_without_visual_evidence():
+    import locator
     rs = records(); before = deepcopy(rs)
-    q = mod('discovery_step').prepare(ROOT, rs, {'working_region': 'r00',
+    q = locator.prepare(ROOT, rs, {'working_region': 'r00',
                                       'discovery_mode': 'relocate'}, 'frame.png')
     ctx = q['discovery_context']; dynamic = json.loads(q['user_prompt'])
     assert set(ctx['region_names'].values()) == set(rs)
@@ -64,9 +65,10 @@ def test_native_supplement_retains_full_index_and_context(tmp_path):
 
 
 def test_discovery_distinguishes_empty_registry_from_missing_visual_candidates():
+    import locator
     m = mod('discovery_step')
-    empty = json.loads(m.prepare(ROOT, {}, {}, 'frame.png')['user_prompt'])
-    existing = json.loads(m.prepare(ROOT, records(), {'discovery_mode': 'relocate'},
+    empty = json.loads(locator.prepare(ROOT, {}, {}, 'frame.png')['user_prompt'])
+    existing = json.loads(locator.prepare(ROOT, records(), {'discovery_mode': 'relocate'},
                                   'frame.png')['user_prompt'])
     assert empty['本次运行身份库']['已登记区块总数'] == 0
     assert empty['本次运行身份库']['空库'] is True

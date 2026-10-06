@@ -53,9 +53,10 @@ def test_handoff_keeps_executed_parent_history_but_not_unexecuted_or_unrelated()
 
 
 def test_task_inventory_receives_same_observation_gap():
+    import task_proposer
     _, records, state = fixture()
     state['handoff_summary'] = '入口已完成，但新菜单的外观被提示遮挡'
-    request = mod('region_tasks').plan_request(ROOT, records, state, 'menu')
+    request = task_proposer.plan_request(ROOT, records, state, 'menu')
     assert '入口已完成，但新菜单的外观被提示遮挡' in request['user_prompt']
     assert json.loads(request['user_prompt'])['区块'] == '菜单'
 

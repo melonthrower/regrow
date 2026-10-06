@@ -68,13 +68,14 @@ def test_changed_source_does_not_hide_new_conflicting_destination():
 
 
 def test_task_prompt_does_not_ask_for_sharing_decision():
+    import task_proposer
     from tests.test_coverage_exemption import fixture
     from tests.test_recovery_discovery import ROOT
     r,_,_=fixture();r['r2']=mod('stepwise_flow').new_region('r2','New toolbar')
     r['r2']['controls']={'local':{'name':'World','observations':[],'action_refs':[]}}
     mod('shared_controls').link(r,'World',[('r1','top'),('r2','local')],'stable',[{'region':'r1','attempt':'a1'}])
     for rr in r.values():rr.setdefault('name','Old');rr.setdefault('description','Old')
-    q=mod('region_tasks').plan_request(ROOT,r,{'observation':{'id':'now','image':'frame.png'}},'r2')
+    q=task_proposer.plan_request(ROOT,r,{'observation':{'id':'now','image':'frame.png'}},'r2')
     props=q['response_schema']['properties']['operations']['items']['properties']
     assert 'shared_from' not in props
     assert props['control']['enum']==['']

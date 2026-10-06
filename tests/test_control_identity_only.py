@@ -50,7 +50,7 @@ def test_boundary_cache_is_frame_specific_and_keeps_same_frame_peers(tmp_path,mo
 
 
 def test_generated_update_prompt_has_no_legacy_region_pixel_override():
-    q=mod('update_step').build_update_request(ROOT,{},['before.png','after.png'])
+    q=mod('result_updater').build_update_request(ROOT,{},['before.png','after.png'])
     for stale in ['框架在登记前统一比较区块裁图','历史区块裁图在当前整图','唯一的像素相同区块会自动复用','自动复用条件见']:
         assert stale not in q['system_prompt']
     assert '程序不依据区块整体外观自动覆盖' in q['system_prompt']

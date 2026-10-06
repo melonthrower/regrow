@@ -44,7 +44,7 @@
 - 双向 `distinct_regions` 保存差异证据，`behavior_context` 披露适用上下文。外观自动身份归一化不能覆盖这些证据；显式合并也不能合并互相分离的对象。第三对象合并保留并重写关系。
 - 当图1和图2共用调用编号时，当前控件必须属于动作后的 observation，或重新在图2匹配。图1裁图与图2裁图分目录保存。
 
-入口：`region_behavior_split.py`、`run_task_step.build_attempt_update`、`update_step.build_update_request`、`register_update.commit_update`。固定说明：`遍历prompt/共享/行为差异分离.prompt`。验证结果及边界见本月日志；保存帧模型验证不代表重新执行GUI。
+入口：`region_behavior_split.py`、`run_task_step.build_attempt_update`、`result_updater.build_update_request`、`register_update.commit_update`。固定说明：`遍历prompt/共享/行为差异分离.prompt`。验证结果及边界见本月日志；保存帧模型验证不代表重新执行GUI。
 
 ## 已登记单笔动作的对象纠正（2026-09-23）
 
@@ -96,7 +96,7 @@ Terminal原0408保存帧：旧标签栏已存在且三锚点命中，却被第8�
 
 来源身份对照仅传历史描述、观察出处等文字，不再追加身份参考裁图。来源裁图核对历史result_call与after_observation；跨入口参考使用实际匹配的历史观察。有匹配成功的跨入口候选时，不由失败的来源匹配占据优先参考候选；低分本身不拒绝候选。参考文字使用本轮完整名称标签，与登记region_names一致。任务历史图保留，当前画面始终为图2。
 
-固定手册 `共享/来源动作与区块对照.prompt` 要求整体职责范围对应、区分历史/当前状态，未知旧身份使用既有uncertain；不同入口的动作分别登记，目的区块可复用，不自动并记录、继承实例参数或完成其他入口任务。入口：run_task_step.build_attempt_update → source_region_candidates → update_step，登记仍走原previous_name/commit_update。
+固定手册 `共享/来源动作与区块对照.prompt` 要求整体职责范围对应、区分历史/当前状态，未知旧身份使用既有uncertain；不同入口的动作分别登记，目的区块可复用，不自动并记录、继承实例参数或完成其他入口任务。入口：run_task_step.build_attempt_update → source_region_candidates → result_updater，登记仍走原previous_name/commit_update。
 
 24项聚焦检查通过；16个旧运行副本移植本次增量，并复用既有历史附图合同（至少2图、更新取第2图），各11项通过。3次实际Luna保存帧调用中，首份Terminal回复有历史焦点串入和未知身份误激活；补明确规则后复测及读者审核通过。最终Terminal/Clock完整隔离登记43→43、10→10；Clock验证不同入口到旧区块。0新GUI、正式图不改、全部暂停。证据在 records/source_identity_integration_20260924；不代表长期实机或全应用验证。尚未刷新已缓存的旧pending请求，之后新构建的更新请求生效。
 
@@ -264,7 +264,7 @@ shared_control_conflict 默认仅发送已登记动作前上下文、控件、�
 
 ## 任务生成先发现功能内容（2026-09-24）
 
-任务规则按职责独立保存：任务/区块探索任务.prompt保留选择顺序；探索范围与退出.prompt管理外跳与退出；任务粒度与反馈.prompt管理输入、滚动和完成目标；历史入口与共享复用.prompt管理复用；任务登记与补全.prompt管理字段、旧任务与漏项。参数关系仍在任务/参数关系调查.prompt。region_tasks.plan_request按一个有序清单同时生成system_prompt与fixed_parts，运行时组装为单独task_proposal调用，不增加模型调用。先在允许范围内发现尚未观察的应用内功能内容，再判断常识效果与关系是否需操作验证；新内容不指穷举同类数据或取值。历史复用核对用途、对象、状态及参数语义；已发现不等于任务完成。两提示明确同一优先级，不改字段、调度及旧任务处理方式。原运行旧record未自动改写，需另行复核。验证边界见records/task_discovery_priority_20260924_01/REPORT.md。
+任务规则按职责独立保存：任务/区块探索任务.prompt保留选择顺序；探索范围与退出.prompt管理外跳与退出；任务粒度与反馈.prompt管理输入、滚动和完成目标；历史入口与共享复用.prompt管理复用；任务登记与补全.prompt管理字段、旧任务与漏项。参数关系仍在任务/参数关系调查.prompt。task_proposer.plan_request按一个有序清单同时生成system_prompt与fixed_parts，运行时组装为单独task_proposal调用，不增加模型调用。先在允许范围内发现尚未观察的应用内功能内容，再判断常识效果与关系是否需操作验证；新内容不指穷举同类数据或取值。历史复用核对用途、对象、状态及参数语义；已发现不等于任务完成。两提示明确同一优先级，不改字段、调度及旧任务处理方式。原运行旧record未自动改写，需另行复核。验证边界见records/task_discovery_priority_20260924_01/REPORT.md。
 
 ## 前景范围优先（2026-09-24）
 
@@ -312,7 +312,7 @@ supervised_live_20260929_06从已审核0858图开始，正常0859完成r0035功�
 
 control_history_context统一投影控件首末文字/外观/操作/来源、未展开观察数量及关联任务；history_context与region_candidate_names均使用它，避免候选重建丢失职责。摘要不是当前可见性证明，也不自动判断身份或展开全部历史。
 
-control_observation_repair.begin用于监督者定位的明确历史混写，在当前已交互区块、与当前记录内容相同的原图上，从完整run调用正常region_tasks.plan_request，并追加来源/目标完整观察与带来源的历史原图，进入原Runner任务纠错。不是每轮自动审核，也不创建独立遍历器。新增record_edit包含region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence，仅允许本轮披露的来源及目标；校验原快照。迁移观察与恢复来源名称在同一事务中发布，原回复、旧快照及原动作文件不改。保留原任务和动作绑定，不整条合并控件；若所选观察是动作前身份依据，须先独立核对动作归属。不能搬空来源观察；同批改名仍按披露时标签绑定稳定ID。
+control_observation_repair.begin用于监督者定位的明确历史混写，在当前已交互区块、与当前记录内容相同的原图上，从完整run调用正常task_proposer.plan_request，并追加来源/目标完整观察与带来源的历史原图，进入原Runner任务纠错。不是每轮自动审核，也不创建独立遍历器。新增record_edit包含region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence，仅允许本轮披露的来源及目标；校验原快照。迁移观察与恢复来源名称在同一事务中发布，原回复、旧快照及原动作文件不改。保留原任务和动作绑定，不整条合并控件；若所选观察是动作前身份依据，须先独立核对动作归属。不能搬空来源观察；同批改名仍按披露时标签绑定稳定ID。
 
 按当前observation.id重建受影响可见引用，保留同帧未迁移观察；使旧功能摘要证据标记失效并要求任务清点复核。这不证明相关功能已重新执行，也不自动迁移参数事实/其他历史完成结论。
 

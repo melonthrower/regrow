@@ -44,6 +44,7 @@ def test_dispatched_actions_cannot_be_reopened(tmp_path,marker):
 
 
 def test_target_only_match_restores_candidate_with_current_evidence(tmp_path,monkeypatch):
+    import locator
     from tests.test_stepwise_deferral import setup as seed
     run,q,d=seed(tmp_path)
     snapshot,records,state=d.load(run)
@@ -52,6 +53,7 @@ def test_target_only_match_restores_candidate_with_current_evidence(tmp_path,mon
     def hide(records,state,*args):
         state['observation']['control_refs']=[]
         records[rid]['controls'][cid]['observations'][-1]['image']='test-crop.png'
+        records[rid]['controls'][cid]['observations'][-1].update(image_quality='clear',image_quality_reason='synthetic eligible match fixture')
     d.publish(run,'hide-for-test',hide)
     snapshot,records,state=d.load(run)
     control=records[rid]['controls'][cid]
@@ -64,13 +66,14 @@ def test_target_only_match_restores_candidate_with_current_evidence(tmp_path,mon
     from types import SimpleNamespace
     def locate(template,frame):matched.append((template,frame));return {'accepted':True,'box':[1,2,3,4]}
     monkeypatch.setattr(reg,'sibling',lambda name:SimpleNamespace(locate=locate) if name=='image_match' else sibling(name))
-    monkeypatch.setattr(d,'registration',lambda:reg)
-    assert d.locate_task_control(run,q,run/'current.png')
+    original_helper=locator.helper
+    monkeypatch.setattr(locator,'helper',lambda name:reg if name=='register_update' else original_helper(name))
+    assert locator.locate_task_control(run,q,run/'current.png')
     new=d.load(run)[2]
     assert new['observation']['control_refs']==[cid] and len(matched)==1
     assert new['visual_navigation']['controls']=={cid:rid}
     q['backend_candidates']=[{'id':cid}]
-    assert not d.locate_task_control(run,q,run/'current.png')
+    assert not locator.locate_task_control(run,q,run/'current.png')
 
 
 def test_wrong_group_can_be_cleared_without_removing_control(tmp_path):
@@ -87,12 +90,13 @@ def test_wrong_group_can_be_cleared_without_removing_control(tmp_path):
 
 
 def test_supplement_validation_repairs_discovery_not_original_action(tmp_path,monkeypatch):
+    import task_proposer
     from tests.test_recovery_discovery import seeded_run
     from tests.test_shared_step_repair import strict_reply
     import shutil
     run=seeded_run(tmp_path);m=repair();d=mod('discovery_step')
     _,records,state=d.load(run)
-    q=mod('region_tasks').plan_request(ROOT,records,state,'r1')
+    q=task_proposer.plan_request(ROOT,records,state,'r1')
     good=strict_reply();bad=deepcopy(good)
     for c in bad['controls']:c['list_group']='wrong functional group'
     calls=Calls(run,[bad,answer('revise',good)])

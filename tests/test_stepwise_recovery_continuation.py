@@ -6,6 +6,7 @@ from tests.test_recovery_discovery import mod,ROOT
 
 
 def test_changed_pre_dispatch_target_reobserves_instead_of_stopping(tmp_path,monkeypatch):
+    import locator
     loop=mod('recover_loop');run,_,_=fixture(tmp_path);invoke(regmodule(),run)
     (run/'run_manifest.json').write_text('{}');events=[];captures=[]
     class Transport:
@@ -15,14 +16,14 @@ def test_changed_pre_dispatch_target_reobserves_instead_of_stopping(tmp_path,mon
             captures.append(path);Image.new('RGB',(100,100),'blue' if len(captures)==1 else 'red').save(path)
         def adb(self,argv):raise AssertionError('must not dispatch stale click')
     t=Transport();t.run=run;original=loop.helper;d=original('discovery_step')
-    monkeypatch.setattr(loop,'helper',lambda n:d if n=='discovery_step' else original(n))
+    monkeypatch.setattr(loop,'helper',lambda n:d if n=='discovery_step' else locator if n=='locator' else original(n))
     monkeypatch.setattr(d,'await_discovery',lambda *a:events.append('await'))
-    monkeypatch.setattr(d,'run_stage',lambda *a,**k:events.append('discover'))
+    monkeypatch.setattr(locator,'run_stage',lambda *a,**k:events.append('discover'))
     calls=[]
     def call(q):
         calls.append(q)
         if len(calls)==1:
-            a=dict(action='click',target='Close',x=20,y=20,end_x=None,end_y=None,text=None,reason='close',skip_task=False,request_task_review=False)
+            a=dict(action='click',target='Close',x=20,y=20,end_x=None,end_y=None,text=None,reason='close',skip_task=False)
             return '1',dict(exception='blocking_popup',decision='act',action=a,framework_tool=None,reason='close',handoff='verify')
         assert '未投递' in json.loads(q['user_prompt'])['框架反馈']
         return '2',dict(exception='none',decision='resume_exploration',action=None,framework_tool=None,reason='now clear',handoff='resume')

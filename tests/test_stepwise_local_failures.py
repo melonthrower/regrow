@@ -130,6 +130,6 @@ def test_active_preparation_visual_change_is_not_a_loop(tmp_path):
 
 
 def test_update_visibility_schema_uses_disclosed_candidate_names():
-    q=mod('update_step').build_update_request(ROOT,{'已知区块':[{'name':'Editor — document'},{'name':'Editor — sidebar'}]},[])
+    q=mod('result_updater').build_update_request(ROOT,{'已知区块':[{'name':'Editor — document'},{'name':'Editor — sidebar'}]},[])
     names=q['response_schema']['properties']['previous_regions']['items']['properties']['name']['enum']
     assert names==['Editor — document','Editor — sidebar']

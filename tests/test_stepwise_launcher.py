@@ -66,12 +66,13 @@ def test_application_selection_preserves_old_runs_and_reobserves_resume(tmp_path
 
 
 def test_fresh_run_enters_existing_discovery_without_old_graph(tmp_path,modules):
+    import locator
     from PIL import Image
     launcher,_=modules
     import discovery_step
     frame=tmp_path/'frame.png';Image.new('RGB',(100,200)).save(frame)
     run=launcher.create_run(tmp_path/'runs','org.example.notes','Notes','test',frame)
-    request=discovery_step.request_from_run(ROOT,run)
+    request=locator.request_from_run(ROOT,run)
     assert request['discovery_context']['mode']=='relocate'
     assert request['discovery_context']['region_names']=={}
     assert json.loads(request['user_prompt'])['目标应用']=='org.example.notes'

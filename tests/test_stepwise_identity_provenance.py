@@ -53,12 +53,13 @@ def test_semantic_rename_keeps_actions_tasks_and_graph_references():
 
 
 def test_discovery_alias_is_not_persisted_and_explicit_rename_is(tmp_path):
+    import locator
     import json
     from tests.test_recovery_discovery import seeded_run,discovery_reply,ROOT
     for new_name in ['Menu — 编辑操作','编辑菜单']:
         base=tmp_path/str(len(list(tmp_path.iterdir())));base.mkdir()
         m=mod('discovery_step');run=seeded_run(base);m.await_discovery(run,'returned.png','review')
-        q=m.request_from_run(ROOT,run);q['discovery_context']['region_names']={'Menu — 编辑操作':'r1'}
+        q=locator.request_from_run(ROOT,run);q['discovery_context']['region_names']={'Menu — 编辑操作':'r1'}
         reply=discovery_reply();reply['regions'][0].update(name=new_name,previous_name='Menu — 编辑操作')
         before=deepcopy(m.load(run)[1]['r1'])
         call=run/'calls/0003';call.mkdir()

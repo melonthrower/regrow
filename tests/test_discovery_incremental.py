@@ -37,6 +37,7 @@ def test_missing_reply_cannot_silently_close_gap():
 
 
 def seed(tmp_path):
+    import locator
     from PIL import Image
     m=module('discovery_step');flow=module('stepwise_flow');run=tmp_path/'run'
     snap=run/'knowledge_snapshots/seed';snap.mkdir(parents=True)
@@ -48,7 +49,7 @@ def seed(tmp_path):
     (snap/'source.json').write_text('{}')
     (snap/'runtime_state.json').write_text(json.dumps({'next_action_mode':'discover','pending_frame':'frame.png','working_region':'r0001','interactive_regions':[]}))
     q={'role':'observation','system_prompt':'Observe','user_prompt':'{}','screenshots':[str(run/'frame.png')],
-       'response_schema':m.schema(ROOT,'relocate'),
+       'response_schema':locator.schema(ROOT,'relocate'),
        'discovery_context':{'mode':'relocate','focus':'r0001','region_names':{'Toolbar':'r0001'},'control_names':{},'visual_plan':{'mode':'relocate','focus':'r0001','regions':[]}}}
     def region(name,identity):return {'name':name,'description':name,'reason':'visible','parent_index':None,'bbox':None,'identity':identity,'previous_name':name if identity=='same' else None,'identity_evidence':'visible appearance','controls_complete':False}
     reply={'foreground':{'description':'editor','evidence':'image','uncertainty':''},'focus_presence':'interactive','regions':[region('Toolbar','same'),region('Status bar','uncertain')],'controls':[],'excluded':[],'uncertainties':[]}
@@ -59,11 +60,12 @@ def save_call(run,ref,q,reply):
     (p/'request.json').write_text(json.dumps(q));(p/'response.json').write_text(json.dumps(reply))
 
 def test_actual_partial_commit_and_followup_preserve_foreground_and_provenance(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path);save_call(run,'0001',q,reply)
     m.commit(ROOT,run,'0001');_,r,s=m.load(run)
     assert len(r['r0001']['observations'])==1 and not r['r0002']['observations']
     assert s['next_action_mode']=='discover' and s['interactive_regions']==[]
-    nextq=m.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
+    nextq=locator.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
     assert prompt['已实际登记'][0]['区块']=='Toolbar'
     assert [x['名称'] for x in prompt['相关历史候选']]==['Status bar']
     nextreply=deepcopy(reply);nextreply['regions']=[nextreply['regions'][1]]
@@ -77,27 +79,29 @@ def test_actual_partial_commit_and_followup_preserve_foreground_and_provenance(t
     assert not s['discovery_completion']['pending']
 
 def test_changed_frame_and_empty_followup_leave_partial_intact(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path);save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001')
-    nextq=m.request_from_run(ROOT,run);empty=deepcopy(reply);empty.update(regions=[],controls=[],completion_updates=[])
+    nextq=locator.request_from_run(ROOT,run);empty=deepcopy(reply);empty.update(regions=[],controls=[],completion_updates=[])
     save_call(run,'0002',nextq,empty);before=(run/'knowledge_current.json').read_bytes()
     with pytest.raises(ValueError,match='缺口'):m.commit(ROOT,run,'0002')
     assert before==(run/'knowledge_current.json').read_bytes()
     from PIL import Image
     Image.new('RGB',(100,100),'black').save(run/'frame.png')
-    with pytest.raises(ValueError,match='截图'):m.request_from_run(ROOT,run)
+    with pytest.raises(ValueError,match='截图'):locator.request_from_run(ROOT,run)
 
 
 def control(name,identity):
     return {'name':name,'text':name,'list_group':'','region_index':0,'identity':identity,'previous_name':name if identity=='same' else None,'identity_evidence':'appearance','icon_appearance':'','state':'visible','possible_operation':'tap','uncertainty':'','bbox':None,'icon_bbox':None,'click_bbox':None}
 
 def test_local_completion_references_parent_without_overwriting_or_losing_controls(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path)
     q['discovery_context'].update(mode='local');q['discovery_context']['visual_plan']['next_offset']=8
-    q['response_schema']=m.schema(ROOT,'local');reply['regions']=reply['regions'][:1]
+    q['response_schema']=locator.schema(ROOT,'local');reply['regions']=reply['regions'][:1]
     reply['controls']=[control('Open','new'),control('Close','uncertain')]
     save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001')
     _,r,s=m.load(run);old=deepcopy(r['r0001']);assert s.get('control_scan') is None
-    nextq=m.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
+    nextq=locator.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
     out=deepcopy(reply);out['regions'][0]['description']='context reference must not overwrite'
     out['controls']=[control('Close','new')]
     out['completion_updates']=[{'item':prompt['待补事项'][0]['item'],'resolution':'registered','region_index':None,'control_index':0,'evidence':'visible Close button'}]
@@ -109,10 +113,11 @@ def test_local_completion_references_parent_without_overwriting_or_losing_contro
 
 
 def test_cross_batch_duplicate_region_rejected_and_original_source_index_retained(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path);reply['regions'].reverse()
     save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001')
     _,r,s=m.load(run);assert r['r0001']['observations'][-1]['evidence']['source_field']=='/regions/1'
-    nextq=m.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
+    nextq=locator.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
     bad=deepcopy(reply);bad['regions']=[bad['regions'][1]];bad['regions'][0].update(identity='new',previous_name=None)
     bad['completion_updates']=[{'item':prompt['待补事项'][0]['item'],'resolution':'unresolved','region_index':None,'control_index':None,'evidence':'still unsure'}]
     save_call(run,'0002',nextq,bad);before=(run/'knowledge_current.json').read_bytes()
@@ -127,12 +132,13 @@ def test_repair_adapter_accepts_partial_without_consuming_correction(tmp_path):
 
 
 def test_cross_batch_list_group_representative_is_checked(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path)
     q['discovery_context'].update(mode='local');q['discovery_context']['visual_plan']['next_offset']=8
-    q['response_schema']=m.schema(ROOT,'local');reply['regions']=reply['regions'][:1]
+    q['response_schema']=locator.schema(ROOT,'local');reply['regions']=reply['regions'][:1]
     reply['controls']=[control('First row','new'),control('Search','uncertain')];reply['controls'][0]['list_group']='result'
     save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001')
-    nextq=m.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
+    nextq=locator.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
     bad=deepcopy(reply);bad['controls']=[control('Second row','new')];bad['controls'][0]['list_group']='result'
     bad['completion_updates']=[{'item':prompt['待补事项'][0]['item'],'resolution':'unresolved','region_index':None,'control_index':None,'evidence':'search unresolved'}]
     save_call(run,'0002',nextq,bad)
@@ -144,8 +150,9 @@ def test_bad_indices_stay_in_standard_diagnostics(tmp_path):
     with pytest.raises(ValueError,match='parent_region'):m.commit(ROOT,run,'0001')
 
 def test_uncertain_only_followup_retains_gap_and_updates_reason(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path);save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001')
-    nextq=m.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
+    nextq=locator.request_from_run(ROOT,run);prompt=json.loads(nextq['user_prompt'])
     out=deepcopy(reply);out['regions']=out['regions'][1:];out['regions'][0]['description']='same item, identity still ambiguous'
     out['completion_updates']=[{'item':prompt['待补事项'][0]['item'],'resolution':'unresolved','region_index':0,'control_index':None,'evidence':'several similar old bars'}]
     save_call(run,'0002',nextq,out);m.commit(ROOT,run,'0002');_,r,s=m.load(run)
@@ -155,10 +162,11 @@ def test_uncertain_only_followup_retains_gap_and_updates_reason(tmp_path):
     assert len(r['r0001']['observations'])==1
 
 def test_global_supplement_has_no_unrelated_focus_controls(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path);save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001')
     snap,r,s=m.load(run);r['r0001']['controls']={f'c{i}':{'name':f'Unrelated {i}','observations':[]} for i in range(100)}
     module('register_update').write_json(snap/'regions/r0001/region.json',r['r0001'])
-    nextq=m.request_from_run(ROOT,run)
+    nextq=locator.request_from_run(ROOT,run)
     assert json.loads(nextq['user_prompt'])['本区块控件身份候选']==[]
 
 
@@ -174,15 +182,17 @@ def test_new_same_named_gap_is_not_silently_dropped():
 
 
 def test_supplement_upgrades_historical_inventory_required_flag():
-    schema=module('discovery_step').schema(ROOT,'relocate')
+    import locator
+    schema=locator.schema(ROOT,'relocate')
     schema['properties']['regions']['items']['required']=[k for k in schema['properties']['regions']['items']['required'] if k!='controls_complete']
     module().extend_schema(schema)
     assert 'controls_complete' in schema['properties']['regions']['items']['required']
 
 
 def test_resumed_supplement_uses_current_fixed_prompt_files(tmp_path):
+    import locator
     m,run,q,reply=seed(tmp_path);q['system_prompt']='obsolete prefix'
     q['fixed_parts']=[{'path':'任务/当前区块重定位.prompt','text':'obsolete prefix'}]
-    save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001');nextq=m.request_from_run(ROOT,run)
+    save_call(run,'0001',q,reply);m.commit(ROOT,run,'0001');nextq=locator.request_from_run(ROOT,run)
     assert 'obsolete prefix' not in nextq['system_prompt']
     assert nextq['system_prompt']=='\n\n'.join(p['text'] for p in nextq['fixed_parts'])

@@ -61,4 +61,4 @@
 [返回三步总览](README.md) · [返回开发入口](../../../DEVELOPMENT.md)
 
 ## 可调用组件（2026-10-06）
-Locator.discover接收当前帧、run及原Runner，持有发现schema、上下文/请求、阶段驱动和局部视觉定位。TaskProposer持有任务schema、提示和历史/共享上下文，request/run交原Runner。discovery_step与region_tasks分别保留发现和任务正式登记；旧请求出口直接绑定角色内实现。普通工作及发现后的导航/检查安排归traversal_scheduler，两个组件不自行结束会话，也不是每轮必调。
+Locator.discover接收当前帧、run及原Runner，持有发现schema、上下文/请求、阶段驱动和局部视觉定位。TaskProposer持有任务schema、提示和历史/共享上下文，request/run交原Runner。discovery_step与region_tasks分别保留发现和任务正式登记；请求与调度调用方直接进入对应角色，原登记模块不再导出这些接口。普通工作及发现后的导航/检查安排归traversal_scheduler，两个组件不自行结束会话，也不是每轮必调。

@@ -5,7 +5,7 @@ import pytest
 import region_tasks
 import inventory_scroll
 import task_settlement
-from update_step import build_update_request, route_update
+from result_updater import build_update_request, route_update
 from tests.test_inventory_scroll_progress import plan_scroll
 from tests.test_stepwise_region_tasks import row, proposal, ROOT
 from tests.test_task_action_binding import fixture, settle
@@ -52,10 +52,11 @@ def test_scroll_preparation_can_close_obstruction(tmp_path):
 
 
 def test_partial_inventory_keeps_normal_pending_action(tmp_path):
+    import task_proposer
     m, run, records, state, _, reply = plan_scroll(tmp_path)
     # A second real proposal has a trusted control task and no scroll row.
     reply = proposal([row(name='查看可见入口')], 'partial')
-    q = m.plan_request(ROOT, records, state, 'r1')
+    q = task_proposer.plan_request(ROOT, records, state, 'r1')
     folder = run/'calls/904'; folder.mkdir()
     (folder/'request.json').write_text(json.dumps(q)); (folder/'response.json').write_text(json.dumps(reply))
     m.commit_plan(ROOT, run, '904')
@@ -106,11 +107,12 @@ def test_completed_region_can_leave_before_function_summary(tmp_path):
 
 
 def discovery_partial(tmp_path):
+    import locator
     from tests.test_discovery_incremental import seed, save_call, control
     m,run,q,reply=seed(tmp_path)
     q['discovery_context'].update(mode='local')
     q['discovery_context']['visual_plan']['next_offset']=8
-    q['response_schema']=m.schema(ROOT,'local')
+    q['response_schema']=locator.schema(ROOT,'local')
     reply['regions']=reply['regions'][:1]
     reply['controls']=[control('Open','new'),control('Unknown','uncertain')]
     for item in reply['regions']+reply['controls']:
@@ -125,6 +127,7 @@ def discovery_partial(tmp_path):
 
 
 def test_partial_discovery_retains_trusted_current_objects_and_gap(tmp_path):
+    import task_proposer
     m,run=discovery_partial(tmp_path)
     _,records,state=m.load(run)
     assert state['next_action_mode']=='explore'
@@ -132,7 +135,7 @@ def test_partial_discovery_retains_trusted_current_objects_and_gap(tmp_path):
     assert len(state['observation']['control_refs'])==1
     assert len(records['r0001']['controls'])==1
     assert state['discovery_completion']['pending']
-    q=region_tasks.plan_request(ROOT,records,state,'r0001')
+    q=task_proposer.plan_request(ROOT,records,state,'r0001')
     assert q['stage']=='task_proposal' and 'Open' in q['user_prompt']
     # Completing the registered subset cannot resolve a withheld identity.
     control=next(iter(records['r0001']['controls'].values()))['name']
@@ -141,6 +144,7 @@ def test_partial_discovery_retains_trusted_current_objects_and_gap(tmp_path):
 
 
 def test_new_frame_archives_gaps_without_old_completion_lock(tmp_path):
+    import locator
     from PIL import Image
     m,run=discovery_partial(tmp_path)
     Image.new('RGB',(100,100),'black').save(run/'next.png')
@@ -148,7 +152,7 @@ def test_new_frame_archives_gaps_without_old_completion_lock(tmp_path):
     _,records,state=m.load(run)
     assert state['discovery_completion_history'][0]['pending']
     assert not state.get('discovery_completion')
-    q=m.request_from_run(ROOT,run)
+    q=locator.request_from_run(ROOT,run)
     assert not q['discovery_context'].get('completion')
     assert q['screenshots']==[str(run/'next.png')]
     assert records['r0001']['registration_gaps']['discovery']['pending']
@@ -197,6 +201,7 @@ def test_relocation_gap_does_not_hijack_trusted_existing_task(tmp_path):
 
 
 def test_completion_only_resolves_its_batch_and_keeps_old_gap_source(tmp_path):
+    import locator
     from tests.test_discovery_incremental import save_call
     from PIL import Image
     m,run=discovery_partial(tmp_path)
@@ -211,7 +216,7 @@ def test_completion_only_resolves_its_batch_and_keeps_old_gap_source(tmp_path):
     save_call(run,'0002',q,reply);m.commit(ROOT,run,'0002')
     m.publish(run,'resume-current-batch',lambda records,state,*args:state.update(
         next_action_mode='discover',pending_frame=str(run/'next.png'),inspection_region='r0001'))
-    completion=m.request_from_run(ROOT,run)
+    completion=locator.request_from_run(ROOT,run)
     label=json.loads(completion['user_prompt'])['待补事项'][0]['item']
     out=deepcopy(reply);out['controls']=out['controls'][1:]
     out['controls'][0].update(identity='new')
@@ -243,6 +248,7 @@ def test_idle_session_finalizes_knowledge_after_gui_and_counts_http(tmp_path,mon
 
 
 def test_historical_plan_cannot_reopen_done_scroll_from_current_viewport(tmp_path):
+    import task_proposer
     m,run,records,state,_,reply=plan_scroll(tmp_path)
     name=state['active_task']['name']
     def done(records,state,*args):
@@ -250,7 +256,7 @@ def test_historical_plan_cannot_reopen_done_scroll_from_current_viewport(tmp_pat
         state['observation']['id']='unrelated-current-viewport'
     m.helper('discovery_step').publish(run,'done-scroll',done)
     snapshot,records,state=m.helper('discovery_step').load(run)
-    q=m.plan_request(ROOT,records,{**state,'observation':{**state['observation'],'id':'historic-viewport'}},'r1')
+    q=task_proposer.plan_request(ROOT,records,{**state,'observation':{**state['observation'],'id':'historic-viewport'}},'r1')
     q['historical_inventory']={'evidence_digest':m.helper('historical_inventory').digest(records['r1'])}
     folder=run/'calls/905';folder.mkdir()
     (folder/'request.json').write_text(json.dumps(q));(folder/'response.json').write_text(json.dumps(reply))

@@ -106,7 +106,7 @@ def begin(root,run,rid,from_control,to_control,selectors,frame):
         hits=[o for o in source['observations'] if key(o)==(selector['source_call'],selector['source_field'])]
         if len(hits)!=1:raise ValueError('诊断观察不唯一')
         chosen+=hits
-    q=helper('region_tasks').plan_request(root,records,state,rid)
+    q=helper('task_proposer').plan_request(root,records,state,rid)
     q['screenshots']=[str(Path(frame).resolve())]
     # Include original full frames, with their provenance, not manually reduced prompts/crops.
     examples=[source['observations'][0],*chosen,target['observations'][-1]]

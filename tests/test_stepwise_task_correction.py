@@ -12,11 +12,12 @@ def repair():return tasks().helper('step_repair')
 
 
 def saved(tmp_path):
+    import task_proposer
     reg=module();run,graph,reply=fixture(tmp_path);p=invoke(reg,run)
     sf=run/p['snapshot']/'runtime_state.json';state=json.loads(sf.read_text())
     state.update(next_action_mode='explore',interactive_regions=['r1']);sf.write_text(json.dumps(state))
     r=json.loads((run/p['snapshot']/'regions/r1/region.json').read_text())
-    q=tasks().plan_request(ROOT,{'r1':r},state,'r1')
+    q=task_proposer.plan_request(ROOT,{'r1':r},state,'r1')
     good=proposal([{**row(name=c['name'],control=c['name']),'findings':[]} for c in r['controls'].values()])
     return run,q,good
 
@@ -81,7 +82,8 @@ def test_record_edit_is_versioned_and_cannot_touch_history(tmp_path):
 
 
 def test_missing_control_reinspection_is_persistently_bounded(tmp_path):
+    import locator
     run,q,good=saved(tmp_path);frame=tmp_path/'frame.png';frame.write_bytes(b'frame');q['screenshots']=[str(frame)]
     d=tasks().helper('discovery_step')
-    assert d.rediscover(run,q,'检查缺失控件') and not d.rediscover(run,q,'重复请求')
+    assert locator.rediscover(run,q,'检查缺失控件') and not locator.rediscover(run,q,'重复请求')
     assert d.load(run)[2]['working_region']=='r1'

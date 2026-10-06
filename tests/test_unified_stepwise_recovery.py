@@ -37,7 +37,7 @@ def test_exit_blocks_task_but_popup_preserves_pending():
 
 def test_new_exceptions_route_without_registering_external_regions():
     from tests.test_stepwise_update_exception import reply
-    m=tasks().helper('update_step')
+    m=tasks().helper('result_updater')
     for name in ['blocking_popup','unexpected_exit','external_app','unclassified']:
         r=reply(name)
         r['exploration_update'].pop('entry_name')  # Removed from the current wire schema.
@@ -45,6 +45,7 @@ def test_new_exceptions_route_without_registering_external_regions():
 
 
 def test_popup_loop_has_no_region_registration_between_actions(tmp_path,monkeypatch):
+    import locator
     import json
     from types import SimpleNamespace
     from PIL import Image
@@ -59,9 +60,9 @@ def test_popup_loop_has_no_region_registration_between_actions(tmp_path,monkeypa
         def adb(self,argv):events.append(argv);return SimpleNamespace(returncode=0,stdout=b'',stderr=b'')
     t=Transport();t.run=run
     discovery=loop.helper('discovery_step');original=loop.helper
-    monkeypatch.setattr(loop,'helper',lambda name:discovery if name=='discovery_step' else original(name))
+    monkeypatch.setattr(loop,'helper',lambda name:discovery if name=='discovery_step' else locator if name=='locator' else original(name))
     monkeypatch.setattr(discovery,'await_discovery',lambda *args:events.append('await_discovery'))
-    monkeypatch.setattr(discovery,'run_stage',lambda *args,**kwargs:events.append('discover'))
+    monkeypatch.setattr(locator,'run_stage',lambda *args,**kwargs:events.append('discover'))
     monkeypatch.setattr(loop.time,'sleep',lambda n:None)
     replies=[decision(action={'action':'click','target':'Got it','x':20,'y':20,'reason':'关闭'}),decision(exception='none',mode='resume_exploration')]
     def call(q):
@@ -117,6 +118,7 @@ def test_restart_history_discloses_restriction_and_feedback():
 
 
 def test_repeated_restart_replans_instead_of_stopping(tmp_path,monkeypatch):
+    import locator
     import json
     from types import SimpleNamespace
     from PIL import Image
@@ -133,9 +135,9 @@ def test_repeated_restart_replans_instead_of_stopping(tmp_path,monkeypatch):
             return SimpleNamespace(returncode=0,stdout=b'launch accepted',stderr=b'')
     t=Transport();t.run=run
     discovery=loop.helper('discovery_step');original=loop.helper
-    monkeypatch.setattr(loop,'helper',lambda n:discovery if n=='discovery_step' else original(n))
+    monkeypatch.setattr(loop,'helper',lambda n:discovery if n=='discovery_step' else locator if n=='locator' else original(n))
     monkeypatch.setattr(discovery,'await_discovery',lambda *a:None)
-    monkeypatch.setattr(discovery,'run_stage',lambda *a,**k:None)
+    monkeypatch.setattr(locator,'run_stage',lambda *a,**k:None)
     monkeypatch.setattr(loop.time,'sleep',lambda n:None)
     replies=[decision(exception='unexpected_exit',tool='restart_app'),decision(exception='unexpected_exit',tool='restart_app'),decision(exception='none',mode='resume_exploration')]
     requests=[]

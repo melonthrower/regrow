@@ -82,7 +82,8 @@ def commit(root, run, call_ref):
     reg=registration();run=Path(run).resolve();call=run/'calls'/call_ref
     request,reply=reg.sibling('step_repair').submission(run,call_ref);ctx=request['discovery_context']
     completion=reg.sibling('discovery_completion')
-    contract=schema(root,ctx['mode'],ctx.get('focus') is not None)
+    locator=reg.sibling('locator');scheduler=reg.sibling('traversal_scheduler')
+    contract=locator.schema(root,ctx['mode'],ctx.get('focus') is not None)
     if ctx.get('completion'):completion.extend_schema(contract)
     if request.get('dependency_candidates'):
         contract['properties']['dependency_updates']=request['response_schema']['properties']['dependency_updates']
@@ -111,14 +112,14 @@ def commit(root, run, call_ref):
         raise ValueError('局部补全不能静默改变原观察范围；需重新定位')
     if ctx['mode']=='local' and reply['focus_presence']!='interactive':
         def expand(records,state,snapshot,temp):
-            if offer_foreground_navigation(records,state,ctx['focus'],reply):return
+            if scheduler.offer_foreground_navigation(records,state,ctx['focus'],reply):return
             state.update(discovery_mode='relocate',reason='local_position_unconfirmed',interactive_regions=[],observation=None)
         return publish(run,'expand-discovery-'+call_ref,expand)
     request,reply,audit=reg.sibling('region_identity').prepare(run,request,reply)
     ctx=request['discovery_context']
     if audit:reg.write_json(call/'visual_identity.json',{'matches':audit,'effective_candidate':reply})
     reply,missing,region_indices,control_indices=completion.prepare_registration(reply,{**request,'response_schema':contract},known,batch,reg.sibling('registration_diagnostics'))
-    validate_identity(reply)
+    locator.validate_identity(reply)
     for r in reply['regions']:
         if r['identity']=='same':
             rid=ctx['region_names'].get(r['previous_name'])
@@ -201,7 +202,7 @@ def commit(root, run, call_ref):
         if not state.get('working_region') and refs:state['working_region']=refs[0]
         if ctx['mode']=='relocate' and refs:
             if not (missing and any(reg.sibling('region_tasks').coverage(records[rid],records)['pending'] for rid in refs)):
-                schedule_local_inspection(records,state)
+                scheduler.schedule_local_inspection(records,state)
         elif ctx['mode']=='local':
             state.setdefault('control_scan',{})[ctx['focus']]=ctx['visual_plan']['next_offset']
             state['control_inventory_status']='partial'  # Never interpret a bounded batch as complete.
@@ -215,20 +216,3 @@ def commit(root, run, call_ref):
         state['handoff_summary']=reply['foreground']['description']
         if state['next_action_mode']!='discover':state.pop('pending_frame',None)
     return publish(run,'discovery-'+call_ref,mutate)
-
-
-# Existing callers share the role implementations; publication stays above.
-_locator = registration().sibling('locator')
-schema = _locator.schema
-validate_identity = _locator.validate_identity
-match_context = _locator.match_context
-prepare = _locator.prepare
-request_from_run = _locator.request_from_run
-run_stage = _locator.run_stage
-focus_task = _locator.focus_task
-rediscover = _locator.rediscover
-locate_task_control = _locator.locate_task_control
-_scheduler = registration().sibling('traversal_scheduler')
-offer_foreground_navigation = _scheduler.offer_foreground_navigation
-schedule_local_inspection = _scheduler.schedule_local_inspection
-retire_completed_goal = _scheduler.retire_completed_goal

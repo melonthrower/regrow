@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import region_tasks
 import task_settlement
-from update_step import build_update_request
+from result_updater import build_update_request
 
 ROOT=Path(region_tasks.__file__).parent
 

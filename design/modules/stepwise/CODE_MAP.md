@@ -2,7 +2,7 @@
 
 [开发入口](../../../DEVELOPMENT.md) · [三步流程](README.md) · [测试索引](../../../tests/STEPWISE_INDEX.md) · [提示入口](../../../experiments/clock_manual_20260919/遍历prompt/README.md)
 
-源码在 `experiments/clock_manual_20260919/`。下面完整列出 105 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
+源码在 `experiments/clock_manual_20260919/`。下面完整列出 104 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
 
 入口连接：`启动遍历.sh → launch_traversal.main → run_source.session_command → run_progress_session.run_session → run_task_step._run_step`。单轮由traversal_scheduler先处理已执行待登记与pending，再选择发现/任务清点、动作或异常复核；三步不等于固定三次 Luna 调用。
 
@@ -25,10 +25,10 @@
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [discovery_step.py](../../../experiments/clock_manual_20260919/discovery_step.py) | 发现观察/身份正式登记、快照读取与发布；旧请求出口绑定 locator。 | `load / commit / publish / await_discovery` |
+| [discovery_step.py](../../../experiments/clock_manual_20260919/discovery_step.py) | 发现观察/身份正式登记、快照读取与发布；定位请求由 locator 直接提供。 | `load / commit / publish / await_discovery` |
 | [discovery_completion.py](../../../experiments/clock_manual_20260919/discovery_completion.py) | 同帧增量登记、历史身份召回与未解决缺口补齐。 | `prepare_registration / supplement` |
 | [discovery_inventory.py](../../../experiments/clock_manual_20260919/discovery_inventory.py) | 把任务清点缺口交给本区局部发现，不批量改其他 owner。 | `supplement` |
-| [region_tasks.py](../../../experiments/clock_manual_20260919/region_tasks.py) | 任务增量登记及覆盖计算；旧请求/schema出口绑定 task_proposer。 | `apply_plan / commit_plan / coverage` |
+| [region_tasks.py](../../../experiments/clock_manual_20260919/region_tasks.py) | 任务增量登记及覆盖计算；提议请求/schema由 task_proposer 直接提供。 | `apply_plan / commit_plan / coverage` |
 | [entry_evidence.py](../../../experiments/clock_manual_20260919/entry_evidence.py) | 披露已观察的入口效果，为规划和累计核对保留来源。 | `disclose / related` |
 
 ## 第二步：选择已有工作与前置条件（7 文件）
@@ -60,13 +60,12 @@
 | [region_scroll.py](../../../experiments/clock_manual_20260919/region_scroll.py) | 校验当前图中的模型滚动坐标，保留 Region 动作归属。 | `bind` |
 | [visual_choices.py](../../../experiments/clock_manual_20260919/visual_choices.py) | 提供本轮外观匹配备选，明确身份裁图与点击区域不同。 | `prepare / match_controls / click_box` |
 
-## 第三步：结果更新与登记（9 文件）
+## 第三步：结果更新与登记（8 文件）
 
 详细职责：[模块页](updates.md)。
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [update_step.py](../../../experiments/clock_manual_20260919/update_step.py) | 旧更新出口直接绑定 result_updater 的唯一实现，无独立执行路径。 | `build_update_request / route_update` |
 | [register_update.py](../../../experiments/clock_manual_20260919/register_update.py) | 固定原动作来源、保存观察/动作/图像及正式快照；不调用模型或 GUI。 | `commit_update / commit_discovery / materialize_regions` |
 | [task_settlement.py](../../../experiments/clock_manual_20260919/task_settlement.py) | 由已登记绑定动作计算探索进度、修正后续绑定并保存参数事实。 | `completion_target / settle_task / reconcile_run / store_findings` |
 | [region_evidence.py](../../../experiments/clock_manual_20260919/region_evidence.py) | 构造/投影 Region、控件、动作和保存图状态，不推断成功或反向路线。 | `region_transitions / region_records / graph_state；new_region / region_observation / control_observation / control_name / action_record / index_actions` |

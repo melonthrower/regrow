@@ -48,8 +48,9 @@ def test_same_control_names_without_region_appearance_do_not_merge(tmp_path):
 
 
 def test_discovery_registration_preserves_explicit_new_identity(tmp_path):
+    import locator
     m=mod('discovery_step');run=seeded_run(tmp_path);m.await_discovery(run,'returned.png','return')
-    q=m.request_from_run(ROOT,run);reply=discovery_reply()
+    q=locator.request_from_run(ROOT,run);reply=discovery_reply()
     reply['regions'][0].update(name='另一背景的菜单',identity='new',previous_name='',context_matches=None)
     reply['foreground'].update(interactive_areas=[{'bbox':reply['regions'][0]['bbox'],'reason':'fixture'}],excluded_areas=[])
     reply['regions'][0].update(task_review_reason='',controls_complete=True,out_of_scope_reason='')
@@ -66,9 +67,10 @@ def test_discovery_registration_preserves_explicit_new_identity(tmp_path):
 
 
 def test_both_prompts_explain_completeness_and_schema(tmp_path):
+    import locator
     discovery=mod('discovery_step');run=seeded_run(tmp_path);discovery.await_discovery(run,'returned.png','return')
-    q=discovery.request_from_run(ROOT,run)
-    u=mod('update_step').build_update_request(ROOT,{},[])
+    q=locator.request_from_run(ROOT,run)
+    u=mod('result_updater').build_update_request(ROOT,{},[])
     for request in (q,u):
         assert 'controls_complete' in request['response_schema']['properties']['regions']['items']['properties']
         assert '局部批次' in request['system_prompt'] and '确定、取消' in request['system_prompt']

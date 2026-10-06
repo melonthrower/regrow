@@ -20,6 +20,7 @@ def load(name):
 
 @pytest.mark.parametrize('failure', ['schema', 'identity'])
 def test_failed_supplement_reaches_next_correction_without_registration(tmp_path, monkeypatch, failure):
+    import locator
     stages, repair, discovery = load('repair_stages'), load('step_repair'), load('discovery_step')
     item = {'identity': 'uncertain', 'previous_name': 'Old arrow'}
     reply = {'regions': [], 'controls': [item]}
@@ -34,10 +35,10 @@ def test_failed_supplement_reaches_next_correction_without_registration(tmp_path
     # correction request consumer use the production implementations.
     observed = SimpleNamespace(load=lambda run: (tmp_path, {}, {}),
         focus_task=lambda *args: None, prepare=lambda *args: deepcopy(q),
-        validate_identity=discovery.validate_identity,
+        validate_identity=locator.validate_identity,
         publish=lambda *args: published.append(args))
     real_helper = stages.helper
-    monkeypatch.setattr(stages, 'helper', lambda name: observed if name == 'discovery_step' else real_helper(name))
+    monkeypatch.setattr(stages, 'helper', lambda name: observed if name in ('discovery_step','locator') else real_helper(name))
     def call(request):
         repair.atomic(tmp_path / 'calls/0002/request.json', request)
         return '0002', deepcopy(reply)

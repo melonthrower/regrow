@@ -4,6 +4,7 @@ One canonical record lives under the first member's Region. Other members hold
 only a reference. Existing snapshot transactions persist both atomically.
 """
 from copy import deepcopy
+import shared_tasks
 
 
 def link(records,name,members,reason,evidence):
@@ -62,7 +63,8 @@ def refresh(records):
             reviewed=group.get('reviewed_signature')==signature(group)
             group['status']='needs_review' if broken or not results or (len(executed_members)>1 and len(destinations)>1 and not reviewed) else 'confirmed'
 
-    synchronize_tasks(records)
+    # Synchronize before callers clean up detached members.
+    shared_tasks.synchronize_tasks(records)
 
 def view(records,rid,cid):
     ref=records[rid]['controls'][cid].get('shared_control_ref')
@@ -110,7 +112,3 @@ def extend_link(records,old_region,old_control,new_region,new_control,evidence,c
         link(records,label,[(old_region,old_control),(new_region,new_control)],evidence,actions)
         group=records[old_region]['shared_controls'][label]
     group.setdefault('membership_evidence',[]).append({'region':new_region,'control':new_control,'source_call':call,'evidence':evidence})
-
-
-# Refresh must synchronize tasks before callers clean up detached members.
-from shared_tasks import synchronize_tasks, automatic_tasks

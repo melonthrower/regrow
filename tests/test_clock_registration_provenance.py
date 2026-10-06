@@ -3,13 +3,16 @@ from tests.test_recovery_discovery import mod
 
 
 def test_wrong_control_result_is_preserved_but_does_not_complete_task():
-    owner={'id':'r1','tasks':{'inspect':{'control':'center','task_type':'single_action','status':'pending','attempts':[]}}}
+    owner={'id':'r1','tasks':{'inspect':{'control':'center','action':'click','handling':'explore','task_type':'single_action','status':'pending','attempts':[]}},
+           'actions':{'a1':{'control':'top','operation':'click','delivery':'executed_receipt_zero',
+                            'result':{'exception':'none','description':'Opened dialog'}}}}
     reply={'task_result':{'name':'inspect','status':'done','evidence':'Opened dialog','findings':[]},'action_result':{'exception':'none'}}
     mod('region_tasks').settle_task(owner,{'task_name':'inspect','region_ref':'r1','control_ref':'top'},reply,'a1')
     task=owner['tasks']['inspect']
     assert task['status']=='pending'
     assert task['attempts']==['a1']
-    assert task['completion_review']['actual_control']=='top'
+    assert 'completion_basis' not in task
+    assert owner['actions']['a1']['control']=='top'
     assert reply['task_result']['status']=='done'  # immutable model evidence
 
 
@@ -68,7 +71,7 @@ def test_retained_context_cannot_bypass_check_and_background_is_allowed():
 
 def test_generated_schema_requires_context_on_both_reuse_paths_and_split():
     from tests.test_recovery_discovery import ROOT
-    q=mod('update_step').build_update_request(ROOT,{},['before.png','after.png'])
+    q=mod('result_updater').build_update_request(ROOT,{},['before.png','after.png'])
     props=q['response_schema']['properties']
     for item in [props['regions']['items'],props['previous_regions']['items'],props['source_region_split']['anyOf'][1]['properties']['region']]:
         assert 'context_matches' in item['required']

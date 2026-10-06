@@ -13,19 +13,21 @@ def test_recovery_needs_no_region_identity():
 
 
 def test_relocation_schema_does_not_allow_control_enumeration():
+ import locator
  m=mod('discovery_step')
- assert m.schema(ROOT,'relocate')['properties']['controls']['maxItems']==0
- assert 'maxItems' not in m.schema(ROOT,'local')['properties']['controls']
+ assert locator.schema(ROOT,'relocate')['properties']['controls']['maxItems']==0
+ assert 'maxItems' not in locator.schema(ROOT,'local')['properties']['controls']
 
 
 def test_uncertain_identity_does_not_publish(tmp_path):
+ import locator
  m=mod('discovery_step')
  assert m is not None
  # Identity uncertainty is not a new Region and cannot unlock action selection.
  with pytest.raises(ValueError,match='identity'):
-  m.validate_identity({'regions':[{'identity':'uncertain','previous_name':None}], 'controls':[]})
+  locator.validate_identity({'regions':[{'identity':'uncertain','previous_name':None}], 'controls':[]})
  with pytest.raises(ValueError,match='identity'):
-  m.validate_identity({'regions':[{'identity':'same','previous_name':None}], 'controls':[]})
+  locator.validate_identity({'regions':[{'identity':'same','previous_name':None}], 'controls':[]})
 
 def seeded_run(tmp_path):
     s=importlib.util.spec_from_file_location('registration_fixture',Path(__file__).with_name('test_region_registration.py'))
@@ -46,11 +48,9 @@ def discovery_reply():
       'regions':[{'image_quality':'clear','image_quality_reason':'unobscured synthetic fixture','name':'Menu','description':'Menu content','reason':'menu grouping','parent_index':None,'bbox':{'left':0,'top':0,'right':50,'bottom':80},'previous_name':'Menu','identity':'same','identity_evidence':'same grouping and labels'}],
       'controls':[{'image_quality':'uncertain','icon_quality':'uncertain','image_quality_reason':'no crop in fixture','region_index':0,'text':n,'icon_appearance':'','state':'visible','possible_operation':'tap','uncertainty':'','bbox':None,'icon_bbox':None,'identity':'same','previous_name':n,'identity_evidence':'same text'} for n in ['Policy','Settings']],'excluded':[],'uncertainties':[]}
 
-def prepare_review(m,run):
-    return m.request_from_run(ROOT,run)
-
 
 def test_recovery_checkpoint_and_discovery_share_registration_without_actions(tmp_path):
+    import locator
     import json
     m=mod('discovery_step');run=seeded_run(tmp_path)
     old,records,state=m.load(run);previous=deepcopy(records['r1'])
@@ -61,7 +61,7 @@ def test_recovery_checkpoint_and_discovery_share_registration_without_actions(tm
     assert len(records['r1']['observations'])==len(previous['observations'])
     with pytest.raises(ValueError,match='discovery required'):
         mod('stepwise_flow').assemble_current_context(ROOT,run)
-    q=prepare_review(m,run);reply=discovery_reply()
+    q=locator.request_from_run(ROOT,run);reply=discovery_reply()
     call=run/'calls/0003';call.mkdir()
     (call/'request.json').write_text(json.dumps(q));(call/'response.json').write_text(json.dumps(reply))
     m.commit(ROOT,run,'0003')
@@ -75,9 +75,10 @@ def test_recovery_checkpoint_and_discovery_share_registration_without_actions(tm
 
 
 def test_discovery_bad_identity_leaves_pointer_pending(tmp_path):
+    import locator
     import json
     m=mod('discovery_step');run=seeded_run(tmp_path);m.await_discovery(run,'returned.png','test-return')
-    q=prepare_review(m,run);reply=discovery_reply();reply['regions'][0]['identity']='uncertain'
+    q=locator.request_from_run(ROOT,run);reply=discovery_reply();reply['regions'][0]['identity']='uncertain'
     call=run/'calls/0003';call.mkdir();(call/'request.json').write_text(json.dumps(q));(call/'response.json').write_text(json.dumps(reply))
     before=(run/'knowledge_current.json').read_bytes()
     with pytest.raises(ValueError,match='identity'):m.commit(ROOT,run,'0003')
@@ -143,11 +144,12 @@ def test_recovery_retains_task_even_when_external_action_owner_differs(tmp_path,
 
 
 def test_empty_graph_discovery_accepts_its_null_focus_contract(tmp_path):
+    import locator
     import json
     from PIL import Image
     frame=tmp_path/'frame.png';Image.new('RGB',(50,80),'white').save(frame)
     run=mod('app_launcher').create_run(tmp_path/'runs','com.example.clock','Clock','emulator-test',frame)
-    m=mod('discovery_step');q=m.request_from_run(ROOT,run)
+    m=mod('discovery_step');q=locator.request_from_run(ROOT,run)
     assert q['response_schema']['properties']['focus_presence']['type']=='null'
     reply=discovery_reply();reply['focus_presence']=None;reply['controls']=[]
     reply['regions'][0].update(identity='new',previous_name=None)
@@ -156,3 +158,19 @@ def test_empty_graph_discovery_accepts_its_null_focus_contract(tmp_path):
     _,records,state=m.load(run)
     assert len(records)==1 and state['interactive_regions']
     assert all(not r.get('actions') for r in records.values())
+
+
+def test_locator_keeps_recovery_goal_and_historical_identity_context(tmp_path):
+    import locator
+    import json
+    run = seeded_run(tmp_path)
+    registry = mod('discovery_step')
+    registry.await_discovery(run, 'returned.png', 'role-entry')
+    before = (run / 'knowledge_current.json').read_bytes()
+    request = locator.request_from_run(ROOT, run)
+    context = json.loads(request['user_prompt'])
+    assert request['stage'] == 'discovery'
+    assert context['待继续的工作区块'] == 'Menu'
+    assert request['discovery_context']['focus'] == 'r1'
+    assert request['screenshots'] == [str(run.resolve() / 'returned.png')]
+    assert (run / 'knowledge_current.json').read_bytes() == before

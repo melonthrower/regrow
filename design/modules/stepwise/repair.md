@@ -59,3 +59,5 @@
 
 ## 任务判断修订与预算停止
 发现/任务清点纠错的task编辑能力增加reopen_task：before为原控件名，after为具体未知内容目标，evidence说明旧判断遗漏。原任务留revisions，不迁移执行历史。正常清点与改名提案同样诊断旧record变explore，沿已有事务校验登记。HTTP/GUI额度不足为budget_limit，待登记回执与pending保留；真实投递故障仍是interrupted，不能用预算状态遮蔽。
+
+恢复动作沿共享action schema校验；action_defaults只补仍有效的skip_task默认值，不再自动注入已删除的request_task_review字段，避免合法click回复被框架自身拒绝。补观察直接调用locator，登记仍走discovery_step及原Runner。验证边界见本月日志。

@@ -57,7 +57,7 @@ def test_old_conditions_and_unlinked_observations_are_not_lost():
 
 def test_update_manual_registers_bound_feedback_without_a_second_completion_claim():
     from tests.test_stepwise_resume_route import ROOT
-    builder=mod('update_step')
+    builder=mod('result_updater')
     q=builder.build_update_request(ROOT,{'本轮探索任务':'Check selection','任务目标':{'type':'parameter'},'实际动作':[{'action':'click'}]},[])
     assert 'task_result' not in q['response_schema']['properties']
     assert 'task_update' in q['response_schema']['properties']

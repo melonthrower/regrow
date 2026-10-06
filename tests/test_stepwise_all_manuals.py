@@ -14,7 +14,7 @@ def test_action_manual_modules_and_fields():
 
 
 def test_update_and_recovery_manuals_have_field_guides():
-    update=tasks().helper('update_step').build_update_request(ROOT,{'本轮探索任务':{'name':'探索'}},['before.png','after.png'])
+    update=tasks().helper('result_updater').build_update_request(ROOT,{'本轮探索任务':{'name':'探索'}},['before.png','after.png'])
     assert '# 结果观察与更新操作手册' in update['system_prompt']
     for word in ['previous_regions','not_visible','working_context','attempt_status','domain','findings']:
         assert word in update['system_prompt']

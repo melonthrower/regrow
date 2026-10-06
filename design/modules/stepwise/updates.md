@@ -17,7 +17,6 @@
 - [task_settlement.py](../../../experiments/clock_manual_20260919/task_settlement.py)
 - [region_evidence.py](../../../experiments/clock_manual_20260919/region_evidence.py)
 
-- [update_step.py](../../../experiments/clock_manual_20260919/update_step.py)
 - [register_update.py](../../../experiments/clock_manual_20260919/register_update.py)
 - [update_visibility.py](../../../experiments/clock_manual_20260919/update_visibility.py)
 - [registration_diagnostics.py](../../../experiments/clock_manual_20260919/registration_diagnostics.py)
@@ -61,4 +60,4 @@ ResultUpdater.update/resume共用原build_attempt_update/resume_update_request�
 观察判断与正式登记仍是内部两道边界，未合成一次无校验写入。
 run_task_step旧同名辅助入口直接导入唯一实现，保存帧工具可继续调用。
 
-ResultUpdater直接持有结果请求/schema和候选校验，update_step仅保留旧出口绑定。候选路由不正式发布；register_update仍基于真实回执、身份和任务结算写新快照。
+ResultUpdater直接持有结果请求/schema和候选校验；调用方统一进入result_updater，旧update_step转发文件已删除。候选路由不正式发布；register_update仍基于真实回执、身份和任务结算写新快照。

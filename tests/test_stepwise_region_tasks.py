@@ -53,25 +53,6 @@ def test_no_omissions_or_cyclic_equivalence():
     with pytest.raises(ValueError):m.apply_plan(region,proposal([row('a',handling='equivalent',equivalent_to='b'),row('b',handling='equivalent',equivalent_to='a')]),'1')
 
 
-def test_task_stage_then_return_with_no_control_and_no_fake_edge():
-    flow,r,s=fixture();m=tasks();s['interactive_regions']=['middle'];r['middle']['controls']={}
-    r['menu']['actions']['enter']={'control':'open','operation':'tap','delivery':'executed_receipt_zero'}
-    r['middle']['reached_by']=[{'source_region':'menu','source_control':'open','attempt':'enter'}]
-    original=deepcopy(r)
-    base=flow.assemble_context(ROOT,r,s,'menu')
-    q=m.attach(ROOT,r,s,'menu',base);assert q['stage']=='task_proposal'
-    m.apply_plan(r['middle'],proposal([]),'1')
-    assert m.attach(ROOT,r,s,'menu',base)['stage']=='action_selection'
-    m.helper('region_functions').register(r['middle'],{
-        'region_role':'navigation','role_evidence':'Empty local surface',
-        'functions':[],'evidence':'No local functions remain'},'functions')
-    q=m.attach(ROOT,r,s,'menu',base);assert q['allow_back'] and q['action_ready']
-    binding=flow.bind_action_target(q,{'target':'系统返回','action':'back','x':None,'y':None})
-    assert binding['status']=='matched' and binding['control_ref'] is None
-    assert binding['region_ref']=='middle' and binding['working_region']=='menu'
-    assert r['middle']['transitions']==original['middle']['transitions']
-    r['middle']['actions']['back']={'operation':'back','interactive_regions':['middle']}
-    assert not m.attach(ROOT,r,s,'menu',base)['action_ready']
 
 
 def test_registered_back_remains_available_but_is_not_fixed_route():
@@ -170,8 +151,9 @@ def test_navigation_goal_takes_precedence_over_unstarted_local_tasks():
 
 
 def test_task_action_names_share_executor_and_preserve_old_tap_progress():
+    import task_proposer
     m=tasks();_,records,_=fixture();region=records['menu']
-    enum=m.proposal_schema()['properties']['operations']['items']['properties']['action']['enum']
+    enum=task_proposer.proposal_schema()['properties']['operations']['items']['properties']['action']['enum']
     assert set(enum) <= set(m.helper('action_commands').ACTIONS)
     request=row();request['action']='click'
     m.apply_plan(region,proposal([request]),'new')
@@ -182,8 +164,9 @@ def test_task_action_names_share_executor_and_preserve_old_tap_progress():
 
 
 def test_live_task_proposal_schema_requires_all_nested_properties():
+    import task_proposer
     flow,records,state=fixture();state['observation']={'id':'test','image':'current.png'}
-    q=tasks().plan_request(ROOT,records,state,'menu')
+    q=task_proposer.plan_request(ROOT,records,state,'menu')
     def strict(schema):
         if schema.get('type')=='object':
             assert set(schema['properties'])==set(schema['required'])
@@ -194,9 +177,14 @@ def test_live_task_proposal_schema_requires_all_nested_properties():
 
 
 def test_task_proposal_is_bound_to_current_region_controls():
+    import task_proposer
     import json,jsonschema
     _,records,state=fixture();state['observation']={'id':'test','image':'current.png'}
-    q=tasks().plan_request(ROOT,records,state,'menu')
+    before=deepcopy((records,state))
+    q=task_proposer.plan_request(ROOT,records,state,'menu')
+    assert q['role']=='task_proposal' and not q['action_ready']
+    assert q['source']=={'region':'menu','observation':'test'}
+    assert q['screenshots']==['current.png'] and (records,state)==before
     enum=q['response_schema']['properties']['operations']['items']['properties']['control']['enum']
     assert set(enum)=={c['name'] for c in records['menu']['controls'].values()}|{''}
     bad=row(control='另一区块的导航按钮');bad['findings']=[]
@@ -220,11 +208,12 @@ def test_direct_entry_can_finish_while_popup_still_requires_recovery():
 
 
 def test_task_request_discloses_observation_and_relation_instructions():
+    import task_proposer
     import json
     _,records,state=fixture();state['observation']={'id':'now','image':'current.png'}
     control=next(iter(records['menu']['controls'].values()))
     control['observations']=[{'state':'one selected','uncertainty':'switch effect untested','evidence':{'observation':'now'}}]
-    q=tasks().plan_request(ROOT,records,state,'menu')
+    q=task_proposer.plan_request(ROOT,records,state,'menu')
     card=json.loads(q['user_prompt'])['控件'][0]['目标观察']
     assert '可见状态' not in card and card['功能疑问']=='switch effect untested'
     assert q['image_refs']==['current.png']

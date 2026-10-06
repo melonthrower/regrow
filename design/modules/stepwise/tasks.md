@@ -58,5 +58,5 @@ partial/uncertain只描述清点覆盖。当前可信pending优先执行；没�
 真实任务提案曾把scroll挂到列表控件；正常滚动以区块control=None登记，无法与该任务结算。apply_plan现拒绝非空control的scroll提案，沿已有Runner纠错修正；不增加prompt、模型阶段或静默迁移旧任务。旧冻结运行保留原提案/错任务，不能称已修正旧图或实机滚动已验收。
 
 ## 角色与共享任务边界
-TaskProposer拥有提示、schema、历史/控件及共享任务上下文；普通、范围复核、历史清点和纠错刷新沿同一plan_request。region_tasks只保留正式任务登记、覆盖计算和旧公共出口。
+TaskProposer拥有提示、schema、历史/控件及共享任务上下文；普通、范围复核、历史清点和纠错刷新沿同一plan_request。region_tasks保留正式任务登记、覆盖计算及较早的选择/结算出口；plan_request和proposal_schema只由task_proposer提供，普通纠错与观察修订直接调用它。
 [shared_tasks.py](../../../experiments/clock_manual_20260919/shared_tasks.py)负责已确认共享关系上的任务定义/结果引用及失效清理。shared_controls.refresh先刷新关系再同步任务；shared_control_review.apply随后清理已失效继承。无本地证据的继承任务归档后移除，有本地尝试/发现的保留并阻塞复核，真实动作不迁移。

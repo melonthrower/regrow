@@ -56,11 +56,12 @@ def test_navigation_without_known_route_keeps_current_target_card():
 
 
 def test_task_proposal_does_not_reintroduce_unrelated_region_descriptions():
+    import task_proposer
     from tests.test_stepwise_resume_route import fixture
     _,rs,state=fixture()
     rs['main']['description']='Unrelated old Clock 9:33 AM; Mon Oct 5'
     before=deepcopy(rs)
-    q=mod('region_tasks').plan_request(ROOT,rs,state,'menu')
+    q=task_proposer.plan_request(ROOT,rs,state,'menu')
     assert rs['main']['name'] in q['user_prompt']
     assert rs['main']['description'] not in q['user_prompt']
     assert rs==before
@@ -68,6 +69,7 @@ def test_task_proposal_does_not_reintroduce_unrelated_region_descriptions():
 
 @pytest.mark.parametrize('common_map',[False,True])
 def test_task_proposal_history_does_not_expand_other_visible_region(common_map):
+    import task_proposer
     rs=records()
     for rid,refs in [('r1',['a0001','a0003']),('r2',['a0002'])]:
         rs[rid]['tasks']['Inspect']={**task(),'control':'c'+rid,'attempts':refs,'handling':'explore'}
@@ -79,7 +81,7 @@ def test_task_proposal_history_does_not_expand_other_visible_region(common_map):
            'observation':{'id':'now','image':'current.png','control_refs':[]},
            'last_action_result':{'region':'r1','action':'a0003'}}
     before=deepcopy(rs)
-    q=mod('region_tasks').plan_request(ROOT,rs,state,'r1')
+    q=task_proposer.plan_request(ROOT,rs,state,'r1')
     if common_map:
         mod('page_context').attach(q,rs,state)
         history=q['page_context']['history']

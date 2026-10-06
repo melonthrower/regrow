@@ -39,7 +39,7 @@ def coverage(region,records=None):
 
 def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
     import jsonschema
-    jsonschema.validate(reply,proposal_schema())
+    jsonschema.validate(reply,helper('task_proposer').proposal_schema())
     if not reply['evidence'].strip():raise ValueError('inventory needs evidence')
     normalize=helper('action_commands').normalize
     old=region.get('tasks',{});tasks=dict(old);seen=set()
@@ -169,8 +169,3 @@ _settlement = helper('task_settlement')
 task_object_context = _settlement.task_object_context
 settle_task = _settlement.settle_task
 store_findings = _settlement.store_findings
-
-# Proposal context and schema belong to TaskProposer; registration stays here.
-_proposer = helper('task_proposer')
-proposal_schema = _proposer.proposal_schema
-plan_request = _proposer.plan_request

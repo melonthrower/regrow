@@ -27,7 +27,7 @@ def action_defaults(reply):
     # Match action_commands.validate's defaults when reading an older local reply.
     result=deepcopy(reply)
     if isinstance(result.get('action'),dict):
-        result['action']={'skip_task':False,'request_task_review':False,**result['action']}
+        result['action']={'skip_task':False,**result['action']}
     return result
 
 

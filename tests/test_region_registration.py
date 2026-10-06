@@ -343,7 +343,7 @@ def test_parameter_update_keeps_task_owner_separate_from_action_owner(tmp_path):
     for c in r['controls']:c.update(name=c['previous_name'],list_group='')
     r.pop('working_context',None)
     for region in r['regions']:region['task_review_reason']=''
-    request=m.sibling('update_step').build_update_request(ROOT,{'本轮探索任务':'了解标签'},['action_attempts/a2/before.png','action_attempts/a2/after.png'])
+    request=m.sibling('result_updater').build_update_request(ROOT,{'本轮探索任务':'了解标签'},['action_attempts/a2/before.png','action_attempts/a2/after.png'])
     (call/'request.json').write_text(json.dumps(request));(call/'response.schema.json').write_text(json.dumps(request['response_schema']));(call/'response.json').write_text(json.dumps(r))
     pointer=m.commit_update(ROOT,run,'graph_snapshots/0001.json','0002','a2')
     owner=read_region(run,pointer);child=json.loads((run/pointer['snapshot']/'regions/r0002/region.json').read_text())

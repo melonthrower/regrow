@@ -64,8 +64,9 @@ def test_writer_rejects_nonnull_occluded_crop_but_preserves_click_evidence(tmp_p
 
 
 def test_native_discovery_update_and_before_split_require_quality():
-    discovery = mod('discovery_step').schema(ROOT, 'local')
-    update = mod('update_step').build_update_request(ROOT, {}, ['before.png', 'after.png'])
+    import locator
+    discovery = locator.schema(ROOT, 'local')
+    update = mod('result_updater').build_update_request(ROOT, {}, ['before.png', 'after.png'])
     schemas = [discovery, update['response_schema']]
     for schema in schemas:
         for kind in ('regions', 'controls'):

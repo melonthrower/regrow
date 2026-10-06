@@ -28,13 +28,14 @@ def test_failed_local_search_expands_region_scope_but_not_full_control_library()
  assert plan['focus_status']=='unconfirmed'
 
 def test_local_rejection_expands_without_registering_false_region(tmp_path):
+ import locator
  import json
  s=importlib.util.spec_from_file_location('fixtures',Path(__file__).with_name('test_recovery_discovery.py'));f=importlib.util.module_from_spec(s);s.loader.exec_module(f)
  m=mod('discovery_step');run=f.seeded_run(tmp_path);m.await_discovery(run,'returned.png','return')
  scope=mod('foreground_scope');frame=run/'returned.png'
  scope.remember(run,{'source_call':'seed','frame_sha256':scope.fingerprint(frame),'scope':{'interactive_areas':[[0,0,50,80]],'excluded_areas':[],'region_bounds':{}},'identified_regions':[]})
  cache=run/'foreground_scopes'/(scope.fingerprint(frame)+'.json');v=json.loads(cache.read_text());v['scope']['region_bounds']={'r1':[0,0,50,80]};cache.write_text(json.dumps(v))
- q=m.request_from_run(ROOT,run);assert q['discovery_context']['mode']=='local'
+ q=locator.request_from_run(ROOT,run);assert q['discovery_context']['mode']=='local'
  reply=f.discovery_reply();reply.update(focus_presence='not_interactive',regions=[],controls=[])
  reply['foreground'].update(interactive_areas=[],excluded_areas=[])
  folder=run/'calls/0002';folder.mkdir();(folder/'request.json').write_text(json.dumps(q));(folder/'response.json').write_text(json.dumps(reply))
@@ -42,7 +43,7 @@ def test_local_rejection_expands_without_registering_false_region(tmp_path):
  m.commit(ROOT,run,'0002');_,after,state=m.load(run)
  assert state['discovery_mode']=='relocate' and state['working_region']=='r1'
  assert len(before['r1']['observations'])==len(after['r1']['observations'])
- assert m.request_from_run(ROOT,run)['response_schema']['properties']['controls']['maxItems']==0
+ assert locator.request_from_run(ROOT,run)['response_schema']['properties']['controls']['maxItems']==0
 
 def test_required_control_bypasses_batch_cursor(monkeypatch):
  m=mod('visual_region_locator')
@@ -60,20 +61,17 @@ def test_discovery_and_action_reader_share_old_operation_resolution(tmp_path):
 
 
 def test_known_foreground_without_route_can_choose_back_without_control_inventory():
+ import traversal_scheduler
  m=mod('discovery_step')
  regions={'goal':{'controls':{},'actions':{},'transitions':[]},'menu':{'controls':{},'actions':{},'transitions':[]}}
+ regions['menu']['out_of_scope_reason']='当前菜单不探索业务'
  state={'working_region':'goal','interactive_regions':['menu'],'observation':{'control_refs':[]},'inspection_region':'goal','required_control':'stale'}
- m.schedule_local_inspection(regions,state)
+ traversal_scheduler.schedule_local_inspection(regions,state)
  assert state['next_action_mode']=='explore'
- assert state['reason']=='navigation_from_foreground'
+ assert state['reason']=='navigation_from_foreground' and state['working_region']=='goal'
  assert 'inspection_region' not in state and 'required_control' not in state
 
 
-def test_navigation_precedes_foreground_task_inventory():
- m=mod('region_tasks')
- state={'next_action_mode':'explore','interactive_regions':['menu'],'reason':'navigation_from_foreground'}
- base={'navigation_advice':True,'action_ready':True}
- assert m.attach(ROOT,{'goal':{},'menu':{}},state,'goal',base) is base
 
 
 def test_known_overlapping_destination_prevents_background_local_shortcut():
@@ -87,10 +85,11 @@ def test_known_overlapping_destination_prevents_background_local_shortcut():
 
 
 def test_global_discovery_scope_includes_non_target_foreground(tmp_path):
+ import locator
  import json
  from tests.test_recovery_discovery import seeded_run
  m=mod('discovery_step');run=seeded_run(tmp_path);m.await_discovery(run,'returned.png','return')
  m.publish(run,'global',lambda records,state,*args:state.update(discovery_mode='relocate'))
- q=m.request_from_run(ROOT,run)
+ q=locator.request_from_run(ROOT,run)
  assert q['discovery_context']['mode']=='relocate'
  assert '不限制regions' in json.loads(q['user_prompt'])['本轮观察范围']

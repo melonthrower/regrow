@@ -33,8 +33,9 @@ def exercise(tmp_path,stage,run,q,good,bad,attempt=None):
 
 @pytest.mark.parametrize('fault',['missing_fields','wrong_owner','unknown_identity','duplicate_representative'])
 def test_discovery_faults_reject_without_writing_then_resume(tmp_path,fault):
+    import locator
     run=seeded_run(tmp_path);d=mod('discovery_step');d.await_discovery(run,'returned.png','fault-case')
-    q=d.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good)
+    q=locator.request_from_run(ROOT,run);good=strict_reply();bad=deepcopy(good)
     if fault=='missing_fields':del bad['foreground']['description'];del bad['controls'][0]['state']
     elif fault=='wrong_owner':bad['controls'][0]['region_index']=99
     elif fault=='unknown_identity':bad['controls'][0]['previous_name']='不存在的按钮'

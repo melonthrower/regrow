@@ -473,7 +473,7 @@ def observe(runner,job):
         for rid,r in records.items():
             for v in r['observations']+[v for c in r['controls'].values() for v in c['observations']]:
                 if v.get('image'):v['image']=str((snapshot/'regions'/rid/v['image']).resolve())
-        q=discovery.prepare(runner.root,records,local,str(frame.resolve()))
+        q=helper('locator').prepare(runner.root,records,local,str(frame.resolve()))
         queries=[r for r in (job.get('candidate') or {}).get('regions',[]) if r.get('identity')=='uncertain']
         if queries and not q['discovery_context'].get('completion'):
             q=helper('discovery_completion').recall_into_request(q,records,queries)
@@ -493,7 +493,7 @@ def observe(runner,job):
     runner.save(job)
     try:
         jsonschema.validate(reply,q['response_schema'])
-        if job['stage']!='update':discovery.validate_identity(reply)
+        if job['stage']!='update':helper('locator').validate_identity(reply)
     except (ValueError,jsonschema.ValidationError) as error:
         evidence['validation']={'status':'rejected','error':helper('step_repair').diagnostic(error)}
         runner.save(job)
@@ -528,7 +528,7 @@ def observe_registered(runner,job):
         for rid,r in records.items():
             for v in r['observations']+[v for c in r['controls'].values() for v in c['observations']]:
                 if v.get('image'):v['image']=str((snapshot/'regions'/rid/v['image']).resolve())
-        q=discovery.prepare(runner.root,records,local,str(frame.resolve()))
+        q=helper('locator').prepare(runner.root,records,local,str(frame.resolve()))
         dynamic=json.loads(q['user_prompt'])
         dynamic.update(历史疑问=job['observation_question'],用途='补充当前定位；不推断原动作效果。')
         manifest=runner.run/'run_manifest.json'

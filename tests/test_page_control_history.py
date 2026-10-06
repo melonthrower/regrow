@@ -48,11 +48,12 @@ def test_parameter_goal_keeps_related_events_and_gaps_without_intervening_noise(
 
 
 def test_planning_standalone_history_merges_into_map_once(tmp_path):
+    import task_proposer
     from tests.test_stepwise_resume_route import fixture
     _,records,state=fixture()
     records['main']['actions']['a0001']={'control':'open','operation':'click','delivery':'executed_receipt_zero','result':{'description':'unique observed business change'},'interactive_regions':['menu']}
     state['last_action_result']={'region':'main','action':'a0001'}
-    q=mod('region_tasks').plan_request(ROOT,records,state,'main')
+    q=task_proposer.plan_request(ROOT,records,state,'main')
     assert q['user_prompt'].count('unique observed business change')==1
     mod('page_context').attach(q,records,state)
     obj=json.loads(q['user_prompt'])

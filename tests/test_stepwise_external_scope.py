@@ -34,16 +34,16 @@ def test_known_external_is_skipped_but_ordinary_unknown_task_remains(tmp_path):
 
 
 def test_visible_completed_work_is_retired(tmp_path,monkeypatch):
-    run,q,_=saved(tmp_path);d=tasks().helper('discovery_step');reg=d.registration();orig=reg.sibling
+    import traversal_scheduler
+    run,q,_=saved(tmp_path);d=tasks().helper('discovery_step');original_helper=traversal_scheduler.helper
     def seed(records,state,*args):
         r=records['r1'];r['tasks']={};r['controls']={};r['task_inventory']={'inventory':'complete','controls':[]}
         state.update(next_action_mode='explore',working_region='r1',interactive_regions=['r1'])
     d.publish(run,'complete-visible',seed)
     calls=[]
     from types import SimpleNamespace
-    monkeypatch.setattr(reg,'sibling',lambda name:SimpleNamespace(advance_unfinished=lambda run:calls.append(run) or {'region':'next'}) if name=='task_deferral' else orig(name))
-    monkeypatch.setattr(d,'registration',lambda:reg)
-    assert d.retire_completed_goal(run) and calls==[run]
+    monkeypatch.setattr(traversal_scheduler,'helper',lambda name:SimpleNamespace(advance_unfinished=lambda run:calls.append(run) or {'region':'next'}) if name=='task_deferral' else original_helper(name))
+    assert traversal_scheduler.retire_completed_goal(run) and calls==[run]
 
 
 def test_service_scope_review_keeps_attempts_without_claiming_execution():
@@ -80,6 +80,7 @@ def test_scope_review_discloses_later_foreground_for_active_owner(monkeypatch):
 
 
 def test_completed_discovery_target_switches_without_claiming_location(tmp_path):
+    import traversal_scheduler
     run,_,_=saved(tmp_path);d=tasks().helper('discovery_step')
     def seed(records,state,*args):
         r=records['r1'];r['tasks']={};r['controls']={};r['task_inventory']={'inventory':'complete','controls':[]}
@@ -87,7 +88,7 @@ def test_completed_discovery_target_switches_without_claiming_location(tmp_path)
         state.update(next_action_mode='discover',working_region='r1',interactive_regions=[],observation=None,
                      inspection_region='r1',required_control='old',discovery_mode='local',pending_frame='latest.png')
     d.publish(run,'complete-awaiting-location',seed)
-    assert d.retire_completed_goal(run)
+    assert traversal_scheduler.retire_completed_goal(run)
     _,_,state=d.load(run)
     assert state['working_region']=='next'
     assert state['next_action_mode']=='discover' and state['observation'] is None

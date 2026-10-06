@@ -25,6 +25,6 @@ def test_materialization_records_explicit_review_reason():
 
 
 def test_live_update_schema_requires_new_field():
-    q=mod('update_step').build_update_request(ROOT,{},[])
+    q=mod('result_updater').build_update_request(ROOT,{},[])
     region=q['response_schema']['properties']['regions']['items']
     assert 'task_review_reason' in region['required']

@@ -47,14 +47,16 @@ def test_similar_arrow_on_another_page_is_not_an_identity_or_guard(tmp_path):
 
 
 def test_native_prompt_keeps_focus_write_scope(tmp_path,monkeypatch):
+    import locator
     records,partition=context(tmp_path)
     for rid,r in records.items():r.update(id=rid,tasks={},observations=[])
     m=mod('discovery_step');reg=m.registration();sibling=reg.sibling
-    locator=sibling('visual_region_locator')
-    monkeypatch.setattr(locator,'plan',lambda *a,**k:dict(mode='local',focus='body',regions=[],controls=[],next_offset=0,partition_context=partition))
-    reg.sibling=lambda n:locator if n=='visual_region_locator' else sibling(n)
-    monkeypatch.setattr(m,'registration',lambda:reg)
-    q=m.prepare(ROOT,records,{'working_region':'body'},str(tmp_path/'frame.png'))
+    visual_matcher=sibling('visual_region_locator')
+    monkeypatch.setattr(visual_matcher,'plan',lambda *a,**k:dict(mode='local',focus='body',regions=[],controls=[],next_offset=0,partition_context=partition))
+    reg.sibling=lambda n:visual_matcher if n=='visual_region_locator' else sibling(n)
+    original_helper=locator.helper
+    monkeypatch.setattr(locator,'helper',lambda name:reg if name=='register_update' else original_helper(name))
+    q=locator.prepare(ROOT,records,{'working_region':'body'},str(tmp_path/'frame.png'))
     text=json.loads(q['user_prompt'])
     assert text['同帧已确认区块划分']['其他已确认区块'][0]['名称']=='导航'
     assert 'back' not in q['discovery_context']['control_names'].values()
@@ -62,11 +64,12 @@ def test_native_prompt_keeps_focus_write_scope(tmp_path,monkeypatch):
 
 
 def test_supplement_keeps_partition_context(tmp_path):
+    import locator
     records,partition=context(tmp_path)
     m=mod('discovery_step')
     for rid,r in records.items():r.update(id=rid,tasks={},observations=[])
     q={'discovery_context':{'mode':'local','focus':'body','region_names':{'内容':'body'},'control_names':{},'partition_context':partition},
-       'user_prompt':'{}','system_prompt':'','response_schema':m.schema(ROOT,'local'),'fixed_parts':[]}
+       'user_prompt':'{}','system_prompt':'','response_schema':locator.schema(ROOT,'local'),'fixed_parts':[]}
     batch={'frame':str((tmp_path/'frame.png').resolve()),'sha256':mod('discovery_completion').fingerprint(tmp_path/'frame.png'),
            'request':q,'pending':[{'item':'按钮','proposal':{'name':'按钮','description':'未确认'}}],'regions':['body'],'controls':[]}
     result=mod('discovery_completion').supplement(ROOT,records,{'discovery_completion':batch},str(tmp_path/'frame.png'))

@@ -28,8 +28,9 @@ def test_system_stop_and_uncertain_delivery_are_environment_pause():
 
 
 def test_discovery_and_update_contracts_accept_system_error():
-    import discovery_step,update_step,json
-    contract=discovery_step.schema(ROOT,'relocate',True)
+    import locator
+    import discovery_step,result_updater,json
+    contract=locator.schema(ROOT,'relocate',True)
     assert 'system_error' in contract['properties']['foreground']['properties']['exception']['enum']
     for path in ('首屏观察.schema','动作后更新.schema'):
         value=json.loads((ROOT/'遍历prompt/输出格式'/path).read_text())

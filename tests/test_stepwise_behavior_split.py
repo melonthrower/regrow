@@ -6,7 +6,7 @@ from tests.test_stepwise_update_region_matching import case
 
 def test_generated_update_schema_meets_service_required_contract():
     from tests.test_stepwise_resume_route import ROOT
-    request=tasks().helper('update_step').build_update_request(ROOT,{},[])
+    request=tasks().helper('result_updater').build_update_request(ROOT,{},[])
     def check(value):
         if isinstance(value,dict):
             if value.get('type')=='object':

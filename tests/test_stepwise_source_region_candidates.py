@@ -44,7 +44,7 @@ def test_other_entry_can_recall_old_region_and_before_context_is_retained(tmp_pa
     hits=[{'region_ref':'old','name':'old','score':1,'bbox':[0,0,40,30]}]
     reference=m.reference(rs,tmp_path,recall,hits,frame)
     assert reference['region_ref']=='old'
-    rows=mod('update_step').known_regions(rs,{'interactive_regions':['before']},
+    rows=mod('result_updater').known_regions(rs,{'interactive_regions':['before']},
         {'region_ref':'source','working_region':'source'},hits,source_destinations=recall['destinations'])
     assert {r['region_ref'] for r in rows}=={'source','before','old'}
 

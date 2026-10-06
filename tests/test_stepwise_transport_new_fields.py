@@ -14,7 +14,7 @@ def test_resumed_request_gets_strict_fields_without_rewriting_original(tmp_path,
     (tmp_path/'initial/regions').mkdir(parents=True)
     (tmp_path/'initial/runtime_state.json').write_text('{}')
     runner=m.RecoveryRun(ROOT,tmp_path)
-    request=mod('update_step').build_update_request(ROOT,{},[])
+    request=mod('result_updater').build_update_request(ROOT,{},[])
     if nested:request['response_schema']={'properties':{'proposal':{'anyOf':[request['response_schema'],{'type':'null'}]}}}
     original=deepcopy(request)
     def transport(argv,**kwargs):

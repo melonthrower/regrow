@@ -92,12 +92,13 @@ def test_forbidden_prerequisite_stays_blocked_after_reobservation(tmp_path):
 
 
 def test_prerequisite_reason_reaches_task_review(tmp_path):
+    import task_proposer
     import json
     from tests.test_stepwise_resume_route import fixture,ROOT
     _,records,state=fixture();region=records['menu']
     region['tasks']={'inspect':{'control':'open','handling':'defer','status':'blocked','action':'click','task_type':'single_action','reason':'inspect options',
         'deferral':{'reason':'Requires forbidden connection change','retry_when':'Explicit review required'}}}
-    q=tasks().plan_request(ROOT,records,state,'menu')
+    q=task_proposer.plan_request(ROOT,records,state,'menu')
     item=json.loads(q['user_prompt'])['已有任务'][0]
     assert item['暂挂原因']=='Requires forbidden connection change'
     assert item['恢复条件']=='Explicit review required'

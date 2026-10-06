@@ -7,7 +7,7 @@ import pytest
 ROOT=Path(__file__).resolve().parents[1]/'experiments/clock_manual_20260919'
 
 def module():
-    s=importlib.util.spec_from_file_location('update_step',ROOT/'update_step.py')
+    s=importlib.util.spec_from_file_location('result_updater',ROOT/'result_updater.py')
     m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 
 def reply(exception='external_app'):

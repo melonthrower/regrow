@@ -138,12 +138,13 @@ def test_business_function_requires_object_and_completion_boundary():
 
 
 def test_registration_prompt_parts_are_loaded_only_after_exploration():
+    import task_proposer
     m,region,_=alarm_region();flow,r,state=fixture();state['interactive_regions']=['menu']
     expected=['任务/区块功能登记.prompt','功能识别/单区块任务判定规则.prompt','功能识别/单区块任务正反例.prompt']
     q=module().request(ROOT,region,state)
     assert [p['path'] for p in q['fixed_parts']]==expected
     assert q['system_prompt']=='\n\n'.join((ROOT/'遍历prompt'/p).read_text() for p in expected)
-    route=m.plan_request(ROOT,r,state,'menu')
+    route=task_proposer.plan_request(ROOT,r,state,'menu')
     assert not set(expected)&{p['path'] for p in route['fixed_parts']}
     m.apply_plan(r['menu'],proposal([row()]),'p')
     action=m.attach(ROOT,r,state,'menu',flow.assemble_context(ROOT,r,state,'menu'))

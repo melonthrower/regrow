@@ -15,8 +15,9 @@ def complete_reply():
 
 
 def test_discovery_and_bad_correction_then_good_correction_preserve_evidence(tmp_path):
+    import locator
     run=seeded_run(tmp_path);d=mod('discovery_step');d.await_discovery(run,'returned.png','fault-case')
-    q=d.request_from_run(ROOT,run);good=complete_reply();bad=deepcopy(good)
+    q=locator.request_from_run(ROOT,run);good=complete_reply();bad=deepcopy(good)
     bad['controls'][0]['region_index']=99
     before=(run/'knowledge_current.json').read_bytes()
     old={p:p.read_bytes() for p in (run/'knowledge_snapshots').rglob('*.json')}
@@ -51,8 +52,9 @@ def test_framework_publication_failure_keeps_old_pointer_then_retry(tmp_path):
 
 
 def test_repeated_identical_bad_correction_stops_without_publishing(tmp_path):
+    import locator
     run=seeded_run(tmp_path);d=mod('discovery_step');d.await_discovery(run,'returned.png','fault-case')
-    q=d.request_from_run(ROOT,run);bad=complete_reply();bad['controls'][0]['region_index']=99
+    q=locator.request_from_run(ROOT,run);bad=complete_reply();bad['controls'][0]['region_index']=99
     before=(run/'knowledge_current.json').read_bytes();calls=Calls(run,[bad,answer('revise',bad)])
     m=repair()
     with pytest.raises(m.Paused):m.Runner(ROOT,run,calls,None,lambda:10).perform('discovery',q)
@@ -61,16 +63,14 @@ def test_repeated_identical_bad_correction_stops_without_publishing(tmp_path):
 
 
 def test_failed_action_receipt_cannot_become_successful_update():
-    from tests.test_shared_step_repair import update_case
-    # Receipt check is tested with a structurally valid current-schema response.
-    schema={'type':'object'}
-    result=mod('update_step').route_update(ROOT,{}, {'exit_code':1},schema=schema)
-    assert result['status']=='execution_unconfirmed'
+    updater=mod('result_updater')
+    reply={'action_result':{'exception':'external_app'},'regions':[],'controls':[]}
+    result=updater.route_update(ROOT,reply,{'exit_code':1},schema={'type':'object'})
+    assert result['status']=='execution_unconfirmed' and result['next_action_mode']=='review_execution'
+    result=updater.route_update(ROOT,reply,{'exit_code':0},schema={'type':'object'})
+    assert result['status']=='validated_candidate' and result['next_action_mode']=='recover'
 
 
-def test_unresolved_action_cannot_complete_other_control():
-    from tests.test_clock_registration_provenance import test_wrong_control_result_is_preserved_but_does_not_complete_task
-    test_wrong_control_result_is_preserved_but_does_not_complete_task()
 
 
 def test_real_update_transaction_keeps_action_without_false_completion(tmp_path):
@@ -84,7 +84,7 @@ def test_real_update_transaction_keeps_action_without_false_completion(tmp_path)
     (selection/'request.json').write_text(json.dumps({'source':{'snapshot':str(snapshot.relative_to(run)),'observation':'o2'}}))
     (selection/'response.json').write_text('{}')
     binding_path=run/'action_attempts/a2/binding.json';binding=json.loads(binding_path.read_text());binding.update(task_region='r1',task_name='inspect Settings');binding_path.write_text(json.dumps(binding))
-    q=mod('update_step').build_update_request(ROOT,{'本轮探索任务':'inspect Settings','任务目标':{'type':'single_action'}},q['screenshots'])
+    q=mod('result_updater').build_update_request(ROOT,{'本轮探索任务':'inspect Settings','任务目标':{'type':'single_action'}},q['screenshots'])
     reply['action_result'].update(exception='none',returns_to_previous=False)
     reply['exploration_update'].pop('entry_name',None)
     reply['source_region_split']=None

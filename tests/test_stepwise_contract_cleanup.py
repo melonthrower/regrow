@@ -9,7 +9,7 @@ def test_unused_action_arguments_are_normalized():
     assert m.normalize(p)['text'] is None and m.normalize(p)['end_x'] is None
 
 def test_update_does_not_ask_model_for_framework_working_region():
-    q=tasks().helper('update_step').build_update_request(ROOT,{},['a','b'])
+    q=tasks().helper('result_updater').build_update_request(ROOT,{},['a','b'])
     assert 'working_context' not in q['response_schema']['properties']
 
 def test_back_needs_no_display_label_or_prepermission():

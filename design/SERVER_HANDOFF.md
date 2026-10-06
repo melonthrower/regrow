@@ -1,5 +1,15 @@
 # 服务器续接工作
 
+## 2026-10-06 桌面Clock 100调用上限实测：最新桌面停止点
+
+当前个人服务器，工作区/data/shenghonghui/projects/GUI-ReWalk；活动开发checkout见DEVELOPMENT。本批专用容器rewalk-clock-fresh-20261005-02、org.gnome.clocks，备份核验后仅清空Clock应用数据，新图独立于所有旧run。先前桌面停点不再代表当前应用数据。
+
+真实run为artifacts/runs/desktop_clock_100_20261006_01/desktop/runs/org.gnome.clocks_20261006T152951_301e22a0；冻结source-v2对应未改运行代码/提示的5f9325fda2692ddc19d21edb08218d4e1ac2fb16，hash 2fe7a8f727edc870cdd63f85b78f5495a5d78cd4b3a98c3090b602b12445b124。整批max100HTTP、GUI总数不限，小步6HTTP/6GUI及恢复保护保留；先2轮8HTTP/2GUI，再连续91HTTP/35GUI，两段合计99HTTP/37GUI、35实际动作、约57.2分钟。尾余1不足动作选择+结果登记，budget_limit正常停，未耗尽到100；无接口失败、无异常退出。
+
+最后a0035/0099实际打开Edit Alarm，显示00:13、Ring5/Snooze10；未在最后一步修改或提交，当前仍在编辑对话框。pointer=knowledge_snapshots/a0035-0099-8c8916ac8244，无pending_step/execution_pending/visual_navigation_pending，无活动驱动；VM保留运行，秒表仍有运行指示，闹钟保持启用外观，本轮结束后未清理应用状态。全部35动作已提交，禁止把a0035当未执行重放。
+
+图14Region/96控件、任务22done/43record_only/2pending/2blocked，最新编辑页r0014尚未清点任务，不是全应用完成。a0035控件c0080未可靠关联，control_ref为空并保留preparatory_action，其探索任务仍pending；动作/观察已登记。历史添加入口两项blocked及另一添加计时器pending保留。正常纠错4次继续，World一次无效切换保留后再定位成功；未触发应用故障恢复。截图、原答、审查与便携包见desktop_clock_100_20261006_01批次。Android及其他设备未操作。
+
 ## 2026-10-06 三步组件验证后的安卓最新停止点
 
 个人服务器、工作区根/data/shenghonghui/projects/GUI-ReWalk；活动源码见根DEVELOPMENT。本批真实run为artifacts/runs/component_scheduler_20261006_01/live-mobile-v3/run，冻结源同批source-v3，hash c7754f7a536d1e2045a57c71df23a30ff6d48c1f6034a41475b18872bdce9f37。旧clock_idle_fix run完整保留，设备当前已由本新副本推进，不能直接把旧停点当现场。

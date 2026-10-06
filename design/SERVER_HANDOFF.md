@@ -9,7 +9,9 @@
 
 两端真实源v7(hash a0ee53582ccf2f9cab638f1b02c33d93788d586d80d4b77913f0c887b3fe89b0、bbc66ba)，无pending_step/execution_pending/visual_navigation_pending。只读dashboard仍显示新批最近真实观察/区块树；服务信息留本地dashboard-service.json，不在文档记录私有端点。
 
-source-v8仅新增任务提案scroll归属校验；完整保存帧副本native-v8/saved-scroll-owner为1HTTP/0GUI，不是现场图或已滚动。旧错任务、前景待办优先级、裁图/Timer字段遗漏、按钮状态误作参数仍开放。未来续跑先明确源/预算、核对实时图和上述任务归属，不重放已执行动作，也不假称旧图完整。完整整批报告/独立审查/便携ZIP见to_astra/clock_restart_20261006_01；本批无新GUI追加。
+source-v8仅新增任务提案scroll归属校验；完整保存帧副本native-v8/saved-scroll-owner为1HTTP/0GUI，不是现场图或已滚动。旧0032非空绑定任务保留，未静默迁移。未来续跑先明确源/预算、核对实时图和任务归属，不重放已执行动作。整批原报告/便携ZIP保留在to_astra/clock_restart_20261006_01及_v2；本批无新GUI追加。
+
+审查判断已校准，详见to_astra/clock_review_clarification_20261006_01：相同模板仍需结合当前图、owner和位置；未登记数字/预算后有限覆盖不证明清点或任务结算回归；添加禁用有当次条件及后续启用证据；返回设置未删除列表待办，额外聚焦只一次，均未证明行为缺陷。不能把原B1–B5当五项确定错误继续加规则，也不据此声明全图无错。此次仅更正文档，0新增模型/GUI。
 
 
 ## 2026-10-06 最小遍历与上下文修订：最新真实停止点

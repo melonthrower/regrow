@@ -64,3 +64,7 @@ Python入口负责读取，配套HTML负责布局。复用 `progress.snapshot`�
 原生auto会话一次连续推进，人工仅会话结束后审查区块、任务、逐动作调用和异常。每小步最多6次HTTP调用和6条GUI命令，正常调用与纠错合计，但run_session把min(6,剩余额度)交给run_step，不要求尾段还剩6 HTTP/GUI；实际命令数仍由发送入口强制计账。GUI完整命令序列不足则不开始该动作；HTTP不足或修订额度耗尽保留pending。空闲知识登记同样使用HTTP余量，GUI为0。浏览器root-review只展示整批审查，不是调度门槛；“已检查批次”按会话计，旧单小步会话亦仍按其保存会话计。
 
 HTTP不足2次时，已消费调用的小步以ready_next_round续接本会话余量；未消费调用的新小步以budget_limit停止，避免空尾段循环。待登记证据保留，不能据此重投已执行GUI。
+
+
+## 收尾后重新调度
+auto在scope_idle/region_complete后执行一次有界、0GUI的finalize_knowledge，再回到原run_step。若该步仍为空闲即停止，不能仅因pending、knowledge_complete或新快照重复整理；正常动作/发现/清点等推进后，后续空闲可再次整理。每段知识阶段单独保存knowledge、knowledge-0002等目录，HTTP只并入当前session一次。暂停、预算、异常、review_pending和其他受阻结果保留原停止边界。跨会话预算仍由已有续接入口从旧账扣除，不因新session重置本批100额度。

@@ -328,3 +328,6 @@
 本批跨阶段最小遍历回归：[test_minimal_traversal.py](test_minimal_traversal.py)，覆盖partial可信动作、缺口保留、移动续接及参数局部缺口；具体通过范围见月度日志。
 
 上下文相关性：`tests/test_context_relevance.py`核对身份轻量索引/普通目标卡/显式努力引用/原证据不变/可选模板拒绝与点击范围严格分界；`tests/test_history_current_state.py`核对当前状态看本轮图。
+
+
+本批局部退出/空闲续接：[test_idle_continuation.py](test_idle_continuation.py)，覆盖范围内deferred导航、收尾后正常单步、再次空闲停止、独立知识账本和暂停；相邻预算见test_session_budget_tail.py。此索引不把原有其他测试视为全通过。

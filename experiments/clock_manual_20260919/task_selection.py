@@ -24,6 +24,11 @@ def attach(root,records,state,working,base):
     target=continuing.get('completion_action',{})
     if in_progress and target.get('region') in refs:rid=target['region']
     if rid is None:return base
+    # Scope excludes local exploration, not leaving this foreground for unfinished work.
+    if (base.get('navigation_advice') and state.get('deferred_routing_target')==working
+            and working not in refs and working in records and not in_progress
+            and helper('task_deferral').runnable(records[working],records)):
+        return base
     region=records[rid];progress=coverage(region,records)
     if progress.get('excluded'):
         return {**base,'action_ready':False,'stage':'region_complete','reason':'outside current run exploration scope'}
@@ -34,7 +39,6 @@ def attach(root,records,state,working,base):
     if active:
         task=records[active['region']].get('tasks',{}).get(active['name'])
         if task and task['status']=='pending' and helper('task_prerequisites').in_scope(records[active['region']],task,records):continuation=(active['region'],active['name'],task)
-    if state.get('deferred_routing_target')==working and working not in refs and not in_progress:return base
     gap=region.get('registration_gaps',{}).get('task_proposal',{})
     inventory_scroll=helper('inventory_scroll').active(records,state,rid)
     if (not progress['inventory_complete'] and not inventory_scroll and not continuation

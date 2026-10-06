@@ -1,4 +1,4 @@
-"""Drive the existing bounded step repeatedly; pause only after a settled round."""
+"""Drive bounded steps and resume normal scheduling after idle knowledge work."""
 import argparse
 from itertools import count
 import json
@@ -21,6 +21,8 @@ def run_session(root,run,out,mode,step=run_step):
         account['end_call']=int(json.loads(manifest.read_text()).get('last_call',0)) if manifest.exists() else account['start_call']
         target=out/'session.json';temp=out/'session.tmp';temp.write_text(json.dumps(account,ensure_ascii=False,indent=2));temp.replace(target)
     save()
+    idle_recheck=False
+    knowledge_count=0
     for index in count():
         if account['max_rounds'] is not None and index>=account['max_rounds']:
             account['status']='round_limit';break
@@ -50,23 +52,32 @@ def run_session(root,run,out,mode,step=run_step):
         if result['status']=='budget_limit':
             account.update(status='budget_limit',last_result='budget_limit');break
         if mode=='step':account['status']='paused_after_step';break
+        if (result['status'] in ('scope_idle','region_complete') and not idle_recheck
+                and (account['max_http'] is None or account['http_started']<account['max_http'])):
+            knowledge_count+=1
+            folder=out/('knowledge' if knowledge_count==1 else f'knowledge-{knowledge_count:04d}')
+            try:
+                remaining=min(6,account['max_http']-account['http_started']) if account['max_http'] is not None else 6
+                knowledge=finalize_knowledge(root,run,folder,max_http=remaining)
+                account['knowledge_status']=knowledge['status']
+            except CapturePaused:
+                account['status']='paused_by_user'
+                break
+            except BaseException:
+                account['status']='interrupted'
+                raise
+            finally:
+                if (folder/'budget.json').exists():
+                    budget=json.loads((folder/'budget.json').read_text())
+                    account['http_started']+=budget['http_started'];account['gui_started']+=budget['gui_started']
+                save()
+            # The normal step decides whether new work can advance. A second idle
+            # result stops; pending tasks or a new snapshot alone cannot restart finishing.
+            idle_recheck=True
+            continue
         if result['status'] not in ('updated','paused_after_recovery_discovery','task_proposal','ready_next_round','repair_pending','task_deferred'):
             account.update(status='needs_review_or_complete',last_result=result['status']);break
-    if (account.get('last_result') in ('scope_idle','region_complete') and mode=='auto'
-            and not pause.exists() and (account['max_http'] is None or account['http_started']<account['max_http'])):
-        folder=out/'knowledge'
-        try:
-            remaining=min(6,account['max_http']-account['http_started']) if account['max_http'] is not None else 6
-            result=finalize_knowledge(root,run,folder,max_http=remaining)
-            account['knowledge_status']=result['status']
-        except BaseException:
-            account['status']='interrupted'
-            raise
-        finally:
-            if (folder/'budget.json').exists():
-                budget=json.loads((folder/'budget.json').read_text())
-                account['http_started']+=budget['http_started'];account['gui_started']+=budget['gui_started']
-            save()
+        idle_recheck=False
     save();return account
 
 

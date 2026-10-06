@@ -39,3 +39,7 @@ task_selection向动作步提供completion_target（默认原控件/动作，必
 
 ## 记录缺口与动作许可
 已有可信pending/续接任务不等待inventory_complete；局部缺口不撤销可信当前观察。滚动任务允许必要点击、返回、输入等准备动作，准备动作不结束滚动。historical_inventory仅在GUI空闲后的知识整理阶段调度；已执行记录的程序reconcile仍在current执行。
+
+
+## 范围排除与离开前景
+当前区块被排除只禁止在其中派探索义务。task_selection.attach先保留deferred_routing_target指向范围内runnable目标的既有导航，再检查当前区块是否排除；新增deferred保留分支要求目标仍可调度；该分支不放行排除目标或已无工作的目标，原有其他导航优先分支未扩大审查。仍由正常动作请求、当前截图、绑定与投递流程决定怎样离开，不固定返回动作。

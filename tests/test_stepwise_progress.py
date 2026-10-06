@@ -125,14 +125,14 @@ def test_continuous_pause_after_registration_and_charge_failed_round(tmp_path,mo
     import run_progress_session as m
     import pytest
     out=tmp_path/'auto';calls=[]
-    def step(root,run,folder):
+    def step(root,run,folder,*,limits=None):
         folder.mkdir();calls.append(folder)
         (folder/'budget.json').write_text(json.dumps({'http_started':2,'gui_started':1}))
         (folder/'result.json').write_text(json.dumps({'status':'updated'}))
         if len(calls)==2:out.with_suffix('.pause').touch()
     result=m.run_session(ROOT,tmp_path,out,'auto',step)
     assert result['status']=='paused_by_user' and len(calls)==2 and result['http_started']==4
-    def fail(root,run,folder):
+    def fail(root,run,folder,*,limits=None):
         folder.mkdir();(folder/'budget.json').write_text(json.dumps({'http_started':1,'gui_started':1}))
         raise ValueError('delivery uncertain')
     with pytest.raises(ValueError):m.run_session(ROOT,tmp_path,tmp_path/'failed','auto',fail)
@@ -145,7 +145,7 @@ def test_continuous_budget_and_single_step_use_same_round(tmp_path,monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT))
     import run_progress_session as m
     calls=[]
-    def step(root,run,folder):
+    def step(root,run,folder,*,limits=None):
         folder.mkdir();calls.append(folder)
         (folder/'budget.json').write_text(json.dumps({'http_started':6,'gui_started':2}))
         (folder/'result.json').write_text(json.dumps({'status':'updated'}))
@@ -193,7 +193,7 @@ def test_session_uses_run_budget(tmp_path,monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT))
     import run_progress_session as m
     (tmp_path/'run_manifest.json').write_text(json.dumps({'session_limits':{'max_http':120,'max_gui_commands':120,'max_rounds':80}}))
-    def step(root,run,folder):
+    def step(root,run,folder,*,limits=None):
         folder.mkdir()
         (folder/'budget.json').write_text(json.dumps({'http_started':6,'gui_started':2}))
         (folder/'result.json').write_text(json.dumps({'status':'updated'}))
@@ -206,7 +206,7 @@ def test_unlimited_session_keeps_accounting_and_pause(tmp_path,monkeypatch):
     import run_progress_session as m
     (tmp_path/'run_manifest.json').write_text(json.dumps({'session_limits':{'max_http':None,'max_gui_commands':None,'max_rounds':None}}))
     out=tmp_path/'unlimited';calls=[]
-    def step(root,run,folder):
+    def step(root,run,folder,*,limits=None):
         folder.mkdir();calls.append(folder)
         (folder/'budget.json').write_text(json.dumps({'http_started':6,'gui_started':6}))
         (folder/'result.json').write_text(json.dumps({'status':'updated'}))
@@ -231,7 +231,7 @@ def test_capture_pause_stops_session_without_losing_accounting(tmp_path,monkeypa
     monkeypatch.syspath_prepend(str(ROOT))
     import run_progress_session as m
     pending=tmp_path/'execution_pending.json';pending.write_text('receipt retained')
-    def step(root,run,folder):
+    def step(root,run,folder,*,limits=None):
         folder.mkdir();(folder/'budget.json').write_text(json.dumps({'http_started':1,'gui_started':1}))
         raise m.CapturePaused('pause')
     result=m.run_session(ROOT,tmp_path,tmp_path/'paused_capture','auto',step)

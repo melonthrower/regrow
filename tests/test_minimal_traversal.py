@@ -228,11 +228,11 @@ def test_idle_session_finalizes_knowledge_after_gui_and_counts_http(tmp_path,mon
     run=tmp_path/'run';run.mkdir()
     (run/'run_manifest.json').write_text(json.dumps({'last_call':0,'session_limits':{'max_http':12}}))
     events=[]
-    def step(root,run,out):
+    def step(root,run,out,*,limits=None):
         events.append('gui-idle');out.mkdir()
         (out/'budget.json').write_text(json.dumps({'http_started':1,'gui_started':0}))
         (out/'result.json').write_text(json.dumps({'status':'scope_idle'}))
-    def finish(root,run,out):
+    def finish(root,run,out,*,max_http=6):
         events.append('knowledge');out.mkdir()
         (out/'budget.json').write_text(json.dumps({'http_started':2,'gui_started':0}))
         return {'status':'knowledge_complete'}

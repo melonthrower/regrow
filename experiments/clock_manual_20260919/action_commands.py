@@ -83,13 +83,14 @@ def execute(transport,proposal,folder,*,input_context=None):
     folder=Path(folder);folder.mkdir(parents=True,exist_ok=True)
     platform=getattr(transport,"platform","android")
     argv=commands(proposal,platform)
-    if transport.account['gui_started']+len(argv)>transport.account['max_gui_commands']:raise ValueError('GUI command budget exhausted')
+    from model_transport import BudgetExhausted
+    if transport.account['gui_started']+len(argv)>transport.account['max_gui_commands']:raise BudgetExhausted('GUI command budget exhausted')
     def save(name,data):(folder/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
     save('dispatch.json',{'action':proposal,'commands':argv,'status':'dispatching'})
     if input_context is not None:save('input_context.json',input_context)
     receipts=[];steps=[];target=None
     def send(command,step):
-        if transport.account['gui_started']>=transport.account['max_gui_commands']:raise ValueError('GUI command budget exhausted')
+        if transport.account['gui_started']>=transport.account['max_gui_commands']:raise BudgetExhausted('GUI command budget exhausted')
         transport.account['gui_started']+=1;transport.save()
         save('pending_command.json',{'command':command,'step':step})
         try:

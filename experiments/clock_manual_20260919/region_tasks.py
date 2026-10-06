@@ -132,6 +132,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if same:
                 name=same[0];seen.add(name)
                 prior=tasks[name]
+                if prior.get('status')=='record_only' and row['handling']=='explore':
+                    raise ValueError('旧record任务遗漏未知交互内容，请用field=reopen_task修订原任务：'+name)
                 helper('task_settlement').refresh_movement(region,prior,state)
                 if row.get('findings'):
                     store_findings(prior,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
@@ -140,6 +142,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         if row['handling']=='defer':t.update(status='blocked',blocker={'condition':'review_required','source_call':call})
         if name in old:
             prior=old[name]
+            if prior.get('status')=='record_only' and t['handling']=='explore':
+                raise ValueError('旧record任务遗漏未知交互内容，请用field=reopen_task修订原任务：'+name)
             if scope_review and prior.get('status') in ('pending','blocked') and t['handling']=='record' and prior['handling']!='record':
                 if normalize(prior)['action']!=t['action'] or any(prior[k]!=t[k] for k in ('control','task_type')):
                     raise ValueError('范围复核不能更换任务对象或动作')

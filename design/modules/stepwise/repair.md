@@ -56,3 +56,6 @@
 原纠错/恢复链已存在，格式通过不证明身份或导航成功。重复失败、错误登记或任务跑偏需暂停讨论；缺证据时不堆叠新重试。
 
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#repair)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
+
+## 任务判断修订与预算停止
+发现/任务清点纠错的task编辑能力增加reopen_task：before为原控件名，after为具体未知内容目标，evidence说明旧判断遗漏。原任务留revisions，不迁移执行历史。正常清点与改名提案同样诊断旧record变explore，沿已有事务校验登记。HTTP/GUI额度不足为budget_limit，待登记回执与pending保留；真实投递故障仍是interrupted，不能用预算状态遮蔽。

@@ -123,7 +123,13 @@ def resume_update_request(root,transport,folder):
     return build_attempt_update(root,transport,folder)
 
 
-def _run_step(root,run,out,*,review_update=None):
+def action_capacity_status(account):
+    """Reserve selection+result; local progress can resume in the next small step."""
+    if account['max_http']-account['http_started']>=2:return None
+    return 'ready_next_round' if account['http_started'] else 'budget_limit'
+
+
+def _run_step(root,run,out,*,review_update=None,limits=None):
     root,run,out=Path(root).resolve(),Path(run).resolve(),Path(out).resolve()
     out.mkdir(parents=True,exist_ok=False)
     manifest=read(run/"run_manifest.json")
@@ -133,7 +139,7 @@ def _run_step(root,run,out,*,review_update=None):
     else:transport=RecoveryRun.__new__(RecoveryRun)
     transport.root=root;transport.run=run;transport.ledger=out/'budget.json'
     manifest=read(run/'run_manifest.json');transport.device=manifest['device'];transport.package=manifest['app']
-    transport.account={'max_http':6,'max_gui_commands':6,'http_started':0,'gui_started':0,'status':'running'};transport.save()
+    transport.account={'max_http':6,'max_gui_commands':6,**(limits or {}),'http_started':0,'gui_started':0,'status':'running'};transport.save()
     write_json(out/'knowledge_before.json',read(run/'knowledge_current.json'))
     selection_window=foreground_window(transport)
     write_json(out/'selection_window.json',{'window':selection_window})
@@ -260,9 +266,9 @@ def _run_step(root,run,out,*,review_update=None):
     if not q['action_ready']:
         write_json(out/'result.json',{'status':q['stage'],'calls':calls,'gui_actions':0})
         transport.account['status']='paused_'+q['stage'];transport.save();return
-    if transport.account['max_http']-transport.account['http_started']<2:
-        write_json(out/'result.json',{'status':'ready_next_round','calls':calls,'gui_actions':0})
-        transport.account['status']='ready_next_round';transport.save();return
+    capacity=action_capacity_status(transport.account)
+    if capacity:
+        raise step_repair.Paused(capacity,'当前小步HTTP额度不足以选择动作并登记结果；未执行，保留原任务。已推进的小步可续接；无推进的尾段结束本批。')
     # Historical routes advise selection; every new GUI operation uses the
     # normal binding, dispatch and semantic result registration below.
     q['role']='action_selection'
@@ -310,6 +316,9 @@ def _run_step(root,run,out,*,review_update=None):
     except ValueError as error:
         write_json(out/'result.json',{'status':'unsupported_action','reason':str(error),'calls':calls,'gui_actions':0})
         transport.account['status']='paused_unsupported_action';transport.save();return
+    if transport.account['gui_started']+len(command_list)>transport.account['max_gui_commands']:
+        from model_transport import BudgetExhausted
+        raise BudgetExhausted('GUI额度不足以投递完整动作；未执行，保留原任务')
     def deliver(p):
         if transport.account['gui_started']:raise ValueError('single action already dispatched')
         write_json(run/'execution_pending.json',{'attempt':attempt})
@@ -342,8 +351,14 @@ def _run_step(root,run,out,*,review_update=None):
 
 
 @progress.tracked
-def run_step(root,run,out,*,review_update=None):
-    try:return _run_step(root,run,out,review_update=review_update)
+def run_step(root,run,out,*,review_update=None,limits=None):
+    from model_transport import BudgetExhausted
+    try:return _run_step(root,run,out,review_update=review_update,limits=limits)
+    except BudgetExhausted as error:
+        out=Path(out);budget=read(out/'budget.json');budget['status']='budget_limit'
+        write_json(out/'budget.json',budget)
+        write_json(out/'result.json',{'status':'budget_limit','reason':str(error),'gui_actions':budget['gui_started']})
+        progress.detail(str(error))
     except step_repair.Paused as error:
         out=Path(out);budget=read(out/'budget.json');budget['status']=error.status
         write_json(out/'budget.json',budget)
@@ -351,7 +366,7 @@ def run_step(root,run,out,*,review_update=None):
         progress.detail(error.reason)
 
 
-def finalize_knowledge(root,run,out):
+def finalize_knowledge(root,run,out,*,max_http=6):
     """Use existing registration after GUI work is idle, with no GUI delivery."""
     root,run,out=Path(root).resolve(),Path(run).resolve(),Path(out).resolve()
     out.mkdir(parents=True,exist_ok=False)
@@ -362,7 +377,7 @@ def finalize_knowledge(root,run,out):
     else:transport=RecoveryRun.__new__(RecoveryRun)
     transport.root=root;transport.run=run;transport.ledger=out/'budget.json'
     transport.device=manifest['device'];transport.package=manifest['app']
-    transport.account={'max_http':6,'max_gui_commands':0,'http_started':0,'gui_started':0,'status':'running'}
+    transport.account={'max_http':max_http,'max_gui_commands':0,'http_started':0,'gui_started':0,'status':'running'}
     transport.save()
     runner=step_repair.Runner(root,run,transport.call,transport.screenshot,
         lambda:transport.account['max_http']-transport.account['http_started'])
@@ -374,7 +389,7 @@ def finalize_knowledge(root,run,out):
             snapshot,records,state=discovery_step.load(run)
             q=step_repair.helper('historical_inventory').request(root,snapshot,records,state)
             if not q:break
-            if transport.account['http_started']>=6:
+            if transport.account['http_started']>=transport.account['max_http']:
                 status='knowledge_pending';break
             runner.perform(q['stage'],q)
         else:status='knowledge_pending'

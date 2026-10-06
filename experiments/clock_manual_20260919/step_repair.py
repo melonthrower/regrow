@@ -152,7 +152,7 @@ def request(root,job,context):
     edit={'type':'object','properties':{n:{'type':'string'} for n in ('region','control','field','before','after','evidence')},
           'required':['region','control','field','before','after','evidence'],'additionalProperties':False}
     task_edit={'type':'object','properties':{n:{'type':'string'} for n in ('region','task','field','before','after','evidence')},'required':['region','task','field','before','after','evidence'],'additionalProperties':False}
-    task_edit['properties']['field']={'type':'string','enum':['task_control','suspend_task']}
+    task_edit['properties']['field']={'type':'string','enum':['task_control','suspend_task','reopen_task']}
     edits=[edit,task_edit]
     if job['stage']!='action':
         edits.extend([helper('action_owner_correction').schema(),helper('control_observation_repair').schema()])

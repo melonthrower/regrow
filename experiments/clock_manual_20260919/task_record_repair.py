@@ -1,4 +1,5 @@
-"""Narrow task-owner corrections; executed evidence never follows a new owner."""
+"""Task judgment and owner corrections; executed evidence keeps its identity."""
+from copy import deepcopy
 
 
 def apply(region,state,edit,call):
@@ -16,6 +17,14 @@ def apply(region,state,edit,call):
                 ('attempts','findings','equivalent_to','completion_basis','result_evidence','blocker','deferral','blocker_history')) or dependent or supported):
             raise ValueError('任务已有历史、结论或依赖，不能改挂；使用suspend_task保留旧记录，再提出正确控件的新任务')
         task['control']=targets[0]
+    elif edit['field']=='reopen_task':
+        if (task.get('handling')!='record' or task.get('status')!='record_only'
+                or task.get('attempts') or task.get('shared_task_ref')):
+            raise ValueError('reopen_task只允许本地未执行的record_only任务，不重做已执行探索')
+        if not edit['after'].strip():raise ValueError('reopen_task的after需要具体未知内容及观察目标')
+        previous=deepcopy({k:v for k,v in task.items() if k!='revisions'})
+        task.setdefault('revisions',[]).append({'before':previous,'evidence':edit['evidence'],'source_call':call})
+        task.update(handling='explore',status='pending',reason=edit['after'])
     elif edit['field']=='suspend_task':
         if edit['after']:raise ValueError('suspend_task的after留空，不迁移历史')
         task.update(status='blocked',blocker={'condition':'review_required','source_call':call},

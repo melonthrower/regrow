@@ -11,6 +11,10 @@ from register_update import read, write_json
 import progress
 
 
+class BudgetExhausted(ValueError):
+    """A normal stop at the caller's accounting boundary, without new delivery."""
+
+
 def with_environment_scope(root,request):
     """The traversal environment restriction applies to both GUI platforms."""
     # This repair can edit a sharing relation only; it has no GUI action output.
@@ -77,7 +81,7 @@ class ModelTransport:
                 for child in schema.values():strict_fields(child)
         strict_fields(request['response_schema'])
         progress.request(request)
-        if self.account['http_started']>=self.account['max_http']:raise ValueError('HTTP budget exhausted')
+        if self.account['http_started']>=self.account['max_http']:raise BudgetExhausted('HTTP budget exhausted')
         number=max([int(p.name) for p in (self.run/'calls').iterdir() if p.name.isdigit()]+[0])+1
         call=f'{number:04d}';folder=self.run/'calls'/call;folder.mkdir()
         write_json(folder/'request.json',request);write_json(folder/'response.schema.json',request['response_schema'])

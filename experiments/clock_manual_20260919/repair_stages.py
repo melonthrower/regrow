@@ -170,7 +170,9 @@ def related(run,job):
 def record_capabilities(stage=None):
     historical=['edit_record观察归属纠正：仅本轮control_observation_candidates披露的region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence；只迁移指定观察，不迁移任务或动作，不能整条合并。retained_name必须描述迁移后来源控件剩余观察的职责，不能沿用被移走对象的名称。',
                 'edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原前后图及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。']
-    return ([] if stage=='action' else historical)+[
+    reopen=(['edit_record / reopen_task：仅发现/任务清点可把本地未执行record_only改为explore/pending；task为原任务名，before为原控件名，after为具体未知内容目标，evidence说明遗漏。保留身份、动作、旧判断与事实；不重开已尝试、done或共享任务。']
+            if stage in ('discovery','task_proposal') else [])
+    return ([] if stage=='action' else historical)+reopen+[
             'edit_record / task_control或suspend_task：在发现/任务清点中用task选择任务；无历史pending可改到披露的唯一控件，有历史只暂挂保留旧事实并重新清点。',
             'edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。',
             'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。',

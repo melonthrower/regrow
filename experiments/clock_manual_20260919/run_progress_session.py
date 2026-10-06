@@ -25,12 +25,13 @@ def run_session(root,run,out,mode,step=run_step):
         if account['max_rounds'] is not None and index>=account['max_rounds']:
             account['status']='round_limit';break
         if pause.exists():account['status']='paused_by_user';break
-        # Reserve the existing round's full allowance; never exceed session limits.
-        if any(account[limit] is not None and account[used]+6>account[limit]
-               for used,limit in [('http_started','max_http'),('gui_started','max_gui_commands')]):
+        # The step keeps its retry bound while also respecting the session tail.
+        allowance={limit:min(6,account[limit]-account[used]) if account[limit] is not None else 6
+                   for used,limit in [('http_started','max_http'),('gui_started','max_gui_commands')]}
+        if any(value<=0 for value in allowance.values()):
             account['status']='budget_limit';break
         folder=out/f'round-{index+1:04d}'
-        try:step(root,run,folder)
+        try:step(root,run,folder,limits=allowance)
         except CapturePaused:
             account['status']='paused_by_user'
             break
@@ -46,14 +47,17 @@ def run_session(root,run,out,mode,step=run_step):
         if pause.exists():account['status']='paused_by_user';break
         if result['status']=='review_pending':
             account.update(status='review_pending',last_result='review_pending');break
+        if result['status']=='budget_limit':
+            account.update(status='budget_limit',last_result='budget_limit');break
         if mode=='step':account['status']='paused_after_step';break
         if result['status'] not in ('updated','paused_after_recovery_discovery','task_proposal','ready_next_round','repair_pending','task_deferred'):
             account.update(status='needs_review_or_complete',last_result=result['status']);break
     if (account.get('last_result') in ('scope_idle','region_complete') and mode=='auto'
-            and not pause.exists() and (account['max_http'] is None or account['http_started']+6<=account['max_http'])):
+            and not pause.exists() and (account['max_http'] is None or account['http_started']<account['max_http'])):
         folder=out/'knowledge'
         try:
-            result=finalize_knowledge(root,run,folder)
+            remaining=min(6,account['max_http']-account['http_started']) if account['max_http'] is not None else 6
+            result=finalize_knowledge(root,run,folder,max_http=remaining)
             account['knowledge_status']=result['status']
         except BaseException:
             account['status']='interrupted'

@@ -57,3 +57,5 @@ Region 位置与模板资格分开：`region_evidence.region_observation` 保存
 `foreground_scope.audit`严格检查声明前景和当前点击范围；可选Region/控件身份框异常只记template_rejections，不缓存坏边界。`identity_templates.crop_rejection`与`register_update.save_region_images`按真实来源图拒绝越界、前景外、分离或纯色身份模板，原观察/原答与点击证据保留；不以补模板为理由否定已执行动作。身份/归属冲突仍沿原纠错。`update_visibility.locate_retained`不将旧角色的匹配图标再次列到本帧已确认的不同控件位置；不合并或删除旧记录，不能因此宣称全部视觉身份可靠。
 
 归属诊断只有合格的当前Region范围才能对真实click_bbox提出几何矛盾；现代记录的click_bbox=null不退回可选身份框。被拒绝的可选框也不能用于排除另一历史角色。历史地图正文中的旧共同地图编号会明确限定为原请求编号，不在新稀疏列表按同号寻址。
+
+共享身份图提示明确：业务区块止于真实表面分界，不因背景颜色相同延伸入系统状态栏、导航或手势区；不能确认则uncertain。没有机械扣除重叠excluded框的新规则；图像清晰性和语义边界仍分别核对，不将本提示当作全应用几何保证。

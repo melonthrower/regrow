@@ -5,3 +5,5 @@ field=task_control只允许pending、无尝试/事实/结论/依赖的任务，a
 有历史时field=suspend_task、after为空，保留原归属与历史，暂挂并重新清点；给正确控件提出不同名的独立任务，不复制旧事实。
 正例：未执行的“查看音乐目录”误挂Recent，可改到已登记Music。反例：已点击Recent得到的内容不能转成Music的探索事实。
 任务误绑按上述发现/清点规则处理；不能改写已投递绑定。控件本身的所属区块错误使用本轮允许的 field="region" 修订，具体字段见本轮能力表；未提供该能力时不能自行迁移。累计任务结果核对不虚构新动作。
+
+field=reopen_task只用于本区块、本地、未执行的record_only任务：before仍写原控件名，after写具体未知交互内容与最小观察目标，evidence说明旧record遗漏及当前/历史截图依据。保留原任务名、控件、动作、原事实和旧判断；改为explore/pending。不得重开已有尝试、done或共享引用的任务，也不能把修订说成实际执行。修订后的proposal使用原任务名、原绑定、handling=explore及新目标；无新内容则保留record，不为常识效果重开。

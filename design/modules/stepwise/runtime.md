@@ -59,3 +59,8 @@ Python入口负责读取，配套HTML负责布局。复用 `progress.snapshot`�
 
 ## 空闲后知识阶段
 正常会话在GUI无可执行工作后调用finalize_knowledge，HTTP并入session账本，GUI预算为0。没有后台线程、独立队列或CLI开关；网络中断记录interrupted，不伪报knowledge_complete。新冻结源统一使用本批三步与恢复规则，旧冻结源不热替换。
+
+## 连续批次与剩余预算
+原生auto会话一次连续推进，人工仅会话结束后审查区块、任务、逐动作调用和异常。每小步最多6次HTTP调用和6条GUI命令，正常调用与纠错合计，但run_session把min(6,剩余额度)交给run_step，不要求尾段还剩6 HTTP/GUI；实际命令数仍由发送入口强制计账。GUI完整命令序列不足则不开始该动作；HTTP不足或修订额度耗尽保留pending。空闲知识登记同样使用HTTP余量，GUI为0。浏览器root-review只展示整批审查，不是调度门槛；“已检查批次”按会话计，旧单小步会话亦仍按其保存会话计。
+
+HTTP不足2次时，已消费调用的小步以ready_next_round续接本会话余量；未消费调用的新小步以budget_limit停止，避免空尾段循环。待登记证据保留，不能据此重投已执行GUI。

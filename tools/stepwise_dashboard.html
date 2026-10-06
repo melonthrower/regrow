@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>应用探索 · 进度与区块</title>
+<style>
+:root{font:14px/1.65 system-ui,sans-serif;color:#273c36;background:#edf2ee}*{box-sizing:border-box}body{margin:0}header{padding:14px 24px;background:white;border-bottom:1px solid #d8e2da;display:flex;gap:24px;align-items:center;flex-wrap:wrap}h1{font-size:19px;margin:0}h2{font-size:16px;margin:0 0 8px}button{font:inherit;border:1px solid #bdcfc1;border-radius:8px;padding:6px 16px;background:white;cursor:pointer}button.active{color:white;background:#246950;border-color:#246950}nav{display:flex;gap:8px}main{display:grid;grid-template-columns:minmax(320px,48%) 1fr;gap:20px;padding:20px;height:calc(100vh - 74px)}.left{display:flex;flex-direction:column;gap:12px;min-height:0}.card{background:white;border:1px solid #d8e2da;border-radius:14px;padding:16px}.screen{flex:1;min-height:240px;display:flex;flex-direction:column;background:#17241f;color:#e2eee6;text-align:center}.screen img{width:100%;flex:1;min-height:0;object-fit:contain;margin:8px 0}.screen small{color:#b5c7bd}.right{overflow:auto;min-width:0}.muted,small{color:#667b6e}.metrics{display:flex;gap:22px;flex-wrap:wrap}.metrics b{font-size:22px;display:block}.warning{color:#985826}.tree details{border-left:2px solid #d9e6dd;margin:6px 0;padding-left:14px}.tree summary{cursor:pointer}.current{color:#157346;font-weight:600}.task{padding:3px 0;color:#52675a;font-size:13px}ul{padding-left:22px;margin:6px 0}.chip{background:#e8f2eb;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:400;color:#4c6856}#current-tree{margin-bottom:18px}#error{color:#a5492b}#phase{margin-top:8px}.history-note{margin:8px 0;font-size:12px}#totals{margin:8px 0}.crop{max-width:100%;max-height:160px;object-fit:contain;display:block;margin:8px 0}#search{font:inherit;width:100%;padding:8px;border-radius:8px;border:1px solid #ccdacd;margin:6px 0 12px}@media(max-width:800px){main{grid-template-columns:1fr;height:auto;padding:12px}.screen{height:52vh;flex:auto}.right{overflow:visible}header{padding:12px}}
+</style>
+<header><h1>应用探索 · 进度与区块</h1><nav id="apps" aria-label="切换应用"></nav><span id="status" class="muted">连接中</span></header>
+<main>
+<section class="left">
+ <div class="card"><div class="metrics"><div><b id="http">—</b><small>本批模型调用</small></div><div><b id="gui">—</b><small>本批界面操作</small></div><div><b id="reviews">—</b><small>已检查小步</small></div></div><small id="batch-note">正在读取本批预算；小步为一次原生框架处理。</small><div id="phase">读取进度…</div><div id="task" class="muted"></div><div id="review" class="muted"></div><div id="error" role="status"></div></div>
+ <div class="card screen"><span>框架最近观察</span><img id="frame" alt="应用最近一次真实截图"><small id="frame-note">仅在框架取图后更新</small></div>
+</section>
+<aside class="right card"><h2>当前可交互区块</h2><div id="current-tree" class="tree"></div><h2>所有已发现区块 · 控件 · 任务</h2><p class="history-note muted">下方按归属展开。历史访问来路不当作包含父级；任务完成只覆盖已探索的直接目标。</p><div id="totals"></div><input id="search" placeholder="搜索区块、控件或任务" aria-label="搜索区块、控件或任务"><div id="all-tree" class="tree"></div><small id="snapshot"></small></aside>
+</main>
+<script>
+const $=id=>document.getElementById(id),put=(id,text)=>$(id).textContent=text;
+let key=null,latest=null,signature=null,frameTime=null,generation=0;
+const statuses={done:'已完成',pending:'待探索',blocked:'暂挂',record_only:'仅记录'};
+function element(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+function currentTree(nodes,box){for(const n of nodes){const d=element('details');d.open=true;d.append(element('summary',n.name,'current'));const ul=element('ul');for(const c of n.controls||[])ul.append(element('li',c.name));d.append(ul);currentTree(n.children||[],d);box.append(d)}}
+function renderTree(){if(!latest)return;const graph=latest.graph,box=$('all-tree'),query=$('search').value.trim().toLowerCase();
+const opened=new Set([...box.querySelectorAll('details[open]')].map(d=>d.dataset.id));box.replaceChildren();
+for(const n of graph.nodes){if(query&&!JSON.stringify(n).toLowerCase().includes(query))continue;const d=element('details');d.dataset.id=n.id;d.open=opened.has(n.id)||n.current||!!query;
+const title=element('summary',n.name,n.current?'current':'');title.append(element('span',n.current?' 当前':n.working?' 工作目标':' 历史区块','chip'));d.append(title);
+const p=n.progress;d.append(element('small',p.inventory_complete?`探索任务：${p.done.length} 完成 · ${p.pending.length} 待探索 · ${p.blocked.length} 暂挂`:'任务尚未清点完整'));
+for(const c of n.controls){const control=element('details');control.dataset.id=c.id;control.open=opened.has(c.id)||!!query;control.append(element('summary',c.name));
+for(const t of c.tasks||[])control.append(element('div',`${statuses[t.status]||t.status} · ${t.name}`,'task'));
+if(!c.tasks?.length)control.append(element('div','尚无任务记录','muted'));if(c.image){const img=element('img');img.alt=c.name+' · 登记时的身份截图';img.className='crop';img.loading='lazy';img.src='/image/'+key+c.image.slice('/graph-image'.length);control.append(img)}d.append(control)}
+const bound=new Set(n.controls.flatMap(c=>(c.tasks||[]).map(t=>t.name)));for(const [state,names] of Object.entries(p)){if(!Array.isArray(names))continue;for(const name of names)if(!bound.has(name))d.append(element('div',`${statuses[state]||state} · ${name}（区块任务）`,'task'))}box.append(d)}}
+async function refresh(){const token=generation,selected=key;if(!selected||document.hidden)return;
+try{const response=await fetch('/api/'+selected,{cache:'no-store'});if(!response.ok)throw Error();const v=await response.json();if(token!==generation)return;latest=v;
+const a=v.accounting,p=v.progress,g=v.graph,l=a.latest;put('status',p.status==='running'?'正在探索':p.status==='interrupted'?'执行中断':'当前小步已停止');put('http',`${a.http} / ${v.limits.max_http}`);put('gui',`${a.gui} / ${v.limits.max_gui_commands}`);put('reviews',a.reviewed_steps);put('batch-note',`本端一批最多${v.limits.max_http}次模型调用、${v.limits.max_gui_commands}步界面操作；小步为一次原生框架处理。`);put('phase',(p.phase_label?p.phase_label+' · ':'')+String(p.detail||'').replaceAll('本轮','当前小步'));put('task',p.current_task?'当前任务：'+p.current_task:p.unfinished_task?'保留任务：'+p.unfinished_task:'');put('review',l?.status==='running'?'当前小步运行中，结束后检查区块与任务粒度':l?.review_state==='held'?'核对后暂缓：'+l.review_reason:l?.review_state==='continued_with_issue'?'问题保留，继续本批：'+l.review_reason:l&&!l.reviewed?'当前小步待检查':'已检查，继续推进本批预算');put('error','');
+const complete=g.nodes.filter(n=>n.progress.complete).length,pending=g.nodes.reduce((s,n)=>s+n.progress.pending.length,0),blocked=g.nodes.reduce((s,n)=>s+n.progress.blocked.length,0),unplanned=g.nodes.filter(n=>!n.progress.inventory_complete).length;put('totals',`${g.nodes.length} 个已发现区块 · ${complete} 个直属探索完成 · ${pending} 个待探索任务 · ${blocked} 个暂挂 · ${unplanned} 个区块待清点`);put('snapshot','已提交图：'+g.snapshot);
+const next=JSON.stringify([selected,g.snapshot]);if(signature!==next){signature=next;const box=$('current-tree');box.replaceChildren();currentTree(g.page_context?.current_tree||[],box);if(!box.childNodes.length)box.textContent='当前前景尚未登记';renderTree()}
+if(frameTime!==v.frame_time){frameTime=v.frame_time;$('frame').src='/frame/'+selected+'?t='+encodeURIComponent(frameTime||Date.now())}put('frame-note','最近真实观察：'+(v.frame_time?new Date(v.frame_time).toLocaleString():'时间未记录')+'；非连续投屏。图可能仍在等待这张新截图登记。');
+}catch(e){if(token===generation){put('error','连接中断或正在发布新快照，保留上次数据并自动重试');put('status','等待刷新')}}}
+function select(selected){key=selected;generation++;latest=null;signature=null;frameTime=null;$('current-tree').replaceChildren();$('all-tree').replaceChildren();$('frame').removeAttribute('src');put('error','');put('status','连接中');put('phase','正在读取所选应用…');put('batch-note','正在读取所选应用的本批预算；小步为一次原生框架处理。');for(const id of ['task','review','totals','snapshot'])put(id,'');put('frame-note','等待所选应用的真实观察');for(const id of ['http','gui','reviews'])put(id,'—');document.querySelectorAll('#apps button').forEach(b=>b.classList.toggle('active',b.dataset.key===key));refresh()}
+$('search').oninput=renderTree;$('frame').onerror=()=>{frameTime=null;put('frame-note','截图暂不可用；下一次刷新重试')};
+fetch('/apps.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(apps=>{for(const a of apps){const b=element('button',a.label);b.dataset.key=a.key;b.onclick=()=>select(a.key);$('apps').append(b)}select(apps[0].key)}).catch(()=>put('error','应用列表读取失败，请刷新页面'));
+setInterval(refresh,2000);
+</script>
+</html>

@@ -21,7 +21,7 @@ def record_only(task,reason,evidence):
 
 
 def review_request(root,records,state,rid):
-    q=helper('region_tasks').plan_request(root,records,state,rid)
+    q=helper('task_proposer').plan_request(root,records,state,rid)
     dynamic=json.loads(q['user_prompt'])
     for item in dynamic['已有任务']:
         task=records[rid]['tasks'][item['name']]

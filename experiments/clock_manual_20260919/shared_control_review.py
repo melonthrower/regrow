@@ -1,7 +1,7 @@
 """Shared behavior conflicts: evidence, correction request and atomic member edits.
 
 Uses the existing step-correction Runner; never dispatches GUI or rewrites an
-actual attempt. Shared task projection remains owned by shared_controls.
+actual attempt. Shared task projection and withdrawal belong to shared_tasks.
 """
 from copy import deepcopy
 import hashlib
@@ -94,24 +94,9 @@ def apply(records, state, case, item, call):
     else: raise ValueError('共享修订after只能是independent或shared')
     group.setdefault('reviews', []).append(audit)
     shared_controls.refresh(records)
-    # Remove wrong inherited definitions from scheduling, but preserve a full audit.
-    # Actual local attempts stay local and require a new inventory decision.
     if item['after'] == 'independent':
-        for rid, region in records.items():
-            for name, task in list(region.get('tasks', {}).items()):
-                if (rid, task.get('control')) not in affected: continue
-                if not task.get('shared_task_ref') or task.get('shared_task_active', True): continue
-                control = region['controls'][task['control']]
-                control.setdefault('shared_task_history', []).append({'name': name, 'record': deepcopy(task), 'source_call': call})
-                if task.get('attempts') or task.get('findings'):
-                    task.update(status='blocked', handling='explore', reason='共享已解除；保留本地尝试，重新核对任务定义')
-                    task.pop('shared_task_ref', None)
-                else:
-                    del region['tasks'][name]
-                    control['task_refs'] = [n for n in control.get('task_refs', []) if n != name]
-                    if state.get('active_task') == {'region': rid, 'name': name}: state.pop('active_task', None)
-                region.setdefault('task_inventory', {})['review'] = {'kind':'shared_behavior','reason': '共享关系已解除，按本地控件重新清点任务', 'source_call': call}
-        records[member['region']].setdefault('task_inventory', {})['review'] = {'kind':'shared_behavior','reason': '控件已独立，核对本地任务', 'source_call': call}
+        from shared_tasks import reconcile_detached_tasks
+        reconcile_detached_tasks(records, state, affected, member, call)
 
 
 def next_request(root, run):

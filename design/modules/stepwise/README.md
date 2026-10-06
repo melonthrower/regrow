@@ -27,3 +27,13 @@
 每次修改沿[连接核对表](../../../DEVELOPMENT.md#change-connections)检查输入、校验、保存、下一步和相关异常路径；[测试索引](../../../tests/STEPWISE_INDEX.md)按流程选相邻检查。流程页只说明连接，原九份职责页保留源码/prompt清单和当前缺口，详细合同按其链接读取，避免复制出多套规则。
 
 源码仍在 `experiments/clock_manual_20260919/`；已将任务选择、任务结算、模型发送、动作绑定及证据记录构造提取到独立文件。原公共函数名直接绑定唯一实现，唯一实现位置见[代码职责表](CODE_MAP.md)。源码位置与运行证据未搬动；普通任务进度现按[控件/动作绑定](tasks.md)维护，prompt/schema已同步。工作树原有地图候选仍未接受，不能据本批任务修复一并验收。代码存在、离线通过、保存帧模型验证、真实GUI验证分别报告。
+
+## 按角色定位当前代码
+
+| 原步骤 | 角色文件 | 正式记录入口 |
+|---|---|---|
+| 发现与准备任务 | locator.py、task_proposer.py | discovery_step.commit、region_tasks.commit_plan |
+| 提出并执行动作 | action_proposer.py、action_executor.py | 原请求/绑定、attempt与receipt |
+| 观察并更新 | result_updater.py | register_update.commit_update、task_settlement |
+
+traversal_scheduler选择及续接工作；run_task_step连接角色。共享识别沿region_identity/history_matching，跨Region行为沿shared_controls，任务复用沿shared_tasks。角色文件直接持有主要逻辑，原动态加载/资源根/运行证据保持原位。

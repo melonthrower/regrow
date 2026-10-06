@@ -75,7 +75,7 @@ def resume_service_failure(run,episode=None,frame=None):
         discovery.publish(run,'service-retry-'+Path(episode).parent.name+'-'+str(len(job.get('service_resume_history',[]))),reopen)
     if frame is not None and job['stage']=='discovery':
         discovery.await_discovery(run,str(Path(frame).resolve()),'service-retry-'+failure['call'])
-        job['request']=discovery.request_from_run(Path(__file__).parent,run)
+        job['request']=helper('locator').request_from_run(Path(__file__).parent,run)
     job.setdefault('service_resume_history',[]).append({'failure':failure,'previous_status':job['status'],'explicit_retry':True})
     job.pop('service_failure',None)
     for key in ('branch_switch_attempted','branch_review_signature','switch_trigger'):job.pop(key,None)

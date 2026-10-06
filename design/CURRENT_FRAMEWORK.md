@@ -116,3 +116,5 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 不新增Luna角色或完成审核。round/scheduling.json保存程序决定和来源快照。
 范围外前景可离开；范围外目标不派业务探索；局部空闲不当全应用完成。
 当前批次验证范围见月度日志，不接纳原工作树的其他地图候选或宣称跨应用稳定。
+
+2026-10-06角色职责归位：locator持有发现请求/schema及定位；task_proposer持有任务提示/schema/上下文；result_updater持有更新请求及候选校验。发现后的导航/局部检查和目标退出归调度器，shared_tasks独立承接任务共享与失效清理。正式登记仍用discovery_step、region_tasks、register_update；旧出口绑定同一实现。原平铺源码根与运行入口不变，较早的11目录方案已归档。验证范围见本月日志。

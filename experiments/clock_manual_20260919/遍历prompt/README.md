@@ -6,10 +6,10 @@
 
 | 阶段 | 入口 | 固定模块 |
 |---|---|---|
-| 发现与定位 | discovery_step.prepare | 工作区块定位/当前区块重定位 + 发现手册5部分 |
-| 任务清点 | region_tasks.plan_request | 区块探索任务 + 输入与搜索探索正反例 |
-| 动作选择 | stepwise_flow + region_tasks | 流程02所列模块；导航时附探索导航路线 |
-| 动作后更新 | update_step.build_update_request | 流程03 + 列表代表项 + 异常识别；有任务时附任务结果核对 |
+| 发现与定位 | locator.prepare | 工作区块定位/当前区块重定位 + 发现手册5部分 |
+| 任务清点 | task_proposer.plan_request | 区块探索任务 + 输入与搜索探索正反例 |
+| 动作选择 | action_proposer + stepwise_flow | 流程02所列模块；导航时附探索导航路线 |
+| 动作后更新 | result_updater.build_update_request | 流程03 + 列表代表项 + 异常识别；有任务时附任务结果核对 |
 | 功能登记 | region_functions.request | 区块功能登记 + 单区块任务规则/正反例 |
 | 异常恢复 | recovery.build_request | 恢复当前探索 + 异常识别 + 恢复策略 + 共享动作空间 + 恢复输出 |
 | 流程纠错 | step_repair.request | 步骤纠正 + 探索验证原则；动作纠错附目标观察，多候选时附控件候选消歧 |

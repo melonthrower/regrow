@@ -21,7 +21,7 @@ def test_discovery_routes_before_action_context(tmp_path, monkeypatch, entry, mo
     monkeypatch.setattr(m.RecoveryRun, 'foreground_window', lambda self:None, raising=False)
     monkeypatch.setattr(m.discovery_step, 'load', lambda run: (None, {}, state))
     def discover(*args, **kwargs): state['next_action_mode'] = mode
-    monkeypatch.setattr(m.discovery_step, 'run_stage', discover)
+    monkeypatch.setattr(m.Locator, 'discover', discover)
     monkeypatch.setattr(m.step_repair, 'pending', lambda run: None)
     helper=m.step_repair.helper
     monkeypatch.setattr(m.step_repair, 'helper', lambda name:

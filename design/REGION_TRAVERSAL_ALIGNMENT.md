@@ -568,3 +568,5 @@ collection_visual_guard.py 从冻结图外观定位当前控件，再映射点�
 
 
 2026-10-06三步组件：普通工作选择改由traversal_scheduler.select_work，任务/导航请求由action_proposer渲染，投递和正常/中断登记分别集中在action_executor与result_updater。沿用原Region身份、控件绑定、任务结算及纠错合同；排除前景可离开、partial可信任务可推进、多区块任务归属不取决于排列。Gmail月报if/else示例、研究目标及独立冻结图采集边界未改变。验收范围见本月日志及design/archive/component_scheduler_20261006。
+
+2026-10-06角色归位：发现/任务/更新请求分别由locator、task_proposer、result_updater维护；共享任务的synchronize_tasks/automatic_tasks及解除清理归shared_tasks，shared_controls保留关系及刷新时点。Region身份/行为分离、真实尝试归属、Gmail if/else条件与采集边界不变；旧名称仅直接绑定当前实现。

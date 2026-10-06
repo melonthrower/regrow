@@ -80,7 +80,7 @@ def accept_candidate(root,run,job):
     q=job['request']
     # A record rename changes the task's valid names in this same transaction.
     if job.get('record_edit') and job['stage']=='task_proposal':
-        q=deepcopy(q);q['response_schema']=helper('region_tasks').proposal_schema()
+        q=deepcopy(q);q['response_schema']=helper('task_proposer').proposal_schema()
     if job['stage']=='discovery' and job.get('candidate') is not None:
         report=helper('ownership_review').conflict(q,job['candidate'],records)
         if report:raise helper('registration_diagnostics').Rejected(report)
@@ -264,19 +264,19 @@ def refresh(root,run,job):
     discovery=helper('discovery_step');_,records,state=discovery.load(run)
     stage=job['stage'];old=job['request']
     if stage=='task_result_review':return helper('task_result_review').request(root,run,old['source'],old['screenshots'])
-    if stage=='discovery':return discovery.request_from_run(root,run)
+    if stage=='discovery':return helper('locator').request_from_run(root,run)
     if stage in ('task_proposal','function_registration'):
         rid=old['source']['region']
         if stage=='task_proposal' and old.get('historical_inventory'):
             saved=deepcopy(state)
             saved['observation']={'id':old['source']['observation'],'image':old['screenshots'][0],'control_refs':[]}
-            q=helper('region_tasks').plan_request(root,records,saved,rid)
+            q=helper('task_proposer').plan_request(root,records,saved,rid)
             q['historical_inventory']={'evidence_digest':helper('historical_inventory').digest(records[rid])}
             q['user_prompt']=q['dynamic_prompt']=q['user_prompt']+'\n材料是原历史截图；记录已按本次显式修订刷新，不表示当前可见。'
             return q
         if rid not in state['interactive_regions']:raise ValueError('原任务区块当前未确认可交互，不能将修复转成其他任务')
         if stage=='task_proposal':
-            q=helper('region_tasks').plan_request(root,records,state,rid)
+            q=helper('task_proposer').plan_request(root,records,state,rid)
             return helper('page_context').attach(q,records,state,run=run)
         return helper('region_functions').request(root,records[rid],state,records)
     if stage=='action':
@@ -468,7 +468,7 @@ def observe(runner,job):
     else:
         _,records,state=discovery.load(runner.run)
         local=deepcopy(state);local['inspection_region']=job['request'].get('source',{}).get('region') or state.get('working_region')
-        discovery.focus_task(records,local,job['request'])
+        helper('locator').focus_task(records,local,job['request'])
         snapshot,_,_=discovery.load(runner.run)
         for rid,r in records.items():
             for v in r['observations']+[v for c in r['controls'].values() for v in c['observations']]:
@@ -522,7 +522,7 @@ def observe_registered(runner,job):
         if job['observations']>=1:raise ValueError('补观察已尝试；使用已保存证据，不重复调用')
         if not frame.exists():runner.screenshot(frame)
         snapshot,records,state=discovery.load(runner.run);local=deepcopy(state)
-        discovery.focus_task(records,local,job['request'])
+        helper('locator').focus_task(records,local,job['request'])
         if job.get('blocked_by')=='binding_conflict':
             local['discovery_mode']='relocate';local.pop('inspection_region',None);local.pop('required_control',None)
         for rid,r in records.items():
@@ -542,7 +542,7 @@ def observe_registered(runner,job):
     while q is not None or repair.pending(runner.run,pointer) or discovery.load(runner.run)[2].get('next_action_mode')=='discover':
         completed=sum(v.get('image')==str(frame.resolve()) for v in job.get('supplements',[]))
         if completed>=3:raise ValueError('本次补观察的发现流程仍未完成；保留已取得证据')
-        if q is None and not repair.pending(runner.run,pointer):q=discovery.request_from_run(runner.root,runner.run)
+        if q is None and not repair.pending(runner.run,pointer):q=helper('locator').request_from_run(runner.root,runner.run)
         result=child.perform('discovery',q)
         job['supplements'].append({'source_call':result['call'],'image':str(frame.resolve()),'reply':result['candidate']})
         runner.save(job);q=None

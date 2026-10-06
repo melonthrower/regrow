@@ -77,7 +77,7 @@ def run(root,transport,out,call,repair=None):
         if reply['decision']=='resume_exploration':
             discovery.await_discovery(transport.run,str((observations/'current.png').resolve()),'recovery-'+ref,reply['handoff'])
             episode['status']='awaiting_discovery';save()
-            discovery.run_stage(root,transport.run,call,repair=repair)
+            helper('locator').run_stage(root,transport.run,call,repair=repair)
             episode['status']='discovery_complete';save()
             return {'status':'paused_after_recovery_discovery','gui_actions':transport.account['gui_started']-initial,'episode':str(path),'reason':episode.get('reason')}
         if reply['decision']=='stop' or (repeated_surface and helper('recovery_stall').repeated_attempt(episode,reply)):

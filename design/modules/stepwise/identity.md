@@ -10,7 +10,7 @@
 
 当前截图、历史Region/控件与匹配线索 → 已登记身份、前景范围和观察证据。模板匹配不是当前语义确认，裁图可用也不保证识别正确。
 
-主要接口：`discovery_step.request_from_run / run_stage；region_identity；identity_templates`。详细现行合同见[原模块文档](../stepwise_region_identity.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
+主要接口：`locator.request_from_run / run_stage；region_identity；identity_templates`。详细现行合同见[原模块文档](../stepwise_region_identity.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
 Region 位置与模板资格分开：`region_evidence.region_observation` 保存原回复 `bbox`；`register_update.save_region_images` 仍只为 clear 且有理由的框保存模板。`foreground_scope.audit/remember` 校验普通发现/更新顶层 Region 框并关联登记身份；`visual_region_locator.plan` 只消费同帧缓存进行局部发现，换帧重新定位。受挡控件的身份框与点击范围仍独立，未确认边界保持空；不从前景大框补全。
 
@@ -59,3 +59,6 @@ Region 位置与模板资格分开：`region_evidence.region_observation` 保存
 归属诊断只有合格的当前Region范围才能对真实click_bbox提出几何矛盾；现代记录的click_bbox=null不退回可选身份框。被拒绝的可选框也不能用于排除另一历史角色。历史地图正文中的旧共同地图编号会明确限定为原请求编号，不在新稀疏列表按同号寻址。
 
 共享身份图提示明确：业务区块止于真实表面分界，不因背景颜色相同延伸入系统状态栏、导航或手势区；不能确认则uncertain。没有机械扣除重叠excluded框的新规则；图像清晰性和语义边界仍分别核对，不将本提示当作全应用几何保证。
+
+## 共享识别与职责入口
+Locator承接本轮发现请求与局部控件定位；region_identity、history_matching、visual_region_locator仍供发现与更新复用。相同Region的身份复用、不同Region的行为关联（shared_controls）、任务知识复用（shared_tasks）分别维护；单纯同名或外观相似不建立共享关系。

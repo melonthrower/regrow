@@ -3,7 +3,7 @@
 [三步总览](README.md) · [开发入口](../../../DEVELOPMENT.md) · [测试索引](../../../tests/STEPWISE_INDEX.md)
 
 当前截图和已提交知识 → 确认当前区块/控件 → 按需清点探索任务 → 交给第二步选择动作。
-这里导航已提交的执行链；工作树地图修复候选仍未接受，[任务防重方案](tasks.md)尚未实现。
+这里导航已提交的执行链；工作树地图修复候选仍未接受；同区块同控件/动作复用已实现，跨区块语义目标去重尚未实现。
 “三步”是职责顺序，不是固定三次Luna调用：重定位、局部发现、补齐和纠错可能追加调用。
 
 ## 何时进入或重新进入
@@ -11,15 +11,15 @@
 | 条件 | 实际连接 |
 |---|---|
 | 新run或启动后重新确认位置 | [app_launcher.create_run](../../../experiments/clock_manual_20260919/app_launcher.py)创建空快照，设置`next_action_mode=discover`和首图；续接可调用`await_discovery` |
-| 当前状态要求发现 | [run_task_step._run_step](../../../experiments/clock_manual_20260919/run_task_step.py)先处理在途步骤/已执行动作，再由`discovery_step.run_stage`驱动发现 |
-| 定位未确认或全局定位后需要局部控件 | `discovery_step.commit / schedule_local_inspection`保留发现状态，转重定位或局部发现；已确认前景也可转普通导航选择 |
+| 当前状态要求发现 | [run_task_step._run_step](../../../experiments/clock_manual_20260919/run_task_step.py)先处理在途步骤/已执行动作，再由`Locator.discover / locator.run_stage`驱动发现 |
+| 定位未确认或全局定位后需要局部控件 | `discovery_step.commit / traversal_scheduler.schedule_local_inspection`保留发现状态，转重定位或局部发现；已确认前景也可转普通导航选择 |
 | 动作后登记无法确认可交互区块 | [register_update.commit_update](../../../experiments/clock_manual_20260919/register_update.py)保留已执行结果，转发现重定位，消费动作后图 |
 | 任务清点发现控件缺口 | `region_tasks.commit_plan`保留任务，优先已有滚动清点任务，否则转局部发现；`discovery_inventory.supplement`携带缺口 |
 | 补观察或异常恢复结束 | `repair_stages.observe / observe_registered`或`recover_loop.run`接回发现；`await_discovery`保留工作并使旧定位失效 |
 
 ## 普通请求到登记
 
-1. [discovery_step.request_from_run](../../../experiments/clock_manual_20260919/discovery_step.py)读取`knowledge_current.json`指向的区块记录、运行状态和`pending_frame`，拒绝在非发现状态构造发现请求。
+1. [locator.request_from_run](../../../experiments/clock_manual_20260919/locator.py)读取`knowledge_current.json`指向的区块记录、运行状态和`pending_frame`，拒绝在非发现状态构造发现请求。
 2. `prepare`使用历史视觉线索选择重定位或局部模式，组织当前截图、候选身份、已有工作和恢复交接，`request_from_run`补目标应用；模板匹配只是线索，仍需本轮视觉核对。
 3. 固定提示按模式从[任务](../../../experiments/clock_manual_20260919/遍历prompt/任务)、[发现手册](../../../experiments/clock_manual_20260919/遍历prompt/发现手册)与共享段落组合。`schema / prepare`在[首屏观察.schema](../../../experiments/clock_manual_20260919/遍历prompt/输出格式/首屏观察.schema)上扩展身份、前景、控件字段；文件不是最终发送合同的全部。
 4. `request_from_run`接入共同地图；地图与历史投影见[地图与上下文](context.md)，身份、前景和裁图资格见[观察与身份](identity.md)。这些共用职责保留在原模块，不在本页另造实现。
@@ -31,12 +31,12 @@
 
 ## 任务清点是按需子流程
 
-[stepwise_flow.assemble_current_context](../../../experiments/clock_manual_20260919/stepwise_flow.py)读取登记结果，经[region_tasks.attach](../../../experiments/clock_manual_20260919/region_tasks.py)决定继续任务、导航、清点或其他阶段；仍在`discover`时禁止构造动作上下文。
+[stepwise_flow.assemble_current_context](../../../experiments/clock_manual_20260919/stepwise_flow.py)读取登记结果，经[traversal_scheduler.select_work](../../../experiments/clock_manual_20260919/traversal_scheduler.py)决定工作，再由action_proposer渲染；任务请求交TaskProposer；仍在`discover`时禁止构造动作上下文。
 `attach`仅在当前范围需要任务清点/复核时返回`task_proposal`，不是每轮必调。`run_task_step._run_step`才执行该请求，再重新取得普通上下文。
 
 - `plan_request`输入本区块已登记控件、当前定位与历史区分、已有任务/前置条件及入口证据；固定提示与底稿[区块探索任务.schema](../../../experiments/clock_manual_20260919/遍历prompt/输出格式/区块探索任务.schema)在该函数及`proposal_schema`组合。
 - `commit_plan / apply_plan`检查观察归属、任务控件唯一性、动作/类型、已有同名任务一致性和清点覆盖，登记任务及`task_inventory`，通过同一`publish`保存。
-- `inventory=complete`表示任务清点完整，任务执行进度由`coverage`另算。当前增补按本区块任务名匹配；跨区块同目标或换名重复的完整防重仍未实现，见[任务规划与登记](tasks.md)。
+- `inventory=complete`表示任务清点完整，任务执行进度由`coverage`另算。当前增补按本区块控件+规范动作复用；跨区块同目标语义去重仍未实现，见[任务规划与登记](tasks.md)。
 
 [第二步](02_action.md)消费已登记身份、当前观察与任务卡，详细职责见[调度与前置条件](routing.md)和[动作选择与执行](execution.md)；得到一张可读地图或一份清单不证明控件、坐标或导航结果正确。
 
@@ -61,8 +61,4 @@
 [返回三步总览](README.md) · [返回开发入口](../../../DEVELOPMENT.md)
 
 ## 可调用组件（2026-10-06）
-Locator.discover接收当前帧、run及原Runner，承接跨帧发现批次刷新，再调用原
-discovery_step.run_stage；locate_control复用原视觉定位。TaskProposer.request/run
-承接已选Region的任务请求或范围复核并交原Runner；region_tasks继续唯一维护
-任务上下文、提示/schema、apply_plan/commit_plan。普通工作选择已移到
-traversal_scheduler.select_work；两个组件不自行结束会话，也不是每轮必调。
+Locator.discover接收当前帧、run及原Runner，持有发现schema、上下文/请求、阶段驱动和局部视觉定位。TaskProposer持有任务schema、提示和历史/共享上下文，request/run交原Runner。discovery_step与region_tasks分别保留发现和任务正式登记；旧请求出口直接绑定角色内实现。普通工作及发现后的导航/检查安排归traversal_scheduler，两个组件不自行结束会话，也不是每轮必调。

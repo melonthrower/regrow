@@ -29,7 +29,7 @@ def request(root,snapshot,records,state,current_request=None):
         frame=(Path(snapshot)/'regions'/rid/observed['source_image']).resolve()
         if not frame.is_file():continue
         saved=deepcopy(state);saved['observation']={'id':observed['evidence']['observation'],'image':str(frame),'control_refs':[]}
-        q=tasks.plan_request(root,records,saved,rid)
+        q=tasks.helper('task_proposer').plan_request(root,records,saved,rid)
         dynamic=json.loads(q['user_prompt'])
         dynamic['材料来源']='补充功能依据任务：提供的是历史截图，不是当前设备。仅直接观察可确认的能力用handling=record；已有动作结果可作为依据，不能伪造尝试或将未经验证效果写为成功。确实缺少重要事实才安排explore。'
         q['user_prompt']=q['dynamic_prompt']=json.dumps(dynamic,ensure_ascii=False,indent=2)
@@ -83,7 +83,7 @@ def region_request(root,snapshot,records,state,rid):
     if not frame.is_file():return None
     saved=deepcopy(state)
     saved['observation']={'id':observed['evidence']['observation'],'image':str(frame),'control_refs':[]}
-    q=tasks.plan_request(root,records,saved,rid)
+    q=tasks.helper('task_proposer').plan_request(root,records,saved,rid)
     dynamic=json.loads(q['user_prompt'])
     dynamic['材料来源']='这是该区块最后一次登记的历史截图，不是当前设备画面。结合已登记动作补充任务清单；已有结果和仅记录入口不需要回访。只有确实未完成的探索才留待后续到达区块执行；缺少依据时用partial，不假装当前可见。'
     q['user_prompt']=q['dynamic_prompt']=json.dumps(dynamic,ensure_ascii=False,indent=2)

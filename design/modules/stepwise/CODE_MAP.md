@@ -2,22 +2,22 @@
 
 [开发入口](../../../DEVELOPMENT.md) · [三步流程](README.md) · [测试索引](../../../tests/STEPWISE_INDEX.md) · [提示入口](../../../experiments/clock_manual_20260919/遍历prompt/README.md)
 
-源码在 `experiments/clock_manual_20260919/`。下面完整列出 104 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
+源码在 `experiments/clock_manual_20260919/`。下面完整列出 105 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
 
 入口连接：`启动遍历.sh → launch_traversal.main → run_source.session_command → run_progress_session.run_session → run_task_step._run_step`。单轮由traversal_scheduler先处理已执行待登记与pending，再选择发现/任务清点、动作或异常复核；三步不等于固定三次 Luna 调用。
 
 | 主体 | 职责及交接 |
 |---|---|
 | `run_task_step` | 跨三步的编排；驱动 Runner、实际投递、后图取证及下一轮，不归为仅第二步 |
-| `discovery_step / region_tasks` | 发现请求、观察/身份登记与按需任务规划；地图/模板/完整清单不证明可操作或任务完成 |
-| `task_selection / stepwise_flow / action_binding` | 选择已有工作，组装当前动作请求并关联候选；投递由原 StepwiseFlow 与 action_commands 完成 |
-| `update_step / register_update / task_settlement` | 原回执和前后图进入更新、正式登记与原任务结算，发布后由下轮读新快照 |
+| `locator / task_proposer` | 发现和任务请求，分别交 discovery_step / region_tasks 正式登记；地图/模板/完整清单不证明可操作或任务完成 |
+| `traversal_scheduler / action_proposer / action_executor` | 选择工作、提出并绑定动作、投递前检查及真实执行 |
+| `result_updater / register_update / task_settlement` | 原回执和前后图进入更新、正式登记与原任务结算，发布后由下轮读新快照 |
 | `region_evidence` | 单份证据记录构造和保存图投影，供请求、登记与图页复用；最终写入仍归登记器 |
 | `step_repair / repair_stages` | 各 stage 同一纠错/接受边界；已执行动作只修登记，不重新投递 |
 | `model_transport` | 正常/恢复、Android/桌面共用 ModelTransport.call；范围、图像、历史、请求保存和额度保持原顺序 |
 
 本批新增 `task_selection / task_settlement / model_transport / action_binding / region_evidence` 五个职责文件；旧 `region_tasks / recover_external / desktop_transport / stepwise_flow` 的入口直接导入或继承同一实现，保留现有调用者。目录平铺、动态 sibling 加载、prompt 相对根和冻结 run 的 `framework_source` 不变。
-本地图只交付结构与定位；不把源码整理、离线检查或保存图读取写成地图准确、导航成功或模型语义验收。当前地图修复候选与任务防重提案仍按原未接受/未实现状态。
+本地图说明当前实现结构与定位；不把源码整理、离线检查或保存图读取写成地图准确、导航成功或模型语义验收。当前地图修复候选与跨区块语义任务去重仍按原未接受/未实现状态。
 
 ## 第一步：发现与准备任务（5 文件）
 
@@ -25,10 +25,10 @@
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [discovery_step.py](../../../experiments/clock_manual_20260919/discovery_step.py) | 从运行构造发现请求、登记观察并发布知识指针；恢复后也回此入口。 | `request_from_run / run_stage / commit / publish` |
+| [discovery_step.py](../../../experiments/clock_manual_20260919/discovery_step.py) | 发现观察/身份正式登记、快照读取与发布；旧请求出口绑定 locator。 | `load / commit / publish / await_discovery` |
 | [discovery_completion.py](../../../experiments/clock_manual_20260919/discovery_completion.py) | 同帧增量登记、历史身份召回与未解决缺口补齐。 | `prepare_registration / supplement` |
 | [discovery_inventory.py](../../../experiments/clock_manual_20260919/discovery_inventory.py) | 把任务清点缺口交给本区局部发现，不批量改其他 owner。 | `supplement` |
-| [region_tasks.py](../../../experiments/clock_manual_20260919/region_tasks.py) | 任务 schema、规划请求、任务增量登记及清点/执行覆盖计算；选择与结算通过导入别名交给专责模块。 | `plan_request / apply_plan / commit_plan / coverage` |
+| [region_tasks.py](../../../experiments/clock_manual_20260919/region_tasks.py) | 任务增量登记及覆盖计算；旧请求/schema出口绑定 task_proposer。 | `apply_plan / commit_plan / coverage` |
 | [entry_evidence.py](../../../experiments/clock_manual_20260919/entry_evidence.py) | 披露已观察的入口效果，为规划和累计核对保留来源。 | `disclose / related` |
 
 ## 第二步：选择已有工作与前置条件（7 文件）
@@ -60,13 +60,13 @@
 | [region_scroll.py](../../../experiments/clock_manual_20260919/region_scroll.py) | 校验当前图中的模型滚动坐标，保留 Region 动作归属。 | `bind` |
 | [visual_choices.py](../../../experiments/clock_manual_20260919/visual_choices.py) | 提供本轮外观匹配备选，明确身份裁图与点击区域不同。 | `prepare / match_controls / click_box` |
 
-## 第三步：结果更新与登记（10 文件）
+## 第三步：结果更新与登记（9 文件）
 
 详细职责：[模块页](updates.md)。
 
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
-| [update_step.py](../../../experiments/clock_manual_20260919/update_step.py) | 组装动作后更新请求及基础校验；最终发布由登记器完成。 | `build_update_request / route_update` |
+| [update_step.py](../../../experiments/clock_manual_20260919/update_step.py) | 旧更新出口直接绑定 result_updater 的唯一实现，无独立执行路径。 | `build_update_request / route_update` |
 | [register_update.py](../../../experiments/clock_manual_20260919/register_update.py) | 固定原动作来源、保存观察/动作/图像及正式快照；不调用模型或 GUI。 | `commit_update / commit_discovery / materialize_regions` |
 | [task_settlement.py](../../../experiments/clock_manual_20260919/task_settlement.py) | 由已登记绑定动作计算探索进度、修正后续绑定并保存参数事实。 | `completion_target / settle_task / reconcile_run / store_findings` |
 | [region_evidence.py](../../../experiments/clock_manual_20260919/region_evidence.py) | 构造/投影 Region、控件、动作和保存图状态，不推断成功或反向路线。 | `region_transitions / region_records / graph_state；new_region / region_observation / control_observation / control_name / action_record / index_actions` |
@@ -109,7 +109,7 @@
 | [task_record_repair.py](../../../experiments/clock_manual_20260919/task_record_repair.py) | 窄范围纠正任务 owner，已执行证据不跟着迁移。 | `apply` |
 | [shared_control_review.py](../../../experiments/clock_manual_20260919/shared_control_review.py) | 共享行为冲突的证据、独立纠错请求、原子成员修订与重新清点。 | `build_request / apply / run_pending` |
 
-## 共享：身份、前景与视觉匹配（15 文件）
+## 共享：身份、前景、视觉匹配与任务复用（16 文件）
 
 详细职责：[模块页](identity.md)。
 
@@ -127,11 +127,12 @@
 | [visual_region_locator.py](../../../experiments/clock_manual_20260919/visual_region_locator.py) | 控件召回与局部视觉定位，只复用本帧模型确认的边界。 | `plan / resolve_foreground_check` |
 | [source_region_candidates.py](../../../experiments/clock_manual_20260919/source_region_candidates.py) | 动作来源候选及有来源时态的历史身份文字。 | `recall / attach` |
 | [region_candidate_names.py](../../../experiments/clock_manual_20260919/region_candidate_names.py) | 把本轮名字与已登记候选明确对应。 | `candidates / resolve` |
-| [shared_controls.py](../../../experiments/clock_manual_20260919/shared_controls.py) | 显式跨 Region 行为关联；本地观察身份仍本地保存。 | `link / view / synchronize_tasks` |
+| [shared_controls.py](../../../experiments/clock_manual_20260919/shared_controls.py) | 显式跨 Region 行为关联；本地观察身份仍本地保存。 | `link / refresh / view` |
+| [shared_tasks.py](../../../experiments/clock_manual_20260919/shared_tasks.py) | 共享任务定义/结果引用、失效撤回与解除后的审计清理；不复制本地执行。 | `synchronize_tasks / automatic_tasks / reconcile_detached_tasks` |
 | [region_behavior_split.py](../../../experiments/clock_manual_20260919/region_behavior_split.py) | 按更新原答证据撤销行为不同来源的共享。 | `apply` |
 | [control_history_context.py](../../../experiments/clock_manual_20260919/control_history_context.py) | 短身份线索摘要，历史名字不直接证明控件角色。 | `describe` |
 
-## 共享：地图、历史与发送正文（10 文件）
+## 共享：地图、历史与发送正文（11 文件）
 
 详细职责：[模块页](context.md)。
 
@@ -142,6 +143,7 @@
 | [map_prompt.py](../../../experiments/clock_manual_20260919/map_prompt.py) | 只为同源同值事实做共同地图引用，避免删独有证据。 | `current_task / task_view / receipt` |
 | [history_context.py](../../../experiments/clock_manual_20260919/history_context.py) | 组织身份、动作、任务、findings 与必要原图历史，保留时态。 | `action_context / findings / disclose` |
 | [history_disclosure.py](../../../experiments/clock_manual_20260919/history_disclosure.py) | 模型发送边界的统一历史排版与共用规则引用。 | `project` |
+| [history_selection.py](../../../experiments/clock_manual_20260919/history_selection.py) | 按当前任务及明确前置/来路选择历史证据，不以时间相邻代替相关性。 | `for_request / task_attempts / related_tasks` |
 | [task_action_context.py](../../../experiments/clock_manual_20260919/task_action_context.py) | 渲染探索目标及原尝试，历史披露委托已有共用模块。 | `build / history` |
 | [task_attempt_context.py](../../../experiments/clock_manual_20260919/task_attempt_context.py) | 任务历史适配器，披露规则沿 history_context。 | `describe / history` |
 | [target_observation.py](../../../experiments/clock_manual_20260919/target_observation.py) | 动作及纠错共用当前目标观察/交接，候选不证明当前可操作。 | `attach / refresh / handoff` |
@@ -218,12 +220,12 @@
 
 | 文件 | 真实职责 | 可调用接口 |
 |---|---|---|
-| traversal_scheduler.py | 已提交状态选工作、pending优先、会话续接/停止、决定落盘 | select_work / pending_work / after_round / Scheduler.current |
-| locator.py | 当前帧发现批次与原局部视觉定位 | Locator.discover / locate_control |
-| task_proposer.py | 已选Region任务/范围请求、原Runner登记；提示与schema复用region_tasks | TaskProposer.request / run |
+| traversal_scheduler.py | 已提交状态选工作、pending优先、局部观察/导航安排及目标退出、续接/停止 | select_work / schedule_local_inspection / retire_completed_goal / Scheduler.current |
+| locator.py | 发现schema、上下文/请求、阶段驱动及局部控件定位 | schema / prepare / request_from_run / Locator.discover / locate_control |
+| task_proposer.py | 任务schema、提示、历史/共享上下文；普通/范围/历史/纠错请求共用 | proposal_schema / plan_request / TaskProposer.request / run |
 | action_proposer.py | 已选任务/导航的完整上下文、原动作校验绑定 | request_from_run / render_work / ActionProposer.propose |
 | action_executor.py | 投递前核对、真实执行及回执/前后图 | ActionExecutor.execute |
-| result_updater.py | 原结果请求、校验登记与中断补账 | ResultUpdater.update / resume / complete |
+| result_updater.py | 结果请求、候选校验、正常与中断观察；正式写入仍归register_update | build_update_request / route_update / ResultUpdater.update / resume |
 
 普通调用：调度决定→对应组件→原登记发布→重新调度。组件数不等于模型调用数。
 源码路径仍在experiments/clock_manual_20260919，原辅助模块不复制。

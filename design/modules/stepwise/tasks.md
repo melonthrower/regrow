@@ -8,11 +8,13 @@
 
 当前区块、截图、控件及已有任务 → inventory/evidence/operations。同一区块按控件身份+规范动作去重；任务名仅作说明，同绑定改名也沿用原状态、前置条件和历史；complete表示任务清点，不表示任务已执行。
 
-主要接口：`region_tasks.plan_request / apply_plan / commit_plan；entry_evidence.disclose`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
+主要接口：`task_proposer.plan_request / proposal_schema；region_tasks.apply_plan / commit_plan；entry_evidence.disclose`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
 
-任务选择和任务树在 [task_selection](routing.md)，单步结果结算与参数事实在 [task_settlement](updates.md)。本文件的coverage仍只计算已有记录的覆盖状态；region_tasks中的旧公共函数名直接导入唯一实现，不保留第二套逻辑。
+任务选择在 [traversal_scheduler](routing.md)，任务树渲染在 task_selection，单步结果结算与参数事实在 [task_settlement](updates.md)。region_tasks.coverage仍只计算已有记录的覆盖状态；region_tasks中的旧公共函数名直接导入唯一实现，不保留第二套逻辑。
 
 ## 源码与提示入口
+
+- [task_proposer.py](../../../experiments/clock_manual_20260919/task_proposer.py)
 
 - [region_tasks.py](../../../experiments/clock_manual_20260919/region_tasks.py)
 - [entry_evidence.py](../../../experiments/clock_manual_20260919/entry_evidence.py)
@@ -54,3 +56,7 @@ partial/uncertain只描述清点覆盖。当前可信pending优先执行；没�
 
 ## 连续批次后的滚动归属校验
 真实任务提案曾把scroll挂到列表控件；正常滚动以区块control=None登记，无法与该任务结算。apply_plan现拒绝非空control的scroll提案，沿已有Runner纠错修正；不增加prompt、模型阶段或静默迁移旧任务。旧冻结运行保留原提案/错任务，不能称已修正旧图或实机滚动已验收。
+
+## 角色与共享任务边界
+TaskProposer拥有提示、schema、历史/控件及共享任务上下文；普通、范围复核、历史清点和纠错刷新沿同一plan_request。region_tasks只保留正式任务登记、覆盖计算和旧公共出口。
+[shared_tasks.py](../../../experiments/clock_manual_20260919/shared_tasks.py)负责已确认共享关系上的任务定义/结果引用及失效清理。shared_controls.refresh先刷新关系再同步任务；shared_control_review.apply随后清理已失效继承。无本地证据的继承任务归档后移除，有本地尝试/发现的保留并阻塞复核，真实动作不迁移。

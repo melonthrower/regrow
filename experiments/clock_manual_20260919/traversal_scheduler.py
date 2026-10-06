@@ -1,5 +1,4 @@
 """Choose work from committed facts; request renderers do not decide session exits."""
-import discovery_step
 import step_repair
 from region_tasks import helper, coverage
 
@@ -108,6 +107,7 @@ def after_round(status, idle_recheck):
 
 def preview_next(root, run):
     """Read-only post-commit preview; discovery remains a valid next stage."""
+    import discovery_step
     from action_proposer import request_from_run
     _, records, state = discovery_step.load(run)
     decision = select_work(records, state)
@@ -123,6 +123,7 @@ class Scheduler:
 
     def current(self):
         """Reconcile committed work, then choose and render through the components."""
+        import discovery_step
         from action_proposer import request_from_run
         from register_update import write_json
         if not (self.run/'execution_pending.json').exists() and not step_repair.pending(self.run):
@@ -130,7 +131,7 @@ class Scheduler:
         helper('coverage_exemption').refresh(self.run)
         _, known, state = discovery_step.load(self.run)
         helper('traversal_scope').exclude_known_external(self.run, known, state)
-        discovery_step.retire_completed_goal(self.run)
+        retire_completed_goal(self.run)
         helper('task_prerequisites').prioritize(self.run, self.frame)
         _, known, state = discovery_step.load(self.run)
         if state.get('reason')=='verify_prepared_dependency' and state.get('next_action_mode')=='discover':
@@ -142,3 +143,63 @@ class Scheduler:
             deferred=helper('task_result_review').next_deferred(self.root,self.run,self.frame)
             if deferred:return deferred
         return request_from_run(self.root, self.run, decision=decision, frame=self.frame)
+
+
+def offer_foreground_navigation(records,state,focus,reply):
+    """A blocked route entry is not a prerequisite for choosing a navigation action."""
+    if reply.get('focus_presence')!='not_interactive':return False
+    observation=state.get('observation')
+    if not observation or observation.get('image')!=state.get('pending_frame'):return False
+    refs=[r for r in state.get('interactive_regions',[]) if r!=focus and r in records]
+    # Prefer the already identified child foreground over its visible parent container.
+    parents={records[r].get('parent_region') for r in refs}
+    refs=[r for r in refs if r not in parents]
+    if not refs:return False
+    state.update(interactive_regions=refs,next_action_mode='explore',reason='navigation_from_foreground',
+                 phase='ready_for_next_action',handoff_summary=reply['foreground'].get('description',''))
+    state['observation']={**observation,'foreground':reply['foreground'],
+                          'uncertainties':reply.get('uncertainties',[])}
+    for key in ('inspection_region','required_control','discovery_mode','pending_frame'):state.pop(key,None)
+    return True
+
+
+def schedule_local_inspection(records,state):
+    target=state['working_region'];refs=state['interactive_regions']
+    route=helper('stepwise_flow').shortest_known_path(records,state,target,require_control=False)
+    if refs and target not in refs and (not route or route[0]['operation']=='back'):
+        # Foreground is identified. Back needs no control crop or task inventory.
+        # Let the ordinary navigation agent choose; this does not assert a destination.
+        state.pop('inspection_region',None);state.pop('required_control',None)
+        state.update(next_action_mode='explore',reason='navigation_from_foreground',phase='ready_for_next_action')
+        return
+    if target in refs:
+        state['inspection_region']=target;state.pop('required_control',None)
+    elif route:
+        state['inspection_region']=route[0]['source_region'];state['required_control']=route[0]['source_control']
+    elif refs:
+        # Missing graph edges are normal exploration. Inspect one current Region
+        # before offering its controls to the ordinary navigation action step.
+        state['inspection_region']=refs[0];state.pop('required_control',None)
+    else:
+        state.pop('inspection_region',None);state.pop('required_control',None)
+        state['discovery_mode']='relocate'
+    state.update(next_action_mode='discover',reason='locate_local_controls',phase='awaiting_discovery')
+
+
+def retire_completed_goal(run):
+    """Do not navigate back to finished work after leaving its surface."""
+    _,records,state=helper('discovery_step').load(run)
+    if state.get('next_action_mode') not in ('explore','discover'):return False
+    rid=state.get('working_region')
+    if rid not in records:return False
+    tasks=helper('region_tasks')
+    active=state.get('active_task') or {}
+    task=records.get(active.get('region'),{}).get('tasks',{}).get(active.get('name'),{})
+    if task.get('status')=='pending':return False
+    if not tasks.coverage(records[rid],records)['complete']:
+        # A blocked, off-screen goal is not a reason to navigate back without work.
+        scheduling=helper('task_deferral')
+        if rid not in state.get('interactive_regions',[]) and not scheduling.runnable(records[rid],records):
+            return bool(scheduling.advance_unfinished(run))
+        return False
+    return bool(helper('task_deferral').advance_unfinished(run))

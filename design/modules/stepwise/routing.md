@@ -54,3 +54,5 @@ working_region、可选task和reason，不构造prompt。当前可承接的在�
 task_selection.attach仅兼容调用同一select_work/render_work，原render仍渲染进度。
 Scheduler.current负责登记后的程序reconcile和选择；请求构造不再反向决定换工作。
 pending_work优先续已执行结果；after_round集中会话继续、一次空闲整理和停止解释。
+
+局部检查/导航安排（schedule_local_inspection、offer_foreground_navigation）及已结束目标退出（retire_completed_goal）归traversal_scheduler。discovery_step登记当前观察后调用这些决策；Locator不通过局部完成终止会话。

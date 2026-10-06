@@ -339,3 +339,5 @@
   已投递禁止重放、结果额度预留（离线适配器）。
 - 相邻test_idle_continuation、test_session_budget_tail、test_stepwise_capture_pipeline、
   test_stepwise_discovery_dispatch、test_suspended_update_recovery、test_routed_task_constraints。
+
+角色入口与连接： [test_role_module_contracts.py](test_role_module_contracts.py)、[test_stepwise_discovery_dispatch.py](test_stepwise_discovery_dispatch.py)、[test_shared_control_conflict_repair.py](test_shared_control_conflict_repair.py)。旧测试债和本批实际通过范围以月度日志为准。

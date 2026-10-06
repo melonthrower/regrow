@@ -108,7 +108,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
             write_json(run/f'calls/{call_ref}/visual_identity.json',{'matches':identity_audit,'effective_candidate':reply})
     receipt = read(run/f'action_attempts/{attempt_ref}/receipt.json')
     saved_schema=run/f'calls/{call_ref}/response.schema.json'
-    branch = sibling('update_step').route_update(root, reply, receipt,
+    branch = sibling('result_updater').route_update(root, reply, receipt,
                 schema=request.get('response_schema') or (read(saved_schema) if saved_schema.exists() else None))
     if branch['status'] != 'validated_candidate':
         raise ValueError('execution is not confirmed; no exploration update committed')

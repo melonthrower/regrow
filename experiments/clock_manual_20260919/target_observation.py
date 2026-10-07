@@ -94,12 +94,13 @@ def render(request):
     target=source.get('task_control') or source.get('control')
     navigation={step.get('source_control') for step in request.get('navigation_path') or [] if isinstance(step,dict)}
     for candidate in request.get('backend_candidates',[]):
-        if target and candidate['id']!=target and candidate['id'] not in navigation:continue
+        if target and candidate['id']!=target and candidate['id'] not in navigation and not candidate.get('candidate_scope'):continue
         card=candidate.get('target_observation')
         if card is None:continue
         card=page_context.compact_observation(card,request.get('page_context'),
             candidate.get('region_ref',source.get('region')),source.get('observation'),control=candidate['id'])
         item={'所属区块':candidate.get('region_name',''),'控件':candidate['name'],'目标观察':card}
+        if candidate.get('candidate_scope'):item['候选用途']=candidate['candidate_reason']
         frames=request.get('image_refs',[])
         if candidate.get('image') and Path(candidate['image']).is_file() and len(frames)==1 and frames[0] and Path(frames[0]).is_file():
             boxes=[v['box'] for v in request.get('visual_choices',{}).get(candidate['id'],[])]

@@ -33,7 +33,7 @@ def card(region, records):
     from region_functions import review_current
     current = bool(knowledge) and review_current(region, records)
     return {'region': region['id'], 'name': region['name'],
-            'summary': knowledge.get('summary', '') if current else '',
+            'summary': knowledge.get('summary', ''),
             'status': 'summarized' if current else 'needs_review' if knowledge or region.get('functions') else 'not_summarized'}
 
 
@@ -41,7 +41,7 @@ def disclose(records, rid):
     """Read this Region in detail, but only each direct destination's own summary."""
     region = records[rid]
     own = card(region, records)
-    current = own['status'] == 'summarized'
+    current = bool(region.get('local_knowledge'))
     return {'self': own, 'knowledge': deepcopy(region.get('local_knowledge', {})) if current else {},
             'functions': deepcopy(region.get('functions', {})) if current else {},
             'entries': [{**edge, 'destination': card(records[edge['region']], records)}

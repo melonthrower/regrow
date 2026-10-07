@@ -78,7 +78,7 @@ def test_execution_evidence_does_not_require_a_supported_task_or_control():
     assert rows[0]['关联任务']==[] and rows[0]['控件关联']=='未确认'
 
 
-def test_confirmed_action_without_catalog_task_is_preserved_and_invalidates_review():
+def test_exit_without_new_task_knowledge_is_preserved_without_invalidating_review():
     _,r,_=alarm_region();m=mod('region_functions');cid=r['tasks']['时间']['control']
     r['tasks']={};r['actions']={}
     before=m.signature(r)
@@ -86,7 +86,7 @@ def test_confirmed_action_without_catalog_task_is_preserved_and_invalidates_revi
         'result':{'description':'对话框关闭，内容恢复可见','evidence':'实际后图','exception':'none'}}
     row=m.action_results(r)[0]
     assert row['控件']==r['controls'][cid]['name'] and row['关联任务']==[]
-    assert m.signature(r)!=before
+    assert m.signature(r)==before
 
 
 def test_action_scope_and_destination_are_context_not_automatic_navigation_classification():

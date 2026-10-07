@@ -80,7 +80,7 @@ def attach_execution(records, run):
                         a['purpose']+='；文字尚未发送，只执行了点击'
 
 
-def action_source_observation(run, selection_call, observation, region):
+def action_source_observation(run, selection_call, observation, region, control=None):
     """Resolve the immutable source through the dispatched selection request."""
     run=Path(run)
     if not selection_call or not (run/'calls'/selection_call/'request.json').exists():raise ValueError('dispatched action source request is missing')
@@ -92,8 +92,17 @@ def action_source_observation(run, selection_call, observation, region):
     state=read(path/'runtime_state.json')
     if source.get('observation')!=observation or (state.get('observation') or {}).get('id')!=observation:
         raise ValueError('dispatched request and source snapshot observation disagree')
-    if region not in state.get('interactive_regions',[]):raise ValueError('source Region was not interactive in the dispatched request snapshot')
-    return {'id':observation,'region_refs':state['interactive_regions'],'snapshot':snapshot,'selection_call':selection_call}
+    extra = None
+    if region not in state.get('interactive_regions', []):
+        candidates = [c for c in request.get('backend_candidates', [])
+                      if c.get('region_ref') == region and c.get('id') == control
+                      and c.get('candidate_scope') == 'foreground_entry_trigger']
+        if control is None or len(candidates) != 1:
+            raise ValueError('source Region was not interactive and no dispatched related control candidate exists')
+        extra = {'region': region, 'control': control, 'scope': candidates[0]['candidate_scope']}
+    # Preserve actual foreground Regions; an external control does not activate its whole owner.
+    return {'id':observation,'region_refs':state['interactive_regions'],'snapshot':snapshot,'selection_call':selection_call,
+            **({'related_control':extra} if extra else {})}
 
 
 def commit_update(root, run, graph_ref, call_ref, attempt_ref):
@@ -141,7 +150,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
     source, control = edge['source_region'], edge['source_control']
     working_ref=binding.get('working_region',source) if not edges else source
     before=next((o for o in graph['observations'] if o['id']==edge['before_observation']),None)
-    pinned=action_source_observation(run,dispatch.get('source_call'),edge['before_observation'],source) if not graph_ref else None
+    pinned=action_source_observation(run,dispatch.get('source_call'),edge['before_observation'],source,control) if not graph_ref else None
     if pinned:
         before=pinned;write_json(run/f'calls/{call_ref}/source_observation.json',pinned)
     current=run/'knowledge_current.json'
@@ -155,7 +164,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
             known=read(owner_path)['actions'].get(attempt_ref) if owner_path.exists() else None
             if known and known['evidence']['before_observation']==edge['before_observation']:
                 before={'id':edge['before_observation'],'region_refs':known['evidence']['before_regions']}
-    if before is None or (source not in before['region_refs']):
+    if before is None or (source not in before['region_refs'] and before.get('related_control') != {'region':source,'control':control,'scope':'foreground_entry_trigger'}):
         raise ValueError('source observation is missing or source Region was not interactive')
     payload = {'record_format':'region_image_knowledge','graph':graph,'reply':reply,'receipt':receipt,'call':call_ref,'attempt':attempt_ref}
     if not edges:

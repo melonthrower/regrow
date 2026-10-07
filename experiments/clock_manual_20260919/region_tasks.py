@@ -64,8 +64,9 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         if row['task_type']=='scroll' and row['control']:
             raise ValueError('滚动任务属于本区块，control须为空；不能绑定列表控件，否则与实际滚动记录不匹配')
         if len(names)!=1:
-            if reply['inventory']!='complete' and not names:continue
-            raise ValueError('task owner ambiguous or missing')
+            foreign = any(c['name']==row['control'] for rid,r in (records or {}).items() if rid!=region['id'] for c in r.get('controls',{}).values())
+            if reply['inventory']!='complete' and not names and not foreign:continue
+            raise ValueError('task owner ambiguous or missing；只登记本区块已有控件的任务，其他区块任务不能混入本次清点')
         name=row['name'].strip();cid=names[0]
         if not name or name in seen or not row['reason'].strip():raise ValueError('task name/reason missing or repeated')
         seen.add(name)

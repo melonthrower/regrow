@@ -122,6 +122,18 @@ def signature(region,records=None):
     records=records or {region['id']:region}
     evidence=evidence_projection(region,records)
     evidence.pop('动作证据覆盖')
+    local_tasks = region.get('tasks', {})
+    attempts = {aid for t in local_tasks.values() if t.get('handling') == 'explore' for aid in t.get('attempts', [])}
+    # Navigation on a previously explored control is not a new exploration result.
+    relevant = attempts
+    evidence['同区块已执行动作结果'] = [row for row in evidence['同区块已执行动作结果'] if row['动作记录'] in relevant]
+    # Stable task knowledge wins over incidental rewording on a return observation.
+    for item, (cid, control) in zip(evidence['已观察控件'], region['controls'].items()):
+        stable = [t['knowledge'] for t in local_tasks.values()
+                  if t.get('control') == cid and t.get('knowledge') and t.get('status') in ('done','record_only')]
+        if stable:
+            item.pop('possible_operation',None);item.pop('uncertainty',None)
+            item['已登记用途'] = stable
     for c in evidence['已观察控件']:c.pop('观察出处',None)
     selected={(row['region'],row['task']) for f in region.get('functions',{}).values()
               for row in f.get('support_tasks',[]) if row['region']!=region['id']}
@@ -135,16 +147,15 @@ def signature(region,records=None):
             'control':{'name':control.get('name'),**{k:v for k,v in observed.items()
                 if k in ('possible_operation','uncertainty')}},
             'results':[action_row(source,aid,action,records) for aid,action in source.get('actions',{}).items()
-                if task and omitted_reason(action) is None and (aid in task.get('attempts',[])
-                    or task.get('control') is not None and action.get('control')==task['control'])]})
+                if task and omitted_reason(action) is None and aid in task.get('attempts',[])]})
     # Destination summaries and unselected neighbour detail are read-time views.
     # Only local work and explicitly adopted foreign support invalidate this owner.
     evidence.pop('进入本区块的已观察结果')
     for control in evidence['已观察控件']:
         control.pop('state',None);control.pop('text',None)
     data={'extraction_rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],
-          'name':region['name'],'tasks':region.get('tasks',{}),'inventory':region.get('task_inventory'),
-          'evidence':evidence,'entries':knowledge.entries(region,records),
+          'name':region['name'],'tasks':region.get('tasks',{}),'inventory':{k:v for k,v in region.get('task_inventory',{}).items() if k in ('inventory','controls','review')},
+          'evidence':evidence,'entries':[edge for edge in knowledge.entries(region,records) if edge['attempt'] in relevant],
           'selected_foreign_support':dependencies}
     return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
@@ -161,10 +172,20 @@ def review_current(region,records=None):
     return bool(region.get('region_role')) and region.get('function_inventory',{}).get('evidence_digest')==signature(region,records)
 
 
+def ready(region, records=None):
+    """Close all local work; changed adopted supports settle their own batch first."""
+    records = records or {region['id']:region}
+    if not task_module().coverage(region, records)['complete']:
+        return False
+    dependencies = {s['region'] for f in region.get('functions', {}).values()
+                    for s in f.get('support_tasks', []) if s['region'] != region['id']}
+    return all(rid in records and task_module().coverage(records[rid], records)['complete'] for rid in dependencies)
+
+
 def next_ready(records,state):
     """Summarize closed Region work once per evidence revision, without navigation."""
     for region in sorted(records.values(),key=lambda r:r['id']!=state.get('working_region')):
-        if (task_module().coverage(region,records)['complete']
+        if (ready(region,records)
                 and not region.get('registration_gaps',{}).get('function_registration')
                 and not review_current(region,records)):
             return region['id']
@@ -207,7 +228,7 @@ def locations(sources):
 def register(region,reply,call,records=None):
     import jsonschema
     jsonschema.validate(reply,schema(Path(__file__).parent))
-    if not task_module().coverage(region,records)['complete']:raise ValueError('Region exploration is not complete')
+    if not ready(region,records):raise ValueError('Region exploration or adopted support batch is not complete')
     if not reply['role_evidence'].strip():raise ValueError('region role needs evidence')
     if reply['region_role']=='navigation' and reply['functions']:raise ValueError('navigation cannot claim business functions')
     # A parameter surface can support business work without owning a complete atom.
@@ -283,7 +304,7 @@ def register(region,reply,call,records=None):
 
 
 def request(root,region,state,records=None):
-    if not task_module().coverage(region,records)['complete']:raise ValueError('Region exploration is not complete')
+    if not ready(region,records):raise ValueError('Region exploration or adopted support batch is not complete')
     pr=Path(root)/'遍历prompt'
     paths=PROMPT_PATHS
     parts=[{'path':path,'text':(pr/path).read_text()} for path in paths]

@@ -235,6 +235,8 @@ def test_function_context_includes_later_same_control_results():
     q=m.request(ROOT,region,{'observation':{'id':'current'}})
     dynamic=json.loads(q['user_prompt'])
     assert any(r['结果']=='确认编辑后设置面板显示08:15' for r in dynamic['同区块已执行动作结果'])
+    assert m.signature(region)==old
+    region['tasks']['时间'].setdefault('attempts',[]).append('later')
     assert m.signature(region)!=old
     region['functions']={'编辑时间':{'completion':'过时的完成结论','unconfirmed':['过时的疑问']}}
     refreshed=m.request(ROOT,region,{'observation':{'id':'current'}})['user_prompt']

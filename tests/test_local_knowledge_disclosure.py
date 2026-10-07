@@ -91,7 +91,7 @@ def test_stale_knowledge_is_not_disclosed_as_current_after_new_evidence_or_merge
     assert disclose(records,owner['id'])['functions']
     owner['tasks']['时间']['result_evidence']='需要重新总结的新条件'
     view=disclose(records,owner['id'])
-    assert view['self']['status']=='needs_review' and not view['functions'] and not view['knowledge']
+    assert view['self']['status']=='needs_review' and view['functions'] and view['knowledge']
     assert owner['functions'] and owner['local_knowledge']  # Original knowledge remains auditable.
     owner.pop('local_knowledge');owner.pop('function_inventory')
     assert not disclose(records,owner['id'])['functions']

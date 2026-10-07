@@ -223,6 +223,7 @@
 | traversal_scheduler.py | 已提交状态选工作、pending优先、局部观察/导航安排及目标退出、续接/停止 | select_work / schedule_local_inspection / retire_completed_goal / Scheduler.current |
 | locator.py | 发现schema、上下文/请求、阶段驱动及局部控件定位 | schema / prepare / request_from_run / Locator.discover / locate_control |
 | task_proposer.py | 任务schema、提示、历史/共享上下文；普通/范围/历史/纠错请求共用 | proposal_schema / plan_request / TaskProposer.request / run |
+| action_candidates.py（新增） | 本地候选与当前前景直接入边外层触发控件；已有合格图标及原点击范围复用 | candidate / attach_related / use_recorded_icon |
 | action_proposer.py | 已选任务/导航的完整上下文、原动作校验绑定 | request_from_run / render_work / ActionProposer.propose |
 | action_executor.py | 投递前核对、真实执行及回执/前后图 | ActionExecutor.execute |
 | result_updater.py | 结果请求、候选校验、正常与中断观察；正式写入仍归register_update | build_update_request / route_update / ResultUpdater.update / resume |

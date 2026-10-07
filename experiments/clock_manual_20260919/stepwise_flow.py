@@ -101,17 +101,9 @@ def _assemble_local_context(root, records, state, region_ref):
         summary='未提供动作记录，进度未知' if not supplied else ('所提供图中无动作记录' if not attempts else ('有执行回执' if delivered else '执行未确认'))
         statuses[cid]={'attempts':c['action_refs'],'summary':summary}
         if interactive:
-            matching=[v for v in c['observations'] if v['evidence'].get('observation')==obs['id']]
-            # Recall admitted history only inside the observed active Region.
-            # It remains a visual candidate, not a claim of current visibility.
-            appearance=templates.latest(c) or {}
-            if matching or appearance:
-                v=(matching or c['observations'])[-1]
-                backend.append({'id':cid,'name':c['name'],'image':appearance.get('image'),
-                                'region_ref':region_ref,'source_image':appearance.get('source_image'),
-                                **templates.assessment(appearance),
-                                'icon_description':v['icon_description'], 'region_image':templates.image(region),
-                                **{k:appearance[k] for k in ('bbox','click_bbox') if k in appearance}})
+            from action_candidates import candidate
+            item=candidate(region,cid,obs['id'])
+            if item is not None:backend.append(item)
     ready=interactive and state.get('next_action_mode')=='explore'
     if not ready:lines.append('当前不生成本区块点击请求；等待处理已登记的运行分支。')
     dynamic='\n'.join(lines)

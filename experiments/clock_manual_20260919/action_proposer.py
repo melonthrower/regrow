@@ -83,7 +83,8 @@ def request_from_run(root, run, region_ref=None, task_ref=None, *, decision=None
             if v.get('image'):v['image']=str((snapshot/f'regions/{ref}'/v['image']).resolve())
         for c in r['controls'].values():
             for v in c['observations']:
-                if v['image']:v['image']=str((snapshot/f'regions/{ref}'/v['image']).resolve())
+                for field in ('image','icon_image'):
+                    if v.get(field):v[field]=str((snapshot/f'regions/{ref}'/v[field]).resolve())
                 if v.get('source_image'):v['source_image']=str((snapshot/f'regions/{ref}'/v['source_image']).resolve())
     if state['observation'].get('image'):
         state['observation']['image']=str((run/state['observation']['image']).resolve())
@@ -97,6 +98,7 @@ def request_from_run(root, run, region_ref=None, task_ref=None, *, decision=None
     tasks=importlib.util.module_from_spec(spec);spec.loader.exec_module(tasks)
     decision = decision or select_work(records, state, region_ref)
     result = render_work(root, records, state, decision)
+    tasks.helper('action_candidates').attach_related(result,records,state)
     result=tasks.helper('target_observation').attach(result,records)
     tasks.helper('target_observation').attach_handoff(result,records,state,run)
     if state.get('navigation_handoff') and result.get('action_ready'):

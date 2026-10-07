@@ -1,1 +1,1 @@
-研究截图不随 GitHub 源码导出。可运行完整版本位于独立离线交付包中的 presentation/dist；仅导出 HTML/CSS/JavaScript 与说明。完整证据保留本地，不从源码仓库下载。
+GitHub源导出不包含截图。新动画的公开GNOME图片可按dist/film/assets/sources.json核对来源与许可；完整离线演示包包含原图。静态讲稿中的历史研究截图仅保留在授权的私有Site及本地交付，不能把公开示意素材当作框架执行证据。

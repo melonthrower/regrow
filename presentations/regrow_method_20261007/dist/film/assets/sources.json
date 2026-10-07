@@ -1,0 +1,56 @@
+[
+  {
+    "file": "calendar.png",
+    "url": "https://static.gnome.org/catalog/app-screenshot/org.gnome.Calendar/image-1_orig.png",
+    "page": "https://apps.gnome.org/Calendar/",
+    "credit": "The respective GNOME app contributors",
+    "license_as_stated_on_source_page": "GPL-3.0-or-later",
+    "sha256": "e687d8d486bdabb104213007d5f0658fa3ecc328c3f27dbb0049e2baf2046d9c",
+    "use": "public screenshot for annotated method illustration; not regrow execution evidence"
+  },
+  {
+    "file": "event.png",
+    "url": "https://static.gnome.org/catalog/app-screenshot/org.gnome.Calendar/image-4_orig.png",
+    "page": "https://apps.gnome.org/Calendar/",
+    "credit": "The respective GNOME app contributors",
+    "license_as_stated_on_source_page": "GPL-3.0-or-later",
+    "sha256": "5f6049fe634c050b1e44312d0ff95b4b94e3d6ca9c5bf4f923626640e2330855",
+    "use": "public screenshot for annotated method illustration; not regrow execution evidence"
+  },
+  {
+    "file": "files.png",
+    "url": "https://static.gnome.org/catalog/app-screenshot/org.gnome.Nautilus/grid.png",
+    "page": "https://apps.gnome.org/Nautilus/",
+    "credit": "The respective GNOME app contributors",
+    "license_as_stated_on_source_page": "GPL-3.0-or-later",
+    "sha256": "81502ff7cd7e56c077db510c13c87d6db8add2db5c3d20ea4de0749438020a39",
+    "use": "public screenshot for annotated method illustration; not regrow execution evidence"
+  },
+  {
+    "file": "search.png",
+    "url": "https://static.gnome.org/catalog/app-screenshot/org.gnome.Nautilus/search.png",
+    "page": "https://apps.gnome.org/Nautilus/",
+    "credit": "The respective GNOME app contributors",
+    "license_as_stated_on_source_page": "GPL-3.0-or-later",
+    "sha256": "01985b5c2a5826bc2e4e671fd76d07c6bc033a9a4f8b069861bdb66aba24efc8",
+    "use": "public screenshot for annotated method illustration; not regrow execution evidence"
+  },
+  {
+    "file": "appearance.png",
+    "url": "https://static.gnome.org/catalog/app-screenshot/org.gnome.Settings/screenshot-appearance.png",
+    "page": "https://apps.gnome.org/Settings/",
+    "credit": "The respective GNOME app contributors",
+    "license_as_stated_on_source_page": "GPL-2.0-or-later",
+    "sha256": "b13fa5a02163f44854a20e88318851fd09f9ec89478e82f9116ece448971fce4",
+    "use": "public screenshot for annotated method illustration; not regrow execution evidence"
+  },
+  {
+    "file": "sound.png",
+    "url": "https://static.gnome.org/catalog/app-screenshot/org.gnome.Settings/screenshot-sound.png",
+    "page": "https://apps.gnome.org/Settings/",
+    "credit": "The respective GNOME app contributors",
+    "license_as_stated_on_source_page": "GPL-2.0-or-later",
+    "sha256": "1ae473e5c53ae158684815164ba01c9e7b4e31180efebd40623e8779a3a4715c",
+    "use": "public screenshot for annotated method illustration; not regrow execution evidence"
+  }
+]

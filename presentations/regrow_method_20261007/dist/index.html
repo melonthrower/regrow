@@ -1,18 +1,7 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="regrow 研究方法演示：从真实 GUI 遍历、区块功能知识，到目标驱动任务生成与可验证轨迹采集。">
-<title>regrow — 从 GUI 遍历到可验证轨迹</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header><a class="brand" href="#1" aria-label="回到首页">regrow<span>↗</span></a><span class="edition">METHOD / RESEARCH DISCUSSION · 2026.10</span><div class="tools"><button id="overviewBtn" aria-label="打开目录">目录 <kbd>O</kbd></button><button id="notesBtn" aria-pressed="false">讲解备注 <kbd>N</kbd></button><button id="fullBtn">全屏 <kbd>F</kbd></button></div></header>
-<main id="deck" aria-label="研究方法幻灯片"></main>
-<footer><div class="chapter" id="chapter"></div><div class="progress" id="progress" aria-label="幻灯片导航"></div><div class="paging"><button id="prev" aria-label="上一页">←</button><span id="page" aria-live="polite"></span><button id="next" aria-label="下一页">→</button></div></footer>
-<aside id="notes" hidden><button id="closeNotes" aria-label="关闭备注">×</button><h2>讲解备注与依据</h2><div id="noteBody"></div></aside>
-<dialog id="overview"><div class="dialog-top"><h2>演示目录</h2><button id="closeOverview" aria-label="关闭目录">×</button></div><div id="overviewItems"></div><p>← → / 空格翻页 · Home / End 首尾页 · Esc 关闭弹层</p></dialog>
-<dialog id="lightbox"><button id="closeLightbox" aria-label="关闭截图">关闭 ×</button><img id="largeImage" alt=""><p id="largeCaption"></p></dialog>
-<div id="toast" role="status"></div>
-<script src="slides.js"></script><script src="app.js"></script>
-</body></html>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="regrow方法动画：用官方应用截图和逐步标注解释GUI遍历、功能知识、任务生成与轨迹采集。"><title>regrow · 方法动画</title><link rel="stylesheet" href="film/film.css"></head><body>
+<header class="page-header"><a href="#1" class="brand">regrow <span>↗</span></a><span>从界面探索，到目标与轨迹</span><div><a href="slides.html">静态讲稿</a><button id="sourcesButton">图片来源与说明</button></div></header>
+<main><div id="viewport"><div id="stage" role="region" aria-label="方法动画画面"><div class="film-top"><span class="film-tag"><i></i>方法演示 · 非框架实跑</span><div id="chapters"></div></div><div id="scene"></div><div class="caption"><span id="subtitle"></span></div><div class="film-bottom"><span id="assetCredit"></span><span id="sceneNumber"></span></div></div></div>
+<div class="player"><button id="play" aria-label="播放">▶ <span>播放讲解</span></button><button id="previous" aria-label="上一幕">❮</button><div class="track"><input id="seek" type="range" min="0" max="180" step="0.05" value="0" aria-label="播放进度"><div class="tick-labels"><span>认识界面</span><span>探索与复用</span><span>生成功能</span><span>目标与采集</span></div></div><button id="next" aria-label="下一幕">❯</button><span id="time">00:00 / 03:00</span><select id="speed" aria-label="播放速度"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select><button id="fullscreen">全屏</button></div>
+<p class="hint">建议桌面或横屏观看。空格播放 / 暂停，← → 切换一幕；也可用下方按钮或拖动时间轴。</p>
+</main><dialog id="sources"><div class="modal-heading"><h2>素材与证据边界</h2><button id="closeSources" aria-label="关闭来源">×</button></div><p>本片使用 GNOME 官方公开截图作为背景，框线、光标、任务和知识卡片为人工编排的讲解动画。不同画面可以来自不同应用或版本，不构成连续动作记录，也不表示 regrow 已对这些界面成功执行。</p><ul><li><a href="https://apps.gnome.org/Nautilus/" target="_blank" rel="noreferrer">GNOME Files：文件与搜索界面</a> · GPL-3.0-or-later</li><li><a href="https://apps.gnome.org/Settings/" target="_blank" rel="noreferrer">GNOME Settings：外观与声音界面</a> · GPL-2.0-or-later</li><li><a href="https://apps.gnome.org/Calendar/" target="_blank" rel="noreferrer">GNOME Calendar：月历与事件编辑器</a> · GPL-3.0-or-later</li></ul><p>版权归各应用贡献者；许可信息按来源页记载。原图未修改，网页标注独立叠加。完整来源与哈希见 <a href="film/assets/sources.json" target="_blank">素材清单</a>。</p><p>视觉方向参考用户提供的短片截图。OpenAI 参考页与小红书视频均受浏览器访问限制，未观看完整影片。当前交付为可交互、可自动播放的无声字幕动画。</p><p>内容依据项目现行遍历、功能知识、任务生成和采集合同。新入口产物链、复杂组合、目录质量与训练收益仍待验证；实际研究证据见<a href="slides.html#14">静态讲稿的证据边界</a>。</p></dialog>
+<script src="film/scenes.js"></script><script src="film/player.js"></script></body></html>

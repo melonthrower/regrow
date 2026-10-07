@@ -1,0 +1,7 @@
+# 只登记当前可交互范围
+
+已实现：删除foreground.excluded_areas的模型输出要求、坐标校验及新scope保存内容；只保留interactive_areas。该删除不改变现有contains判断，因为它原本就只使用正向范围。
+
+发现与动作后更新共用foreground_scope.extend_schema及共享身份提示；audit/remember保存validate返回的单一范围，history_matching和控件点击范围继续消费interactive_areas。背景接管与可见性沿previous_regions记录，不新增替代字段或模型阶段。
+
+旧原答、历史缓存和冻结运行保留，不做迁移或覆盖。新运行从简化合同开始。聚焦验证应覆盖普通更新schema、前景外匹配零计票、边界/空范围/点击检查和原生保存帧回复登记；保存帧不代表新GUI执行。

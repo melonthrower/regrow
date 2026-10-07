@@ -20,9 +20,8 @@ def extend_schema(schema):
          'required':['left','top','right','bottom']}
     area={'type':'object','additionalProperties':False,'properties':{'bbox':box,'reason':{'type':'string','minLength':1}},'required':['bbox','reason']}
     field=schema['properties']['foreground']
-    for key in ('interactive_areas','excluded_areas'):
-        field['properties'][key]={'type':'array','items':area}
-        field['required']=list(dict.fromkeys(field['required']+[key]))
+    field['properties']['interactive_areas']={'type':'array','items':area}
+    field['required']=list(dict.fromkeys(field['required']+['interactive_areas']))
     return schema
 
 
@@ -32,13 +31,11 @@ def fingerprint(frame):return hashlib.sha256(Path(frame).read_bytes()).hexdigest
 def validate(foreground,frame):
     from PIL import Image
     with Image.open(frame) as im:width,height=im.size
-    result={}
-    for key in ('interactive_areas','excluded_areas'):
-        result[key]=[]
-        for area in foreground[key]:
-            b=area['bbox'];l,t,r,bottom=[b[k] for k in ('left','top','right','bottom')]
-            if not (0<=l<r<=width and 0<=t<bottom<=height):raise ValueError('前景范围超出当前截图或为空')
-            result[key].append([l,t,r,bottom])
+    result={'interactive_areas':[]}
+    for area in foreground['interactive_areas']:
+        b=area['bbox'];l,t,r,bottom=[b[k] for k in ('left','top','right','bottom')]
+        if not (0<=l<r<=width and 0<=t<bottom<=height):raise ValueError('前景范围超出当前截图或为空')
+        result['interactive_areas'].append([l,t,r,bottom])
     if not result['interactive_areas'] and not foreground.get('uncertainty','').strip() and foreground.get('exception','none')=='none':
         raise ValueError('无法确认前景范围时须说明不确定性，不能默认为全屏')
     return result
@@ -48,7 +45,6 @@ def contains(box,scope):
     if not scope:return False
     l,t,r,b=box
     inside=any(a<=l and c<=t and r<=d and b<=e for a,c,d,e in scope['interactive_areas'])
-    # Foreground surfaces take precedence over overlapping background rectangles.
     return inside
 
 

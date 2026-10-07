@@ -154,7 +154,7 @@ def test_common_history_keeps_effect_but_not_raw_dispatch_coordinates(tmp_path):
 
 
 def test_optional_identity_box_is_rejected_locally_not_as_foreground_failure():
-    scope={'interactive_areas':[[100,0,200,100]],'excluded_areas':[]}
+    scope={'interactive_areas':[[100,0,200,100]]}
     b=lambda l:dict(left=l,top=5,right=140,bottom=20)
     p={'regions':[{'bbox':dict(left=100,top=0,right=200,bottom=100)}],
        'controls':[{'region_index':0,'bbox':b(99),'icon_bbox':None,'click_bbox':b(110)}]}

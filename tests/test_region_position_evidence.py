@@ -35,7 +35,7 @@ def test_region_position_survives_without_granting_a_template(tmp_path, monkeypa
 
     monkeypatch.setattr(discovery_step, 'load', lambda run: (tmp_path, records, {}))
     scope.remember(tmp_path, dict(source_call='new', frame_sha256=scope.fingerprint(frame),
-        scope=dict(interactive_areas=[[0, 0, 80, 60]], excluded_areas=[]),
+        scope=dict(interactive_areas=[[0, 0, 80, 60]]),
         identified_regions=[dict(source_field='/regions/0', bbox=observed['bbox'])]))
     current = scope.load(tmp_path, frame)
     assert current['region_bounds'] == {'r': [10, 10, 70, 50]}
@@ -60,8 +60,7 @@ def test_invalid_region_position_is_rejected_even_without_template(tmp_path, mon
     Image.new('RGB', (80, 60), 'gray').save(frame)
     (tmp_path / 'calls/new').mkdir(parents=True)
     reply = dict(foreground=dict(
-        interactive_areas=[dict(bbox=dict(left=0, top=0, right=80, bottom=60), reason='current surface')],
-        excluded_areas=[]),
+        interactive_areas=[dict(bbox=dict(left=0, top=0, right=80, bottom=60), reason='current surface')]),
         regions=[dict(bbox=box, image_quality='occluded')], controls=[])
     request = {'screenshots': ['frame.png'], 'response_schema': {
         'properties': {'foreground': {'properties': {'interactive_areas': {}}}}}}
@@ -82,6 +81,6 @@ def test_missing_region_box_is_not_filled_from_foreground(tmp_path, monkeypatch)
             dict(source_call='new', source_field='/regions/0'))])
     monkeypatch.setattr(discovery_step, 'load', lambda run: (tmp_path, {'r': region}, {}))
     scope.remember(tmp_path, dict(source_call='new', frame_sha256=scope.fingerprint(frame),
-        scope=dict(interactive_areas=[[0, 0, 80, 60]], excluded_areas=[]), identified_regions=[]))
+        scope=dict(interactive_areas=[[0, 0, 80, 60]]), identified_regions=[]))
     assert region['observations'][-1]['bbox'] is None
     assert scope.load(tmp_path, frame)['region_bounds'] == {}

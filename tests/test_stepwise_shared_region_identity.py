@@ -52,7 +52,7 @@ def test_discovery_registration_preserves_explicit_new_identity(tmp_path):
     m=mod('discovery_step');run=seeded_run(tmp_path);m.await_discovery(run,'returned.png','return')
     q=locator.request_from_run(ROOT,run);reply=discovery_reply()
     reply['regions'][0].update(name='另一背景的菜单',identity='new',previous_name='',context_matches=None)
-    reply['foreground'].update(interactive_areas=[{'bbox':reply['regions'][0]['bbox'],'reason':'fixture'}],excluded_areas=[])
+    reply['foreground'].update(interactive_areas=[{'bbox':reply['regions'][0]['bbox'],'reason':'fixture'}])
     reply['regions'][0].update(task_review_reason='',controls_complete=True,out_of_scope_reason='')
     for c in reply['controls']:
         c.update(name=c['text'],identity='new',previous_name='')

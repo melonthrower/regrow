@@ -120,7 +120,7 @@ def discovery_partial(tmp_path):
     for item in reply['controls']:item['icon_quality']='uncertain'
     reply['regions'][0]['context_matches']=True
     reply['foreground'].update(interactive_areas=[{
-        'bbox':dict(left=0,top=0,right=100,bottom=100),'reason':'当前应用前景'}],excluded_areas=[])
+        'bbox':dict(left=0,top=0,right=100,bottom=100),'reason':'当前应用前景'}])
     save_call(run,'0001',q,reply)
     m.commit(ROOT,run,'0001')
     return m,run
@@ -190,7 +190,7 @@ def test_relocation_gap_does_not_hijack_trusted_existing_task(tmp_path):
     q['screenshots']=[str(run/'frame.png')]
     q['discovery_context']['visual_plan']['next_offset']=8
     reply['foreground'].update(interactive_areas=[{
-        'bbox':dict(left=0,top=0,right=100,bottom=100),'reason':'当前前景'}],excluded_areas=[])
+        'bbox':dict(left=0,top=0,right=100,bottom=100),'reason':'当前前景'}])
     for item in reply['regions']:
         item.update(image_quality='uncertain',image_quality_reason='no crop',context_matches=True)
     save_call(run,'0002',q,reply);m.commit(ROOT,run,'0002')

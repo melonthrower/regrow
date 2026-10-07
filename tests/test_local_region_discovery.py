@@ -33,11 +33,11 @@ def test_local_rejection_expands_without_registering_false_region(tmp_path):
  s=importlib.util.spec_from_file_location('fixtures',Path(__file__).with_name('test_recovery_discovery.py'));f=importlib.util.module_from_spec(s);s.loader.exec_module(f)
  m=mod('discovery_step');run=f.seeded_run(tmp_path);m.await_discovery(run,'returned.png','return')
  scope=mod('foreground_scope');frame=run/'returned.png'
- scope.remember(run,{'source_call':'seed','frame_sha256':scope.fingerprint(frame),'scope':{'interactive_areas':[[0,0,50,80]],'excluded_areas':[],'region_bounds':{}},'identified_regions':[]})
+ scope.remember(run,{'source_call':'seed','frame_sha256':scope.fingerprint(frame),'scope':{'interactive_areas':[[0,0,50,80]],'region_bounds':{}},'identified_regions':[]})
  cache=run/'foreground_scopes'/(scope.fingerprint(frame)+'.json');v=json.loads(cache.read_text());v['scope']['region_bounds']={'r1':[0,0,50,80]};cache.write_text(json.dumps(v))
  q=locator.request_from_run(ROOT,run);assert q['discovery_context']['mode']=='local'
  reply=f.discovery_reply();reply.update(focus_presence='not_interactive',regions=[],controls=[])
- reply['foreground'].update(interactive_areas=[],excluded_areas=[])
+ reply['foreground'].update(interactive_areas=[])
  folder=run/'calls/0002';folder.mkdir();(folder/'request.json').write_text(json.dumps(q));(folder/'response.json').write_text(json.dumps(reply))
  before=m.load(run)[1]
  m.commit(ROOT,run,'0002');_,after,state=m.load(run)

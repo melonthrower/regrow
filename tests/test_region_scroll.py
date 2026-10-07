@@ -10,7 +10,7 @@ def scene(tmp_path):
     scope=mod('foreground_scope');stamp=scope.fingerprint(frame)
     folder=tmp_path/'foreground_scopes';folder.mkdir()
     (folder/(stamp+'.json')).write_text(json.dumps({'frame_sha256':stamp,'scope':{
-        'interactive_areas':[[0,0,120,100]],'excluded_areas':[], 'region_bounds':{'r1':[10,10,110,90]}}}))
+        'interactive_areas':[[0,0,120,100]], 'region_bounds':{'r1':[10,10,110,90]}}}))
     state={'interactive_regions':['r1'],'observation':{'id':'o1','image':str(frame)}}
     q={'allow_scroll':True,'source':{'region':'r1','observation':'o1'},'image_refs':[str(frame)]}
     return q,state,frame
@@ -79,7 +79,7 @@ def test_region_observation_can_resume_partial_scroll_without_control_completion
     scope=m.helper('foreground_scope');stamp=scope.fingerprint(frame)
     folder=run/'foreground_scopes';folder.mkdir()
     (folder/(stamp+'.json')).write_text(json.dumps({'frame_sha256':stamp,'scope':{
-        'interactive_areas':[[0,0,120,100]],'excluded_areas':[],'region_bounds':{'r1':[0,0,120,100]}}}))
+        'interactive_areas':[[0,0,120,100]],'region_bounds':{'r1':[0,0,120,100]}}}))
     if blocked=='different_task':q['source']['task_name']='另一任务'
     elif blocked=='missing_scope':(folder/(stamp+'.json')).unlink()
     elif blocked=='identity_gap':

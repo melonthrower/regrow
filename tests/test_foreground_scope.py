@@ -18,9 +18,9 @@ def test_background_only_control_gets_zero_foreground_votes(tmp_path):
     rs={'r':{'name':'background','controls':{'c':{'name':'button','observations':[{'image':str(template),'image_quality':'clear','image_quality_reason':'fixture'}]}},'observations':[]}}
     m=mod('history_matching')
     raw=m.scan(rs,tmp_path,frame)[0];assert raw['matched_controls']==1 and not raw['foreground_confirmed']
-    confirmed=m.scan(rs,tmp_path,frame,scope={'interactive_areas':[[100,0,200,100]],'excluded_areas':[]})[0]
+    confirmed=m.scan(rs,tmp_path,frame,scope={'interactive_areas':[[100,0,200,100]]})[0]
     assert confirmed['matched_controls']==0 and confirmed['foreground_confirmed']
-    full=m.scan(rs,tmp_path,frame,scope={'interactive_areas':[[0,0,200,100]],'excluded_areas':[[5,5,60,60]]})[0]
+    full=m.scan(rs,tmp_path,frame,scope={'interactive_areas':[[0,0,200,100]]})[0]
     assert full['matched_controls']==1
 
 
@@ -33,9 +33,9 @@ def test_foreground_unknown_has_no_public_vote_count(tmp_path):
 
 def test_foreground_bounds_and_empty_uncertainty_are_checked(tmp_path):
     frame=tmp_path/'frame.png';Image.new('RGB',(100,100)).save(frame);m=mod('foreground_scope')
-    with pytest.raises(ValueError,match='不确定性'):m.validate({'interactive_areas':[],'excluded_areas':[]},frame)
-    with pytest.raises(ValueError,match='超出'):m.validate({'interactive_areas':[{'bbox':dict(left=0,top=0,right=101,bottom=50)}],'excluded_areas':[]},frame)
-    assert m.contains([0,0,10,10],{'interactive_areas':[[0,0,100,100]],'excluded_areas':[[5,5,20,20]]})
+    with pytest.raises(ValueError,match='不确定性'):m.validate({'interactive_areas':[]},frame)
+    with pytest.raises(ValueError,match='超出'):m.validate({'interactive_areas':[{'bbox':dict(left=0,top=0,right=101,bottom=50)}]},frame)
+    assert m.contains([0,0,10,10],{'interactive_areas':[[0,0,100,100]]})
 
 
 def test_foreground_anchors_cannot_extrapolate_a_background_local_surface(tmp_path):
@@ -47,13 +47,13 @@ def test_foreground_anchors_cannot_extrapolate_a_background_local_surface(tmp_pa
         if path==str(old):return {'accepted':False}
         i=int(path[1:]);x=5+20*i if scene is not None else 15+20*i
         return {'accepted':True,'score':1,'box':[x,15,x+10,25]}
-    result=mod('history_matching').match_region('r',r,match,frame,scope={'interactive_areas':[[0,0,60,40]],'excluded_areas':[]})
+    result=mod('history_matching').match_region('r',r,match,frame,scope={'interactive_areas':[[0,0,60,40]]})
     assert result['matched_controls']==2 and not result['strong'] and result['bounds'] is None
 
 
 def test_control_identity_boxes_reject_template_locally_and_click_coordinates_strictly():
     m=mod('foreground_scope')
-    scope={'interactive_areas':[[239,54,1109,745]],'excluded_areas':[]}
+    scope={'interactive_areas':[[239,54,1109,745]]}
     owner={'bbox':dict(left=239,top=54,right=1109,bottom=101)}
     bad={'region_index':0,'bbox':dict(left=6,top=5,right=42,bottom=41),'icon_bbox':None}
     issues=m.validate_control_boxes({'regions':[owner],'controls':[bad]},scope)

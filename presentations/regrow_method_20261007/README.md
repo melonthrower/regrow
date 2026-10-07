@@ -14,6 +14,8 @@
 
 ## 实验进度页
 
-`dist/progress.html`为2026-10-07阶段汇报：六项工作、三类阶段状态、E1–E4后续对照与既有冲刺安排；详情可点击或键盘打开。顶部30应用/3000有效轨迹均为目标，四组表示后续实验方向。材料缺全局验收分母，未生成完成率。`progress-sources.html`给出依据与统计口径。该页不改变实验计划或实际记录。
+2026-10-07新版按团队在会话中补充的另一服务器结果整理：23/30应用、桌面1327/3000条、移动935/4000条；任务生成与采集跑通、100步轨迹微调pipeline和Qwen3-VL双基准测试跑通。本次未独立复核服务器，未把采集量写成质检合格量、未声称训练或评测性能提升，不修改框架验收。
 
-Dataset comparison: three version-pinned primary papers; linear count axis 0–16,000. Published counts are solid; regrow 3,000 is fully hatched as a target with completion unknown, not zero or half. Average steps use paper-specific definitions. Print separates the status page and scale/plan page.
+五行展示，无行点击/详情跳转。SEE-Train(2026预印本)与UI-Genie(NeurIPS2025)为相关工作，数量轴0–4000。实心表示已采集，虚框表示目标剩余；本工作12–20步为预期，不是实测。三项后续实验：数据微调、双benchmark同类agent比较、有无图指导复杂指令对照。计划节点10.11/10.15/10.18/10.21。
+
+当前交付继续采用用户要求的单文件离线HTML，不部署新在线版本。断网浏览器检查五行无跳转、两组文献/两端数据条、三项计划/四个日期、手机布局和两页PDF。没有新增GUI/model实验，飞书预览未实测。旧版交付保留。

@@ -14,8 +14,10 @@
 
 验证边界：浏览器功能和素材语义检查；没有新的Luna调用或真实GUI。手机竖屏只是缩放视频，建议桌面/横屏。配音、独立MP4和参考视频精确复刻不在已实现范围。
 
-## 实验进度页增量
+## 实验进度页
 
-参考用户所给绿色进度表，新增progress.html/progress.css/progress.js，保持顶部目标摘要、工作行、三类阶段状态和可展开依据；下方保留此前讨论的E1–E4及近期里程碑。资料依据来自10月6日周报与历史真实试点；无统一完成数量时不填写半数、50%或加权总进度。progress-sources.html单独说明来源与分母。index.html仅增加导航链接，动画不变。页面呈现改动，不修改研究目标、框架、源图和运行状态。
+2026-10-07新版按团队在会话中补充的另一服务器结果整理：23/30应用、桌面1327/3000条、移动935/4000条；任务生成与采集跑通、100步轨迹微调pipeline和Qwen3-VL双基准测试跑通。本次未独立复核服务器，未把采集量写成质检合格量、未声称训练或评测性能提升，不修改框架验收。
 
-Dataset comparison: three version-pinned primary papers; linear count axis 0–16,000. Published counts are solid; regrow 3,000 is fully hatched as a target with completion unknown, not zero or half. Average steps use paper-specific definitions. Print separates the status page and scale/plan page.
+五行展示，无行点击/详情跳转。SEE-Train(2026预印本)与UI-Genie(NeurIPS2025)为相关工作，数量轴0–4000。实心表示已采集，虚框表示目标剩余；本工作12–20步为预期，不是实测。三项后续实验：数据微调、双benchmark同类agent比较、有无图指导复杂指令对照。计划节点10.11/10.15/10.18/10.21。
+
+当前交付继续采用用户要求的单文件离线HTML，不部署新在线版本。断网浏览器检查五行无跳转、两组文献/两端数据条、三项计划/四个日期、手机布局和两页PDF。没有新增GUI/model实验，飞书预览未实测。旧版交付保留。

@@ -7,3 +7,8 @@
 @media print{.comparison{break-before:page;margin-top:0}.dataset-row{padding:16px 0}.plan,.milestones{break-inside:avoid}.comparison .legend{margin-bottom:8px}}
 
 @media print{#plans{grid-template-columns:repeat(4,1fr);gap:20px}.dataset-row{padding:12px 0}.comparison .summary{margin:8px 0}.comparison .section-heading h2{font-size:21px}.comparison .legend{padding-top:8px}.plan-item h3{font-size:17px}.plan-item p{font-size:11px}.milestones{margin-top:14px;padding:12px 18px}.milestones strong{font-size:14px}.milestones p{font-size:11px}}
+
+/* Team-reported progress revision: rows are noninteractive. */
+tbody tr{cursor:default}tbody tr:hover{background:transparent}#plans{grid-template-columns:repeat(3,1fr)}.milestones{grid-template-columns:repeat(4,1fr)}.quantity.segmented{display:flex}.quantity .remaining,.legend .remaining{background:transparent;border:2px dashed #91b59f}.quantity.segmented i{flex:none}.comparison .legend .green{border-radius:0}.milestones p{line-height:1.7}.dataset-row strong{font-size:17px}
+@media(max-width:600px){#plans,.milestones{grid-template-columns:1fr}}
+@media print{#plans{grid-template-columns:repeat(3,1fr)}.milestones{grid-template-columns:repeat(4,1fr)}.dataset-row{padding:9px 0}.plan{margin-top:16px}.plan-item p,.milestones p{font-size:10px}.plan-item h3{font-size:15px}.milestones{gap:17px}footer{font-size:9px}}

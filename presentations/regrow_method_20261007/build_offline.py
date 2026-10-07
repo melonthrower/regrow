@@ -83,7 +83,7 @@ def bundle(source, output):
             text = text.replace('href="progress-sources.html#datasets"', 'href="#datasets"').replace('href="progress-sources.html"', 'href="#offline-sources"')
             text = text.replace('</main>', '<details id="offline-sources"><summary>汇报依据与原论文</summary>' + body + '</details></main>', 1)
             # Dialog source navigation opens the local evidence section rather than leaving the file.
-            text = text.replace('</body>', '<script>document.addEventListener("click",e=>{if(e.target.closest(\'a[href="#offline-sources"],a[href="#datasets"]\')){document.querySelector("#offline-sources").open=true;document.querySelector("#detail").close();}});</script></body>')
+            text = text.replace('</body>', '<script>document.addEventListener("click",e=>{if(e.target.closest(\'a[href="#offline-sources"],a[href="#datasets"]\')){document.querySelector("#offline-sources").open=true;document.querySelector("#detail")?.close();}});</script></body>')
         text = text.replace('</body>', '<noscript><p style="padding:20px">交互演示需要允许 JavaScript。若飞书预览限制脚本，请下载本文件后用浏览器打开。</p></noscript></body>')
         target = output / name
         target.write_text(text)

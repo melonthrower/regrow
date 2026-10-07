@@ -1,5 +1,17 @@
 # 服务器续接工作
 
+## 2026-10-07 Clock重启后30调用：最新桌面停点
+
+当前个人服务器、工作区/data/shenghonghui/projects/GUI-ReWalk；专用容器rewalk-clock-fresh-20261005-02、org.gnome.clocks。重启但未清数据，新图独立于旧run。真实run为artifacts/runs/clock_refresh_30_20261007_01/desktop/runs/org.gnome.clocks_20261007T135618_45d92017；冻结source对应3c0be7b行为，实际checkout b9268ab683528127be2c26cdb94d1407d4f540fa仅多presentation文档，hash 2e1537d1259135efd9a97ea26cd7ffe1293b7a10756fd2959e2150d6ce819110。
+
+30调用总预算，小步6HTTP/6GUI及恢复保护不变；先2轮8调用后续21调用，共29HTTP/10GUI命令、8业务动作，约14.7分钟。余1不足选择+更新，正常budget_limit。29原答均完整未改，2次登记纠错正常解决，全部8动作已提交，pending_step/execution_pending/visual_navigation_pending为空，驱动已退出。
+
+最后a0008/0029打开Stopwatch，真实停图00:00:00.0，Start可用、Lap禁用；未点击Start。pointer=knowledge_snapshots/a0008-0029-531b8fcb1728。本批未点击Add或新建城市/闹钟。不要重放已执行动作。图6区块24控件、6done/10record_only/1pending；Timer入口待探索，世界时钟列表/Alarms/Stopwatch内部尚未完成任务清点。VM状态保留，Android未动。
+
+入口目标及弹窗多用途已有限实测；London样本枚举在task.findings及knowledge.parameters中均带查询条件，不代表全值域。0008残留提示气泡描述与后图不符，未改变本次操作判断；4次总结含两次重整，未证明全图/长跑稳定。证据artifacts/runs/clock_refresh_30_20261007_01，脚本/审查同名artifacts/tmp_tests；旧run及应用备份保留，停止后只截图无新GUI。
+
+独立复核补充：0015再次总结把0012“清除搜索未实测”的函数级限制删为空，虽然支持任务仍为record_only，不能据最终函数断言清除已验证；a0006菜单实际关闭且动作已提交，但control_ref为空/绑定unconfirmed，不能称8动作均身份绑定成功。候选选择反馈也被登记为带条件的parameter枚举，应保留其观察样本/状态反馈边界，未验证其参数建模合理性。本轮不修改框架，以上问题留给后续修复。
+
 ## 2026-10-07 目录批次：Clock续跑最新停止点（实际UTC 2026-10-06）
 
 当前个人服务器，工作区/data/shenghonghui/projects/GUI-ReWalk，活动源码仍由DEVELOPMENT定位。容器rewalk-clock-fresh-20261005-02、org.gnome.clocks沿原数据继续，未重置；原99调用run完整保留。最新真实run为artifacts/runs/region_atomic_resume_clock_20261007_01/desktop/run，最后冻结source-v13/hash 3e46016ae6390e4e9cf46eba4c50732cf0533fab7f906645b7845ef4b2a80b13。

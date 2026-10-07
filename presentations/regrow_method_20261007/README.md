@@ -11,3 +11,9 @@
 验证：JavaScript语法；Chromium 15幕素材、时间轴、播放暂停、章节跳转、结尾停止、全屏控制条、光标尺寸与手机横向布局；陌生读者独立阅读和意图对照。仅演示网页验证，没有新增模型或应用GUI实验。复杂组合、功能目录质量和训练收益仍待研究验证。
 
 本Site创建为私有。用户已明确授权上传演示及历史Clock截图，后续指示使用公开网上图片讲解。GitHub源导出不含截图，完整离线版及核验记录见交付包。
+
+## 实验进度页
+
+`dist/progress.html`为2026-10-07阶段汇报：六项工作、三类阶段状态、E1–E4后续对照与既有冲刺安排；详情可点击或键盘打开。顶部30应用/3000有效轨迹均为目标，四组表示后续实验方向。材料缺全局验收分母，未生成完成率。`progress-sources.html`给出依据与统计口径。该页不改变实验计划或实际记录。
+
+Dataset comparison: three version-pinned primary papers; linear count axis 0–16,000. Published counts are solid; regrow 3,000 is fully hatched as a target with completion unknown, not zero or half. Average steps use paper-specific definitions. Print separates the status page and scale/plan page.

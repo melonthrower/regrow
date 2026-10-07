@@ -1,5 +1,17 @@
 # 服务器续接工作
 
+## 2026-10-07 Clock清空数据与容器重启后30调用：最新桌面停点
+
+个人服务器工作区/data/shenghonghui/projects/GUI-ReWalk；专用容器rewalk-clock-fresh-20261005-02，org.gnome.clocks。已停止应用、备份并哈希核验dconf，再清空/org/gnome/clocks/，重启该容器；启动后核验设置为空及World空白页。未发现独立Clock缓存目录；其他应用持久缓存/容器未清理。旧run与本地备份保留，旧截图不再代表现场。
+
+新run：artifacts/runs/clock_clean_30_20261007_01/desktop/runs/org.gnome.clocks_20261007T154148_99cb25a1；冻结源码53c9a4b0ddc361fdfc1125b360e5d35e9227546d，hash 44007fb212f4e5f2fdea5be38fe5a2e71f56c935c1b3831981f3e7e38c29ad23。30次累计上限，先2轮8HTTP/2GUI，再22HTTP/14GUI，合计30HTTP、16底层GUI命令、12业务动作、约22.3分钟，budget_limit正常停止。全部30原答/HTTP200、12动作提交，无pending_step/execution_pending/visual_navigation_pending及活动驱动；0恢复/0纠错，不代表语义全对。
+
+实际完成创建London United Kingdom世界时钟、进入详情、Back返回并移除，随后访问空Alarms与Stopwatch。末a0012/0030停在秒表00:00:00.0，未点Start；pointer=knowledge_snapshots/a0012-0030-823a4b66598c。没有创建闹钟，Timer/应用菜单尚未探索；保留现场，不能重放已执行动作。图6区块21控件，7done/6record_only/2pending/1blocked，未完成整图。
+
+开放问题：前置准备已输入并选择城市，却未登记参数findings，独立参数任务后续又输入同一London，清掉选中，再次选择后才Add。a0008实际进入详情，但卡片原观察click_bbox=null，图片身份匹配不等于可用点击范围，control_ref保留null；任务因归属缺口blocked，后来返回观察补了点击框也没有回填原动作。框架/原答本批均未改写，不宣称这两处已修复。0次区块总结：r0003虽已有任务done，但新清除/候选控件未补清点；r0002有blocked，其他页未清点或还有pending，尚不满足整批总结门槛。
+
+原始请求/回复/截图/清理回执/冻结源在本批artifacts/runs，脚本/计账/独立审查在同名artifacts/tmp_tests；原始应用备份只留本地，不导出。Android未动。本批只是实际短跑，不是全应用/跨应用验收。
+
 ## 2026-10-07 Clock重启后30调用：最新桌面停点
 
 当前个人服务器、工作区/data/shenghonghui/projects/GUI-ReWalk；专用容器rewalk-clock-fresh-20261005-02、org.gnome.clocks。重启但未清数据，新图独立于旧run。真实run为artifacts/runs/clock_refresh_30_20261007_01/desktop/runs/org.gnome.clocks_20261007T135618_45d92017；冻结source对应3c0be7b行为，实际checkout b9268ab683528127be2c26cdb94d1407d4f540fa仅多presentation文档，hash 2e1537d1259135efd9a97ea26cd7ffe1293b7a10756fd2959e2150d6ce819110。

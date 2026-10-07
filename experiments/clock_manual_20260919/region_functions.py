@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import identity_templates as templates
 from function_evidence import action_results, action_row, omitted_reason, incoming_results, coverage as action_evidence_coverage
-from function_scope import related_regions
+import function_scope as knowledge
 
 
 def task_module():
@@ -44,17 +44,14 @@ def request_support_review(run,rid,call):
 
 
 def supported_tasks(region):
-    # An explicit visible capability need not be executed to enter the catalog.
-    return {name:t for name,t in region.get('tasks',{}).items() if t['status'] in ('done','record_only') and not t.get('coverage_exemption') and not t.get('shared_result')}
+    return knowledge.supported(region)
 
 
 def supporting_tasks(region,records=None):
     records=records or {region['id']:region}
-    related,_=related_regions(region,records)
-    return {(name if rid==region['id'] else rid+' / '+name):
-            {'region':rid,'name':name,'task':task}
-            for rid in [region['id'],*related]
-            for name,task in supported_tasks(records[rid]).items()}
+    local={name:{'region':region['id'],'name':name,'task':task}
+           for name,task in supported_tasks(region).items()}
+    return {**local, **knowledge.parameter_support(region,records)}
 
 
 def catalog(region,records=None):
@@ -100,28 +97,25 @@ def evidence_projection(region,records=None):
         '进入本区块的已观察结果':incoming_results(region,records)}
 
 
-def related_projection(region,records):
-    """Keep foreign observations traceable without repeating local binding machinery."""
-    evidence=evidence_projection(region,records)
-    evidence.pop('已记录属性（待甄别）')  # The shared, fully qualified catalog supplies these once.
-    for key in ('同区块已执行动作结果','进入本区块的已观察结果'):
-        for row in evidence[key]:
-            for field in ('动作前区块','动作后可交互区块','区块变化','观察到的区块连接'):
-                row.pop(field,None)
-    return evidence
-
-
 def summary_projection(region,records=None):
     records=records or {region['id']:region}
-    related,links=related_regions(region,records)
-    return {**evidence_projection(region,records),
-        '相关区块探索事实':[{'区块引用':rid,'名称':records[rid]['name'],
-            '任务状态':task_module().coverage(records[rid],records),
-            **related_projection(records[rid],records)} for rid in related],
-        '已观察连接（用于组织材料，业务归属由目的判断）':links,
-        '支持任务引用目录':{key:{'区块':support['region'],'任务':support['name']}
-            for key,support in supporting_tasks(region,records).items()},
-        '可引用参数事实':catalog(region,records)}
+    supports=supporting_tasks(region,records)
+    return {'已登记操作':[knowledge.task_product(n,t) for n,t in supported_tasks(region).items()],
+        '控件用途标注':[{'名称':c['name'],**{k:v for k,v in semantic_observation(c).items()
+            if k in ('possible_operation','uncertainty')}} for c in region.get('controls',{}).values()],
+        '同区块已执行动作结果':[knowledge.compact_action(row) for row in action_results(region,records)],
+        '动作证据覆盖':action_evidence_coverage(region,records),
+        '进入本区块的已观察结果':[knowledge.compact_action(row) for row in incoming_results(region,records)],
+        '入口与目标一级摘要':[{**edge,'destination':knowledge.card(records[edge['region']],records)}
+                               for edge in knowledge.entries(region,records)],
+        '按本地参数任务披露的支持':[{'区块':support['region'],
+            **knowledge.task_product(support['name'],support['task']),
+            '动作结果':[knowledge.compact_action(row) for row in action_results(records[support['region']],records)
+                if row['动作记录'] in support['task'].get('attempts',[])
+                or row['控件'] and row['控件']==records[support['region']].get('controls',{}).get(support['task'].get('control'),{}).get('name')]} for key,support in supports.items()
+            if support['region']!=region['id']],
+        '支持任务引用目录':{key:{'区块':support['region'],'任务':support['name']} for key,support in supports.items()},
+        '可引用参数事实':{key:knowledge.fact_card(fact) for key,fact in catalog(region,records).items()}}
 
 
 def signature(region,records=None):
@@ -129,9 +123,6 @@ def signature(region,records=None):
     evidence=evidence_projection(region,records)
     evidence.pop('动作证据覆盖')
     for c in evidence['已观察控件']:c.pop('观察出处',None)
-    # Candidate parameters/task availability are useful new information. Foreign
-    # navigation attempts alone are not a reason to re-summarize every owner.
-    supports=supporting_tasks(region,records)
     selected={(row['region'],row['task']) for f in region.get('functions',{}).values()
               for row in f.get('support_tasks',[]) if row['region']!=region['id']}
     dependencies=[]
@@ -142,15 +133,18 @@ def signature(region,records=None):
         observed=semantic_observation(control)
         dependencies.append({'region':rid,'task_name':name,'task':task,
             'control':{'name':control.get('name'),**{k:v for k,v in observed.items()
-                if k in ('text','state','possible_operation','uncertainty')}},
+                if k in ('possible_operation','uncertainty')}},
             'results':[action_row(source,aid,action,records) for aid,action in source.get('actions',{}).items()
                 if task and omitted_reason(action) is None and (aid in task.get('attempts',[])
                     or task.get('control') is not None and action.get('control')==task['control'])]})
-    _,links=related_regions(region,records)
+    # Destination summaries and unselected neighbour detail are read-time views.
+    # Only local work and explicitly adopted foreign support invalidate this owner.
+    evidence.pop('进入本区块的已观察结果')
+    for control in evidence['已观察控件']:
+        control.pop('state',None);control.pop('text',None)
     data={'extraction_rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],
           'name':region['name'],'tasks':region.get('tasks',{}),'inventory':region.get('task_inventory'),
-          'evidence':evidence,'candidate_tasks':sorted(supports),'parameter_facts':catalog(region,records),
-          'connections':sorted({(link['source'],str(link['control']),link['target']) for link in links}),
+          'evidence':evidence,'entries':knowledge.entries(region,records),
           'selected_foreign_support':dependencies}
     return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
@@ -159,7 +153,7 @@ def request_signature(region,records=None):
     """Protect every offered fact, including support first selected in this reply."""
     data={'rules':[(Path(__file__).parent/'遍历prompt'/p).read_text() for p in PROMPT_PATHS],
           'name':region['name'],'description':region['description'],
-          'evidence':summary_projection(region,records),'function_names':list(region.get('functions',{}))}
+          'evidence':summary_projection(region,records)}
     return hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 
@@ -190,6 +184,15 @@ def request_schema(root,region,records=None):
     else:value['properties']['functions']['maxItems']=0
     if keys:fields['constraints']['items']['enum']=keys
     else:fields['constraints']['maxItems']=0
+    definitions=value['properties']['parameter_definitions']
+    if keys:definitions['items']['properties']['ref']['enum']=keys
+    else:definitions['maxItems']=0
+    local=value['properties']['local_knowledge']['properties']
+    local_names=list(supported_tasks(region));local_facts=list(catalog(region))
+    for refs,names in [(local['parameter_refs'],local_facts),
+                       (local['conditions']['items']['properties']['tasks'],local_names)]:
+        if names:refs['items']['enum']=names
+        else:refs['maxItems']=0
     return value
 
 
@@ -209,6 +212,27 @@ def register(region,reply,call,records=None):
     if reply['region_role']=='navigation' and reply['functions']:raise ValueError('navigation cannot claim business functions')
     # A parameter surface can support business work without owning a complete atom.
     if not reply['evidence'].strip():raise ValueError('function inventory needs evidence')
+    facts=catalog(region,records)
+    definitions={}
+    for definition in reply['parameter_definitions']:
+        ref=definition['ref']
+        if ref not in facts or ref in definitions or not definition['description'].strip():
+            raise ValueError('stable parameter definition needs unique known fact and description')
+        definitions[ref]=definition
+    def stable_fact(ref):
+        if ref not in definitions:raise ValueError('selected parameter needs stable definition: '+ref)
+        fact=facts[ref]
+        return {**deepcopy(fact),'description':definitions[ref]['description'],
+                'conditions':list(definitions[ref]['conditions'])}
+    local=reply['local_knowledge']
+    if not local['summary'].strip():raise ValueError('local summary must describe this Region')
+    local_facts=catalog(region)
+    if any(ref not in local_facts for ref in local['parameter_refs']):
+        raise ValueError('local parameters must belong to local tasks')
+    for ref in local['parameter_refs']:stable_fact(ref)
+    for condition in local['conditions']:
+        if not condition['description'].strip() or not condition['tasks'] or any(n not in supported_tasks(region) for n in condition['tasks']):
+            raise ValueError('local condition needs local supporting tasks')
     facts=catalog(region,records);tasks=supporting_tasks(region,records);result={};errors=[]
     for proposed in reply['functions']:
         name=proposed['name'].strip();refs=proposed['tasks']
@@ -232,6 +256,7 @@ def register(region,reply,call,records=None):
                     candidates=matches or [full for full,value in facts.items() if value['task'] in refs]
                 errors.append({'功能':name,'约束引用':key,'原因':reason,'可核对的完整属性名':candidates})
                 continue
+            fact=stable_fact(key)
             evidence=deepcopy(fact.get('sources',[fact['source']]))
             constraints[key]={'name':fact['name'],'description':fact['description'],
                 'domain':deepcopy(fact['domain']),'conditions':list(fact['conditions']),
@@ -248,6 +273,10 @@ def register(region,reply,call,records=None):
     # Old snapshots retain previous records. No GUI task, chosen value or graph edge is created.
     gap=region.get('registration_gaps',{}).pop('function_registration',None)
     if gap:region.setdefault('registration_gap_history',[]).append({**deepcopy(gap),'stage':'function_registration','resolved_by':call})
+    region['local_knowledge']={'summary':local['summary'],
+        'parameters':{ref:knowledge.fact_card(stable_fact(ref)) for ref in local['parameter_refs']},
+        'conditions':deepcopy(local['conditions']),'unconfirmed':list(local['unconfirmed']),
+        'source_call':call}
     region.update(region_role=reply['region_role'],role_evidence=reply['role_evidence'])
     region['functions']=result
     region['function_inventory']={'source_call':call,'evidence':reply['evidence'],'evidence_digest':signature(region,records)}
@@ -261,8 +290,7 @@ def request(root,region,state,records=None):
     text='\n\n'.join(part['text'] for part in parts)
     user={'区块':region['name'],'描述':region['description'],
         **summary_projection(region,records),
-        '已有功能名称（仅供命名复用）':list(region.get('functions',{})),
-        '要求':'以本区块为业务主区块，综合相关区块的任务、参数和实际结果，总结最小完整用户目的。原子操作可跨区块，任务与参数从引用目录选择并保留来源。参数步骤组织为所属目的的约束；已有参数事实但尚无独立目的时，可返回空functions并说明用途。保留待确认条件。本轮产出能力及约束槽位，供后续指令生成和执行使用。'}
+        '要求':'整理本区块自身的稳定知识及多个独立用途。入口仅引用目标一级摘要，不把目标功能写回本区块。仅明确参数支持可按引用补充本地功能。动态值只作历史证据，不进入通用摘要或完成条件。保留条件、限制和未确认项。'}
     dynamic=json.dumps(user,ensure_ascii=False,indent=2)
     return {'pipeline_step':'discovery','stage':'function_registration','role':'function_registration','action_ready':False,
         'system_prompt':text,'user_prompt':dynamic,'dynamic_prompt':dynamic,'screenshots':[],'image_refs':[],

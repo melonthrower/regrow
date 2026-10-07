@@ -135,6 +135,7 @@
 - [test_coverage_exemption.py](test_coverage_exemption.py)
 - [test_function_evidence_projection.py](test_function_evidence_projection.py)
 - [test_function_scope.py](test_function_scope.py)
+- [test_local_knowledge_disclosure.py](test_local_knowledge_disclosure.py)：多用途、本地条件、一跳披露及选择性刷新。
 - [test_identity_template_admission.py](test_identity_template_admission.py)
 - [test_region_scroll.py](test_region_scroll.py)
 - [test_sent_step_contract.py](test_sent_step_contract.py)

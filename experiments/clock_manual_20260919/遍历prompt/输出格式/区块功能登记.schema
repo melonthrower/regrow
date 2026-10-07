@@ -67,13 +67,94 @@
     },
     "role_evidence": {
       "type": "string"
+    },
+    "local_knowledge": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "本区块自身稳定用途的简短摘要，可有多个用途；不嵌套目标区块细节或当前实例值"
+        },
+        "parameter_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "description",
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "unconfirmed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "summary",
+        "parameter_refs",
+        "conditions",
+        "unconfirmed"
+      ],
+      "additionalProperties": false
+    },
+    "parameter_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ref",
+          "description",
+          "conditions"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
     "functions",
     "evidence",
     "region_role",
-    "role_evidence"
+    "role_evidence",
+    "local_knowledge",
+    "parameter_definitions"
   ],
   "additionalProperties": false
 }

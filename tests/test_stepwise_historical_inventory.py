@@ -77,7 +77,7 @@ def test_completed_nonworking_region_gets_function_review_without_navigation(tmp
     assert q and q['stage']=='function_registration'
     assert q['source']['region']=='menu' and state==before
     fn=mod('region_functions')
-    fn.register(records['menu'],{'region_role':'navigation','role_evidence':'导航','functions':[],'evidence':'仅导航'},'review',records)
+    fn.register(records['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'导航','functions':[],'evidence':'仅导航'},'review',records)
     assert m.request(ROOT,tmp_path,records,state) is None
 
 

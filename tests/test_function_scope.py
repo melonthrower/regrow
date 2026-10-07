@@ -10,6 +10,7 @@ def linked():
     child['reached_by']=[{'source_region':owner['id'],'source_control':'时间','attempt':'open'}]
     owner['actions']['open']={'control':'时间','operation':'click','delivery':'executed_receipt_zero',
         'result':{'description':'展开参数选择','exception':'none'}}
+    owner['tasks']['时间']['visited_regions']=['picker']
     return owner,child,{owner['id']:owner,'picker':child}
 
 
@@ -17,6 +18,7 @@ def test_cross_region_task_and_constraint_keep_owner_and_refresh_from_child():
     owner,child,records=linked();m=module()
     value=reply();value['functions'][0]['tasks'].append('picker / 周期')
     value['functions'][0]['constraints'].append('picker / 周期 / 周期')
+    value['parameter_definitions'].append({'ref':'picker / 周期 / 周期','description':'可配置周期','conditions':[]})
     before=deepcopy(child)
     m.register(owner,value,'summary',records)
     fn=owner['functions']['设置闹钟']
@@ -45,23 +47,20 @@ def test_unfinished_related_tasks_are_context_with_their_actual_status():
     assert 'picker / 周期' not in m.supporting_tasks(owner,records)
     assert 'picker / 周期 / 周期' not in m.catalog(owner,records)
     context=m.summary_projection(owner,records)
-    assert context['相关区块探索事实'][0]['任务状态']['pending']==['周期']
+    assert 'picker / 周期' not in context['支持任务引用目录']
     value=reply();value['functions'][0]['tasks'].append('picker / 周期')
     with pytest.raises(ValueError,match='supporting tasks'):m.register(owner,value,'bad',records)
 
 
-def test_parameter_dependencies_include_multilevel_support_without_expanding_navigation_neighbours():
-    from function_scope import related_regions
-    records={rid:{'id':rid,'tasks':{},'actions':{},'reached_by':[]} for rid in ['nav','main','child','leaf','unrelated']}
-    for source,target in [('nav','main'),('main','child'),('child','leaf'),('nav','unrelated')]:
-        aid=source+'-'+target
-        records[source]['actions'][aid]={'delivery':'executed_receipt_zero','operation':'click','result':{}}
-        records[target]['reached_by'].append({'source_region':source,'attempt':aid})
-    records['main']['tasks']['options']={'task_type':'parameter','control':'options','visited_regions':['child']}
-    records['child']['tasks']['nested']={'task_type':'single_action','registration_kind':'parameter','control':'nested','visited_regions':['leaf']}
-    refs,links=related_regions(records['main'],records)
-    assert set(refs)=={'nav','child','leaf'}
-    assert 'unrelated' not in str(links)
+def test_parameter_support_does_not_recursively_expand_navigation_or_parameter_children():
+    from function_scope import parameter_support
+    owner,child,records=linked()
+    leaf=deepcopy(child);leaf['id']='leaf';leaf['name']='下一层'
+    records['leaf']=leaf
+    child['tasks']['周期']['visited_regions']=['leaf']
+    result=parameter_support(owner,records)
+    assert 'picker / 周期' in result
+    assert not any(ref.startswith('leaf /') for ref in result)
 
 
 def test_unrelated_foreign_action_does_not_invalidate_a_local_summary():
@@ -91,8 +90,7 @@ def test_selected_support_tracks_task_and_control_but_not_other_control_actions(
 def test_request_digest_protects_unselected_foreign_evidence():
     owner,child,records=linked();m=module();m.register(owner,reply(),'summary',records)
     refresh=m.signature(owner,records);sent=m.request_signature(owner,records)
-    child['actions']['new']={'control':'标签','operation':'click','delivery':'executed_receipt_zero',
-        'result':{'description':'请求发送后新登记的结果','exception':'none'}}
+    child['tasks']['周期']['findings']['周期']['description']='请求发送后参数定义变化'
     assert m.signature(owner,records)==refresh
     assert m.request_signature(owner,records)!=sent
 

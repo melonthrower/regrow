@@ -27,26 +27,26 @@ def test_completed_task_attempt_remains_in_function_input():
 
 def test_changed_observation_fact_invalidates_review_but_repeated_fact_does_not():
     _,r,_=alarm_region();m=mod('region_functions');cid=r['tasks']['时间']['control']
-    r['controls'][cid]['observations']=[{'state':'未操作','evidence':{'source_call':'0010'}}]
+    r['controls'][cid]['observations']=[{'possible_operation':'待核对用途','evidence':{'source_call':'0010'}}]
     m.register(r,reply(),'catalog')
-    r['controls'][cid]['observations'].append({'state':'已确认','evidence':{'source_call':'0025'}})
+    r['controls'][cid]['observations'].append({'possible_operation':'已确认用途','evidence':{'source_call':'0025'}})
     assert not m.review_current(r)
     current=m.signature(r)
-    r['controls'][cid]['observations'].append({'state':'已确认','evidence':{'source_call':'0099'}})
+    r['controls'][cid]['observations'].append({'possible_operation':'已确认用途','evidence':{'source_call':'0099'}})
     assert m.signature(r)==current
     request=json.loads(m.request(ROOT,r,{})['user_prompt'])
-    assert request['已观察控件'][0].get('观察出处') or any(c.get('观察出处') for c in request['已观察控件'])
+    assert request['已登记操作'] and '已观察控件' not in request
 
 
 def test_visual_navigation_localization_does_not_change_summary_evidence():
     _,r,_=alarm_region();m=mod('region_functions');cid=r['tasks']['时间']['control']
     control=r['controls'][cid]
-    control['observations']=[{'state':'已确认','evidence':{'source_call':'0025','observation':'update:0025'}}]
+    control['observations']=[{'possible_operation':'已确认用途','evidence':{'source_call':'0025','observation':'update:0025'}}]
     original=m.request_signature(r);evidence=m.evidence_projection(r)
     control['observations'].append({'state':'较早模板状态','visual_only':True,
         'evidence':{'source_call':'0020','observation':'update:0099'}})
     assert m.request_signature(r)==original and m.evidence_projection(r)==evidence
-    control['observations'].append({'state':'正式新观察','evidence':{'source_call':'0100','observation':'update:0100'}})
+    control['observations'].append({'possible_operation':'正式新用途','evidence':{'source_call':'0100','observation':'update:0100'}})
     assert m.request_signature(r)!=original
 
 
@@ -96,7 +96,7 @@ def test_action_scope_and_destination_are_context_not_automatic_navigation_class
         'interactive_regions':['list'],'region_changes':[{'region':'list','state':'changed_interactive','evidence':'列表回显新标签'}]}}
     r['transitions']=[{'source_control':cid,'target_region':'list','attempt':'a8','relation':'observed_interactive_candidate'}]
     records={r['id']:r,'list':{'id':'list','name':'对象列表','description':'可见对象摘要'}}
-    q=json.loads(m.request(ROOT,r,{},records)['user_prompt']);row=q['同区块已执行动作结果'][0]
+    q=json.loads(m.request(ROOT,r,{},records)['user_prompt']);row=m.action_results(r,records)[0]
     assert row['动作后可交互区块'][0]['名称']=='对象列表'
     assert row['动作后可交互区块'][0]=={'区块':'list','名称':'对象列表'}
     assert row['区块变化'][0]['state']=='changed_interactive'
@@ -113,7 +113,7 @@ def test_task_and_attribute_provenance_remain_explicit_in_function_request():
     task=next(t for t in q['已登记操作'] if t['任务']=='时间')
     assert task['任务提出调用']=='0010'
     assert task['依据时态']=='历史记录：其中当前、本轮、未验证均指对应观察时刻，须与后续动作和恢复观察合看'
-    fact=q['已记录属性（待甄别）']['时间']['时间 / 时间']
+    fact=q['可引用参数事实']['时间 / 时间']
     expected=r['tasks']['时间']['findings']['时间']
     assert fact['事实来源']==expected.get('sources',[expected['source']])
 

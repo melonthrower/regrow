@@ -11,7 +11,7 @@ def setup_chain():
     r['menu']['reached_by']=[{'source_region':'middle','source_control':'open','attempt':'a2'}]
     s['interactive_regions']=['menu'];s['working_region']='menu'
     tasks().apply_plan(r['menu'],proposal([]),'inventory')
-    tasks().helper('region_functions').register(r['menu'],{
+    tasks().helper('region_functions').register(r['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},
         'region_role':'navigation','role_evidence':'No local functions remain',
         'functions':[],'evidence':'Empty control inventory'},'functions')
     return flow,r,s
@@ -92,7 +92,7 @@ def test_scroll_binding_requires_both_endpoints_in_matched_region(tmp_path):
 
 def test_parent_completion_returns_home_not_same_menu():
     flow,r,s=setup_chain();m=tasks();r['middle']['controls']={};m.apply_plan(r['middle'],proposal([]),'plan')
-    m.helper('region_functions').register(r['middle'],{
+    m.helper('region_functions').register(r['middle'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},
         'region_role':'navigation','role_evidence':'No local functions remain',
         'functions':[],'evidence':'Empty control inventory'},'functions')
     s.update(interactive_regions=['middle'],region_path=['main','middle'],working_region='middle')

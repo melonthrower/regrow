@@ -95,5 +95,5 @@ def test_function_review_of_region_with_excluded_preparation(tmp_path):
     f=mod('region_functions')
     q=f.request(ROOT,r,state,records)
     assert q['stage']=='function_registration'
-    f.register(r,{'region_role':'navigation','role_evidence':'navigation only','functions':[],'evidence':'observed navigation'},'scope-test',records)
+    f.register(r,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'navigation only','functions':[],'evidence':'observed navigation'},'scope-test',records)
     assert r['tasks']['prepare']['status']=='pending'

@@ -82,7 +82,7 @@
 | 文件 | 主要职责 | 主要接口 |
 |---|---|---|
 | [region_functions.py](../../../experiments/clock_manual_20260919/region_functions.py) | 从已有控件、任务、属性和实际动作提取本区功能知识。 | `next_ready / request / commit / evidence_projection` |
-| [function_scope.py](../../../experiments/clock_manual_20260919/function_scope.py) | 按真实直接连接和任务/参数关联组织跨区块总结的材料候选，不改身份或图。 | `related_regions` |
+| [function_scope.py](../../../experiments/clock_manual_20260919/function_scope.py) | 本地知识与入口目标一级摘要只读披露；按明确参数任务读取支持，不递归传播。 | `disclose / entries / parameter_support` |
 | [function_evidence.py](../../../experiments/clock_manual_20260919/function_evidence.py) | 只读整理本区执行结果和观察来源，独立于任务是否可调度。 | `action_results / incoming_results` |
 | [coverage_exemption.py](../../../experiments/clock_manual_20260919/coverage_exemption.py) | 保存有依据的非执行覆盖决定，未验证缺口保留；不借另一控件成功。 | `apply / reconcile / refresh` |
 

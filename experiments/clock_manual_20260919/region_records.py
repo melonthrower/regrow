@@ -50,6 +50,7 @@ def merge(records,state,sources,target,*,snapshot,rebase,evidence):
         dst.setdefault('merged_records',[]).extend(src.get('merged_records',[]))
         dst['merged_records'].append({'id':source,'name':src['name'],'evidence':evidence,
             'task_inventory':src.get('task_inventory'),'external_entry_policy':src.get('external_entry_policy')})
+        if src.get('local_knowledge'):dst.setdefault('prior_local_knowledge',[]).append(deepcopy(src['local_knowledge']))
         del rs[source]
     # Same-region consolidation does not make every same-name control identical.
     # Reuse only uniquely corroborated image evidence; otherwise request review.
@@ -76,6 +77,8 @@ def merge(records,state,sources,target,*,snapshot,rebase,evidence):
     rs=rewrite(rs,aliases);st=rewrite(st,aliases)
     # Inventory coverage must be checked again when source and target differ.
     dst=rs[target]
+    if dst.get('local_knowledge'):dst.setdefault('prior_local_knowledge',[]).append(dst.pop('local_knowledge'))
+    dst.pop('function_inventory',None)
     if 'task_inventory' in dst and set(dst['task_inventory'].get('controls',[]))!=set(dst['controls']):
         dst['task_inventory']['inventory']='partial'
     st.pop('visual_navigation',None)

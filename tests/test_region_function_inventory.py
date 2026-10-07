@@ -11,7 +11,7 @@ def module():
 
 
 def reply():
-    return {'region_role':'functional','role_evidence':'可配置当前对象参数','functions':[{'name':'设置闹钟','description':'配置闹钟的时间、周期、振动和标签','object':'当前闹钟','completion':'当前闹钟配置显示目标参数，是否持久保存待核实',
+    return {'parameter_definitions':[{'ref':n+' / '+n,'description':'可配置'+n,'conditions':[]} for n in ['时间','周期','振动','标签']],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'functional','role_evidence':'可配置当前对象参数','functions':[{'name':'设置闹钟','description':'配置闹钟的时间、周期、振动和标签','object':'当前闹钟','completion':'当前闹钟配置显示目标参数，是否持久保存待核实',
         'tasks':['时间','周期','振动','标签'],
         'constraints':[n+' / '+n for n in ['时间','周期','振动','标签']],
         'unconfirmed':['保存后的生效情况尚未验证']}], 'evidence':'依据已登记功能及参数整理'}
@@ -43,7 +43,8 @@ def test_record_only_visible_parameter_can_feed_function_without_an_action():
     assert m.coverage(region)['complete']
     fact=module().catalog(region)['查看内容 / 标签']
     assert fact['source']['source_call']=='plan' and 'attempt' not in fact['source']
-    result={'region_role':'functional','role_evidence':'可编辑标签','functions':[{'name':'编辑标签','description':'修改当前闹钟的标签','object':'当前闹钟','completion':'标签显示所填内容，确认方式尚未验证','tasks':['查看内容'],'constraints':['查看内容 / 标签'],'unconfirmed':[]}],'evidence':'可见输入能力'}
+    result={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'functional','role_evidence':'可编辑标签','functions':[{'name':'编辑标签','description':'修改当前闹钟的标签','object':'当前闹钟','completion':'标签显示所填内容，确认方式尚未验证','tasks':['查看内容'],'constraints':['查看内容 / 标签'],'unconfirmed':[]}],'evidence':'可见输入能力'}
+    result['parameter_definitions']=[{'ref':'查看内容 / 标签','description':'可配置标签文本','conditions':[]}]
     module().register(region,result,'f')
     assert region['functions']['编辑标签']['constraints']['查看内容 / 标签']['locations']==[{'region':'menu','control':'open'}]
     assert region['tasks']['查看内容']['attempts']==[]
@@ -65,7 +66,7 @@ def test_three_step_triggers_and_completed_function_inventory_does_not_repeat():
     assert (q['pipeline_step'],q['stage'])==('discovery','function_registration')
     assert not q['action_ready'] and q['screenshots']==[]
     assert 'goal' not in json.dumps(q['response_schema'])
-    module().register(r['menu'],{'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'只有导航，未确认独立业务功能'},'f')
+    module().register(r['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'只有导航，未确认独立业务功能'},'f')
     q=m.attach(ROOT,r,state,'menu',base)
     assert q['stage']!='function_registration'
     r['menu']['tasks']['查看内容']['result_evidence']='补充新观察'
@@ -89,7 +90,7 @@ def test_function_commit_preserves_graph_and_rejects_stale_evidence(tmp_path):
     m.apply_plan(r,proposal(operations),'plan');p.write_text(json.dumps(r))
     state=json.loads((sf/'runtime_state.json').read_text());mod=module();q=mod.request(ROOT,r,state)
     out=run/'calls/functions';out.mkdir();(out/'request.json').write_text(json.dumps(q))
-    (out/'response.json').write_text(json.dumps({'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅记录已知操作'}))
+    (out/'response.json').write_text(json.dumps({'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅记录已知操作'}))
     pointer=mod.commit(ROOT,run,'functions');after=json.loads((run/pointer['snapshot']/'regions/r1/region.json').read_text())
     assert after['actions']==r['actions'] and after['transitions']==r['transitions'] and after['tasks']==r['tasks']
     assert after['function_inventory']['source_call']=='functions'
@@ -117,7 +118,7 @@ def test_runner_routes_registration_before_exit_without_gui_or_instruction_gener
                     'registration_kind':'control_effect'} for n in ['Policy','Settings']])
             else:
                 assert q['stage']=='function_registration' and q['screenshots']==[]
-                response={'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅导航，无业务功能依据'}
+                response={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅导航，无业务功能依据'}
             (folder/'request.json').write_text(json.dumps(q));(folder/'response.json').write_text(json.dumps(response))
             return ref,response
         def adb(self,args):
@@ -179,7 +180,7 @@ def test_new_control_reopens_route_registration_before_function_refresh():
 
 def test_region_role_records_navigation_without_removing_routes_or_tasks():
     m,region,_=alarm_region();before=deepcopy(region)
-    module().register(region,{'region_role':'navigation','role_evidence':'操作只切换目的地','functions':[],'evidence':'已检查操作结果'},'f')
+    module().register(region,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'操作只切换目的地','functions':[],'evidence':'已检查操作结果'},'f')
     assert region['region_role']=='navigation' and region['functions']=={}
     assert region['tasks']==before['tasks'] and region['transitions']==before['transitions']
     data=reply();data['region_role']='mixed';data['role_evidence']='既可配置，也有导航'
@@ -202,7 +203,7 @@ def test_parameter_surface_keeps_facts_without_owning_a_business_atom(role):
 
 def test_unknown_role_is_not_silently_pure_navigation():
     _,region,_=alarm_region()
-    module().register(region,{'region_role':'undetermined','role_evidence':'结果用途尚不清楚','functions':[],'evidence':'保留未知'},'f')
+    module().register(region,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'undetermined','role_evidence':'结果用途尚不清楚','functions':[],'evidence':'保留未知'},'f')
     assert region['region_role']=='undetermined'
 
 
@@ -237,7 +238,8 @@ def test_function_context_includes_later_same_control_results():
     assert m.signature(region)!=old
     region['functions']={'编辑时间':{'completion':'过时的完成结论','unconfirmed':['过时的疑问']}}
     refreshed=m.request(ROOT,region,{'observation':{'id':'current'}})['user_prompt']
-    assert '编辑时间' in refreshed and '过时的完成结论' not in refreshed and '过时的疑问' not in refreshed
+    assert '过时的完成结论' not in refreshed and '过时的疑问' not in refreshed
+    assert '已有功能名称' not in refreshed  # Prior grouping is an output, not extraction evidence.
     # Merely proposed actions do not become observed evidence or stale the catalog.
     signature=m.signature(region)
     region['actions']['not_sent']={'control':cid,'delivery':'not_executed','result':{'description':'虚构结果'}}
@@ -275,12 +277,12 @@ def test_function_context_uses_real_incoming_results_and_refreshes_on_revisit():
     q=mod.request(ROOT,region,{'observation':{'id':'now'}},records)
     rows=json.loads(q['user_prompt'])['进入本区块的已观察结果']
     assert rows[0]['来源区块']=='播放器' and rows[0]['结果']=='重新进入声音列表，Deep space仍选中'
-    assert mod.signature(region,records)!=old
+    assert mod.signature(region,records)==old  # Incoming history is read-time evidence, not a local knowledge change.
     mod.register(region,reply(),'f',records)
     assert mod.review_current(region,records)
     source['actions']['visit']['delivery']='not_executed'
     assert not mod.incoming_results(region,records)
-    assert not mod.review_current(region,records)
+    assert mod.review_current(region,records)
 
 
 def test_extraction_rule_change_invalidates_previous_review(monkeypatch):

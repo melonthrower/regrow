@@ -19,7 +19,7 @@ def test_completed_region_summarizes_before_other_work_and_refreshes_on_new_evid
     request = action_proposer.render_work(ROOT, records, state, decision)
     assert request['stage'] == 'function_registration' and not request['action_ready']
     assert (records, state) == before
-    region_functions.register(records['menu'], {'region_role':'navigation',
+    region_functions.register(records['menu'], {'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation',
         'role_evidence':'已知导航入口','functions':[],'evidence':'入口观察已归纳'}, 'summary', records)
     assert scheduler.select_work(records, state)['kind'] != 'function_registration'
     records['menu']['tasks']['查看内容']['result_evidence'] = '新观察补充用途'

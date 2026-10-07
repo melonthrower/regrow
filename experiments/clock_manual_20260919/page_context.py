@@ -130,7 +130,9 @@ def build(records, state, run=None):
             controls.append({'ref': cid, 'name': control.get('name', cid),
                              'state': row.get('state', '') if confirmed else '',
                              'evidence': 'current_observation' if confirmed else 'needs_recheck'})
-        nodes[rid] = {**_region(records, rid), 'controls': controls, 'children': []}
+        from function_scope import disclose
+        nodes[rid] = {**_region(records, rid), 'controls': controls, 'children': [],
+                      'knowledge': disclose(records, rid)}
         parent = region.get('parent_region')
         if parent:
             own_row = _observed(region, oid)
@@ -243,6 +245,8 @@ def _display(view, goal_in_task_context=False):
     def tree(nodes, depth=0):
         for node in nodes:
             lines.append('  ' * depth + '- ' + node['name'])
+            if node.get('knowledge'):
+                lines.append('  ' * (depth + 1) + '已登记区块知识（历史能力，不证明当前可操作）：' + json.dumps(node['knowledge'],ensure_ascii=False))
             for entry in view.get('incoming_actions', {}).get(node['ref'], []):
                 event = events.get(entry['attempt'], {})
                 if event.get('region') == entry['region'] and not event.get('缺口'):

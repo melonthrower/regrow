@@ -129,6 +129,7 @@ def repartition(records,state,episode,snapshot,*,existing_targets=None,merge_con
     for rid in {source_id,*moved.values()}:
         r=records[rid]
         if r.get('functions'):r.setdefault('prior_partition_functions',[]).append(deepcopy(r['functions']))
+        if r.get('local_knowledge'):r.setdefault('prior_local_knowledge',[]).append(r.pop('local_knowledge'))
         r['functions']={};r.pop('function_inventory',None);r.pop('task_inventory',None)
         # Equivalence across the newly separated owners needs explicit review.
         for task in r.get('tasks',{}).values():

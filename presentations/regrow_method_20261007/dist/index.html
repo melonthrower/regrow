@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="regrow 研究方法演示：从真实 GUI 遍历、区块功能知识，到目标驱动任务生成与可验证轨迹采集。">
+<title>regrow — 从 GUI 遍历到可验证轨迹</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><a class="brand" href="#1" aria-label="回到首页">regrow<span>↗</span></a><span class="edition">METHOD / RESEARCH DISCUSSION · 2026.10</span><div class="tools"><button id="overviewBtn" aria-label="打开目录">目录 <kbd>O</kbd></button><button id="notesBtn" aria-pressed="false">讲解备注 <kbd>N</kbd></button><button id="fullBtn">全屏 <kbd>F</kbd></button></div></header>
+<main id="deck" aria-label="研究方法幻灯片"></main>
+<footer><div class="chapter" id="chapter"></div><div class="progress" id="progress" aria-label="幻灯片导航"></div><div class="paging"><button id="prev" aria-label="上一页">←</button><span id="page" aria-live="polite"></span><button id="next" aria-label="下一页">→</button></div></footer>
+<aside id="notes" hidden><button id="closeNotes" aria-label="关闭备注">×</button><h2>讲解备注与依据</h2><div id="noteBody"></div></aside>
+<dialog id="overview"><div class="dialog-top"><h2>演示目录</h2><button id="closeOverview" aria-label="关闭目录">×</button></div><div id="overviewItems"></div><p>← → / 空格翻页 · Home / End 首尾页 · Esc 关闭弹层</p></dialog>
+<dialog id="lightbox"><button id="closeLightbox" aria-label="关闭截图">关闭 ×</button><img id="largeImage" alt=""><p id="largeCaption"></p></dialog>
+<div id="toast" role="status"></div>
+<script src="slides.js"></script><script src="app.js"></script>
+</body></html>

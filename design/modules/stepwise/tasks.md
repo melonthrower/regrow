@@ -73,3 +73,6 @@ TaskProposer以三类具体信息需求提出探索：打开新入口认识功�
 共享任务传递registration_kind，复用结果同样核对对应登记；旧task_result_review入口不能凭模型done绕过新规则。参数依赖范围按registration_kind识别，保留旧parameter任务的默认解释。
 
 等价任务也须具有相同registration_kind；同为click/single_action不足以替代参数或入口产物。region_tasks.equivalent_source/effective_task集中该判断，覆盖统计、任务树、纠错上下文及进度页共用。旧不一致引用投影为blocked并保留原记录，不继承代表任务done或其观察事实。
+
+## 先探索再记录（2026-10-07）
+有价值的未知直接提出探索任务。待完成findings是来源证据，不能作已完成控件知识；正常更新得到结果并结算后，task_knowledge按原任务归属维护control.knowledge。任务清点读取已完成任务知识，复用既有record/探索/暂挂机制；旧record任务不伪造执行，新字段缺失的旧任务不自动提炼稳定含义。

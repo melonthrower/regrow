@@ -77,7 +77,7 @@ def test_completed_nonworking_region_gets_function_review_without_navigation(tmp
     assert q and q['stage']=='function_registration'
     assert q['source']['region']=='menu' and state==before
     fn=mod('region_functions')
-    fn.register(records['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'导航','functions':[],'evidence':'仅导航'},'review',records)
+    fn.register(records['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'navigation','role_evidence':'导航','functions':[],'evidence':'仅导航'},'review',records)
     assert m.request(ROOT,tmp_path,records,state) is None
 
 
@@ -132,7 +132,9 @@ def test_multiple_function_reviews_continue_as_next_round(tmp_path,monkeypatch):
 def test_historical_merge_and_plan_refresh_in_one_transaction(tmp_path):
     from tests.test_stepwise_task_correction import saved,Calls,answer,repair
     run,q,good=saved(tmp_path);d=mod('discovery_step');h=mod('historical_inventory')
-    for row in good['operations']:row['registration_kind']='control_effect'
+    for row in good['operations']:
+        row['registration_kind']='control_effect'
+        row['knowledge']='打开所标入口' if row['handling']=='record' else ''
     def duplicate(records,state,*args):
         r=records['r1'];cid=next(iter(r['controls']));r['controls']['duplicate']=deepcopy(r['controls'][cid]);r['controls']['duplicate']['id']='duplicate'
         state['interactive_regions']=[]

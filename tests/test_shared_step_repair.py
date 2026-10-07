@@ -124,7 +124,7 @@ def test_function_registration_uses_same_repair(tmp_path):
         for t in r['tasks'].values():t.update(status='done',result_evidence='观察到导航结果')
     d.publish(run,'finish-fixture',finish)
     _,records,state=d.load(run);functions=mod('region_functions');q=functions.request(ROOT,records['r1'],state)
-    good={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'两个导航入口','functions':[],'evidence':'已探索'}
+    good={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'navigation','role_evidence':'两个导航入口','functions':[],'evidence':'已探索'}
     bad={**good,'region_role':'invalid_role'}
     calls=Calls(run,[bad,answer('revise',good)])
     repair().Runner(ROOT,run,calls,None,lambda:6).perform('function_registration',q)

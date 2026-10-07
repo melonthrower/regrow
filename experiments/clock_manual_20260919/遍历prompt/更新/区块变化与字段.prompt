@@ -25,7 +25,7 @@ regions和controls按本轮观察增量登记。仅补新出现或变化的控�
 | action_result | exception为异常分类；description简短记录实际对象、动作和变化；evidence补关键依据；recovery_handoff为恢复需求，无异常可为空 |
 | regions | 增量区块；name为名称，description为可见内容，reason为划分依据，bbox为图2中可确认的当前边界；内部受挡不清空已确认边界，image_quality另记且不保存受挡模板。previous_name为旧对象名称或空字符串 |
 | regions[].parent_index | 本次regions列表中父区块的位置，从0开始；没有父级填null |
-| controls | 增量控件；text为辨认控件的标签或选项文字，icon_appearance为外观，state只写选中、禁用等影响操作许可的状态，无特殊状态填空字符串，不重复“可见”或图片遮挡说明；possible_operation为功能推测，uncertainty为疑问；bbox为识别框，click_bbox为点击框，icon_bbox为可选独立图标框；previous_name为旧控件名或空字符串 |
+| controls | 增量控件；text为辨认控件的标签或选项文字，icon_appearance为外观，state记录当前值及选中、禁用等影响下一步操作的状态，无特殊状态填空字符串，不重复“可见”或图片遮挡说明；possible_operation为功能推测，uncertainty为疑问；bbox为识别框，click_bbox为点击框，icon_bbox为可选独立图标框；previous_name为旧控件名或空字符串 |
 | controls[].region_index | 直接所属区块在本次regions列表中的位置，从0开始，不是持久编号 |
 | previous_regions | 对本轮提供的相关已有区块填写name、state及evidence，状态见下表；不枚举未提供的全图历史 |
 | excluded | 不纳入清单的对象description及原因reason |
@@ -70,3 +70,5 @@ action_result.returns_to_previous：点击界面返回入口，或关闭菜单�
 框架保留实际观察到的返回边，但不把它用于保证到达某区块的自动路径。需要返回时由普通动作步结合本次任务选择，执行后仍由更新步确认落点。
 
 计时数字等自然变化且与本次验证无关的显示，不重复抄入控件text或state。若数值变化直接支持本次动作效果，则在action_result的历史结果依据中简短记录；实际探索出的参数范围/选项仍可带来源保存，不能据旧值推断当前状态。
+
+本次controls.state同时记录影响下一步的当前值、选中、开关或禁用状态；状态只属于当前观察，不能混入possible_operation或稳定参数说明。与任务无关的自动计数无需逐项抄录。状态变了但身份不变时沿用原控件，重报该控件本次状态；未重报不表示确认未变。框架将本次语义观察按控件归入区块current_observation，旧帧或纯视觉定位不提供当前状态。功能未知通过探索任务处理，不把uncertainty当成另一套知识待办。

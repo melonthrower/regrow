@@ -70,6 +70,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         if not name or name in seen or not row['reason'].strip():raise ValueError('task name/reason missing or repeated')
         seen.add(name)
         if cid is not None:covered.add(cid)
+        if row.get('knowledge') and row['handling']!='record':
+            raise ValueError('未完成探索不得预写knowledge；具体未知写任务reason，knowledge为空')
         t={**{k:v for k,v in row.items() if k!='findings'},'control':cid,'status':'pending','source_call':call,'attempts':[]}
         # Names describe an exploration; the control and operation identify it.
         # Reuse status/prerequisites/history instead of creating a renamed retry.
@@ -84,10 +86,15 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
                 if prior.get('status')=='record_only' and row['handling']=='explore':
                     raise ValueError('旧record任务遗漏未知交互内容，请用field=reopen_task修订原任务：'+name)
                 helper('task_settlement').refresh_movement(region,prior,state)
+                if row.get('knowledge') and prior.get('status')=='record_only' and row['handling']=='record':
+                    prior['knowledge']=row['knowledge']
                 if row.get('findings'):
                     store_findings(prior,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
                 continue
-        if row['handling']=='record':t['status']='record_only'
+        if row['handling']=='record':
+            t['status']='record_only'
+            if 'knowledge' in row and not row['knowledge'].strip():
+                raise ValueError('直接观察record需提供稳定knowledge；仍需探索的问题改为explore')
         if row['handling']=='defer':t.update(status='blocked',blocker={'condition':'review_required','source_call':call})
         if name in old:
             prior=old[name]
@@ -106,6 +113,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if row.get('prerequisite') and row['prerequisite']!={k:v for k,v in (prior.get('prerequisite') or {}).items() if k not in ('scheduled','satisfied','last_check','recheck_requested')}:
                 if prior.get('prerequisite'):t.setdefault('prerequisite_history',[]).append(dict(prior['prerequisite']))
                 t['prerequisite']=dict(row['prerequisite'])
+        if row.get('knowledge') and t.get('status')=='record_only':
+            t['knowledge']=row['knowledge']
         if row.get('findings'):
             store_findings(t,row['findings'],{'region':region['id'],'task_region':region['id'],'task':name,'control':cid,'source_call':call})
         if row.get('registration_kind')=='parameter' and t['handling']=='record' and not t.get('findings'):

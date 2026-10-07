@@ -104,20 +104,12 @@
             ],
             "additionalProperties": false
           }
-        },
-        "unconfirmed": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "uniqueItems": true
         }
       },
       "required": [
         "summary",
         "parameter_refs",
-        "conditions",
-        "unconfirmed"
+        "conditions"
       ],
       "additionalProperties": false
     },

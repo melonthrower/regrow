@@ -345,3 +345,5 @@
 角色入口与连接： [test_recovery_discovery.py](test_recovery_discovery.py)、[test_stepwise_region_tasks.py](test_stepwise_region_tasks.py)、[test_stepwise_discovery_dispatch.py](test_stepwise_discovery_dispatch.py)、[test_shared_control_conflict_repair.py](test_shared_control_conflict_repair.py)。旧测试债和本批实际通过范围以月度日志为准。
 
 本轮清退角色转发测试文件：独有的恢复上下文检查归入恢复测试，其余职责断言合并到任务、更新回执及导航测试；重复包装和旧串行清点门槛测试删除，净减少6个测试函数。测试数量不是执行门槛，只按改动合同选择检查。
+
+任务后知识与状态：`tests/test_task_knowledge_flow.py`；相邻合同为`test_task_action_binding.py`、`test_preparation_completion.py`、`test_current_page_context.py`与区块总结测试。

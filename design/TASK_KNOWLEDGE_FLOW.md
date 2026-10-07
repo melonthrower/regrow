@@ -1,0 +1,15 @@
+# 探索完成后登记知识，观察后更新状态
+
+用户确认的流程：问题直接进入已有探索任务，完成探索后才记录稳定控件知识；状态在每次观察时更新，供下一步操作使用。不新增待确认清单、完成审核调用或CLI路径。
+
+ResultUpdater在原task_update增加knowledge字符串，写实际探索得出的稳定用途或操作规则。findings继续保存参数，entry继续保存去向，action_result保留本次效果和证据边界。原问题未解决时，next_action继续同一任务或registration_gap沿现有暂挂路径保留；真实动作不重放。空knowledge不能把新格式未知用途任务结束。
+
+task_settlement仍以真实绑定、回执和登记产物结算；只有完成后task_knowledge才将任务knowledge及参数投影到对应control.knowledge，区块自身操作放operation_knowledge。待办、阻塞、等价和共享任务不冒充本地已探索知识。旧任务没有knowledge时不从旧动态结果猜造稳定知识；直接观察record通过TaskProposer的knowledge字段登记稳定说明，以observation_only标明证据边界；历史总结沿已有边界，不强制为常识补点击。
+
+同一发布事务将本次语义观察中的text/state按控件ID存入Region.current_observation。不在本次可交互范围、未重报或仅视觉匹配的控件不给当前值，历史原始观察保留。读请求仍核对观察ID与截图；只有同帧选择动作时披露本次状态，动作前地图或换帧候选不冒充动作后状态。
+
+TaskProposer及当前地图同时读取控件知识和区块operation_knowledge，不等待区块总结。区块探索清点结束后沿原总结归纳多个用途及独立功能；删除local_knowledge.unconfirmed输出与保存，待办只由任务管理。函数既有unconfirmed只保留业务效果证据边界，不新增待办。常规地图披露区块摘要、一级目标卡，以及紧凑的条件、参数和功能完成边界/约束，不每轮复制整个functions/参数源记录；当前控件知识按任务提供紧凑稳定描述与参数，历史引用保留。
+
+实现连接：result_updater.build_update_request → task_settlement.settle_task/mark_explored → task_knowledge.refresh → discovery_step.publish/register_update.commit_update → task_proposer/page_context。共享记录、控制身份、截图证据、正常纠错和中断事务沿原路径。不会改写已有活动run或采集冻结图。
+
+验收应覆盖：未完成有事实但不发布；完成后立即可读；后续换值不改知识；状态换帧失效；未知效果继续/暂挂；无新疑问列表；参数原生更新、下一轮正常读取及总结。离线、保存帧和GUI分别报告；本批先做保存帧，不宣称GUI执行。

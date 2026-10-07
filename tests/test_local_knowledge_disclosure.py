@@ -11,7 +11,7 @@ def test_multiple_independent_functions_and_local_conditions_survive_registratio
     second=deepcopy(answer['functions'][0]);second.update(name='清除标签',object='当前闹钟',description='清除当前闹钟标签',completion='标签为空',tasks=['标签'],constraints=[])
     answer['functions'].append(second)
     answer['local_knowledge']={'summary':'配置闹钟并支持另一独立用途','parameter_refs':['时间 / 时间'],
-        'conditions':[{'description':'已启用才可配置','tasks':['时间']}], 'unconfirmed':['保存效果未确认']}
+        'conditions':[{'description':'已启用才可配置','tasks':['时间']}]}
     m.register(owner,answer,'summary',records)
     assert len(owner['functions'])==2
     assert owner['local_knowledge']['conditions']==answer['local_knowledge']['conditions']

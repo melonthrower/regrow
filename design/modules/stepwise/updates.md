@@ -79,3 +79,6 @@ ResultUpdater直接持有结果请求/schema和候选校验；调用方统一进
 未确认动作关联的ownership缺口当前没有完整自动补录入口；这只解开其他工作的调度，原任务仍未完成。早期reconcile在待更新/导航续接之后、循环检查之前同步记录，避免沿旧pending状态触发无意义循环纠错。
 
 纠错上下文与覆盖统计共用region_tasks.effective_task；等价引用若要求不同登记产物，披露blocked和本任务缺口，不借用代表任务的完成状态/观察。
+
+## 完成任务知识与本次状态（2026-10-07）
+task_update.knowledge提供稳定用途/规则，当前值在controls.state及原action_result；所需信息未得到时knowledge为空，沿next_action或registration_gap保留原探索任务。task_settlement完成后才发布控件知识；新格式空knowledge不能只因点击就结算。task_knowledge.refresh由普通发布和动作更新共同调用，Region.current_observation仅存本次语义观察控件，未观察不等于未变化。没有新待确认字段或独立完成审核。

@@ -131,8 +131,13 @@ def build(records, state, run=None):
                              'state': row.get('state', '') if confirmed else '',
                              'evidence': 'current_observation' if confirmed else 'needs_recheck'})
         from function_scope import disclose
+        from task_knowledge import current, control_knowledge
         nodes[rid] = {**_region(records, rid), 'controls': controls, 'children': [],
-                      'knowledge': disclose(records, rid)}
+                      'knowledge': disclose(records, rid),
+                      'current_observation': current(region,state),
+                      'operation_knowledge':control_knowledge(region,None)}
+        for control in controls:
+            control['knowledge']=control_knowledge(region,control['ref'])
         parent = region.get('parent_region')
         if parent:
             own_row = _observed(region, oid)
@@ -225,6 +230,7 @@ def _source_attempts(view):
 def _display(view, goal_in_task_context=False):
     # IDs live in request metadata. The prompt presents names and evidence roles.
     import page_history
+    from task_knowledge import summary_view
     names = view.get('names', {})
     name = lambda ref: names.get(ref, ref) or '未绑定具体控件'
     usage = view.get('usage', 'selection')
@@ -246,7 +252,9 @@ def _display(view, goal_in_task_context=False):
         for node in nodes:
             lines.append('  ' * depth + '- ' + node['name'])
             if node.get('knowledge'):
-                lines.append('  ' * (depth + 1) + '已登记区块知识（历史能力，不证明当前可操作）：' + json.dumps(node['knowledge'],ensure_ascii=False))
+                lines.append('  ' * (depth + 1) + '已登记区块知识（历史能力，不证明当前可操作）：' + json.dumps(summary_view(node['knowledge']),ensure_ascii=False))
+            if node.get('operation_knowledge'):
+                lines.append('  ' * (depth + 1) + '区块操作知识：' + json.dumps(node['operation_knowledge'],ensure_ascii=False))
             for entry in view.get('incoming_actions', {}).get(node['ref'], []):
                 event = events.get(entry['attempt'], {})
                 if event.get('region') == entry['region'] and not event.get('缺口'):
@@ -254,6 +262,11 @@ def _display(view, goal_in_task_context=False):
             for control in node['controls']:
                 qualifier='（历史外观候选；本轮身份未确认）' if control.get('evidence')=='needs_recheck' else ''
                 lines.append('  ' * (depth + 1) + '- ' + control['name']+qualifier)
+                if control.get('knowledge'):
+                    lines.append('  ' * (depth + 2) + '已完成任务知识：' + json.dumps(control['knowledge'],ensure_ascii=False))
+                current=node.get('current_observation',{}).get('controls',{}).get(control['ref'])
+                if current is not None and usage=='selection' and view['frame_relation']=='same_observation_frame':
+                    lines.append('  ' * (depth + 2) + '本次状态：' + json.dumps(current,ensure_ascii=False))
                 for aid in controls.get((node['ref'], control['ref']), []):
                     event = events[aid]
                     line = '  ' * (depth + 2) + '历史记录：' + page_history.reference(history, aid)

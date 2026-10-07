@@ -75,7 +75,7 @@ def test_update_schema_records_facts_and_optional_next_action_without_task_verdi
     q=build_update_request(ROOT,{'本轮探索任务':'查看选项','任务目标':{'type':'parameter'}},['before.png','after.png'])
     fields=q['response_schema']['properties']
     assert 'task_result' not in fields and 'related_task_results' not in fields
-    assert set(fields['task_update']['properties'])=={'findings','next_action','registration_gap'}
+    assert set(fields['task_update']['properties'])=={'findings','next_action','registration_gap','knowledge'}
     assert '累计任务' not in q['system_prompt']
 
 def test_preparation_requires_observed_condition_not_just_entry_click():

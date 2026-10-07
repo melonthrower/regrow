@@ -130,3 +130,5 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 原子操作可跨相关区块，仍挂业务主区块：function_scope组织图上的证据候选，region_functions提供跨区块任务/参数引用并校验登记。support_tasks保留结构化region/task来源；本地task_refs、任务身份和真实动作归属保持原合同。相关证据变化触发更新，图连接不自动等于业务归属。
 
 2026-10-07登记结算：TaskProposer指定registration_kind，ResultUpdater沿正常更新登记对应产物，task_settlement据真实绑定与已登记信息结算；缺口保存并暂挂，原动作不重放。旧完成记录不追溯重判。参数登记、缺口保留、跨区块总结与调度已有有限原生/实机证据；新entry产物分支尚未原生验收，详见任务/更新模块及本月日志。
+
+2026-10-07任务后知识：普通结果更新提供稳定knowledge，原任务完成后才归入控件；区块current_observation维护当前帧状态，换帧不沿用。未知交由已有任务推进/暂挂，local_knowledge不另维护unconfirmed清单。请求与保存连接见[任务后知识设计](TASK_KNOWLEDGE_FLOW.md)及任务/更新/上下文模块；验收范围见月度日志。

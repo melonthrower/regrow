@@ -11,7 +11,7 @@ def module():
 
 
 def reply():
-    return {'parameter_definitions':[{'ref':n+' / '+n,'description':'可配置'+n,'conditions':[]} for n in ['时间','周期','振动','标签']],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'functional','role_evidence':'可配置当前对象参数','functions':[{'name':'设置闹钟','description':'配置闹钟的时间、周期、振动和标签','object':'当前闹钟','completion':'当前闹钟配置显示目标参数，是否持久保存待核实',
+    return {'parameter_definitions':[{'ref':n+' / '+n,'description':'可配置'+n,'conditions':[]} for n in ['时间','周期','振动','标签']],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'functional','role_evidence':'可配置当前对象参数','functions':[{'name':'设置闹钟','description':'配置闹钟的时间、周期、振动和标签','object':'当前闹钟','completion':'当前闹钟配置显示目标参数，是否持久保存待核实',
         'tasks':['时间','周期','振动','标签'],
         'constraints':[n+' / '+n for n in ['时间','周期','振动','标签']],
         'unconfirmed':['保存后的生效情况尚未验证']}], 'evidence':'依据已登记功能及参数整理'}
@@ -43,7 +43,7 @@ def test_record_only_visible_parameter_can_feed_function_without_an_action():
     assert m.coverage(region)['complete']
     fact=module().catalog(region)['查看内容 / 标签']
     assert fact['source']['source_call']=='plan' and 'attempt' not in fact['source']
-    result={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'functional','role_evidence':'可编辑标签','functions':[{'name':'编辑标签','description':'修改当前闹钟的标签','object':'当前闹钟','completion':'标签显示所填内容，确认方式尚未验证','tasks':['查看内容'],'constraints':['查看内容 / 标签'],'unconfirmed':[]}],'evidence':'可见输入能力'}
+    result={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'functional','role_evidence':'可编辑标签','functions':[{'name':'编辑标签','description':'修改当前闹钟的标签','object':'当前闹钟','completion':'标签显示所填内容，确认方式尚未验证','tasks':['查看内容'],'constraints':['查看内容 / 标签'],'unconfirmed':[]}],'evidence':'可见输入能力'}
     result['parameter_definitions']=[{'ref':'查看内容 / 标签','description':'可配置标签文本','conditions':[]}]
     module().register(region,result,'f')
     assert region['functions']['编辑标签']['constraints']['查看内容 / 标签']['locations']==[{'region':'menu','control':'open'}]
@@ -66,7 +66,7 @@ def test_three_step_triggers_and_completed_function_inventory_does_not_repeat():
     assert (q['pipeline_step'],q['stage'])==('discovery','function_registration')
     assert not q['action_ready'] and q['screenshots']==[]
     assert 'goal' not in json.dumps(q['response_schema'])
-    module().register(r['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'只有导航，未确认独立业务功能'},'f')
+    module().register(r['menu'],{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'只有导航，未确认独立业务功能'},'f')
     q=m.attach(ROOT,r,state,'menu',base)
     assert q['stage']!='function_registration'
     r['menu']['tasks']['查看内容']['result_evidence']='补充新观察'
@@ -90,7 +90,7 @@ def test_function_commit_preserves_graph_and_rejects_stale_evidence(tmp_path):
     m.apply_plan(r,proposal(operations),'plan');p.write_text(json.dumps(r))
     state=json.loads((sf/'runtime_state.json').read_text());mod=module();q=mod.request(ROOT,r,state)
     out=run/'calls/functions';out.mkdir();(out/'request.json').write_text(json.dumps(q))
-    (out/'response.json').write_text(json.dumps({'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅记录已知操作'}))
+    (out/'response.json').write_text(json.dumps({'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅记录已知操作'}))
     pointer=mod.commit(ROOT,run,'functions');after=json.loads((run/pointer['snapshot']/'regions/r1/region.json').read_text())
     assert after['actions']==r['actions'] and after['transitions']==r['transitions'] and after['tasks']==r['tasks']
     assert after['function_inventory']['source_call']=='functions'
@@ -115,10 +115,10 @@ def test_runner_routes_registration_before_exit_without_gui_or_instruction_gener
             stages.append(q['stage']);ref='call_'+str(len(stages));folder=run/'calls'/ref;folder.mkdir()
             if q['stage']=='task_proposal':
                 response=proposal([{**row(name=n,control=n,handling='record'),'findings':[],
-                    'registration_kind':'control_effect'} for n in ['Policy','Settings']])
+                    'registration_kind':'control_effect','knowledge':'打开'+n+'入口'} for n in ['Policy','Settings']])
             else:
                 assert q['stage']=='function_registration' and q['screenshots']==[]
-                response={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅导航，无业务功能依据'}
+                response={'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'navigation','role_evidence':'仅切换目的地','functions':[],'evidence':'仅导航，无业务功能依据'}
             (folder/'request.json').write_text(json.dumps(q));(folder/'response.json').write_text(json.dumps(response))
             return ref,response
         def adb(self,args):
@@ -180,7 +180,7 @@ def test_new_control_reopens_route_registration_before_function_refresh():
 
 def test_region_role_records_navigation_without_removing_routes_or_tasks():
     m,region,_=alarm_region();before=deepcopy(region)
-    module().register(region,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'navigation','role_evidence':'操作只切换目的地','functions':[],'evidence':'已检查操作结果'},'f')
+    module().register(region,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'navigation','role_evidence':'操作只切换目的地','functions':[],'evidence':'已检查操作结果'},'f')
     assert region['region_role']=='navigation' and region['functions']=={}
     assert region['tasks']==before['tasks'] and region['transitions']==before['transitions']
     data=reply();data['region_role']='mixed';data['role_evidence']='既可配置，也有导航'
@@ -203,7 +203,7 @@ def test_parameter_surface_keeps_facts_without_owning_a_business_atom(role):
 
 def test_unknown_role_is_not_silently_pure_navigation():
     _,region,_=alarm_region()
-    module().register(region,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[],'unconfirmed':[]},'region_role':'undetermined','role_evidence':'结果用途尚不清楚','functions':[],'evidence':'保留未知'},'f')
+    module().register(region,{'parameter_definitions':[],'local_knowledge':{'summary':'本地用途测试记录','parameter_refs':[],'conditions':[]},'region_role':'undetermined','role_evidence':'结果用途尚不清楚','functions':[],'evidence':'保留未知'},'f')
     assert region['region_role']=='undetermined'
 
 

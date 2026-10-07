@@ -351,6 +351,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
         save_region_images(records,delta_refs,reply,call_ref,run,edge.get('after_image'),snapshot,temp,observation=edge['after_observation'])
         sibling('shared_controls').refresh(records)
         sibling('coverage_exemption').reconcile(records,state)
+        sibling('task_knowledge').refresh(records,state)
         for ref,r in records.items():write_json(temp/f'regions/{ref}/region.json',r)
         write_json(temp/'runtime_state.json',state)
         write_json(temp/'source.json',{'record_format':'region_image_knowledge','graph':graph_ref,'call':call_ref,'attempt':attempt_ref,'digest':digest,'parent_snapshot':parent_snapshot})

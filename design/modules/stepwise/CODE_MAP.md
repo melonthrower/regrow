@@ -231,3 +231,5 @@
 源码路径仍在experiments/clock_manual_20260919，原辅助模块不复制。
 
 2026-10-07候选接线：task_proposer.proposal_schema/plan_request → region_tasks.apply_plan保存registration_kind → action_proposer/history_context传递目标 → result_updater.build_attempt_update/build_update_request → register_update.commit_update → task_settlement.register_entry/require_registration/settle_task。function_evidence向总结披露已登记入口语义和信息缺口。
+
+`task_knowledge.py`：`control_knowledge/current/refresh`，由已完成任务维护控件知识，由本帧语义观察维护区块状态；两个发布入口共用，任务与地图读取复用。

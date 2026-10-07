@@ -49,6 +49,7 @@ def register_entry(value,records,actual,attempt,labels=None):
 def registered_result(task,action):
     """An executed click alone does not supply a parameter or entry record."""
     kind=registration_kind(task)
+    if 'knowledge' in action and not action['knowledge']:return False
     if action.get('registration_gap') and action.get('registration_kind')==kind:return False
     if kind=='parameter':return bool(action.get('parameter_findings'))
     if kind=='entry':return bool(action.get('entry_registration'))
@@ -56,6 +57,8 @@ def registered_result(task,action):
 
 
 def require_registration(task,action,update):
+    if 'knowledge' in update:
+        action['knowledge']=update['knowledge'].strip()
     if update.get('next_action') is not None:return
     gap=update.get('registration_gap','').strip()
     action['registration_kind']=registration_kind(task)
@@ -63,6 +66,8 @@ def require_registration(task,action,update):
         action['registration_gap']=gap
         return
     action.pop('registration_gap',None)
+    if 'knowledge' in update and not action.get('knowledge'):
+        raise ValueError('探索问题尚未回答时用next_action继续或registration_gap暂挂；完成登记需要有证据的稳定knowledge，不以无反馈结束未知用途探索')
     if not registered_result(task,action):
         needed={'parameter':'findings参数事实','entry':'entry实际去向与跳转语义','control_effect':'action_result直接反馈'}[registration_kind(task)]
         raise ValueError('本任务需要登记'+needed+'；当前图与已有证据不足时，用registration_gap说明具体缺口，保存尝试并暂挂，而非重做动作')
@@ -134,6 +139,8 @@ def mark_explored(task, region, aid, action):
                                'control': action.get('control'), 'operation': action['operation'],
                                'attempt': aid, 'meaning': '已执行并登记本类探索产物，不表示业务效果成功'}
     task.pop('completion_review', None)
+    if action.get('knowledge'):
+        task['knowledge'] = action['knowledge']
 
 
 def set_next_action(records, owner, task, value, attempt, labels=None):

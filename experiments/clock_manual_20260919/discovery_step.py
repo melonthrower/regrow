@@ -39,6 +39,7 @@ def publish(run, tag, mutate):
         mutate(records,state,snapshot,temp)
         reg.sibling('shared_controls').refresh(records)
         reg.sibling('coverage_exemption').reconcile(records,state)
+        reg.sibling('task_knowledge').refresh(records,state)
         state.update(update_digest=digest,update_status='committed')
         for rid,r in records.items():reg.write_json(temp/'regions'/rid/'region.json',r)
         reg.write_json(temp/'runtime_state.json',state)

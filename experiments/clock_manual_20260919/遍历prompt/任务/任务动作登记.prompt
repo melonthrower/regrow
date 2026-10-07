@@ -9,3 +9,6 @@ findings仍可附带其他本次参数事实；没有新事实时用[]。registr
 next_action通常为null。只有本次观察证明原绑定不合适、需要对另一已登记控件执行动作才能获得原定信息时，写region、control、action、reason。框架保留旧动作，转向有依据的后续绑定。导航、关闭遮挡和输入前的聚焦按准备动作如实登记，原任务所需产物仍由其实际目标动作提供。
 
 框架在对应事实正式登记后更新任务状态；回复提供上述观察，不另输出done/pending。信息登记完成与业务目的成功分别记录。前置准备保留dependency_updates，以本次条件观察为准。
+
+## 先探索完成，再登记稳定知识
+knowledge只填写本任务实际探索得到、以后可复用的控件用途或操作规则；description与conditions中的参数说明也在本轮区分稳定含义。当前选中值、开关状态、输入实例写本轮controls.state或action_result，不写入knowledge。任务仍需后续操作时用next_action继续同一任务；无法继续沿registration_gap保留原任务，不另建待确认清单。仅点击过或无可见变化不足以确认原本未知的用途；未解决原问题时knowledge为空，不能把猜测写成规则。准备和异常不登记原目标知识。框架只在任务正常结算后把knowledge及参数归入对应控件。完成结果的证据边界仍保留在action_result。

@@ -55,6 +55,7 @@ def build_update_request(root, dynamic, screenshots):
     field['required']=list(dict.fromkeys(field['required']+['recovery_handoff','returns_to_previous']))
     parts.append({'path':'异常处理/异常识别.prompt','text':(pr/'异常处理/异常识别.prompt').read_text()})
     if dynamic.get('本轮探索任务'):
+        parts.insert(0,{'path':'共享/任务知识与当前观察.prompt','text':(pr/'共享/任务知识与当前观察.prompt').read_text()})
         schema['properties']['task_update'] = {
             'type':'object','properties':{
                 'findings':{'type':'array','items':json.loads((pr/'输出格式/参数发现.schema').read_text())},
@@ -62,8 +63,9 @@ def build_update_request(root, dynamic, screenshots):
                     'region':{'type':'string'},'control':{'type':'string'},
                     'action':{'type':'string','enum':['click','double_click','long_press','input_text','scroll','key_press','hotkey','hover','right_click','drag','back','wait']},
                     'reason':{'type':'string'}},'required':['region','control','action','reason'],'additionalProperties':False}]},
+                'knowledge':{'type':'string','description':'一句话说明探索得到的稳定控件用途或规则；不附加本次值/选中状态或选项表。参数写findings，当前值写controls.state；未解决/准备/异常为空。'},
                 'registration_gap':{'type':'string','description':'当前证据尚未回答本任务具体未知时，说明缺少什么；所需登记齐全时用空字符串。'}},
-            'required':['findings','next_action','registration_gap'],'additionalProperties':False}
+            'required':['findings','next_action','registration_gap','knowledge'],'additionalProperties':False}
         if dynamic.get('任务目标',{}).get('registration_kind')=='entry':
             from task_settlement import entry_schema
             schema['properties']['task_update']['properties']['entry']=entry_schema()

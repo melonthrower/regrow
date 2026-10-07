@@ -275,7 +275,7 @@ def register(region,reply,call,records=None):
     if gap:region.setdefault('registration_gap_history',[]).append({**deepcopy(gap),'stage':'function_registration','resolved_by':call})
     region['local_knowledge']={'summary':local['summary'],
         'parameters':{ref:knowledge.fact_card(stable_fact(ref)) for ref in local['parameter_refs']},
-        'conditions':deepcopy(local['conditions']),'unconfirmed':list(local['unconfirmed']),
+        'conditions':deepcopy(local['conditions']),
         'source_call':call}
     region.update(region_role=reply['region_role'],role_evidence=reply['role_evidence'])
     region['functions']=result

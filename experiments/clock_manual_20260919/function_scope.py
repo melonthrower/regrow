@@ -76,7 +76,7 @@ def task_product(name, task):
     """One copy of each registered product; original records remain the audit source."""
     fields = ('control', 'action', 'status', 'registration_kind', 'task_type',
               'registration_gap', 'finding_gaps', 'prerequisite', 'prepares',
-              'ownership_history', 'blocker')
+              'ownership_history', 'blocker', 'knowledge')
     return {'任务': name, **{k: deepcopy(task[k]) for k in fields if k in task},
             '依据': task.get('result_evidence', task.get('reason', '')),
             '任务提出调用': task.get('source_call'),

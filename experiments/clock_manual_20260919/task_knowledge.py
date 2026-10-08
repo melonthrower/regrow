@@ -17,12 +17,28 @@ def control_knowledge(region, cid, records=None):
     for name, task in region.get('tasks', {}).items():
         if task.get('control') != cid or not completed(task) or not task.get('knowledge'):
             continue
-        result[name] = {'description': task['knowledge'],
+        basis=task.get('completion_basis',{})
+        if task.get('ownership_history') and (basis.get('region'),basis.get('control'))!=(region['id'],cid):
+            continue  # a referenced split task retains its owner, not the old control's knowledge
+        result[name] = {'description': task['knowledge'], 'conditions':list(task.get('conditions',[])),
             'parameters': {n: {k: deepcopy(f[k]) for k in ('description', 'domain', 'conditions')}
                            for n, f in task.get('findings', {}).items()},
             'source': {'task': name, 'attempts': list(task.get('attempts', [])),
                        'basis': 'observation_only' if task['status'] == 'record_only' else 'explored'}}
     if records:
+        for owner in records.values():
+            if owner['id']==region['id']:continue
+            for name, task in owner.get('tasks',{}).items():
+                basis=task.get('completion_basis',{})
+                if (not task.get('ownership_history') or not completed(task) or not task.get('knowledge')
+                        or (basis.get('region'),basis.get('control'))!=(region['id'],cid)):
+                    continue
+                label=owner['id']+'/'+name
+                result[label]={'description':task['knowledge'],'conditions':list(task.get('conditions',[])),
+                    'parameters':{n:{k:deepcopy(f[k]) for k in ('description','domain','conditions')}
+                                  for n,f in task.get('findings',{}).items()},
+                    'source':{'region':region['id'],'control':cid,'task_region':owner['id'],
+                              'task':name,'attempts':list(task.get('attempts',[])),'basis':'explored'}}
         for name, task in region.get('tasks', {}).items():
             ref=task.get('shared_result')
             if task.get('control')!=cid or not ref:continue

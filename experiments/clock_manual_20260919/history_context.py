@@ -148,7 +148,7 @@ def disclose(region,control,records):
     shared=importlib.util.module_from_spec(spec);spec.loader.exec_module(shared)
     hits=sibling('entry_evidence').known_entries(region,control,'click')
     return [{'已观察结果':h['description'],'已知目的区块':records.get(h['destination_region'],{}).get('name',h['destination_region']),
-             '用途':'此入口无需重新验证；如需进入目的区块，应作为已知导航。'} for h in hits[-2:]]+shared.disclose(records,region['id'],control)
+             '适用条件':h['conditions'],'用途':'当前截图满足适用条件才复用此入口；不同条件的用途不互相覆盖。条件符合时无需重新验证。'} for h in hits[-2:]]+shared.disclose(records,region['id'],control)
 
 
 def related(region,control,records):
@@ -162,7 +162,7 @@ def related(region,control,records):
             if c['name'].strip().casefold()!=name:continue
             for hit in sibling('entry_evidence').known_entries(other,cid,'click'):
                 row={'来源区块':other['name'],'来源区块描述':other.get('description',''),
-                     '入口':c['name'],'已观察结果':hit['description'],
+                     '入口':c['name'],'已观察结果':hit['description'],'适用条件':hit['conditions'],
                      '已知目的区块':records.get(hit['destination_region'],{}).get('name',hit['destination_region']),
                      '适用性':'同名召回，不是同一控件的证明；结合当前截图和用途判断，不转移执行记录。'}
                 if row not in rows:rows.append(row)
@@ -172,7 +172,7 @@ def related(region,control,records):
 def task_goal(task, records, run=None):
     """Project evidence once per event; never infer causality or task completion."""
     from copy import deepcopy
-    result={'type':task.get('task_type'),'reason':task['reason'],
+    result={'type':task.get('task_type'),'reason':task['reason'],'适用条件':task.get('conditions',[]),
             'registration_kind':sibling('task_settlement').registration_kind(task)}
     result['历史阅读']='来源对象保留历史身份引用，不保证与动作入口相同。身份关联unconfirmed仅指后台控件绑定未确认，不否定动作投递或截图观察。仅展开任务引用的努力与反馈；未展开的其他历史仍留档，不能推断期间没有其他动作。对象身份、适用条件或因果链不清楚时明确缺口，不推断成功。'
     refs=task_attempts(task);observations={};unlinked=[];facts={}

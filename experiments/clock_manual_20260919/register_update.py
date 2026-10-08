@@ -218,6 +218,8 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
     for item in reply['previous_regions']:
         r = records[sibling('region_candidate_names').resolve(records,item['name'],request.get('region_names'))]
         region_changes.append({'region':r['id'],'state':item['state'],'evidence':item['evidence']})
+        if item.get('task_review_reason','').strip() and r.get('task_inventory'):
+            r['task_inventory']['review']={'reason':item['task_review_reason'],'source_call':call_ref}
 
 
     split=reply.get('source_region_split')
@@ -303,9 +305,11 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                 records[target]['reached_by'].append({'source_region':source,'source_control':control,'attempt':attempt_ref})
     # Settlement must see the actual operation and partial-input receipt.
     attach_execution(records,run)
-    if not split:
-        effective_binding={**binding,'region_ref':source,'control_ref':control}
-        sibling('region_tasks').settle_task(records[binding.get('task_region',source)],effective_binding,reply,attempt_ref,records,receipt=receipt,labels=request.get('region_names'))
+    if split:
+        binding=sibling('control_context').migrate_split_task(records,binding,source,control,attempt_ref)
+    effective_binding={**binding,'region_ref':source,'control_ref':control}
+    sibling('region_tasks').settle_task(records[binding.get('task_region',source)],effective_binding,reply,attempt_ref,records,receipt=receipt,labels=request.get('region_names'))
+    binding=effective_binding
     sibling('task_prerequisites').apply(records,reply,call_ref,request.get('dependency_candidates',[]))
     flow.index_actions(records)
     for region in records.values():

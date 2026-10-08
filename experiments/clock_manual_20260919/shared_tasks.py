@@ -9,6 +9,7 @@ def synchronize_tasks(records):
     """Project one shared task definition onto local controls, without copying acts."""
     from action_owner_correction import effective_attempts
     from shared_controls import view
+    from control_context import same_use
     active=set()
     for owner in records.values():
         for group in owner.get('shared_controls',{}).values():
@@ -29,13 +30,16 @@ def synchronize_tasks(records):
                     if local is None:
                         label=name if name not in tasks else name+'（共享：'+region['controls'][cid]['name']+'）'
                         if label in tasks:continue  # never overwrite an independent obligation
-                        t={k:deepcopy(definition[k]) for k in ('action','task_type','reason','source_call','registration_kind') if k in definition}
+                        t={k:deepcopy(definition[k]) for k in ('action','task_type','reason','source_call','registration_kind','conditions') if k in definition}
                         t.update(control=cid,status='pending',handling='explore',equivalent_to='',attempts=[],
                             shared_task_ref={'region':rr,'task':name,'control':cc},
                             shared_definition={'handling':definition['handling'],'reason':definition['reason']})
                         if definition.get('prerequisite'):
                             t['prerequisite']={k:deepcopy(v) for k,v in definition['prerequisite'].items() if k not in ('scheduled','satisfied','last_check','recheck_requested')}
                         tasks[label]=t;local=(label,t)
+                    if not local[1].get('attempts') and not same_use(local[1],definition):
+                        local[1].setdefault('condition_history',[]).append({'conditions':local[1].get('conditions',[]),'source_task':name})
+                        local[1]['conditions']=deepcopy(definition.get('conditions',[]))
                     local[1]['shared_task_active']=True
                     if definition.get('registration_kind'):
                         local[1]['registration_kind']=definition['registration_kind']
@@ -45,7 +49,7 @@ def synchronize_tasks(records):
                 winner=None
                 from task_settlement import registered_result
                 for rid,n,t in members:
-                    if t.get('status')!='done':continue
+                    if t.get('status')!='done' or not same_use(t,definition):continue
                     evidence=[aid for aid in effective_attempts(t) if
                         records[rid].get('actions',{}).get(aid,{}).get('control')==t.get('control') and
                         records[rid]['actions'][aid].get('delivery')=='executed_receipt_zero' and
@@ -54,6 +58,10 @@ def synchronize_tasks(records):
                     if evidence:winner={'region':rid,'task':n,'attempts':evidence};break
                 for rid,n,t in members:
                     if (rid,n)==(rr,name) or t.get('status')=='done':continue
+                    if not same_use(t,definition):
+                        t.pop('shared_result',None)
+                        if t.get('shared_prior_state'):t.update(t.pop('shared_prior_state'))
+                        continue
                     t.pop('shared_result',None)
                     if winner:
                         t.setdefault('shared_prior_state',{'status':t['status'],'handling':t['handling']})
@@ -94,7 +102,7 @@ def synchronize_tasks(records):
 
 def automatic_tasks(region,cid):
     return [{'任务':n,'结束条件':t['reason'],'状态':t['status'],'知识来源':'历史共享成员；名称和描述中的选中/当前值不是本图状态',
-             '说明':'框架引用共享知识，本地未执行' if t.get('shared_result') else '共享任务尚未完成，仍需探索'}
+             '适用条件':t.get('conditions',[]),'说明':'框架引用共享知识，本地未执行' if t.get('shared_result') else '共享任务尚未完成，仍需探索'}
             for n,t in region.get('tasks',{}).items() if t.get('control')==cid and t.get('shared_task_ref') and t.get('shared_task_active',True)]
 
 

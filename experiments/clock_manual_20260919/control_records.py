@@ -3,6 +3,7 @@
 def extend_schema(schema, required=False):
     item=schema['properties']['controls']['items']
     item['properties'].update(name={'type':'string'},list_group={'type':'string'})
+    item['properties']['previous_name']['description']='当前控件对应本区块历史控件时逐字填旧name；当前name可描述新条件用途，但不能因此清空previous_name另建身份。对照历史图标外观和当前匹配位置，只有确实不同的控件才填空。'
     if required:item['required']=list(dict.fromkeys(item['required']+['name','list_group','click_bbox']))
     return schema
 

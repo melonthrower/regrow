@@ -11,6 +11,8 @@ def proposal_schema():
     value['properties']['operations']['items']['properties']['registration_kind']={
         'type':'string','enum':['entry','parameter','control_effect'],
         'description':'探索产物：entry登记入口去向与用途；parameter登记参数事实；control_effect登记试探控件的直接反馈。'}
+    value['properties']['operations']['items']['properties']['conditions']={'type':'array','items':{'type':'string','minLength':1},
+        'description':'只用于区分同一控件同一动作的不同功能用途，例如文件页与日历页的加号。优先标明影响用途的当前功能页或对象类别，不以运行/停止、按钮此刻可见等状态替代页面条件。这不是操作可执行的前置条件：运行才能暂停属于当前状态或prerequisite，不是另一个暂停用途。稳定用途填[]，已有相同用途逐字复用其条件；未证实影响用途的状态不写入。'}
     value['properties']['operations']['items']['properties']['knowledge']={'type':'string',
         'description':'仅record填写一句稳定用途或规则；不要附加本次显示值、选中状态或选项表。参数写findings，当前状态证据写reason/evidence；其余handling为空。'}
     value['properties']['shared_instances']={'type':'array','items':{
@@ -30,7 +32,7 @@ def plan_request(root,records,state,rid):
     sharing['source_control'].update(enum=sorted({cid for r in records.values() for cid in r.get('controls',{})}),
         description='逐字复制来源实例的control身份，例如c0001，不填控件名称。')
     # Strict API requires every property; local validation still accepts old evidence.
-    schema['properties']['operations']['items']['required']+=['findings','prerequisite','registration_kind','knowledge']
+    schema['properties']['operations']['items']['required']+=['findings','prerequisite','registration_kind','knowledge','conditions']
     schema['properties']['operations']['items']['properties']['control']['enum']=[c['name'] for cid,c in region['controls'].items() if not helper('shared_tasks').automatic_tasks(region,cid)]+['']
     visible=set(state.get('observation',{}).get('control_refs',[]))
     dynamic={'区块':region['name'],'描述':region['description'],
@@ -49,7 +51,7 @@ def plan_request(root,records,state,rid):
         '可引用同类实例':[{'region':other,'control':cid,'区块':r['name'],'名称':c['name'],
             '说明':c.get('description',''),'功能线索':next((v.get('possible_operation','') for v in reversed(c.get('observations',[])) if not v.get('visual_only')),''),
             '任务':[{'name':n,'action':t.get('action'),'kind':helper('task_settlement').registration_kind(t),
-                     'status':t.get('status'),'knowledge':t.get('knowledge','')}
+                     'status':t.get('status'),'conditions':t.get('conditions',[]),'knowledge':t.get('knowledge','')}
                     for n,t in r.get('tasks',{}).items() if t.get('control')==cid and not t.get('shared_task_ref')]}
             for other,r in records.items() for cid,c in r.get('controls',{}).items()
             if other==rid or any(t.get('control')==cid and not t.get('shared_task_ref') for t in r.get('tasks',{}).values())],
@@ -66,7 +68,7 @@ def plan_request(root,records,state,rid):
     dynamic['已有任务']=[{'name':n,'control':region['controls'][t['control']]['name'] if t['control'] else region['name'],
                          '知识来源':'历史共享任务，不是本地执行或当前状态' if t.get('shared_task_ref') else '本区块任务',
                          'handling':t['handling'],'status':t['status'],'reason':t['reason'],'action':normalize(t)['action'],'task_type':t['task_type'],
-                         'registration_kind':helper('task_settlement').registration_kind(t),
+                         'registration_kind':helper('task_settlement').registration_kind(t),'conditions':t.get('conditions',[]),
                          '已登记前置条件':t.get('prerequisite'),
                          '暂挂原因':t.get('deferral',{}).get('reason') or t.get('blocker',{}).get('reason',''),
                          '恢复条件':t.get('deferral',{}).get('retry_when','需显式复核；仅重新定位不解除' if t.get('blocker',{}).get('condition')=='review_required' else '')}

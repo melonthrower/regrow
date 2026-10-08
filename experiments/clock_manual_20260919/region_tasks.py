@@ -16,7 +16,7 @@ def helper(name):
 def equivalent_source(tasks,task):
     canonical=tasks.get(task.get('equivalent_to'))
     kind=helper('task_settlement').registration_kind
-    return canonical if canonical and canonical.get('handling')=='explore' and kind(canonical)==kind(task) else None
+    return canonical if canonical and canonical.get('handling')=='explore' and kind(canonical)==kind(task) and helper('control_context').same_use(canonical,task) else None
 
 
 def effective_task(tasks,task):
@@ -105,6 +105,8 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
         if row['handling']=='defer':t.update(status='blocked',blocker={'condition':'review_required','source_call':call})
         if name in old:
             prior=old[name]
+            if not helper('control_context').same_use(prior,t):
+                raise ValueError('已有任务的适用条件不能被普通清点改写；不同条件用途使用独立任务名，相同用途逐字沿用已有conditions')
             if prior.get('status')=='record_only' and t['handling']=='explore':
                 raise ValueError('旧record任务遗漏未知交互内容，请用field=reopen_task修订原任务：'+name)
             if scope_review and prior.get('status') in ('pending','blocked') and t['handling']=='record' and prior['handling']!='record':

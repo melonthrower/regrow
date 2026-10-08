@@ -34,7 +34,7 @@ def refresh(records):
     for owner in records.values():
         for group in owner.get('shared_controls',{}).values():
             if group.get('status')=='separated':continue
-            results=[];destinations=set();executed_members=set();broken=False
+            results=[];contexts={};broken=False
             for member in group['members']:
                 rid,cid=member['region'],member['control'];region=records.get(rid,{})
                 c=region.get('controls',{}).get(cid)
@@ -48,7 +48,8 @@ def refresh(records):
                     row={'source':{'region':rid,'control':cid,'attempt':aid},
                          'operation':a.get('operation'),'description':result['description'],
                          'evidence':result.get('evidence',''),'exception':result.get('exception'),
-                         'destination_regions':targets}
+                         'destination_regions':targets,
+                         'conditions':list(a.get('entry_registration',{}).get('conditions',a.get('conditions',[])))}
                     results.append(row)
                     if result.get('exception')!='none':broken=True
                     if targets and a.get('operation') in ('tap','click') and not result.get('returns_to_previous'):
@@ -57,11 +58,13 @@ def refresh(records):
                         # appearing surfaces are conflict hints, not causal proof.
                         direct=set(targets)-before-{rid}
                         if direct:
-                            destinations.add(tuple(sorted(direct)));executed_members.add((rid,cid))
+                            from control_context import conditions
+                            destinations,members=contexts.setdefault(conditions(row),(set(),set()))
+                            destinations.add(tuple(sorted(direct)));members.add((rid,cid))
             group['results']=results
             from shared_control_review import signature
             reviewed=group.get('reviewed_signature')==signature(group)
-            group['status']='needs_review' if broken or (not results and not group.get('proposal_evidence')) or (len(executed_members)>1 and len(destinations)>1 and not reviewed) else 'confirmed'
+            group['status']='needs_review' if broken or (not results and not group.get('proposal_evidence')) or (any(len(members)>1 and len(destinations)>1 for destinations,members in contexts.values()) and not reviewed) else 'confirmed'
 
     # Synchronize before callers clean up detached members.
     shared_tasks.synchronize_tasks(records)
@@ -78,7 +81,7 @@ def disclose(records,rid,cid):
     return [{'共享关系':group['name'],'关联区块':[records.get(m['region'],{}).get('name',m['region']) for m in group['members']],
              '共享范围':'行为知识；当前状态、位置和执行记录仍属于各自控件',
              '已观察结果':[{'来源区块':records.get(row['source']['region'],{}).get('name',''),
-                 '结果':row['description'],'依据':row['evidence'],
+                 '结果':row['description'],'依据':row['evidence'],'适用条件':row.get('conditions',[]),
                  '目的区块':[records.get(r,{}).get('name',r) for r in row['destination_regions']]} for row in group['results']],
              '用途':('共享结果存在冲突或成员缺失，需重新核对，不能据此跳过探索' if group['status']=='needs_review'
                     else '关联入口的已有行为证据；结合当前对象和状态判断适用性，不代表本地已执行') }]
@@ -92,7 +95,7 @@ def render(records,rid):
         lines.append('共享控件「'+c['name']+'」：'+('关系需重新核对' if group['status']=='needs_review' else '关联入口行为已确认'))
         for row in group['results']:
             source=records.get(row['source']['region'],{}).get('name',row['source']['region'])
-            lines.append('  '+source+'中实际观察：'+row['description'])
+            lines.append('  '+source+'中实际观察：'+row['description']+'；适用条件：'+str(row.get('conditions',[])))
         lines.append('  不代表本区块已执行；本地状态与任务仍分别登记。')
     return lines
 

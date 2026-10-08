@@ -349,3 +349,6 @@
 任务后知识与状态：`tests/test_task_knowledge_flow.py`；相邻合同为`test_task_action_binding.py`、`test_preparation_completion.py`、`test_current_page_context.py`与区块总结测试。
 
 - 桌面批次固定入口：[test_batch_entry.py](test_batch_entry.py)；相邻预算与初始化：test_session_budget_tail、test_stepwise_launcher。实机/保存帧验收另见月度日志。
+
+
+控件条件用途：`tests/test_control_context.py`覆盖条件去重、跨条件不结算、结果收紧、真实拆分及引用/知识归属、共享条件与最终发送身份目录；相邻检查为`test_stepwise_behavior_split`、`test_stepwise_region_tasks`、`test_task_settlement_routing`、`test_task_knowledge_flow`、`test_instance_knowledge`、`test_shared_control_conflict_repair`、`test_shared_control_text_prompt`。

@@ -32,7 +32,10 @@ def candidates(records, rows):
             row.pop(key,None)
         row['name']=label
         if row.get('披露范围')!='仅历史身份索引':
-            row['controls']=[{'name':c['name'],'关联任务':[{'action':t.get('action'),'status':t.get('status')}
+            row['controls']=[{'name':c['name'],
+                '历史图标外观（非当前状态）':next((o.get('icon_description','') for o in reversed(c.get('observations',[])) if o.get('icon_description') and not o.get('visual_only')),''),
+                '关联任务':[{'action':t.get('action'),'status':t.get('status'),'conditions':t.get('conditions',[]),
+                    **({'已登记用途':t['knowledge']} if t.get('knowledge') and t.get('status') in ('done','record_only') else {})}
                 for t in r.get('tasks',{}).values() if t.get('control')==cid]} for cid,c in r.get('controls',{}).items()]
             entered=entry_summary(r,records)
             if entered:row['已知进入入口（历史依据，不保证本轮可用）']=entered

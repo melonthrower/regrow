@@ -36,7 +36,7 @@ def build_request(root, run, snapshot, records, state, case):
         src = row['source']; rid = src['region']
         action = records[rid]['actions'][src['attempt']]
         fact = {'区块': records[rid]['name'], '控件': records[rid]['controls'][src['control']]['name'],
-                '动作': row['operation'], '实际结果': row['description'], '观察依据': row['evidence'],
+                '动作': row['operation'], '适用条件':row.get('conditions',[]), '实际结果': row['description'], '观察依据': row['evidence'],
                 '动作前上下文（历史登记）': [records[r]['name'] for r in action.get('evidence',{}).get('before_regions',[]) if r in records],
                 '目的区块': [records.get(r, {}).get('name', r) for r in row['destination_regions']]}
         for key in ('before_image', 'after_image'):

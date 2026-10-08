@@ -13,7 +13,8 @@ def known_entries(region,control,operation):
         targets=list(dict.fromkeys(action.get('interactive_regions',[])))
         if len(targets)!=1 or targets[0]==region['id']:continue
         hits.append({'attempt':aid,'destination_region':targets[0],
-                     'description':action['result'].get('description','')})
+                     'description':action['result'].get('description',''),
+                     'conditions':action.get('entry_registration',{}).get('conditions',action.get('conditions',[]))})
     return hits
 
 

@@ -25,7 +25,7 @@ def extend_schema(schema):
     schema['properties']['source_region_split'] = {'anyOf': [
         {'type': 'null'}, {'type': 'object', 'properties': fields,
                          'required': list(fields), 'additionalProperties': False}],
-        'description': '仅实测确认来源区块在当前上下文中具有不同功能时填写；无差异填null。region和controls来自图1动作前，不混入图2的落点控件。'}
+        'description': '仅来源区块本身职责或结构确实不同才填写；同一操作栏中个别控件因上下文改变用途时保持原身份，填null，用任务及entry.conditions登记条件用途。region和controls来自图1动作前，不混入图2的落点控件。'}
 
     schema['required']=list(dict.fromkeys(schema.get('required',[])+['source_region_split']))
 

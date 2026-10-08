@@ -34,11 +34,12 @@ def extend_schema(schema,required=False):
     if previous:
         previous['properties']['context_matches']={
             'type':['boolean','null'],'description':'保留有行为适用上下文的旧区块为可交互时，必须依据图2确认上下文符合才填true；不符合填false并报告not_visible或真实背景状态。无此限定或不再交互时null。'}
-        previous['required']=list(dict.fromkeys(previous.get('required',[])+['context_matches']))
+        previous['properties']['task_review_reason']={'type':'string','description':'仅本次出现原任务未覆盖的新条件用途时说明需要补清点；即使保留同一区块不重报regions，也比较当前可见控件用途与历史已登记用途。用途已覆盖填空，不因值变化重复清点。'}
+        previous['required']=list(dict.fromkeys(previous.get('required',[])+['context_matches','task_review_reason']))
     schema['properties']['regions']['description']='按功能区而非整窗输出。标签栏控制职责不同的可替换内容时，分别列公共导航/操作区和当前内容区，即使本轮只识别区块。'
     schema['properties']['regions']['items']['properties']['previous_name']['description']='仅范围和职责均对应旧区块时复用；从旧整窗拆出的公共区或内容区按本轮schema填写空值，不能冒用整窗身份。'
 
-    schema['properties']['regions']['items']['properties']['task_review_reason']={'type':'string','description':'仅出现已有任务未覆盖且有信息价值的功能、参数范围、精度或适用约束问题时说明变化；新动作方式本身不构成补查理由；本轮任务对象重新可见、尚未执行或尚待反馈不需要重提任务，填空字符串'}
+    schema['properties']['regions']['items']['properties']['task_review_reason']={'type':'string','description':'仅出现已有任务未覆盖且有信息价值的功能、参数范围、精度或适用约束问题时说明变化；同一控件出现尚未登记的条件用途时复用控件与区块并在这里要求补清点，不新建身份；新动作方式本身不构成补查理由；本轮任务对象重新可见、尚未执行或尚待反馈不需要重提任务，填空字符串'}
     if required:
         item=schema['properties']['regions']['items']
         item['required']=list(dict.fromkeys(item['required']+['task_review_reason','controls_complete']))

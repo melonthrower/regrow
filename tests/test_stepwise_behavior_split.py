@@ -88,10 +88,12 @@ def test_merge_into_third_record_preserves_separation(tmp_path):
 @pytest.mark.parametrize('source_still_visible', [False, True])
 def test_update_registers_split_source_and_actual_edge(tmp_path,source_still_visible):
     import json
-    from PIL import Image
+    from PIL import Image, ImageDraw
     from tests.test_region_registration import fixture, module, invoke
     run, graph, reply = fixture(tmp_path)
-    Image.new('RGB', (80, 60), 'red').save(run/'before.png')
+    before=Image.new('RGB', (80,60), 'red')
+    ImageDraw.Draw(before).rectangle((10,10,20,20),fill='white')
+    before.save(run/'before.png')
     Image.new('RGB', (80, 60), 'blue').save(run/'after.png')
     graph['action_edges'][0].update(before_image='before.png', after_image='after.png')
     box = dict(left=0, top=0, right=40, bottom=30)
@@ -105,6 +107,8 @@ def test_update_registers_split_source_and_actual_edge(tmp_path,source_still_vis
     reply['regions'] = [dict(region, name='Editor B', description='New editor')]
     reply['controls'] = [dict(control, name='Cancel')]
     reply['previous_regions'][0]['state'] = 'retained_interactive' if source_still_visible else 'visible_background_blocked'
+    if source_still_visible:
+        reply['previous_regions'][0]['context_matches']=True
     (run/'graph_snapshots/0001.json').write_text(json.dumps(graph))
     (run/'calls/0001/response.json').write_text(json.dumps(reply))
     (run/'calls/0001/response.schema.json').write_text(json.dumps({'type':'object'}))

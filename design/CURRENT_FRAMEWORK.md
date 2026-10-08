@@ -130,7 +130,7 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 
 原子操作可跨相关区块，仍挂业务主区块：function_scope组织图上的证据候选，region_functions提供跨区块任务/参数引用并校验登记。support_tasks保留结构化region/task来源；本地task_refs、任务身份和真实动作归属保持原合同。相关证据变化触发更新，图连接不自动等于业务归属。
 
-2026-10-07登记结算：TaskProposer指定registration_kind，ResultUpdater沿正常更新登记对应产物，task_settlement据真实绑定与已登记信息结算；缺口保存并暂挂，原动作不重放。旧完成记录不追溯重判。参数登记、缺口保留、跨区块总结与调度已有有限原生/实机证据；新entry产物分支尚未原生验收，详见任务/更新模块及本月日志。
+2026-10-07登记结算：TaskProposer指定registration_kind，ResultUpdater沿正常更新登记对应产物，task_settlement据真实绑定与已登记信息结算；缺口保存并暂挂，原动作不重放。旧完成记录不追溯重判。参数登记、缺口保留、跨区块总结与调度已有有限原生/实机证据；entry产物分支于2026-10-08取得有限原生保存帧验证，详见任务/更新模块及本月日志。
 
 2026-10-07任务后知识：普通结果更新提供稳定knowledge，原任务完成后才归入控件；区块current_observation维护当前帧状态，换帧不沿用。未知交由已有任务推进/暂挂，local_knowledge不另维护unconfirmed清单。请求与保存连接见[任务后知识设计](TASK_KNOWLEDGE_FLOW.md)及任务/更新/上下文模块；验收范围见月度日志。
 
@@ -142,3 +142,7 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 ## 2026-10-08 实例共享与动作归属
 任务提出支持shared_instances在探索前引用同类代表，实例身份与本地执行保持独立；动作身份由显式候选引用关联，点击范围不再决定归属。参数非枚举样本留观察证据。现行入口仍为TaskProposer/ActionProposer/ResultUpdater；详细合同见stepwise tasks、execution、knowledge。
 本批验证状态见2026-10月变更日志；保存帧不代表新增GUI执行。
+
+
+## 2026-10-08 控件条件用途
+公共区块/控件身份不因个别控件用途随页面变化而拆分；任务conditions区分同控件的适用用途，同条件复用、不同条件隔离结算。入口条件、控件知识与共享读取保留同一限制。真正结构拆分正常处理任务目标及结算，不静默清理旧重复图。实现及有限验证见[设计](CONTROL_CONTEXT.md)和当月日志；保存帧验收不等于新GUI或长跑验证。

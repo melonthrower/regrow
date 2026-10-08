@@ -8,7 +8,8 @@ def action_name(value):
 
 
 def task_key(task):
-    return task.get('control'), action_name(task.get('action'))
+    from control_context import conditions
+    return task.get('control'), action_name(task.get('action')), conditions(task)
 
 
 def registration_kind(task):
@@ -20,7 +21,7 @@ def entry_schema():
     return {'anyOf':[{'type':'null'},{'type':'object','properties':{
         'region':{'type':'string','description':'本次实际进入或显露的区块完整名称'},
         'meaning':{'type':'string','description':'此入口通往什么功能内容'},
-        'conditions':{'type':'array','items':{'type':'string'}},
+        'conditions':{'type':'array','items':{'type':'string'},'description':'区分此控件用途所需的最小适用条件，例如当前功能页或选中对象类别。不是动作发生时的状态复述；计时正在运行、当前读数等仅观察到同时发生且未证明影响用途的事实写evidence，不写conditions。沿用任务已有条件措辞；不得省略影响用途的当前功能页。'},
         'evidence':{'type':'string','description':'动作前后图支持该去向的具体变化'}},
         'required':['region','meaning','conditions','evidence'],'additionalProperties':False}]}
 
@@ -40,7 +41,8 @@ def register_entry(value,records,actual,attempt,labels=None):
             or action.get('result',{}).get('exception')!='none'):
         raise ValueError('入口去向必须对应本次新出现或发生变化的可交互区块；仅同时可见不足以证明跳转')
     if not value['meaning'].strip() or not value['evidence'].strip():raise ValueError('入口语义需要用途与前后变化依据')
-    entry={**value,'region':target,'attempt':attempt}
+    entry={**value,'region':target,'attempt':attempt,
+           'conditions':list(dict.fromkeys(action.get('conditions',[])+value['conditions']))}
     action['entry_registration']=entry
     for edge in actual.get('transitions',[]):
         if edge['attempt']==attempt and edge['target_region']==target:edge['entry_semantics']=dict(entry)
@@ -48,6 +50,8 @@ def register_entry(value,records,actual,attempt,labels=None):
 
 def registered_result(task,action):
     """An executed click alone does not supply a parameter or entry record."""
+    from control_context import same_use
+    if not same_use(task, action):return False
     kind=registration_kind(task)
     if 'knowledge' in action and not action['knowledge']:return False
     if action.get('registration_gap') and action.get('registration_kind')==kind:return False
@@ -101,7 +105,7 @@ def task_object_context(records, binding):
             '待执行区块': region['name'],
             '待执行控件': region['controls'].get(target['control'], {}).get('name', '区块本身'),
             '待执行动作': target['action'],
-            '所需登记':registration_kind(task),
+            '所需登记':registration_kind(task),'适用条件':task.get('conditions',[]),
             '说明': ('这是前置准备，按已知准备目标推进；条件是否满足由本次观察的dependency_updates登记，不因入口点击而结束。' if task.get('prepares') else '') + '框架用实际绑定、执行记录和本任务所需的信息登记更新探索状态；提交观察和具体信息缺口，不另判任务done或业务成功。'}
 
 
@@ -183,7 +187,14 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
     if task:
         task['attempts'] = list(dict.fromkeys(task.get('attempts', []) + [attempt]))
         if (not task.get('prepares') and recorded_match(actual,attempt,action,completion_target(owner,task),receipt)):
+            action['conditions']=list(task.get('conditions',[]))
             register_entry(update.get('entry'),records,actual,attempt,labels)
+            entry=action.get('entry_registration')
+            if entry and set(entry['conditions'])!=set(task.get('conditions',[])):
+                task.setdefault('condition_history',[]).append({'conditions':list(task.get('conditions',[])),
+                    'attempt':attempt,'evidence':entry['evidence']})
+                task['conditions']=list(entry['conditions'])
+                action['conditions']=list(entry['conditions'])
             require_registration(task,action,update)
             if action.get('registration_gap'):
                 task.update(status='blocked',result_evidence=action['result']['description'],
@@ -205,6 +216,8 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
         for task_name, candidate in region.get('tasks', {}).items():
             if candidate.get('handling') != 'explore' or candidate.get('status') != 'pending' or candidate.get('prepares'):
                 continue
+            from control_context import same_use
+            if not same_use(candidate,action):continue
             if not recorded_match(actual, attempt, action, completion_target(region, candidate), receipt):
                 continue
             if findings:

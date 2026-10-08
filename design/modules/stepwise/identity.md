@@ -64,3 +64,8 @@ Region 位置与模板资格分开：`region_evidence.region_observation` 保存
 Locator承接本轮发现请求与局部控件定位；region_identity、history_matching、visual_region_locator仍供发现与更新复用。相同Region的身份复用、不同Region的行为关联（shared_controls）、任务知识复用（shared_tasks）分别维护；单纯同名或外观相似不建立共享关系。
 
 当前前景合同只输出、校验并缓存interactive_areas，不再要求excluded_areas。背景是否可交互仍由既有区块可见性/接管状态表达；边界、空范围说明及点击范围检查保留。旧原答和历史缓存不批量改写，新观察按单一正向范围登记。
+
+
+## 控件条件用途（2026-10-08）
+公共区块内个别控件随页面/对象改变用途时复用区块和控件身份，不创建各页操作栏；条件属于用途，当前值属于观察。control_records的previous_name合同和region_candidate_names最终发送目录保留历史图标、任务条件，模型仍结合当前截图决定身份，不用几何自动合并。新条件用途通过regions或previous_regions的task_review_reason补清点；最终候选还保留已完成任务的稳定用途供比较。
+source_region_split只处理来源区块本身结构或职责差异；旧图已有behavior_context不静默清除或合并。条件字符串需逐字复用，不实现语义同义词推断。设计见[控件条件用途](../../CONTROL_CONTEXT.md)。

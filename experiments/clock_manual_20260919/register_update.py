@@ -275,7 +275,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                           'evidence':split['evidence']}
     elif association:a['association']=association
     a['result']=deepcopy(reply['action_result'])
-    reported=(reply.get('task_update') or reply.get('task_result') or {}).get('findings',[])
+    reported=sibling('task_updates').current(reply,{**binding,'region_ref':source}).get('findings',[])
     task=records.get(binding.get('task_region',source),{}).get('tasks',{}).get(binding.get('task_name'))
     facts,gaps=sibling('task_settlement').partition_findings(reported,task)
     a['parameter_findings']=deepcopy(facts)
@@ -305,10 +305,12 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                 records[target]['reached_by'].append({'source_region':source,'source_control':control,'attempt':attempt_ref})
     # Settlement must see the actual operation and partial-input receipt.
     attach_execution(records,run)
+    original_task_ref=sibling('task_updates').reference(binding.get('task_region',source),binding.get('task_name',''))
     if split:
         binding=sibling('control_context').migrate_split_task(records,binding,source,control,attempt_ref)
-    effective_binding={**binding,'region_ref':source,'control_ref':control}
-    sibling('region_tasks').settle_task(records[binding.get('task_region',source)],effective_binding,reply,attempt_ref,records,receipt=receipt,labels=request.get('region_names'))
+    effective_binding={**binding,'region_ref':source,'control_ref':control,'task_update_ref':original_task_ref}
+    sibling('region_tasks').settle_task(records[binding.get('task_region',source)],effective_binding,reply,attempt_ref,records,
+        receipt=receipt,labels=request.get('region_names'),candidates=request.get('task_update_candidates'))
     binding=effective_binding
     sibling('task_prerequisites').apply(records,reply,call_ref,request.get('dependency_candidates',[]))
     flow.index_actions(records)

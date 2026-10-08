@@ -24,6 +24,7 @@ def control_knowledge(region, cid, records=None):
             'parameters': {n: {k: deepcopy(f[k]) for k in ('description', 'domain', 'conditions')}
                            for n, f in task.get('findings', {}).items()},
             'source': {'task': name, 'attempts': list(task.get('attempts', [])),
+                       'completion_basis':deepcopy(task.get('completion_basis',{})),
                        'basis': 'observation_only' if task['status'] == 'record_only' else 'explored'}}
     if records:
         for owner in records.values():

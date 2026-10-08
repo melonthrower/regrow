@@ -261,6 +261,10 @@ def action_context(records,state,task_region,name,task):
     if facts:
         lines+=['已登记的相关属性（历史观察，不代表完整范围；用于判断还有什么新信息需要探索）：',*facts]
     lines.append('任务登记状态：'+task.get('status','未提供'))
+    from task_updates import latest_suggestion
+    suggestion=latest_suggestion(records,task)
+    if suggestion:
+        lines.append('最近一次尝试给出的下一步建议（不改变原目标，按当前图核对）：'+json.dumps(suggestion,ensure_ascii=False))
     if task_region not in state.get('interactive_regions',[]) and task.get('attempts'):
         lines.append('任务仍归原区块记录，但不要求返回原区块。依据已有结果从当前截图继续核验；不要为再次操作原入口而自动返回。')
     from task_settlement import task_object_context

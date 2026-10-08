@@ -1,3 +1,5 @@
+历史提案，登记接口已被[单一任务更新 v3](../../TIMER_TASK_REGISTRATION_V3.md)取代；未实施范围见新文档。
+
 # Timer任务推进变更地图 v1
 
 **提议，未实现。** 代码基准为已导出的[`9c71783db10918ced219cb28669944dd7c3956b6`](https://github.com/melonthrower/regrow/tree/9c71783db10918ced219cb28669944dd7c3956b6)，下列仓库相对路径、函数和行锚均据该提交核对。该提交的遍历行为未因交接文档改变；真实受阻运行仍冻结978f537。配套[设计](TIMER_TASK_PROGRESS_DESIGN.md)。源代码变化后应出新地图，不沿用旧行号。

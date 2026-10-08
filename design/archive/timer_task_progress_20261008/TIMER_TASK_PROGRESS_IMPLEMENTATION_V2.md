@@ -1,3 +1,5 @@
+历史提案，登记接口已被[单一任务更新 v3](../../TIMER_TASK_REGISTRATION_V3.md)取代；未实施范围见新文档。
+
 # Timer任务推进：具体接线方案 v2
 
 **提议，未实现、未行为验收。** 本版细化并取代v1实施建议，v1保留历史。配套[代码变更地图](TIMER_TASK_PROGRESS_CHANGE_MAP_V2.md)。问题依据为Clock冻结978f537的a0020–a0023；原实验不改写。

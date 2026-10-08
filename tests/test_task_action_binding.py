@@ -48,18 +48,20 @@ def test_nonmatching_or_unconfirmed_execution_does_not_finish_original(change):
         r['tasks']['查看选项']['action']='input_text';a['operation']='input_text';receipt['text_delivered']=False
     assert settle(r,b,q,receipt)['status']=='pending'
 
-def test_replacement_completion_action_preserves_original_execution():
+def test_next_action_is_advice_and_preserves_original_goal():
     r,b,q,receipt=fixture()
     q['task_update']['next_action']={'region':'设置','control':'其他入口','action':'click','reason':'原入口仅聚焦；需要点击实际展开入口'}
     t=settle(r,b,q,receipt)
     assert t['status']=='pending'
     assert t['control']=='c1'
-    assert t['completion_action']['control']=='c2'
+    assert 'completion_action' not in t
+    assert r['actions']['a1']['next_action']['control']=='c2'
     assert 'a1' in r['actions'] and 'a1' in t['attempts']
     r['actions']['a2']={**r['actions']['a1'],'control':'c2'}
     q['task_update']['next_action']=None
     task_settlement.settle_task(r,{**b,'control_ref':'c2'},q,'a2',{'r1':r},receipt=receipt)
-    assert t['status']=='done' and t['completion_basis']['attempt']=='a2'
+    assert t['status']=='pending' and 'completion_basis' not in t
+    assert r['actions']['a2']['next_action'] is None
 
 def test_renamed_same_control_action_reuses_done_task_and_keeps_other_action():
     r,b,q,receipt=fixture();settle(r,b,q,receipt)

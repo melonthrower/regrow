@@ -1,3 +1,5 @@
+历史提案，登记接口已被[单一任务更新 v3](../../TIMER_TASK_REGISTRATION_V3.md)取代；未实施范围见新文档。
+
 # Timer具体接线变更地图 v2
 
 **提议，未实现。** 对应[实施方案](TIMER_TASK_PROGRESS_IMPLEMENTATION_V2.md)。基准为已导出的[3ed4cef11832357feae74c10d4701f40fef3aaa5](https://github.com/melonthrower/regrow/tree/3ed4cef11832357feae74c10d4701f40fef3aaa5)；下列路径均位于`experiments/clock_manual_20260919/`，行锚据该提交核对。两份v2文档为新文件，无既有行号。

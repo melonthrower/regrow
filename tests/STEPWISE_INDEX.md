@@ -355,3 +355,5 @@
 
 
 只读任务看板：`test_dashboard_task_focus.py`覆盖当前任务/工作区块分离、清点阶段不冒用旧任务、上一round隔离、投递与登记区分及证据路径；`test_stepwise_dashboard.py`覆盖累计/进行中计账。界面行为另用真实run的只读HTTP及浏览器检验，不能替代遍历验收。
+
+`test_task_update_list.py`：局部任务数组、同控件旧问题显式回答、条件边界、准备保留目标、遗漏项续接不自动结束及拆分引用。与task_action_binding/task_knowledge_flow/control_context/suspended_update_recovery/history_context_module按影响选择。

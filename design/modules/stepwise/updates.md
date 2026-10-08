@@ -40,9 +40,9 @@
 聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#updates)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
 
 ## 绑定动作驱动探索进度（2026-10-05）
-普通更新保留地图和action_result，任务部分改为task_update：findings保存本次参数事实；next_action通常为null，只有新观察证明原绑定不合适才给出region/control/action/reason。Luna不输出普通任务done/pending，也不替同次动作逐个判断其他任务。
+普通更新保留地图和action_result，task_update按已有任务引用提交数组：findings保存参数事实；next_action为可空的后续建议。Luna不输出done/pending，当前任务及同次结果确实回答的其他用途问题沿下述显式登记规则处理。
 
-commit_update先附实际operation与输入回执，再由task_settlement匹配任务并写completion_basis；同一次确认动作可覆盖历史重复名。只有聚焦、对象未确认、其他控件/动作或缺观察不能完成原任务。参数事实保存实际来源；其他对象事实保留在动作层，不冒充任务控件参数。next_action保留旧绑定和历史，不消费修正前动作。
+commit_update先附实际operation与输入回执，再由task_settlement匹配任务并写completion_basis；新数组只结算明确提交的任务，后续reconcile同样尊重这次集合。只有聚焦、对象未确认、其他控件/动作或缺观察不能完成原任务。参数事实保存实际来源；其他对象事实保留在动作层，不冒充任务控件参数。next_action存实际动作，不覆盖完成目标。旧保存对象回复仍按其已保存schema读取。
 
 正常续接的reconcile_run只复用已提交同绑定动作，无模型调用；前置准备及有blocker的任务不被历史点击结束。prepares仍由task_prerequisites的本次条件观察结束；unexpected_exit保留既有异常暂挂。暂挂解锁、归属修订及显式历史修复仍有专门入口，普通调度不再发累计完成复核。
 
@@ -64,7 +64,7 @@ ResultUpdater直接持有结果请求/schema和候选校验；调用方统一进
 
 ## 按探索产物登记结算（2026-10-07）
 任务提出器用registration_kind区分entry（入口去向与功能语义）、parameter（参数事实）、control_effect（控件试探反馈）；task_type仍描述执行形式。动作提出与结果更新传递同一登记目标。参数事实沿用findings，入口语义在本次action.entry_registration及对应transition.entry_semantics登记，试探反馈沿用action_result。
-结果更新先核对真实动作绑定，再核对本类产物。缺少所需记录且没有明确缺口时走原更新纠错，复用原前后图和回执；registration_gap记录具体信息不足并暂挂任务。next_action仍可据实际观察修正后续绑定，准备动作和异常仍沿原路径。没有新增完成审核调用，也不因补录失败重做GUI。只有本类信息完成登记才写新的completion_basis；模型不输出普通任务done。
+结果更新先核对真实动作绑定，再核对本类产物。缺少所需记录且没有明确缺口时走原更新纠错，复用原前后图和回执；registration_gap记录具体信息不足并暂挂任务。next_action只提供据实际观察得到的后续建议，不修改原任务目标；准备动作和异常仍沿原路径。没有新增完成审核调用，也不因补录失败重做GUI。只有本类信息完成登记才写新的completion_basis；模型不输出普通任务done。
 入口语义必须对应本次新显露或变化的实际可交互区块；仅同时可见不足以作为去向。无变化且去向未知保留缺口。控件试探可以登记本次无可见变化；该记录不证明已确定功能含义。参数部分选项可以构成有效观察，不要求穷举；本任务明确未知尚未回答时保留registration_gap。结构校验不能保证模型视觉语义正确，需原生证据验收。
 新参数record任务也需findings，任务reason不能替代参数目录。旧完成记录不批量重判；未标注registration_kind的旧parameter任务按参数产物处理，其他旧任务沿直接反馈结算，后续正常清点可给未完成任务补充明确类别。参数登记、明确缺口及调度已作有限原生/实机验证；entry产物分支于2026-10-08用真实历史前后图经正常更新、原答校验及登记取得有限保存帧验证；没有新增GUI。具体证据见月度记录。
 
@@ -92,3 +92,11 @@ task_update.knowledge提供稳定用途/规则，当前值在controls.state及�
 ## 条件登记与真实拆分结算（2026-10-08）
 task_settlement将绑定目标任务条件登记到实际匹配动作；准备动作不继承目标条件。entry条件与任务条件合并收紧，新增限制保留condition_history，任务、action、入口边及稳定知识一致；reconcile和同绑定候选结算要求条件一致，不将另一条件的发现补给本任务。
 真实source_region_split经control_context迁移实际目标任务并调用原结算，不再跳过。已有等价/准备/支持引用的任务保留owner，completion_action指向新实际目标后结算，避免悬空引用。task_knowledge将这种任务的知识投影到completion_basis所指实际控件，保留task_region，不污染旧控件；原历史快照、动作证据不改。
+
+## 单一任务更新与准备进展（2026-10-09）
+
+新增task_updates集中目录、显式更新及最近建议。当前任务必回；其他任务仅允许本次已确认控件及正常回执/观察直接回答的用途问题，不能借此完成参数、入口、前置、异常或共享代理任务。原尝试保留，completion_basis指向本次真实回答，适用条件收窄到实际动作条件。源码拆分后沿请求时引用映射当前owner，数组不能使合法拆分登记失败。
+
+准备实际动作不符原目标时只登记其效果，原任务继续pending；最近null使旧建议失效。原目标信息已齐全时，后续清理建议不阻止完成。正常与纠错使用完整同一请求；suspended_updates检查数组候选owner与建议涉及的历史冲突。保存帧验证范围见月度日志；未修原最终图或运行导航/前置门禁。
+
+实际边界：接旧启动记录的删除原答曾把c0028开始按钮重复登记为身份未明c0038，任务结算正确不代表全量地图通过。从本批新启动登记连续暂停/删除的对照复用c0028且无新身份；旧混合知识/疑问的图修订仍未完成，不以单次对照证明归因。

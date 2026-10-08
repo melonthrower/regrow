@@ -94,8 +94,11 @@ def validate_commit(run, attempt, reply, request, binding, snapshot, records):
                and completion_target(region,t).get('control')==binding.get('control_ref')
                for t in region.get('tasks',{}).values()):
             affected.add(rid)
-    followup=(reply.get('task_update') or {}).get('next_action')
-    if followup:affected.add(names.get(followup['region']))
+    updates=reply.get('task_update') or {}
+    for row in updates if isinstance(updates,list) else [updates]:
+        followup=row.get('next_action')
+        if followup:affected.add(names.get(followup['region']))
+    for row in request.get('task_update_candidates',[]):affected.add(row['region'])
     for rid in affected - {None}:
         path = baseline/'regions'/rid/'region.json'
         if not path.exists() or rid not in records:

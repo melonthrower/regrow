@@ -1,3 +1,5 @@
+历史提案，登记接口已被[单一任务更新 v3](../../TIMER_TASK_REGISTRATION_V3.md)取代；未实施范围见新文档。
+
 # Timer任务推进修复建议 v1
 
 状态：**提议，未实现、未进行新Luna或GUI验证**。这是对2026-10-08受阻续跑的处理建议，不修改当前框架合同或冻结运行。实现定位见[变更地图](TIMER_TASK_PROGRESS_CHANGE_MAP.md)。

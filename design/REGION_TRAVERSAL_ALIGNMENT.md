@@ -590,3 +590,5 @@ collection_visual_guard.py 从冻结图外观定位当前控件，再映射点�
 
 
 2026-10-08逐步身份补充：公共Region可承载控件的条件用途。World/Timer等页面条件属于加号用途，稳定导航不重复建身份；task_proposer/region_tasks按条件用途提出与去重，task_settlement/register_update结算，control_context处理真实结构拆分，task_knowledge/entry_evidence/shared_controls披露条件。该实现不改变Gmail月报if/else业务分支、冻结图采集边界及未验收研究目标；验证范围见当月日志。
+
+2026-10-09逐步登记补充：任务仍绑定Region控件；一个task_update列表明确登记当前与相关已回答用途问题。旧试探方式不限制后续有效答案，知识带真实完成依据及实际适用条件；准备建议不替换原参数目标。完整真实记录的保存帧验证不等于新增GUI或Timer遍历完成，研究/采集边界和Gmail if/else示例保持不变，范围见当月日志。

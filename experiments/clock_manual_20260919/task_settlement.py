@@ -63,7 +63,7 @@ def registered_result(task,action):
 def require_registration(task,action,update):
     if 'knowledge' in update:
         action['knowledge']=update['knowledge'].strip()
-    if update.get('next_action') is not None:return
+    if update.get('next_action') is not None and not update.get('knowledge'):return
     gap=update.get('registration_gap','').strip()
     action['registration_kind']=registration_kind(task)
     if gap:
@@ -147,7 +147,9 @@ def mark_explored(task, region, aid, action):
         task['knowledge'] = action['knowledge']
 
 
-def set_next_action(records, owner, task, value, attempt, labels=None):
+def set_next_action(records, owner, task, value, attempt, labels=None,actual=None):
+    if actual is None:actual=owner['actions'][attempt]
+    actual['next_action']=None
     if value is None:
         return
     if not value.get('reason', '').strip():
@@ -163,18 +165,17 @@ def set_next_action(records, owner, task, value, attempt, labels=None):
         controls = [None]
     if len(controls) != 1:
         raise ValueError('后续动作控件尚未登记或不唯一；不能猜测控件身份')
-    task.setdefault('completion_action_history', []).append({
-        'binding': dict(completion_target(owner, task)), 'revised_after': attempt, 'reason': value['reason']})
-    # A deliberate correction requires a subsequent attempt, not a stale result.
-    task['completion_action'] = {'region': region['id'], 'control': controls[0], 'action': operation,
-        'reason': value['reason'], 'excluded_attempts': list(region.get('actions', {}))}
-    task['status'] = 'pending'
-    task.pop('completion_basis', None)
+    actual['next_action']={'region':region['id'],'control':controls[0],'action':operation,
+                          'reason':value['reason'],'source_attempt':attempt}
 
 
-def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, labels=None):
+def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, labels=None,candidates=None,explicit=False):
     """Called inside the normal update transaction after action/identity registration."""
     records = records or {owner['id']: owner}
+    if isinstance(reply.get('task_update'),list):
+        from task_updates import apply
+        return apply(owner,binding,reply,attempt,records,receipt=receipt,labels=labels,
+                     candidates=candidates,settle=settle_task)
     name = binding.get('task_name')
     task = owner.get('tasks', {}).get(name)
     # Old saved pending requests retain their original schema/reply; their model
@@ -203,7 +204,7 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
         if findings and recorded_match(actual,attempt,action,completion_target(owner,task),receipt):
             store_findings(task,findings,{'region':actual['id'],'task_region':owner['id'],
                 'task':name,'control':action.get('control'),'attempt':attempt})
-        set_next_action(records, owner, task, update.get('next_action'), attempt, labels)
+        set_next_action(records, owner, task, update.get('next_action'), attempt, labels,actual=action)
         if reply['action_result']['exception']=='unexpected_exit':
             task.update(status='blocked',result_evidence=reply['action_result'].get('description','应用异常退出'))
             task['blocker']={'condition':'review_required','exception':'unexpected_exit','attempt':attempt,
@@ -214,6 +215,8 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
     # One confirmed action can satisfy pre-existing duplicate names automatically.
     for region in records.values():
         for task_name, candidate in region.get('tasks', {}).items():
+            if explicit and candidate is not task:continue
+            if candidate is task and update.get('next_action') is not None and not update.get('knowledge'):continue
             if candidate.get('handling') != 'explore' or candidate.get('status') != 'pending' or candidate.get('prepares'):
                 continue
             from control_context import same_use
@@ -236,6 +239,10 @@ def reconcile(records):
             target = completion_target(owner, task)
             region = records.get(target['region'], {})
             for aid, action in reversed(list(region.get('actions', {}).items())):
+                if action.get('next_action') is not None and not action.get('knowledge'):continue
+                if isinstance(action.get('task_update'),list):
+                    from task_updates import reference
+                    if not any(row['task']==reference(owner['id'],name) for row in action['task_update']):continue
                 if recorded_match(region, aid, action, target) and registered_result(task,action):
                     if action.get('parameter_findings'):
                         store_findings(task, action['parameter_findings'], {
@@ -313,8 +320,9 @@ def validation_reply(reply,task=None):
     result=deepcopy(reply)
     for field in ('task_update','task_result'):
         value=result.get(field)
-        if isinstance(value,dict) and 'findings' in value:
-            value['findings']=partition_findings(value['findings'],task)[0]
+        for row in value if isinstance(value,list) else [value]:
+            if isinstance(row,dict) and 'findings' in row:
+                row['findings']=partition_findings(row['findings'],task)[0]
     return result
 
 

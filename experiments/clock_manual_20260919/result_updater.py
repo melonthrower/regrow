@@ -54,7 +54,7 @@ def build_update_request(root, dynamic, screenshots):
     field['properties']['exception']['enum']=['none','blocking_popup','system_error','unexpected_exit','external_app','unclassified']
     field['required']=list(dict.fromkeys(field['required']+['recovery_handoff','returns_to_previous']))
     parts.append({'path':'异常处理/异常识别.prompt','text':(pr/'异常处理/异常识别.prompt').read_text()})
-    if dynamic.get('本轮探索任务'):
+    if '任务更新引用' in dynamic or dynamic.get('本轮探索任务') or dynamic.get('来源区块已有任务'):
         parts.insert(0,{'path':'共享/任务知识与当前观察.prompt','text':(pr/'共享/任务知识与当前观察.prompt').read_text()})
         schema['properties']['task_update'] = {
             'type':'object','properties':{
@@ -66,10 +66,18 @@ def build_update_request(root, dynamic, screenshots):
                 'knowledge':{'type':'string','description':'一句话说明探索得到的稳定控件用途或规则；不附加本次值/选中状态或选项表。参数写findings，当前值写controls.state；未解决/准备/异常为空。'},
                 'registration_gap':{'type':'string','description':'当前证据尚未回答本任务具体未知时，说明缺少什么；所需登记齐全时用空字符串。'}},
             'required':['findings','next_action','registration_gap','knowledge'],'additionalProperties':False}
-        if dynamic.get('任务目标',{}).get('registration_kind')=='entry':
+        if dynamic.get('任务目标',{}).get('registration_kind')=='entry' or dynamic.get('任务更新引用'):
             from task_settlement import entry_schema
             schema['properties']['task_update']['properties']['entry']=entry_schema()
             schema['properties']['task_update']['required'].append('entry')
+        if '任务更新引用' in dynamic:
+            item=schema['properties']['task_update']
+            refs=dynamic.pop('任务更新引用')
+            item['properties']['task']={'type':'string',**({'enum':refs} if refs else {})}
+            item['required'].append('task')
+            schema['properties']['task_update']={'type':'array','items':item,
+                'description':'只登记有进展或被本次结果回答的已有任务；包含本轮当前任务。未改变的其他任务不重写。'}
+            if not refs:schema['properties']['task_update']['maxItems']=0
         schema['required'].append('task_update')
         parts.append({'path':'任务/任务动作登记.prompt','text':(pr/'任务/任务动作登记.prompt').read_text()})
         parts.append({'path':'共享/参数观察值.prompt','text':(pr/'共享/参数观察值.prompt').read_text()})
@@ -151,9 +159,13 @@ def build_attempt_update(root,transport,folder):
         dynamic['任务与实际对象核对']=task_object_context(records,binding)
     from region_tasks import coverage
     progress_now=coverage(owner,records)
-    dynamic['来源区块已有任务']=[{'name':n,'action':t.get('action'),'control':owner['controls'].get(t.get('control'),{}).get('name'),
-        'status':'done' if n in progress_now['done'] else 'record_only' if n in progress_now['record_only'] else t.get('status')}
-        for n,t in owner.get('tasks',{}).items()]
+    from task_updates import catalog,reference
+    task_candidates=catalog(records,binding)
+    dynamic['来源区块已有任务']=[{k:v for k,v in row.items() if k!='control'} for row in task_candidates]
+    refs=[row['task'] for row in task_candidates if row['status'] in ('pending','blocked')]
+    dynamic['任务更新引用']=refs
+    if binding.get('task_name'):
+        dynamic['当前任务引用']=reference(binding.get('task_region',binding['region_ref']),binding['task_name'])
     import history_matching
     ranking=history_matching.scan(records,snapshot,folder/'after.png',scope=history_matching.foreground_scope.load(run,folder/'after.png'))
     dynamic['当前截图视觉匹配到的既有区块']=[{'region_ref':r['region'],'name':records[r['region']]['name'],
@@ -169,6 +181,7 @@ def build_attempt_update(root,transport,folder):
     dynamic['本次入口历史落点']=source_candidates.describe(recalled,labels)
     dynamic['区块名称使用']='身份引用使用已知区块中的完整name；同名区块以历史对象序号区别，仅用于本轮关联，不代表新建或合并。'
     u=build_update_request(root,dynamic,[str((folder/n).relative_to(run)) for n in ['before.png','after.png']])
+    u['task_update_candidates']=task_candidates
     u=source_candidates.attach(u,reference,labels)
     u=history_matching.attach(u,records,ranking,region_names,snapshot)
     u['region_names']=region_names

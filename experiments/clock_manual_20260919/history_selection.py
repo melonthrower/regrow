@@ -12,6 +12,7 @@ def for_request(records,state,source):
 
 def task_attempts(task):
     refs = set(task.get('attempts', []))
+    if task.get('completion_basis',{}).get('attempt'):refs.add(task['completion_basis']['attempt'])
     refs.update(task.get('completion_basis', {}).get('attempts', []))
     for episode in task.get('navigation_history', []):
         refs.update((episode.get('completion_basis') or {}).get('attempts', []))

@@ -149,7 +149,7 @@ def related(run,job):
             for rid,r in result.items():
                 ids={task.get('control')} if rid==owner else {c['id'] for c in q.get('backend_candidates',[])}
                 target=(job.get('candidate') or {}).get('target')
-                ids.update(c['id'] for c in q.get('backend_candidates',[]) if c['name']==target)
+                ids.update(c['id'] for c in q.get('backend_candidates',[]) if c['name']==target or helper('action_binding').candidate_key(q,c)==target)
                 r['controls']={cid:c for cid,c in r['controls'].items() if cid in ids}
                 r['tasks']={name:task} if rid==owner else {}
     if q.get('action_owner_candidates'):

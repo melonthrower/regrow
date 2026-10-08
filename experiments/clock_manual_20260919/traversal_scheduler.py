@@ -49,6 +49,8 @@ def select_work(records, state, working=None):
         progress = coverage(region, records)
         if region.get('tasks') and region.get('external_entry_policy') != 'record_only':
             return choice('scope_review', rid, reason='review existing tasks against this run scope')
+        if region.get('task_inventory',{}).get('review',{}).get('kind')=='parameter_facts':
+            return choice('task_proposal',rid,reason='register existing parameter evidence before another action')
         continuation = task is not None and (rid == owner or in_progress)
         if continuation:
             return choice('action', rid, task=dict(active), source_regions=list(allowed),

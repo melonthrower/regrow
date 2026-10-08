@@ -3,10 +3,20 @@ from copy import deepcopy
 from task_settlement import registration_kind
 
 
-def supported(region):
-    return {name: task for name, task in region.get('tasks', {}).items()
+def supported(region, records=None):
+    result={name: task for name, task in region.get('tasks', {}).items()
             if task.get('status') in ('done', 'record_only')
             and not task.get('coverage_exemption') and not task.get('shared_result')}
+    # Read one source only; retain the member's identity and empty local attempts.
+    from task_knowledge import completed
+    for name,task in region.get('tasks',{}).items():
+        ref=task.get('shared_result')
+        if not ref or not records:continue
+        origin=records.get(ref['region'],{}).get('tasks',{}).get(ref['task'],{})
+        if not completed(origin):continue
+        result[name]={**task,**{k:deepcopy(origin[k]) for k in ('knowledge','findings') if k in origin},
+                      'knowledge_source':deepcopy(ref)}
+    return result
 
 
 def entries(region, records):
@@ -76,7 +86,7 @@ def task_product(name, task):
     """One copy of each registered product; original records remain the audit source."""
     fields = ('control', 'action', 'status', 'registration_kind', 'task_type',
               'registration_gap', 'finding_gaps', 'prerequisite', 'prepares',
-              'ownership_history', 'blocker', 'knowledge')
+              'ownership_history', 'blocker', 'knowledge', 'knowledge_source')
     return {'任务': name, **{k: deepcopy(task[k]) for k in fields if k in task},
             '依据': task.get('result_evidence', task.get('reason', '')),
             '任务提出调用': task.get('source_call'),

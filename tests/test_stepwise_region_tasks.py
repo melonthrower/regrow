@@ -13,7 +13,7 @@ def row(name='查看内容',control='打开菜单',handling='explore',equivalent
 
 
 def proposal(operations,inventory='complete'):
-    return dict(operations=operations,inventory=inventory,evidence='已检查当前区域全部可见入口')
+    return dict(operations=operations,inventory=inventory,shared_instances=[],evidence='已检查当前区域全部可见入口')
 
 
 def test_empty_controls_need_explicit_complete_inventory():

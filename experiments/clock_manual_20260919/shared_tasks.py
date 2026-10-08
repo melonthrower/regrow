@@ -53,7 +53,7 @@ def synchronize_tasks(records):
                         registered_result(t,records[rid]['actions'][aid])]
                     if evidence:winner={'region':rid,'task':n,'attempts':evidence};break
                 for rid,n,t in members:
-                    if rid==rr or t.get('status')=='done':continue
+                    if (rid,n)==(rr,name) or t.get('status')=='done':continue
                     t.pop('shared_result',None)
                     if winner:
                         t.setdefault('shared_prior_state',{'status':t['status'],'handling':t['handling']})
@@ -69,7 +69,7 @@ def synchronize_tasks(records):
                 # references that outcome too, without claiming a local attempt.
                 if not winner and definition.get('shared_origin_state'):
                     definition.update(definition.pop('shared_origin_state'));definition.pop('shared_result',None)
-                if winner and winner['region']!=rr and definition.get('status')!='done':
+                if winner and (winner['region'],winner['task'])!=(rr,name) and definition.get('status')!='done':
                     definition.setdefault('shared_origin_state',{'handling':definition['handling'],'status':definition['status']})
                     definition.update(handling='record',status='record_only',shared_result=deepcopy(winner))
     for rid,r in records.items():

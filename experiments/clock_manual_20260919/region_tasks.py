@@ -55,9 +55,15 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
     jsonschema.validate(reply,helper('task_proposer').proposal_schema())
     if not reply['evidence'].strip():raise ValueError('inventory needs evidence')
     normalize=helper('action_commands').normalize
+    records=records or {region['id']:region}
+    shared_rows=reply.get('shared_instances',[])
+    helper('shared_controls').propose_instances(records,region['id'],shared_rows,call)
+    shared_names={row['control'] for row in shared_rows}
     old=region.get('tasks',{});tasks=dict(old);seen=set()
     covered={t['control'] for t in old.values() if t.get('control') in region['controls']}
     for row in reply['operations']:
+        if row['control'] in shared_names:
+            raise ValueError('同类实例已引用代表控件，不能再分别提出探索任务')
         names=[cid for cid,c in region['controls'].items() if c['name']==row['control']]
         if row['task_type']=='scroll' and row['control']=='':names=[None]
         if (row['task_type']=='scroll') != (row['action']=='scroll'):raise ValueError('scroll task/action mismatch')
@@ -132,6 +138,14 @@ def apply_plan(region,reply,call,scope_review=False,records=None,state=None):
             if not canonical or canonical['handling']!='explore' or normalize(canonical)['action']!=normalize(t)['action'] or canonical['task_type']!=t['task_type'] or name==t['equivalent_to']:
                 raise ValueError('equivalence must name a direct same-action exploration task with the same registration_kind；参数、入口语义与普通控件反馈不能互相替代')
         elif t['equivalent_to']:raise ValueError('unexpected equivalence')
+    region['tasks']=tasks
+    helper('shared_controls').refresh(records)
+    tasks=region['tasks']
+    covered.update(t['control'] for t in tasks.values() if t.get('shared_task_ref') and t.get('shared_task_active',True))
+    for row in shared_rows:
+        cid=next(cid for cid,c in region['controls'].items() if c['name']==row['control'])
+        if not helper('shared_tasks').automatic_tasks(region,cid):
+            raise ValueError('代表控件尚无可引用任务，请在同轮为代表提出任务或引用已有任务')
     if reply['inventory']=='complete' and covered!=set(region['controls']):
         raise ValueError('complete inventory omitted registered controls')
     region['tasks']=tasks

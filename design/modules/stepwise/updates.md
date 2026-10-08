@@ -82,3 +82,8 @@ ResultUpdater直接持有结果请求/schema和候选校验；调用方统一进
 
 ## 完成任务知识与本次状态（2026-10-07）
 task_update.knowledge提供稳定用途/规则，当前值在controls.state及原action_result；所需信息未得到时knowledge为空，沿next_action或registration_gap保留原探索任务。task_settlement完成后才发布控件知识；新格式空knowledge不能只因点击就结算。task_knowledge.refresh由普通发布和动作更新共同调用，Region.current_observation仅存本次语义观察控件，未观察不等于未变化。没有新待确认字段或独立完成审核。
+
+
+## 2026-10-08 实例共享与动作归属
+任务参数登记在store_findings时就分离非枚举样本值与稳定domain；不是等区块总结才清理。原始observations和动作证据保留；同类实例共享只复用知识，不将代表的实际点击和目标区块转移给其他实例。
+本批验证状态见2026-10月变更日志；保存帧不代表新增GUI执行。

@@ -136,3 +136,8 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 2026-10-07前景简化：删除未用于范围判定的excluded_areas输出字段；发现/更新共用interactive_areas作为当前可交互范围。前景归属、背景接管、点击和模板校验边界不变。验收见月度日志。
 
 2026-10-07区块批次：总结仍为独立步骤，当前本区块清点与探索任务整批完成后更新；常识退出不触发重总结，旧摘要带needs_review状态保留。动作候选可召回当前前景直接入边的外层触发控件，保持控件和任务原归属，不激活整个后台。140项聚焦离线检查、6次实际Luna调用的完整保存帧验证通过；外层按钮用已合格图标保留原点击框。0新GUI，旧运行未部署，验证边界见本月日志。
+
+
+## 2026-10-08 实例共享与动作归属
+任务提出支持shared_instances在探索前引用同类代表，实例身份与本地执行保持独立；动作身份由显式候选引用关联，点击范围不再决定归属。参数非枚举样本留观察证据。现行入口仍为TaskProposer/ActionProposer/ResultUpdater；详细合同见stepwise tasks、execution、knowledge。
+本批验证状态见2026-10月变更日志；保存帧不代表新增GUI执行。

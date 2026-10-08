@@ -1,4 +1,4 @@
-一次选择一个动作，返回target、action、x、y、reason。使用共享Android动作空间：click、double_click、long_press、input_text、scroll、back、wait；none表示本轮不投递。target原样使用控件文字或图标描述。动作是建议，不表示已执行。
+一次选择一个动作，返回target、action、x、y、reason。使用共享Android动作空间：click、double_click、long_press、input_text、scroll、back、wait；none表示本轮不投递。有身份候选表时target使用region/control；未登记目标使用准确文字或图标描述。动作是建议，不表示已执行。
 仍须遵守本轮路由任务范围：不为凑动作改变业务目标。back用于正常返回，target说明返回意图，坐标null；wait的target说明等待对象，坐标null。输入需text和控件坐标；scroll的target为当前区块名，x/y为起点，end_x/end_y为终点。其他动作不附加输入或终点。不确定目标时none、坐标null。Android不支持hover；当前文字适配器支持可打印ASCII，不能静默改写中文。
 
 共享动作输出包含text、end_x、end_y；当前动作不使用的字段填null，无关参数由框架忽略。

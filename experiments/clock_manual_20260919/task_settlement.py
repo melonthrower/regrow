@@ -324,4 +324,6 @@ def store_findings(task,findings,source):
             observations.append({k:previous[k] for k in ('description','domain','conditions','source')})
         current={'description':fact['description'],'domain':fact['domain'],'conditions':fact['conditions'],'source':evidence}
         if current not in observations:observations.append(current)
+        if d['type']!='enum':
+            d={**d,'values':[]}  # sampled inputs remain in observations and raw replies
         task.setdefault('findings',{})[fact['name']]={**fact,'domain':d,'source':evidence,'sources':sources,'observations':observations}

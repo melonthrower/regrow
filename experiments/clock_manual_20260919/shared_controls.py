@@ -61,7 +61,7 @@ def refresh(records):
             group['results']=results
             from shared_control_review import signature
             reviewed=group.get('reviewed_signature')==signature(group)
-            group['status']='needs_review' if broken or not results or (len(executed_members)>1 and len(destinations)>1 and not reviewed) else 'confirmed'
+            group['status']='needs_review' if broken or (not results and not group.get('proposal_evidence')) or (len(executed_members)>1 and len(destinations)>1 and not reviewed) else 'confirmed'
 
     # Synchronize before callers clean up detached members.
     shared_tasks.synchronize_tasks(records)
@@ -112,3 +112,39 @@ def extend_link(records,old_region,old_control,new_region,new_control,evidence,c
         link(records,label,[(old_region,old_control),(new_region,new_control)],evidence,actions)
         group=records[old_region]['shared_controls'][label]
     group.setdefault('membership_evidence',[]).append({'region':new_region,'control':new_control,'source_call':call,'evidence':evidence})
+
+
+def propose_instances(records,rid,rows,call):
+    """Explicit semantic sharing at inventory time; no execution is invented."""
+    for row in rows:
+        source=(row['source_region'],row['source_control'])
+        members=[cid for cid,c in records[rid]['controls'].items() if c['name']==row['control']]
+        if len(members)!=1 or not row['reason'].strip():
+            raise ValueError('同类实例共享需要本区块唯一控件和具体共性依据')
+        member=(rid,members[0])
+        if source==member or source[1] not in records.get(source[0],{}).get('controls',{}):
+            raise ValueError('共享来源必须是已登记的另一实例控件')
+        target=records[rid]['controls'][member[1]]
+        origin=records[source[0]]['controls'][source[1]]
+        ref=origin.get('shared_control_ref')
+        if target.get('shared_control_ref'):
+            if ref and target['shared_control_ref']==ref:continue
+            raise ValueError('实例已经关联其他共享关系，需先修订旧关系')
+        if any(t.get('control')==member[1] and not t.get('shared_task_ref')
+               for t in records[rid].get('tasks',{}).values()):
+            raise ValueError('已有独立任务不能借新共享声明覆盖；先沿原记录修订')
+        if ref:
+            group=records[ref['region']]['shared_controls'][ref['name']]
+            if group['status']!='confirmed':raise ValueError('共享来源有冲突，不能扩展')
+        else:
+            label=source[1]+' / 同类实例'
+            ref={'region':source[0],'name':label}
+            groups=records[source[0]].setdefault('shared_controls',{})
+            if label in groups:raise ValueError('旧同类关系已解除，需复核后再建立')
+            group=groups[label]={'name':label,'scope':'behavior_only','reason':row['reason'],
+                'members':[{'region':source[0],'control':source[1]}],
+                'evidence':[],'results':[],'status':'confirmed','proposal_evidence':[]}
+            origin['shared_control_ref']=deepcopy(ref)
+        group['members'].append({'region':rid,'control':member[1]})
+        group.setdefault('proposal_evidence',[]).append({**deepcopy(row),'source_call':call,'region':rid})
+        target['shared_control_ref']=deepcopy(ref)

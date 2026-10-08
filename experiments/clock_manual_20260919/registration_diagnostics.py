@@ -172,6 +172,11 @@ def collect(stage,q,p,records,binding=None):
             if op.get('task_type')=='scroll' and not op['control']:continue
             if len(ids)!=1:add('task_owner',f'/operations/{i}/control',op['name'],op['control'],{'matches':ids},'多条匹配先核对并修订重复记录；无匹配先发现登记，不猜控件名称。')
             else:covered.add(ids[0])
+        for i,row in enumerate(p.get('shared_instances',[])):
+            ids=[cid for cid,c in controls.items() if c['name']==row['control']]
+            if len(ids)!=1:
+                add('task_owner',f'/shared_instances/{i}/control',row['control'],row['control'],{'matches':ids},'共享成员必须是本区块已登记控件；源身份由登记器核对。')
+            else:covered.add(ids[0])
         if p.get('inventory')=='complete' and covered!=set(controls):
             add('inventory_coverage','/operations',region.get('name'),sorted(covered),[c['name'] for k,c in controls.items() if k not in covered],'修订重复记录后覆盖保留控件；未清点完整填写partial并说明缺口。')
     if stage=='update' and binding:

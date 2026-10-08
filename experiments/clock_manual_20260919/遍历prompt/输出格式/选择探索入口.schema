@@ -2,7 +2,8 @@
   "type": "object",
   "properties": {
     "target": {
-      "type": "string"
+      "type": "string",
+      "description": "已有候选使用可登记动作身份region/control；未登记目标用准确描述，区域动作描述意图。"
     },
     "action": {
       "type": "string",

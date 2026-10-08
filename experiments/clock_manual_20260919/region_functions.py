@@ -43,14 +43,14 @@ def request_support_review(run,rid,call):
     return True
 
 
-def supported_tasks(region):
-    return knowledge.supported(region)
+def supported_tasks(region,records=None):
+    return knowledge.supported(region,records)
 
 
 def supporting_tasks(region,records=None):
     records=records or {region['id']:region}
     local={name:{'region':region['id'],'name':name,'task':task}
-           for name,task in supported_tasks(region).items()}
+           for name,task in supported_tasks(region,records).items()}
     return {**local, **knowledge.parameter_support(region,records)}
 
 
@@ -61,10 +61,11 @@ def catalog(region,records=None):
             for name,fact in support['task'].get('findings',{}).items()}
 
 
-def attribute_context(region):
+def attribute_context(region,records=None):
     """Keep full binding keys and facts, grouped under the supporting task."""
     result={}
-    for key,fact in catalog(region).items():
+    for key,fact in catalog(region,records).items():
+        if fact['task_region']!=region['id']:continue
         item={k:v for k,v in fact.items() if k not in ('source','sources')}
         item['事实来源']=deepcopy(fact.get('sources') or ([fact['source']] if fact.get('source') else []))
         result.setdefault(fact['task'],{})[key]=item
@@ -87,11 +88,11 @@ def evidence_projection(region,records=None):
         if templates.evidence_limit(observation):controls[-1]['视觉依据限定']=templates.evidence_limit(observation)
     return {'已观察控件':controls,
         '已登记操作':[{'任务':n,'依据':t.get('result_evidence',t['reason']),
-                     '任务提出调用':t.get('source_call'),
+                     '任务提出调用':t.get('source_call'),'稳定知识':t.get('knowledge',''),'共享知识来源':t.get('knowledge_source'),
                      '依据时态':'历史记录：其中当前、本轮、未验证均指对应观察时刻，须与后续动作和恢复观察合看',
                      '结果动作记录':list(t.get('attempts',[])),
-                     '登记方式':'本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '绑定动作已探索；只采用实际观察，不把done或任务意图当作功能成功'} for n,t in supported_tasks(region).items()],
-        '已记录属性（待甄别）':attribute_context(region),
+                     '登记方式':'引用同类实例知识；本地未执行' if t.get('knowledge_source') else '本任务以直接观察登记；不否认其他历史动作' if t['status']=='record_only' else '绑定动作已探索；只采用实际观察，不把done或任务意图当作功能成功'} for n,t in supported_tasks(region,records).items()],
+        '已记录属性（待甄别）':attribute_context(region,records),
         '同区块已执行动作结果':action_results(region,records),
         '动作证据覆盖':action_evidence_coverage(region,records),
         '进入本区块的已观察结果':incoming_results(region,records)}
@@ -100,7 +101,9 @@ def evidence_projection(region,records=None):
 def summary_projection(region,records=None):
     records=records or {region['id']:region}
     supports=supporting_tasks(region,records)
-    return {'已登记操作':[knowledge.task_product(n,t) for n,t in supported_tasks(region).items()],
+    return {'共享控件知识':{cid:task_module().helper('task_knowledge').control_knowledge(region,cid,records)
+                        for cid,c in region.get('controls',{}).items() if c.get('shared_control_ref')},
+        '已登记操作':[knowledge.task_product(n,t) for n,t in supported_tasks(region,records).items()],
         '控件用途标注':[{'名称':c['name'],**{k:v for k,v in semantic_observation(c).items()
             if k in ('possible_operation','uncertainty')}} for c in region.get('controls',{}).values()],
         '同区块已执行动作结果':[knowledge.compact_action(row) for row in action_results(region,records)],
@@ -209,7 +212,7 @@ def request_schema(root,region,records=None):
     if keys:definitions['items']['properties']['ref']['enum']=keys
     else:definitions['maxItems']=0
     local=value['properties']['local_knowledge']['properties']
-    local_names=list(supported_tasks(region));local_facts=list(catalog(region))
+    local_names=list(supported_tasks(region,records));local_facts=[k for k,f in catalog(region,records).items() if f['task_region']==region['id']]
     for refs,names in [(local['parameter_refs'],local_facts),
                        (local['conditions']['items']['properties']['tasks'],local_names)]:
         if names:refs['items']['enum']=names
@@ -247,12 +250,12 @@ def register(region,reply,call,records=None):
                 'conditions':list(definitions[ref]['conditions'])}
     local=reply['local_knowledge']
     if not local['summary'].strip():raise ValueError('local summary must describe this Region')
-    local_facts=catalog(region)
+    local_facts={k:f for k,f in catalog(region,records).items() if f['task_region']==region['id']}
     if any(ref not in local_facts for ref in local['parameter_refs']):
         raise ValueError('local parameters must belong to local tasks')
     for ref in local['parameter_refs']:stable_fact(ref)
     for condition in local['conditions']:
-        if not condition['description'].strip() or not condition['tasks'] or any(n not in supported_tasks(region) for n in condition['tasks']):
+        if not condition['description'].strip() or not condition['tasks'] or any(n not in supported_tasks(region,records) for n in condition['tasks']):
             raise ValueError('local condition needs local supporting tasks')
     facts=catalog(region,records);tasks=supporting_tasks(region,records);result={};errors=[]
     for proposed in reply['functions']:

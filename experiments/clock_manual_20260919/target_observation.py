@@ -82,7 +82,8 @@ def refresh(request):
     spec=importlib.util.spec_from_file_location('target_choices',Path(__file__).with_name('visual_choices.py'))
     choices=importlib.util.module_from_spec(spec);spec.loader.exec_module(choices)
     request=choices.prepare(request)
-    return render(request)
+    from action_binding import disclose_candidates
+    return disclose_candidates(render(request))
 
 
 def render(request):
@@ -105,7 +106,7 @@ def render(request):
         if candidate.get('image') and Path(candidate['image']).is_file() and len(frames)==1 and frames[0] and Path(frames[0]).is_file():
             boxes=[v['box'] for v in request.get('visual_choices',{}).get(candidate['id'],[])]
             item['整屏候选位置']=boxes
-            item['位置说明']='与后台核对共用的当前图视觉候选；外观及相对位置匹配不独立证明字段单位或功能，仍需结合截图核对目标'
+            item['位置说明']='当前图辅助定位候选；外观及相对位置匹配不独立证明字段单位或功能，仍需结合截图核对目标'
             matches=request.get('visual_choices',{}).get(candidate['id'],[])
             if any(v.get('layout_evidence') for v in matches):
                 item['布局依据']='同源控件组的实际像素与相对位置在本图唯一重匹配；保留原单位/功能的未验证边界'

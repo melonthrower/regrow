@@ -8,10 +8,11 @@ from copy import deepcopy
 def completed(task):
     return (task.get('status') in ('done', 'record_only')
             and not task.get('coverage_exemption') and not task.get('shared_result')
-            and not task.get('shared_task_ref') and task.get('handling') != 'equivalent')
+            and (not task.get('shared_task_ref') or task.get('status') == 'done')
+            and task.get('handling') != 'equivalent')
 
 
-def control_knowledge(region, cid):
+def control_knowledge(region, cid, records=None):
     result = {}
     for name, task in region.get('tasks', {}).items():
         if task.get('control') != cid or not completed(task) or not task.get('knowledge'):
@@ -21,6 +22,17 @@ def control_knowledge(region, cid):
                            for n, f in task.get('findings', {}).items()},
             'source': {'task': name, 'attempts': list(task.get('attempts', [])),
                        'basis': 'observation_only' if task['status'] == 'record_only' else 'explored'}}
+    if records:
+        for name, task in region.get('tasks', {}).items():
+            ref=task.get('shared_result')
+            if task.get('control')!=cid or not ref:continue
+            source=records.get(ref['region'],{})
+            original=source.get('tasks',{}).get(ref['task'],{})
+            if not completed(original):continue
+            shared=control_knowledge(source,original.get('control')).get(ref['task'])
+            if shared:
+                shared['source'].update(region=ref['region'],shared=True,local_execution=False)
+                result[name]=shared
     return result
 
 
@@ -46,7 +58,7 @@ def refresh(records, state):
     for region in records.values():
         region['current_observation'] = current(region, state)
         for cid, control in region.get('controls', {}).items():
-            control['knowledge'] = control_knowledge(region, cid)
+            control['knowledge'] = control_knowledge(region, cid, records)
         region['operation_knowledge'] = control_knowledge(region, None)
 
 

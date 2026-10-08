@@ -11,7 +11,9 @@ def test_unknown_bounds_are_not_a_reason_to_discard_observed_fact():
     assert t['findings']['步进数值']['domain']['min'] is None
     tasks().store_findings(t,[fact(0)],{'call':'2'})
     assert t['findings']['步进数值']['domain']['max'] is None
-    with pytest.raises(ValueError,match='range'):tasks().store_findings(t,[fact(5,2)],{'call':'3'})
+    tasks().store_findings(t,[fact(5,2)],{'call':'3'})
+    assert t['finding_gaps'][-1]['reason']=='invalid observed range'
+    assert t['findings']['步进数值']['domain']['min']==0
 
 
 def test_conditions_are_preserved_per_observation_not_rejected_or_unioned():

@@ -83,7 +83,7 @@ def test_normal_round_keeps_original_frames_in_fact_author_request(tmp_path,monk
             seen.append(q)
             raise run_task_step.step_repair.Paused('review_pending','inspect native request')
     monkeypatch.setattr(run_task_step,'RecoveryRun',Transport)
-    monkeypatch.setattr(run_task_step,'execute_action',lambda *args:pytest.fail('no new GUI'))
+    monkeypatch.setattr(run_task_step.ActionExecutor,'execute',lambda *args:pytest.fail('no new GUI'))
     run_task_step.run_step(ROOT,run,tmp_path/'round')
     assert len(seen)==1 and seen[0]['stage']=='task_proposal'
     assert seen[0]['source']['parameter_fact_review']['task']=='Policy'

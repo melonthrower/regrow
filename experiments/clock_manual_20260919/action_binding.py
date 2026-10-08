@@ -13,10 +13,7 @@ def bind_action_target(request, proposal):
 
 
 def _bind_action_target(request, proposal):
-    """Conservative linkage to recorded candidates, not a live identity verifier.
-
-    Never guess nearest controls or enlarge text boxes into unknown row bounds.
-    Low-confidence image evidence is advisory when it agrees with the model position.
+    """Explicit linkage to recorded candidates, not a live identity verifier.
     """
     base = {'region_ref':request['source']['region'],
             'observation_ref':request['source']['observation'], 'control_ref':None,
@@ -58,85 +55,52 @@ def _bind_action_target(request, proposal):
     x, y = proposal.get('x'), proposal.get('y')
     if any(isinstance(v, bool) or not isinstance(v, (int,float)) for v in (x,y)):
         return {**base, 'status':'unresolved', 'reason':'missing position'}
-    target = str(proposal.get('target','')).strip().casefold()
     from pathlib import Path
-    import importlib.util
-    spec=importlib.util.spec_from_file_location('stepwise_image_match',Path(__file__).with_name('visual_choices.py'))
-    matcher=importlib.util.module_from_spec(spec);spec.loader.exec_module(matcher)
+    from PIL import Image
     frames=request.get('image_refs',[])
     if len(frames)!=1 or not Path(frames[0]).is_file():
         return {**base,'status':'unresolved','reason':'current screenshot is missing'}
-    from PIL import Image
     with Image.open(frames[0]) as frame:width,height=frame.size
-    if not (0<=x<width and 0<=y<height):return {**base,'status':'unresolved','reason':'coordinates outside screenshot'}
-    hits=[];selected={};model_grounded=set();diagnostics=[];matches={};competing=[]
-    current_matches=matcher.match_controls(request['backend_candidates'],frames[0])
-    named=[c for c in request['backend_candidates'] if target and target in
-           [str(c.get(k,'')).strip().casefold() for k in ('name','icon_description')]]
-    point_binding=bool(target) and not named and proposal.get('action') in ('tap','click','double_click','long_press','right_click','hover','drag','input_text')
-    for c in (request['backend_candidates'] if point_binding else named):
-        if not c.get('image') or not Path(c['image']).is_file():
-            diagnostics.append(c['name']+'：缺少记录图片');continue
-        match=current_matches[c['id']]
-        matches[c['id']]=match
-        diagnostics.append(c['name']+'：候选范围'+str(match.get('box'))+'，模型位置'+str((x,y))+'，图片判断'+str(match.get('reason',match.get('accepted'))))
-        if not match['accepted']:
-            if point_binding:
-                # An admitted alternative at this point prevents certainty about another object.
-                # It does not make this weaker object the correct target.
-                if any(v['box'][0]<=x<v['box'][2] and v['box'][1]<=y<v['box'][3]
-                       for v in match.get('candidates',[]) if v.get('box')):
-                    competing.append(c)
-                continue
-            disclosed=request.get('visual_choices',{}).get(c['id'],[])
-            alternatives=[v for v in match.get('candidates',[]) if any(v['box']==d['box'] for d in disclosed)
-                          and v['box'][0]<=x<v['box'][2] and v['box'][1]<=y<v['box'][3]]
-            if len(alternatives)==1 and str(proposal.get('reason','')).strip():
-                hits.append(c);selected[c['id']]=alternatives[0]
-            elif not match.get('candidates') and match.get('box') and str(proposal.get('reason','')).strip():
-                left,top,right,bottom=match['box']
-                if left<=x<right and top<=y<bottom:
-                    hits.append(c);model_grounded.add(c['id'])
-            continue
-        left,top,right,bottom=match['box']
-        if left<=x<right and top<=y<bottom:hits.append(c)
+    if not (0<=x<width and 0<=y<height):
+        return {**base,'status':'unresolved','reason':'coordinates outside screenshot'}
+    target=str(proposal.get('target','')).strip()
+    candidates=request.get('backend_candidates',[])
+    # Identity is the model's explicit choice. Geometry is execution input, not
+    # evidence that a different recorded control owns this action.
+    hits=[c for c in candidates if target==candidate_key(request,c)]
+    if not hits:
+        hits=[c for c in candidates if target.casefold() in
+              [str(c.get(k,'')).strip().casefold() for k in ('name','icon_description')] and target]
     if len(hits)==1:
-        if not point_binding and not matches[hits[0]['id']]['accepted']:
-            # Renaming a weak proposal cannot resolve a different strong object at its point.
-            for other in request['backend_candidates']:
-                if other['id']==hits[0]['id'] or not other.get('image') or not Path(other['image']).is_file():continue
-                match=current_matches[other['id']]
-                if match.get('accepted') and match.get('box'):
-                    left,top,right,bottom=match['box']
-                    if left<=x<right and top<=y<bottom:
-                        return {**base,'status':'unresolved',
-                                'reason':'目标 '+hits[0]['name']+' 只有弱图片依据，而同一点另有强匹配对象 '+other['name']+
-                                '。改写目标名称或重复声明可见不能解除此跨对象歧义；请补充观察，或依据当前图选择必要准备动作，无法核实时保留缺口。'}
-        if point_binding and competing:
-            names='、'.join(c['name'] for c in hits+competing)
-            return {**base,'status':'unresolved',
-                    'reason':'点位同时有不同登记对象的当前图片候选：'+names+
-                    '。其他对象匹配较弱不证明唯一强匹配就是实际操作对象。请按单张当前图核对对象，'
-                    '改用弱对象名称不能解除它与强对象的同点竞争；可补观察或选择有当前依据的必要准备动作，不能确认则保留缺口。'}
-        base['region_ref']=hits[0].get('region_ref',base['region_ref'])
-        layout=matches[hits[0]['id']].get('layout_evidence')
-        if layout:
-            return {**base,'status':'matched','control_ref':hits[0]['id'],'layout_evidence':layout,
-                    'basis':'current group pixels and relative positions match the recorded controls; functional meaning is not independently verified'}
-        if hits[0]['id'] in model_grounded:
-            return {**base,'status':'matched','control_ref':hits[0]['id'],'model_grounded':True,
-                    'basis':'model position agrees with low-confidence image candidate; no visual contradiction established'}
-        if hits[0]['id'] in selected:
-            return {**base,'status':'matched','control_ref':hits[0]['id'],'visual_choice':selected[hits[0]['id']],
-                    'basis':'model selected one disclosed appearance candidate; current image reconfirmed its bounds'}
-        return {**base,'status':'matched','control_ref':hits[0]['id'],
-                'basis':'unique strong visual match at model point; target wording differed' if point_binding else 'exact description and unique crop match in supplied frame; live check still required'}
-    reason=('当前候选表没有目标 '+str(proposal.get('target')) if not diagnostics else '多个登记对象同时符合，需区分身份' if len(hits)>1 else '目标未能对应：'+'；'.join(diagnostics))
+        c=hits[0]
+        return {**base,'region_ref':c.get('region_ref',base['region_ref']),
+                'status':'matched','control_ref':c['id'],'model_grounded':True,
+                'basis':'explicit recorded control selection; coordinates do not verify identity or outcome'}
+    if len(hits)>1:
+        return {**base,'status':'unresolved','reason':'同名控件不唯一，请用候选中的 region/control 身份填写 target'}
     if not target:return {**base,'status':'unresolved','reason':'missing target description'}
     return {**base,'status':'matched','model_grounded':True,
-            'basis':'execute model coordinates; recorded control association remains unconfirmed',
-            'association':{'status':'unconfirmed','target':proposal['target'],'x':x,'y':y,
-                           'candidates':[{'region':c.get('region_ref',base['region_ref']),'control':c['id'],
-                               'position':selected.get(c['id'],matches.get(c['id'],{})).get('box'),
-                               'basis':'current visual candidate at model point' if c in hits else 'target wording candidate; not visually confirmed'} for c in (hits or named)],
-                           'reason':reason}}
+            'basis':'unrecorded model target; no recorded identity inferred from coordinates',
+            'association':{'status':'unconfirmed','target':target,'x':x,'y':y,
+                           'candidates':[],'reason':'target not in the supplied identity candidates'}}
+
+
+def candidate_key(request,candidate):
+    return candidate.get('region_ref',request['source']['region'])+'/'+candidate['id']
+
+
+def disclose_candidates(request):
+    """One bounded catalog from the already admitted action candidates."""
+    if not request.get('action_ready'):return request
+    import json
+    rows=[{'target':candidate_key(request,c),'name':c['name'],
+           'region':c.get('region_name',c.get('region_ref',request['source']['region']))}
+          for c in request.get('backend_candidates',[])]
+    marker='\n\n可登记动作身份（选已有控件时 target 使用下列身份；坐标按当前图选择）：\n'
+    old=request.get('_action_identity_text')
+    new=json.dumps(rows,ensure_ascii=False)
+    for key in ('user_prompt','dynamic_prompt'):
+        text=request.get(key,request.get('user_prompt',''))
+        request[key]=text.replace(marker+old,marker+new,1) if old and marker+old in text else text+marker+new
+    request['_action_identity_text']=new
+    return request

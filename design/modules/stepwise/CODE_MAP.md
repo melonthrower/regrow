@@ -2,9 +2,11 @@
 
 [开发入口](../../../DEVELOPMENT.md) · [三步流程](README.md) · [测试索引](../../../tests/STEPWISE_INDEX.md) · [提示入口](../../../experiments/clock_manual_20260919/遍历prompt/README.md)
 
-源码在 `experiments/clock_manual_20260919/`。下面完整列出 104 个顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
+源码在 `experiments/clock_manual_20260919/`。下面按职责列出顶层 Python 文件，每个文件只有一个主要 owner；其他步骤调用它时沿同一接口复用。按三步、异常和共享职责阅读，不机械创建三份实现。表内“主要接口”是定位线索，精确合同在相应模块页。
 
-入口连接：`启动遍历.sh → launch_traversal.main → run_source.session_command → run_progress_session.run_session → run_task_step._run_step`。单轮由traversal_scheduler先处理已执行待登记与pending，再选择发现/任务清点、动作或异常复核；三步不等于固定三次 Luna 调用。
+桌面批次入口：`tools/run_stepwise.py → batch_launch → batch_runtime → run_source.session_command`，随后与原生会话汇合。
+
+浏览器入口连接：`启动遍历.sh → launch_traversal.main → run_source.session_command → run_progress_session.run_session → run_task_step._run_step`。单轮由traversal_scheduler先处理已执行待登记与pending，再选择发现/任务清点、动作或异常复核；三步不等于固定三次 Luna 调用。
 
 | 主体 | 职责及交接 |
 |---|---|
@@ -167,7 +169,7 @@
 |---|---|---|
 | [traversal_scope.py](../../../experiments/clock_manual_20260919/traversal_scope.py) | 沿运行授权复核任务范围及禁止动作，不擦除真实尝试。 | `review_request / skip_prohibited` |
 
-## 共享：运行、模型、设备与进度（21 文件）
+## 共享：运行、模型、设备与进度（24 文件）
 
 详细职责：[模块页](runtime.md)。
 
@@ -176,6 +178,9 @@
 | [run_task_step.py](../../../experiments/clock_manual_20260919/run_task_step.py) | 贯穿三步及恢复/续登记的单轮编排入口，连接调度器、组件、原Runner及会话预算。 | `_run_step / run_step / build_attempt_update / resume_update_request` |
 | [launch_traversal.py](../../../experiments/clock_manual_20260919/launch_traversal.py) | 浏览器、已安装应用与保存/新运行的统一维护入口。 | `main` |
 | [app_launcher.py](../../../experiments/clock_manual_20260919/app_launcher.py) | 应用与设备选择、模型配置读取和空 run 创建。 | `create_run / Device / ApplicationHub` |
+| [batch_launch.py](../../../experiments/clock_manual_20260919/batch_launch.py) | 桌面固定CLI、新建配置、持久服务及只读状态；tools/run_stepwise.py调用。 | `main / launch / status` |
+| [batch_environment.py](../../../experiments/clock_manual_20260919/batch_environment.py) | 实际服务内有界预检、支持的应用数据备份重置及新图准备。 | `preflight / clear_clock_data / prepare_new` |
+| [batch_runtime.py](../../../experiments/clock_manual_20260919/batch_runtime.py) | 设备锁、冻结源/依赖核验、原总预算续接、原生子进程及退出记录。 | `execute` |
 | [run_source.py](../../../experiments/clock_manual_20260919/run_source.py) | 浏览器与监督会话共用源码选择、冻结源核对和启动命令。 | `resolve_source / source_hash / session_command` |
 | [run_progress_session.py](../../../experiments/clock_manual_20260919/run_progress_session.py) | 反复驱动原有单轮，正常轮结算后再暂停。 | `run_session` |
 | [model_transport.py](../../../experiments/clock_manual_20260919/model_transport.py) | 正常步骤与恢复共用最终范围/截图/历史投影、请求保存、预算和模型发送。 | `ModelTransport.call / with_environment_scope / with_run_scope / with_frame_context` |

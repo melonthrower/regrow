@@ -82,3 +82,11 @@ round/scheduling.json（目标、任务、原因、snapshot），再构造请求
 run_progress_session用after_round解释工作结果；沿原空闲整理和一次重新调度，
 保持知识段独立目录与预算累计，不新增模型完成审核、开关或后台队列。
 旧运行仍由manifest冻结源选择，新模块按现有顶层Python冻结规则进入新源。
+
+## 桌面批次固定入口（2026-10-08）
+
+`tools/run_stepwise.py --new OUTPUT --template-run RUN --max-calls N` 新建独立图；可显式添加 `--clear-app-data` 和 `--restart-container`。`--resume RUN_JSON` 只沿原记录扣除已用额度续跑，`--status RUN_JSON` 只读检查服务和真实账本。新批用 batch.json，既有批次可用原 run.json。详细命令与支持边界见[固定入口设计](../../DESKTOP_BATCH_ENTRY.md)。
+
+启动层为 batch_launch/batch_environment/batch_runtime；正常框架入口不变。systemd 用户服务以现有 Docker 组权限运行；预检在实际后台环境内有界完成，检查真实显示截图与控制器。数据重置目前限 GNOME Clocks dconf，未知专用目录拒绝，保留本地备份。当前源码、共享依赖及每次启动日志均保留；续跑不升级原冻结源。
+
+状态区分服务存活与推进：包括所有原生截图位置的 waiting、请求未返回和服务消失，不把旧 session 的 running 当作活跃进程。未完成的准备不自动重复清数据；正常执行恢复交原 pending 消费路径。机器重启或用户服务管理器退出后的自动恢复不在本批范围。验证状态见本月日志。

@@ -21,6 +21,7 @@
 
 | 入口 | 职责与阅读位置 |
 |---|---|
+| `tools/run_stepwise.py` | 桌面批次新建/显式清数据/持久续跑/只读状态；[固定入口](DESKTOP_BATCH_ENTRY.md)及[运行](modules/stepwise/runtime.md) |
 | `experiments/clock_manual_20260919/启动遍历.sh` → `launch_traversal.py` | 当前逐步浏览器/应用入口；[运行](modules/stepwise/runtime.md) |
 | 同目录 `run_progress_session.py` → `run_task_step.py` | 原有会话驱动与单轮编排；[三步导航](modules/stepwise/README.md) |
 | 同目录 `debug_loop.py` | 原有隔离候选与监督闭环；[监督合同](modules/stepwise_debug_loop.md) |
@@ -73,7 +74,7 @@ Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议�
 
 逐步流程的共享视觉定位现用原尺寸灰度像素匹配（无边缘提取、缩放或OCR），保留控件组关联；按严格门槛允许漏识别，不能宣称无误识别。默认与相邻输入/整页检查边界见[身份合同](modules/stepwise_region_identity.md#2026-10-03-重复外观控件的位置关联)。旧冻结运行不会自动切换。
 
-本批不新增 CLI 开关或第二条默认执行路径。guided/autonomous/modular 的模型默认、显式实验模式与 fixture 开关见[原第 5 节](CURRENT_FRAMEWORK_DETAILS.md#5-当前调试开关)及对应模块；当前逐步模型配置按[运行模块](modules/stepwise/runtime.md)核对，不沿用其他内核的默认值。
+桌面批次的命令行参数由固定入口管理，发现、动作、更新仍复用同一原生会话执行链。guided/autonomous/modular 的模型默认、显式实验模式与 fixture 开关见[原第 5 节](CURRENT_FRAMEWORK_DETAILS.md#5-当前调试开关)及对应模块；当前逐步模型配置按[运行模块](modules/stepwise/runtime.md)核对，不沿用其他内核的默认值。
 新运行通常在 `artifacts/runs/`；真实旧 run 保留原位，源码由 `run_manifest.json/framework_source` 指定。临时验证在 `artifacts/tmp_tests/<唯一任务>/`，审阅包在 `to_astra/<唯一名称>/`；冻结源不会随 checkout 自动更新。
 
 ## 6. 当前全局风险

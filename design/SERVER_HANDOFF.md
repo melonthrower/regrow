@@ -1,3 +1,13 @@
+# 2026-10-08 09:43（北京时间）运行与固定入口
+
+当前Clock100仍在运行：专用容器rewalk-clock-fresh-20261005-02，原件artifacts/runs/clock_clean_100_20261008_01/desktop/run.json；run为同目录runs/org.gnome.clocks_20261008T003924_c9f99a8c，冻结源db70ac0/hash591d86716f6fd8a8a5c4df766fddb37d32e8b76e78987d98ece3f97e935340ed。09:43读数71/100，仅为当时计数；恢复前先查询实际状态，禁止按此数值重启或补算。
+
+session01在0038请求未返回时中断：本线程08:59:22收到Codex Shutdown，旧进程不存在；38次均计额度，原session旧running不代表活跃。session02正常operator暂停以修复Docker组继承（框架标签paused_by_user，但非用户取消任务），0HTTP/0GUI。session03由用户服务regrow-clock-clean100-resume-20261008-02运行，剩余62额度，pending沿原路径续接；不再运行旧临时驱动。原100任务要求结束后统一审查，不能逐步语义干预。
+
+新维护入口 tools/run_stepwise.py，实际开发checkout仍见DEVELOPMENT。--status可只读检查上述run.json（旧驱动活跃显示device_busy_external并避免重复启动）；--resume仅在原进程消失且需要继续时用，保持原总100预算及冻结源。新批用--new/--template-run/--max-calls，明确需要时才--clear-app-data/--restart-container。固定入口独立桌面验收完成，临时regrow-entry-validation-20261008-01容器及唯一测试卷均已删除；源种子和实机原件保留。31聚焦检查、3新Luna调用、0遍历GUI，不代表100批次已完成或全应用接受。
+
+---
+
 # 服务器续接工作
 
 ## 2026-10-07 Clock清空数据与容器重启后30调用：最新桌面停点

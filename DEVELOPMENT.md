@@ -72,3 +72,5 @@
 历史run可能仍在原实验目录；不要为统一外观移动或删除它们。继续GUI前读[现场交接](design/SERVER_HANDOFF.md)。研究问题与遍历/采集边界见[研究目标](design/RESEARCH_GOAL.md)和[Region对齐](design/REGION_TRAVERSAL_ALIGNMENT.md)。
 
 当前按角色文件定位：locator、task_proposer、action_proposer、action_executor、result_updater；traversal_scheduler负责选择/续接，shared_tasks承接共享任务。完整支持文件仍见CODE_MAP；此次整理不迁移源码根。
+
+桌面批次固定入口：`python tools/run_stepwise.py --help`；新建、清数据、续跑与状态参数见[入口设计](design/DESKTOP_BATCH_ENTRY.md)。常规桌面批次不再复制临时启动脚本；框架执行仍由原生会话承接。

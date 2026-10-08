@@ -1,5 +1,6 @@
 """Read-only multi-run browser view using the runs' pinned stepwise projections."""
 import argparse
+import importlib.util
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
@@ -45,9 +46,15 @@ def accounting(sessions):
 def server(config):
     source = Path(config['source']).resolve()
     sys.path[:0] = [str(source), str(Path(config['repository']).resolve())]
-    import progress
     import region_graph
+    import region_tasks
     from region_tasks import effective_task
+    # Presentation fixes apply to existing runs without editing their frozen source.
+    # Task status/coverage still use the run's pinned implementation.
+    display_path = Path(__file__).resolve().parents[1] / 'experiments/clock_manual_20260919/progress.py'
+    spec = importlib.util.spec_from_file_location('dashboard_progress', display_path)
+    progress = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(progress)
     from run_source import source_hash
     expected = source_hash(source)
     if config['source_hash'] != expected:
@@ -63,12 +70,12 @@ def server(config):
     def project(item):
         run = Path(item['run'])
         graph = region_graph.project(run)
-        view = progress.snapshot(run)
+        view = progress.snapshot(run, tasks=region_tasks)
         # Publishing may advance while the two existing projections are read.
         # Retry once, then report a transient gap instead of mixing snapshots.
         if graph['snapshot'] != view['snapshot']:
             graph = region_graph.project(run)
-            view = progress.snapshot(run)
+            view = progress.snapshot(run, tasks=region_tasks)
         if graph['snapshot'] != view['snapshot']:
             raise ValueError('Snapshot is advancing; retry on next refresh')
         frame_meta = read(run / 'live_frame.json') if (run / 'live_frame.json').exists() else {}

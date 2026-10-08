@@ -41,3 +41,36 @@ def test_region_only_deferral_destination_does_not_break_progress(tmp_path):
     assert v['last_task_switch']['next_region']=='other'
     assert v['last_task_switch']['next_task'] is None
     assert v['deferred_tasks'][0]['reason']=='needs inspection'
+
+
+def test_structured_discovery_gap_remains_visible_without_reason_field(tmp_path):
+    r,path=fixture(tmp_path)
+    r['registration_gaps']={'discovery':{'pending':[{
+        'item':'控件：Timer → 播放图标','proposal':{'uncertainty':'身份尚未确认'}}]}}
+    path.write_text(json.dumps(r))
+    v=module().snapshot(tmp_path)
+    assert not v['progress']['inventory_complete']
+    assert v['deferred_tasks'][0]['reason']=='待补发现登记：控件：Timer → 播放图标（身份尚未确认）'
+    assert v['blocker'] is None  # A local registration gap is not a global failure.
+    assert json.loads(path.read_text())==r
+
+
+def test_unexplained_gap_is_not_silently_hidden(tmp_path):
+    r,path=fixture(tmp_path);r['registration_gaps']={'function_registration':{}}
+    path.write_text(json.dumps(r))
+    v=module().snapshot(tmp_path)
+    assert v['deferred_tasks'][0]['reason']=='登记缺口未提供原因说明'
+
+
+def test_external_task_projection_keeps_pinned_completion_semantics(tmp_path):
+    from types import SimpleNamespace
+    r,path=fixture(tmp_path)
+    r['tasks']={'use':{'control':'one','status':'done','handling':'explore'}}
+    path.write_text(json.dumps(r))
+    pinned=SimpleNamespace(
+        coverage=lambda region,records:{'inventory_complete':True,'complete':False,'done':[],
+            'pending':['use'],'blocked':[],'record_only':[]},
+        effective_task=lambda tasks,t:{**t,'status':'pending'})
+    v=module().snapshot(tmp_path,tasks=pinned)
+    assert v['progress']['pending']==['use'] and v['tasks'][0]['status']=='pending'
+    assert json.loads(path.read_text())['tasks']['use']['status']=='done'

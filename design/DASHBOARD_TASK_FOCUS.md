@@ -5,6 +5,8 @@
 左上回答当前在哪个区块、处理哪个任务、为什么探索、用途条件及需要登记什么；任务owner单列，可与工作区块不同。三步按真实phase高亮，总结与异常恢复单独标记、不高亮三步；发现/清点/总结可没有控件任务；等待、纠错和中断按原记录显示。
 右侧列本区块任务与状态，当前任务突出，全部历史区块折叠。最近操作展开原始动作前后图、操作理由、结果和知识；投递成功不表示结果已登记，任务完成也不宣称业务成功。模型调用记录单列，不能三次调用强凑一轮。
 
-实现位置：tools/stepwise_dashboard_view.py（新增投影文件）、stepwise_dashboard.py（HTTP接线）、stepwise_dashboard.html（展示）。现有progress/region_graph及冻结运行只读复用，不改调度、状态或prompt；显示状态不写回地图。
+实现位置：tools/stepwise_dashboard_view.py（投影文件）、stepwise_dashboard.py（HTTP接线）、stepwise_dashboard.html（展示）。看板使用维护中的progress显示层，任务完成/覆盖及region_graph采用运行冻结实现；显示状态不写回地图，不改调度、状态或prompt。结构化discovery缺口缺少reason时，从pending项生成说明并保留在API中；HTML暂不逐条展示deferred_tasks。打开侧边时使用服务配置的原始地址，转发端口由客户端处理。
+
+连接修复验证：32项聚焦检查通过，真实运行API同快照、六项缺口保留，服务器端宽/窄屏及原动作图片检查通过；详见browser_port_repair_20261008_01。侧边客户端访问须单独确认，不能用服务器端浏览器替代；无新增Luna/GUI调用。
 
 验证：聚焦投影/计账检查、真实运行API、浏览器宽/窄屏、真实前后图展开和断线反馈。原件保存在artifacts/tmp_tests/dashboard_task_focus_20261008_01，实际通过范围及修订见当月日志。不新增Luna调用或控制应用。

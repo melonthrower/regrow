@@ -9,6 +9,18 @@ RESOLUTIONS={'revise':'修正本轮提案','observe':'补充观察','edit_record
 def read(path):return json.loads(Path(path).read_text())
 
 
+def gap_reason(gap):
+    if gap.get('reason'):
+        return gap['reason']
+    pending=gap.get('pending',[])
+    if pending:
+        return '待补发现登记：'+'；'.join(
+            (item.get('item') or item.get('name') or '未命名对象')+
+            ('（'+item['proposal']['uncertainty']+'）' if item.get('proposal',{}).get('uncertainty') else '')
+            for item in pending)
+    return '登记缺口未提供原因说明'
+
+
 def details(run,regions):
     run=Path(run);gaps=[];episodes={}
     for rid,r in regions.items():
@@ -20,7 +32,7 @@ def details(run,regions):
                                   else '发现步重新定位到该控件后再尝试' if evidence else '前置条件满足后再评估'),
                          'episode':evidence.get('episode')})
         for stage,gap in r.get('registration_gaps',{}).items():
-            gaps.append({'region':r['name'],'task':STAGES.get(stage,stage)+'缺口','reason':gap['reason'],
+            gaps.append({'region':r['name'],'task':STAGES.get(stage,stage)+'缺口','reason':gap_reason(gap),
                          'retry':'补充相关观察或记录后重新检查','episode':gap.get('episode')})
     for gap in gaps:
         path=run/gap['episode'] if gap['episode'] else None

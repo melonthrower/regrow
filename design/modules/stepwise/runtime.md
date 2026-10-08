@@ -8,7 +8,9 @@
 
 `python tools/stepwise_dashboard.py <config.json>` 接入同一冻结源码的多个已有run。配置包含 `source`、`source_hash`、`repository`，以及 `apps[{key,label,run,sessions,limits}]`；`sessions`下为原生 `session-*/session.json` 和 `round-*/budget.json`，`limits`为本批累计上限，配置保存在对应实验目录。可用 `port` 固定本地端口，未提供时自动分配；启动打印本地浏览器地址。
 
-Python入口负责读取，配套HTML负责布局。复用 `progress.snapshot`、`region_graph.project/asset`；只监听本地地址，拒绝POST，没有启动、暂停或GUI控制入口。区块图和进度必须来自同一提交快照；刷新冲突暂留旧数据并明确重试。运行中未结算轮次的原预算纳入计数一次，不按页面刷新重新计账。`root-review.json`只用于显示已检查小步、暂缓或保留问题继续，不改变调度；`accepted=false, continue=true`与质量接受分开。调用/操作按本批累计上限显示，不把一次原生处理称作40调用批次。
+Python入口负责读取，配套HTML负责布局。显示层加载维护中的 `progress.snapshot/details`，向snapshot传入该批冻结的 `region_tasks`，保持coverage/effective_task语义；`region_graph.project/asset`也来自冻结源。显示修复不改写冻结源码或原记录。登记缺口既可有reason，也可有discovery pending条目；后者生成可读说明，缺说明仍保留缺口。API保留deferred_tasks，当前HTML不逐条展开这些缺口。
+
+只监听本地地址，拒绝POST，没有启动、暂停或GUI控制入口。区块图和进度必须来自同一提交快照；刷新冲突暂留旧数据并明确重试。运行中未结算轮次的原预算纳入计数一次，不按页面刷新重新计账。`root-review.json`只用于显示已检查小步、暂缓或保留问题继续，不改变调度；`accepted=false, continue=true`与质量接受分开。调用/操作按本批累计上限显示，不把一次原生处理称作40调用批次。通过Codex侧边打开时传入配置中的原始服务地址，不能把客户端转发后的localhost端口再次作为远端服务地址。HTML、API、服务器端浏览器和客户端转发分别核对。
 
 左上为当前工作区块、具体任务/归属、探索目的、用途条件和所需登记产物，并按实际phase高亮三步（总结/恢复单独标记，不高亮三步）；下方展示最近真实观察及北京时间，非连续投屏。右侧显示本区块任务与状态，最近操作可展开真实前后图及已登记知识；模型回复返回与动作结果登记分开标记。当前可交互包含结构与所有历史区块默认折叠，来路不当包含父级。无控件绑定的任务仍显示在区块下，任务清点不完整单列。切换应用立即清空上一应用的显示，新应用断流不能沿用旧应用数据；同一应用断流明确保留上次数据。图片裁图为登记时身份证据。刷新不调用Luna、不取设备新图、不修改原run。
 

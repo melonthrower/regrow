@@ -99,13 +99,14 @@ def detail(text):
         session['detail']=text;_write(session)
 
 
-def snapshot(run):
+def snapshot(run, tasks=None):
     run=Path(run);pointer=read(run/'knowledge_current.json');base=run/pointer['snapshot']
     state=read(base/'runtime_state.json')
     regions={p.parent.name:read(p) for p in (base/'regions').glob('*/region.json')}
     work=regions.get(state.get('working_region'),{})
-    spec=importlib.util.spec_from_file_location('progress_tasks',Path(__file__).with_name('region_tasks.py'))
-    tasks=importlib.util.module_from_spec(spec);spec.loader.exec_module(tasks)
+    if tasks is None:
+        spec=importlib.util.spec_from_file_location('progress_tasks',Path(__file__).with_name('region_tasks.py'))
+        tasks=importlib.util.module_from_spec(spec);spec.loader.exec_module(tasks)
     cov=tasks.coverage({**work,'controls':work.get('controls',{})},regions)
     total=sum(len(cov[k]) for k in ('done','pending','blocked'))
     cov['total']=total;cov['percent']=round(100*len(cov['done'])/total) if cov['inventory_complete'] and total else None

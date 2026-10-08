@@ -17,7 +17,7 @@
 
 ## 2. 当前入口
 
-多应用只读进度投影：`tools/stepwise_dashboard.py <config.json>`，同页显示框架最近真实观察、累计预算及区块/控件/任务树；复用每批冻结源的原投影，不启动遍历。配置与验证见[运行模块](modules/stepwise/runtime.md#多应用只读浏览器投影)。
+多应用只读进度投影：`tools/stepwise_dashboard.py <config.json>`，同页显示框架最近真实观察、累计预算及区块/控件/任务树；显示层使用维护中的progress，图谱及任务完成/覆盖语义使用每批冻结源，不启动遍历。配置与验证见[运行模块](modules/stepwise/runtime.md#多应用只读浏览器投影)。
 
 | 入口 | 职责与阅读位置 |
 |---|---|

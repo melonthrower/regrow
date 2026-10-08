@@ -244,4 +244,4 @@
 控件条件用途：`control_context.py`（新增）集中条件集合比较及真实拆分任务目标迁移；`task_settlement`/`region_tasks`分别调用结算与去重，`shared_controls`/`shared_tasks`保留共享条件，`region_candidate_names`保留最终发送的历史图标及条件。
 
 
-只读任务看板：`tools/stepwise_dashboard.py`提供HTTP/同快照投影；`tools/stepwise_dashboard_view.py`提供当前区块/任务及原动作证据，`tools/stepwise_dashboard.html`负责三步高亮、任务列表和前后图。独立于冻结遍历源，不包含调度或GUI控制。
+只读任务看板：`tools/stepwise_dashboard.py`提供HTTP/同快照投影，加载维护中的progress显示层并注入冻结region_tasks完成/覆盖语义，region_graph仍来自冻结源；`tools/stepwise_dashboard_view.py`提供当前区块/任务及原动作证据，`tools/stepwise_dashboard.html`负责三步高亮、任务列表和前后图。不改写冻结遍历源，不包含调度或GUI控制。

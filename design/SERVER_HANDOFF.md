@@ -1,3 +1,13 @@
+# 2026-10-08 11:16（北京时间）条件用途修订后Clock100新遍历
+
+固定入口新建：artifacts/runs/clock_context_100_20261008_01/batch.json；实际run为artifacts/runs/clock_context_100_20261008_01/runs/org.gnome.clocks_20261008T031638_44354159。源码978f537，冻结hash 42adec87ccbf2b9866f00fd991417253cabc9be33a9aa83425915ac1b1270227。专用容器rewalk-clock-fresh-20261005-02已由入口预检、备份并清空Clock数据、重启；全新图，旧Clock100原件保留，旧现场截图不能代表当前应用。
+
+整批100次Luna调用（含纠错、恢复、总结），GUI总数不限，小步6HTTP/6GUI保护不变。原生粗发现和局部清点前2个回复已登记，后续后台连续运行；这里只检查启动接线，不逐步干预，结束后统一检查。状态以tools/run_stepwise.py --status的实际账本为准，不按本页旧读数推断完成；续跑用同batch.json，不能再次清数据或重新获得100预算。
+
+上一轮clock_clean_100_20261008_01已budget_limit结束，100调用/99回复/32动作，无pending，源db70ac0，历史重复区块与任务缺口保留。当前新源不改写旧图。本轮只读dashboard接新run且保留旧端口；启动、备份、原生请求/回复/截图、冻结源在新运行目录，命令核对与独立审查在同名artifacts/tmp_tests。当前三步可视化仅提出复用方案，尚未改页面或遍历行为。
+
+---
+
 # 2026-10-08 09:43（北京时间）运行与固定入口
 
 当前Clock100仍在运行：专用容器rewalk-clock-fresh-20261005-02，原件artifacts/runs/clock_clean_100_20261008_01/desktop/run.json；run为同目录runs/org.gnome.clocks_20261008T003924_c9f99a8c，冻结源db70ac0/hash591d86716f6fd8a8a5c4df766fddb37d32e8b76e78987d98ece3f97e935340ed。09:43读数71/100，仅为当时计数；恢复前先查询实际状态，禁止按此数值重启或补算。

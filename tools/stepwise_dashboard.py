@@ -6,6 +6,10 @@ from pathlib import Path
 import re
 import sys
 from urllib.parse import parse_qs, urlsplit
+try:
+    from . import stepwise_dashboard_view as task_view
+except ImportError:
+    import stepwise_dashboard_view as task_view
 
 
 def read(path):
@@ -43,6 +47,7 @@ def server(config):
     sys.path[:0] = [str(source), str(Path(config['repository']).resolve())]
     import progress
     import region_graph
+    from region_tasks import effective_task
     from run_source import source_hash
     expected = source_hash(source)
     if config['source_hash'] != expected:
@@ -68,6 +73,7 @@ def server(config):
             raise ValueError('Snapshot is advancing; retry on next refresh')
         frame_meta = read(run / 'live_frame.json') if (run / 'live_frame.json').exists() else {}
         return {'label': item['label'], 'graph': graph, 'progress': view,
+                'focus': task_view.project(run, view, effective_task),
                 'accounting': accounting(item['sessions']), 'limits': item['limits'],
                 'frame_time': frame_meta.get('captured_at')}
 
@@ -96,6 +102,11 @@ def server(config):
                         file = region_graph.asset(item['run'], args['snapshot'][0], args['region'][0], args.get('control', [None])[0])
                         body = file.read_bytes()
                         mime = {'.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp'}.get(file.suffix.lower(), 'image/png')
+                    elif endpoint == 'evidence':
+                        args = parse_qs(parsed.query)
+                        file = task_view.evidence_asset(item['run'], args['attempt'][0], args['frame'][0])
+                        body = file.read_bytes()
+                        mime = 'image/png'
                     else:
                         self.send_error(404)
                         return

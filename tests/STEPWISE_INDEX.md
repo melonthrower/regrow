@@ -352,3 +352,6 @@
 
 
 控件条件用途：`tests/test_control_context.py`覆盖条件去重、跨条件不结算、结果收紧、真实拆分及引用/知识归属、共享条件与最终发送身份目录；相邻检查为`test_stepwise_behavior_split`、`test_stepwise_region_tasks`、`test_task_settlement_routing`、`test_task_knowledge_flow`、`test_instance_knowledge`、`test_shared_control_conflict_repair`、`test_shared_control_text_prompt`。
+
+
+只读任务看板：`test_dashboard_task_focus.py`覆盖当前任务/工作区块分离、清点阶段不冒用旧任务、上一round隔离、投递与登记区分及证据路径；`test_stepwise_dashboard.py`覆盖累计/进行中计账。界面行为另用真实run的只读HTTP及浏览器检验，不能替代遍历验收。

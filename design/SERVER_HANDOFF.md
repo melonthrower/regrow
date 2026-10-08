@@ -1,3 +1,17 @@
+# 2026-10-08 16:49（北京时间）Clock按20调用检查续跑：受阻停点
+
+个人服务器工作区和活动checkout仍由DEVELOPMENT定位。原run `artifacts/runs/clock_context_100_20261008_01/runs/org.gnome.clocks_20261008T031638_44354159` 沿原数据续跑，未清应用或替换冻结源；源码978f537，hash仍为42adec87ccbf2b9866f00fd991417253cabc9be33a9aa83425915ac1b1270227。专用容器rewalk-clock-fresh-20261005-02保留现场，Android未动。
+
+用户授权直到结束、每20次Luna调用检查异常。固定入口依次读取同批根目录resume-monitor-01至04.json，累积额度119/138/158/166；原生session-03至06实际新增19/20/20/7调用、7/6/3/2动作。累计165调用/48实际动作，本轮新增66调用/18动作；第4段因已知循环缩至最多8调用，配置reason仅记人工计划，不限制调度路线。最后1调用不足选择与更新，session-06以budget_limit停止；随后人工检查决定不再给相同循环追加额度。**不是全应用完成，也不是用户取消任务。**
+
+停图为a0048/0163进入London城市详情；0164清点、0165总结均已登记。pointer=`knowledge_snapshots/functions-0165-9c80fe0b350d`。全部新增回复完整、48动作均登记；pending_step/execution_pending/visual_navigation_pending均为空，无活动遍历驱动。不得重放a0048。图12区块，已有记录中10区块覆盖完成，22done/46record_only/4blocked，13项功能；record_only和功能数量不等于实测数量，也不代表所有潜在界面已发现。
+
+仍有Timer相关4项暂挂：旧播放图标身份试探、秒数字段直接输入、暂停后播放、运行态添加入口。已确认清点循环：0147–0158共12模型调用、0GUI；旧discovery候选沿旧名称/位置保留，秒数任务准备动作的后续绑定变为删除按钮后以未输入为由blocked；同控件其他blocked又阻止前置准备登记。最后Timer动作后图a0046中开始按钮正常可见，不能把这些记录缺口说成应用按钮失效。应先修复、经正常原生路径验证，再规划续接版本；禁止直接改状态为完成或继续盲加额度。框架/提示本轮未改。
+
+第三段首次启动因数据盘少于2GiB被预检拦住，新增0模型/0GUI；核验10份ZIP的解包副本后仅删重复ZIP（约4.1GiB），另将历史to_astra内相同文件改为同内容硬链接（逻辑重复约9.25GiB，非净可用增长）。原实验不删、不链接到导出文件；导出包仍可写，后续不得就地修改共享文件。数据盘仍紧张，恢复前重新检查。命令、逐段配置/账本/真实截图/独立阅读与意图对照分别留在本批artifacts/runs和`artifacts/tmp_tests/clock_context_continue_20261008_01`。只读看板保留原服务，最后root-review明确受阻；未新建审阅ZIP。
+
+---
+
 # 2026-10-08 11:16（北京时间）条件用途修订后Clock100新遍历
 
 固定入口新建：artifacts/runs/clock_context_100_20261008_01/batch.json；实际run为artifacts/runs/clock_context_100_20261008_01/runs/org.gnome.clocks_20261008T031638_44354159。源码978f537，冻结hash 42adec87ccbf2b9866f00fd991417253cabc9be33a9aa83425915ac1b1270227。专用容器rewalk-clock-fresh-20261005-02已由入口预检、备份并清空Clock数据、重启；全新图，旧Clock100原件保留，旧现场截图不能代表当前应用。

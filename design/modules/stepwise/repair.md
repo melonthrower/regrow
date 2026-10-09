@@ -64,3 +64,6 @@
 
 ## 控件候选选择与两图复核（2026-10-09）
 `control_identity_review`将同Region的新建冲突交回原Runner：唯一候选直接复核；同位置多个历史候选先由`control_identity_selection`选一个，再由正常纠错附该历史原图。两步共享原两次纠错额度；不逐对扫描或重发GUI。selection=null、更新uncertain及多候选的different保留原未完成动作。完整原上下文和纠错历史保留，发布时从实际请求/原答复核决定，不依赖effective_request缓存。网络失败仍受既有Runner计数影响，保存帧验证须区分模型回复和未投递成功尝试；本批不改变传输恢复。详见[设计](../../CONTROL_IDENTITY_REVIEW.md)。
+
+## 具体失败动作（2026-10-09）
+动作接受与纠错共用`operation_blocking.check_action`。原task.blocker指向实际attempt，不能用原任务控件代替准备中实际失败对象；只有已确认控件、执行回执和退出结果才能建立控件操作限制。用途条件不明时在普通动作请求保留原证据，不增设永久字段/额外模型阶段。准备和导航不能靠改名绕过明确同用途退出限制；普通任务知识缺口不构成操作禁令。详见[设计](../../SCOPED_TASK_BLOCKING.md)。

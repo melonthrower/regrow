@@ -114,6 +114,7 @@ def accept_candidate(root,run,job):
             if binding.get('observation_ref')!=(current_state.get('observation') or {}).get('id'):
                 raise StaleActionSource('动作来源观察已过期；请按原任务刷新当前观察上下文，旧截图来源不能继续投递')
             helper('action_commands').commands(proposal,platform)
+            helper('operation_blocking').check_action(records,binding,proposal)
             helper('attempt_guard').check(run,helper('discovery_step').load(run)[1],binding,proposal,(q.get('screenshots') or q.get('image_refs') or [None])[0],correction=job.get('repairs',0)>0)
         return {'binding':binding,'proposal':proposal,'request':q,'call':ref}
     raise RuntimeError('Unknown acceptance stage: '+stage)

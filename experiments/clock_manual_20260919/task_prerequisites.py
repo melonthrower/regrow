@@ -38,8 +38,9 @@ def enroll(records,rid,call):
                  for cid,c in r['controls'].items() if c['name']==dep['control']]
         if len(targets)!=1:continue
         rr,cid=targets[0]
-        # Do not reopen an entry already known to crash or forbidden in this run.
-        if any(t.get('control')==cid and t.get('status')=='blocked' for t in records[rr].get('tasks',{}).values()):continue
+        # Waiting for a prerequisite must not prohibit its own preparation.
+        from operation_blocking import applicable
+        if applicable(records,rr,cid,'click'):continue
         prep_name='满足前置条件：'+dep['preparation']+'（'+records[rid]['name']+' / '+name+'）'
         prep={'name':prep_name,'control':cid,'task_type':'single_action','action':'click','handling':'explore',
               'status':'pending','equivalent_to':'','reason':dep['preparation']+'；返回目标观察是否满足：'+dep['condition'],

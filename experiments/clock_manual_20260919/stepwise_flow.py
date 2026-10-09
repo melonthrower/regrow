@@ -144,8 +144,9 @@ def shortest_known_path(records, state, target, *, require_control=True):
         region=records[source]
         for edge in region['transitions']:
             dest=edge['target_region'];cid=edge['source_control']
-            if cid and any(t.get('status')=='blocked' and t.get('control')==cid for t in region.get('tasks',{}).values()):continue
             action=region['actions'].get(edge['attempt'],{})
+            from operation_blocking import applicable
+            if applicable(records,source,cid,action.get('operation'),action.get('conditions',[])):continue
             result=action.get('result',{})
             if contextual_return(action):continue
             back=action.get('operation')=='back' and cid is None

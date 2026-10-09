@@ -112,7 +112,7 @@ def request_from_run(root, run, region_ref=None, task_ref=None, *, decision=None
         tasks.helper('page_context').refresh(result)
         if result.get('action_ready'):
             result = tasks.helper('target_observation').refresh(result)
-    return result
+    return helper('operation_blocking').attach(result, records, state)
 
 
 

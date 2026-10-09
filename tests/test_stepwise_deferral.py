@@ -111,13 +111,13 @@ def test_unlocated_failure_calls_correction_before_deferring(tmp_path):
     assert d.load(run)[1]['r1']['tasks']['Settings']['status']=='pending'
 
 
-def test_blocked_task_does_not_hide_independent_task_but_route_still_needs_evidence():
+def test_blocked_task_does_not_hide_independent_task_or_valid_route():
     from tests.test_stepwise_resume_route import fixture
     flow,r,s=fixture();m=tasks().helper('task_deferral');s['interactive_regions']=['main'];s['observation']['control_refs']=['open']
     r['main']['tasks']={'bad':{'status':'blocked','handling':'explore','control':'open'},'alias':{'status':'pending','handling':'explore','control':'open'}}
     r['middle']['tasks']={'next':{'status':'pending','handling':'explore','control':'open'}}
     assert m.choose(r,s)['task']=='alias'
-    assert flow.shortest_known_path(r,s,'middle') is None
+    assert flow.shortest_known_path(r,s,'middle')
 
 
 def test_remote_fallback_uses_existing_edge_and_preserves_old_gap(tmp_path):

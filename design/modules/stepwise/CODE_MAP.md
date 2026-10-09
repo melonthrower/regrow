@@ -42,6 +42,7 @@
 | [task_selection.py](../../../experiments/clock_manual_20260919/task_selection.py) | 兼容入口委托唯一调度器及请求组件，保留任务进度渲染。 | `attach / render / render_current` |
 | [task_routing.py](../../../experiments/clock_manual_20260919/task_routing.py) | 依据已观察进入链推进原工作目标，来源链不自动成为返回边。 | `advance / destination_work` |
 | [task_prerequisites.py](../../../experiments/clock_manual_20260919/task_prerequisites.py) | 登记有证据的前置条件、准备任务与范围内唤醒。 | `augment / apply / complete_preparation` |
+| [operation_blocking.py](../../../experiments/clock_manual_20260919/operation_blocking.py) | 从原退出证据派生实际操作限制；普通blocked不禁止其他用途，未知条件在正常动作请求披露。 | `failures / applicable / attach / check_action` |
 | [task_deferral.py](../../../experiments/clock_manual_20260919/task_deferral.py) | 保留局部暂挂和已观察路线，选择独立可继续工作。 | `defer / runnable / resume_localized` |
 | [inventory_scroll.py](../../../experiments/clock_manual_20260919/inventory_scroll.py) | 清点 incomplete 时调度明确的本区滚动并保留缺口。 | `select / resume_after_region_observation` |
 | [historical_inventory.py](../../../experiments/clock_manual_20260919/historical_inventory.py) | 用已访问表面的实际历史做任务清点，避免仅为清点重复导航。 | `request / region_request` |

@@ -132,6 +132,8 @@
 
 ## 调度与前置条件
 
+- [test_scoped_task_blocking.py](test_scoped_task_blocking.py)：普通暂挂/同控件准备、实际退出归属与条件、正常动作接受、父任务唤醒边界。
+
 - [test_coverage_exemption.py](test_coverage_exemption.py)
 - [test_function_evidence_projection.py](test_function_evidence_projection.py)
 - [test_function_scope.py](test_function_scope.py)

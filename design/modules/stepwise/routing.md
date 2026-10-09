@@ -60,3 +60,6 @@ pending_work优先续已执行结果；after_round集中会话继续、一次空
 已有实际回执及观察、关联仍unconfirmed且候选明确包含原任务目标的尝试，由正常reconcile转为ownership review缺口，清理active_task后调度其他工作；不赋予确认控件、完成状态或重新投递许可。不同候选、已排除旧尝试、准备任务和异常仍保留原边界。此改动针对Clock已开编辑页但父任务反复none→发现的实机循环，验收见本批日志。
 
 未确认动作关联的ownership缺口当前没有完整自动补录入口；这只解开其他工作的调度，原任务仍未完成。早期reconcile在待更新/导航续接之后、循环检查之前同步记录，避免沿旧pending状态触发无意义循环纠错。
+
+## 任务暂挂不封整个控件（2026-10-09）
+`task_prerequisites.enroll`与`stepwise_flow.shortest_known_path`不再按任意同控件blocked排除准备/路线。`operation_blocking`只复用未解除退出记录的实际操作范围；`action_proposer.request_from_run`披露相关失败，`repair_stages.accept_candidate`在原动作接受阶段拦截明确同用途重试。缺少实际条件不当作无条件禁令；不明适用性交给正常动作上下文判断。原任务不因准备开始而完成，同控件准备可登记；范围、permitted、既有去重和原始证据保留。详见[设计](../../SCOPED_TASK_BLOCKING.md)；保存帧有限验证不等于实机导航或全应用完成。

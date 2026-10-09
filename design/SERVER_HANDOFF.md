@@ -1,3 +1,18 @@
+# 2026-10-09 13:12（北京时间）双端 Settings 100 调用：已启动，运行中
+
+用户授权桌面 GNOME Settings 与 Android Settings 各 100 次 Luna 调用，共 200 次，纠错、恢复和总结均计入。新建两份图，保留应用数据、旧 Clock 原件和冻结源；没有清缓存、重启容器或重置系统设置。两端共用 `artifacts/runs/settings_dual_20261009_01/desktop/source`，内容来自已接受的 8512b13，hash=`f4c7822101e8bea5d32ca3456f4e791f30ba7c118d1115c3e9231df7e5f07036`。以下运行路径相对外层工作区；活动源码仍由 DEVELOPMENT 定位。
+
+- 桌面：专用容器 `rewalk-clock-fresh-20261005-02`，`org.gnome.Settings`；固定入口配置 `artifacts/runs/settings_dual_20261009_01/desktop/batch.json`，run 为同目录 `runs/org.gnome.Settings_20261009T050147_799e05d9`。首会话 0001 在收到 HTTP 响应前中断，0 探索 GUI；保留计数 1，固定入口续会话限额 99。0002 恢复首屏发现；随后 a0001 实际展开搜索框，0006 登记结果；后续继续运行。续跑只用原 batch，不重建或再次给 100 次。
+- Android：专用设备 `emulator-44744`，`com.android.settings`；run 为 `artifacts/runs/settings_dual_20261009_01/android/runs/com.android.settings_20261009T050815_e5ab5777`。使用现有 Device/create_run/session_command 和原生 run_progress_session；一次性运行脚本保存于同名 tmp_tests/start_android.py，输出目录存在则拒绝重复初始化，原生服务持有相同设备锁。首次会话限额 100；若中断，必须先读实际累计调用，再给剩余额度，不能重复该初始化脚本或重置预算。
+
+13:12 只读检查点：桌面 11 调用/3 GUI 命令，Android 9 调用/3 GUI 命令，两端运行中；包含进行中的请求/动作，不代表完成。Android a0001 滚动成功且登记新类别，但 0005 的 next_action.control 填“区块本身”被校验拒绝，0006 纠错删除建议后任务暂挂；未修写原答或手改任务。a0002 实际打开 Settings Intelligence 的搜索页，因包名不同被现有外部应用规则暂挂并进入返回恢复；此时尚不能声称搜索覆盖或恢复完成。后续 0009/0010 分别返回收起键盘、退出搜索页，0011 的真实观察图确认已回到 Settings 主页面，并交给发现步；搜索任务仍未完成。局部问题保留，其他可执行任务继续；不宣称首批全语义通过或全应用完成。
+
+13:20 续接：Android 恢复后的 0012/0013 区块框不完全包含于声明的可交互区域，未缓存边界；0014 已修正并缓存同帧边界，但恢复定位循环的 3 次上限先停止了会话。只读构建完整原生下一请求确认 mode=local；不是单凭 image_quality=occluded 阻塞。保留原图/源码/14 次计数，以 session-02 的剩余 86 次继续，命令和旧 manifest 在 android/resume-02/。此时桌面 23/100（6 done、0 blocked），Android 15/100（请求进行中、2 blocked）；不把续服务提交当作后续登记通过。最初将停止归因于遮挡并提出换版选择，进一步核对后已撤回该选择，原版续接。
+
+计划、依赖源码副本及 hash、启动参数/日志、原生截图/请求/回复、失败记录和检查点集中在 `artifacts/runs/settings_dual_20261009_01`；辅助命令/独立审查在同名 `artifacts/tmp_tests`。合并只读看板配置和服务记录在运行根的 dashboard/，仍使用现有可视化实现。保护遍历所需运行、显示、输入、连接设置；允许导航/展开/观察，不执行系统重置、账户/锁屏配置等。当前真实设备前景已由 Settings 遍历推进，下文旧 Clock 现场不可直接重放。框架/提示未改，本页只记录启动与已见问题；继续前必须读取实时状态，不能按这些历史计数判断结束。
+
+---
+
 # 2026-10-08 16:49（北京时间）Clock按20调用检查续跑：受阻停点
 
 个人服务器工作区和活动checkout仍由DEVELOPMENT定位。原run `artifacts/runs/clock_context_100_20261008_01/runs/org.gnome.clocks_20261008T031638_44354159` 沿原数据续跑，未清应用或替换冻结源；源码978f537，hash仍为42adec87ccbf2b9866f00fd991417253cabc9be33a9aa83425915ac1b1270227。专用容器rewalk-clock-fresh-20261005-02保留现场，Android未动。

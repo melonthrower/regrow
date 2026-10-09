@@ -1,6 +1,6 @@
 # 控件身份复核修改地图
 
-对应[设计](CONTROL_IDENTITY_REVIEW.md)。既有行锚核对自已导出的 `084235cecd82b1d5c6bc55553996957877e4bcf9`；本批实现已获下述有限保存帧验收，待导出固定最终源码锚。新文件不冒用既有行号。
+对应[设计](CONTROL_IDENTITY_REVIEW.md)。既有行锚核对自已导出的 `084235cecd82b1d5c6bc55553996957877e4bcf9`；本批实现已获下述有限保存帧验收；最终源码固定到 `533ca652a164a7dc001ed90736bd4bcd790f56b9`（下表为变更前入口，文末为该实现提交的准确行锚）。新文件不冒用既有行号。
 
 | 仓库相对文件 | 基准入口/行号 | 已实施修改 |
 | --- | --- | --- |
@@ -17,3 +17,17 @@
 验收案例：真实 Timer 删除后的旧新建回复应复用开始按钮而非继续按钮，原输入目标保持 pending；之后正常局部发现应复用稳定身份。重复位置跳过、无法选择/复核未决、different 不冒充 same、直接提交及幂等边界由聚焦检查辅助验证。实际结果和未验证范围见设计及月度日志，不能以 schema 通过代替身份/任务语义接受。
 
 已验证：完整原生0168选择→0169纠错→正式登记，以及0170普通局部发现；c0028复用、c0034原输入目标pending、0新控件/0GUI，实际任务与帧审计见月度日志。same复用与正常重复按钮重识别已具模型证据；different/uncertain等边界只有辅助检查，不列为原生通过。
+
+最终源码锚：`533ca652a164a7dc001ed90736bd4bcd790f56b9`，全部直接从该Git提交读取；这里的新文件已存在于此提交，不再使用变更前行号。后续仅文档锚定，不改变已验源码。
+
+| 仓库相对文件 | 实现入口及行范围 |
+| --- | --- |
+| experiments/clock_manual_20260919/control_identity_review.py | candidates:73–129；check_request:141–148；selection_request:151–169；selected_pair:172–180；attach:183–216；reviewed_request:219–246 |
+| experiments/clock_manual_20260919/discovery_step.py | commit:82–222 |
+| experiments/clock_manual_20260919/register_update.py | commit_update:108–381 |
+| experiments/clock_manual_20260919/step_repair.py | submission:91–104；request:149–224；perform:310–495 |
+| experiments/clock_manual_20260919/prompt_delivery.py | effective_role:22–26 |
+| experiments/clock_manual_20260919/history_disclosure.py | project:40–72 |
+| experiments/clock_manual_20260919/遍历prompt/纠错/控件身份候选选择.prompt | 1–3（该提交新文件） |
+| experiments/clock_manual_20260919/遍历prompt/纠错/控件身份两图复核.prompt | 1–4（该提交新文件） |
+| tests/test_control_identity_review.py | 1–255（该提交新文件） |

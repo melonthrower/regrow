@@ -89,7 +89,9 @@ def commit(root, run, call_ref):
     if request.get('dependency_candidates'):
         contract['properties']['dependency_updates']=request['response_schema']['properties']['dependency_updates']
     jsonschema.validate(reply,contract)
-    _,known,current=load(run)
+    prior,known,current=load(run)
+    if reg.read(prior/'source.json').get('stage')=='discovery-'+call_ref:
+        return reg.read(run/'knowledge_current.json')
     batch=completion.scoped_batch(known,current.get('discovery_completion') or {})
     if call_ref in batch.get('calls',[]):return reg.read(run/'knowledge_current.json')
     if current.get('next_action_mode')!='discover':raise ValueError('not awaiting discovery')
@@ -117,6 +119,7 @@ def commit(root, run, call_ref):
             state.update(discovery_mode='relocate',reason='local_position_unconfirmed',interactive_regions=[],observation=None)
         return publish(run,'expand-discovery-'+call_ref,expand)
     request,reply,audit=reg.sibling('region_identity').prepare(run,request,reply)
+    reg.sibling('control_identity_review').check_request(run,request,reply)
     ctx=request['discovery_context']
     if audit:reg.write_json(call/'visual_identity.json',{'matches':audit,'effective_candidate':reply})
     reply,missing,region_indices,control_indices=completion.prepare_registration(reply,{**request,'response_schema':contract},known,batch,reg.sibling('registration_diagnostics'))

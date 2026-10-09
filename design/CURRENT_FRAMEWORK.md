@@ -85,7 +85,7 @@ Clock续跑发现已投递但控件关联unconfirmed的旧父任务会重复none
 
 当前地图修复候选仍未接受：Stopwatch 虚报 Add、Timer 单位推测、历史控件被列为当前可操作及裁图/归属缺口仍需实际证据核对。本批结构整理不把这些候选、跨区块任务语义重复或已暂停运行变为已通过；具体范围见[身份](modules/stepwise_region_identity.md)、[监督](modules/stepwise_debug_loop.md)和[任务](modules/stepwise/tasks.md)。
 
-2026-10-09任务登记有限验证不消除旧图风险：旧启动快照接续的删除回复重复新建开始按钮身份；从新登记的启动记录连续推进的对照则正确复用。旧最终图/发现缺口尚未修订，不能把任务合同通过解释为全量身份或GUI续跑已接受，见[更新](modules/stepwise/updates.md)。
+2026-10-09任务登记有限验证不消除旧图风险：旧启动快照接续的删除回复重复新建开始按钮身份；从新登记的启动记录连续推进的对照则正确复用。新增的同Region候选选择→两图复核已在该原失败回复的完整副本中复用c0028，后续普通发现也复用；旧最终图/发现缺口仍未修订，不能称全量身份或GUI续跑已接受，见[身份复核](CONTROL_IDENTITY_REVIEW.md)与[更新](modules/stepwise/updates.md)。
 各内核还保留模型身份误判、前景/控件漏报、导航/恢复、异常生命周期与大文件职责债务；[原风险表](CURRENT_FRAMEWORK_DETAILS.md#6-当前全局风险)保留对应范围和反例，不以历史测试数宣称当前全图或跨应用稳定。最新机器、源码与停止点读 [SERVER_HANDOFF](SERVER_HANDOFF.md)。
 
 ## 7. 验证策略

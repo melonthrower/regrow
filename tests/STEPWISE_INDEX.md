@@ -357,3 +357,5 @@
 只读任务看板：`test_dashboard_task_focus.py`覆盖当前任务/工作区块分离、清点阶段不冒用旧任务、上一round隔离、投递与登记区分及证据路径；`test_stepwise_dashboard.py`覆盖累计/进行中计账。界面行为另用真实run的只读HTTP及浏览器检验，不能替代遍历验收。
 
 `test_task_update_list.py`：局部任务数组、同控件旧问题显式回答、条件边界、准备保留目标、遗漏项续接不自动结束及拆分引用。与task_action_binding/task_knowledge_flow/control_context/suspended_update_recovery/history_context_module按影响选择。
+
+控件新建冲突：`test_control_identity_review.py`覆盖仅同Region、同屏重复不复核、同位置多历史候选、原场景/完整上下文、same/different/uncertain、直接提交与Runner续接。相邻合同选`test_history_disclosure.py`、`test_stepwise_update_region_matching.py`及`test_control_layout_matching.py`；旧坐标落点绑定测试与现行动作显式候选合同不符，不以其旧断言恢复已删除行为。

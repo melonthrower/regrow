@@ -185,6 +185,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
             os.replace(tmp_pointer,sibling('knowledge_transaction').pointer(current))
         return pointer  # Never roll back a newer current pointer on old replays.
 
+    if current.exists():sibling('control_identity_review').check_request(run,request,reply)
     flow=sibling('stepwise_flow')
     if current.exists():
         prior=run/read(current)['snapshot']

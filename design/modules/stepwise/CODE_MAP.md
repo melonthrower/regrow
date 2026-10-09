@@ -247,3 +247,5 @@
 只读任务看板：`tools/stepwise_dashboard.py`提供HTTP/同快照投影，加载维护中的progress显示层并注入冻结region_tasks完成/覆盖语义，region_graph仍来自冻结源；`tools/stepwise_dashboard_view.py`提供当前区块/任务及原动作证据，`tools/stepwise_dashboard.html`负责三步高亮、任务列表和前后图。不改写冻结遍历源，不包含调度或GUI控制。
 
 任务增量登记集中在`experiments/clock_manual_20260919/task_updates.py`：catalog构造局部任务目录，current读取当前项，apply在正常更新事务结算显式答案，latest_suggestion读取原任务最后一次尝试建议；不另建resolved_tasks。
+
+控件身份复核：`control_identity_review.py`集中候选范围、原始匹配分组、单候选选择与原场景复核的临时合同；发现/更新发布共用`check_request`，`step_repair`复用原Runner持久续接，`prompt_delivery/history_disclosure`保留原角色规则和完整上下文。不承担GUI投递、旧图合并或任务完成。

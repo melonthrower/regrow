@@ -1,0 +1,4 @@
+本次只核对指定的一对控件：历史对象原场景与当前对象原场景。像素匹配只提供候选，不是相同身份的结论。结合所在区块、周边结构、历史职责和当前图判断；框只用于指认对象，不是点击要求。不要复查所有相似按钮，不为身份核对执行点击，也不合并历史记录。
+control_identity填same、different或uncertain，具体视觉依据写现有reason。用途尚未知、临时状态不同或同控件的条件用途变化，不足以证明新身份；外观相同也不足以证明同一对象。
+能确认同一对象：resolution=revise，完整proposal中复用指定previous_name；发现步identity=same。明确是不同对象：resolution=revise，保留新对象名称和空previous_name，reason解释场景中的区别；发现步identity=new。仍不确定：发现步可用revise和identity=uncertain保留原清点缺口；更新步用blocked或defer、proposal=null保留实际动作证据和待登记步骤，不新建稳定身份。
+只修订这次身份判断及必要的关联内容；原任务、动作结果与其他区块仍按原合同登记。保留被核对对象的区块身份和身份框，列表可重排，当前坐标仍来自原请求当前图，历史框不用于当前选点。

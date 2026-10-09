@@ -97,6 +97,8 @@ def submission(run,ref):
         if reply['resolution']=='edit_record' and normalized.exists():
             return read(folder/'effective_request.json'),read(normalized)
         if reply['resolution']!='revise' or reply['proposal'] is None:raise ValueError('not a revised candidate')
+        if q.get('control_identity_pair'):
+            return helper('control_identity_review').reviewed_request(q,reply),deepcopy(reply['proposal'])
         effective=folder/'effective_request.json'
         return (read(effective) if effective.exists() else deepcopy(q['original_request'])),deepcopy(reply['proposal'])
     return q,reply
@@ -215,10 +217,11 @@ def request(root,job,context):
         dynamic['图片说明']='依图片顺序逐张核对用途；历史尝试前后图仅解释过去的投递与效果，不代表当前状态。补充观察也不能替代原动作后图。'
     dynamic['图片顺序']=image_roles
     text=json.dumps(dynamic,ensure_ascii=False,indent=2)
-    return {**original,'role':'step_correction','stage':'step_correction','original_request':deepcopy(original),
+    correction = {**original,'role':'step_correction','stage':'step_correction','original_request':deepcopy(original),
             'system_prompt':'\n\n'.join(p['text'] for p in parts),'user_prompt':text,'dynamic_prompt':text,
             'screenshots':frames,'image_refs':frames,'response_schema':schema,
             'fixed_parts':parts}
+    return helper('control_identity_review').attach(root,job,correction)
 
 
 class Runner:
@@ -392,6 +395,8 @@ class Runner:
                         raise Paused('repair_pending','区块归属需实地复查；原记录与提案已保存')
                     if getattr(error,'defer_task',False):self.stop(job,str(error))
                     if getattr(error,'blocked_by',None):job['blocked_by']=error.blocked_by
+                    if getattr(error,'control_identity_pair',None):job['control_identity_pair']=error.control_identity_pair
+                    if getattr(error,'control_identity_candidates',None):job['control_identity_candidates']=error.control_identity_candidates
                     job['error']=diagnostic(error);job['status']='repair'
                     job['history'].append({'call':job['call'],'error':diagnostic(error)})
                     self.save(job);continue
@@ -428,8 +433,16 @@ class Runner:
             job['call']=ref;job['history'].append({'call':ref,'role':q.get('role')})
             try:
                 if repairing:
+                    if q.get('role')=='control_identity_selection':
+                        pair=helper('control_identity_review').selected_pair(q,reply)
+                        if pair is None:self.stop(job,'当前场景无法选定历史控件：'+reply['reason'])
+                        job['control_identity_pair']=pair
+                        job.pop('control_identity_candidates',None)
+                        job['history'].append({'call':ref,'identity_candidate':reply['candidate'],'reason':reply['reason']})
+                        job.update(status='repair',error='已按场景选定一个候选；现在仅核对这一对原场景，不直接登记身份')
+                        self.save(job);continue
                     repeated=reply.get('proposal') if isinstance(reply,dict) else None
-                    if repeated is not None:
+                    if repeated is not None and not q.get('control_identity_pair'):
                         check=hashlib.sha256(json.dumps([repeated,job['request'],job.get('supplements'),reply.get('record_edit')],sort_keys=True).encode()).hexdigest()
                         if check in job['seen']:self.stop(job,'重复提交同一证据下已拒绝的提案')
                     if job['stage']=='shared_control_review':job['last_shared_reply']=deepcopy(reply)
@@ -445,6 +458,13 @@ class Runner:
                         raise ValueError('resolution=edit_record需要record_edit说明具体修订。')
                     if resolution not in ('revise','edit_record') and reply['record_edit'] is not None:
                         raise ValueError(f'resolution={resolution}要求record_edit=null；保留修复方式，不混入记录修订。')
+                    if q.get('control_identity_pair'):
+                        if reply['record_edit'] is not None:raise ValueError('本次两图复核只修正当前提案，不修改旧记录')
+                        reviewed=helper('control_identity_review').reviewed_request(q,reply)
+                        if resolution=='revise':
+                            job['request']=reviewed
+                            atomic(self.run/'calls'/ref/'effective_request.json',reviewed)
+                            job.pop('control_identity_pair',None)
                     if resolution in ('blocked','defer'):
                         job['blocked_by']=reply['blocked_by']
                         self.stop(job,reply['reason'])

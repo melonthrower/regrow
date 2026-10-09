@@ -20,7 +20,7 @@ ALIASES = {'discovery': 'observation', 'action': 'action_selection',
 
 
 def effective_role(request):
-    if request.get('role') == 'step_correction' or request.get('stage') == 'correction':
+    if request.get('role') in ('step_correction', 'control_identity_selection') or request.get('stage') == 'correction':
         return effective_role(request.get('original_request', {}))
     role = request.get('role') or request.get('stage')
     return ALIASES.get(role, role)

@@ -7,7 +7,7 @@ import json
 
 
 ROLES={'task_result_review','observation','task_proposal','action_selection','observation_update',
-       'function_registration','step_correction','recovery','branch_correction'}
+       'function_registration','step_correction','control_identity_selection','recovery','branch_correction'}
 
 
 def render(value,depth=0):
@@ -47,7 +47,7 @@ def project(request):
         return {**request,'user_prompt':grouped_facts(text)}
     if not isinstance(value,dict):return request
     value=deepcopy(value);suffix=text[end:]
-    if role=='step_correction':
+    if role in ('step_correction','control_identity_selection'):
         nested=value.get('原动态上下文')
         if isinstance(nested,str):
             try:

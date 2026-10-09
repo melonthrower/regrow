@@ -59,7 +59,7 @@ def history(region, target=''):
             '历史结果': rows, '用途': '与本次实际结果比较职责差异；普通值变化和依进入路径返回不代表不同区块。'}
 
 
-def apply(records, source, split, call, observation, attempt):
+def apply(records, source, split, call, observation, attempt, *, frame=None):
     """Return new source/control and a before-frame crop payload for the writer."""
     if not split: return source, None, None
     region = deepcopy(split['region']); controls = deepcopy(split['controls'])
@@ -84,7 +84,7 @@ def apply(records, source, split, call, observation, attempt):
     region.update(name=split['name'], description=split['description'])
     payload = {'regions': [region], 'controls': controls}
     reg = helper('register_update')
-    rid = reg.materialize_regions(records, payload, call, observation)[0]
+    rid = reg.materialize_regions(records, payload, call, observation, frame=frame)[0]
     record = records[rid]
     cid = next(cid for cid,c in record['controls'].items() if c['name'] == split['acted_control'])
     record['behavior_context'] = split['context']

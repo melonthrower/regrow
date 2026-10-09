@@ -54,7 +54,7 @@ Region 位置与模板资格分开：`region_evidence.region_observation` 保存
 身份未确认项沿discovery_completion及原图保存，可信区块/控件继续交给任务步。区块内未确认控件同时记registration_gaps.discovery，不升级为new/same，也不虚报清点完整。新帧重新发现，原同帧缺口留history；原回复及快照不改写。
 
 ## 可选模板与真实前景分开（2026-10-06）
-`foreground_scope.audit`严格检查声明前景和当前点击范围；可选Region/控件身份框异常只记template_rejections，不缓存坏边界。`identity_templates.crop_rejection`与`register_update.save_region_images`按真实来源图拒绝越界、前景外、分离或纯色身份模板，原观察/原答与点击证据保留；不以补模板为理由否定已执行动作。身份/归属冲突仍沿原纠错。`update_visibility.locate_retained`不将旧角色的匹配图标再次列到本帧已确认的不同控件位置；不合并或删除旧记录，不能因此宣称全部视觉身份可靠。
+`foreground_scope.audit`严格检查声明前景和当前点击范围；可选Region/控件身份框异常只记template_rejections，不缓存坏边界。`identity_templates.crop_rejection`与`register_update.save_region_images`按真实来源图拒绝越界或纯色身份模板；控件另检查前景范围及所属区块相交，原观察/原答与点击证据保留；不以补模板为理由否定已执行动作。身份/归属冲突仍沿原纠错。`update_visibility.locate_retained`不将旧角色的匹配图标再次列到本帧已确认的不同控件位置；不合并或删除旧记录，不能因此宣称全部视觉身份可靠。
 
 归属诊断只有合格的当前Region范围才能对真实click_bbox提出几何矛盾；现代记录的click_bbox=null不退回可选身份框。被拒绝的可选框也不能用于排除另一历史角色。历史地图正文中的旧共同地图编号会明确限定为原请求编号，不在新稀疏列表按同号寻址。
 
@@ -73,3 +73,9 @@ source_region_split只处理来源区块本身结构或职责差异；旧图已�
 ## 新建冲突的局部原场景复核（2026-10-09）
 `control_identity_review`在发现/更新正式发布前检查已确认Region内的新控件提案。一个历史模板对应多个当前位置不进入此机制；同一当前位置对应多个历史身份时，Luna先按当前场景及历史用途/条件选一个，再仅比较该候选的历史原场景与当前原场景。原任务/历史/前后图保留，像素相似度不直接合并身份。普通明确previous_name复用仍走原路径。
 无法选择或复核未决不新增稳定身份；缺图/缺模板不声称消除了冲突，旧重复记录不自动迁移。临时决定绑定同一对象与帧，无长期新字段；幂等重放先返回原发布。实现、验收状态及边界见[设计](../../CONTROL_IDENTITY_REVIEW.md)。
+
+## Region边界与前景范围（2026-10-09）
+Region bbox只校验非空、未倒置且在原图内，不要求完整包含于某个interactive_areas矩形。Region模板也不再应用该包含门槛，仍需clear、有理由且非纯色。registration_diagnostics.region_surface按发现图1/更新图2核对原图边界，使含留白的有效区块仍能诊断完全分离的控件归属。前景输入接管仍按真实截图判断；控件点击、控件模板及历史控件匹配继续使用前景范围。
+同帧边界按本次登记的可交互Region保留；局部清点保留其他已确认同帧分区，不把未重报当作消失。全局重新判断时移除已不在当前前景的旧分区；换帧不继承。未确认/越界的边界不从前景框补齐。设计与验证范围见[边界设计](../../REGION_BOUNDARY_SCOPE.md)。
+
+本批保存帧另见控件模板质量缺陷：Privacy身份/图标裁图截断眼睛/小锁却标clear，Security标题轻微切边。身份复用正确不代表这些裁图合格；未修改的控件坐标/质量声明及裁图校验仍未识别该问题。原答和原图保留，不将Region边界有限验收扩大为模板质量验收。

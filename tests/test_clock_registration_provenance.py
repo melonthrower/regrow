@@ -39,15 +39,19 @@ def proposal():
             'controls':[{'name':'plus','previous_name':'','region_index':0,'bbox':{'left':10,'top':10,'right':30,'bottom':30},'click_bbox':{'left':10,'top':10,'right':30,'bottom':30}}]}
 
 
-def test_disjoint_control_owner_reports_specific_correction():
-    errors=mod('registration_diagnostics').collect('update',{},proposal(),{'r1':{'name':'panel','controls':{}}})['errors']
+def test_disjoint_control_owner_reports_specific_correction(tmp_path):
+    from PIL import Image
+    frame=tmp_path/'after.png';Image.new('RGB',(500,500)).save(frame)
+    errors=mod('registration_diagnostics').collect('update',{},proposal(),{'r1':{'name':'panel','controls':{}}},frame=frame)['errors']
     assert any(e['code']=='control_owner_surface' for e in errors)
 
 
-def test_missing_or_partly_overlapping_box_is_not_proof_of_wrong_owner():
+def test_missing_or_partly_overlapping_box_is_not_proof_of_wrong_owner(tmp_path):
+    from PIL import Image
+    frame=tmp_path/'after.png';Image.new('RGB',(500,500)).save(frame)
     for box in [None,{'left':95,'top':110,'right':150,'bottom':140}]:
         p=proposal();p['controls'][0]['click_bbox']=box;p['controls'][0]['bbox']=box
-        errors=mod('registration_diagnostics').collect('update',{},p,{'r1':{'name':'panel','controls':{}}})['errors']
+        errors=mod('registration_diagnostics').collect('update',{},p,{'r1':{'name':'panel','controls':{}}},frame=frame)['errors']
         assert not any(e['code']=='control_owner_surface' for e in errors)
 
 

@@ -28,21 +28,20 @@ def check_visibility(reply,region_refs,changes):
     if errors:raise Rejected({'errors':errors,'unchecked':[]})
 
 
-def region_surface(reply,index):
+def region_surface(reply,index,frame=None):
     """Only a qualified current Region box can contradict a true click area."""
     box=reply['regions'][index].get('bbox')
-    if not box:return None
+    if not box or frame is None:return None
     values=[box[k] for k in ('left','top','right','bottom')]
     if not (0<=values[0]<values[2] and 0<=values[1]<values[3]):return None
-    areas=reply.get('foreground',{}).get('interactive_areas')
-    if areas is not None:
-        import foreground_scope
-        scope={'interactive_areas':[[a['bbox'][k] for k in ('left','top','right','bottom')] for a in areas]}
-        if not foreground_scope.contains(values,scope):return None
+    if frame is not None:
+        from PIL import Image
+        with Image.open(frame) as image:
+            if values[2]>image.width or values[3]>image.height:return None
     return box
 
 
-def collect(stage,q,p,records,binding=None):
+def collect(stage,q,p,records,binding=None,*,frame=None):
     errors=[];unchecked=[]
     if stage=='update':
         from task_settlement import validation_reply
@@ -61,6 +60,8 @@ def collect(stage,q,p,records,binding=None):
             add('schema','/'+ '/'.join(map(str,e.absolute_path)),stage,e.instance,e.message,'按该字段格式修订，不修改其他真实证据。')
         if errors:return {'errors':errors,'unchecked':['结构不合格，依赖这些字段的身份、归属和结果校验尚未执行。']}
     if stage in ('discovery','update'):
+        frames=q.get('screenshots',[]);frame_index=1 if stage=='update' else 0
+        if frame is None:frame=frames[frame_index] if len(frames)>frame_index else None
         if stage=='discovery':
             import local_partition
             errors.extend(local_partition.errors(q,p))
@@ -117,7 +118,7 @@ def collect(stage,q,p,records,binding=None):
                 add('owner',path+'/region_index',name,idx,list(range(len(rids))),'归属到本轮实际区块。');continue
             rid=rids[idx];region=records.get(rid,{});controls=region.get('controls',{})
             obj=(region.get('name') or p['regions'][idx]['name'])+' → '+name
-            rb=region_surface(p,idx)
+            rb=region_surface(p,idx,frame)
             cb=c.get('click_bbox') if 'click_bbox' in c else c.get('bbox')
             if rb and cb and (cb['right']<=rb['left'] or cb['left']>=rb['right']
                               or cb['bottom']<=rb['top'] or cb['top']>=rb['bottom']):
@@ -187,7 +188,7 @@ def collect(stage,q,p,records,binding=None):
     return {'errors':errors,'unchecked':unchecked}
 
 
-def check(stage,q,p,records,binding=None):
-    report=collect(stage,q,p,records,binding)
+def check(stage,q,p,records,binding=None,*,frame=None):
+    report=collect(stage,q,p,records,binding,frame=frame)
     if report['errors']:raise Rejected(report)
     return report

@@ -1,3 +1,18 @@
+# 2026-10-09 16:36（北京时间）双端Settings预算停止
+
+只读终点核对：桌面与Android都累计99/100次Luna调用，各余1次不足以选择动作并登记结果，最后一轮status=budget_limit且0GUI。两端pending_step、execution_pending、visual_navigation_pending均无待处理项；不是全应用完成。沿用下方原run/冻结源，未热更新新边界候选、清数据或加预算。原始终点与复核在外层artifacts/runs/settings_dual_20261009_01/checkpoints/20261009T083634050331Z。
+
+| 应用 | 已发现区块/控件 | 探索动作已登记 | 探索任务done/pending/blocked/record_only | 账面区块清点完成 | 功能记录 |
+| --- | --- | --- | --- | --- | --- |
+| GNOME Settings | 32/142 | 34/34 | 28/0/2/5 | 2/32 | 1 |
+| Android Settings | 14/85 | 30/30 | 13/17/7/42 | 6/14 | 5 |
+
+Android另有2次真实系统返回恢复命令，故GUI命令账本32，不应将其算成32个探索动作。桌面首调用无HTTP响应，后98份回复；Android99份回复。桌面主要打开分类入口，29个已见区块尚无正式任务，pending=0不代表覆盖完毕；Android主要深入Network & internet→Internet→移动网络→数据阈值/APN。record_only以及带未执行限制的功能记录不表示已测试保存设置。
+
+具体缺口：桌面侧栏滚动后仍因未见底暂挂；Connectivity已选中、右侧内容可见，却因再次点击没有变化而暂挂入口。Android有未见底滚动、无变化的状态行/摘要，以及Data limit关闭前置等；Data warning单位已在r0009登记MB/GB（a0020），r0007上层暂挂说明仍含“单位尚未展开”，同时数值范围/精度仍未知，不能据此直接手改为done。保留原图和任务，不给相同暂挂盲加预算。
+
+---
+
 # 2026-10-09 13:12（北京时间）双端 Settings 100 调用：已启动，运行中
 
 用户授权桌面 GNOME Settings 与 Android Settings 各 100 次 Luna 调用，共 200 次，纠错、恢复和总结均计入。新建两份图，保留应用数据、旧 Clock 原件和冻结源；没有清缓存、重启容器或重置系统设置。两端共用 `artifacts/runs/settings_dual_20261009_01/desktop/source`，内容来自已接受的 8512b13，hash=`f4c7822101e8bea5d32ca3456f4e791f30ba7c118d1115c3e9231df7e5f07036`。以下运行路径相对外层工作区；活动源码仍由 DEVELOPMENT 定位。

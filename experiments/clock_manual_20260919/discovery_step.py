@@ -144,7 +144,7 @@ def commit(root, run, call_ref):
             state.pop('discovery_completion',None)
         obs=batch.get('observation','discovery:'+call_ref)
         retained={rid:deepcopy(records[rid]) for rid in batch.get('regions',[]) if rid in records}
-        refs=reg.materialize_regions(records,reply,call_ref,obs,ctx['region_names'])
+        refs=reg.materialize_regions(records,reply,call_ref,obs,ctx['region_names'],frame=run/frame)
         resolved=reg.sibling('visual_region_locator').resolve_foreground_check(ctx['visual_plan'],run/frame,refs,reply['focus_presence'],call_ref,previous=state.get('foreground_resolution'))
         if resolved:state['foreground_resolution']=resolved
         reg.save_region_images(records,refs,reply,call_ref,run,frame,snapshot,temp)

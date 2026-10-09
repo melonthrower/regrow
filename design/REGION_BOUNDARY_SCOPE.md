@@ -1,0 +1,15 @@
+# Region边界与可交互范围
+
+Android Settings的恢复图中，区块框为(0,140,1080,2280)，交互范围为(44,180,1036,2280)。原实现因四周留白差异拒绝缓存区块边界，下一步又要求重定位。
+
+区块框描述区块在原图中的边界；interactive_areas描述当前可接受输入的位置。二者不要求矩形包含。发现与更新均只对区块框检查非空、未倒置和截图内；模板仍另检查清晰性与有效外观。控件点击、控件身份框、历史控件匹配仍受前景范围约束。没有新字段或开关。
+
+同帧缓存采用正常登记的可交互区块身份。局部清点保留先前同帧其他分区；全局重新判断则只保留仍可交互的区块。缓存不跨截图，不根据矩形相交推断语义身份或输入接管。
+
+接线：foreground_scope.audit → 普通发现/更新登记 → foreground_scope.remember → visual_region_locator.plan；register_update.save_region_images在区块模板处同步取消前景包含门槛。普通与纠错均经repair_stages.accept。registration_diagnostics.region_surface同步按当前来源截图检查边界资格，不再以foreground包含关系跳过控件归属诊断。repair_stages从run解析更新图2；发现和更新的materialize_regions复用各自真实来源图，source_region_split使用图1。缺图不构造几何归属证据。
+
+验收案例：真实0013原答的完整登记回放应进入local并复用r0001；新Luna请求采用真实恢复检查点的完整任务/历史/截图，经正常发现、校验、纠错及登记；相邻检查覆盖坏框、遮挡、控件前景范围、同帧分区保留及换帧失效。保存帧不执行GUI，不等于实际导航验收。
+
+已验证范围：102项聚焦检查通过，6项已在基准复现的无关旧失败排除；真实0013发现和0017更新原答经完整Runner回放通过，独立阅读及修订复审通过。用户确认后新Luna保存帧2HTTP/0GUI：0100以区块底边2310、前景底边2290登记r0001并缓存边界；0101正常local复用c0013 Security/c0014 Privacy，无新身份、任务未改，下一请求进入action_selection。原答未编辑，原run不变。Privacy身份图和图标图截断眼睛/小锁，不能作为合格模板；Security标题轻微切边。原图身份仍可辨识，但该既有裁图质量缺陷未解决，本批不接受为模板质量改进。该结果不是GUI导航或全应用验收；无新桌面模型案例或全门。
+
+两轮已冻结Settings运行未热更新，原失败证据不改写。验证明细见月度日志；变更定位另附REGION_BOUNDARY_SCOPE_CHANGE_MAP.md。

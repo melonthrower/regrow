@@ -11,7 +11,9 @@ def guidance():
             '其后的设置页、导航和标题栏即使清晰也不能仅凭外观匹配算作当前可操作区。'
             '不能确认它是否接管输入时说明uncertainty，不假定整个窗口均可操作。'
             '相反，只有一段说明文字的tooltip不成为交互菜单；保留其所属前景窗口，'
-            '真实遮挡按已有异常恢复和身份图质量规则处理。regions及有效命中只来自上述可交互范围；'
+            '真实遮挡按已有异常恢复和身份图质量规则处理。regions只报告属于当前可交互表面的区块；'
+            '区块bbox可包含该表面的留白，不要求整个区块框包含在某个interactive_areas矩形内。'
+            '有效控件命中仍只来自声明的可交互范围；'
             '即使所有历史候选都在背景，也要报告实际菜单，可判为新身份，不能为了复用旧身份扩大前景。')
 
 
@@ -86,14 +88,16 @@ def audit(run,job):
     q,reply=step_repair.submission(run,job['call'])
     frame=Path(run)/q['screenshots'][1 if job['stage']=='update' else 0]
     scope=validate(reply['foreground'],frame)
+    from PIL import Image
+    with Image.open(frame) as image:width,height=image.size
     identified=[];issues=[]
     for index,region in enumerate(reply.get('regions',[])):
         box=region.get('bbox')
         if box:
             values=[box[k] for k in ('left','top','right','bottom')]
-            if not (values[0]<values[2] and values[1]<values[3] and contains(values,scope)):
+            if not (0<=values[0]<values[2]<=width and 0<=values[1]<values[3]<=height):
                 issues.append({'source_field':f'/regions/{index}','field':'image',
-                    'reason':'区块框为空、倒置或不在本轮前景；不缓存该边界或保存模板'})
+                    'reason':'区块框为空、倒置或超出当前截图；不缓存该边界或保存模板'})
             else:identified.append({'source_field':f'/regions/{index}','bbox':box})
     issues.extend(validate_control_boxes(reply,scope))
     snapshot,records,_=discovery_step.load(run)
@@ -110,11 +114,15 @@ def audit(run,job):
 def remember(run,value):
     if value is None:return
     import discovery_step
-    _,records,_=discovery_step.load(run)
+    _,records,state=discovery_step.load(run)
     path=Path(run)/'foreground_scopes'/(value['frame_sha256']+'.json')
     previous=json.loads(path.read_text()) if path.exists() else {}
+    active=set(state.get('interactive_regions',[]))
+    # A local inventory only revisits its focus, not the other same-frame partitions.
+    if active and (state.get('observation') or {}).get('scope')=='local':
+        active.update(previous.get('scope',{}).get('region_bounds',{}))
     value['scope']['region_bounds']={rid:box for rid,box in previous.get('scope',{}).get('region_bounds',{}).items()
-        if rid in records and contains(box,value['scope'])}
+        if rid in records and rid in active}
     for item in value.get('identified_regions',[]):
         ids=[rid for rid,r in records.items() if any(
             o.get('evidence',{}).get('source_call')==value.get('source_call')

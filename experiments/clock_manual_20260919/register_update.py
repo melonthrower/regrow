@@ -231,7 +231,7 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
         if reply['action_result']['exception']!='none' or not edge.get('before_image'):
             raise ValueError('行为分离需要正常动作结果和真实动作前截图')
         source,control,split_payload=sibling('region_behavior_split').apply(
-            records,source,split,call_ref,edge['before_observation'],attempt_ref)
+            records,source,split,call_ref,edge['before_observation'],attempt_ref,frame=run/edge['before_image'])
         owner=records[source]
         split_record=deepcopy(owner)
         edge.update(source_region=source,source_control=control)
@@ -248,7 +248,8 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
                         if c['name'] in names:c['previous_name']=c['name']
         if working_ref==original_source:working_ref=source
 
-    delta_refs=materialize_regions(records,reply,call_ref,edge['after_observation'],request.get('region_names'))
+    delta_refs=materialize_regions(records,reply,call_ref,edge['after_observation'],request.get('region_names'),
+        frame=run/edge['after_image'] if edge.get('after_image') else None)
     sibling('registration_diagnostics').check_visibility(reply,delta_refs,region_changes)
     visibility=sibling('update_visibility')
     region_refs=visibility.regions(delta_refs,region_changes,reply['action_result']['exception'])
@@ -381,8 +382,8 @@ def commit_update(root, run, graph_ref, call_ref, attempt_ref):
     return pointer
 
 
-def materialize_regions(records, reply, call_ref, observation, region_names=None):
-    sibling('registration_diagnostics').check('update',{'region_names':region_names or {}},reply,records)
+def materialize_regions(records, reply, call_ref, observation, region_names=None, *, frame=None):
+    sibling('registration_diagnostics').check('update',{'region_names':region_names or {}},reply,records,frame=frame)
     flow=sibling('stepwise_flow')
     # Materialize new/changed model candidates; exact previous names only.
     # Unknown or ambiguous identities stop publication instead of guessing.
@@ -438,14 +439,14 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
     import foreground_scope
     foreground=reply.get('foreground',{})
     scope=(foreground_scope.validate(foreground,run/image_ref) if 'interactive_areas' in foreground else None)
-    def crop(r, name, box, *, identity_field=None, observed=None, owner=None):
+    def crop(r, name, box, *, identity_field=None, observed=None, owner=None, region=False):
         if box is None:return None
         from PIL import Image
         source_image=run/image_ref
         with Image.open(source_image) as image:
             xy=[box[k] for k in ('left','top','right','bottom')]
             if identity_field:
-                reason=templates.crop_rejection(box,image.size,scope,owner)
+                reason=templates.crop_rejection(box,image.size,None if region else scope,owner)
                 if not reason and templates.uniform_pixels(image.crop(xy)):
                     reason='身份裁图完全单色，没有可区分外观；不使用该模板，不判定对象不存在'
                 if reason:
@@ -463,7 +464,7 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
         r=records[ref];v=r['observations'][-1]
         proposal=reply['regions'][int(v['evidence']['source_field'].split('/')[-1])]
         v['source_image']=os.path.relpath(run/image_ref,snapshot/f"regions/{r['id']}")
-        visual=crop(r,'region',templates.admitted_box(proposal),identity_field='image',observed=v)
+        visual=crop(r,'region',templates.admitted_box(proposal),identity_field='image',observed=v,region=True)
         if visual:v.update(image=visual['image'],source_image=visual['source_image'])
         for cid,c in r['controls'].items():
             v=c['observations'][-1]

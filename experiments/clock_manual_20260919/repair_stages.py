@@ -88,7 +88,8 @@ def accept_candidate(root,run,job):
         q,candidate,_=helper('region_identity').prepare(run,q,job['candidate'])
         job={**job,'candidate':candidate}
     if job.get('candidate') is not None and job['stage']!='discovery':
-        helper('registration_diagnostics').check(job['stage'],q,job['candidate'],records,binding)
+        frame=Path(run)/q['screenshots'][1] if job['stage']=='update' else None
+        helper('registration_diagnostics').check(job['stage'],q,job['candidate'],records,binding,frame=frame)
 
     stage=job['stage'];ref=job['call']
     if stage in ('discovery','task_proposal','function_registration','task_result_review'):

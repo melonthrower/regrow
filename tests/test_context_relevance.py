@@ -251,17 +251,19 @@ def test_preparation_retains_the_explicit_parent_condition_effort():
     assert set(h['events'])=={'a0001','a0003','a0004'}
 
 
-def test_optional_region_box_outside_foreground_is_not_owner_proof():
-    # Same declared foreground, trustworthy click area, but a bad optional Region crop.
+def test_optional_region_box_outside_screenshot_is_not_owner_proof(tmp_path):
+    # A bad optional Region crop cannot contradict a trustworthy click area.
+    frame=tmp_path/'after.png';Image.new('RGB',(200,100)).save(frame)
+    q={'region_names':{},'screenshots':['unused-before.png',str(frame)]}
     b=lambda l,t,r,bt:dict(left=l,top=t,right=r,bottom=bt)
-    p={'regions':[{'name':'Menu','previous_name':'','parent_index':None,'bbox':b(0,0,50,50)}],
+    p={'regions':[{'name':'Menu','previous_name':'','parent_index':None,'bbox':b(200,0,250,50)}],
        'controls':[{'name':'Select','previous_name':'','region_index':0,'bbox':b(110,10,150,30),
                     'click_bbox':b(110,10,150,30)}], 'previous_regions':[],
        'foreground':{'interactive_areas':[{'bbox':b(100,0,200,100)}]}}
-    errors=mod('registration_diagnostics').collect('update',{'region_names':{}},p,{})
+    errors=mod('registration_diagnostics').collect('update',q,p,{})
     assert not any(e['code']=='control_owner_surface' for e in errors['errors'])
     p['regions'][0]['bbox']=b(100,50,200,100)
-    errors=mod('registration_diagnostics').collect('update',{'region_names':{}},p,{})
+    errors=mod('registration_diagnostics').collect('update',q,p,{})
     assert any(e['code']=='control_owner_surface' for e in errors['errors'])
 
 

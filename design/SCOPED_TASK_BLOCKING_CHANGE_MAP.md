@@ -2,7 +2,7 @@
 
 对应[设计](SCOPED_TASK_BLOCKING.md)。状态：已实现并完成本页限定验证，未执行新GUI。
 
-源码提交：待本批实现提交后固定。开发基准 `69610badfbbc10089e0a79cc1e92446d3f6b9b8a`；最终冻结源码 source-v4 SHA256 `f4c7822101e8bea5d32ca3456f4e791f30ba7c118d1115c3e9231df7e5f07036`。下表是当前已实现位置，operation_blocking为本批新文件，不是旧版既有函数锚。
+源码提交：[`d9588def`](https://github.com/melonthrower/regrow/commit/d9588def6a677f29a2d95344d8406b759ad9d242)。开发基准 `69610badfbbc10089e0a79cc1e92446d3f6b9b8a`；最终冻结源码 source-v4 SHA256 `f4c7822101e8bea5d32ca3456f4e791f30ba7c118d1115c3e9231df7e5f07036`。下表是当前已实现位置，operation_blocking为本批新文件，不是旧版既有函数锚。
 
 | 仓库相对路径 | 已实现函数及行号 | 原行为与修改 |
 | --- | --- | --- |

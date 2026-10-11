@@ -1,3 +1,15 @@
+# 2026-10-11 Clock 50 调用上限：候选实测停止，未验收
+
+本机外层工作区 `artifacts/runs/clock_context_50_20261011_01`；固定入口 `batch.json`，真实 run `runs/org.gnome.clocks_20261011T070746_9a849965`。沿用专用桌面 `rewalk-clock-fresh-20261005-02`，新图、保留应用数据，未清数据或重启容器，Android 未动。运行冻结源 `source` 的 hash 为 `36560fe8b8ba779b9c0b1544021eef4f9c7d2759b495a127f2788479c83c511b`，对应当前未验收候选；本次没有修改或接受框架代码/提示。
+
+07:07:39–07:42:20 UTC，49/50 次实际 Luna 调用，含 5 次纠错、2 次停滞切换、0011 无回复失败；48 份完整原答未经改写。0011 在 a0003 已投递后中断，正常入口续接、0012 只补登记，无 GUI 重放。7 次点击（含关闭菜单准备）均已提交，所有 pending_step/execution_pending/visual_navigation_pending 均空，驱动已结束；尾余 1 次不足动作选择+登记，budget_limit。最后指针 `knowledge_snapshots/discovery-0049-dc2fb918fad7`，最后实际动作 a0007 把 Timer 小时从 00 改为 01，停图 01:00:00、未启动计时；之后只是观察/暂挂，未导航到 Stopwatch。不要重放任何已执行动作。
+
+图 10 区块（6 Clock、4 范围外 Settings）/22 控件；任务 4 done、9 record_only、4 blocked。添加入口无弹窗保留未解；Timer 小时动作因显示串未关联稳定控件，原任务未结算，分钟/秒未操作却随区块暂挂。World 与三个辅助入口的错误去向仍在；0032 清晰身份图因不可交互被拒存，旧耦合未消除；初始截字页签图后来恢复不代表准入已修。49 次调用中，48 次已知用量合计 568,054 tokens；0011 失败调用用量未知；两段停滞/恢复 24 调用、238,028 tokens，不能据正文变短宣称整体优化。
+
+原请求/原答/图片/快照/冻结源保留在本批运行目录；统计与陌生读者审阅位于同名 `artifacts/tmp_tests`，脱敏便携包在 `to_astra/clock_context_50_20261011_01`。本轮只保存已核对的停止事实，候选仍未验收、不合入或推送；旧 20 次保存帧账本不重置。续跑须另获调用额度并核对现场，不能把剩余 1 次当下一轮全额。
+
+---
+
 # 2026-10-09 16:36（北京时间）双端Settings预算停止
 
 只读终点核对：桌面与Android都累计99/100次Luna调用，各余1次不足以选择动作并登记结果，最后一轮status=budget_limit且0GUI。两端pending_step、execution_pending、visual_navigation_pending均无待处理项；不是全应用完成。沿用下方原run/冻结源，未热更新新边界候选、清数据或加预算。原始终点与复核在外层artifacts/runs/settings_dual_20261009_01/checkpoints/20261009T083634050331Z。

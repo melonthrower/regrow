@@ -32,24 +32,7 @@
 
 网页由 artifacts/prompt_review/20261012_01/build_review_data.py 生成。共享术语取 dist/drafts/术语定义-历史权衡稿.prompt.txt；其余取 dist/modified/ 下对应提示。原版取 dist/sources/，不能把原版或历史草稿重新拼回新请求。网页分组不是实际发送顺序。本轮任务提出稿只保留新任务；明确用途说明随发现，参数与任务结果在更新部分审阅，准备放动作部分。网页分组只为逐段阅读，不代表运行组合/路由已经修改。
 
-本次与运行 遍历prompt/ 不同的 15 份：
-
-- `共享/术语定义.prompt`
-- `任务/当前区块重定位.prompt`
-- `任务/工作区块定位.prompt`
-- `共享/当前前景.prompt`
-- `发现手册/列表代表项.prompt`
-- `任务/区块探索任务.prompt`
-- `任务/探索范围与退出.prompt`
-- `任务/清点输出约定.prompt`
-- `更新/动作后观察与状态更新.prompt`
-- `更新/区块变化与字段.prompt`
-- `任务/区块功能登记.prompt`
-- `任务/任务动作登记.prompt`
-- `共享/任务知识与当前观察.prompt`
-- `共享/参数观察值.prompt`
-- `纠错/登记修订.prompt`
-
+本次38份稿件均已复核，与运行源码有38份字节差异。逐份路径、职责、前后散列和理由保存在本批 audit.json；差异不代表运行已经切换。
 参数公共结构仍由 遍历prompt/输出格式/参数发现.schema 定义；修改时覆盖任务提出与旧任务更新所有引用者。动作执行协议本轮没有删除 action。发现引用/几何分工的已实现候选另见现行身份、执行模块；不能以任务字段讨论稿覆盖它。
 
 ## 接入核对与证据
@@ -84,3 +67,35 @@
 | `traversal_scope.py` | `01cf7ed5d2e5354c649d6442223c72d3a221a9f5ee774c57e26992c41ac17a26` |
 | `model_transport.py` | `90cbc7626a522b5c9d102e2ffa7276742a0b90cb935bfcb90a6664aa582a6e48` |
 | `prompt_delivery.py` | `9e282016fae3c50dbd04fc722838dbf24f9c447cfe1b7d3836107c65640615bb` |
+
+## 本轮字段必要性审查（P25–P28）
+
+本表是候选接口取舍；先审阅文字，组合/路由后续统一。不改变旧证据的实际归属或验收状态。
+
+| 字段组 | 本轮取舍 | 理由及接入边界 |
+|---|---|---|
+| previous_name、name、identity、region_index、parent_index | 保留 | 模型需根据画面选择身份和归属，框架分配稳定ID；引用不是让模型复述整个账本。 |
+| text、state、knowledge | 保留增量 | 本帧状态与可复用用途含义不同；已有任务答案随task_update提交，其他用途随控件记录。 |
+| exception | 保留明确none | 是否有阻塞是视觉语义判断，缺字段不能直接当作无异常；不配套生成空理由。 |
+| uncertainty、uncertainties、handoff、recovery_handoff、handoff_summary | 有内容才填 | 保留真实未知与未满足条件；清除旧疑问需明确空值，省略不冒充已经解决。 |
+| focus_presence、controls_complete、out_of_scope_reason、context_matches | 材料相关时填 | 无指定区块/条件时不返占位；未核对清单不冒充本帧已清点。 |
+| bbox、icon_bbox、image_quality、icon_quality、image_quality_reason | 保留必要几何/质量 | 新对象仍须报告裁图或null；非空裁图需质量。只有clear进入有效模板，准入代码本轮不变。常规清晰不再写理由。 |
+| reason、evidence、identity_evidence、role_evidence | 保留有用依据，去同义复述 | 说明为何判断、看到什么及尚未确认什么；没有额外信息不反复改写description或已知归属。 |
+| list_group | 需要分组才填 | 区分同类数据与不同功能；独立控件不填空分组。 |
+| control、question_type、name；conditions按需 | 保留 | 对象、问题类型、问题及适用情境；已去掉预设action和混合知识登记。 |
+| action、target、reason、坐标/文本参数 | 保留所选动作所需字段 | 坐标/输入由当前图与平台定义；无关参数不返回null。 |
+| task、decision、reason、retry_when | 保留核心判断/恢复条件 | reason承担回答依据、未答内容或实际障碍；retry_when仅暂挂需要。 |
+| registration_gap、next_action | 本稿取消 | 具体缺口并入reason；下一步操作由动作阶段选择。不删除历史失败或未验证限制。 |
+| knowledge、findings、entry | 按结论选用 | 用途、参数及图中目标引用不同，不能全合成无关联的自由文本；不要求每项都填。 |
+| dependency_updates.ready及引用/依据 | 仅给出依赖目标时保留 | 选择准备操作属于动作；确认目标状态属于观察，不用回执成功替代可用性。 |
+| region_role、local_knowledge、functions及支持引用 | 保留语义组织 | 区分导航、参数支持与完整业务目的；参数引用/功能支持关系保留。 |
+| parameter_definitions | 确需整理时才填 | 已有定义可直接引用；确有临时观察需整理成稳定规则时仍允许补充，不盲删语义整理。 |
+| source_region_split字段族 | 保留专用接口、普通情况省略 | 其职责/结构差异仍需语义判断；原动作前材料不可缺。更细的复制字段压缩留组合时核对，不凭字段名盲删。 |
+| resolution、proposal、record_edit、reason | 保留 | 完整重答与正式记录修订分开；revise可同时附必要record_edit，未选字段省略。 |
+| record_edit.before、from_region、from_control | 本稿交框架 | 来自本轮提供的原记录快照，由框架做版本核验并写审计，不让模型复抄。 |
+| blocked_by | 本稿不要求回传旧诊断 | 已知分类由诊断器保留，新障碍写reason；后续路由消费和新障碍分类仍须一起设计，不能只从schema删键。 |
+| region/control/task、attempt、field、after/to_* | 保留选择与新值 | 模型需要指定修正对象；唯一对象能否省略引用留统一合同决定。已执行/有事实依赖的对象修订资格由程序核验。 |
+| action_result、previous_regions、returns_to_previous | 保留结果；返回判断按材料提供 | 真实变化和旧区块去向需要模型判断，不能从命令成功推断。returns_to_previous仅在有进入前材料时判断，省略不能当作已确认返回。 |
+| excluded、unresolved、task_review_reason | 有相应对象或目录时保留 | 解释可见对象为何不登记；回应明确的待补项；仅有相关任务目录时指出尚未覆盖的新问题。不得由未执行或未定位直接推出新任务；具体触发路由仍待统一。 |
+
+输入按发现、任务、动作、更新、总结、恢复、纠错分别选择；逐角色材料清单及38份逐项审查见工作区根 artifacts/tmp_tests/prompt_full_readability_20261014_01/audit.json。本批仅改审阅网页和维护记录；未改runtime builder/schema/路由。当前 step_repair 仍要求before/blocked_by，task_updates仍读取registration_gap/next_action，region_functions仍要求参数定义，接入时必须处理对应消费者。

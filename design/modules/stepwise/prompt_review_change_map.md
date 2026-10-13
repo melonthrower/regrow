@@ -1,6 +1,6 @@
 # 提示审阅：逐项接线图
 
-对应[持续清单](prompt_review_backlog.md)。本图只定位已知影响面，未实现项不能按表直接视为已接受接口。
+对应[持续清单](prompt_review_backlog.md)。先调整各部分提示，组合与路由之后再统一设计。本图仅保留已知待接入位置，不授权本轮先改流程；未实现项不是已接受接口。
 
 版本：本文版本由所在 Git 提交固定。代码行号核对的是 2026-10-13 活动工作树：基础提交 b1ed1499f4410d7b5a826b922d46012dc80423e6 加既有未提交候选。下列源码 SHA-256 固定实际字节；文档提交不包含这些未验收候选，也不宣称远端同名源码等于该工作树。后续源码改变时更新本图与证据，不沿用旧行号。
 
@@ -8,11 +8,11 @@
 
 | 文件 | 函数与已核对行范围 | 对应项 | 当前依赖及待接入点 |
 |---|---|---|---|
-| `task_proposer.py` | proposal_schema:7–24；plan_request:54–103 | P09–P16 | 旧inventory/evidence/operations/shared_instances与必填action/conditions；待统一新输出。question_type与回答产物/派生执行形式的映射见U07，不把分类改名直接当作实现 |
+| `task_proposer.py` | proposal_schema:7–24；plan_request:54–103 | P09–P16 | 旧inventory/evidence/operations/shared_instances与必填action/conditions；任务提出稿现仅tasks，发现/更新分别承担用途与结果；待统一输入输出。question_type与回答产物/派生执行形式的映射见U07，不把分类改名直接当作实现 |
 | `region_tasks.py` | coverage:30–50；apply_plan:53–141；commit_plan:144–192 | P11–P15；U01–U04 | 旧定义、共享、旧更新在同一事务；85行按action/registration_kind派生task_type，覆盖依赖inventory。待改登记/派生/去重/覆盖并保持原归属、失败及完整性 |
 | `task_settlement.py` | task_key:10–12；completion_target:90–92；recorded_match:122–145；partition_findings:271–292；store_findings:306–327；missing_product_fields:25–29 | P13–P14；U01/U05 | 任务键/完成目标依赖action；missing_product_fields按registration_kind要求产物；参数校验/合并直接索引domain。P10/U07与P14须同步，不得静默推断 |
 | `task_updates.py` | schema:11–27；decide:66–93 | P11/P13/P14 | 共用参数schema和显式回答检查；保留产物、来源及真实阻碍门槛 |
-| `task_knowledge.py` | control_knowledge:20–63 | P11–P13；U02/U04 | 既有知识由任务/共享来源读取；直接知识写入后必须有正常后读，不伪造本地执行 |
+| `task_knowledge.py` | control_knowledge:20–63 | P11–P13；U02/U04 | 既有知识由任务/共享来源读取；发现/更新控件knowledge的登记与后读待接，不伪造本地执行 |
 | `region_functions.py` | catalog:58–62；register:244–319 | P11/P13；U02/U05 | 参数目录和总结依赖任务支持与domain；直接事实引用、语义参数合并需先定案 |
 | `prompt_rules.py` | parts:60–70 | P01–P03/P19 | task_proposal固定清单已只有三份；复用该入口，不机械再删已经不存在的固定片段 |
 | `output_contract.py` | prepare:98–146 | P02/P11–P15/P19 | prepare按输出字段追加任务动作登记/知识/参数片段；新字段接入后需消除旧必填规则，纠错沿同一合同 |
@@ -30,17 +30,23 @@
 
 ## 提示文字的实际生产入口
 
-网页由 artifacts/prompt_review/20261012_01/build_review_data.py 生成。共享术语取 dist/drafts/术语定义-历史权衡稿.prompt.txt；其余取 dist/modified/ 下对应提示。原版取 dist/sources/，不能把原版或历史草稿重新拼回新请求。网页分组不是实际发送顺序。本轮把范围判断放到任务提出段、knowledge说明放到首例之前；旧范围文件的修改稿仅保留准备与暂挂，名称暂留原位，避免改出第二条维护路径。
+网页由 artifacts/prompt_review/20261012_01/build_review_data.py 生成。共享术语取 dist/drafts/术语定义-历史权衡稿.prompt.txt；其余取 dist/modified/ 下对应提示。原版取 dist/sources/，不能把原版或历史草稿重新拼回新请求。网页分组不是实际发送顺序。本轮任务提出稿只保留新任务；明确用途说明随发现，参数与任务结果在更新部分审阅，准备放动作部分。网页分组只为逐段阅读，不代表运行组合/路由已经修改。
 
-本次与运行 遍历prompt/ 不同的 9 份：
+本次与运行 遍历prompt/ 不同的 15 份：
 
 - `共享/术语定义.prompt`
+- `任务/当前区块重定位.prompt`
+- `任务/工作区块定位.prompt`
 - `共享/当前前景.prompt`
 - `发现手册/列表代表项.prompt`
 - `任务/区块探索任务.prompt`
 - `任务/探索范围与退出.prompt`
 - `任务/清点输出约定.prompt`
+- `更新/动作后观察与状态更新.prompt`
+- `更新/区块变化与字段.prompt`
 - `任务/区块功能登记.prompt`
+- `任务/任务动作登记.prompt`
+- `共享/任务知识与当前观察.prompt`
 - `共享/参数观察值.prompt`
 - `纠错/登记修订.prompt`
 
@@ -53,7 +59,7 @@
 - 后读：知识与参数进入原目录及总结；{}不虚假完成，身份缺口及暂挂继续可读；共享事实不冒充本实例执行。
 - 验收：保存实际原答与全部纠错/失败，检查身份、任务、知识、图像和下一请求；报告正文、调用总数及总成本，保留未调试检查例。只做静态文档检查时不填行为通过。
 
-本清单及接线图持续维护。本轮更新任务提出网页稿与此处待接入记录，Tier 1 静态检查及陌生读者审阅；0 Luna、0 GUI，无运行代码或运行提示变更。详情在工作区根 artifacts/tmp_tests/prompt_integration_ledger_20261013_01/，其中 source-map.json/source/ 固定本图审计源码，prompt-state.json 固定38份文字对照。没有额外ZIP或截图外传。本轮可读性与范围前置的前态、差异及补充源码定位在 artifacts/tmp_tests/task_proposal_readability_20261013_01/。
+本清单及接线图持续维护。本轮更新各阶段职责的网页稿与此处待接入记录，Tier 1 静态检查及陌生读者审阅；0 Luna、0 GUI，无运行代码或运行提示变更。详情在工作区根 artifacts/tmp_tests/prompt_integration_ledger_20261013_01/，其中 source-map.json/source/ 固定本图审计源码，prompt-state.json 固定38份文字对照。没有额外ZIP或截图外传。可读性与范围前置前态在 artifacts/tmp_tests/task_proposal_readability_20261013_01/；本轮职责拆分前态、差异及静态审阅在 artifacts/tmp_tests/task_prompt_responsibilities_20261014_01/。控件knowledge替代possible_operation仍需未来同步发现、更新、登记及后读；本轮不新增固定调用顺序。
 
 ## 本图代码字节基准
 

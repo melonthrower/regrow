@@ -24,10 +24,13 @@
 | `action_proposer.py` | render_work:6–62 | P14；U01 | render_work把任务动作写入source.task_action；任务不预设动作后需同步请求内容与来源绑定 |
 | `action_binding.py` | bind_action_target:4–11 | P14；U01 | bind_action_target依任务动作及completion_target区分preparatory_action；不能因删字段把目标操作误归准备 |
 | `control_context.py` | migrate_split_task:31–64 | P14；U01 | migrate_split_task在对象拆分迁移时读取完成目标与操作；须保留原任务及实际执行归属 |
+| `traversal_scope.py` | record_only:14–20；review_request:23–41；exclude_known_external:44–64 | P16/P21；U08 | 当前按真实external_app结果作record_only并复核旧任务；P16移除常驻类别策略时须与本轮范围一致，不只改提示。 |
+| `model_transport.py` | with_run_scope:42–50；with_environment_scope:26–38 | P16/P21；U08 | with_run_scope读取run_manifest.exploration_scope，with_environment_scope加入环境约束；复用原来源把范围清楚交给任务提出，不添加第二份配置。 |
+| `prompt_delivery.py` | environment_part:30–36 | P16/P21；U08 | environment_part按角色选择真实环境限制；删范围特例不删除有效的本轮操作约束。 |
 
 ## 提示文字的实际生产入口
 
-网页由 artifacts/prompt_review/20261012_01/build_review_data.py 生成。共享术语取 dist/drafts/术语定义-历史权衡稿.prompt.txt；其余取 dist/modified/ 下对应提示。原版取 dist/sources/，不能把原版或历史草稿重新拼回新请求。网页分组不是实际发送顺序。
+网页由 artifacts/prompt_review/20261012_01/build_review_data.py 生成。共享术语取 dist/drafts/术语定义-历史权衡稿.prompt.txt；其余取 dist/modified/ 下对应提示。原版取 dist/sources/，不能把原版或历史草稿重新拼回新请求。网页分组不是实际发送顺序。本轮把范围判断放到任务提出段、knowledge说明放到首例之前；旧范围文件的修改稿仅保留准备与暂挂，名称暂留原位，避免改出第二条维护路径。
 
 本次与运行 遍历prompt/ 不同的 9 份：
 
@@ -50,7 +53,7 @@
 - 后读：知识与参数进入原目录及总结；{}不虚假完成，身份缺口及暂挂继续可读；共享事实不冒充本实例执行。
 - 验收：保存实际原答与全部纠错/失败，检查身份、任务、知识、图像和下一请求；报告正文、调用总数及总成本，保留未调试检查例。只做静态文档检查时不填行为通过。
 
-本次只增加本清单/本图及开发索引链接，Tier 1 文档检查与陌生读者审阅；0 Luna、0 GUI，无运行代码或提示变更。详情在工作区根 artifacts/tmp_tests/prompt_integration_ledger_20261013_01/，其中 source-map.json/source/ 固定本图审计源码，prompt-state.json 固定38份文字对照。没有额外ZIP或截图外传。
+本清单及接线图持续维护。本轮更新任务提出网页稿与此处待接入记录，Tier 1 静态检查及陌生读者审阅；0 Luna、0 GUI，无运行代码或运行提示变更。详情在工作区根 artifacts/tmp_tests/prompt_integration_ledger_20261013_01/，其中 source-map.json/source/ 固定本图审计源码，prompt-state.json 固定38份文字对照。没有额外ZIP或截图外传。本轮可读性与范围前置的前态、差异及补充源码定位在 artifacts/tmp_tests/task_proposal_readability_20261013_01/。
 
 ## 本图代码字节基准
 
@@ -72,3 +75,6 @@
 | `action_proposer.py` | `c70d3985372f973de698cb39c717234f0bd3b0d24cbc8ffda99c7274b8b57389` |
 | `action_binding.py` | `4c9337c9c62b2e8d3d003c8639004054063813f6ec4e74898b2c1c1a708152fc` |
 | `control_context.py` | `2921e42e817dad2285edf556b9699b10b868330de42377d2de2483cf08760c38` |
+| `traversal_scope.py` | `01cf7ed5d2e5354c649d6442223c72d3a221a9f5ee774c57e26992c41ac17a26` |
+| `model_transport.py` | `90cbc7626a522b5c9d102e2ffa7276742a0b90cb935bfcb90a6664aa582a6e48` |
+| `prompt_delivery.py` | `9e282016fae3c50dbd04fc722838dbf24f9c447cfe1b7d3836107c65640615bb` |

@@ -60,6 +60,7 @@
       if(result.contexts?.length){const contexts=document.createElement('optgroup');contexts.label='上下文与历史（真实请求）';for(const item of result.contexts){const option=document.createElement('option');option.value='context:'+item.id;option.textContent=item.title;contexts.append(option);}$('document').append(contexts);}
     }
     $('document').value=documentState.path;$('base').textContent=documentState.base;$('draft').value=documentState.text;$('idea').value=documentState.idea;
+    showHistoryGuide(result.history_guide);
     showNotes();showChanges(documentState.changes);$('annotate').disabled=true;
     const contextual=documentState.kind==='context';$('context-details').hidden=!contextual;
     $('context-images').replaceChildren();$('related-prompts').replaceChildren();
@@ -73,6 +74,29 @@
     for(const id of ['document','draft','idea','save','submit'])$(id).disabled=false;
     status(documentState.saved_at?'已读取保存的修改和想法':'可以开始编辑');
     const url=new URL(location.href);url.searchParams.set('path',documentState.path);if(reviewContext)url.searchParams.set('context',reviewContext);else url.searchParams.delete('context');history.replaceState(null,'',url);
+  }
+  function showHistoryGuide(guide){
+    const box=$('history-guide');box.replaceChildren();
+    const add=(parent,tag,text,cls='')=>{const node=document.createElement(tag);node.textContent=text;node.className=cls;parent.append(node);return node;};
+    const heading=add(box,'h2','这一部分的历史怎么给');heading.id='history-guide-title';
+    add(box,'p',guide?.notice||'这份材料的历史提供方式尚未核对。','note');
+    if(guide?.stale_sources?.length)add(box,'p','相关源码已变化，以下说明待重新核对。','error');
+    if(!guide?.profiles?.length)add(box,'p','尚无对应说明。');
+    for(const [index,profile] of (guide?.profiles||[]).entries()){
+      const section=add(box,'details','');section.open=index===0;add(section,'summary',profile.title);
+      const list=add(section,'dl','');
+      for(const [label,text] of Object.entries(profile.fields)){add(list,'dt',label);add(list,'dd',text);}
+      if(profile.pending){add(section,'h3','讨论中的调整（未接入）');add(section,'p',profile.pending);}
+      if(profile.sources?.length){
+        const sources=add(section,'details','');add(sources,'summary','源码依据');
+        for(const source of profile.sources)add(sources,'p',source.file+' · '+source.functions.join('、'),'note');
+      }
+    }
+    if(guide?.examples?.length){
+      add(box,'h3','相关真实请求');
+      for(const example of guide.examples){const link=add(box,'a',example.title);link.href='/editor?path='+encodeURIComponent('context:'+example.id);link.target='_blank';link.rel='noopener';}
+      add(box,'p','当次使用过这份提示的全文或片段，文字可能与当前候选不同；不代表当前草稿已接入或验证。','note');
+    }else if(documentState.kind!=='context')add(box,'p','尚未载入与这一部分关联的真实请求。','note');
   }
   $('draft').addEventListener('input',changed);$('idea').addEventListener('input',changed);
   $('draft').addEventListener('select',()=>{$('annotate').disabled=$('draft').selectionStart===$('draft').selectionEnd;});

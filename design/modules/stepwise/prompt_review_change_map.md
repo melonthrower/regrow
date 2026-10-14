@@ -145,13 +145,27 @@
 | 文件、函数与已核对行号 | 当前行为与边界 |
 |---|---|
 | `tools/prompt_review_editor.py` source_paths:26–29、build_data:32–46、changes:49–60 | 原38份候选的共同供稿入口；保存正文/章节/行号，不写遍历源码 |
-| 同文件 import_context:63–99 | 新增真实保存请求导入，核对user/system正文并冻结request和原图；来源与散列随context_cases保存，不用手写例子冒充运行 |
-| 同文件 EditorStore.read:120–142、save:144–180 | 区分提示正文和context候选，原始历史只读；版本冲突拒绝，想法单独登记 |
-| 同文件 read_worklog:182–188、save_worklog:190–206 | 新增跨材料工作记录，保存到项目worklog.md与历史版本；服务重启可读回 |
-| 同文件 submit:208–236 | 固定提示、上下文、原图、差异及独立想法/工作记录；显式附带未改历史，修改材料仍包含；prepared不表示代理已启动 |
-| 同文件 do_GET:260–302、do_POST:304–322、serve:330–333 | 本地服务、已有材料选择、工作记录与对应归档图片；不执行输入文字或调用模型 |
-| `tools/prompt_review_editor/worklog.js`（新文件） | 每份未保存稿有独立不可变浏览器键；本页活动稿与恢复稿分离，关闭补存，采用/舍弃只影响对应稿 |
+| 同文件 related_prompts:63–65、import_context:68–103 | 新增真实保存请求导入，核对user/system正文并冻结request和原图；来源与散列随context_cases保存，不用手写例子冒充运行 |
+| 同文件 EditorStore.read:150–172、save:174–210 | 区分提示正文和context候选，原始历史只读；版本冲突拒绝，想法单独登记 |
+| 同文件 read_worklog:212–218、save_worklog:220–236 | 新增跨材料工作记录，保存到项目worklog.md与历史版本；服务重启可读回 |
+| 同文件 submit:238–266 | 固定提示、上下文、原图、差异及独立想法/工作记录；显式附带未改历史，修改材料仍包含；prepared不表示代理已启动 |
+| 同文件 do_GET:290–333、do_POST:335–353、serve:361–364 | 本地服务、已有材料选择、工作记录与对应归档图片；不执行输入文字或调用模型 |
+| `tools/prompt_review_editor/worklog.js` | 每份未保存稿有独立不可变浏览器键；本页活动稿与恢复稿分离，关闭补存，采用/舍弃只影响对应稿 |
 | `tools/prompt_review_editor/editor.html`、`editor.js`、`editor.css` | 同一选择器提供提示/真实上下文；原系统提示、原图、关联候选和底部工作记录同页；快照包含工作记录前先保存 |
 | `tests/test_prompt_review_editor.py` | 9项聚焦检查覆盖既有保存/来源、工作记录重载/冲突、上下文原件隔离与未改材料附带 |
 
 Tier 2：9项聚焦检查通过；真实Chromium在隔离副本验证多页恢复互不清除、选择另一恢复稿保留未选稿、历史原图随快照、快速关窗重开、服务重启后换新浏览器仍读回。第一轮浏览器检查仅因把已恢复状态误要求显示为再次保存而失败，记录已保留；修正断言后第二轮通过。实际数据目录只读页面/附图检查通过。227份遍历源码/prompt/schema未变，0 Luna、0新遍历GUI。证据位于工作区根`artifacts/tmp_tests/prompt_debug_workspace_20261014_01/`。
+
+## 历史旁注
+
+工具改动与本文由同一导出提交固定；具体导出哈希在本轮Astra包中。旁注引用的遍历生产代码另按`history_guide.json`内散列固定核对版本，属于活动工作树既有未验收源码，不声称与导出提交的遍历文件相同。源码不一致时工作台显示待复核。
+
+| 文件、函数及定位 | 本轮修改 | 验证边界 |
+|---|---|---|
+| `tools/prompt_review_editor/history_guide.json`（本轮新增） | 38份提示显式映射11组历史说明；全局/局部共享片段多组显示；讨论方向与当前实现分开；记录生产函数和散列 | 名称全覆盖、引用函数及源码核对；非模型验收 |
+| `tools/prompt_review_editor.py` related_prompts:63–65、contexts:120–126 | 原请求分段路径归并到提示文件；旧归档读取时恢复关联，不覆写原件或旧目录元数据 | 新导入和既有空关联均有聚焦检查；实际0049可访问 |
+| 同文件 history_guide:128–148、do_GET:290–333 | API独立返回旁注；源变更提醒；真实上下文不套用当前生产说明 | 人工元数据不进入候选文字或Luna请求 |
+| `tools/prompt_review_editor/editor.js` showHistoryGuide；`editor.html` #history-guide；`editor.css` .editor-layout | 编辑区旁显示说明和原请求链接；窄屏放上方 | Chromium宽/窄屏、材料切换、原图与正文比对 |
+| `tests/test_prompt_review_editor.py` | 新增旁注隔离/过期标记和分段请求关联检查 | 共11项通过，已有编辑/工作记录检查一并通过 |
+
+运行：`python -m pytest tests/test_prompt_review_editor.py -q --basetemp=<本轮证据目录>/pytest-final`；11 passed。`node --check tools/prompt_review_editor/editor.js`通过。真实服务Chromium检查覆盖38份API映射、宽窄屏、全局/局部共享段、真实0049图片和关联；首次因0049分段关联缺失失败，修复后同一检查通过。125份现有用户资料/历史文件及227份遍历代码/提示/schema散列未变。独立读者的关联、映射、纠错图片表述问题已处理并复审。0 Luna、0新遍历GUI；没有验证运行遍历效果。证据：工作区根`artifacts/tmp_tests/prompt_history_guide_20261014_01/`。

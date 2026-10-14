@@ -15,12 +15,15 @@
 <p class="note">左侧是保存请求的原始上下文，附图是当次记录；右侧另存讨论候选。尚未重新组装请求或调用模型。</p>
 <div id="context-images"></div><details><summary>查看这次请求的原始固定提示</summary><pre id="context-system"></pre></details>
 <p id="related-prompts" class="note"></p></section>
+<div class="editor-layout">
+<aside id="history-guide" aria-labelledby="history-guide-title"><h2 id="history-guide-title">这一部分的历史怎么给</h2><p class="note">正在读取…</p></aside>
 <div class="columns">
 <section><h2>改前</h2><pre id="base"></pre></section>
 <section><h2><label for="draft">你的修改</label></h2><textarea id="draft" spellcheck="false" disabled></textarea>
 <button id="annotate" disabled>给选中文字写想法</button>
 <h2><label for="idea">这段的整体想法</label></h2><textarea id="idea" rows="3" placeholder="例如：我想让这一步只识别已有对象，这一段是否可以删去？" disabled></textarea>
 <div id="notes"></div></section>
+</div>
 </div>
 <section><h2>自动记录的修改位置</h2><p class="note">行号分别对应左侧改前内容和右侧已保存内容。选中文字的说明保留你标注时的原文位置。</p><div id="changes"></div></section>
 <section id="submission" hidden><h2>审查快照已准备好</h2><p>正文、修改位置和你的想法已保存。复制下面这句话发回对话，我会先让新读者独立读正文，再对照你的想法。此按钮不会自动启动代理。</p><textarea id="review-request" readonly rows="3"></textarea><button id="copy-request">复制审查请求</button><p id="copy-status" role="status"></p></section>

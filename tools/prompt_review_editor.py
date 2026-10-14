@@ -60,6 +60,11 @@ def changes(before, after):
     return rows
 
 
+def related_prompts(request, paths):
+    names = [part.get('path', '').split('/片段-', 1)[0] for part in request.get('fixed_parts', [])]
+    return list(dict.fromkeys(name for name in names if name in paths))
+
+
 def import_context(root, run, call, title):
     """Freeze one saved framework request and its actual images for human review."""
     root, run = Path(root).resolve(), Path(run).resolve()
@@ -93,8 +98,7 @@ def import_context(root, run, call, title):
     catalog[key] = {'id': key, 'title': title, 'call': call, 'role': request.get('role'),
                     'original_run': str(run), 'request_sha256': sha256(raw).hexdigest(),
                     'images': images,
-                    'related_prompts': [part['path'] for part in request.get('fixed_parts', [])
-                                        if part.get('path') in source_paths(root)]}
+                    'related_prompts': related_prompts(request, source_paths(root))}
     dump(catalog_path, catalog)
     return key
 
@@ -115,7 +119,33 @@ class EditorStore:
 
     def contexts(self):
         path = self.root / 'context_cases.json'
-        return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+        cases = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+        for case in cases.values():
+            request = json.loads((self.root / 'context_sources' / case['id'] / 'request.json').read_text())
+            case['related_prompts'] = related_prompts(request, self.paths)
+        return cases
+
+    def history_guide(self, name):
+        """Human-only source notes; never part of draft text or model input."""
+        catalog = json.loads((ASSETS / 'history_guide.json').read_text(encoding='utf-8'))
+        if name.startswith('context:'):
+            return {'notice': '这里是当次实际发送的上下文；历史按当时的代码选择，不用今天的实现倒推。',
+                    'profiles': [{'title': '这份真实请求的历史', 'fields': {
+                        '提供什么': '左侧保留当次完整 user prompt，页面上方可展开同次 system prompt，并查看原始附图。',
+                        '如何核对': '在原文中查看身份候选、任务、执行记录和来源。右侧修改的是讨论稿，原件保持不变。',
+                        '继续检查': '通过上方关联提示查看各部分当前的历史提供方式；它与这份旧请求可能不同。'}}],
+                    'examples': [], 'stale_sources': []}
+        keys = catalog['parts'].get(name, [])
+        profiles = [deepcopy(catalog['profiles'][key]) for key in keys]
+        stale = set()
+        for profile in profiles:
+            for source in profile.get('sources', []):
+                path = ASSETS.parents[1] / source['file']
+                if not path.exists() or sha256(path.read_bytes()).hexdigest() != source['sha256']:
+                    stale.add(source['file'])
+        examples = [case for case in self.contexts().values() if name in case.get('related_prompts', [])]
+        return {'notice': catalog['notice'], 'profiles': profiles, 'examples': examples,
+                'stale_sources': sorted(stale)}
 
     def read(self, name):
         with self.lock:
@@ -263,7 +293,8 @@ class EditorHandler(SimpleHTTPRequestHandler):
             name = parse_qs(route.query).get('path', [next(iter(self.store.paths))])[0]
             try:
                 self.respond({'paths': list(self.store.paths), 'document': self.store.read(name),
-                              'contexts': list(self.store.contexts().values()), 'workspace': self.store.workspace})
+                              'contexts': list(self.store.contexts().values()), 'workspace': self.store.workspace,
+                              'history_guide': self.store.history_guide(name)})
             except ValueError as error:
                 self.respond({'error': str(error)}, 400)
             return

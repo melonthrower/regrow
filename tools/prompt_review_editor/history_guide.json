@@ -1,0 +1,440 @@
+{
+  "notice": "供我们审阅的说明，不发送给 Luna。依据 2026-10-14 活动源码核对；其中含未验收实现。下列“未接入”内容仅是讨论方向。",
+  "profiles": {
+    "global": {
+      "title": "发现与识别：整个当前前景",
+      "fields": {
+        "提供什么": "旧区块名称、描述和来源，相关控件的身份线索，以及程序在当前图中找到的匹配候选。若有原任务，还会带入该任务及直接相关准备、来路记录。",
+        "如何选取": "先选程序匹配到的区块，再补入本次运行其他历史区块的身份索引。控件候选覆盖这些旧区块；重点候选资料更详细。当前实现不是只取当前区块的历史。",
+        "放在哪里": "动态 user prompt 的“历史身份候选”“相关区块控件身份候选”“历史匹配对照”和共同地图等材料中；不是写进这份固定提示。没有旧对象的首次调用没有这些身份资料。",
+        "图片": "普通发现附当前截图。旧身份图用于程序匹配，不会把全部历史裁图自动附给 Luna。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/locator.py",
+          "functions": [
+            "prepare",
+            "request_from_run"
+          ],
+          "sha256": "a6cbb893119e6e356199960bee4cb2b9444ab2ad89d309c1b094f0428de2b21f"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/history_matching.py",
+          "functions": [
+            "with_history",
+            "attach"
+          ],
+          "sha256": "c4048cfe40dafe7d8f8555d92d9f4039776206ca1f9806d5f12c3c50767c0610"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/region_candidate_names.py",
+          "functions": [
+            "candidates",
+            "control_candidates"
+          ],
+          "sha256": "34e8dd6e83599277f2c4ad5d40019a77fd568dd0397101090fef57ef730be9f9"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/page_context.py",
+          "functions": [
+            "attach"
+          ],
+          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+        }
+      ],
+      "pending": "当前仍发送指定定位区块，并可能要求 focus_presence；旧身份用候选名称和 previous_name 引用。取消额外目标判断、改用稳定 ref 都还在讨论。"
+    },
+    "local": {
+      "title": "发现与识别：补充指定区块",
+      "fields": {
+        "提供什么": "指定区块的描述、已知控件、控件的身份线索和当前图匹配结果；相关原任务、准备和来路由共同上下文补入。",
+        "如何选取": "以本轮指定区块为主，除匹配候选外也提供该区块未匹配的旧控件，供 Luna 核对；未匹配本身不是对象消失或新增任务的结论。",
+        "放在哪里": "user prompt 的“本轮定位区块”“本轮局部控件”、历史匹配对照及共同地图；这份固定提示只规定识别要求。",
+        "图片": "普通局部发现附当前截图；历史外观线索和匹配候选以文字材料提供。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/locator.py",
+          "functions": [
+            "prepare",
+            "request_from_run"
+          ],
+          "sha256": "a6cbb893119e6e356199960bee4cb2b9444ab2ad89d309c1b094f0428de2b21f"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/page_context.py",
+          "functions": [
+            "attach"
+          ],
+          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+        }
+      ]
+    },
+    "tasks": {
+      "title": "提出区块探索任务",
+      "fields": {
+        "提供什么": "本区块控件、已知用途和参数、已有任务及状态、相关来源；必要时提供可引用的同类实例、旧参数证据、上步交接和真实清点缺口。",
+        "如何选取": "以当前区块的任务与知识为主。其他区块按关联来源加入；旧任务分为“本轮可判断旧任务”和“其他任务背景”。并非每个旧任务的全部执行流水。",
+        "放在哪里": "user prompt 的“控件”“历史控件身份索引”、两类旧任务和“可引用同类实例”等材料，随后按问题整理，并补共同地图。",
+        "图片": "本步使用当前观察图，历史事实以登记内容及来源提供。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/task_proposer.py",
+          "functions": [
+            "plan_request"
+          ],
+          "sha256": "32bc42897eee450fcf675fa227115ca506b04cac0e236d30b2c531d32b95104e"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/task_inventory_context.py",
+          "functions": [
+            "project"
+          ],
+          "sha256": "efbad464e71000ad5bd4a7bddf20a5c7e2f5ec9583a4bffd4775717a77d372ce"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/page_context.py",
+          "functions": [
+            "attach"
+          ],
+          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+        }
+      ],
+      "pending": "网页候选只提出新任务。当前运行仍让清点回复兼顾旧任务结算、明确用途和共享关系；这些路由与登记尚未按新稿改造。"
+    },
+    "actions": {
+      "title": "选择下一步动作",
+      "fields": {
+        "提供什么": "原探索问题、条件和完成目标，当前可操作对象，原任务尝试及结果、直接准备过程和相关来路；必要时带入既有知识和实际失败。",
+        "如何选取": "从当前任务引用、完成依据、准备关联及事实来源查找相关尝试。不是固定取最近两条，也不是把全部运行事件逐条塞入。",
+        "放在哪里": "user prompt 的任务材料、目标观察、动作候选和共同地图/相关历史中；平台片段只说明可执行动作。",
+        "图片": "动作根据当前图定位；旧记录说明已知结果与条件，不提供可沿用的当前点击坐标。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/action_proposer.py",
+          "functions": [
+            "render_work",
+            "request_from_run"
+          ],
+          "sha256": "c70d3985372f973de698cb39c717234f0bd3b0d24cbc8ffda99c7274b8b57389"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/history_selection.py",
+          "functions": [
+            "task_attempts",
+            "related_tasks"
+          ],
+          "sha256": "fd403f5e3cca5687611b0c63c61d239a79f055992854f8fc315bb4c309c3e357"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/page_context.py",
+          "functions": [
+            "attach"
+          ],
+          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+        }
+      ],
+      "pending": "新任务不预设 action 的方向尚未接入运行。当前动作材料仍读取旧任务 action 和完成目标。"
+    },
+    "update": {
+      "title": "动作后核对与登记",
+      "fields": {
+        "提供什么": "刚执行动作的绑定、实际参数与回执，原任务和动作前已知对象，动作后观察，以及相关旧区块、控件和历史结果。",
+        "如何选取": "先读取这次真实 attempt 的原始绑定，再补相关目标和历史身份候选；历史候选仍可能扩展到运行中的其他旧区块。准备操作保留其原任务关联。",
+        "放在哪里": "user prompt 按动作结果、旧区块去向、身份和任务判断组织；原任务从执行绑定读取，不用后来切换的工作任务替代。",
+        "图片": "普通更新附动作后图，动作前对象/几何资料按已有记录提供；专门身份对照或纠错可能另有图片。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/result_updater.py",
+          "functions": [
+            "build_attempt_update",
+            "build_update_request"
+          ],
+          "sha256": "93b4b1bd3ee800a3757e51cbd1d2e8fd094a18c2ecc6983987d1aed411679425"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/history_matching.py",
+          "functions": [
+            "with_history"
+          ],
+          "sha256": "c4048cfe40dafe7d8f8555d92d9f4039776206ca1f9806d5f12c3c50767c0610"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/page_context.py",
+          "functions": [
+            "attach"
+          ],
+          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+        }
+      ],
+      "pending": "网页已精简知识、参数和任务结算写法；运行字段、历史选择及后续读取仍须一起接入，不能用网页例子推断已改变。"
+    },
+    "summary": {
+      "title": "整理区块功能",
+      "fields": {
+        "提供什么": "已接受的控件知识、任务产物、真实结果和证据覆盖，相关入口来路、一级目标区块总结，以及被采用的支持任务和参数事实。",
+        "如何选取": "围绕待总结区块和有明确关联的支持资料汇总；不是重新识别当前页面，也不要求重读整次运行流水。",
+        "放在哪里": "user prompt 中的区块描述及 summary_projection 生成的知识、任务和支持材料。",
+        "图片": "当前总结请求不附截图；以已登记证据为依据。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/region_functions.py",
+          "functions": [
+            "summary_projection",
+            "request"
+          ],
+          "sha256": "24035c12ebcbc90be0445d435fd3dc0064aaccaab4496e8a7ac9c1d7a9b5d242"
+        }
+      ],
+      "pending": "候选稿允许已有参数直接引用；运行仍有参数定义的输出和校验要求，尚未统一修改。"
+    },
+    "recovery": {
+      "title": "恢复被阻塞的探索",
+      "fields": {
+        "提供什么": "本次恢复缘由、目标应用、工作区块、中断任务、交接、已尝试的恢复动作与结果，以及可用恢复能力。",
+        "如何选取": "以本次恢复 episode 的 actions 和被中断工作为主，保留先前停止/交接材料；不是普通任务清点的全部历史目录。",
+        "放在哪里": "user prompt 的“本次恢复历史”、中断任务与恢复材料；同一次恢复继续追加其尝试记录。",
+        "图片": "恢复请求使用该轮恢复观察的截图。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/recovery.py",
+          "functions": [
+            "build_request"
+          ],
+          "sha256": "a9c686ff736aea5ff3fa4f1251ec7bdf808e0e7fb31b0e40207322c880f1b58a"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/recover_loop.py",
+          "functions": [
+            "run"
+          ],
+          "sha256": "ae8a590469f291a19d10be9ee8ffce5713938decd640719d5666bd7f229477e0"
+        }
+      ]
+    },
+    "repair": {
+      "title": "修正被拒的回复或相关记录",
+      "fields": {
+        "提供什么": "原请求上下文、被拒回复、具体诊断、本次纠错历史、补充观察，以及本错误允许核对或修订的相关记录。",
+        "如何选取": "继承原步骤材料，再按错误加入针对性的记录和候选；不同纠错片段不各自读取整本账本。",
+        "放在哪里": "纠错 user prompt 的“原动态上下文”“相关记录与可用能力”“被拒绝回复”“本次修复历史”等；原固定提示沿用并组合相应纠错说明。",
+        "图片": "有图的普通步骤纠错使用一张明确时点的原证据图；原请求无图时不附图。需要补充观察时另作观察调用，其结果作为文字材料回到纠错。专门身份复核才可能使用两张对照图。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/step_repair.py",
+          "functions": [
+            "request"
+          ],
+          "sha256": "fda3a452954b751c162d1af49fcc0703cce3786b6ee92b1153334b04835f91bd"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/correction_prompts.py",
+          "functions": [
+            "parse_disclosure"
+          ],
+          "sha256": "33bfb934960e7b798c82df9b19b36cbd73f553c62fd8c229917a4430508d8308"
+        }
+      ],
+      "pending": "目前仍主要要求完整回复或正式记录修订；只返回出错字段的补丁模式尚未实现。"
+    },
+    "common": {
+      "title": "共享定义与字段说明",
+      "fields": {
+        "提供什么": "这段自身不读取历史。历史来自使用它的发现、任务、动作、更新或其他请求。",
+        "如何选取": "程序按角色、输出字段组合共享片段；片段出现不意味着额外加载一份历史。",
+        "放在哪里": "这段是固定 system 提示；对应实例、任务、已知知识和来源在该次 user prompt 中。查看关联的真实请求才能确认当次具体提供了什么。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/output_contract.py",
+          "functions": [
+            "prepare"
+          ],
+          "sha256": "ad4823664c72a22e0494c2c746de60518d740460d31333e379ef65036ed5060b"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/prompt_rules.py",
+          "functions": [
+            "parts"
+          ],
+          "sha256": "4c765ae76d5fc0448cf8c53ce5971fc7a5af95e123f05dcc1b51b056bf3e9930"
+        }
+      ],
+      "pending": "网页按讨论主题放在一起，不代表运行时一起发送；新的知识/参数字段和路由仍待接入。"
+    },
+    "prerequisites": {
+      "title": "核对已登记的前置条件",
+      "fields": {
+        "提供什么": "已有前置条件而暂挂的任务：所属区块、原问题、对应控件、条件及准备操作。",
+        "如何选取": "仅在发现或更新阶段，从本轮相关区块/任务中选出已登记的依赖候选；没有候选就不追加本段。",
+        "放在哪里": "追加在 user prompt 的“可在本次观察核对的暂挂任务”中，固定提示同时增加对应条件核对要求。",
+        "图片": "使用承载这段的发现/更新请求图片，不为这段另拍一张图。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/task_prerequisites.py",
+          "functions": [
+            "augment"
+          ],
+          "sha256": "f90ecd563a91cd9c52cff14de08df94b9d62d80d03265f78787a3da2c168251c"
+        }
+      ]
+    },
+    "platform": {
+      "title": "平台与环境约定",
+      "fields": {
+        "提供什么": "平台动作格式和本轮环境限制，不是历史回顾模块。",
+        "如何选取": "平台与环境片段由本次请求的角色和环境选定；原任务、动作结果及恢复历史由所在阶段提供。",
+        "放在哪里": "固定执行约定进入 system；实际历史在 user。看动作或恢复请求的材料，才能知道这次具体经历了什么。"
+      },
+      "sources": [
+        {
+          "file": "experiments/clock_manual_20260919/model_transport.py",
+          "functions": [
+            "with_environment_scope"
+          ],
+          "sha256": "90cbc7626a522b5c9d102e2ffa7276742a0b90cb935bfcb90a6664aa582a6e48"
+        },
+        {
+          "file": "experiments/clock_manual_20260919/prompt_delivery.py",
+          "functions": [
+            "environment_part"
+          ],
+          "sha256": "9e282016fae3c50dbd04fc722838dbf24f9c447cfe1b7d3836107c65640615bb"
+        }
+      ]
+    }
+  },
+  "parts": {
+    "共享/术语定义.prompt": [
+      "common"
+    ],
+    "任务/任务动作登记.prompt": [
+      "common"
+    ],
+    "共享/任务知识与当前观察.prompt": [
+      "common"
+    ],
+    "共享/参数观察值.prompt": [
+      "common"
+    ],
+    "任务/当前区块重定位.prompt": [
+      "global"
+    ],
+    "发现手册/前景与区块.prompt": [
+      "global",
+      "local"
+    ],
+    "任务/工作区块定位.prompt": [
+      "local"
+    ],
+    "共享/当前前景.prompt": [
+      "global",
+      "local",
+      "update"
+    ],
+    "共享/区块身份复用.prompt": [
+      "global",
+      "local",
+      "update"
+    ],
+    "共享/身份图准入.prompt": [
+      "global",
+      "local",
+      "update"
+    ],
+    "发现手册/列表代表项.prompt": [
+      "global",
+      "local",
+      "update"
+    ],
+    "任务/区块探索任务.prompt": [
+      "tasks"
+    ],
+    "任务/探索范围与退出.prompt": [
+      "tasks"
+    ],
+    "任务/清点输出约定.prompt": [
+      "tasks"
+    ],
+    "动作/围绕目标选择动作.prompt": [
+      "actions"
+    ],
+    "动作/动作空间与字段.prompt": [
+      "actions",
+      "recovery"
+    ],
+    "更新/动作后观察与状态更新.prompt": [
+      "update"
+    ],
+    "更新/区块变化与字段.prompt": [
+      "update"
+    ],
+    "共享/行为差异分离.prompt": [
+      "update"
+    ],
+    "任务/区块功能登记.prompt": [
+      "summary"
+    ],
+    "异常处理/恢复当前探索.prompt": [
+      "recovery"
+    ],
+    "异常处理/异常识别.prompt": [
+      "recovery"
+    ],
+    "异常处理/恢复策略.prompt": [
+      "recovery"
+    ],
+    "异常处理/恢复输出.prompt": [
+      "recovery"
+    ],
+    "任务/前置条件与恢复.prompt": [
+      "prerequisites"
+    ],
+    "平台/Android执行.prompt": [
+      "platform"
+    ],
+    "平台/桌面执行.prompt": [
+      "platform"
+    ],
+    "平台/遍历环境只读.prompt": [
+      "platform"
+    ],
+    "纠错/步骤纠正.prompt": [
+      "repair"
+    ],
+    "纠错/回复解析.prompt": [
+      "repair"
+    ],
+    "纠错/定位绑定.prompt": [
+      "repair"
+    ],
+    "纠错/身份名称.prompt": [
+      "repair"
+    ],
+    "纠错/任务归属.prompt": [
+      "repair"
+    ],
+    "纠错/结果证据.prompt": [
+      "repair"
+    ],
+    "纠错/登记修订.prompt": [
+      "repair"
+    ],
+    "纠错/区块归属.prompt": [
+      "repair"
+    ],
+    "纠错/动作归属.prompt": [
+      "repair"
+    ],
+    "纠错/重复无进展.prompt": [
+      "repair"
+    ]
+  }
+}

@@ -118,3 +118,7 @@
 - 参数例子补足月份标签、界面范围提示及实际回显边界：`artifacts/tmp_tests/parameter_month_example_20261014_01/`。
 - 全部38份文字、输入/输出字段审查与逐份取舍：`artifacts/tmp_tests/prompt_full_readability_20261014_01/`，网页人工审查页为`dist/field-review.txt`，不进入Luna提示。
 - 本清单核对、源码定位散列及读者审阅：`artifacts/tmp_tests/prompt_integration_ledger_20261013_01/`。历史记录保留，已被后续否定的任务必填 action、参数必填 domain、Clock 固定示例不再作为新稿要求。
+
+## 各部分历史旁注（2026-10-14）
+
+工作台新增38份提示的历史提供说明：来源/内容、选择范围、进入请求的位置、图片和相关真实请求。共同片段区分其承载阶段；已载入0001/0049之外的阶段不假称已有示例。说明对照活动源码，包括未验收实现，明确标出与网页讨论稿的差异。源码变化会标记待复核；历史原件仍按当次保存内容阅读。此项只改人工工具，不改运行历史选择、prompt或用户候选。实现及验证见[接线图](prompt_review_change_map.md#历史旁注)。

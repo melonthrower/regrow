@@ -137,3 +137,20 @@
 | excluded、unresolved、task_review_reason | 有相应对象或目录时保留 | 解释可见对象为何不登记；回应明确的待补项；仅有相关任务目录时指出尚未覆盖的新问题。不得由未执行或未定位直接推出新任务；具体触发路由仍待统一。 |
 
 输入按发现、任务、动作、更新、总结、恢复、纠错分别选择；逐角色材料清单及38份逐项审查见工作区根 artifacts/tmp_tests/prompt_full_readability_20261014_01/audit.json。本批仅改审阅网页和维护记录；未改runtime builder/schema/路由。当前 step_repair 仍要求before/blocked_by，task_updates仍读取registration_gap/next_action，region_functions仍要求参数定义，接入时必须处理对应消费者。
+
+## 浏览器编辑入口
+
+本节工具与文档同提交导出；仅编辑审阅候选，不改变前文运行候选的验收状态。
+
+| 文件与已核对位置 | 职责与写入边界 |
+|---|---|
+| `tools/prompt_review_editor.py` source_paths:25–28、build_data:31–45 | 复用原38份供稿路径与数据构建方式；仅允许已有候选文件，重建original/modified展示数据，不写遍历源码 |
+| 同文件 changes:48–59、EditorStore.read:75–85、save:87–122 | 按首次编辑基线及每次保存记录行号/章节；旧标签页版本冲突拒绝；想法和标注时原文存审阅目录的独立历史 |
+| 同文件 EditorStore.submit:124–144 | 固定正文/差异/想法三份材料，prepared只表示快照就绪，automatic_review_started=false |
+| 同文件 EditorHandler.do_GET:168–187、do_POST:189–207、serve:215–218 | 127.0.0.1本地服务；GET编辑页/已有文件，POST保存/准备审查；不调用模型或执行用户文字 |
+| `tools/prompt_review_editor/editor.html`、`editor.js`、`editor.css` | 两栏正文、整体想法/选文批注、自动保存与位置清单；切换/提交期间锁定输入，后续编辑隐藏旧快照请求 |
+| `tests/test_prompt_review_editor.py` | 保存回读、位置与原文、旧版本拒绝、冻结审查与意图分离、删除章节归属的5项聚焦检查 |
+
+运行：`python tools/prompt_review_editor.py <审阅目录>`，默认端口45663；本地旧serve.py/build_review_data.py已转为调用上述唯一实现的薄入口，数据根不迁移。原审阅页增加逐段编辑链接。工具源码不包含用户正文或运行证据。
+
+本批Tier 2：5项聚焦检查通过；隔离真实Chromium验证编辑、选文备注、刷新回读、多标签冲突、切换保存和快照固定；实际审阅页只读点开入口验证通过。227份遍历源码/prompt/schema字节未变，0 Luna、0遍历GUI。证据在工作区根`artifacts/tmp_tests/prompt_browser_editor_20261014_01/`；浏览器测试数据留在隔离副本，未写入实际用户稿。服务首次切换因旧进程使用相对脚本名而被所有权断言拒绝，核对cwd后停止正确进程并恢复同端口；没有误杀遍历进程。

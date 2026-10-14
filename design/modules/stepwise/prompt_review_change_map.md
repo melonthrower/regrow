@@ -35,6 +35,33 @@
 本次38份稿件均已复核，与运行源码有38份字节差异。逐份路径、职责、前后散列和理由保存在本批 audit.json；差异不代表运行已经切换。
 参数公共结构仍由 遍历prompt/输出格式/参数发现.schema 定义；修改时覆盖任务提出与旧任务更新所有引用者。动作执行协议本轮没有删除 action。发现引用/几何分工的已实现候选另见现行身份、执行模块；不能以任务字段讨论稿覆盖它。
 
+## 陌生读者讨论的接入点
+
+对应清单D01–D03，均为待确认提案。本轮只读消费链，未修改以下源码、网页或运行prompt。新增行号于2026-10-14在活动工作树核对；文档基于862e8c91220550ede68ee1a66421e91b88af45b2，表中源码含既有未验收候选，不宣称与该提交导出的同名源码一致。本版文档由其所在导出提交固定，后续修改须随提交更新映射。
+
+| 取舍 | 文件、函数和行号（沿用前缀） | 当前行为 → 拟改范围 | 后续验收案例（本轮未执行） |
+|---|---|---|---|
+| D01 新对象省略空旧引用 | `discovery_delta.py` schema:8–22；`locator.py` schema:11–29、validate_identity:32–35 | 当前必填previous_name；拟仅在明确new且无冲突时规范化为空，不能把任意省略当new；同步发现/更新合同与纠错 | new省略引用仍为新身份；省略identity或冲突引用不能自动接受 |
+| D01 旧控件省略未变归属 | `region_candidate_names.py` control_candidates:63–96；`discovery_delta.py` resolve:41–80；`discovery_step.py` commit:123–140；`register_update.py` materialize_regions:417–420 | 当前已有唯一候选label→cid，但仍依赖region_index取owner；拟从唯一旧引用和本轮已确认owner恢复下标，保留显式冲突检查，不把历史owner补成当前前景 | regions重排仍绑定原控件；同名控件不混合；owner未确认、归属冲突、新对象仍留缺口或走原纠错；原答保留 |
+| D02 区块角色保留并澄清 | `region_functions.py` review_current:187–188、register:244–266、317；`task_routing.py` destination_work:30–39；知识模块knowledge.md:41、46 | role参与总结有效性、navigation约束及导航排序；参数支持区可functional且functions为空。拟补清语义；role_evidence按需须同时修改目前非空校验，不按functions长度猜角色 | 已知纯参数/展示区不因无functions变undetermined；纯导航不获得目标业务；混合区不丢本地用途 |
+| D02 旧区块状态保留，区分变化与转换依据 | `register_update.py` commit_update:222–227、292–302；`task_settlement.py` register_entry:47–65；`region_evidence.py` region_records:144–153 | changed参与候选转换和入口目标检查；不能只删枚举或将所有变化自动等同导航。拟统一提示观察尺度，另核对已有action_result/entry及真实边后读能否承担转换依据，不新增平行结果字段 | 无关计数变化如实保留但不单独确认为导航；原已可见区块切换内容的真实结果不丢；背景/不可见仍分别登记 |
+| D03 条件字段保留，按材料提供 | `region_identity.py` extend_schema:29–51；`register_update.py` commit_update:226–227、325；`discovery_step.py` commit:114–116；`traversal_scheduler.py` offer_foreground_navigation:215–226、schedule_local_inspection:233–240；`region_functions.py` register:253–270 | 完整性、指定目标、补清点、交接和参数归纳均有消费者。拟只在相关材料可用时提供判断要求；必要来源、真实失败、未知与清除语义保持。参数已有定义可直接引用需修改stable_fact的强制重写 | 无指定目标不填focus；未核对控件不自动完整；未知用途引发补清点但仅值变化不自动重提任务；已有参数不重复改写且条件/反证保留 |
+
+普通回复、纠错、登记及下一次读取需成套接入；上表不是运行改动已完成的列表，也不将现有入口当成新设计的唯一触发点。
+
+新增源码散列（其余见本图原表）；完整只读快照与核对记录在工作区根`artifacts/tmp_tests/prompt_responsibility_discussion_20261014_01/source-map.json`。
+
+| 文件 | SHA-256 |
+|---|---|
+| `region_candidate_names.py` | `34e8dd6e83599277f2c4ad5d40019a77fd568dd0397101090fef57ef730be9f9` |
+| `discovery_delta.py` | `a4b0970a72fc04bdb0c58d03ca52aecf7f78dfa413474ec0867a39b0dadb59c4` |
+| `locator.py` | `a6cbb893119e6e356199960bee4cb2b9444ab2ad89d309c1b094f0428de2b21f` |
+| `discovery_step.py` | `d976ec2e0c0def87d84640a9fb1819461ac11f308f8bafee8160e22bb2abe1de` |
+| `register_update.py` | `0b6a5a1680a22b61bc63c3dca6a15698eecff751eb3be0f439c2bba5498ee8d9` |
+| `task_routing.py` | `17622cbe8eeda502cf25eb92273dc47b412c1956302e8822129d9a34fa0d66da` |
+| `region_evidence.py` | `a5a005addf072a2c337cb9611de367422be9aaae593a3857d4f482b2a8922eb0` |
+| `region_identity.py` | `5fe110a1304e417d1e852767fe2ed0b02ea70f33aba2f0725da8413eb9911ed2` |
+
 ## 接入核对与证据
 
 - 请求：正常构造完整真实记录，核对固定提示、问题模块、实际字段说明及相关历史，纠错不重新带回旧字段。

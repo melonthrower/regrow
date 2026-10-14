@@ -32,7 +32,7 @@
 
 网页由 artifacts/prompt_review/20261012_01/build_review_data.py 生成。共享术语取 dist/drafts/术语定义-历史权衡稿.prompt.txt；其余取 dist/modified/ 下对应提示。原版取 dist/sources/，不能把原版或历史草稿重新拼回新请求。网页分组不是实际发送顺序。 `?compare=responsibilities` 使用 `dist/previous.js` 固定的上一轮稿作左侧，只显示本轮7份变化；默认入口仍对照最初原文与当前候选。两种视图共用同一修改稿；前态不是已接受基准。本轮任务提出稿只保留新任务；明确用途说明随发现，参数与任务结果在更新部分审阅，准备放动作部分。网页分组只为逐段阅读，不代表运行组合/路由已经修改。
 
-前一轮38份稿件全量审查保存在 prompt_full_readability_20261014_01/audit.json。本次7份候选的前态、差异和复审另存 prompt_responsibility_preview_20261014_01/。当前38份均与运行源码不同，差异不代表运行已经切换。
+前一轮38份稿件全量审查保存在 prompt_full_readability_20261014_01/audit.json。此前7份候选的前态、差异和复审在 prompt_responsibility_preview_20261014_01/，本轮5份发现片段的精简另存 discovery_mainline_preview_20261014_01/。当前38份均与运行源码不同，差异不代表运行已经切换。
 参数公共结构仍由 遍历prompt/输出格式/参数发现.schema 定义；修改时覆盖任务提出与旧任务更新所有引用者。动作执行协议本轮没有删除 action。发现引用/几何分工的已实现候选另见现行身份、执行模块；不能以任务字段讨论稿覆盖它。
 
 ## 陌生读者讨论的接入点
@@ -61,6 +61,17 @@
 | `task_routing.py` | `17622cbe8eeda502cf25eb92273dc47b412c1956302e8822129d9a34fa0d66da` |
 | `region_evidence.py` | `a5a005addf072a2c337cb9611de367422be9aaae593a3857d4f482b2a8922eb0` |
 | `region_identity.py` | `5fe110a1304e417d1e852767fe2ed0b02ea70f33aba2f0725da8413eb9911ed2` |
+
+## 发现与识别主线精简（D04）
+
+本轮5份网页候选精简，运行源码与最终请求组合均未修改。入口稿分别表达整前景/指定区块范围；共同登记只在已有共享片段中维护。对应的文件仍是`任务/当前区块重定位.prompt`、`任务/工作区块定位.prompt`、`共享/区块身份复用.prompt`、`共享/当前前景.prompt`、`共享/身份图准入.prompt`，此处指网页副本，不是运行路径已切换。
+
+- `prompt_rules.py` STAGES:10–15、parts:60–70：后续两种发现范围须配共同登记/前景/裁图说明，不能只复制短入口；更新亦使用共享身份片段，接入时检查其与更新字段说明的重复。
+- `locator.py` schema:11–29、`discovery_delta.py` schema:8–23：旧引用已有稀疏合同，但新对象仍继承原必填state等字段；须同步可读输出要求、schema与纠错，不能仅删正文。已有新对象裁图/null及质量边界保留。
+- `region_evidence.py` control_observation:56–61：state属于有来源的观察；省略不能补旧帧状态。保留旧对象的新用途和实际有用观察，不把“只认身份”误写成禁止补充事实。
+- `register_update.py` materialize_regions:389–414：parent_index登记为parent_region，表达区块包含关系；已有关系未变可保留，当前身份/归属缺口仍核验。新层级说明不引入新的父子枚举。
+
+本表复用上表同一源码字节，未产生新代码；文档版本由本次导出提交固定。后续验收应覆盖：旧对象仅引用；新对象无状态问题时不强填启用；同屏新区域/控件；真包含关系与独立相邻区；未知/遮挡；旧对象新确认用途。上述行为验收尚未执行，本轮仅文字、示例、前后展示和静态核对。证据位于工作区根`artifacts/tmp_tests/discovery_mainline_preview_20261014_01/`。
 
 ## 接入核对与证据
 

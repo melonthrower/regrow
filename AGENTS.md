@@ -286,3 +286,8 @@ current behavior, proposed edits, and acceptance cases. Label new files as new
 changes, and behavior actually validated. If the source changes, issue a new
 version rather than silently retaining stale line references. Include the
 matching source/diff and a portable review package when needed.
+
+
+## Long-term prompt debugging workspace
+
+User instruction (2026-10-14): keep using the existing Prompt debugging workspace for prompt text, historical context, original request images, user ideas and work notes together. Reuse `tools/prompt_review_editor.py` and read `tools/prompt_review_editor/README.md`; do not rebuild another review site. The local GUI-ReWalk data root is `artifacts/prompt_review/20261012_01/` and is durable user work, not disposable test output. Preserve `user_edits/`, `context_sources/`, original texts and review snapshots. Reopen the same data root after a browser/server restart. Candidate/history editing does not itself authorize replacing traversal source or running Luna. Use unfamiliar-reader independent reading before author-intent comparison.

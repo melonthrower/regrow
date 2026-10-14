@@ -157,3 +157,6 @@ TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发
 ## 人工提示审阅工具（2026-10-14）
 
 `tools/prompt_review_editor.py <审阅目录>`提供本地浏览器编辑、修改位置、想法与固定审查快照；只写人工审阅候选，不改遍历运行源。审查由用户把生成请求发回对话后安排，不自动调用代理或Luna。使用和数据边界见[提示审阅记录](modules/stepwise/prompt_review_backlog.md#在浏览器编辑与准备审查)。
+
+
+Prompt调试工具于2026-10-14扩为长期工作区：同页编辑提示与真实请求上下文，查看原固定提示/附图，底部工作记录存项目文件并可在重启后恢复。原运行记录与候选分离；工具及持久数据见[工具说明](../tools/prompt_review_editor/README.md)。这不是遍历历史生产或Luna运行合同变更。

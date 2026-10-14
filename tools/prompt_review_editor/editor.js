@@ -1,12 +1,13 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);
-  let documentState=null, dirty=false, timer=null, saving=null, generation=0, notes=[], busy=false;
+  let documentState=null, dirty=false, timer=null, saving=null, generation=0, notes=[], busy=false, reviewContext=new URLSearchParams(location.search).get('context');
   const status=(message,error=false)=>{$('status').textContent=message;$('status').className=error?'error':'';};
   function lock(value){
-    for(const id of ['document','draft','idea','save','submit'])$(id).disabled=value;
+    for(const id of ['document','draft','idea','save','submit','clear-review-context'])$(id).disabled=value;
     $('annotate').disabled=value||$('draft').selectionStart===$('draft').selectionEnd;
     for(const el of $('notes').querySelectorAll('textarea,button'))el.disabled=value;
+    window.promptWorklog.lock(value);
   }
   const json=async(url,body)=>{
     const response=await fetch(url,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});
@@ -53,12 +54,25 @@
   async function load(path){
     const result=await json('/api/editor'+(path?'?path='+encodeURIComponent(path):''));
     documentState=result.document;notes=JSON.parse(JSON.stringify(documentState.notes));dirty=false;generation++;
-    if(!$('document').options.length)for(const name of result.paths){const option=document.createElement('option');option.value=name;option.textContent=name.replace(/\.prompt$/,'');$('document').append(option);}
+    if(!$('document').options.length){
+      const group=document.createElement('optgroup');group.label='提示正文';
+      for(const name of result.paths){const option=document.createElement('option');option.value=name;option.textContent=name.replace(/\.prompt$/,'');group.append(option);}$('document').append(group);
+      if(result.contexts?.length){const contexts=document.createElement('optgroup');contexts.label='上下文与历史（真实请求）';for(const item of result.contexts){const option=document.createElement('option');option.value='context:'+item.id;option.textContent=item.title;contexts.append(option);}$('document').append(contexts);}
+    }
     $('document').value=documentState.path;$('base').textContent=documentState.base;$('draft').value=documentState.text;$('idea').value=documentState.idea;
     showNotes();showChanges(documentState.changes);$('annotate').disabled=true;
+    const contextual=documentState.kind==='context';$('context-details').hidden=!contextual;
+    $('context-images').replaceChildren();$('related-prompts').replaceChildren();
+    if(contextual){
+      const item=documentState.case;$('context-title').textContent=item.title;$('context-origin').textContent=`保存的调用 ${item.call} · ${item.images.length} 张原始附图`;$('context-system').textContent=documentState.system_prompt;
+      reviewContext=item.id;$('review-context').hidden=false;$('review-context-label').textContent='本次审查附带历史：'+item.title;$('submission').hidden=true;
+      item.images.forEach((frame,index)=>{const figure=document.createElement('figure'),img=document.createElement('img'),caption=document.createElement('figcaption');img.src='/api/editor/context-image?id='+encodeURIComponent(item.id)+'&index='+index;img.alt='该请求保存的附图 '+(index+1);caption.textContent='原始请求附图 '+(index+1)+'（复用保存帧）';figure.append(img,caption);$('context-images').append(figure);});
+      $('related-prompts').append('同页关联的提示候选：');for(const name of item.related_prompts){const link=document.createElement('a');link.href='/editor?path='+encodeURIComponent(name)+'&context='+encodeURIComponent(item.id);link.target='_blank';link.rel='noopener';link.textContent=name.replace(/\.prompt$/,'');$('related-prompts').append(link,' ');}
+    }
+    const attached=(result.contexts||[]).find(item=>item.id===reviewContext);if(attached){$('review-context').hidden=false;$('review-context-label').textContent='本次审查附带历史：'+attached.title;}else{reviewContext=null;$('review-context').hidden=true;}
     for(const id of ['document','draft','idea','save','submit'])$(id).disabled=false;
     status(documentState.saved_at?'已读取保存的修改和想法':'可以开始编辑');
-    const url=new URL(location.href);url.searchParams.set('path',documentState.path);history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.set('path',documentState.path);if(reviewContext)url.searchParams.set('context',reviewContext);else url.searchParams.delete('context');history.replaceState(null,'',url);
   }
   $('draft').addEventListener('input',changed);$('idea').addEventListener('input',changed);
   $('draft').addEventListener('select',()=>{$('annotate').disabled=$('draft').selectionStart===$('draft').selectionEnd;});
@@ -69,6 +83,7 @@
     notes.push(note);showNotes(note.id);changed();
   });
   $('save').addEventListener('click',save);
+  $('clear-review-context').addEventListener('click',()=>{reviewContext=null;$('review-context').hidden=true;$('submission').hidden=true;const url=new URL(location.href);url.searchParams.delete('context');history.replaceState(null,'',url);});
   $('document').addEventListener('change',async()=>{
     if(busy)return;busy=true;const next=$('document').value;lock(true);
     try{if(await save())await load(next);else $('document').value=documentState.path;}
@@ -78,9 +93,9 @@
   $('submit').addEventListener('click',async()=>{
     if(busy)return;busy=true;lock(true);
     try{
-      if(!await save())return;
-      const result=await json('/api/editor/submit',{});$('review-request').value=result.request;$('submission').hidden=false;
-      $('submission').scrollIntoView({block:'nearest'});status(`已固定 ${result.count} 段修改和想法的审查快照。请将审查请求发回对话。`);
+      if(!await save()||!await window.promptWorklog.save())return;
+      const result=await json('/api/editor/submit',{contexts:reviewContext?[reviewContext]:[]});$('review-request').value=result.request;$('submission').hidden=false;
+      $('submission').scrollIntoView({block:'nearest'});status(`已固定 ${result.count} 份材料修改和想法${result.has_worklog?'，并包含工作记录':''}。请将审查请求发回对话。`);
     }catch(error){status(error.message,true);}finally{busy=false;lock(false);}
   });
   $('copy-request').addEventListener('click',async()=>{

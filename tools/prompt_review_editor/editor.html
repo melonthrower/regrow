@@ -2,14 +2,19 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>编辑提示与想法</title>
-<link rel="stylesheet" href="editor.css"><script defer src="editor.js"></script>
+<title>Prompt 调试工作台</title>
+<link rel="stylesheet" href="editor.css"><script defer src="worklog.js"></script><script defer src="editor.js"></script>
 </head>
 <body><main>
-<h1>编辑提示与想法</h1>
-<p class="note">在右侧直接改正文。修改和想法会自动保存；左侧保留你开始编辑时的内容。这里保存的是网页候选稿，运行框架保持原样。</p>
-<nav><label for="document">当前段落</label><select id="document" disabled></select><button id="save" disabled>保存</button><button id="submit" disabled>准备陌生读者审查</button><a href="/?part=discovery">返回对照页</a></nav>
+<h1>Prompt 调试工作台</h1>
+<p class="note">选择提示正文或真实请求的上下文，在右侧修改候选稿。修改、想法与底部工作记录自动保存；原始运行记录保持不变。</p>
+<nav><label for="document">当前材料</label><select id="document" disabled></select><button id="save" disabled>保存</button><button id="submit" disabled>准备陌生读者审查</button><a href="/?part=discovery">返回对照页</a></nav>
 <p id="status" role="status">正在读取…</p>
+<p id="review-context" class="note" hidden><span id="review-context-label"></span> <button id="clear-review-context">取消额外附带</button> 已修改的历史会随改动一起提交。</p>
+<section id="context-details" hidden><h2 id="context-title"></h2><p id="context-origin" class="note"></p>
+<p class="note">左侧是保存请求的原始上下文，附图是当次记录；右侧另存讨论候选。尚未重新组装请求或调用模型。</p>
+<div id="context-images"></div><details><summary>查看这次请求的原始固定提示</summary><pre id="context-system"></pre></details>
+<p id="related-prompts" class="note"></p></section>
 <div class="columns">
 <section><h2>改前</h2><pre id="base"></pre></section>
 <section><h2><label for="draft">你的修改</label></h2><textarea id="draft" spellcheck="false" disabled></textarea>
@@ -19,4 +24,10 @@
 </div>
 <section><h2>自动记录的修改位置</h2><p class="note">行号分别对应左侧改前内容和右侧已保存内容。选中文字的说明保留你标注时的原文位置。</p><div id="changes"></div></section>
 <section id="submission" hidden><h2>审查快照已准备好</h2><p>正文、修改位置和你的想法已保存。复制下面这句话发回对话，我会先让新读者独立读正文，再对照你的想法。此按钮不会自动启动代理。</p><textarea id="review-request" readonly rows="3"></textarea><button id="copy-request">复制审查请求</button><p id="copy-status" role="status"></p></section>
+<section id="worklog-panel"><h2><label for="worklog">我的思路与工作记录</label></h2>
+<p class="note">这是整个调试工作区共用的笔记，可写总体思路、历史取舍和下一步。切换材料不清空，关闭后再打开会读取已保存内容。</p>
+<textarea id="worklog" rows="12" placeholder="今天在讨论什么？哪些问题已有结论，哪些还要看历史材料？" disabled></textarea>
+<button id="save-worklog" disabled>保存工作记录</button><p id="worklog-status" role="status">正在读取工作记录…</p>
+<section id="worklog-recovery" hidden><h3>找到尚未保存的浏览器草稿</h3><p>上方是服务器记录，下方是恢复稿。两份均已保留，请选择继续使用哪份。</p><label for="worklog-drafts">恢复稿</label><select id="worklog-drafts"></select><textarea id="recovered-worklog" readonly rows="8"></textarea><button id="use-recovered-worklog">用恢复稿继续编辑</button><button id="keep-server-worklog">保留服务器记录</button></section>
+</section>
 </main></body></html>

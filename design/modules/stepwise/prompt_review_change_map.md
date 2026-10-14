@@ -140,17 +140,18 @@
 
 ## 浏览器编辑入口
 
-本节工具与文档同提交导出；仅编辑审阅候选，不改变前文运行候选的验收状态。
+本节工具与文档同提交导出，详见`tools/prompt_review_editor/README.md`；既有运行候选状态不因工具验证升级。
 
-| 文件与已核对位置 | 职责与写入边界 |
+| 文件、函数与已核对行号 | 当前行为与边界 |
 |---|---|
-| `tools/prompt_review_editor.py` source_paths:25–28、build_data:31–45 | 复用原38份供稿路径与数据构建方式；仅允许已有候选文件，重建original/modified展示数据，不写遍历源码 |
-| 同文件 changes:48–59、EditorStore.read:75–85、save:87–122 | 按首次编辑基线及每次保存记录行号/章节；旧标签页版本冲突拒绝；想法和标注时原文存审阅目录的独立历史 |
-| 同文件 EditorStore.submit:124–144 | 固定正文/差异/想法三份材料，prepared只表示快照就绪，automatic_review_started=false |
-| 同文件 EditorHandler.do_GET:168–187、do_POST:189–207、serve:215–218 | 127.0.0.1本地服务；GET编辑页/已有文件，POST保存/准备审查；不调用模型或执行用户文字 |
-| `tools/prompt_review_editor/editor.html`、`editor.js`、`editor.css` | 两栏正文、整体想法/选文批注、自动保存与位置清单；切换/提交期间锁定输入，后续编辑隐藏旧快照请求 |
-| `tests/test_prompt_review_editor.py` | 保存回读、位置与原文、旧版本拒绝、冻结审查与意图分离、删除章节归属的5项聚焦检查 |
+| `tools/prompt_review_editor.py` source_paths:26–29、build_data:32–46、changes:49–60 | 原38份候选的共同供稿入口；保存正文/章节/行号，不写遍历源码 |
+| 同文件 import_context:63–99 | 新增真实保存请求导入，核对user/system正文并冻结request和原图；来源与散列随context_cases保存，不用手写例子冒充运行 |
+| 同文件 EditorStore.read:120–142、save:144–180 | 区分提示正文和context候选，原始历史只读；版本冲突拒绝，想法单独登记 |
+| 同文件 read_worklog:182–188、save_worklog:190–206 | 新增跨材料工作记录，保存到项目worklog.md与历史版本；服务重启可读回 |
+| 同文件 submit:208–236 | 固定提示、上下文、原图、差异及独立想法/工作记录；显式附带未改历史，修改材料仍包含；prepared不表示代理已启动 |
+| 同文件 do_GET:260–302、do_POST:304–322、serve:330–333 | 本地服务、已有材料选择、工作记录与对应归档图片；不执行输入文字或调用模型 |
+| `tools/prompt_review_editor/worklog.js`（新文件） | 每份未保存稿有独立不可变浏览器键；本页活动稿与恢复稿分离，关闭补存，采用/舍弃只影响对应稿 |
+| `tools/prompt_review_editor/editor.html`、`editor.js`、`editor.css` | 同一选择器提供提示/真实上下文；原系统提示、原图、关联候选和底部工作记录同页；快照包含工作记录前先保存 |
+| `tests/test_prompt_review_editor.py` | 9项聚焦检查覆盖既有保存/来源、工作记录重载/冲突、上下文原件隔离与未改材料附带 |
 
-运行：`python tools/prompt_review_editor.py <审阅目录>`，默认端口45663；本地旧serve.py/build_review_data.py已转为调用上述唯一实现的薄入口，数据根不迁移。原审阅页增加逐段编辑链接。工具源码不包含用户正文或运行证据。
-
-本批Tier 2：5项聚焦检查通过；隔离真实Chromium验证编辑、选文备注、刷新回读、多标签冲突、切换保存和快照固定；实际审阅页只读点开入口验证通过。227份遍历源码/prompt/schema字节未变，0 Luna、0遍历GUI。证据在工作区根`artifacts/tmp_tests/prompt_browser_editor_20261014_01/`；浏览器测试数据留在隔离副本，未写入实际用户稿。服务首次切换因旧进程使用相对脚本名而被所有权断言拒绝，核对cwd后停止正确进程并恢复同端口；没有误杀遍历进程。
+Tier 2：9项聚焦检查通过；真实Chromium在隔离副本验证多页恢复互不清除、选择另一恢复稿保留未选稿、历史原图随快照、快速关窗重开、服务重启后换新浏览器仍读回。第一轮浏览器检查仅因把已恢复状态误要求显示为再次保存而失败，记录已保留；修正断言后第二轮通过。实际数据目录只读页面/附图检查通过。227份遍历源码/prompt/schema未变，0 Luna、0新遍历GUI。证据位于工作区根`artifacts/tmp_tests/prompt_debug_workspace_20261014_01/`。

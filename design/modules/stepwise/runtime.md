@@ -1,99 +1,46 @@
-# 运行、环境与进度
+# 提示、模型和执行支撑
 
-[模块总览](README.md) · [测试索引](../../../tests/STEPWISE_INDEX.md)
+- [prompts/compose.py](../../../src/regrow/prompts/compose.py)：读取唯一组成配置，选择规则和呈现本步材料。
+- [prompts/output.py](../../../src/regrow/prompts/output.py)：平台动作和字段合同、可读输出要求；schema 校验仍在程序中。
+- [调用组成.json](../../../src/regrow/prompts/流程/调用组成.json)：提示维护入口；本批正文与字段语义保持。
+- runtime/model_transport、model_reply_parse：实际发送、回复读取及调用计数。
+- runtime/action_executor、action_commands：当前图核对、一次投递、回执及前后帧；更新失败不重做已投递动作。
+- runtime/run_source：新入口与源码散列；tools/debug_loop.freeze 复制完整 regrow 包及资源，独立进程读取自己的冻结源码。
 
-选择源码与运行，维护传输、预算、冻结副本和进度。
+入口为 `python src step ...` / `python src session ...`；桌面批次由 `tools/run_stepwise.py` 接入。旧平铺源码不由新入口自动兼容。历史运行、原图、请求/原答和工作台数据均未清理。
 
-## 多应用只读浏览器投影
+预算由框架保存并执行，不进入 Luna 正文。保存帧测试通过复制原帧供读取，禁止投递新 GUI；实际调用和所有失败计入日志，不以流程完成代替语义检查。
 
-`python tools/stepwise_dashboard.py <config.json>` 接入同一冻结源码的多个已有run。配置包含 `source`、`source_hash`、`repository`，以及 `apps[{key,label,run,sessions,limits}]`；`sessions`下为原生 `session-*/session.json` 和 `round-*/budget.json`，`limits`为本批累计上限，配置保存在对应实验目录。可用 `port` 固定本地端口，未提供时自动分配；启动打印本地浏览器地址。
+Prompt工作台通过tools/prompt_review_trace.py连接真实调用轨迹、完整请求和可编辑模块。预览/测试复制完整原记录及当前源码，正常builder/Runner/transport处理；未勾选的模块保持当前源码。测试最多3次HTTP含纠错、GUI禁用；历史轨迹与候选结果分开。原件和每次trace_jobs均保留。动作提案不执行，也不假借原后图当新效果。
 
-Python入口负责读取，配套HTML负责布局。显示层加载维护中的 `progress.snapshot/details`，向snapshot传入该批冻结的 `region_tasks`，保持coverage/effective_task语义；`region_graph.project/asset`也来自冻结源。显示修复不改写冻结源码或原记录。登记缺口既可有reason，也可有discovery pending条目；后者生成可读说明，缺说明仍保留缺口。API保留deferred_tasks，当前HTML不逐条展开这些缺口。
+2026-10-16：顶部改为三个代表案例（识别3调用、准备4调用含纠错、结果3调用）；完整34调用保留在原始记录分组。只收拢展示，调用的完整记录、重建和测试入口不删减。完整prompt默认折叠；模块引用随案例切换刷新。上下文正文的人工编辑仍是讨论稿，不自动替换底层记录或进入测试。
 
-只监听本地地址，拒绝POST，没有启动、暂停或GUI控制入口。区块图和进度必须来自同一提交快照；刷新冲突暂留旧数据并明确重试。运行中未结算轮次的原预算纳入计数一次，不按页面刷新重新计账。`root-review.json`只用于显示已检查小步、暂缓或保留问题继续，不改变调度；`accepted=false, continue=true`与质量接受分开。调用/操作按本批累计上限显示，不把一次原生处理称作40调用批次。通过Codex侧边打开时传入配置中的原始服务地址，不能把客户端转发后的localhost端口再次作为远端服务地址。HTML、API、服务器端浏览器和客户端转发分别核对。
+## 工作轨迹（2026-10-16）
 
-左上为当前工作区块、具体任务/归属、探索目的、用途条件和所需登记产物，并按实际phase高亮三步（总结/恢复单独标记，不高亮三步）；下方展示最近真实观察及北京时间，非连续投屏。右侧显示本区块任务与状态，最近操作可展开真实前后图及已登记知识；模型回复返回与动作结果登记分开标记。当前可交互包含结构与所有历史区块默认折叠，来路不当包含父级。无控件绑定的任务仍显示在区块下，任务清点不完整单列。切换应用立即清空上一应用的显示，新应用断流不能沿用旧应用数据；同一应用断流明确保留上次数据。图片裁图为登记时身份证据。刷新不调用Luna、不取设备新图、不修改原run。
+每个代表案例在原数据目录 working_traces/<案例>/revisions 保留不可覆盖版本，固定选入的模块正文和按步骤编辑的底层记录。页面显示受影响步骤，模块编辑后提示尚未收录；保存不调用模型。编辑上下文保留原截图来源，并标注为编辑案例测试，不能当成未修改真实记录验收。编辑器的自由历史正文仍是讨论稿；工作轨迹编辑的是records/state，经正常builder重新生成请求，不替换最终user字符串。
 
-## 输入、输出与边界
+批量预览和统一测试使用固定版本及同一冻结源码，逐步复用原trace worker；每步最多3调用含纠错、0GUI。预览不调用模型。失败、新动作选择或登记/运行状态变化使下游待更新；不把旧下游当一致的新轨迹。待更新状态保留在工作轨迹中，再次测试前需修改本步上下文或明确采用新的非动作登记。采用结果仅允许紧接下一步且截图一致（无图总结按记录继续），带上新原答/图片/记录依赖，不顺带收录尚未保存的模块。新动作不执行，不能采用旧后图继续。
 
-运行配置、源码引用、设备/模型 → 完整run目录和阶段驱动。预算保留在框架账本，不塞入Luna prompt。
+UI把内部work_context.reason放进“内部调度与调用来源”，任务与本步单独显示；这不篡改历史system/user，也不声称自动改写了所有运行prompt。测试结果与版本历史保留，未保存的上下文另有浏览器恢复稿。入口为tools/prompt_review_work.py，界面worktrace.js；复用tools/prompt_review_trace.py正常构建/校验/纠错/登记。
 
-主要接口：`launch_traversal；run_source；run_progress_session；desktop_transport.DesktopRun`。详细现行合同见[原模块文档](../stepwise_debug_loop.md)；本页负责开发定位与职责边界，实验流水不在这里复制。
+2026-10-16：默认显示当前工作版本的完整请求，历史system/user与执行记录收进折叠对照。只选同案例/步骤/版本且源码散列仍匹配的预览；模块有未收录改动、版本/源码不符或未生成预览时展示最新模块稿并标明尚未组装，不拿旧请求冒充当前稿。生成0030正常离线预览验证新“动作执行”正文，0 Luna/GUI。证据在工作区artifacts/tmp_tests/current_draft_view_20261016_01。
 
-公共发送顺序在 `model_transport.ModelTransport.call`：平台 → 前置条件 → 环境范围 → 运行范围 → 截图尺寸 → 历史投影 → schema必填兼容 → 进度/预算检查 → 请求落盘与计数 → 发送及保存原答。桌面先经 `DesktopRun.call/prepare_request`，Android与恢复共用这一个发送实现。
+当前动作调用以`02_动作选择.json.system_order`显式组装，`output.ordered_action`集中输出与示例；普通动作不再展示第二套任务计划。运行范围位于动态材料开头。单层none的部分答案/恢复条件由action_commands.for_request映射既有登记。源版本与失败范围见2026-10月志：Add选择及历史参数答案complete已有限通过，不能称全阶段已精简或自主探索已实现。
 
-正常会话通过所选源码的新子进程运行；不支持在一个动作进程中混用两份源码。冻结器按顶层Python文件收集源码，新增职责文件沿同一规则进入新冻结源。旧run不随整理自动部署。`render_region_context`中的两份.snapshot.py仅是入口审计摘录，不是自足运行源码；复现使用run_manifest指定的冻结源。
+2026-10-17参数输出统一删除domain/type/values/min/max结构；共享说明提供月份输入一个正例，description承载已确认范围。正常输出schema、补充校验和参数关系提示同时修改；conditions随后已并入description；findings.evidence已取消，来源由原登记入口关联。
 
-## 源码与提示入口
+参数说明与schema共用入口更新为name/description；任务提出、动作结算、结果更新及纠错中引用findings的路径共用这一合同。功能总结parameter_definitions同步使用ref/description。仅此共享产物接入，不表示各阶段完整prompt已整理完。
 
-- [model_transport.py](../../../experiments/clock_manual_20260919/model_transport.py)
+后续按调用职责检查完整请求（计划，未实施）：先完成动作选择中的操作/complete/none输出与材料组织；再查动作后更新的实际动作、前后观察、结论；再查任务提出的已有知识与未知问题；再查发现识别的历史身份/新对象与用途；最后查区块总结及纠错恢复的必要材料。每段先展示正常组装输入输出，用户审阅后按相同规则改生产/校验/登记/后读；不先改调度或扩展字段。findings.evidence已取消；其他结果类型的证据字段尚未调整。
 
-- [launch_traversal.py](../../../experiments/clock_manual_20260919/launch_traversal.py)
-- [app_launcher.py](../../../experiments/clock_manual_20260919/app_launcher.py)
-- [run_source.py](../../../experiments/clock_manual_20260919/run_source.py)
-- [run_progress_session.py](../../../experiments/clock_manual_20260919/run_progress_session.py)
-- [debug_loop.py](../../../experiments/clock_manual_20260919/debug_loop.py)
-- [debug_candidate.py](../../../experiments/clock_manual_20260919/debug_candidate.py)
-- [debug_progress.py](../../../experiments/clock_manual_20260919/debug_progress.py)
-- [desktop_transport.py](../../../experiments/clock_manual_20260919/desktop_transport.py)
-- [desktop_capture.py](../../../experiments/clock_manual_20260919/desktop_capture.py)
-- [desktop_lifecycle.py](../../../experiments/clock_manual_20260919/desktop_lifecycle.py)
-- [browser_hub.py](../../../experiments/clock_manual_20260919/browser_hub.py)
-- [progress.py](../../../experiments/clock_manual_20260919/progress.py)
-- [progress_details.py](../../../experiments/clock_manual_20260919/progress_details.py)
-- [progress_window.py](../../../experiments/clock_manual_20260919/progress_window.py)
-- [exploration_summary.py](../../../experiments/clock_manual_20260919/exploration_summary.py)
-- [exploration_loop.py](../../../experiments/clock_manual_20260919/exploration_loop.py)
-- [call_model_once.py](../../../experiments/clock_manual_20260919/call_model_once.py)
-- [assemble.py](../../../experiments/clock_manual_20260919/assemble.py)
-- [replay_stepwise_baseline.py](../../../experiments/clock_manual_20260919/replay_stepwise_baseline.py)
+2026-10-18 Settings现场11调用/2GUI发现任务预设“展开指示符”导致已进入应用列表仍追求展开；返回仅改变左侧导航，更新漏记变化。材料齐全，修订任务提出/共享知识/效果描述三处通用措辞，保持未知界面形式开放、据实际行为作答、对比变化与保留部分。未改调度或原答；保存帧5次调用未解除任务预设，候选三处文字已精确撤销，未部署；全部计入本轮50额度。证据artifacts/runs/desktop_settings_20261018_01。
 
-固定提示/schema入口（最终请求还会按步骤组合）：
+2026-10-18 待验证候选：未完成入口任务有两次同任务、同控件、同条件的成功投递且后图匹配时，复用task_result_review先复核累计证据；不直接判失败/完成。原始最近动作前后两图无几何输出，已复核pair通过既有latest_update.source.related_attempts避免重复触发；准备、失败、排除和不同条件不触发。已有工作台worker补该角色正常请求分支。8项聚焦通过，真实保存帧及部署仍待验证。证据desktop_settings_20261018_01/fix-review。
 
-- [平台](../../../experiments/clock_manual_20260919/遍历prompt/平台)
-- [通用](../../../experiments/clock_manual_20260919/遍历prompt/通用)
+2026-10-18 按用户新约定，新探索任务仅control/task_type；统一类型目标在调用组成.json的task_goals，框架生成任务标签，动作/更新/复核读取同一目标。原图旧任务引用、状态、历史保留，准备任务仍按原依赖目标；不沿旧标题预设界面形式。选择已有同类型任务复用原记录；已done/record_only被重新选中时保留知识并记录revisions转pending，blocked不因重新选择解除。入口复核与实时结算共用store_action_entry同步条件，补充识别复用正常登记，双图纠错/重试保图。25项聚焦通过；正常保存帧验证及现场部署待完成。新50次额度仅从修复后正式续跑起算，旧现场及诊断分账。
 
-## 验证与未完成事项
+2026-10-18：input_target历史模板未匹配时复用实际聚焦前后same_surface核验；回退不返回target，不提升身份，输入投递仍为unverified，效果交后图判断。3项聚焦和真实保存帧核验通过，独立审阅通过；实际输入验证待本轮续跑。
 
-浏览器入口仍为启动遍历.sh；assemble和replay_stepwise_baseline为离线诊断，不是第二条默认实机路径。恢复现场前读SERVER_HANDOFF并核对run_manifest源码。
+2026-10-18新图Settings第03轮：49/50调用、11逻辑动作/21GUI命令，剩1次因下一轮至少需2次而停止，无未登记动作。4任务done/18pending；404398tokens含纠错。a0008真实输入和筛选通过、独立审查通过；输入回退模拟回执2分支通过。整体未通过：按钮/输入框身份混用，different移除引用后后续仍用旧控件，14次身份复核，参数结束仍未收敛。证据根artifacts/runs/desktop_settings_20261018_03及to_astra/settings_fresh50_20261018_03，未追加调用。已有未跟踪src重构不能安全隔离提交，未提交/推送。
 
-聚焦测试从[测试索引](../../../tests/STEPWISE_INDEX.md#runtime)选择；涉及共享接口时补相邻模块测试。索引不是全通过声明，也不自动要求全部执行。
-
-## 区块总结与空闲后知识阶段
-区块探索结束后的总结在普通run_step内按需登记并计入小步及会话HTTP预算。正常会话在GUI无可执行工作后仍调用finalize_knowledge补历史清点与遗漏总结，HTTP并入session账本，GUI预算为0。没有后台线程、独立队列或CLI开关；网络中断记录interrupted，不伪报knowledge_complete。新冻结源统一使用本批三步与恢复规则，旧冻结源不热替换。
-
-## 连续批次与剩余预算
-
-进度页的等价任务状态沿region_tasks.effective_task读取；登记类别不一致的旧引用显示blocked及原因，不把代表任务完成误呈现为本任务已登记。
-
-后续常规实验按用户2026-10-06确认的口径：设置整批模型调用上限，整批GUI次数不限（`session_limits.max_gui_commands=null`）；保留下述小步额度和异常恢复的局部保护。分段续跑从本批实际调用账扣除已用次数，纠错、恢复和知识整理调用一并计入，不能每段重新获得完整额度。调用上限不是必须耗尽的指标，正常无工作、阻塞或保护触发仍应说明原因。
-
-原生auto会话一次连续推进，人工仅会话结束后审查区块、任务、逐动作调用和异常。每小步最多6次HTTP调用和6条GUI命令，正常调用与纠错合计，但run_session把min(6,剩余额度)交给run_step，不要求尾段还剩6 HTTP/GUI；实际命令数仍由发送入口强制计账。GUI完整命令序列不足则不开始该动作；HTTP不足或修订额度耗尽保留pending。空闲知识登记同样使用HTTP余量，GUI为0。浏览器root-review只展示整批审查，不是调度门槛；“已检查批次”按会话计，旧单小步会话亦仍按其保存会话计。
-
-HTTP不足2次时，已消费调用的小步以ready_next_round续接本会话余量；未消费调用的新小步以budget_limit停止，避免空尾段循环。待登记证据保留，不能据此重投已执行GUI。
-
-
-## 收尾后重新调度
-auto在scope_idle/region_complete后执行一次有界、0GUI的finalize_knowledge，再回到原run_step。若该步仍为空闲即停止，不能仅因pending、knowledge_complete或新快照重复整理；正常动作/发现/清点等推进后，后续空闲可再次整理。每段知识阶段单独保存knowledge、knowledge-0002等目录，HTTP只并入当前session一次。暂停、预算、异常、review_pending和其他受阻结果保留原停止边界。跨会话预算仍由已有续接入口从旧账扣除，不因新session重置本批100额度。
-
-## 主程序与组件（2026-10-06）
-run_task_step保持设备/会话额度、原Runner和三步组件连接；工作选择在
-traversal_scheduler，动作请求构造在action_proposer，投递在action_executor，
-登记/续登记在result_updater。每次current重读已提交状态并保存
-round/scheduling.json（目标、任务、原因、snapshot），再构造请求。
-run_progress_session用after_round解释工作结果；沿原空闲整理和一次重新调度，
-保持知识段独立目录与预算累计，不新增模型完成审核、开关或后台队列。
-旧运行仍由manifest冻结源选择，新模块按现有顶层Python冻结规则进入新源。
-
-## 桌面批次固定入口（2026-10-08）
-
-`tools/run_stepwise.py --new OUTPUT --template-run RUN --max-calls N` 新建独立图；可显式添加 `--clear-app-data` 和 `--restart-container`。`--resume RUN_JSON` 只沿原记录扣除已用额度续跑，`--status RUN_JSON` 只读检查服务和真实账本。新批用 batch.json，既有批次可用原 run.json。详细命令与支持边界见[固定入口设计](../../DESKTOP_BATCH_ENTRY.md)。
-
-启动层为 batch_launch/batch_environment/batch_runtime；正常框架入口不变。systemd 用户服务以现有 Docker 组权限运行；预检在实际后台环境内有界完成，检查真实显示截图与控制器。数据重置目前限 GNOME Clocks dconf，未知专用目录拒绝，保留本地备份。当前源码、共享依赖及每次启动日志均保留；续跑不升级原冻结源。
-
-状态区分服务存活与推进：包括所有原生截图位置的 waiting、请求未返回和服务消失，不把旧 session 的 running 当作活跃进程。未完成的准备不自动重复清数据；正常执行恢复交原 pending 消费路径。机器重启或用户服务管理器退出后的自动恢复不在本批范围。验证状态见本月日志。
-
-
-## 当前任务与证据展示（2026-10-08）
-`tools/stepwise_dashboard_view.py`只读投影选定knowledge snapshot中的任务/动作，并读取当前round的实际request/exploration_context补充正在处理的目标。工作区块与任务owner分别显示；清点/总结阶段无绑定任务时显示阶段工作，不借旧active_task冒充当前任务。历史调用不作新round当前目标；未完成任务knowledge不作为已登记知识。记录缺失明确留空，不调用模型补文案。
-`/evidence/<app>?attempt=aNNNN&frame=before|after`仅读取原动作图片，校验文件仍在该run内。新图尚未登记时，最近截图与已提交图的时间差保留提示；断线保留原内容并取消阶段高亮。页面只提供读取，不接旧progress_window的启动/暂停按钮，不修改冻结遍历源码、预算或状态。覆盖检查见test_dashboard_task_focus及test_stepwise_dashboard；实际API/浏览器验证只证明展示，不是业务动作验收。
+2026-10-18对象补登记：新增object_registration角色使用原动作后单图，批量补齐本次对象外观；正常Runner计费/纠错/暂停，不执行GUI。语义双图与外观单图原答分别保留，registration_request/candidate仅为带来源的派生提交。最终14项聚焦通过，12调用保存帧结果及限制见月志。

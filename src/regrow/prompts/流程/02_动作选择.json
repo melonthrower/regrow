@@ -1,0 +1,75 @@
+{
+  "stage": "action_selection",
+  "parts": [
+    "动作/围绕目标选择动作.prompt",
+    "动作/动作空间与字段.prompt"
+  ],
+  "schema": "输出格式/选择探索入口.schema",
+  "system_order": [
+    {
+      "title": "本步目的",
+      "path": "动作/围绕目标选择动作.prompt",
+      "section": "本步目的"
+    },
+    {
+      "title": "探索范围",
+      "kind": "environment"
+    },
+    {
+      "title": "对象与当前场景",
+      "path": "共享/术语定义.prompt",
+      "section": "通用"
+    },
+    {
+      "title": "选择下一步",
+      "path": "动作/围绕目标选择动作.prompt",
+      "section": "选择下一步"
+    },
+    {
+      "title": "输出要求",
+      "kind": "action_contract"
+    },
+    {
+      "title": "功能知识",
+      "path": "共享/任务知识与当前观察.prompt",
+      "section": "功能知识的内容",
+      "fields": [
+        "knowledge"
+      ]
+    },
+    {
+      "path": "共享/任务知识与当前观察.prompt",
+      "section": "任务知识的归属 → knowledge",
+      "fields": [
+        "knowledge"
+      ]
+    },
+    {
+      "title": "参数答案",
+      "path": "任务/任务动作登记.prompt",
+      "section": "输出：参数答案 → findings",
+      "fields": [
+        "findings"
+      ]
+    },
+    {
+      "path": "共享/参数观察值.prompt",
+      "fields": [
+        "findings"
+      ]
+    },
+    {
+      "title": "入口答案",
+      "path": "任务/任务动作登记.prompt",
+      "section": "输出：入口关联 → entry",
+      "fields": [
+        "entry"
+      ]
+    },
+    {
+      "title": "输出示例",
+      "path": "动作/围绕目标选择动作.prompt",
+      "section": "输出示例"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+# 本步目的
+识别当前前景中的区块和控件，核对已有身份，补充新对象。查看操作区和没有控件的信息展示区。
+
+## 输出
+foreground描述当前前景与实际异常；regions和controls登记本图能确认的对象。身份引用及知识的写法见对应字段说明。
+如提供指定定位区块，focus_presence判断它是否在当前前景；未指定时为null。该判断不限制其他前景区块的识别。
+身份尚未确定的对象写identity=uncertain和具体identity_evidence；其他本步未解决事项放uncertainties。
+
+## 示例：复认已有对象
+历史资料：区块r0080名为“文件编辑区”，控件index=3名为“保存”，属于r0080。当前图中仍可确认二者。本例未指定定位区块。
+```json
+{
+  "foreground":{"description":"文件编辑区位于前景。","exception":"none","evidence":"编辑区及保存按钮可见。","uncertainty":"","recovery_handoff":""},
+  "focus_presence":null,
+  "regions":[{"ref":"r0080"}],
+  "controls":[{"index":3}],
+  "uncertainties":[]
+}
+```
+保存按钮禁用时仍是原保存控件，用途仍是保存；普通复认不必重报它的用途或状态。需要实际操作时再结合当前图判断是否可操作。

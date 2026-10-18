@@ -1,0 +1,23 @@
+## 任务判断字段
+
+decision 表示本次判断，reason 说明采用的已有/新增证据与未解事项。需要填写task时，引用本轮给定任务。
+只判断本轮给定且有证据可用的任务。原目标、类别和条件不重报。
+
+- continue：仍需调查，填写具体 remaining_question。可附 next_action，说明如何补足缺口。
+- defer：存在实际推进障碍，填写 remaining_question 和重新考虑条件 retry_when，不填 next_action。
+- answered：原问题已获回答，说明旧缺口如何解决或为何仅构成证据限制；不填活动 remaining_question、retry_when、next_action，reason 说明仍影响结论的失败或限制。
+
+next_action 一旦填写，须有 region、control、action、reason 四项。region/control 引用给定唯一身份；仅区块滚动、返回、等待、按键、快捷键允许 control 为空字符串。无法确定后续操作或不再采用旧建议时，省略整个 next_action 或填 null。
+continue/defer也可记录已确认的部分。已有明确用途或足够参数答案时，可以直接登记。
+
+## 输出：用途答案 → knowledge
+
+功能探索以knowledge为答案；已有答案足够时可直接采用，不重复改写。
+
+## 输出：参数答案 → findings
+
+参数问题以有效findings为答案，无须重复同义knowledge。可采用已登记的参数答案，在reason说明本次判断。
+
+## 输出：准备结果 → dependency_updates
+
+核对给定原目标是否在当前图中确实解锁/可用，填写引用与观察证据。准备任务 answered 须与该前提观察一致；仅打开入口或回执成功不足。

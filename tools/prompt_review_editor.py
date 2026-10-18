@@ -13,6 +13,9 @@ from threading import RLock
 from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
+import prompt_review_trace as trace_tool
+import prompt_review_work as work_tool
+
 ASSETS = Path(__file__).with_suffix('')
 
 
@@ -289,6 +292,40 @@ class EditorHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         route = urlsplit(self.path)
+        if route.path.startswith('/api/trace'):
+            try:
+                args = parse_qs(route.query)
+                if route.path == '/api/trace':
+                    self.respond({'traces': trace_tool.overview(self.store.root), 'jobs': trace_tool.jobs(self.store.root)})
+                elif route.path == '/api/trace/current':
+                    self.respond(work_tool.current_display(self.store.root,args['trace'][0],args['call'][0],self.store))
+                elif route.path == '/api/trace/work':
+                    self.respond(work_tool.view(self.store.root, args['trace'][0], self.store))
+                elif route.path == '/api/trace/batch':
+                    self.respond(work_tool.batch_view(self.store.root, args['trace'][0], args['id'][0]))
+                elif route.path == '/api/trace/step':
+                    self.respond(trace_tool.step(self.store.root, args['trace'][0], args['call'][0]))
+                elif route.path == '/api/trace/job':
+                    self.respond(trace_tool.job_view(self.store.root, args['id'][0]))
+                elif route.path == '/api/trace/job-image':
+                    path = trace_tool.job_image(self.store.root, args['id'][0], args['index'][0])
+                    body = path.read_bytes()
+                    self.send_response(200)
+                    self.send_header('Content-Type', self.guess_type(str(path)))
+                    self.send_header('Content-Length', str(len(body)))
+                    self.end_headers(); self.wfile.write(body)
+                elif route.path == '/api/trace/image':
+                    path = trace_tool.image_path(self.store.root, args['trace'][0], args['call'][0], args['index'][0])
+                    body = path.read_bytes()
+                    self.send_response(200)
+                    self.send_header('Content-Type', self.guess_type(str(path)))
+                    self.send_header('Content-Length', str(len(body)))
+                    self.end_headers(); self.wfile.write(body)
+                else:
+                    self.respond({'error': '未知轨迹接口'}, 404)
+            except (ValueError, KeyError, IndexError, StopIteration, OSError) as error:
+                self.respond({'error': str(error)}, 400)
+            return
         if route.path == '/api/editor':
             name = parse_qs(route.query).get('path', [next(iter(self.store.paths))])[0]
             try:
@@ -320,7 +357,7 @@ class EditorHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
-        if route.path in ('/editor', '/editor.js', '/editor.css', '/worklog.js'):
+        if route.path in ('/editor', '/editor.js', '/editor.css', '/worklog.js', '/trace.js', '/trace.css', '/worktrace.js'):
             filename = 'editor.html' if route.path == '/editor' else route.path[1:]
             path = ASSETS / filename
             body = path.read_bytes()
@@ -334,7 +371,7 @@ class EditorHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         route = urlsplit(self.path).path
-        if route not in ('/api/editor/save', '/api/editor/submit', '/api/editor/worklog'):
+        if route not in ('/api/editor/save', '/api/editor/submit', '/api/editor/worklog', '/api/trace/start', '/api/trace/work-save', '/api/trace/batch-start', '/api/trace/adopt'):
             self.respond({'error': '未知请求。'}, 404)
             return
         if self.headers.get('Sec-Fetch-Site') == 'cross-site' or self.headers.get_content_type() != 'application/json':
@@ -345,6 +382,13 @@ class EditorHandler(SimpleHTTPRequestHandler):
             if not 0 < length <= 2_000_000:
                 raise ValueError('提交内容为空或过大。')
             value = json.loads(self.rfile.read(length))
+            if route in ('/api/trace/work-save', '/api/trace/batch-start', '/api/trace/adopt'):
+                action={'/api/trace/work-save':work_tool.save,'/api/trace/batch-start':work_tool.batch_start,'/api/trace/adopt':work_tool.adopt}[route]
+                self.respond(action(self.store.root,value,self.store))
+                return
+            if route == '/api/trace/start':
+                self.respond(trace_tool.start(self.store.root, value, self.store))
+                return
             result = self.store.save(value) if route.endswith('/save') else self.store.save_worklog(value) if route.endswith('/worklog') else self.store.submit(value.get('contexts', []))
             self.respond(result)
         except Conflict as error:

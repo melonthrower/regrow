@@ -1,0 +1,285 @@
+{
+  "type": "object",
+  "properties": {
+    "foreground": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "uncertainty": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "evidence",
+        "uncertainty"
+      ],
+      "additionalProperties": false
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parent_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "本轮regions数组0起始父行号；无父级为null。不是跨图身份ID。"
+          },
+          "description": {
+            "type": "string"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+          },
+          "source_ref": {
+            "type": "string",
+            "enum": [
+              "",
+              "r0001",
+              "r0002"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "parent_index",
+          "description",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region_index": {
+            "type": "integer",
+            "description": "唯一直接所属Region的0起始行号"
+          },
+          "icon_appearance": {
+            "type": "string",
+            "description": "需要辅助辨认时写图标外观；不把功能含义当作外观。"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+          },
+          "icon_bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "可选的独立图标裁图范围；不作为操作坐标。"
+          },
+          "source_ref": {
+            "type": "string",
+            "enum": [
+              "",
+              "c0001",
+              "c0002",
+              "c0003",
+              "c0004",
+              "c0005",
+              "c0006",
+              "c0007"
+            ]
+          },
+          "knowledge": {
+            "type": "string",
+            "description": "控件可供后续复用的稳定功能、操作效果及适用条件；有新知识时整合已有内容。当前值和选中/禁用属于本帧观察。"
+          }
+        },
+        "required": [
+          "region_index",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_result": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "observed_effect",
+            "no_effect",
+            "uncertain"
+          ]
+        },
+        "evidence": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "previous_regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region_ref": {
+            "type": "string",
+            "enum": [
+              "r0001",
+              "r0002"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "retained_interactive",
+              "changed_interactive",
+              "visible_background_blocked",
+              "not_visible",
+              "uncertain"
+            ]
+          },
+          "evidence": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "region_ref",
+          "state",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "foreground",
+    "regions",
+    "controls",
+    "excluded",
+    "uncertainties",
+    "action_result",
+    "previous_regions"
+  ],
+  "additionalProperties": false
+}

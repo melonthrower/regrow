@@ -1,0 +1,1 @@
+修正本张原动作后图中所列对象的识别范围。能够修正时resolution填revise，proposal填写整批objects；仍无法定位时填defer或blocked，proposal填null并说明具体缺口。blocked_by按实际原因填写。仅补资料，不执行动作、不补拍截图、不修改旧记录。

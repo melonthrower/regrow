@@ -1,0 +1,23 @@
+## 新任务 → operations
+每项填写：
+- control：需要探索的控件，使用材料中的完整控件名；针对整个区块时填空字符串。
+- task_type：function（功能探索）或 parameter（参数探索）。
+
+## 示例
+文件选择面板的“文件名搜索框”用于筛选文件，输入规则尚未了解。
+{"control":"文件名搜索框","task_type":"parameter"}
+
+## 已有任务
+未结束的任务引用给定task，填写decision与reason；已获得的结论按对应答案字段登记。已完成的控件出现新未知时，选择该控件与探索类型。
+
+## 同类实例 → shared_instances
+
+无共享填 []；有共享时，control 为本区块成员，source_region、source_control 填写来源区块名、控件名；重名时使用所给引用，reason 说明用途、对象、操作和参数共性。
+shared_instances 引用已有的代表控件。
+
+## 覆盖结论 → inventory / evidence
+
+- complete：已考虑本次提供的全部控件，值得调查的未知已有对应问题。
+- partial：仍有具体身份、登记或覆盖缺口，在 evidence 中逐项说明。
+- uncertain：当前无法判断覆盖范围。
+已有充分依据的用途不因当前未见或未执行而新增问题。区块内容仍需探索时，control=""并选择相应探索类型；未结束任务以原task承接。清晰但未登记的对象在 evidence 中说明。

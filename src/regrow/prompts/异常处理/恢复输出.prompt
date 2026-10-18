@@ -1,0 +1,13 @@
+## 所选处理 → 一份恢复回复
+
+- exception：当前异常类型。
+- reason：支持本次判断的具体证据。
+- handoff：实际新观察和原任务未解决事项；拟操作的结果须待执行后观察。
+
+decision=act 时，action 与 framework_tool 恰选一个：
+- action 的结构为 {operation:{...}}；动作类型在 action.operation.action，其参数也位于 operation 内，不能为 none。
+- framework_tool 仅支持 restart_app，适用条件见恢复策略。
+- 未选用的一项为 null。
+
+decision=resume_exploration 或 stop 时，action、framework_tool 均为 null。
+exception=none 时使用 resume_exploration；仍处于应用外、异常退出或阻塞状态时，保留对应异常，不能宣告恢复。

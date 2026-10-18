@@ -1,0 +1,6193 @@
+{
+  "source_root": "/data/shenghonghui/projects/GUI-ReWalk/artifacts/tmp_tests/component_scheduler_20261006_01/implementation",
+  "scope": "current stepwise traversal only; other research pipelines and frozen runtime evidence untouched",
+  "status": "implemented structural migration; limited verification; scene-policy work remains",
+  "files": [
+    {
+      "lines": 125,
+      "sha256": "6a51b0b4632ac3afef90c7ae377cc06cc41fac7b5ab9236cc6a3de738d49e9b7",
+      "description": "Associate an action proposal with recorded visual candidates, before delivery.",
+      "definitions": [
+        {
+          "name": "bind_action_target",
+          "line": 4,
+          "end": 10
+        },
+        {
+          "name": "_bind_action_target",
+          "line": 14,
+          "end": 84
+        },
+        {
+          "name": "candidate_matches",
+          "line": 87,
+          "end": 104
+        },
+        {
+          "name": "candidate_key",
+          "line": 107,
+          "end": 108
+        },
+        {
+          "name": "candidate_rows",
+          "line": 111,
+          "end": 114
+        },
+        {
+          "name": "candidate_line",
+          "line": 117,
+          "end": 119
+        },
+        {
+          "name": "disclose_candidates",
+          "line": 122,
+          "end": 125
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_binding.py",
+      "proposed_destination": "regrow/traversal/action.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/action_binding.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/action_binding.py": "d8b1873ec878ea38cc1bef1bdd2c7ea6eef8cc749743dcc93504dc710e4e0153"
+      }
+    },
+    {
+      "lines": 92,
+      "sha256": "2a4c533252f3b9babe2ee69ce04499a3d57b89943dfe8e245364060d27968fa4",
+      "description": "",
+      "definitions": [
+        {
+          "name": "candidate",
+          "line": 12,
+          "end": 24
+        },
+        {
+          "name": "use_recorded_icon",
+          "line": 27,
+          "end": 45
+        },
+        {
+          "name": "attach_related",
+          "line": 48,
+          "end": 92
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_candidates.py",
+      "proposed_destination": "regrow/records/candidates.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/action_candidates.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/action_candidates.py": "a28c466843ce9ec59383465fac06b02ccbf608071b954cf85fd0b97760825a8f"
+      }
+    },
+    {
+      "lines": 204,
+      "sha256": "8352cc1f291d56bb5138560361cdbf0bb35e3ca580894850e5d41dc34416760f",
+      "description": "Shared Android action contract for exploration and recovery.\n\nNames follow the original traversal contract; ADB performs platform translation.\nOld tap evidence is readable, but new requests advertise click.",
+      "definitions": [
+        {
+          "name": "schema",
+          "line": 16,
+          "end": 21
+        },
+        {
+          "name": "selection_schema",
+          "line": 24,
+          "end": 52
+        },
+        {
+          "name": "for_request",
+          "line": 55,
+          "end": 64
+        },
+        {
+          "name": "execution_schema",
+          "line": 67,
+          "end": 72
+        },
+        {
+          "name": "platform_request",
+          "line": 75,
+          "end": 94
+        },
+        {
+          "name": "normalize",
+          "line": 97,
+          "end": 107
+        },
+        {
+          "name": "validate",
+          "line": 110,
+          "end": 116
+        },
+        {
+          "name": "commands",
+          "line": 119,
+          "end": 146
+        },
+        {
+          "name": "execute",
+          "line": 149,
+          "end": 204
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_commands.py",
+      "proposed_destination": "regrow/runtime/actions.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/action_commands.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/action_commands.py": "f53727f5d1201a913ce137d67f48120a52278aec03cca5f575aee3190b811ba4"
+      }
+    },
+    {
+      "lines": 101,
+      "sha256": "f54d8717ee1c766a9c64b4d0c951dfd7370e0f64295baf77728a66cd01fd2863",
+      "description": "Read delivered action types. Never infer an action from a label or screenshot.",
+      "definitions": [
+        {
+          "name": "resolve_operations",
+          "line": 7,
+          "end": 35
+        },
+        {
+          "name": "compact",
+          "line": 42,
+          "end": 80
+        },
+        {
+          "name": "entries_for_action",
+          "line": 84,
+          "end": 94
+        },
+        {
+          "name": "assessments",
+          "line": 97,
+          "end": 101
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_evidence.py",
+      "proposed_destination": "regrow/records/actions.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/action_evidence.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/action_evidence.py": "3bb1d9cb53341c1938e0d668ce2e82adee2d9fbf68349e5ae985a2d4b6f567fd"
+      }
+    },
+    {
+      "lines": 105,
+      "sha256": "a90e7b78d315a22fa1ee84d926abe76c1f9757ad565015f3e086b63d2ae18ff0",
+      "description": "Pre-dispatch checks, single GUI delivery, receipt and before/after evidence.",
+      "definitions": [
+        {
+          "name": "foreground_window",
+          "line": 11,
+          "end": 17
+        },
+        {
+          "name": "window_evidence",
+          "line": 20,
+          "end": 27
+        },
+        {
+          "name": "system_action_changed",
+          "line": 30,
+          "end": 37
+        },
+        {
+          "name": "ActionExecutor",
+          "line": 41,
+          "end": 105
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_executor.py",
+      "proposed_destination": "regrow/runtime/execute.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/action_executor.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/action_executor.py": "45c613d379bc4c0407c23f7981002dfd6373239f26cd1a51e656aeda266d571a"
+      }
+    },
+    {
+      "lines": 137,
+      "sha256": "301f3638b99ebaf705ec1dae59ae34c8a87a962a888ac5b2194accab8dc602a9",
+      "description": "",
+      "definitions": [
+        {
+          "name": "schema",
+          "line": 11,
+          "end": 14
+        },
+        {
+          "name": "effective_attempts",
+          "line": 17,
+          "end": 21
+        },
+        {
+          "name": "control_history",
+          "line": 24,
+          "end": 30
+        },
+        {
+          "name": "apply",
+          "line": 33,
+          "end": 97
+        },
+        {
+          "name": "request",
+          "line": 100,
+          "end": 137
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_owner_correction.py",
+      "proposed_destination": "regrow/records/correction.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/action_owner_correction.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/action_owner_correction.py": "eaab17df45936c5d55961c7fecd767f7c56c7e3ab53aa31468816cc08db99143"
+      }
+    },
+    {
+      "lines": 151,
+      "sha256": "c7dceb2db136840bcd0020bad1541a452c6b3814b45e4d79b2c5015d07395116",
+      "description": "",
+      "definitions": [
+        {
+          "name": "render_work",
+          "line": 11,
+          "end": 64
+        },
+        {
+          "name": "request_from_run",
+          "line": 67,
+          "end": 138
+        },
+        {
+          "name": "ActionProposer",
+          "line": 142,
+          "end": 151
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/action_proposer.py",
+      "proposed_destination": "regrow/traversal/action.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/action_proposer.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/action_proposer.py": "c8bd97b109d8e2a2f9ef2171fc29e7f6a7286fccacd896e9ac0db85422334187"
+      }
+    },
+    {
+      "lines": 114,
+      "sha256": "24c3ce454cf049de5eeda55342f1d904b55306caf667ec6bd73e6e1f2648ea12",
+      "description": "",
+      "definitions": [
+        {
+          "name": "configured_model",
+          "line": 15,
+          "end": 20
+        },
+        {
+          "name": "repository",
+          "line": 23,
+          "end": 24
+        },
+        {
+          "name": "write",
+          "line": 27,
+          "end": 29
+        },
+        {
+          "name": "create_run",
+          "line": 32,
+          "end": 47
+        },
+        {
+          "name": "Device",
+          "line": 50,
+          "end": 72
+        },
+        {
+          "name": "ApplicationHub",
+          "line": 75,
+          "end": 114
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/app_launcher.py",
+      "proposed_destination": "regrow/runtime/session.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/app_launcher.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/app_launcher.py": "7631c1bd22bb9e89588d067a08ea287b39d8efa4100d4f0bd17ee8a58c88a535"
+      }
+    },
+    {
+      "lines": 46,
+      "sha256": "0da06602d407376f7b5b6e26ea3889b93631401c17365a4c27a68661b7348546",
+      "description": "Saved-frame prompt assembly prototype; no GUI execution or production ledger writes.",
+      "definitions": [
+        {
+          "name": "assemble",
+          "line": 10,
+          "end": 46
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/assemble.py",
+      "proposed_destination": "退出活动源码；冻结历史保留",
+      "state": "retired from active source; historical original retained",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [],
+      "destination_sha256": {},
+      "retirement_reason": "旧平铺源码装配入口已由src包和统一入口替代。"
+    },
+    {
+      "lines": 51,
+      "sha256": "1b319cba98358d6b4f9e518ffcb3b30d8d3a222c57113350848d3504988eb38a",
+      "description": "Repeated unsuccessful task attempts enter the existing correction boundary.",
+      "definitions": [
+        {
+          "name": "RepeatedAttempt",
+          "line": 8,
+          "end": 9
+        },
+        {
+          "name": "check",
+          "line": 12,
+          "end": 51
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/attempt_guard.py",
+      "proposed_destination": "regrow/traversal/action.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/attempt_guard.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/attempt_guard.py": "d3939c007bb6fc25e227cf8159b41855e2447a6fececfd402660ef2614abd521"
+      }
+    },
+    {
+      "lines": 117,
+      "sha256": "032a838084a458c34139bf1dde37002be9e8a156874d2f119a95aab6901e6949",
+      "description": "Bounded desktop preparation for the maintained batch entry.",
+      "definitions": [
+        {
+          "name": "adapter",
+          "line": 14,
+          "end": 20
+        },
+        {
+          "name": "preflight",
+          "line": 23,
+          "end": 47
+        },
+        {
+          "name": "clear_clock_data",
+          "line": 50,
+          "end": 77
+        },
+        {
+          "name": "prepare_new",
+          "line": 80,
+          "end": 117
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/batch_environment.py",
+      "proposed_destination": "外移工具：tools/traversal_batch/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/batch_environment.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/batch_environment.py": "d16c70eb000c855e203202b31b9649c44424e7eb765fc435a2d4ea865d8d5d84"
+      }
+    },
+    {
+      "lines": 185,
+      "sha256": "2e6c7efa1bcff81e04d21ca1f369d5f9bcc056d3975f4972c4fa616f6f86c12a",
+      "description": "One CLI for new desktop batches, persistent resume and truthful status.",
+      "definitions": [
+        {
+          "name": "arguments",
+          "line": 21,
+          "end": 37
+        },
+        {
+          "name": "config_for",
+          "line": 40,
+          "end": 81
+        },
+        {
+          "name": "unit_state",
+          "line": 84,
+          "end": 87
+        },
+        {
+          "name": "status",
+          "line": 90,
+          "end": 136
+        },
+        {
+          "name": "service_command",
+          "line": 139,
+          "end": 148
+        },
+        {
+          "name": "launch",
+          "line": 151,
+          "end": 173
+        },
+        {
+          "name": "main",
+          "line": 176,
+          "end": 181
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/batch_launch.py",
+      "proposed_destination": "外移工具：tools/traversal_batch/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/batch_launch.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/batch_launch.py": "f376dae0763dc8d7bafc1bae2a490a991b078bdf1dc0d6b830e283569b5fe40d"
+      }
+    },
+    {
+      "lines": 97,
+      "sha256": "ea1ba2318d24697effeac30d0452843d62c91af6f04a3dcad34024a813057412",
+      "description": "Persistent worker; reuse the selected run's native session and pending recovery.",
+      "definitions": [
+        {
+          "name": "utc",
+          "line": 9,
+          "end": 10
+        },
+        {
+          "name": "execute",
+          "line": 13,
+          "end": 93
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/batch_runtime.py",
+      "proposed_destination": "regrow/runtime/session.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/batch_runtime.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/batch_runtime.py": "12fa9976349a02521a723d321dfafe035bd2accf627616114eb69eacaa232172"
+      }
+    },
+    {
+      "lines": 195,
+      "sha256": "d9fb836ccd29455a62b34a336d82bc22f750d822c1ffe544e9a4e5c173bc2815",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 11,
+          "end": 13
+        },
+        {
+          "name": "trigger",
+          "line": 20,
+          "end": 30
+        },
+        {
+          "name": "readable_trigger",
+          "line": 33,
+          "end": 63
+        },
+        {
+          "name": "request",
+          "line": 66,
+          "end": 114
+        },
+        {
+          "name": "commit",
+          "line": 117,
+          "end": 177
+        },
+        {
+          "name": "correct",
+          "line": 180,
+          "end": 195
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/branch_switch.py",
+      "proposed_destination": "外移工具：tools/traversal_debug/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/branch_switch.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/branch_switch.py": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8"
+      }
+    },
+    {
+      "lines": 151,
+      "sha256": "c1628d95e211314de801775b540a2341ec3e336cec28caa8468111228682d73d",
+      "description": "One-origin original traversal panels with demand-driven device projection.",
+      "definitions": [
+        {
+          "name": "save",
+          "line": 15,
+          "end": 16
+        },
+        {
+          "name": "frame",
+          "line": 17,
+          "end": 43
+        },
+        {
+          "name": "ExistingProcess",
+          "line": 47,
+          "end": 51
+        },
+        {
+          "name": "SharedRunner",
+          "line": 52,
+          "end": 75
+        },
+        {
+          "name": "backend",
+          "line": 77,
+          "end": 86
+        },
+        {
+          "name": "panel_html",
+          "line": 87,
+          "end": 105
+        },
+        {
+          "name": "Handler",
+          "line": 106,
+          "end": 145
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/browser_hub.py",
+      "proposed_destination": "外移工具：tools/traversal_ui/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/browser_hub.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/browser_hub.py": "a0bfe4cd4546b18793ffd8d1b4a7e1b85584b08a73391439f32386a252e0fcae"
+      }
+    },
+    {
+      "lines": 42,
+      "sha256": "605d013421e58524d9a2ecddbd7c8131e42bca6f80f649accad0680c5bb95539",
+      "description": "",
+      "definitions": [
+        {
+          "name": "save",
+          "line": 11,
+          "end": 12
+        },
+        {
+          "name": "NoRetry",
+          "line": 15,
+          "end": 15
+        },
+        {
+          "name": "post",
+          "line": 16,
+          "end": 38
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/call_model_once.py",
+      "proposed_destination": "regrow/runtime/model.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/call_model_once.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/call_model_once.py": "5cef3fbe72cfea52817d4caf4b2fbdc9f511d5810c5b1a5b698acc9027a26f25"
+      }
+    },
+    {
+      "lines": 220,
+      "sha256": "595f11eeceeb0cf853a8f0eedc4eecaa738bfc0c212bb5e6bbb51d050d09ac55",
+      "description": "",
+      "definitions": [
+        {
+          "name": "rule_selection",
+          "line": 17,
+          "end": 37
+        },
+        {
+          "name": "task_refs",
+          "line": 40,
+          "end": 63
+        },
+        {
+          "name": "preparation_entries",
+          "line": 66,
+          "end": 97
+        },
+        {
+          "name": "select",
+          "line": 100,
+          "end": 131
+        },
+        {
+          "name": "for_request",
+          "line": 134,
+          "end": 147
+        },
+        {
+          "name": "identity",
+          "line": 150,
+          "end": 155
+        },
+        {
+          "name": "history_changes",
+          "line": 158,
+          "end": 174
+        },
+        {
+          "name": "source_attempts",
+          "line": 177,
+          "end": 191
+        },
+        {
+          "name": "region_information",
+          "line": 194,
+          "end": 198
+        },
+        {
+          "name": "control_information",
+          "line": 201,
+          "end": 220
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/context_scope.py",
+      "proposed_destination": "regrow/records/context.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/context_scope.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/context_scope.py": "4c1060b25a22628d318dad22058e6682e5afac7aad88066b1c25deff5d5e735e"
+      }
+    },
+    {
+      "lines": 64,
+      "sha256": "939bbfa8eb8b6fcf93ca1cd2c56bfb959a425a4bfd9c62c5e50a39e613e598af",
+      "description": "Context belongs to a control use, not to the whole surrounding Region.\n\nConditions are explicit model-grounded labels. Reuse their recorded wording;\nnever infer semantic equivalence from screenshots or string similarity here.",
+      "definitions": [
+        {
+          "name": "conditions",
+          "line": 12,
+          "end": 13
+        },
+        {
+          "name": "same_use",
+          "line": 16,
+          "end": 17
+        },
+        {
+          "name": "referenced",
+          "line": 20,
+          "end": 32
+        },
+        {
+          "name": "migrate_split_task",
+          "line": 35,
+          "end": 64
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/control_context.py",
+      "proposed_destination": "regrow/records/relations.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/control_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/control_context.py": "1f96e70c06461d1c752831161c2238fd28f8883f4786ce32ac5f0b449e62d344"
+      }
+    },
+    {
+      "lines": 77,
+      "sha256": "8d2cc88b7ab6b8e2aa78d7488ade443c0213e65f04b706c9a51f59ccf5c89f7c",
+      "description": "",
+      "definitions": [
+        {
+          "name": "last_reported",
+          "line": 8,
+          "end": 10
+        },
+        {
+          "name": "uncertain_observations",
+          "line": 13,
+          "end": 26
+        },
+        {
+          "name": "known_information",
+          "line": 28,
+          "end": 41
+        },
+        {
+          "name": "describe",
+          "line": 44,
+          "end": 54
+        },
+        {
+          "name": "comparison",
+          "line": 57,
+          "end": 77
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/control_history_context.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/control_history_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/control_history_context.py": "59744c0b0ae7dbe441a218a6e8c41556f3e54654d24e55e4378c1777fc551420"
+      }
+    },
+    {
+      "lines": 371,
+      "sha256": "2b5550e403ef29f56d98706486c5ca49dbf5bdaa3d2e8b54fcf3b1e82b9e5d3e",
+      "description": "Review proposed new identities and unsupported reuse before publication.\n\nRaw local pixel candidates only select a question. Luna decides identity using\noriginal scenes; neither matching nor this module merges historical records.",
+      "definitions": [
+        {
+          "name": "Conflict",
+          "line": 18,
+          "end": 24
+        },
+        {
+          "name": "CandidateConflict",
+          "line": 27,
+          "end": 32
+        },
+        {
+          "name": "box",
+          "line": 35,
+          "end": 39
+        },
+        {
+          "name": "same_position",
+          "line": 42,
+          "end": 46
+        },
+        {
+          "name": "owner",
+          "line": 49,
+          "end": 58
+        },
+        {
+          "name": "candidate_groups",
+          "line": 61,
+          "end": 73
+        },
+        {
+          "name": "candidates",
+          "line": 76,
+          "end": 127
+        },
+        {
+          "name": "reused_candidates",
+          "line": 130,
+          "end": 171
+        },
+        {
+          "name": "check",
+          "line": 174,
+          "end": 183
+        },
+        {
+          "name": "check_request",
+          "line": 186,
+          "end": 193
+        },
+        {
+          "name": "review_material",
+          "line": 196,
+          "end": 231
+        },
+        {
+          "name": "recorded_history",
+          "line": 234,
+          "end": 241
+        },
+        {
+          "name": "selection_request",
+          "line": 244,
+          "end": 270
+        },
+        {
+          "name": "selected_pair",
+          "line": 273,
+          "end": 281
+        },
+        {
+          "name": "attach",
+          "line": 284,
+          "end": 334
+        },
+        {
+          "name": "compared_candidate",
+          "line": 337,
+          "end": 367
+        },
+        {
+          "name": "reviewed_request",
+          "line": 370,
+          "end": 371
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/control_identity_review.py",
+      "proposed_destination": "regrow/recognition/identity.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/control_identity_review.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/control_identity_review.py": "e5d1e602eb271425d1d9159ef7dc739ad8271d56152f216cd31522112e0d910a"
+      }
+    },
+    {
+      "lines": 73,
+      "sha256": "f6f7c1e5110497d52a41a7110e65b8f15d77c47a8740d75d1535686d076cb293",
+      "description": "Resolve repeated appearances only when their original group pixels re-match.\n\nThis associates recorded positions, not unobserved units or functional effects.\nNo reference images are added to the model request.",
+      "definitions": [
+        {
+          "name": "overlap",
+          "line": 11,
+          "end": 14
+        },
+        {
+          "name": "refine",
+          "line": 17,
+          "end": 73
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/control_layout.py",
+      "proposed_destination": "regrow/recognition/matching.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/matching.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/matching.py": "1dd95108a07170c81110c061125843651e1d8b905fbaf60c217b5e92044eae7e"
+      }
+    },
+    {
+      "lines": 138,
+      "sha256": "2262274a9125887410c761fea6da0c91515d38b8dc7d41587193babe22fc9e49",
+      "description": "",
+      "definitions": [
+        {
+          "name": "schema",
+          "line": 10,
+          "end": 14
+        },
+        {
+          "name": "key",
+          "line": 17,
+          "end": 19
+        },
+        {
+          "name": "apply",
+          "line": 22,
+          "end": 66
+        },
+        {
+          "name": "validate_scope",
+          "line": 69,
+          "end": 88
+        },
+        {
+          "name": "begin",
+          "line": 91,
+          "end": 138
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/control_observation_repair.py",
+      "proposed_destination": "regrow/recognition/identity.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/control_observation_repair.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/control_observation_repair.py": "7173798004d7d9cb9b72f3484454fa4cc4fbbdfc410441f988885ae395fbe3d3"
+      }
+    },
+    {
+      "lines": 76,
+      "sha256": "057c896eef69411e9c11154641f4d00f51542f2ece1651984ad6c2bb12d92501",
+      "description": "",
+      "definitions": [
+        {
+          "name": "extend_schema",
+          "line": 9,
+          "end": 14
+        },
+        {
+          "name": "validate",
+          "line": 17,
+          "end": 24
+        },
+        {
+          "name": "rewrite",
+          "line": 27,
+          "end": 39
+        },
+        {
+          "name": "merge",
+          "line": 42,
+          "end": 62
+        },
+        {
+          "name": "remove",
+          "line": 65,
+          "end": 76
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/control_records.py",
+      "proposed_destination": "regrow/records/objects.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/control_records.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/control_records.py": "8e2573fa04cb7aebe67fd1694a989907133ce7704f89261529cbed119f0e9653"
+      }
+    },
+    {
+      "lines": 51,
+      "sha256": "b34098b651a8b8aff7ea7565873faea2612596ee23411929f2723d5445463b70",
+      "description": "Show rejected identity bounds as derived evidence, never as a new observation.",
+      "definitions": [
+        {
+          "name": "attach",
+          "line": 8,
+          "end": 51
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/correction_crop_feedback.py",
+      "proposed_destination": "regrow/traversal/correction.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/correction_crop_feedback.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/correction_crop_feedback.py": "69cd9fac822d9fbfb4ff02c219569210d4aaffa783d245615aa28fed6cecde95"
+      }
+    },
+    {
+      "lines": 76,
+      "sha256": "431ee0eb390a9c02021f4d62a96c84a23977652bc7a6214d3b8a57a96ea9cb47",
+      "description": "Select correction guidance from stage, structured diagnostics and evidence.\n\nThis is prompt composition only: acceptance and repair capabilities stay in\nrepair_stages. Unknown older diagnostics retain stage-level record guidance.",
+      "definitions": [
+        {
+          "name": "current_parse_failure",
+          "line": 15,
+          "end": 16
+        },
+        {
+          "name": "parse_disclosure",
+          "line": 19,
+          "end": 33
+        },
+        {
+          "name": "select",
+          "line": 37,
+          "end": 59
+        },
+        {
+          "name": "parts",
+          "line": 62,
+          "end": 76
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/correction_prompts.py",
+      "proposed_destination": "regrow/traversal/correction.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/correction_prompts.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/correction_prompts.py": "c2e2ce5adbe12d22476779ffbd1bd087f9d0915cb9a071fd725599d47ef7c8e8"
+      }
+    },
+    {
+      "lines": 146,
+      "sha256": "8b75c9cca5553a9b0ee3bc5169a4277720c7c682fb7755bd56da7c2ecdae07a1",
+      "description": "Non-execution coverage decisions; never substitute another control's success.",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 16,
+          "end": 18
+        },
+        {
+          "name": "support",
+          "line": 21,
+          "end": 32
+        },
+        {
+          "name": "valid",
+          "line": 35,
+          "end": 46
+        },
+        {
+          "name": "apply",
+          "line": 49,
+          "end": 65
+        },
+        {
+          "name": "reconcile",
+          "line": 68,
+          "end": 78
+        },
+        {
+          "name": "augment",
+          "line": 81,
+          "end": 135
+        },
+        {
+          "name": "refresh",
+          "line": 138,
+          "end": 146
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/coverage_exemption.py",
+      "proposed_destination": "regrow/records/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/coverage_exemption.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/coverage_exemption.py": "96aba7635875a7c65fed5f879b819279e21dbb53f000031c69f29b16ef27deba"
+      }
+    },
+    {
+      "lines": 217,
+      "sha256": "13bf0c2e2e93ab509fc5c5200f191d5c0698aa22b7c001c769fd60085399aea8",
+      "description": "",
+      "definitions": [
+        {
+          "name": "object_schema",
+          "line": 19,
+          "end": 20
+        },
+        {
+          "name": "repo_root",
+          "line": 26,
+          "end": 29
+        },
+        {
+          "name": "workspace",
+          "line": 32,
+          "end": 44
+        },
+        {
+          "name": "codex",
+          "line": 47,
+          "end": 63
+        },
+        {
+          "name": "tree_files",
+          "line": 66,
+          "end": 67
+        },
+        {
+          "name": "reader_paths",
+          "line": 70,
+          "end": 71
+        },
+        {
+          "name": "assert_scope",
+          "line": 74,
+          "end": 83
+        },
+        {
+          "name": "pytest_run",
+          "line": 86,
+          "end": 91
+        },
+        {
+          "name": "retry_http",
+          "line": 94,
+          "end": 100
+        },
+        {
+          "name": "luna",
+          "line": 103,
+          "end": 136
+        },
+        {
+          "name": "validate_replay_evidence",
+          "line": 139,
+          "end": 165
+        },
+        {
+          "name": "repair_candidate",
+          "line": 168,
+          "end": 217
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/debug_candidate.py",
+      "proposed_destination": "外移工具：tools/traversal_debug/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/debug_candidate.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/debug_candidate.py": "01c248a40bb973250642db1f73939299d46a03e204c11fddbd1d141830aaf889"
+      }
+    },
+    {
+      "lines": 337,
+      "sha256": "ce36b0333c166148cd3cd624aa46fa960f1a6fc9fdf30e75a604936a71376c0a",
+      "description": "Round-robin supervision of the existing traversal, with isolated repair trials.",
+      "definitions": [
+        {
+          "name": "read",
+          "line": 23,
+          "end": 25
+        },
+        {
+          "name": "write",
+          "line": 28,
+          "end": 31
+        },
+        {
+          "name": "helper",
+          "line": 34,
+          "end": 36
+        },
+        {
+          "name": "graph_summary",
+          "line": 39,
+          "end": 41
+        },
+        {
+          "name": "classify",
+          "line": 44,
+          "end": 60
+        },
+        {
+          "name": "fingerprint",
+          "line": 63,
+          "end": 64
+        },
+        {
+          "name": "device_key",
+          "line": 67,
+          "end": 69
+        },
+        {
+          "name": "live_run",
+          "line": 72,
+          "end": 82
+        },
+        {
+          "name": "device_lock",
+          "line": 86,
+          "end": 91
+        },
+        {
+          "name": "freeze",
+          "line": 94,
+          "end": 99
+        },
+        {
+          "name": "Supervisor",
+          "line": 105,
+          "end": 332
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/debug_loop.py",
+      "proposed_destination": "外移工具：tools/traversal_debug/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/debug_loop.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/debug_loop.py": "10e1fa72577039e0c817af64ee9b053d927a18ff03abe0a7cc8c8cd16325dc5f"
+      }
+    },
+    {
+      "lines": 33,
+      "sha256": "3d0437d36b47580d09c4606582689354e3b79833c0ad9b12a2fb8022bb30b4a1",
+      "description": "",
+      "definitions": [
+        {
+          "name": "graph_summary",
+          "line": 11,
+          "end": 33
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/debug_progress.py",
+      "proposed_destination": "外移工具：tools/traversal_ui/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/debug_progress.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/debug_progress.py": "87d8ff9acaf17a5bbc2c3fadcf741f1020327cce94206c2da1505f4f03f6d7fd"
+      }
+    },
+    {
+      "lines": 32,
+      "sha256": "98e1eeeebe7fafb6c9f9b45433c6b99fd2a6117f7be0bc16dbda47239d09450b",
+      "description": "Read the local VM display without the guest screenshot service.",
+      "definitions": [
+        {
+          "name": "display_capture",
+          "line": 12,
+          "end": 22
+        },
+        {
+          "name": "publish_frame",
+          "line": 25,
+          "end": 32
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/desktop_capture.py",
+      "proposed_destination": "regrow/runtime/platform.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/desktop_capture.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/desktop_capture.py": "c6ef49fbeedbcfa04dcca2ed41af4a00f76fd84cdba373f25fd5844b8d7d72c7"
+      }
+    },
+    {
+      "lines": 25,
+      "sha256": "7667e3bca8b562e8569c5af13933f671fcd935e338082556f465f3cab7c32061",
+      "description": "Start target applications outside the controller service's cleanup cgroup.",
+      "definitions": [
+        {
+          "name": "start",
+          "line": 9,
+          "end": 25
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/desktop_lifecycle.py",
+      "proposed_destination": "regrow/runtime/platform.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/desktop_lifecycle.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/desktop_lifecycle.py": "63f567833e056f2c62ab5b10a4477ed460305e6ad669d6fd95a5055a1710c76e"
+      }
+    },
+    {
+      "lines": 159,
+      "sha256": "9b875506cc610c661f567a5e66ef3219a88a03d2c1f463209ea0637b7b7c5eec",
+      "description": "OSWorld HTTP adapter for the existing stepwise pipeline, without action retries.",
+      "definitions": [
+        {
+          "name": "receipt",
+          "line": 12,
+          "end": 13
+        },
+        {
+          "name": "commands",
+          "line": 16,
+          "end": 47
+        },
+        {
+          "name": "prepare_request",
+          "line": 50,
+          "end": 64
+        },
+        {
+          "name": "DesktopRun",
+          "line": 67,
+          "end": 159
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/desktop_transport.py",
+      "proposed_destination": "regrow/runtime/platform.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/desktop_transport.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/desktop_transport.py": "6e3f9acb125163b0cb6bc7f21df63d794616bc7f0f954d6a18f144c9b0d13aa9"
+      }
+    },
+    {
+      "lines": 256,
+      "sha256": "ae7ecb51333564be3b95df5c945fb4ea0bc034315ac649decf6a0e7fa2a24551",
+      "description": "",
+      "definitions": [
+        {
+          "name": "tokens",
+          "line": 13,
+          "end": 18
+        },
+        {
+          "name": "retrieve",
+          "line": 21,
+          "end": 39
+        },
+        {
+          "name": "partition",
+          "line": 42,
+          "end": 64
+        },
+        {
+          "name": "resolve_gaps",
+          "line": 67,
+          "end": 93
+        },
+        {
+          "name": "extend_schema",
+          "line": 96,
+          "end": 101
+        },
+        {
+          "name": "fingerprint",
+          "line": 104,
+          "end": 104
+        },
+        {
+          "name": "same_frame",
+          "line": 107,
+          "end": 109
+        },
+        {
+          "name": "scoped_batch",
+          "line": 112,
+          "end": 121
+        },
+        {
+          "name": "supplement",
+          "line": 124,
+          "end": 188
+        },
+        {
+          "name": "prepare_registration",
+          "line": 191,
+          "end": 231
+        },
+        {
+          "name": "recall_into_request",
+          "line": 234,
+          "end": 256
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/discovery_completion.py",
+      "proposed_destination": "regrow/recognition/observe.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/discovery_completion.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/discovery_completion.py": "fe037cb9793a07bee703a565e49d22e4c9b6ff8af5be02304bd65c1b1c667d6f"
+      }
+    },
+    {
+      "lines": 86,
+      "sha256": "638dffe3a0a92cd54780adad6e53e272783bf1564122ab161a7cf16acc61b9fa",
+      "description": "Discovery references reuse identity facts, never unobserved current state.",
+      "definitions": [
+        {
+          "name": "schema",
+          "line": 11,
+          "end": 29
+        },
+        {
+          "name": "same_frame_observation",
+          "line": 32,
+          "end": 44
+        },
+        {
+          "name": "resolve",
+          "line": 47,
+          "end": 86
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/discovery_delta.py",
+      "proposed_destination": "按选材与排版拆解；去掉反复解析/去重路径",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/discovery_delta.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/discovery_delta.py": "5eded1410da7c65f9416ec7d877a4afc936a6b6621fc67f3e36eeaccbb391c5b"
+      }
+    },
+    {
+      "lines": 18,
+      "sha256": "7f8377bf8d4758cb790e771325852adae265fb2dc57b0148d081874e9c16d292",
+      "description": "",
+      "definitions": [
+        {
+          "name": "supplement",
+          "line": 8,
+          "end": 18
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/discovery_inventory.py",
+      "proposed_destination": "regrow/recognition/observe.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/discovery_inventory.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/discovery_inventory.py": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7"
+      }
+    },
+    {
+      "lines": 249,
+      "sha256": "df8a04b4031213a8fc5fe08f38edd1906cf58dc916e08ccf4bde33582e37eb9f",
+      "description": "",
+      "definitions": [
+        {
+          "name": "registration",
+          "line": 24,
+          "end": 27
+        },
+        {
+          "name": "load",
+          "line": 30,
+          "end": 34
+        },
+        {
+          "name": "publish",
+          "line": 37,
+          "end": 61
+        },
+        {
+          "name": "await_discovery",
+          "line": 64,
+          "end": 86
+        },
+        {
+          "name": "commit",
+          "line": 89,
+          "end": 249
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/discovery_step.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/discovery_step.py",
+        "src/regrow/records/snapshots.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/discovery_step.py": "8271670aa944e6f357f5901e5d04347690bda37c477b91db775d91fb94d9c809",
+        "src/regrow/records/snapshots.py": "b3ed8f4e5286321644c7566663a21e52fbe4b8a4d12e06860e4d36dc1033886b"
+      }
+    },
+    {
+      "lines": 33,
+      "sha256": "2a5ca29969c38223336f755b6656c3a6f82b282aa93ffafc741d05411907d9a7",
+      "description": "Disclose observed entry effects; task-result review decides applicability.",
+      "definitions": [
+        {
+          "name": "known_entries",
+          "line": 5,
+          "end": 19
+        },
+        {
+          "name": "history",
+          "line": 25,
+          "end": 27
+        },
+        {
+          "name": "disclose",
+          "line": 29,
+          "end": 30
+        },
+        {
+          "name": "related",
+          "line": 32,
+          "end": 33
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/entry_evidence.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/navigation.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/navigation.py": "9ecf511d1f2adbce7ef0ecbbec6e2cf2a55bdc5afdafe7f6d9f1f850c4e341ff"
+      }
+    },
+    {
+      "lines": 87,
+      "sha256": "eef26aec99390d0b7e3b0d7d47b3c83b349579d6b417acb9d6d971c60591dca9",
+      "description": "",
+      "definitions": [
+        {
+          "name": "resolve",
+          "line": 11,
+          "end": 21
+        },
+        {
+          "name": "register",
+          "line": 24,
+          "end": 54
+        },
+        {
+          "name": "request_review",
+          "line": 57,
+          "end": 75
+        },
+        {
+          "name": "unresolved_review",
+          "line": 78,
+          "end": 87
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/entry_observation.py",
+      "proposed_destination": "regrow/records/relations.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/entry_observation.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/entry_observation.py": "c3f8b709f8fdb86555f6c0a9f8edd09ac437cee05fccf7533590ed6459eaeb24"
+      }
+    },
+    {
+      "lines": 92,
+      "sha256": "5982fbadfce77c73b7d4cd8ed097ef4aa72805715973ef60e8ea70e6a4227f8a",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 14,
+          "end": 16
+        },
+        {
+          "name": "same_observation",
+          "line": 19,
+          "end": 20
+        },
+        {
+          "name": "progress_key",
+          "line": 23,
+          "end": 37
+        },
+        {
+          "name": "observe",
+          "line": 40,
+          "end": 66
+        },
+        {
+          "name": "detect",
+          "line": 69,
+          "end": 81
+        },
+        {
+          "name": "correct",
+          "line": 84,
+          "end": 92
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/exploration_loop.py",
+      "proposed_destination": "regrow/traversal/loop.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/exploration_loop.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/exploration_loop.py": "d00afa62fd4467cd74ea795ae24132fb0683c23f5cd9b26374e458e861abc706"
+      }
+    },
+    {
+      "lines": 87,
+      "sha256": "41dc3184f8f2c8744b006b9cba1c994ac12fc79c6968545574eed8cc2e689927",
+      "description": "",
+      "definitions": [
+        {
+          "name": "read",
+          "line": 10,
+          "end": 12
+        },
+        {
+          "name": "category",
+          "line": 15,
+          "end": 21
+        },
+        {
+          "name": "knowledge",
+          "line": 24,
+          "end": 29
+        },
+        {
+          "name": "record",
+          "line": 32,
+          "end": 57
+        },
+        {
+          "name": "counts",
+          "line": 60,
+          "end": 60
+        },
+        {
+          "name": "summarize",
+          "line": 63,
+          "end": 87
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/exploration_summary.py",
+      "proposed_destination": "regrow/traversal/summary.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/exploration_summary.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/exploration_summary.py": "ffb14beadf54271e523cdf619eeeac757eed43046317bcbd5960ec901f35de20"
+      }
+    },
+    {
+      "lines": 95,
+      "sha256": "daa6c12145265ed3c2b1c38a9f73b76d722c7b737503acd45e90f003cc5d36cb",
+      "description": "Same-call foreground reports, geometric validation and frame-bound reuse.",
+      "definitions": [
+        {
+          "name": "guidance",
+          "line": 8,
+          "end": 9
+        },
+        {
+          "name": "extend_schema",
+          "line": 12,
+          "end": 16
+        },
+        {
+          "name": "fingerprint",
+          "line": 19,
+          "end": 19
+        },
+        {
+          "name": "load",
+          "line": 22,
+          "end": 26
+        },
+        {
+          "name": "audit",
+          "line": 29,
+          "end": 71
+        },
+        {
+          "name": "remember",
+          "line": 74,
+          "end": 95
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/foreground_scope.py",
+      "proposed_destination": "regrow/recognition/scene.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/foreground_scope.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/foreground_scope.py": "7d47f6a4e31a1c75acd34f0d9a4c38081ecac9a16184b98058f4a96124e9545c"
+      }
+    },
+    {
+      "lines": 47,
+      "sha256": "cce006b2ed8a893a01d5ced53c8071ff9eccff961f2dd852248568453104b602",
+      "description": "Request-local image provenance, supplied by the builder that owns the frame.\n\nBuilders own frame time. Saved updates can be read by their explicit old contract.",
+      "definitions": [
+        {
+          "name": "label",
+          "line": 7,
+          "end": 9
+        },
+        {
+          "name": "purpose",
+          "line": 12,
+          "end": 13
+        },
+        {
+          "name": "roles",
+          "line": 16,
+          "end": 18
+        },
+        {
+          "name": "primary",
+          "line": 21,
+          "end": 29
+        },
+        {
+          "name": "select",
+          "line": 32,
+          "end": 37
+        },
+        {
+          "name": "validate",
+          "line": 40,
+          "end": 47
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/frame_context.py",
+      "proposed_destination": "regrow/prompts/frame.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/frame_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/frame_context.py": "fee9b2aeb83019ed2c460c12c33ffdc7a331a04f2edcfc22f0d5dfa1b6345d68"
+      }
+    },
+    {
+      "lines": 103,
+      "sha256": "9ee53d23ee4aca45195b97199dfefaee4af724fb583b2c318149114d6497a889",
+      "description": "",
+      "definitions": [
+        {
+          "name": "omitted_reason",
+          "line": 10,
+          "end": 15
+        },
+        {
+          "name": "region_context",
+          "line": 18,
+          "end": 21
+        },
+        {
+          "name": "action_row",
+          "line": 24,
+          "end": 58
+        },
+        {
+          "name": "action_results",
+          "line": 61,
+          "end": 64
+        },
+        {
+          "name": "incoming_results",
+          "line": 67,
+          "end": 83
+        },
+        {
+          "name": "coverage",
+          "line": 86,
+          "end": 103
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/function_evidence.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/function_evidence.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/function_evidence.py": "9a9fb40402cce8f430fd258b2c31cfd3663889d3b114595525cd61da4687e987"
+      }
+    },
+    {
+      "lines": 123,
+      "sha256": "7812c3c051c213cd1545e53b5abf8d18cee42ad37d0e25a816c57bf376b5136c",
+      "description": "",
+      "definitions": [
+        {
+          "name": "supported",
+          "line": 9,
+          "end": 20
+        },
+        {
+          "name": "entries",
+          "line": 23,
+          "end": 47
+        },
+        {
+          "name": "card",
+          "line": 50,
+          "end": 57
+        },
+        {
+          "name": "disclose",
+          "line": 60,
+          "end": 69
+        },
+        {
+          "name": "parameter_support",
+          "line": 72,
+          "end": 98
+        },
+        {
+          "name": "task_product",
+          "line": 101,
+          "end": 109
+        },
+        {
+          "name": "compact_action",
+          "line": 112,
+          "end": 117
+        },
+        {
+          "name": "fact_card",
+          "line": 120,
+          "end": 123
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/function_scope.py",
+      "proposed_destination": "regrow/records/context.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/function_scope.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/function_scope.py": "294ccdfd152c4d9248222a791abbc586281b52218b7686d5da3556f115b6a553"
+      }
+    },
+    {
+      "lines": 96,
+      "sha256": "0a463f0264bafe01c5b45716a3f64010c27eb754122518ffe33188958537a860",
+      "description": "",
+      "definitions": [
+        {
+          "name": "digest",
+          "line": 10,
+          "end": 11
+        },
+        {
+          "name": "request",
+          "line": 14,
+          "end": 69
+        },
+        {
+          "name": "region_request",
+          "line": 72,
+          "end": 91
+        },
+        {
+          "name": "validate",
+          "line": 94,
+          "end": 96
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/historical_inventory.py",
+      "proposed_destination": "regrow/traversal/schedule.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/historical_inventory.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/historical_inventory.py": "41e372e0ab2eaf68e9baa8a5c4ba025247948a9836f67e7c2c7f79f4e6f9645b"
+      }
+    },
+    {
+      "lines": 283,
+      "sha256": "46cb7e2d5cfc0f3cc0a910934b756544c38117bbf160bc05eb037188c70e5285",
+      "description": "Read-only history: select related evidence, project provenance, render it.\nNo visibility inference, task mutation or navigation scheduling belongs here.",
+      "definitions": [
+        {
+          "name": "reading_guidance",
+          "line": 11,
+          "end": 16
+        },
+        {
+          "name": "sibling",
+          "line": 22,
+          "end": 24
+        },
+        {
+          "name": "attempts",
+          "line": 27,
+          "end": 54
+        },
+        {
+          "name": "findings",
+          "line": 57,
+          "end": 71
+        },
+        {
+          "name": "identity_candidates",
+          "line": 75,
+          "end": 110
+        },
+        {
+          "name": "disclose",
+          "line": 114,
+          "end": 121
+        },
+        {
+          "name": "related",
+          "line": 124,
+          "end": 139
+        },
+        {
+          "name": "task_goal",
+          "line": 142,
+          "end": 212
+        },
+        {
+          "name": "decision",
+          "line": 215,
+          "end": 219
+        },
+        {
+          "name": "deepcopy_value",
+          "line": 222,
+          "end": 224
+        },
+        {
+          "name": "question",
+          "line": 227,
+          "end": 250
+        },
+        {
+          "name": "action_context",
+          "line": 253,
+          "end": 283
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/history_context.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/history_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/history_context.py": "08f830c85aca52a43599eb5b353e95b3264205a9ed85c6628422d9550a7f4e0a"
+      }
+    },
+    {
+      "lines": 169,
+      "sha256": "4b4b0337a4907210f5cf9d647df943f1fac6e4fcb2ee2a8f14b6df53bd54d217",
+      "description": "History presentation and shared-rule references at the model-send boundary.\n\nNo evidence selection, task binding, schema changes or state mutation.",
+      "definitions": [
+        {
+          "name": "structured_text",
+          "line": 10,
+          "end": 14
+        },
+        {
+          "name": "restore",
+          "line": 17,
+          "end": 22
+        },
+        {
+          "name": "named_rows",
+          "line": 40,
+          "end": 50
+        },
+        {
+          "name": "knowledge_text",
+          "line": 53,
+          "end": 64
+        },
+        {
+          "name": "readable",
+          "line": 67,
+          "end": 93
+        },
+        {
+          "name": "render",
+          "line": 101,
+          "end": 108
+        },
+        {
+          "name": "project",
+          "line": 113,
+          "end": 169
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/history_disclosure.py",
+      "proposed_destination": "按选材与排版拆解；去掉反复解析/去重路径",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/history_disclosure.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/history_disclosure.py": "e89ce36873f5f651008c2f5fbb47fe5a747dc4f268c4f54b2910bfc9d91b5618"
+      }
+    },
+    {
+      "lines": 90,
+      "sha256": "487fe5c2bd272ec0b4cc3de62057b5d58eea576b7d0a77f79e9acb92bca4f469",
+      "description": "Read-only historical identity recall: unique control votes and model evidence.",
+      "definitions": [
+        {
+          "name": "image",
+          "line": 12,
+          "end": 15
+        },
+        {
+          "name": "match_region",
+          "line": 18,
+          "end": 38
+        },
+        {
+          "name": "rank",
+          "line": 41,
+          "end": 42
+        },
+        {
+          "name": "scan",
+          "line": 45,
+          "end": 60
+        },
+        {
+          "name": "with_history",
+          "line": 63,
+          "end": 70
+        },
+        {
+          "name": "attach",
+          "line": 73,
+          "end": 90
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/history_matching.py",
+      "proposed_destination": "regrow/recognition/matching.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/history_matching.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/history_matching.py": "75171c0932aade48cc907b3b148088b9d18a1153c96e8f88b28450f6a367e839"
+      }
+    },
+    {
+      "lines": 57,
+      "sha256": "fc2decfcc84ef7f3698592a8b9e219dff8be6285c1255bda291fcafdfca22810",
+      "description": "Select explicit task evidence; temporal proximity alone is not relevance.",
+      "definitions": [
+        {
+          "name": "for_request",
+          "line": 8,
+          "end": 17
+        },
+        {
+          "name": "task_attempts",
+          "line": 20,
+          "end": 32
+        },
+        {
+          "name": "related_tasks",
+          "line": 35,
+          "end": 43
+        },
+        {
+          "name": "latest_control_attempt",
+          "line": 48,
+          "end": 57
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/history_selection.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/history_selection.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/history_selection.py": "4304b49cf5c00cc069deaf5629e51975c181ee3db2eafbbae83ab9c0f5eab7e5"
+      }
+    },
+    {
+      "lines": 98,
+      "sha256": "6b40f80384a4282d8f18d0923780e8d34524f07e3046c4970b8c4f9352b28a23",
+      "description": "Explicit template admission; observation evidence alone grants no eligibility.",
+      "definitions": [
+        {
+          "name": "usable",
+          "line": 10,
+          "end": 13
+        },
+        {
+          "name": "latest",
+          "line": 16,
+          "end": 17
+        },
+        {
+          "name": "image",
+          "line": 20,
+          "end": 22
+        },
+        {
+          "name": "assessment",
+          "line": 25,
+          "end": 28
+        },
+        {
+          "name": "uniform_pixels",
+          "line": 31,
+          "end": 32
+        },
+        {
+          "name": "crop_rejection",
+          "line": 35,
+          "end": 41
+        },
+        {
+          "name": "check_control_crop",
+          "line": 44,
+          "end": 49
+        },
+        {
+          "name": "reject_uniform_history",
+          "line": 52,
+          "end": 70
+        },
+        {
+          "name": "evidence_limit",
+          "line": 73,
+          "end": 77
+        },
+        {
+          "name": "extend_schema",
+          "line": 80,
+          "end": 91
+        },
+        {
+          "name": "admitted_box",
+          "line": 94,
+          "end": 98
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/identity_templates.py",
+      "proposed_destination": "regrow/recognition/matching.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/identity_templates.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/identity_templates.py": "da64a22347f01930104f6b4c15aac395cafad4dcdc727d53de880136363146f8"
+      }
+    },
+    {
+      "lines": 66,
+      "sha256": "717b87af94d23a34c91748d28289cfa3a5c6952f7cf14061fd4fd7989a8546bd",
+      "description": "Conservative original-size pixel localization shared by the stepwise flow.\n\nA match is spatial evidence, not proof of control identity or action success.\nCoordinates remain transient; callers keep identity crops and click areas separate.",
+      "definitions": [
+        {
+          "name": "_search",
+          "line": 15,
+          "end": 49
+        },
+        {
+          "name": "SceneMatcher",
+          "line": 52,
+          "end": 60
+        },
+        {
+          "name": "locate",
+          "line": 63,
+          "end": 66
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/image_match.py",
+      "proposed_destination": "regrow/recognition/matching.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/matching.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/matching.py": "1dd95108a07170c81110c061125843651e1d8b905fbaf60c217b5e92044eae7e"
+      }
+    },
+    {
+      "lines": 49,
+      "sha256": "9cdde666d9a6d40fcd6c685303b2228db825ed3b636e20514f82bd2ea6515c6b",
+      "description": "Continue text delivery only against a visually confirmed recorded input target.",
+      "definitions": [
+        {
+          "name": "context",
+          "line": 13,
+          "end": 22
+        },
+        {
+          "name": "locate",
+          "line": 25,
+          "end": 43
+        },
+        {
+          "name": "resolve",
+          "line": 46,
+          "end": 49
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/input_target.py",
+      "proposed_destination": "regrow/runtime/execute.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/input_target.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/input_target.py": "aa35bdf99deee7308a16828dddade204dab1cf3e01a5e565f454b62dd695a51e"
+      }
+    },
+    {
+      "lines": 69,
+      "sha256": "a498a1d75d3d58d2f36b508bfb75237e742cfa4f903abc2c18a2f6fe25ef49f7",
+      "description": "",
+      "definitions": [
+        {
+          "name": "eligible",
+          "line": 6,
+          "end": 11
+        },
+        {
+          "name": "select",
+          "line": 14,
+          "end": 28
+        },
+        {
+          "name": "target",
+          "line": 31,
+          "end": 37
+        },
+        {
+          "name": "active",
+          "line": 40,
+          "end": 43
+        },
+        {
+          "name": "restrict",
+          "line": 46,
+          "end": 49
+        },
+        {
+          "name": "resume_after_region_observation",
+          "line": 52,
+          "end": 69
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/inventory_scroll.py",
+      "proposed_destination": "regrow/traversal/schedule.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/inventory_scroll.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/inventory_scroll.py": "cd54d6d438632520fb5a640aaf6934f068d5578e8691917d279d45fc7755c604"
+      }
+    },
+    {
+      "lines": 26,
+      "sha256": "37a404df329933dd908d80b26134a8e679004bbe679ee4f2474650d6bd8c595a",
+      "description": "Keep intermediate snapshot pointers private until a combined repair succeeds.",
+      "definitions": [
+        {
+          "name": "pointer",
+          "line": 9,
+          "end": 12
+        },
+        {
+          "name": "transaction",
+          "line": 16,
+          "end": 26
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/knowledge_transaction.py",
+      "proposed_destination": "regrow/records/snapshots.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/snapshots.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/snapshots.py": "b3ed8f4e5286321644c7566663a21e52fbe4b8a4d12e06860e4d36dc1033886b"
+      }
+    },
+    {
+      "lines": 48,
+      "sha256": "a6d11db626d056f1ba939119c805ea0f3e92d4cb9550230db3ebd6cfdbf35952",
+      "description": "One entry point: local browser, installed apps, saved/new traversal.",
+      "definitions": [
+        {
+          "name": "main",
+          "line": 16,
+          "end": 45
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/launch_traversal.py",
+      "proposed_destination": "外移工具：tools/traversal_ui/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/launch_traversal.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/launch_traversal.py": "c0308cc1e59852232bbddbcdee43f769149d441256cfd65293bbc2973a69d9d7"
+      }
+    },
+    {
+      "lines": 71,
+      "sha256": "a1204bb889db968173625631cea052e095a4063f84b7588226451eb9a969ac6e",
+      "description": "Same-frame partition context for local discovery and publication checks.",
+      "definitions": [
+        {
+          "name": "build",
+          "line": 11,
+          "end": 30
+        },
+        {
+          "name": "exit_guidance",
+          "line": 33,
+          "end": 36
+        },
+        {
+          "name": "prompt",
+          "line": 39,
+          "end": 45
+        },
+        {
+          "name": "errors",
+          "line": 48,
+          "end": 71
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/local_partition.py",
+      "proposed_destination": "regrow/recognition/observe.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/local_partition.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/local_partition.py": "a6096267b036eda2526a25d1f7eeeb985c295b87a28c2aeefe011c3bb8ad1e4b"
+      }
+    },
+    {
+      "lines": 275,
+      "sha256": "75403394c3d32af0f3f0e0e69cab5b385950d8cbaa950515b4f4854bf59b49fb",
+      "description": "Discover Regions and local controls; registration remains in discovery_step.",
+      "definitions": [
+        {
+          "name": "schema",
+          "line": 15,
+          "end": 33
+        },
+        {
+          "name": "validate_identity",
+          "line": 36,
+          "end": 39
+        },
+        {
+          "name": "match_context",
+          "line": 42,
+          "end": 50
+        },
+        {
+          "name": "identity_library",
+          "line": 53,
+          "end": 58
+        },
+        {
+          "name": "prepare",
+          "line": 61,
+          "end": 162
+        },
+        {
+          "name": "request_from_run",
+          "line": 165,
+          "end": 182
+        },
+        {
+          "name": "run_stage",
+          "line": 185,
+          "end": 195
+        },
+        {
+          "name": "focus_task",
+          "line": 198,
+          "end": 214
+        },
+        {
+          "name": "rediscover",
+          "line": 217,
+          "end": 230
+        },
+        {
+          "name": "locate_task_control",
+          "line": 233,
+          "end": 257
+        },
+        {
+          "name": "Locator",
+          "line": 261,
+          "end": 275
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/locator.py",
+      "proposed_destination": "regrow/recognition/observe.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/locator.py",
+        "src/regrow/traversal/observation.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/locator.py": "017dc839b7da85c4f3d14094e328f6ee67b768059c444a730425550a0a7da59e",
+        "src/regrow/traversal/observation.py": "d900833c0ea1de3eb8911004a82a727935ac375f30784a5525f5f2c0ece7eabd"
+      }
+    },
+    {
+      "lines": 47,
+      "sha256": "316b77e2c71db042d5e61e26ae35df6275ef71a6baf1db5539b05e4ce9330742",
+      "description": "Exact references to evidence already sent in the shared map.\n\nThese helpers only project prompt copies; original tasks, proposals and receipts\nremain intact. Different snapshots and facts absent from the map retain text.",
+      "definitions": [
+        {
+          "name": "current_task",
+          "line": 13,
+          "end": 17
+        },
+        {
+          "name": "task_view",
+          "line": 20,
+          "end": 32
+        },
+        {
+          "name": "receipt",
+          "line": 35,
+          "end": 47
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/map_prompt.py",
+      "proposed_destination": "并入直接调用处；删除转发文件",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/map_prompt.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/map_prompt.py": "ee4a4986f13711394ce82e9eb02696c27ac57f1e17ada856730b83369d4a1943"
+      }
+    },
+    {
+      "lines": 29,
+      "sha256": "ceba9bd578e761bc527466dd1af011d65f81b831a96dec5839eba315859015dd",
+      "description": "Parse complete model messages independently; never concatenate decisions.",
+      "definitions": [
+        {
+          "name": "ReplyParseError",
+          "line": 5,
+          "end": 8
+        },
+        {
+          "name": "parse",
+          "line": 11,
+          "end": 29
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/model_reply_parse.py",
+      "proposed_destination": "regrow/runtime/model.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/model_reply_parse.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/model_reply_parse.py": "43532b96868c5eb6c83db57e7e66e6e18645f0b79af1557b6822bf1a312d726d"
+      }
+    },
+    {
+      "lines": 173,
+      "sha256": "505b3639714a5b3014485c0aff4c36d55a5ddc2e5c12615f9ae0c10eb7fa8609",
+      "description": "Shared final request preparation, evidence persistence, budget and model send.\n\nUsed by both normal steps and recovery, on Android and desktop.",
+      "definitions": [
+        {
+          "name": "BudgetExhausted",
+          "line": 14,
+          "end": 15
+        },
+        {
+          "name": "read_service_error",
+          "line": 18,
+          "end": 23
+        },
+        {
+          "name": "with_environment_scope",
+          "line": 26,
+          "end": 38
+        },
+        {
+          "name": "with_run_scope",
+          "line": 42,
+          "end": 50
+        },
+        {
+          "name": "with_frame_context",
+          "line": 54,
+          "end": 67
+        },
+        {
+          "name": "expand_schema",
+          "line": 71,
+          "end": 80
+        },
+        {
+          "name": "compact_schema",
+          "line": 83,
+          "end": 108
+        },
+        {
+          "name": "ModelTransport",
+          "line": 111,
+          "end": 173
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/model_transport.py",
+      "proposed_destination": "regrow/runtime/model.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/model_transport.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/model_transport.py": "62946cec1b535a266ba1968bc051cfcf4b0c2ca80204fa39defb109e9e84dd48"
+      }
+    },
+    {
+      "lines": 512,
+      "sha256": "6578869e1b2b69f509b2ec64e2fc2eedcdfd098acba8037813bbae1661651f3c",
+      "description": "One Region table and one control table; Region-scoped access is a query.\n\nNew snapshots contain objects.json. Old snapshots are read without rewriting\nthem. Evidence paths in loaded records are relative to the snapshot root.",
+      "definitions": [
+        {
+          "name": "normalize_constraints",
+          "line": 20,
+          "end": 28
+        },
+        {
+          "name": "region_work",
+          "line": 31,
+          "end": 33
+        },
+        {
+          "name": "incoming",
+          "line": 36,
+          "end": 43
+        },
+        {
+          "name": "Region",
+          "line": 46,
+          "end": 71
+        },
+        {
+          "name": "Control",
+          "line": 74,
+          "end": 89
+        },
+        {
+          "name": "observation_history",
+          "line": 92,
+          "end": 96
+        },
+        {
+          "name": "replace_observation_history",
+          "line": 99,
+          "end": 103
+        },
+        {
+          "name": "RegionControls",
+          "line": 106,
+          "end": 145
+        },
+        {
+          "name": "RegionTasks",
+          "line": 148,
+          "end": 190
+        },
+        {
+          "name": "RegionActions",
+          "line": 193,
+          "end": 222
+        },
+        {
+          "name": "Records",
+          "line": 225,
+          "end": 351
+        },
+        {
+          "name": "owned_controls",
+          "line": 354,
+          "end": 362
+        },
+        {
+          "name": "owned_tasks",
+          "line": 365,
+          "end": 367
+        },
+        {
+          "name": "owned_actions",
+          "line": 370,
+          "end": 372
+        },
+        {
+          "name": "control_actions",
+          "line": 375,
+          "end": 377
+        },
+        {
+          "name": "find_control",
+          "line": 380,
+          "end": 382
+        },
+        {
+          "name": "replace_owned_tasks",
+          "line": 385,
+          "end": 391
+        },
+        {
+          "name": "replace_owned_actions",
+          "line": 394,
+          "end": 400
+        },
+        {
+          "name": "region_state",
+          "line": 403,
+          "end": 408
+        },
+        {
+          "name": "rebase",
+          "line": 411,
+          "end": 431
+        },
+        {
+          "name": "load",
+          "line": 434,
+          "end": 477
+        },
+        {
+          "name": "save",
+          "line": 480,
+          "end": 512
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/object_store.py",
+      "proposed_destination": "regrow/records/objects.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/object_store.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/object_store.py": "8a3a41bdc104c3ded8fda5062d64d7d60a50647552b1b670d8c78873e74eef35"
+      }
+    },
+    {
+      "lines": 96,
+      "sha256": "1fd7dc43997adf6c39bd547246b836623879e1e720f774a6c2be5e0e16a41a48",
+      "description": "Scope unresolved crashes to their actual operation, never to a task's control.\n\nTask status is scheduling information. Only the existing explicit crash blocker\nand its executed action establish a reusable operation restriction.",
+      "definitions": [
+        {
+          "name": "failures",
+          "line": 15,
+          "end": 44
+        },
+        {
+          "name": "applicable",
+          "line": 47,
+          "end": 55
+        },
+        {
+          "name": "action_conditions",
+          "line": 58,
+          "end": 66
+        },
+        {
+          "name": "check_action",
+          "line": 69,
+          "end": 74
+        },
+        {
+          "name": "attach",
+          "line": 77,
+          "end": 96
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/operation_blocking.py",
+      "proposed_destination": "regrow/traversal/action.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/operation_blocking.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/operation_blocking.py": "08070f7d41fa5b3666926b0873faa2e918a8aa76633a6478eddac46e037389fb"
+      }
+    },
+    {
+      "lines": 225,
+      "sha256": "a89dc967317d506e1d8f09a2255436389bb86ad7597812f0d697ca01693c4178",
+      "description": "Deliver one glossary and output contract from the actual per-step schema.\n\nThe schema remains the local validator. The wire uses JSON object mode and a\nreadable declaration of the same shape; optional fields do not multiply branches.",
+      "definitions": [
+        {
+          "name": "fields",
+          "line": 12,
+          "end": 24
+        },
+        {
+          "name": "shape",
+          "line": 27,
+          "end": 76
+        },
+        {
+          "name": "inline_shape",
+          "line": 79,
+          "end": 90
+        },
+        {
+          "name": "action_shape",
+          "line": 93,
+          "end": 128
+        },
+        {
+          "name": "fragments",
+          "line": 131,
+          "end": 151
+        },
+        {
+          "name": "prepare",
+          "line": 154,
+          "end": 225
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/output_contract.py",
+      "proposed_destination": "regrow/prompts/render.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/output.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/output.py": "b09ff52fb4ff3c952869061670b5f8c44d44d9019a37948f190afbe8604e96aa"
+      }
+    },
+    {
+      "lines": 220,
+      "sha256": "1ee1eb973a987df0f0643b9fc381d72f38e8a6de5faafeb9c2a4ecee2dfbe477",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 14,
+          "end": 17
+        },
+        {
+          "name": "begin",
+          "line": 20,
+          "end": 40
+        },
+        {
+          "name": "request",
+          "line": 43,
+          "end": 65
+        },
+        {
+          "name": "record_observation",
+          "line": 68,
+          "end": 79
+        },
+        {
+          "name": "repartition",
+          "line": 82,
+          "end": 154
+        },
+        {
+          "name": "run",
+          "line": 157,
+          "end": 200
+        },
+        {
+          "name": "conflict",
+          "line": 203,
+          "end": 220
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/ownership_review.py",
+      "proposed_destination": "regrow/recognition/identity.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/ownership_review.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/ownership_review.py": "4d2a77f5d3d61c599f9186dd66d9f1f9a94b5cc7adf3a2fb157a95e7701a4783"
+      }
+    },
+    {
+      "lines": 476,
+      "sha256": "e43ee6b5639ac9daf40e2023211d728d05a3c3551b2d854f844929eefec9e233",
+      "description": "Read-only page composition and visit ancestry derived from recorded evidence.\n\nComposition, incoming navigation and task ownership remain distinct. Nothing in\nthis view authorizes an action or changes the underlying Region graph.",
+      "definitions": [
+        {
+          "name": "_digest",
+          "line": 20,
+          "end": 21
+        },
+        {
+          "name": "_observed",
+          "line": 24,
+          "end": 26
+        },
+        {
+          "name": "_region",
+          "line": 29,
+          "end": 30
+        },
+        {
+          "name": "_parent_branches",
+          "line": 33,
+          "end": 43
+        },
+        {
+          "name": "_index",
+          "line": 46,
+          "end": 53
+        },
+        {
+          "name": "_entry",
+          "line": 56,
+          "end": 63
+        },
+        {
+          "name": "_origin",
+          "line": 66,
+          "end": 111
+        },
+        {
+          "name": "build",
+          "line": 114,
+          "end": 221
+        },
+        {
+          "name": "_source_attempts",
+          "line": 224,
+          "end": 232
+        },
+        {
+          "name": "_display",
+          "line": 235,
+          "end": 291
+        },
+        {
+          "name": "_frame_relation",
+          "line": 294,
+          "end": 303
+        },
+        {
+          "name": "live",
+          "line": 306,
+          "end": 319
+        },
+        {
+          "name": "compact_observation",
+          "line": 322,
+          "end": 324
+        },
+        {
+          "name": "separate_map",
+          "line": 327,
+          "end": 339
+        },
+        {
+          "name": "refresh",
+          "line": 342,
+          "end": 405
+        },
+        {
+          "name": "attach",
+          "line": 408,
+          "end": 456
+        },
+        {
+          "name": "advances_goal",
+          "line": 459,
+          "end": 476
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/page_context.py",
+      "proposed_destination": "regrow/records/context.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/page_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/page_context.py": "46981c3e795fc432f1ee01129e875b5d75702422483be46fed22d4c2947f005c"
+      }
+    },
+    {
+      "lines": 333,
+      "sha256": "e00ae140407ce25c54c7134a1e4ec22245c3a8d340ccdf9c163cb74d7285de8e",
+      "description": "",
+      "definitions": [
+        {
+          "name": "_order",
+          "line": 21,
+          "end": 22
+        },
+        {
+          "name": "_execution",
+          "line": 25,
+          "end": 43
+        },
+        {
+          "name": "build",
+          "line": 46,
+          "end": 181
+        },
+        {
+          "name": "reference",
+          "line": 184,
+          "end": 187
+        },
+        {
+          "name": "_handoff",
+          "line": 190,
+          "end": 215
+        },
+        {
+          "name": "_historical_text",
+          "line": 218,
+          "end": 229
+        },
+        {
+          "name": "event_text",
+          "line": 232,
+          "end": 267
+        },
+        {
+          "name": "render",
+          "line": 270,
+          "end": 276
+        },
+        {
+          "name": "attach",
+          "line": 279,
+          "end": 304
+        },
+        {
+          "name": "incoming_entries",
+          "line": 307,
+          "end": 316
+        },
+        {
+          "name": "link_incoming",
+          "line": 319,
+          "end": 333
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/page_history.py",
+      "proposed_destination": "regrow/records/context.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/page_history.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/page_history.py": "384404fb1f1ff0a7435c1ff644905ac2173cde7650c932b7fadb92aab1c516b7"
+      }
+    },
+    {
+      "lines": 99,
+      "sha256": "2f012b0e08b2de1676a207106ab9e4c92455ee615cd2fa39d49a4a4ab56efc53",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 13,
+          "end": 16
+        },
+        {
+          "name": "observable",
+          "line": 19,
+          "end": 26
+        },
+        {
+          "name": "from_no_action",
+          "line": 30,
+          "end": 59
+        },
+        {
+          "name": "reviewing",
+          "line": 62,
+          "end": 65
+        },
+        {
+          "name": "normalize",
+          "line": 68,
+          "end": 78
+        },
+        {
+          "name": "evidence_context",
+          "line": 81,
+          "end": 89
+        },
+        {
+          "name": "augment",
+          "line": 92,
+          "end": 99
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/parameter_evidence_review.py",
+      "proposed_destination": "regrow/traversal/result.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/parameter_evidence_review.py",
+        "src/regrow/records/review_history.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/parameter_evidence_review.py": "4d83cb489709ecd97a325791fd83d7eeb5b1d695e60321c42ef893ffa4563c1b",
+        "src/regrow/records/review_history.py": "335871049fb6b1f9a18698fca0242cbe6533e3973c357771e3bb144e98eec7d9"
+      }
+    },
+    {
+      "lines": 161,
+      "sha256": "5e1669b3f10e5c1d7cda92fa4c4c1ff7378397b1ebfc691de1dfe461986038b4",
+      "description": "",
+      "definitions": [
+        {
+          "name": "CapturePaused",
+          "line": 22,
+          "end": 23
+        },
+        {
+          "name": "check_capture_pause",
+          "line": 26,
+          "end": 29
+        },
+        {
+          "name": "read",
+          "line": 32,
+          "end": 33
+        },
+        {
+          "name": "_write",
+          "line": 36,
+          "end": 47
+        },
+        {
+          "name": "failure_reason",
+          "line": 50,
+          "end": 66
+        },
+        {
+          "name": "round_status",
+          "line": 70,
+          "end": 84
+        },
+        {
+          "name": "tracked",
+          "line": 87,
+          "end": 91
+        },
+        {
+          "name": "request",
+          "line": 94,
+          "end": 100
+        },
+        {
+          "name": "detail",
+          "line": 103,
+          "end": 106
+        },
+        {
+          "name": "snapshot",
+          "line": 109,
+          "end": 161
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/progress.py",
+      "proposed_destination": "regrow/runtime/evidence.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/progress.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/progress.py": "65c7a1d99d225f321a326de46d8016f58cfe040592ed367d59f04968257a1cf3"
+      }
+    },
+    {
+      "lines": 66,
+      "sha256": "8d8465c2ac4ba7a6d4854c150043f8932672a988b0065ccfdff7d12288ea4fd4",
+      "description": "",
+      "definitions": [
+        {
+          "name": "read",
+          "line": 12,
+          "end": 12
+        },
+        {
+          "name": "gap_reason",
+          "line": 15,
+          "end": 24
+        },
+        {
+          "name": "details",
+          "line": 27,
+          "end": 66
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/progress_details.py",
+      "proposed_destination": "外移工具：tools/traversal_ui/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/progress_details.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/progress_details.py": "4e207f5ac1cc1bed29900467cad19256b076cbce6776a9dc06f189f90db0787a"
+      }
+    },
+    {
+      "lines": 132,
+      "sha256": "e527e66b87242b70d81df24e4c65ec131a68d1b1feb7df39778837db39b28dc1",
+      "description": "Traversal progress, run controls and optional application selection.",
+      "definitions": [
+        {
+          "name": "RoundRunner",
+          "line": 19,
+          "end": 56
+        },
+        {
+          "name": "server",
+          "line": 59,
+          "end": 125
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/progress_window.py",
+      "proposed_destination": "外移工具：tools/traversal_ui/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/progress_window.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/progress_window.py": "2f8a7802fe5c60a3bcd9d6ca30991b573b8eafe023387e2def848bc1d09521eb"
+      }
+    },
+    {
+      "lines": 111,
+      "sha256": "5dd4943601e12e26a5b171e1b2a6245e34376dd5d28577d12def31852f5141ec",
+      "description": "Select desktop rule sections and reference exact shared correction rules.\n\nOnly fixed instructions change; facts, schemas and archived requests stay intact.",
+      "definitions": [
+        {
+          "name": "effective_role",
+          "line": 12,
+          "end": 16
+        },
+        {
+          "name": "desktop_parts",
+          "line": 19,
+          "end": 27
+        },
+        {
+          "name": "environment_part",
+          "line": 30,
+          "end": 36
+        },
+        {
+          "name": "android_part",
+          "line": 39,
+          "end": 43
+        },
+        {
+          "name": "action_contract",
+          "line": 46,
+          "end": 91
+        },
+        {
+          "name": "original_rules",
+          "line": 94,
+          "end": 111
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/prompt_delivery.py",
+      "proposed_destination": "regrow/prompts/render.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/output.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/output.py": "b09ff52fb4ff3c952869061670b5f8c44d44d9019a37948f190afbe8604e96aa"
+      }
+    },
+    {
+      "lines": 313,
+      "sha256": "11a8b041e9b7df937d82b17f7d842b5118f16b22f9a6b4751b4a096c82f07991",
+      "description": "Model-facing material: omit bookkeeping and reference exact repeated facts.\n\nInput selection remains in context_scope. This view neither resolves old doubts\nnor narrows candidates, rules, output schemas or stored evidence.",
+      "definitions": [
+        {
+          "name": "same",
+          "line": 11,
+          "end": 19
+        },
+        {
+          "name": "body",
+          "line": 23,
+          "end": 34
+        },
+        {
+          "name": "assign",
+          "line": 37,
+          "end": 47
+        },
+        {
+          "name": "task_present",
+          "line": 50,
+          "end": 55
+        },
+        {
+          "name": "clean",
+          "line": 74,
+          "end": 91
+        },
+        {
+          "name": "update_task",
+          "line": 94,
+          "end": 135
+        },
+        {
+          "name": "execution",
+          "line": 138,
+          "end": 153
+        },
+        {
+          "name": "matching",
+          "line": 156,
+          "end": 180
+        },
+        {
+          "name": "summary",
+          "line": 183,
+          "end": 225
+        },
+        {
+          "name": "diagnostic_references",
+          "line": 228,
+          "end": 250
+        },
+        {
+          "name": "target_cards",
+          "line": 253,
+          "end": 263
+        },
+        {
+          "name": "view",
+          "line": 266,
+          "end": 299
+        },
+        {
+          "name": "map_knowledge",
+          "line": 302,
+          "end": 313
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/prompt_material.py",
+      "proposed_destination": "按选材与排版拆解；去掉反复解析/去重路径",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/prompt_material.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/prompt_material.py": "7cb1146b062ffb200976c8d2fa9178e33cd6651aa231d5a48883e34bda2a0d2e"
+      }
+    },
+    {
+      "lines": 91,
+      "sha256": "dd42e770ce9b453f8b09e1129e5f9980f0a90451b6f2d114ae623fd0edca659f",
+      "description": "One ordered fixed-rule composition for ordinary traversal requests.\n\nStage-specific output contracts stay with their role. Shared semantic rules\nhave one source; repair inherits the original request and adds only diagnosis.",
+      "definitions": [
+        {
+          "name": "catalog",
+          "line": 9,
+          "end": 13
+        },
+        {
+          "name": "entry",
+          "line": 16,
+          "end": 21
+        },
+        {
+          "name": "selected",
+          "line": 24,
+          "end": 26
+        },
+        {
+          "name": "supplement",
+          "line": 29,
+          "end": 30
+        },
+        {
+          "name": "load",
+          "line": 33,
+          "end": 35
+        },
+        {
+          "name": "contains",
+          "line": 38,
+          "end": 40
+        },
+        {
+          "name": "unindexed",
+          "line": 43,
+          "end": 65
+        },
+        {
+          "name": "sections",
+          "line": 68,
+          "end": 72
+        },
+        {
+          "name": "parts",
+          "line": 75,
+          "end": 81
+        },
+        {
+          "name": "compose",
+          "line": 84,
+          "end": 91
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/prompt_rules.py",
+      "proposed_destination": "regrow/prompts/render.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/compose.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/compose.py": "58958ed933e5212422f40144b1f3564a021fab4afeb9031b3642b48e1db2c351"
+      }
+    },
+    {
+      "lines": 116,
+      "sha256": "58efd34bbc95d6204e2f11b32c1c2c979cfb5615078afa435a99d3f51c6d3925",
+      "description": "Immutable accepted observation records, shared across object snapshots.\n\nThe current objects contain no observation arrays. One event groups the objects\nreported from the same source frame/call; snapshots retain only event references.\nOriginal model replies, frames and execution receipts remain in their run paths.",
+      "definitions": [
+        {
+          "name": "rebase_paths",
+          "line": 17,
+          "end": 24
+        },
+        {
+          "name": "image_record",
+          "line": 27,
+          "end": 35
+        },
+        {
+          "name": "_event",
+          "line": 38,
+          "end": 43
+        },
+        {
+          "name": "write",
+          "line": 46,
+          "end": 64
+        },
+        {
+          "name": "write_actions",
+          "line": 67,
+          "end": 72
+        },
+        {
+          "name": "read_actions",
+          "line": 75,
+          "end": 80
+        },
+        {
+          "name": "write_tasks",
+          "line": 83,
+          "end": 88
+        },
+        {
+          "name": "read_tasks",
+          "line": 91,
+          "end": 96
+        },
+        {
+          "name": "read",
+          "line": 99,
+          "end": 116
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/record_history.py",
+      "proposed_destination": "regrow/records/snapshots.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/record_history.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/record_history.py": "5b34e56527f307570a2ade3938f1ae888ad64160ac90a06177c19bfafd007492"
+      }
+    },
+    {
+      "lines": 70,
+      "sha256": "9365e5c27f5ead552d4f513736ab9ecb33c3654876dcdf8570e8a350e6fd3790",
+      "description": "",
+      "definitions": [
+        {
+          "name": "RecoveryRun",
+          "line": 21,
+          "end": 59
+        },
+        {
+          "name": "main",
+          "line": 62,
+          "end": 68
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/recover_external.py",
+      "proposed_destination": "regrow/runtime/platform.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/recover_external.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/recover_external.py": "c1e222f3b947347222696e4b14bd581634040029eab3d823aafb9b85d0c57465"
+      }
+    },
+    {
+      "lines": 159,
+      "sha256": "79c228619a035a229b732ed155aa884faa16bddce315f23b45fbe754957e979a",
+      "description": "Bounded recovery without business Region identification between actions.",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 11,
+          "end": 13
+        },
+        {
+          "name": "stalled",
+          "line": 16,
+          "end": 21
+        },
+        {
+          "name": "recovery_result",
+          "line": 24,
+          "end": 28
+        },
+        {
+          "name": "run",
+          "line": 31,
+          "end": 159
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/recover_loop.py",
+      "proposed_destination": "regrow/traversal/recovery.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/recover_loop.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/recover_loop.py": "d84dbf2c7acaa086def4316657cdbdde3717ca4d483a14bd6ebf77864a5e79d3"
+      }
+    },
+    {
+      "lines": 93,
+      "sha256": "5dd9c0e4fb8654ea353c8a7dc44587399c242a91cd4872d61fef70d197b8d99a",
+      "description": "One recovery policy; action payload is shared with ordinary exploration.",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 11,
+          "end": 13
+        },
+        {
+          "name": "schema",
+          "line": 18,
+          "end": 25
+        },
+        {
+          "name": "action_defaults",
+          "line": 28,
+          "end": 29
+        },
+        {
+          "name": "validate",
+          "line": 32,
+          "end": 46
+        },
+        {
+          "name": "resolve",
+          "line": 49,
+          "end": 59
+        },
+        {
+          "name": "interrupted_tasks",
+          "line": 62,
+          "end": 71
+        },
+        {
+          "name": "build_request",
+          "line": 74,
+          "end": 88
+        },
+        {
+          "name": "restart_commands",
+          "line": 91,
+          "end": 93
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/recovery.py",
+      "proposed_destination": "regrow/traversal/recovery.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/recovery.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/recovery.py": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c"
+      }
+    },
+    {
+      "lines": 18,
+      "sha256": "78d147eba172c49f05aeb838810b4a5c22a01eb3722f6841e108f40e56c2ff30",
+      "description": "Compare executed recovery attempts, independently of whole-screen similarity.",
+      "definitions": [
+        {
+          "name": "repeated_attempt",
+          "line": 4,
+          "end": 18
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/recovery_stall.py",
+      "proposed_destination": "regrow/traversal/recovery.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/recovery_stall.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/recovery_stall.py": "0daf4c916dc78d710c5aa136b89e71bac42effa1681b6d9065edfa343f1e6785"
+      }
+    },
+    {
+      "lines": 143,
+      "sha256": "1e2921d46fa5d447da378e5d557a53cd939dbe15b8151c7c37213f9d8c25e166",
+      "description": "Detach a behaviorally different source observed by the update model.\n\nVisual similarity may suggest reuse; it cannot override observed differences.\nThe old record stays intact. New controls carry no inherited completion.",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 15,
+          "end": 18
+        },
+        {
+          "name": "before_objects",
+          "line": 21,
+          "end": 37
+        },
+        {
+          "name": "bind_geometry",
+          "line": 40,
+          "end": 57
+        },
+        {
+          "name": "extend_schema",
+          "line": 60,
+          "end": 73
+        },
+        {
+          "name": "history",
+          "line": 76,
+          "end": 102
+        },
+        {
+          "name": "apply",
+          "line": 105,
+          "end": 143
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_behavior_split.py",
+      "proposed_destination": "regrow/records/relations.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/region_behavior_split.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/region_behavior_split.py": "41db13fc205701dd8137b415979ce991fb8cfb50665f659631f434beae1a05c5"
+      }
+    },
+    {
+      "lines": 81,
+      "sha256": "9efa9cdcfcb0c067d2a1fd52abcff7c0ae6d3851019b85eaf6352333deffa7ef",
+      "description": "Per-request readable identity labels, shared by disclosure and binding.",
+      "definitions": [
+        {
+          "name": "candidates",
+          "line": 9,
+          "end": 46
+        },
+        {
+          "name": "resolve",
+          "line": 49,
+          "end": 56
+        },
+        {
+          "name": "control_candidates",
+          "line": 59,
+          "end": 81
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_candidate_names.py",
+      "proposed_destination": "regrow/recognition/identity.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/region_candidate_names.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/region_candidate_names.py": "5cc73aec86e664eac1b173cc35c691a6af5c8a5cb967dffe2ffa31e1a237a2d0"
+      }
+    },
+    {
+      "lines": 166,
+      "sha256": "d4763737e2805ebbf71774c42e2cbcdc9a36279ccf6d6bef58a441d528d4de94",
+      "description": "",
+      "definitions": [
+        {
+          "name": "region_transitions",
+          "line": 11,
+          "end": 42
+        },
+        {
+          "name": "new_region",
+          "line": 46,
+          "end": 49
+        },
+        {
+          "name": "region_observation",
+          "line": 53,
+          "end": 57
+        },
+        {
+          "name": "control_observation",
+          "line": 61,
+          "end": 66
+        },
+        {
+          "name": "control_name",
+          "line": 70,
+          "end": 71
+        },
+        {
+          "name": "action_record",
+          "line": 75,
+          "end": 85
+        },
+        {
+          "name": "region_records",
+          "line": 89,
+          "end": 155
+        },
+        {
+          "name": "graph_state",
+          "line": 159,
+          "end": 166
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_evidence.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/region_evidence.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/region_evidence.py": "17208ce6dc0a89f9276e2933603e8f58143229901c42e5dbd737ce5e454cec77"
+      }
+    },
+    {
+      "lines": 389,
+      "sha256": "0fccbe01ec80f054e1295c471efca1cb7a98c353ee7de59c61fbf662b07dde83",
+      "description": "",
+      "definitions": [
+        {
+          "name": "task_module",
+          "line": 18,
+          "end": 21
+        },
+        {
+          "name": "wire_schema",
+          "line": 24,
+          "end": 30
+        },
+        {
+          "name": "prompt_paths",
+          "line": 34,
+          "end": 35
+        },
+        {
+          "name": "request_support_review",
+          "line": 38,
+          "end": 52
+        },
+        {
+          "name": "supported_tasks",
+          "line": 55,
+          "end": 56
+        },
+        {
+          "name": "supporting_tasks",
+          "line": 59,
+          "end": 64
+        },
+        {
+          "name": "catalog",
+          "line": 67,
+          "end": 79
+        },
+        {
+          "name": "attribute_context",
+          "line": 82,
+          "end": 90
+        },
+        {
+          "name": "semantic_observation",
+          "line": 93,
+          "end": 95
+        },
+        {
+          "name": "purpose_observation",
+          "line": 98,
+          "end": 107
+        },
+        {
+          "name": "evidence_projection",
+          "line": 110,
+          "end": 128
+        },
+        {
+          "name": "summary_projection",
+          "line": 131,
+          "end": 152
+        },
+        {
+          "name": "signature",
+          "line": 155,
+          "end": 193
+        },
+        {
+          "name": "request_signature",
+          "line": 196,
+          "end": 201
+        },
+        {
+          "name": "review_current",
+          "line": 204,
+          "end": 205
+        },
+        {
+          "name": "ready",
+          "line": 208,
+          "end": 224
+        },
+        {
+          "name": "next_ready",
+          "line": 227,
+          "end": 234
+        },
+        {
+          "name": "schema",
+          "line": 237,
+          "end": 238
+        },
+        {
+          "name": "support_catalog",
+          "line": 241,
+          "end": 256
+        },
+        {
+          "name": "request_schema",
+          "line": 259,
+          "end": 278
+        },
+        {
+          "name": "locations",
+          "line": 281,
+          "end": 286
+        },
+        {
+          "name": "register",
+          "line": 289,
+          "end": 360
+        },
+        {
+          "name": "request",
+          "line": 363,
+          "end": 378
+        },
+        {
+          "name": "commit",
+          "line": 381,
+          "end": 389
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_functions.py",
+      "proposed_destination": "regrow/traversal/summary.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/region_functions.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/region_functions.py": "b1b32c408fadde50603141254df67cc38d1b3f973c6862abf3f484b6b7164901"
+      }
+    },
+    {
+      "lines": 72,
+      "sha256": "f0051119105617e4f9e99b1f047e5ff91ea720791fa3fe10d8a28801deb3283a",
+      "description": "",
+      "definitions": [
+        {
+          "name": "read",
+          "line": 15,
+          "end": 15
+        },
+        {
+          "name": "snapshot",
+          "line": 18,
+          "end": 23
+        },
+        {
+          "name": "asset",
+          "line": 26,
+          "end": 36
+        },
+        {
+          "name": "project",
+          "line": 39,
+          "end": 72
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_graph.py",
+      "proposed_destination": "regrow/records/relations.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/region_graph.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/region_graph.py": "bffda9b28c4af434a432003aade63f052155a61454161246074f867556aacc7d"
+      }
+    },
+    {
+      "lines": 71,
+      "sha256": "548a8a09f838262527e35fbc957dc7af942400af9d1b79dde3182e771db95d90",
+      "description": "Shared discovery/update Region identity matching; screen placement is not identity.",
+      "definitions": [
+        {
+          "name": "normalize",
+          "line": 10,
+          "end": 12
+        },
+        {
+          "name": "for_request",
+          "line": 15,
+          "end": 28
+        },
+        {
+          "name": "extend_schema",
+          "line": 31,
+          "end": 47
+        },
+        {
+          "name": "prepare",
+          "line": 50,
+          "end": 54
+        },
+        {
+          "name": "reuse_list_roles",
+          "line": 57,
+          "end": 71
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_identity.py",
+      "proposed_destination": "regrow/recognition/identity.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/region_identity.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/region_identity.py": "9abf284fabd9f8fdf3a82d75e2c7fa4a5fcec2e49f8547d962d52da9b3fc88ca"
+      }
+    },
+    {
+      "lines": 52,
+      "sha256": "4bae4806d285eaf24864ce127f038d365011b94cdd2830d3d2f0fa8a541fcac6",
+      "description": "Stable numbered Region knowledge, updated without rewriting untouched paragraphs.",
+      "definitions": [
+        {
+          "name": "normalize",
+          "line": 6,
+          "end": 21
+        },
+        {
+          "name": "validate",
+          "line": 24,
+          "end": 35
+        },
+        {
+          "name": "apply",
+          "line": 38,
+          "end": 48
+        },
+        {
+          "name": "text",
+          "line": 51,
+          "end": 52
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_knowledge.py",
+      "proposed_destination": "regrow/records/objects.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/region_knowledge.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/region_knowledge.py": "18279dff0de58ecd7b6df0af3a8d93c25f81dd0f98522a3b4f33bbdabe836ce4"
+      }
+    },
+    {
+      "lines": 100,
+      "sha256": "e88a8e0a62ceb77d376cf84e457d574a4f570e51d39583b0bc0f24046383088b",
+      "description": "",
+      "definitions": [
+        {
+          "name": "rewrite",
+          "line": 16,
+          "end": 28
+        },
+        {
+          "name": "merge",
+          "line": 31,
+          "end": 100
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_records.py",
+      "proposed_destination": "regrow/records/objects.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/region_records.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/region_records.py": "ab5feaf4e55e374d4a13dfe37a7f8c3ba00b1106f33c48ea9c1ad9bdf675c6f5"
+      }
+    },
+    {
+      "lines": 25,
+      "sha256": "282766011c97eabdf87748b42661fcd7d997b66cbb3e73c18e38912bc322b0ba",
+      "description": "Use model coordinates for Region scrolling; observe the result before updating.",
+      "definitions": [
+        {
+          "name": "bind",
+          "line": 6,
+          "end": 25
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_scroll.py",
+      "proposed_destination": "regrow/traversal/action.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/region_scroll.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/region_scroll.py": "7709050dbd6f14fc90e321d81f865cc1e587776ad943ef4b05128b17babf463b"
+      }
+    },
+    {
+      "lines": 205,
+      "sha256": "0eea4cc9c448b1c0713c9db675cb14f88b094584554e3671b5b0e170ef0771ff",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 14,
+          "end": 17
+        },
+        {
+          "name": "equivalent_source",
+          "line": 20,
+          "end": 23
+        },
+        {
+          "name": "effective_task",
+          "line": 26,
+          "end": 31
+        },
+        {
+          "name": "coverage",
+          "line": 34,
+          "end": 53
+        },
+        {
+          "name": "purpose_controls",
+          "line": 56,
+          "end": 58
+        },
+        {
+          "name": "apply_plan",
+          "line": 61,
+          "end": 130
+        },
+        {
+          "name": "commit_plan",
+          "line": 133,
+          "end": 181
+        },
+        {
+          "name": "review_observation",
+          "line": 196,
+          "end": 205
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/region_tasks.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/region_tasks.py",
+        "src/regrow/records/tasks.py",
+        "src/regrow/prompts/task_progress.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/region_tasks.py": "d77efb15e70d06dad73184f2ff7b3aeca46069e7b78a8e6da709aaf69047e7a5",
+        "src/regrow/records/tasks.py": "f6da388ecaf7db99c95152cfc4eeea395725782dfbac9b3d2b304f3992c74c04",
+        "src/regrow/prompts/task_progress.py": "452d0c4fbd06ed36b24c0448ce4442a5191c77348f7053241d46fa37dc3bb221"
+      }
+    },
+    {
+      "lines": 523,
+      "sha256": "639591f87dd2a89a08456a41f8c9d3f79fd7454bbe3eec2a6c90e3eb3bd9506c",
+      "description": "",
+      "definitions": [
+        {
+          "name": "sibling",
+          "line": 27,
+          "end": 34
+        },
+        {
+          "name": "read",
+          "line": 37,
+          "end": 38
+        },
+        {
+          "name": "write_json",
+          "line": 41,
+          "end": 43
+        },
+        {
+          "name": "unique",
+          "line": 46,
+          "end": 50
+        },
+        {
+          "name": "label",
+          "line": 53,
+          "end": 54
+        },
+        {
+          "name": "rebase",
+          "line": 57,
+          "end": 59
+        },
+        {
+          "name": "attach_execution",
+          "line": 62,
+          "end": 86
+        },
+        {
+          "name": "action_source_observation",
+          "line": 89,
+          "end": 111
+        },
+        {
+          "name": "commit_update",
+          "line": 114,
+          "end": 370
+        },
+        {
+          "name": "materialize_regions",
+          "line": 373,
+          "end": 427
+        },
+        {
+          "name": "save_region_images",
+          "line": 430,
+          "end": 473
+        },
+        {
+          "name": "commit_discovery",
+          "line": 476,
+          "end": 513
+        },
+        {
+          "name": "main",
+          "line": 516,
+          "end": 520
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/register_update.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/register_update.py",
+        "src/regrow/records/snapshots.py",
+        "src/regrow/records/observations.py",
+        "src/regrow/records/action_evidence.py",
+        "src/regrow/tools/import_records.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/register_update.py": "1dbfc49b164ff3eef7f7267498ce10b9d574e61baee1ed6ff3b8f34823618044",
+        "src/regrow/records/snapshots.py": "b3ed8f4e5286321644c7566663a21e52fbe4b8a4d12e06860e4d36dc1033886b",
+        "src/regrow/records/observations.py": "f26432519ee037f220877e204f46461a78921e3e6e762477002e8dd01fc248cf",
+        "src/regrow/records/action_evidence.py": "3bb1d9cb53341c1938e0d668ce2e82adee2d9fbf68349e5ae985a2d4b6f567fd",
+        "src/regrow/tools/import_records.py": "ff371b8828c6b80b79c1b4762ef6e01c5ec4fec93887f0432f6eebc83b401803"
+      }
+    },
+    {
+      "lines": 222,
+      "sha256": "1bd1e6b9aeb952de52e1fea08739ba0a62e64da062aac82f788a2dcb4ef5d8da",
+      "description": "Read-only acceptance diagnostics. Report independent errors before publication.",
+      "definitions": [
+        {
+          "name": "Rejected",
+          "line": 10,
+          "end": 13
+        },
+        {
+          "name": "visibility_errors",
+          "line": 16,
+          "end": 26
+        },
+        {
+          "name": "check_visibility",
+          "line": 29,
+          "end": 31
+        },
+        {
+          "name": "region_surface",
+          "line": 34,
+          "end": 44
+        },
+        {
+          "name": "parent_cycles",
+          "line": 47,
+          "end": 70
+        },
+        {
+          "name": "collect",
+          "line": 73,
+          "end": 216
+        },
+        {
+          "name": "check",
+          "line": 219,
+          "end": 222
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/registration_diagnostics.py",
+      "proposed_destination": "regrow/records/validation.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/registration_diagnostics.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/registration_diagnostics.py": "f2296fab8cd7e517ea3ee77a542446c063f9703c030406eb5112fc977f9d350a"
+      }
+    },
+    {
+      "lines": 40,
+      "sha256": "77369656e8fc6cc3e421989ad076b0f433c7e817a72a7a6f2d6f39f147a6c01d",
+      "description": "Render current committed Region knowledge without an API or GUI call.",
+      "definitions": [
+        {
+          "name": "main",
+          "line": 10,
+          "end": 37
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/render_region_context.py",
+      "proposed_destination": "外移工具：tools/inspect_records/",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/tools/render_region_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/tools/render_region_context.py": "a56986b1ea2ae593a090c7a0c79a0968aace342dadf2251f02b396e39dfd3a8a"
+      }
+    },
+    {
+      "lines": 670,
+      "sha256": "1f8ddb71971cce17616873a1c8fd4b5c587c9f169fd85363f85cb5ae736c3e89",
+      "description": "",
+      "definitions": [
+        {
+          "name": "BindingConflict",
+          "line": 16,
+          "end": 17
+        },
+        {
+          "name": "StaleActionSource",
+          "line": 20,
+          "end": 21
+        },
+        {
+          "name": "helper",
+          "line": 24,
+          "end": 26
+        },
+        {
+          "name": "preserve_repair_aliases",
+          "line": 29,
+          "end": 38
+        },
+        {
+          "name": "accept",
+          "line": 41,
+          "end": 45
+        },
+        {
+          "name": "accept_with_edits",
+          "line": 48,
+          "end": 79
+        },
+        {
+          "name": "accept_candidate",
+          "line": 82,
+          "end": 139
+        },
+        {
+          "name": "related",
+          "line": 142,
+          "end": 194
+        },
+        {
+          "name": "record_capabilities",
+          "line": 197,
+          "end": 212
+        },
+        {
+          "name": "context",
+          "line": 215,
+          "end": 320
+        },
+        {
+          "name": "refresh",
+          "line": 323,
+          "end": 367
+        },
+        {
+          "name": "edit_record",
+          "line": 370,
+          "end": 499
+        },
+        {
+          "name": "update_observation_request",
+          "line": 502,
+          "end": 540
+        },
+        {
+          "name": "observe",
+          "line": 543,
+          "end": 596
+        },
+        {
+          "name": "observe_registered",
+          "line": 599,
+          "end": 644
+        },
+        {
+          "name": "edit_proposal",
+          "line": 647,
+          "end": 670
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/repair_stages.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/repair_stages.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/repair_stages.py": "63b8ff632fbde5b951d3d15e892431e48010e9ccca89f4a6b918f52607bca0a1"
+      }
+    },
+    {
+      "lines": 55,
+      "sha256": "05391e449a1902546112ae337d2d3e79a160ab31f70c8aecb4679370d205d044",
+      "description": "Replay frozen replies only; never imports a model client or device controller.",
+      "definitions": [
+        {
+          "name": "main",
+          "line": 12,
+          "end": 51
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/replay_stepwise_baseline.py",
+      "proposed_destination": "退出活动源码；冻结历史保留",
+      "state": "retired from active source; historical original retained",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [],
+      "destination_sha256": {},
+      "retirement_reason": "旧基线重放工具依赖已退出的图与状态机路径；历史运行原件保留，不作为当前执行入口。"
+    },
+    {
+      "lines": 278,
+      "sha256": "50317758d8ff9dbbfa7c386364c85248344e11556559f906fe1d1a19b9f97501",
+      "description": "Observe and register executed actions; keep model observation and publication separate.",
+      "definitions": [
+        {
+          "name": "history",
+          "line": 20,
+          "end": 22
+        },
+        {
+          "name": "known_regions",
+          "line": 25,
+          "end": 26
+        },
+        {
+          "name": "build_update_request",
+          "line": 29,
+          "end": 81
+        },
+        {
+          "name": "selection_from_dynamic",
+          "line": 84,
+          "end": 91
+        },
+        {
+          "name": "route_update",
+          "line": 94,
+          "end": 125
+        },
+        {
+          "name": "build_attempt_update",
+          "line": 129,
+          "end": 208
+        },
+        {
+          "name": "rebuild_retained",
+          "line": 211,
+          "end": 228
+        },
+        {
+          "name": "resume_update_request",
+          "line": 231,
+          "end": 249
+        },
+        {
+          "name": "ResultUpdater",
+          "line": 253,
+          "end": 278
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/result_updater.py",
+      "proposed_destination": "regrow/traversal/result.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/result_updater.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/result_updater.py": "2cfffda4cc9b9bc9a5ca6f73fb2cbf5f02b711d34bf591787c449cd1f557c8c7"
+      }
+    },
+    {
+      "lines": 88,
+      "sha256": "3e7e46ba47bd28296da952133a74cc504fb390987a6cb9394315913dd053faf9",
+      "description": "Drive bounded steps and resume normal scheduling after idle knowledge work.",
+      "definitions": [
+        {
+          "name": "run_session",
+          "line": 11,
+          "end": 83
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/run_progress_session.py",
+      "proposed_destination": "regrow/traversal/loop.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/run_progress_session.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/run_progress_session.py": "fcb3deab1f94179e1d7c6e6c6241e44d423e7b350b008df513426953132747b7"
+      }
+    },
+    {
+      "lines": 47,
+      "sha256": "548fcea70d05e8d82bc55e93419f8dbd689ca3d2a2f2e16a8634d786bdc83654",
+      "description": "One source selection for browser and supervised traversal sessions.",
+      "definitions": [
+        {
+          "name": "source_hash",
+          "line": 8,
+          "end": 13
+        },
+        {
+          "name": "resolve_source",
+          "line": 16,
+          "end": 28
+        },
+        {
+          "name": "session_command",
+          "line": 31,
+          "end": 42
+        },
+        {
+          "name": "launcher_identity",
+          "line": 45,
+          "end": 47
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/run_source.py",
+      "proposed_destination": "regrow/runtime/session.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/runtime/run_source.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/runtime/run_source.py": "8ff127b3c0dc262c88de35b8cd6aaeb8e665280783281d2e6dfe912ef1de9f8b"
+      }
+    },
+    {
+      "lines": 216,
+      "sha256": "28c106fd42a83f268d676793fbce90fa7202018160b00c6cbe20cf729f87b7c7",
+      "description": "One bounded Region task round: inventory if needed, action, update, then pause.",
+      "definitions": [
+        {
+          "name": "action_capacity_status",
+          "line": 24,
+          "end": 27
+        },
+        {
+          "name": "_run_step",
+          "line": 30,
+          "end": 156
+        },
+        {
+          "name": "run_step",
+          "line": 160,
+          "end": 172
+        },
+        {
+          "name": "finalize_knowledge",
+          "line": 175,
+          "end": 211
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/run_task_step.py",
+      "proposed_destination": "regrow/traversal/loop.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/run_task_step.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/run_task_step.py": "fd35642315408578a51ef0539c218904590f14ebe517fa7ccc9afa0190d907ad"
+      }
+    },
+    {
+      "lines": 164,
+      "sha256": "9559b55d69154151c91b5b7d00e5faf4602df02d7046737ac9eec2987584b61f",
+      "description": "",
+      "definitions": [
+        {
+          "name": "signature",
+          "line": 16,
+          "end": 18
+        },
+        {
+          "name": "conflicts",
+          "line": 21,
+          "end": 25
+        },
+        {
+          "name": "current_group",
+          "line": 28,
+          "end": 32
+        },
+        {
+          "name": "build_request",
+          "line": 35,
+          "end": 64
+        },
+        {
+          "name": "apply",
+          "line": 67,
+          "end": 103
+        },
+        {
+          "name": "next_request",
+          "line": 106,
+          "end": 118
+        },
+        {
+          "name": "run_pending",
+          "line": 121,
+          "end": 127
+        },
+        {
+          "name": "inventory_request",
+          "line": 130,
+          "end": 138
+        },
+        {
+          "name": "correction_request",
+          "line": 141,
+          "end": 164
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/shared_control_review.py",
+      "proposed_destination": "regrow/records/correction.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/shared_control_review.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/shared_control_review.py": "203b12df125fbb33f0ea5d5a0b61e539eabecac321ff2a0ad4cb10a2f623a998"
+      }
+    },
+    {
+      "lines": 156,
+      "sha256": "05ad4fba411fcc418589dd233c8b03ebe60dbea17e1edc53a5394c1302f2f8d6",
+      "description": "Explicit cross-Region behavior links; local observation identity stays local.\n\nOne canonical record lives under the first member's Region. Other members hold\nonly a reference. Existing snapshot transactions persist both atomically.",
+      "definitions": [
+        {
+          "name": "link",
+          "line": 13,
+          "end": 32
+        },
+        {
+          "name": "refresh",
+          "line": 35,
+          "end": 73
+        },
+        {
+          "name": "view",
+          "line": 75,
+          "end": 78
+        },
+        {
+          "name": "disclose",
+          "line": 81,
+          "end": 90
+        },
+        {
+          "name": "render",
+          "line": 93,
+          "end": 103
+        },
+        {
+          "name": "extend_link",
+          "line": 106,
+          "end": 120
+        },
+        {
+          "name": "propose_instances",
+          "line": 123,
+          "end": 156
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/shared_controls.py",
+      "proposed_destination": "regrow/records/relations.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/shared_controls.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/shared_controls.py": "9cb2a53652d2b9f695168f389c1cefd496110cfe248e05d9a746af67b336b533"
+      }
+    },
+    {
+      "lines": 133,
+      "sha256": "a1aac9de1bb6d2abb7797a3d7864e211bd9b699475b386ff4c52c86862e1dcb7",
+      "description": "",
+      "definitions": [
+        {
+          "name": "synchronize_tasks",
+          "line": 13,
+          "end": 107
+        },
+        {
+          "name": "automatic_tasks",
+          "line": 110,
+          "end": 113
+        },
+        {
+          "name": "reconcile_detached_tasks",
+          "line": 117,
+          "end": 133
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/shared_tasks.py",
+      "proposed_destination": "regrow/records/relations.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/shared_tasks.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/shared_tasks.py": "be89f7995dcbbb4587218f5f143a9db2efe34b4f16aa178c39ba6b78d58c9071"
+      }
+    },
+    {
+      "lines": 38,
+      "sha256": "829132a43caa94bf97b8df70df910c745253c495e61fbf8e2f5f22ba9cca86e7",
+      "description": "Read-only source-action recall and historical identity text.",
+      "definitions": [
+        {
+          "name": "recall",
+          "line": 11,
+          "end": 30
+        },
+        {
+          "name": "describe",
+          "line": 33,
+          "end": 38
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/source_region_candidates.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/source_region_candidates.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/source_region_candidates.py": "117f5b2af2f03b407c87230d8e67541008495a430fd611c339c6407729b209bf"
+      }
+    },
+    {
+      "lines": 160,
+      "sha256": "519a1d95d33c88b6fe56324523051e0eb8696c01ffadc02f1dca95885a5828e6",
+      "description": "Question-led reading order for a request's already selected evidence.\n\nWork and task references come from normal builders. This module neither guesses\nscreen semantics nor creates tasks; it keeps evidence beside the decision that\nuses it. Unknown material is retained, and the transport keeps the full source.",
+      "definitions": [
+        {
+          "name": "work_question",
+          "line": 11,
+          "end": 13
+        },
+        {
+          "name": "group_tuple",
+          "line": 16,
+          "end": 17
+        },
+        {
+          "name": "brief",
+          "line": 20,
+          "end": 37
+        },
+        {
+          "name": "action_material",
+          "line": 40,
+          "end": 71
+        },
+        {
+          "name": "render",
+          "line": 74,
+          "end": 160
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/step_questions.py",
+      "proposed_destination": "regrow/prompts/render.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/compose.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/compose.py": "58958ed933e5212422f40144b1f3564a021fab4afeb9031b3642b48e1db2c351"
+      }
+    },
+    {
+      "lines": 596,
+      "sha256": "fe9a4778e64fa38312f945e523968c3254b3fb43ed38c7dbe0e6fe1f32574323",
+      "description": "Persistent, bounded repair at stage acceptance boundaries. No GUI dispatch.",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 15,
+          "end": 17
+        },
+        {
+          "name": "read",
+          "line": 20,
+          "end": 20
+        },
+        {
+          "name": "diagnostic",
+          "line": 22,
+          "end": 25
+        },
+        {
+          "name": "atomic",
+          "line": 28,
+          "end": 30
+        },
+        {
+          "name": "refresh_retained_identity_candidate",
+          "line": 33,
+          "end": 58
+        },
+        {
+          "name": "content_rejection",
+          "line": 61,
+          "end": 66
+        },
+        {
+          "name": "resume_service_failure",
+          "line": 69,
+          "end": 114
+        },
+        {
+          "name": "Paused",
+          "line": 117,
+          "end": 118
+        },
+        {
+          "name": "submission",
+          "line": 121,
+          "end": 136
+        },
+        {
+          "name": "pending",
+          "line": 139,
+          "end": 143
+        },
+        {
+          "name": "confirmed_dispatch_review",
+          "line": 146,
+          "end": 164
+        },
+        {
+          "name": "reopen_blocked",
+          "line": 167,
+          "end": 178
+        },
+        {
+          "name": "request",
+          "line": 181,
+          "end": 267
+        },
+        {
+          "name": "Runner",
+          "line": 270,
+          "end": 596
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/step_repair.py",
+      "proposed_destination": "regrow/traversal/correction.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/step_repair.py",
+        "src/regrow/records/calls.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/step_repair.py": "c2e89e6c0c2f979e73afd55372f30974190e561a775ab05f53d805181cb73033",
+        "src/regrow/records/calls.py": "79817bcd7748d66e27ff943dc7344af54f91c9a90e8a6b50221583e9cbc5861e"
+      }
+    },
+    {
+      "lines": 325,
+      "sha256": "1e66afe77f98af239d22556277f6111686b62541b1be61aa4cc1f168cb5e316c",
+      "description": "",
+      "definitions": [
+        {
+          "name": "StepwiseFlow",
+          "line": 16,
+          "end": 80
+        },
+        {
+          "name": "_assemble_local_context",
+          "line": 85,
+          "end": 130
+        },
+        {
+          "name": "contextual_return",
+          "line": 133,
+          "end": 135
+        },
+        {
+          "name": "navigation_description",
+          "line": 138,
+          "end": 142
+        },
+        {
+          "name": "shortest_known_path",
+          "line": 145,
+          "end": 175
+        },
+        {
+          "name": "render_exploration_tree",
+          "line": 178,
+          "end": 235
+        },
+        {
+          "name": "assemble_context",
+          "line": 238,
+          "end": 245
+        },
+        {
+          "name": "_assemble_action_context",
+          "line": 248,
+          "end": 301
+        },
+        {
+          "name": "assemble_region_choice",
+          "line": 304,
+          "end": 309
+        },
+        {
+          "name": "resolve_action_operations",
+          "line": 312,
+          "end": 314
+        },
+        {
+          "name": "assemble_current_context",
+          "line": 317,
+          "end": 320
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/stepwise_flow.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/action_context.py",
+        "src/regrow/runtime/action_executor.py",
+        "src/regrow/records/navigation.py",
+        "src/regrow/tools/import_records.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/action_context.py": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4",
+        "src/regrow/runtime/action_executor.py": "45c613d379bc4c0407c23f7981002dfd6373239f26cd1a51e656aeda266d571a",
+        "src/regrow/records/navigation.py": "9ecf511d1f2adbce7ef0ecbbec6e2cf2a55bdc5afdafe7f6d9f1f850c4e341ff",
+        "src/regrow/tools/import_records.py": "ff371b8828c6b80b79c1b4762ef6e01c5ec4fec93887f0432f6eebc83b401803"
+      }
+    },
+    {
+      "lines": 153,
+      "sha256": "64f247d90e550cd4ba6162abbb42c356fecd7bb7fc0638e6a066cec00fb3fb73",
+      "description": "",
+      "definitions": [
+        {
+          "name": "context",
+          "line": 15,
+          "end": 19
+        },
+        {
+          "name": "restore_next",
+          "line": 22,
+          "end": 62
+        },
+        {
+          "name": "_activate",
+          "line": 65,
+          "end": 76
+        },
+        {
+          "name": "validate_commit",
+          "line": 79,
+          "end": 116
+        },
+        {
+          "name": "complete",
+          "line": 119,
+          "end": 153
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/suspended_updates.py",
+      "proposed_destination": "拆分：记录修订归records；活跃任务/清点/重观察决定归traversal；同次事务发布",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/suspended_updates.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/suspended_updates.py": "300a0fb4d833f635bd2879215d66f13685acc488656845194d869380314a922a"
+      }
+    },
+    {
+      "lines": 142,
+      "sha256": "01cb869c1d2a654f3c7e32264dd382c8ca8a59a8dc65c36d3047f9db43cefdc1",
+      "description": "Shared read-only target observations for action selection and correction.",
+      "definitions": [
+        {
+          "name": "describe",
+          "line": 11,
+          "end": 32
+        },
+        {
+          "name": "handoff",
+          "line": 35,
+          "end": 41
+        },
+        {
+          "name": "attach_handoff",
+          "line": 44,
+          "end": 50
+        },
+        {
+          "name": "compact_handoff",
+          "line": 53,
+          "end": 59
+        },
+        {
+          "name": "render_handoff",
+          "line": 62,
+          "end": 73
+        },
+        {
+          "name": "attach",
+          "line": 76,
+          "end": 89
+        },
+        {
+          "name": "refresh",
+          "line": 92,
+          "end": 101
+        },
+        {
+          "name": "render",
+          "line": 104,
+          "end": 142
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/target_observation.py",
+      "proposed_destination": "regrow/prompts/objects.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/target_observation.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/target_observation.py": "da445753926324bce9ee82e539858aaa727955d62f8d6f8334862418eecc6991"
+      }
+    },
+    {
+      "lines": 11,
+      "sha256": "0d55ae39647534e24083a02fd6af427be8135ec3d4c0038bfa01bda9466e9239",
+      "description": "Project an exploration goal and its sourced facts before final presentation.",
+      "definitions": [
+        {
+          "name": "history",
+          "line": 6,
+          "end": 8
+        },
+        {
+          "name": "build",
+          "line": 10,
+          "end": 11
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_action_context.py",
+      "proposed_destination": "并入直接调用处；删除转发文件",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/history_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/history_context.py": "08f830c85aca52a43599eb5b353e95b3264205a9ed85c6628422d9550a7f4e0a"
+      }
+    },
+    {
+      "lines": 10,
+      "sha256": "7b6964450666483a65eefcb9f64ae542e03a53b94bddac2a03fb2f9f3e63e1f1",
+      "description": "Task-history adapter; disclosure policy lives in history_context.",
+      "definitions": [
+        {
+          "name": "history",
+          "line": 5,
+          "end": 7
+        },
+        {
+          "name": "describe",
+          "line": 9,
+          "end": 10
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_attempt_context.py",
+      "proposed_destination": "并入直接调用处；删除转发文件",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/history_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/history_context.py": "08f830c85aca52a43599eb5b353e95b3264205a9ed85c6628422d9550a7f4e0a"
+      }
+    },
+    {
+      "lines": 168,
+      "sha256": "c67d8444cb6a77ffaf97d4c2e8add72a66c7176766c3d1d0845f2c25ac6ecbb9",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 13,
+          "end": 15
+        },
+        {
+          "name": "pending_tasks",
+          "line": 18,
+          "end": 21
+        },
+        {
+          "name": "choose",
+          "line": 24,
+          "end": 37
+        },
+        {
+          "name": "defer",
+          "line": 40,
+          "end": 85
+        },
+        {
+          "name": "resume_localized",
+          "line": 88,
+          "end": 115
+        },
+        {
+          "name": "inventory_evidence_changed",
+          "line": 118,
+          "end": 127
+        },
+        {
+          "name": "runnable",
+          "line": 130,
+          "end": 137
+        },
+        {
+          "name": "choose_unfinished",
+          "line": 140,
+          "end": 151
+        },
+        {
+          "name": "advance_unfinished",
+          "line": 154,
+          "end": 168
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_deferral.py",
+      "proposed_destination": "regrow/traversal/schedule.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/task_deferral.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/task_deferral.py": "3bd5b52fce1f135fb78124fed55c3ec99b1a3b38eef095ad48d3de6e3ef677df"
+      }
+    },
+    {
+      "lines": 153,
+      "sha256": "fde6887111f535f69480a851c7f2135db4480c4f8de82140eae0dcb4aa4d59bd",
+      "description": "",
+      "definitions": [
+        {
+          "name": "pending_discovery",
+          "line": 13,
+          "end": 22
+        },
+        {
+          "name": "knowledge",
+          "line": 23,
+          "end": 30
+        },
+        {
+          "name": "detail_reasons",
+          "line": 33,
+          "end": 60
+        },
+        {
+          "name": "task_catalog",
+          "line": 63,
+          "end": 76
+        },
+        {
+          "name": "external_sources",
+          "line": 79,
+          "end": 90
+        },
+        {
+          "name": "project",
+          "line": 93,
+          "end": 153
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_inventory_context.py",
+      "proposed_destination": "regrow/records/context.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/task_inventory_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/task_inventory_context.py": "db9ced21e8eb33aee1a5680e6f9d59205f7d124ed215e1d4c8401f0c2ea23dc6"
+      }
+    },
+    {
+      "lines": 75,
+      "sha256": "126357fbe185d29d3ac03b38c5a3b1a25cb734fbd6f2619457572f8aa6024422",
+      "description": "Read current object knowledge and shared references; tasks contain questions.",
+      "definitions": [
+        {
+          "name": "has_information",
+          "line": 8,
+          "end": 9
+        },
+        {
+          "name": "completed",
+          "line": 12,
+          "end": 14
+        },
+        {
+          "name": "observed_purpose",
+          "line": 17,
+          "end": 27
+        },
+        {
+          "name": "control_knowledge",
+          "line": 30,
+          "end": 54
+        },
+        {
+          "name": "refresh",
+          "line": 57,
+          "end": 62
+        },
+        {
+          "name": "summary_view",
+          "line": 65,
+          "end": 75
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_knowledge.py",
+      "proposed_destination": "regrow/records/history.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/task_knowledge.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/task_knowledge.py": "cf3e248533530bd80b889cb4784126bfe00cdb6b302020983e9d5296697deead"
+      }
+    },
+    {
+      "lines": 140,
+      "sha256": "267dc7edd3e564a91901286b71c12181de365ea0d2f9ddad3e82d14fa25c8ae9",
+      "description": "",
+      "definitions": [
+        {
+          "name": "in_scope",
+          "line": 13,
+          "end": 16
+        },
+        {
+          "name": "schema",
+          "line": 19,
+          "end": 23
+        },
+        {
+          "name": "describe",
+          "line": 26,
+          "end": 30
+        },
+        {
+          "name": "enroll",
+          "line": 33,
+          "end": 53
+        },
+        {
+          "name": "candidates",
+          "line": 56,
+          "end": 59
+        },
+        {
+          "name": "augment",
+          "line": 62,
+          "end": 86
+        },
+        {
+          "name": "apply",
+          "line": 89,
+          "end": 108
+        },
+        {
+          "name": "prioritize",
+          "line": 111,
+          "end": 140
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_prerequisites.py",
+      "proposed_destination": "regrow/traversal/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/task_prerequisites.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/task_prerequisites.py": "6e94b2e21c61bcd240ed641bace22cffcc015185e0fcb65396cf17ca4e3798af"
+      }
+    },
+    {
+      "lines": 110,
+      "sha256": "60d530cedbb08eae44ded46dae8c1560bbe40505af1097c96f590a13d2899fad",
+      "description": "",
+      "definitions": [
+        {
+          "name": "proposal_schema",
+          "line": 11,
+          "end": 24
+        },
+        {
+          "name": "validate_definition",
+          "line": 27,
+          "end": 34
+        },
+        {
+          "name": "update_names",
+          "line": 37,
+          "end": 43
+        },
+        {
+          "name": "plan_request",
+          "line": 46,
+          "end": 97
+        },
+        {
+          "name": "TaskProposer",
+          "line": 101,
+          "end": 110
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_proposer.py",
+      "proposed_destination": "regrow/traversal/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/task_proposer.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/task_proposer.py": "f3654eb2c9a581c1b750b159dbf05cafb84568047b755fe149fd36aa0e8fdf8b"
+      }
+    },
+    {
+      "lines": 40,
+      "sha256": "6ea1611483bf8991c34ccac1b7a4f39852de0dc7f1fd8bd471bbde8a8855ac61",
+      "description": "",
+      "definitions": [
+        {
+          "name": "apply",
+          "line": 10,
+          "end": 40
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_record_repair.py",
+      "proposed_destination": "拆分：记录修订归records；活跃任务/清点/重观察决定归traversal；同次事务发布",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/task_record_repair.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/task_record_repair.py": "c23140d844f7742497c31fcee49760cb07793f281aa0d1d8538e24353f4fdbce"
+      }
+    },
+    {
+      "lines": 323,
+      "sha256": "d7b945f74a792d9ee978937a002b2f4c982cac26d211ce0ab4fb53864a4e4364",
+      "description": "Task questions, object-owned answers, and explicit access to process records.",
+      "definitions": [
+        {
+          "name": "Task",
+          "line": 11,
+          "end": 34
+        },
+        {
+          "name": "audit",
+          "line": 37,
+          "end": 38
+        },
+        {
+          "name": "detached",
+          "line": 41,
+          "end": 43
+        },
+        {
+          "name": "target",
+          "line": 46,
+          "end": 50
+        },
+        {
+          "name": "target_control",
+          "line": 53,
+          "end": 54
+        },
+        {
+          "name": "attempts",
+          "line": 57,
+          "end": 59
+        },
+        {
+          "name": "associated_actions",
+          "line": 62,
+          "end": 70
+        },
+        {
+          "name": "parameter_key",
+          "line": 73,
+          "end": 78
+        },
+        {
+          "name": "parameter_ref",
+          "line": 81,
+          "end": 83
+        },
+        {
+          "name": "source_attempts",
+          "line": 86,
+          "end": 92
+        },
+        {
+          "name": "invalidated",
+          "line": 95,
+          "end": 97
+        },
+        {
+          "name": "invalidate_products",
+          "line": 100,
+          "end": 129
+        },
+        {
+          "name": "read",
+          "line": 132,
+          "end": 175
+        },
+        {
+          "name": "store_knowledge",
+          "line": 178,
+          "end": 188
+        },
+        {
+          "name": "store_findings",
+          "line": 191,
+          "end": 216
+        },
+        {
+          "name": "store_entry",
+          "line": 219,
+          "end": 232
+        },
+        {
+          "name": "entry_value",
+          "line": 235,
+          "end": 241
+        },
+        {
+          "name": "merge_products",
+          "line": 244,
+          "end": 270
+        },
+        {
+          "name": "import_products",
+          "line": 273,
+          "end": 323
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_records.py",
+      "proposed_destination": "regrow/records/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/tasks.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/tasks.py": "f6da388ecaf7db99c95152cfc4eeea395725782dfbac9b3d2b304f3992c74c04"
+      }
+    },
+    {
+      "lines": 169,
+      "sha256": "c4f50b463efbefb81de8f0dd5957f1e1aea5484e7b3b082da2757d91d4845688",
+      "description": "",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 11,
+          "end": 13
+        },
+        {
+          "name": "reviewable",
+          "line": 16,
+          "end": 28
+        },
+        {
+          "name": "recovery_evidence",
+          "line": 31,
+          "end": 51
+        },
+        {
+          "name": "later_entry_history",
+          "line": 54,
+          "end": 62
+        },
+        {
+          "name": "next_deferred",
+          "line": 65,
+          "end": 76
+        },
+        {
+          "name": "request",
+          "line": 79,
+          "end": 121
+        },
+        {
+          "name": "apply",
+          "line": 124,
+          "end": 140
+        },
+        {
+          "name": "commit",
+          "line": 143,
+          "end": 169
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_result_review.py",
+      "proposed_destination": "regrow/traversal/result.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/task_result_review.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/task_result_review.py": "255a57e37ae6cedd151e621a5d14b188a7353812d8ecb463d1249160382d77fb"
+      }
+    },
+    {
+      "lines": 84,
+      "sha256": "65477bac6073df5a86a770c8933ce5ea93cdf637bc99eac231ab825fd4caf4da",
+      "description": "",
+      "definitions": [
+        {
+          "name": "entry_path",
+          "line": 7,
+          "end": 20
+        },
+        {
+          "name": "path_for",
+          "line": 23,
+          "end": 25
+        },
+        {
+          "name": "parent_region",
+          "line": 28,
+          "end": 30
+        },
+        {
+          "name": "destination_work",
+          "line": 33,
+          "end": 41
+        },
+        {
+          "name": "advance",
+          "line": 44,
+          "end": 84
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_routing.py",
+      "proposed_destination": "regrow/traversal/schedule.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/task_routing.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/task_routing.py": "7da0b7fa97e322ed8d9504e5b60c36f15c4f790f2f161bd6c5fa43f0db3fdf1b"
+      }
+    },
+    {
+      "lines": 45,
+      "sha256": "6d92a46b948d748d5f7df20cef43820e6bb7ab31959fbc17f936d421522975c1",
+      "description": "Render task progress; compatibility entry delegates to the single scheduler.",
+      "definitions": [
+        {
+          "name": "attach",
+          "line": 5,
+          "end": 8
+        },
+        {
+          "name": "render_current",
+          "line": 11,
+          "end": 19
+        },
+        {
+          "name": "render",
+          "line": 23,
+          "end": 45
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_selection.py",
+      "proposed_destination": "拆分：attach转发删除；render/render_current迁prompts进度呈现，不能删丢",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/prompts/task_progress.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/prompts/task_progress.py": "452d0c4fbd06ed36b24c0448ce4442a5191c77348f7053241d46fa37dc3bb221"
+      }
+    },
+    {
+      "lines": 314,
+      "sha256": "37db1a4f0a58b88ecf7ef3fece0df0b38f5cea9f4849d97545c5a2f2791574bc",
+      "description": "Settle exploration from bound actions and their requested information records.",
+      "definitions": [
+        {
+          "name": "action_name",
+          "line": 10,
+          "end": 11
+        },
+        {
+          "name": "task_key",
+          "line": 14,
+          "end": 16
+        },
+        {
+          "name": "registration_kind",
+          "line": 19,
+          "end": 21
+        },
+        {
+          "name": "region_task",
+          "line": 24,
+          "end": 25
+        },
+        {
+          "name": "task_product",
+          "line": 28,
+          "end": 30
+        },
+        {
+          "name": "missing_product_fields",
+          "line": 33,
+          "end": 37
+        },
+        {
+          "name": "registration_requirement",
+          "line": 40,
+          "end": 44
+        },
+        {
+          "name": "entry_schema",
+          "line": 47,
+          "end": 52
+        },
+        {
+          "name": "register_entry",
+          "line": 55,
+          "end": 72
+        },
+        {
+          "name": "registered_result",
+          "line": 75,
+          "end": 91
+        },
+        {
+          "name": "completion_target",
+          "line": 94,
+          "end": 101
+        },
+        {
+          "name": "refresh_movement",
+          "line": 104,
+          "end": 115
+        },
+        {
+          "name": "task_object_context",
+          "line": 118,
+          "end": 127
+        },
+        {
+          "name": "recorded_match",
+          "line": 130,
+          "end": 154
+        },
+        {
+          "name": "settle_task",
+          "line": 157,
+          "end": 212
+        },
+        {
+          "name": "reconcile",
+          "line": 215,
+          "end": 254
+        },
+        {
+          "name": "reconcile_run",
+          "line": 257,
+          "end": 270
+        },
+        {
+          "name": "partition_findings",
+          "line": 273,
+          "end": 294
+        },
+        {
+          "name": "validation_reply",
+          "line": 297,
+          "end": 305
+        },
+        {
+          "name": "store_findings",
+          "line": 308,
+          "end": 314
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_settlement.py",
+      "proposed_destination": "regrow/records/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/task_settlement.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/task_settlement.py": "0b284c69634e7fc16a0afbca11309ec7a8bbf3634a7584da55995f247a46007f"
+      }
+    },
+    {
+      "lines": 258,
+      "sha256": "ad516a77f72c29c61b9774a5eac0db2da85dca1fd98879036afacf0e9d77ea7c",
+      "description": "One task-update interface for the active goal and explicitly answered questions.",
+      "definitions": [
+        {
+          "name": "object_schema",
+          "line": 12,
+          "end": 13
+        },
+        {
+          "name": "schema",
+          "line": 16,
+          "end": 32
+        },
+        {
+          "name": "validate",
+          "line": 35,
+          "end": 49
+        },
+        {
+          "name": "resolve_suggestion",
+          "line": 52,
+          "end": 61
+        },
+        {
+          "name": "hard_block",
+          "line": 64,
+          "end": 68
+        },
+        {
+          "name": "decide",
+          "line": 71,
+          "end": 97
+        },
+        {
+          "name": "store_increment",
+          "line": 100,
+          "end": 120
+        },
+        {
+          "name": "store_knowledge",
+          "line": 123,
+          "end": 125
+        },
+        {
+          "name": "current_observation",
+          "line": 128,
+          "end": 135
+        },
+        {
+          "name": "preparation_product",
+          "line": 138,
+          "end": 144
+        },
+        {
+          "name": "observed_control",
+          "line": 147,
+          "end": 155
+        },
+        {
+          "name": "reference",
+          "line": 158,
+          "end": 159
+        },
+        {
+          "name": "catalog",
+          "line": 162,
+          "end": 194
+        },
+        {
+          "name": "current",
+          "line": 197,
+          "end": 202
+        },
+        {
+          "name": "apply",
+          "line": 205,
+          "end": 253
+        },
+        {
+          "name": "latest_suggestion",
+          "line": 256,
+          "end": 258
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/task_updates.py",
+      "proposed_destination": "regrow/records/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/task_updates.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/task_updates.py": "3f8aec8308fb64c6aec1e2118dfeb4fd6237747653a28ec32ad2ab51c32e4531"
+      }
+    },
+    {
+      "lines": 282,
+      "sha256": "cf900698de1ea235260a6b55617ab22568350aad1dd5c1189c258c67f4563f5b",
+      "description": "",
+      "definitions": [
+        {
+          "name": "handoff_no_action",
+          "line": 11,
+          "end": 70
+        },
+        {
+          "name": "select_work",
+          "line": 73,
+          "end": 146
+        },
+        {
+          "name": "pending_work",
+          "line": 149,
+          "end": 166
+        },
+        {
+          "name": "after_round",
+          "line": 169,
+          "end": 176
+        },
+        {
+          "name": "preview_next",
+          "line": 179,
+          "end": 187
+        },
+        {
+          "name": "Scheduler",
+          "line": 190,
+          "end": 215
+        },
+        {
+          "name": "offer_foreground_navigation",
+          "line": 218,
+          "end": 233
+        },
+        {
+          "name": "schedule_local_inspection",
+          "line": 236,
+          "end": 263
+        },
+        {
+          "name": "retire_completed_goal",
+          "line": 266,
+          "end": 282
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/traversal_scheduler.py",
+      "proposed_destination": "regrow/traversal/schedule.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/traversal_scheduler.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/traversal_scheduler.py": "68fcdc4be948760659c7cd684d8a751cce4e737e7ac9423055a019b8de08a39f"
+      }
+    },
+    {
+      "lines": 63,
+      "sha256": "5d35cc21ed5b53cb3c0dc331a75522cb5ab5bc047861ca79b3319156acafe893",
+      "description": "Review traversal scope without erasing attempts or inventing execution.",
+      "definitions": [
+        {
+          "name": "helper",
+          "line": 10,
+          "end": 12
+        },
+        {
+          "name": "record_only",
+          "line": 15,
+          "end": 22
+        },
+        {
+          "name": "review_request",
+          "line": 25,
+          "end": 40
+        },
+        {
+          "name": "exclude_known_external",
+          "line": 43,
+          "end": 63
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/traversal_scope.py",
+      "proposed_destination": "regrow/traversal/tasks.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/traversal_scope.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/traversal_scope.py": "6e1ca9ce3816ae30993383a1e753a3ee8cfd34d6c457430bdce2f9daa641d5e2"
+      }
+    },
+    {
+      "lines": 74,
+      "sha256": "29d371a67d71a1d689153fe78338bf6eb78e562220836c4c10f4a4bfacfbe59d",
+      "description": "Evidence-bound supervisor decisions before an update is published.\n\nThe caller supplies the reviewer; this module never calls a model or a device.",
+      "definitions": [
+        {
+          "name": "Pending",
+          "line": 11,
+          "end": 12
+        },
+        {
+          "name": "Rejected",
+          "line": 15,
+          "end": 16
+        },
+        {
+          "name": "submission_files",
+          "line": 19,
+          "end": 22
+        },
+        {
+          "name": "check",
+          "line": 25,
+          "end": 74
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/update_semantic_review.py",
+      "proposed_destination": "regrow/records/validation.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/records/update_semantic_review.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/records/update_semantic_review.py": "2b0e5a255366811d08fbe90974dd3c9e4d936d986cd9febbc7a31d79d07a4269"
+      }
+    },
+    {
+      "lines": 57,
+      "sha256": "da7e63ce6639db64db3fbf253f5653615e9bb1daae90c75e6892f5eb78c4382f",
+      "description": "Combine observed unchanged Regions with deltas; old crops remain historical.",
+      "definitions": [
+        {
+          "name": "has_interactive",
+          "line": 10,
+          "end": 12
+        },
+        {
+          "name": "regions",
+          "line": 15,
+          "end": 19
+        },
+        {
+          "name": "locate_retained",
+          "line": 22,
+          "end": 51
+        },
+        {
+          "name": "_same_position",
+          "line": 54,
+          "end": 57
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/update_visibility.py",
+      "proposed_destination": "regrow/recognition/scene.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/update_visibility.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/update_visibility.py": "8e2d44e50bc20b933b9729d9f3858e8808c4181106f6ce38224722f641a24dfe"
+      }
+    },
+    {
+      "lines": 78,
+      "sha256": "da602cf153f353be29ffd160f4bbaad66816586fa1c9acc9db90bd79f14e75ef",
+      "description": "Visual comparison and read-only recovery of earlier navigation replays.\n\nNew navigation goes through normal action selection, dispatch and registration.",
+      "definitions": [
+        {
+          "name": "same_surface",
+          "line": 19,
+          "end": 35
+        },
+        {
+          "name": "choose_position",
+          "line": 38,
+          "end": 45
+        },
+        {
+          "name": "handoff",
+          "line": 48,
+          "end": 59
+        },
+        {
+          "name": "resume_pending",
+          "line": 62,
+          "end": 65
+        },
+        {
+          "name": "project",
+          "line": 68,
+          "end": 78
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/visual_backtrack.py",
+      "proposed_destination": "拆分，见函数级映射",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/visual_backtrack.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/visual_backtrack.py": "9c16e1995b4940cf1ad8352d25fa39d869cbe522a301881947c8e6fd15b89187"
+      }
+    },
+    {
+      "lines": 41,
+      "sha256": "b13a9685deca417b33942ea059d143f2c3088440dbc12ae095b92c6faeb21341",
+      "description": "Disclose image-match alternatives for one model choice; keep recognition and click bounds separate.",
+      "definitions": [
+        {
+          "name": "matcher",
+          "line": 8,
+          "end": 10
+        },
+        {
+          "name": "match_control",
+          "line": 13,
+          "end": 19
+        },
+        {
+          "name": "match_controls",
+          "line": 22,
+          "end": 26
+        },
+        {
+          "name": "prepare",
+          "line": 29,
+          "end": 36
+        },
+        {
+          "name": "describe",
+          "line": 39,
+          "end": 41
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/visual_choices.py",
+      "proposed_destination": "regrow/recognition/matching.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/matching.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/matching.py": "1dd95108a07170c81110c061125843651e1d8b905fbaf60c217b5e92044eae7e"
+      }
+    },
+    {
+      "lines": 92,
+      "sha256": "750f05047296a6dc2a8b8efa8285e0d468f1c473748d3ea4774ceaef1ef50323",
+      "description": "Control recall; local scans reuse only same-frame model-confirmed boundaries.",
+      "definitions": [
+        {
+          "name": "matcher",
+          "line": 15,
+          "end": 30
+        },
+        {
+          "name": "image",
+          "line": 32,
+          "end": 33
+        },
+        {
+          "name": "resolve_foreground_check",
+          "line": 35,
+          "end": 45
+        },
+        {
+          "name": "plan",
+          "line": 48,
+          "end": 92
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/visual_region_locator.py",
+      "proposed_destination": "regrow/recognition/matching.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/recognition/visual_region_locator.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/recognition/visual_region_locator.py": "807a692fe193895e9f64c2505c219934a75556c219b80d1d6f84ca729b443eeb"
+      }
+    },
+    {
+      "lines": 137,
+      "sha256": "7d7aaf23639bde13356bfd7c240b7916db8f97c7af5371b3ddc05c642b8dc3d0",
+      "description": "",
+      "definitions": [
+        {
+          "name": "guidance",
+          "line": 15,
+          "end": 16
+        },
+        {
+          "name": "inventory_reason",
+          "line": 22,
+          "end": 25
+        },
+        {
+          "name": "select",
+          "line": 28,
+          "end": 55
+        },
+        {
+          "name": "from_request",
+          "line": 58,
+          "end": 83
+        },
+        {
+          "name": "reading_state",
+          "line": 86,
+          "end": 89
+        },
+        {
+          "name": "describe",
+          "line": 92,
+          "end": 118
+        },
+        {
+          "name": "attach",
+          "line": 121,
+          "end": 128
+        },
+        {
+          "name": "observation_work",
+          "line": 131,
+          "end": 137
+        }
+      ],
+      "source": "experiments/clock_manual_20260919/work_context.py",
+      "proposed_destination": "regrow/traversal/work.py",
+      "state": "migrated/retired from active source; prior acceptance limits preserved",
+      "migration_rule": "按实际职责迁移函数、更新直接调用者；不是整文件拼接；合并目标的同名函数须消解，逐段核对行为",
+      "actual_destinations": [
+        "src/regrow/traversal/work_context.py"
+      ],
+      "destination_sha256": {
+        "src/regrow/traversal/work_context.py": "f5c1e84d29aea44afc2af74a2114fa92ec45d15f1a645afabede8e57926cc1c8"
+      }
+    }
+  ]
+}

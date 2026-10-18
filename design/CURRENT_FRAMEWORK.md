@@ -1,162 +1,95 @@
-# regrow 当前框架索引
+# 当前框架
 
-2026-10-06最小遍历修复采用当前单图直接滚动、partial可信动作及程序回执合同；本轮任务/清点范围决定历史披露，独立复审遗漏已补。2026-10-05虚报Nairobi的候选图保留，不作为准确图续跑；其他地图候选仍未接受。旧冻结运行不自动切换，有限验证见本月日志。
+当前逐步遍历唯一维护源码是 `src/regrow/`。2026-10-16（UTC+8）按识别、遍历、记录重新接线；保留原数据合同与提示语义，退出旧状态机、平铺文件加载和转发入口。验证范围见 [实施记录](THREE_PART_FRAMEWORK.md)，不代表原工作树全部候选获验收。
 
-[开发入口](../DEVELOPMENT.md) · [三步主流程](modules/stepwise/README.md) · [逐文件职责](modules/stepwise/CODE_MAP.md) · [完整细节](CURRENT_FRAMEWORK_DETAILS.md)
+## 1. 从哪里读
 
-本文只保存全局入口、共用边界与验证导航。具体行为读对应模块；日期批次、旧实现仍适用的合同和证据限制完整保留在细节参考，不统一归为过时。研究目标以 [RESEARCH_GOAL](RESEARCH_GOAL.md) 为准，未完成目标不代表当前能力。
+[开发入口](../DEVELOPMENT.md) → [三部分职责](modules/stepwise/README.md) → [实际代码地图](modules/stepwise/CODE_MAP.md)。
 
-<a id="1-当前主链"></a>
+- [识别](modules/stepwise/recognition.md)：当前图、已有身份、外观匹配与对象变化。
+- [遍历](modules/stepwise/traversal.md)：当前工作、探索任务、动作、结果判断及异常续接。
+- [记录](modules/stepwise/records.md)：稳定对象、任务与实际过程，事务发布及相关历史。
+- [支撑](modules/stepwise/runtime.md)：提示、模型接口、平台、预算、原始证据与展示工具。
 
-## 1. 开发范围与主线
+## 2. 执行入口
 
-当前逐步开发源码在 `experiments/clock_manual_20260919/`，按发现与准备任务 → 选择并执行动作 → 观察结果并更新记录阅读；异常贯穿三步，共享模块由各步调用。实际编排入口是 `run_task_step._run_step`，三步不是每轮固定三次模型调用。
-源码保持原位；本批把任务选择、任务结算、模型发送、动作关联和证据记录拆为五个职责文件，旧入口直接绑定或继承唯一实现。Python 文件及脚本、页面、prompt、测试连接见 [CODE_MAP](modules/stepwise/CODE_MAP.md)。
+`python src step ...` 执行一步，`python src session ...` 续接会话；桌面批次继续使用 `python tools/run_stepwise.py ...`。主函数是 `regrow.traversal.run_task_step._run_step`。已投递未登记动作先续登记，再按需识别/提出任务、选择动作、核对和登记结果。三部分不等于固定调用三次模型。
 
-其他实现仍分别维护：guided/autonomous 在 `core/visual_traversal/`，modular explore 在 `core/explore/`，evidence explore 在 `core/evidence_explore/`。它们并存，不用同名概念推定合同相同；[完整主链](CURRENT_FRAMEWORK_DETAILS.md#1-当前主链)保留各自范围。
+冻结目录同时包含 `__main__.py` 与 regrow 包，启动时使用自己的源码与提示资源。旧 `experiments/clock_manual_20260919/` 原样保留供历史运行引用，但不再是默认开发/执行入口，不通过新入口暗中兼容旧执行模式。
 
-## 2. 当前入口
+## 3. 共同合同
 
-多应用只读进度投影：`tools/stepwise_dashboard.py <config.json>`，同页显示框架最近真实观察、累计预算及区块/控件/任务树；显示层使用维护中的progress，图谱及任务完成/覆盖语义使用每批冻结源，不启动遍历。配置与验证见[运行模块](modules/stepwise/runtime.md#多应用只读浏览器投影)。
+- 区块包括操作区与信息展示区；稳定身份、共享实例、原任务归属和区块总结时机保持。
+- 准备动作不替换原任务；实际操作归真正对象。观察知识不能伪装成原目标的点击效果。
+- 明确用途可直接登记；不可见、未定位或未覆盖不自动产生新探索任务。
+- 外观图用于身份，动作坐标取当前图；匹配不证明可操作或成功。两图比较不输出几何。
+- 必要条件、未解问题、真实失败与证据来源保留。预算只在框架计数，不写入 Luna prompt。
+- 普通、纠错和恢复调用同一记录发布；读写遵守同一个事务指针。已执行动作登记失败不能重做 GUI。
+- 提示组成入口是 `src/regrow/prompts/流程/调用组成.json`。工作台持久数据仍在项目根 `artifacts/prompt_review/20261012_01/`。
 
-| 入口 | 职责与阅读位置 |
-|---|---|
-| `tools/run_stepwise.py` | 桌面批次新建/显式清数据/持久续跑/只读状态；[固定入口](DESKTOP_BATCH_ENTRY.md)及[运行](modules/stepwise/runtime.md) |
-| `experiments/clock_manual_20260919/启动遍历.sh` → `launch_traversal.py` | 当前逐步浏览器/应用入口；[运行](modules/stepwise/runtime.md) |
-| 同目录 `run_progress_session.py` → `run_task_step.py` | 原有会话驱动与单轮编排；[三步导航](modules/stepwise/README.md) |
-| 同目录 `debug_loop.py` | 原有隔离候选与监督闭环；[监督合同](modules/stepwise_debug_loop.md) |
-| `gui_rewalk/run_visual_traversal.py` | guided、autonomous、modular explore 与 perception-only，按对应模式合同读取 |
-| `gui_rewalk/run_evidence_explore.py` / `run_region_panorama.py` | 独立证据内核与全景工具 |
-| `gui_rewalk/run_capability_synth.py` / `run_capability_induction.py` | 可选离线归一/补录与真实 attempt/effect 归纳 |
-| `gui_rewalk/run_capability_task_synthesis.py` | 从账本或冻结逐步图生成 Region 目标/分支，固定来源摘要 |
-| `gui_rewalk/run_visual_collection.py` | Region 图指导实时采集，独立输出，逐步图自动接视觉 guard |
-| `gui_rewalk/run_graph_quality.py` / `tools/check_stepwise_quality.py` | 对应图格式的只读质量检查 |
-| `run_local_visual.ps1` / `ops/run_guitraverse_seeded_mobile.ps1` | 既有桌面/版本化 whole-AVD 环境入口 |
-| `ops/pull_remote_run_evidence.ps1` | 白名单回收结果/日志，拒绝链接与 `repo/OSWorld` |
+## 遍历设计原则：Luna 理解与探索，框架提供记忆与可靠执行
 
-环境支持桌面、Android/ADB、Docker/OSWorld 与诊断用 Local HTML；fixture 不代表真实应用验收。平台、provider、seed/readback、前台归属与生命周期细节见 [环境模块](modules/env_and_config.md)及[原入口合同](CURRENT_FRAMEWORK_DETAILS.md#2-当前入口)。
+用户于2026-10-16确认。以下是设计约定；已实现范围与剩余差距见“当前验证及限制”。
 
-## 3. 模块文档地图
+- Luna 根据当前截图与相关历史，核对区块和控件的新旧身份、解释用途，并主动提出和推进探索任务。探索策略、必要准备及语义结果主要由 Luna 判断。
+- 框架掌握跨调用的记录，负责召回可能对应的旧对象及必要历史，使 Luna 有依据区分新旧；不能要求 Luna 凭不完整上下文记住全部已探索对象。框架维护稳定身份、共享关系、任务归属和遍历图，并负责实际操作、回执与引用一致性。功能或动作成功不能仅由几何匹配推断。
+- 三个改进方向：让 Luna 更准确地帮助登记应用结构；提高框架视觉召回与身份关联的准确率，并由 Luna 结合语义核对；让 Luna 利用已有结构、知识和当前任务更有效地探索未知界面与控件。三者共用一套记录，不另建平行账本。
+- 前景是辅助理解当前交互场景的共享概念，应按调用问题加入发现、动作或结果判断的 prompt，不专属于发现步。控件操作结合当前图中的可见性和遮挡判断；热键、返回等结合焦点和作用范围判断。前景说明不要求每步额外输出一套前景字段。
+- 本次识别到的对象是观察结果，不是操作许可名单。未报告、未匹配或未列入候选不等于不可操作；历史候选或匹配成功也不等于当前可操作。框架核验实际目标和执行证据，不以名单成员身份代替核验。当前 interactive_regions 的限制用途尚待修改。
+- 优先探索当前区块、原任务及准备归属、共享身份、区块总结时机等既有约定保留。首次识别无需全页清点完毕才允许推进；明确用途无需强制操作证明。
 
-| 修改范围 | 修改前读取 |
-|---|---|
-| 逐步框架、prompt、浏览器与会话 | [三步入口](modules/stepwise/README.md) → [完整 owner 表](modules/stepwise/CODE_MAP.md) → 相关职责页 |
-| guided/autonomous、Router、grounding、scroll、resume | [视觉遍历合同](modules/visual_traversal.md)与[文件地图](modules/visual_traversal_file_map.md) |
-| StateGraph/schema/attempt/completion | [状态图](modules/state_graph.md) |
-| 环境/provider/模型传输/生命周期/fixture | [环境与配置](modules/env_and_config.md) |
-| modular explore / evidence explore | [探索内核地图](modules/explore_kernel_design.md) / [证据内核](modules/evidence_explore.md) |
-| 生成、归纳、采集、质量检查与研究设计 | [全项目模块地图](modules/README.md)；遍历/采集边界还读 [Region 对齐](REGION_TRAVERSAL_ALIGNMENT.md) |
+下一步先贯通“召回旧对象 → Luna 核对新旧 → 记录关联 → 动作步读取”的一条链，检查登记遗漏、身份重复及名单限制；随后改善召回质量和探索材料。先审查完整实例，再修改对应生产、校验、登记和后读，不先叠加新字段或提示禁令。
 
-完整旧模块地图与 Phase 1 归纳细节仍见[细节参考第 3 节](CURRENT_FRAMEWORK_DETAILS.md#3-模块文档地图)。
+## 4. 当前验证及限制
 
-## 4. 跨模块不变量
+本次验证使用完整真实运行记录正常构造请求，包含桌面与 Android 保存帧；实际 Luna 原答走正常校验/纠错/登记。没有新增 GUI，没有长跑或跨应用遍历验收；具体全部调用、失败与语义核对按实施记录计数。
 
-- 区块可承载多个用途与独立功能。local_knowledge维护自身稳定用途、参数和条件；入口目标仅一层只读披露，不递归复制知识。有效本地探索结束后总结，子区块新细节不自动重写父区块；显式采用的支持变化仍复核。合同见[知识模块](modules/stepwise/knowledge.md)，本批保存帧验收与局限见月度日志。
+2026-10-17动作调用已做显式顺序及单层回复改动；同一历史参数答案案例的complete校验、正式登记和后读已有限保存帧通过。历史来源仅接纳已披露、账本/回执一致的具体控件动作观察，不放宽入口、无控件移动及准备目标的现有门槛。准备子任务路由仍未改，不称自主探索完整实现。
 
-- 稳定身份由框架分配；截图、框、中心点、模板和匹配位置是观察证据，不能直接证明当前身份、可操作性或成功。
-- 逐步 Region 观察的 `bbox` 保存该帧已确认边界，只检查非空、未倒置及截图内，不要求包含于前景交互矩形；`image_quality` 独立控制新模板资格。受挡但边界明确可有位置、无模板；后续局部定位只读绑定同一截图的前景缓存，不跨帧使用历史框。详见[身份模块](modules/stepwise/identity.md)。
-- 区块滚动使用当前单图中的模型坐标，不以同帧区块边界缓存为执行前提；普通与导航滚动共用校验，结果仍按真实前后图登记，详见[动作模块](modules/stepwise/execution.md#区块滚动)。
-- 动作提案、实际投递回执、观察结果、任务结算与功能知识分别记录；像素变化、落点识别或 schema 合法都不能独自证明业务效果。
-- 每次动作使用当前证据；历史图/路线只提供参考。已执行未登记动作优先结算，不因登记失败重做 GUI；中断恢复保留原请求、回复、回执和纠错历史。
-- 地图与历史投影读取已提交账本，不增加执行事实；正式写入沿各实现已有登记入口，保留旧快照与原始证据。
-- 图中已发现工作闭合不证明未感知功能不存在。清点完整、任务完成、功能整理、结构闭合与语义验收不能互相替代。
-- 逐步任务清点默认专注实际功能；未被专门要求的帮助、关于、快捷键列表等辅助说明只记录，实际功能设置仍探索。旧任务不自动删除/完成；详见[任务范围](modules/stepwise/tasks.md)。
-- API/GUI 预算由框架计数和强制执行，不把剩余额度计数放进 Luna prompt；范围与安全授权不由任务生成扩大。
-- 指令生成和采集独立消费冻结只读图及固定视觉实现，不修改遍历、其 prompts、活动运行或来源图；本次采集仍检查实际结果。
+本次没有实现此前全部“前景仅作建议”的策略改动：调度、候选和部分任务证据仍使用 interactive_regions。构造器不再单独以成员身份否决 action_ready，来源核验已由投递前和登记共用，但不能宣称场景漏报导致的空转全部解决。
 
-<a id="41-页面元素与动作"></a>
-<a id="42-遍历与恢复"></a>
-<a id="43-数据与输出"></a>
+既有未验收问题仍保留，包括旧图/身份质量、纯展示屏保任务未闭环、部分共享/归属与历史修复缺口。源码迁移和有限保存帧通过不能提升这些问题的验收状态。
 
-Page/Variant、verified routing、stateful 恢复、旧 M13 和各模型协议的精确合同见[原第 4 节](CURRENT_FRAMEWORK_DETAILS.md#4-跨模块不变量)。原 §4 明确适用于 `visual_traversal`；其他内核按各自模块，不把其细则提升为所有实现的共同规则。
+## 5. 其他研究管线
 
-## 5. 当前调试开关
+`gui_rewalk/` 下其他遍历、指令生成和采集保持原入口，见 [模块索引](modules/README.md)。采集仍消费冻结只读图和固定视觉实现，未为本次迁移改动它们。研究问题与证据边界仍读 RESEARCH_GOAL.md、REGION_TRAVERSAL_ALIGNMENT.md。
 
-逐步流程的共享视觉定位现用原尺寸灰度像素匹配（无边缘提取、缩放或OCR），保留控件组关联；按严格门槛允许漏识别，不能宣称无误识别。默认与相邻输入/整页检查边界见[身份合同](modules/stepwise_region_identity.md#2026-10-03-重复外观控件的位置关联)。旧冻结运行不会自动切换。
+工作台新增真实轨迹、模块引用位置与隔离保存帧预览/测试入口；持久数据仍在原工作台目录，详见tools/prompt_review_editor/README.md。不是新的遍历执行路径，不执行GUI。工作版本与批次存于原数据目录working_traces，手工上下文测试与未修改真实记录验收分开；变化后的下游需明确更新。
 
-桌面批次的命令行参数由固定入口管理，发现、动作、更新仍复用同一原生会话执行链。guided/autonomous/modular 的模型默认、显式实验模式与 fixture 开关见[原第 5 节](CURRENT_FRAMEWORK_DETAILS.md#5-当前调试开关)及对应模块；当前逐步模型配置按[运行模块](modules/stepwise/runtime.md)核对，不沿用其他内核的默认值。
-新运行通常在 `artifacts/runs/`；真实旧 run 保留原位，源码由 `run_manifest.json/framework_source` 指定。临时验证在 `artifacts/tmp_tests/<唯一任务>/`，审阅包在 `to_astra/<唯一名称>/`；冻结源不会随 checkout 自动更新。
+## 6. 修改与保存
 
-## 6. 当前全局风险
+按职责修改唯一实现及直接调用者，更新模块、月志与必要映射；不要重建兼容转发层。保留已有用户工作、源版本与失败记录。新代码、离线检查、保存帧模型检查、真实 GUI 验证分别说明。
 
-Clock续跑发现已投递但控件关联unconfirmed的旧父任务会重复none/发现。当前实现将匹配的未确认尝试保留为ownership缺口，继续其他前景工作；此类归属补录尚无完整自动恢复入口，不能宣称原任务已补齐。验证状态见本月日志。Clock末批仍保留r0007/r0008旧摘要登记缺口，不能把修复代码已验称为这些旧失败已补齐。
+## 7. 历史导航
 
-跨区块总结要求同一目的的本地支持任务，全部外区块支持不能登记为本区块操作；世界时钟列表反例在完整保存帧及实际补录通过；r0016全外区块提案也由正常纠错撤回。结构门槛仍不能自动证明所选本地任务语义相关，不能当作可组合能力质量认证。
+原长索引和逐步模块说明归档在 `design/archive/three_part_before_20261016/`，月志与真实实验原件不改写。历史源码/设计不能覆盖本页与三个当前职责页。
 
-当前地图修复候选仍未接受：Stopwatch 虚报 Add、Timer 单位推测、历史控件被列为当前可操作及裁图/归属缺口仍需实际证据核对。本批结构整理不把这些候选、跨区块任务语义重复或已暂停运行变为已通过；具体范围见[身份](modules/stepwise_region_identity.md)、[监督](modules/stepwise_debug_loop.md)和[任务](modules/stepwise/tasks.md)。
+## 8. 显式全框架门禁
 
-2026-10-09任务登记有限验证不消除旧图风险：旧启动快照接续的删除回复重复新建开始按钮身份；从新登记的启动记录连续推进的对照则正确复用。新增的同Region候选选择→两图复核已在该原失败回复的完整副本中复用c0028，后续普通发现也复用；旧最终图/发现缺口仍未修订，不能称全量身份或GUI续跑已接受，见[身份复核](CONTROL_IDENTITY_REVIEW.md)与[更新](modules/stepwise/updates.md)。
-各内核还保留模型身份误判、前景/控件漏报、导航/恢复、异常生命周期与大文件职责债务；[原风险表](CURRENT_FRAMEWORK_DETAILS.md#6-当前全局风险)保留对应范围和反例，不以历史测试数宣称当前全图或跨应用稳定。最新机器、源码与停止点读 [SERVER_HANDOFF](SERVER_HANDOFF.md)。
+本轮只运行受影响合同的聚焦检查。仅在用户要求或发布/正式基线时运行全量门禁；原清单见 CURRENT_FRAMEWORK_DETAILS.md 的 explicit-framework-regression-gate。该清单含旧逐步接口，作为新结构发布门禁前须更新，不将本次有限验证称为全量通过。
 
-Settings保存帧中的Privacy身份/图标图被截断却标clear，不能作为合格模板；Region边界有限验证未解决该控件裁图缺陷，见[身份模块](modules/stepwise/identity.md)。
+2026-10-17参数答案合同：新findings使用name/description，取消必填domain；范围用description文字表述。既有结构化历史保留可读，功能约束沿用同一事实；验证见当月日志。
 
-## 7. 验证策略
+2026-10-17参数描述条件接入：新findings为name/description，启用条件和条件分支写入description；功能总结parameter_definitions为ref/description。历史结构化条件仍可读，不改变任务/入口的执行条件和原任务归属。
 
-按现行 AGENTS 选择最小充分层级：Tier 1 文档/非行为检查链接、结构和差异；Tier 2 模块行为与直接相邻合同；Tier 3 受影响共享入口/schema/Router/resume/completion及必要相邻检查。测试从[逐步索引](../tests/STEPWISE_INDEX.md)或相关模块选择，不默认全跑。
-行为/prompt 验收使用真实 run 的正常入口构建完整请求，原 Luna 回复不编辑，经过正常校验、纠错和登记，再检查身份、任务与图片。独立陌生读者先阅读、再对照意图；offline、fixture、保存帧模型验证、真实 GUI 分别报告。
+2026-10-18 待验证候选：未完成入口任务有两次同任务、同控件、同条件的成功投递且后图匹配时，复用task_result_review先复核累计证据；不直接判失败/完成。原始最近动作前后两图无几何输出，已复核pair通过既有latest_update.source.related_attempts避免重复触发；准备、失败、排除和不同条件不触发。已有工作台worker补该角色正常请求分支。8项聚焦通过，真实保存帧及部署仍待验证。证据desktop_settings_20261018_01/fix-review。
 
-<a id="8-文档维护"></a>
+2026-10-18任务提出候选：新任务核心字段control/name/task_type，control指定探索对象，name是具体问题而非重复对象标题，使用条件写进问题，不另收conditions。旧任务条件和独立prerequisite不删除。用途已知与目标内容已了解分开；问题不预设未观察的界面形式。保留旧任务更新/共享/清点合同。两个聚焦字段/持久化检查通过，正常真实0004保存帧验收待完成；现场冻结源未部署此候选。
 
-模块行为更新对应文档，每批行为变更记录月度日志；全局入口/默认/共享合同/输出/平台/风险变化更新本文。旧 §8 文档维护及其他长文标题由[完整细节](CURRENT_FRAMEWORK_DETAILS.md#8-文档维护)继续承接；普通修改不必读全长文或历史日志。
+2026-10-18 按用户新约定，新探索任务仅control/task_type；统一类型目标在调用组成.json的task_goals，框架生成任务标签，动作/更新/复核读取同一目标。原图旧任务引用、状态、历史保留，准备任务仍按原依赖目标；不沿旧标题预设界面形式。选择已有同类型任务复用原记录；已done/record_only被重新选中时保留知识并记录revisions转pending，blocked不因重新选择解除。入口复核与实时结算共用store_action_entry同步条件，补充识别复用正常登记，双图纠错/重试保图。25项聚焦通过；正常保存帧验证及现场部署待完成。新50次额度仅从修复后正式续跑起算，旧现场及诊断分账。
 
-## 8. 显式全框架回归门
+2026-10-18新合同候选：任务类型合并为function/parameter；区域关联独立于任务答案，由动作后更新destination引用本次regions序号，保存到实际操作对象。旧任务身份和历史不改写；remaining_question统一未解问题输出。实现、验证状态与未解决风险见当月日志；原Settings现场保持blocked，未切换本候选。
 
-只有用户明确要求，或准备发布、基线、认证、正式外部结果时，运行[显式全框架回归门的 19 条命令](CURRENT_FRAMEWORK_DETAILS.md#explicit-framework-regression-gate)。共享合同改动本身不自动触发全门禁。命令集合保留原 Section 8 历史清单；其中 `tests/test_visual_run_state_machine.py` 当前缺失，不能按原清单直接执行全门禁。本批仅核对路径，未执行或重新确认全框架覆盖；运行目录按现行 AGENTS 实例化为唯一临时目录，保存命令/日志，记录明确要求时的漏跑项、原因与验证缺口。门禁通过不代替原生模型与真实 GUI 语义验收。
+2026-10-18提出步共享输入输出引用：source_region/source_control可使用唯一名称，名称不唯一时用提供的稳定ID；登记层统一解析，持久共享关系仍存稳定ID。提出步普通知识材料不再默认包含机器编号，必要旧任务引用和重名引用保留。当前验证范围见月志。
 
-## 逐步任务进度补充（2026-10-05）
-逐步explore任务以区块内控件+动作复用。2026-10-07进一步按registration_kind要求参数事实、入口语义或试探反馈；动作已执行与所需信息已登记分开，done不能当作业务成功。普通更新用一个task_update数组，引用已有区块任务登记findings、knowledge、可空next_action、信息缺口及entry；同次结果可明确回答同控件旧用途问题，未提交任务不自动完成。next_action只作建议，准备不覆盖原目标，产物齐全的探索不因后续建议延长。不要求task_result状态或独立累计完成核对。前置准备的条件观察、异常暂挂、身份修订和真实地图登记仍保留；详见[任务](modules/stepwise/tasks.md)与[更新](modules/stepwise/updates.md)。当前地图的其他未接受候选不因任务进度修改获验收。
+2026-10-18控件共享合同调整：识别用途猜测与确认知识分开。possible_purpose/may_open_content/needs_exploration保存初步判断，knowledge仅由接受的任务知识写入；后读按来源区分旧混合记录，展示为短句。正常schema、登记、合并和提出材料同时更新；实际验证范围见月志。
 
-## 2026-10-06 最小遍历合同
-本批实现：清点缺口不阻挡无关可信pending；区块内缺口仍参与完整性。滚动按当前单图选点，规范任务复用且允许必要准备。新结果schema删模型投递状态复述，可分离参数坏行局部留缺口。区块探索结束后的原子操作总结接入普通调度，历史补清点保留在auto会话GUI空闲之后，预算仍计入框架；旧冻结源及无关地图候选不自动切换。验证结论见本月日志与交接，未验证能力不算接受。
+2026-10-18控件模型输出合同：controls.index引用本轮已有控件，无identity/ref字段；新区块身份协议不变，region_index仍指本次regions数组位置。调用内映射由recognition/control_indexes维护，存储仍使用稳定控件ID，不持久化index或新旧标签。必要任务/身份复核输出字面引用保持其各自合同，不能统一替换破坏其他schema。限定验证见月志。
 
-状态依据：目标卡及共同地图不复述旧控件显示值/状态；本轮最新截图决定当前状态。历史保存实际探索努力和结果证据，具体合同见[上下文](modules/stepwise/context.md)。
+2026-10-18用户确认的知识用途：控件确认知识用于后续指令生成与路由导航，保存稳定功能、作用对象、实际目标及必要条件。仅有时间相邻或无关区域变化，不建立控件效果或导航关联；未知关联保留未知，实际失败/限制不因简短而删去。初次发现用途是推测，接受的任务知识才作确认；旧来源缺失时明确缺少依据，不把所有旧记录笼统称为无法区分。
 
-每轮模型正文按任务相关性披露：相关身份详细、其他身份轻量索引，旧页面描述不作当前状态；当前任务努力与明确来路/准备保留，原回执/坐标在后台。可选身份模板异常局部拒绝，不重复已投递动作；实际点击范围、前景与身份冲突保持严格。当前相邻视觉误绑定风险仍未全面接受。
+2026-10-18最新真实Settings新图有限运行见月志：49/50调用，整体未通过；已验证输入回退效果，但搜索按钮/输入框身份关联及参数探索结束仍有缺陷。此前“无新增GUI”的描述只适用原迁移验证，不适用此次运行。
 
-最终235聚焦检查及代表性原生/两端短批证据按源版本记录；最新source-v14相关性修订为保存帧验收，实机末批source-v11。原始数值/状态不改写，旧裁图与前景排除几何的开放边界保留；不声称全地图或全应用接受。
+2026-10-18：新增结果登记衔接候选：双图语义无几何→必要时单后图批量补外观→对象/任务/出现关系事务发布。新输出destinations支持区块和控件目标，详见stepwise模块；已在原搜索按钮保存帧验证独立输入框、出现关系及后续任务归属；整体未接受，身份复核理由与菜单前景调度仍有限制。原运行或采集框架未修改。
 
-2026-10-06连续批次修订：本地未执行record_only可沿原纠错reopen_task保留旧判断后探索；状态转换未知结构与自动瞬时值边界在共享提示定义。auto尾段额度由原入口限额执行，人工审查放在会话结束；详见任务、纠错、上下文与运行模块。旧冻结批次不热替换。
-
-
-2026-10-06空闲续接：当前范围外区块不截断通往范围内未完成目标的既有导航；auto收尾后重进原单步调度，再次空闲则停止。连续知识段保存knowledge、knowledge-0002等独立账本，仍合计HTTP、0GUI；局部结束和知识整理完成均不声明全应用完成。有限验证与开放边界见本月日志及运行/调度模块。
-
-## 2026-10-06 三步组件与集中程序调度
-traversal_scheduler统一普通工作选择、pending优先及会话结果解释；Locator、
-TaskProposer、ActionProposer、ActionExecutor、ResultUpdater分别复用原发现/任务、
-动作绑定、投递和更新登记。主入口仍为run_task_step/run_progress_session，
-不新增Luna角色或完成审核。round/scheduling.json保存程序决定和来源快照。
-范围外前景可离开；范围外目标不派业务探索；局部空闲不当全应用完成。
-当前批次验证范围见月度日志，不接纳原工作树的其他地图候选或宣称跨应用稳定。
-
-2026-10-06角色职责归位：locator持有发现请求/schema及定位；task_proposer持有任务提示/schema/上下文；result_updater持有更新请求及候选校验。发现后的导航/局部检查和目标退出归调度器，shared_tasks独立承接任务共享与失效清理。正式登记仍用discovery_step、region_tasks、register_update；调用方直接进入角色模块，update_step及本轮角色转发出口已清退。原平铺源码根与运行入口不变，较早的11目录方案已归档。验证范围见本月日志。
-
-2026-10-07探索与总结：任务提示按新入口功能、功能参数、不确定控件三类说明探索目的；区块有效探索任务结束后，由调度器安排原子操作总结，沿用region_functions及原校验登记。region_role描述表面用途，参数表面可为functional且functions为空；完整业务目的及其约束才进入原子操作目录。详细合同见[知识模块](modules/stepwise/knowledge.md)，验证范围见本月日志。
-
-原子操作可跨相关区块，仍挂业务主区块：function_scope组织图上的证据候选，region_functions提供跨区块任务/参数引用并校验登记。support_tasks保留结构化region/task来源；本地task_refs、任务身份和真实动作归属保持原合同。相关证据变化触发更新，图连接不自动等于业务归属。
-
-2026-10-07登记结算：TaskProposer指定registration_kind，ResultUpdater沿正常更新登记对应产物，task_settlement据真实绑定与已登记信息结算；缺口保存并暂挂，原动作不重放。旧完成记录不追溯重判。参数登记、缺口保留、跨区块总结与调度已有有限原生/实机证据；entry产物分支于2026-10-08取得有限原生保存帧验证，详见任务/更新模块及本月日志。
-
-2026-10-07任务后知识：普通结果更新提供稳定knowledge，原任务完成后才归入控件；区块current_observation维护当前帧状态，换帧不沿用。未知交由已有任务推进/暂挂，local_knowledge不另维护unconfirmed清单。请求与保存连接见[任务后知识设计](TASK_KNOWLEDGE_FLOW.md)及任务/更新/上下文模块；验收范围见月度日志。
-
-2026-10-07前景简化：删除未用于范围判定的excluded_areas输出字段；发现/更新共用interactive_areas作为当前可交互范围。前景归属、背景接管、点击和模板校验边界不变。验收见月度日志。
-
-2026-10-07区块批次：总结仍为独立步骤，当前本区块清点与探索任务整批完成后更新；常识退出不触发重总结，旧摘要带needs_review状态保留。动作候选可召回当前前景直接入边的外层触发控件，保持控件和任务原归属，不激活整个后台。140项聚焦离线检查、6次实际Luna调用的完整保存帧验证通过；外层按钮用已合格图标保留原点击框。0新GUI，旧运行未部署，验证边界见本月日志。
-
-
-## 2026-10-08 实例共享与动作归属
-任务提出支持shared_instances在探索前引用同类代表，实例身份与本地执行保持独立；动作身份由显式候选引用关联，点击范围不再决定归属。参数非枚举样本留观察证据。现行入口仍为TaskProposer/ActionProposer/ResultUpdater；详细合同见stepwise tasks、execution、knowledge。
-本批验证状态见2026-10月变更日志；保存帧不代表新增GUI执行。
-
-
-## 2026-10-08 控件条件用途
-公共区块/控件身份不因个别控件用途随页面变化而拆分；任务conditions区分同控件的适用用途，同条件复用、不同条件隔离结算。入口条件、控件知识与共享读取保留同一限制。真正结构拆分正常处理任务目标及结算，不静默清理旧重复图。实现及有限验证见[设计](CONTROL_CONTEXT.md)和当月日志；保存帧验收不等于新GUI或长跑验证。
-
-2026-10-09逐步任务暂挂范围：blocked只描述该任务；准备登记、路线筛选及动作接受共用实际操作退出限制，不把知识缺口或未满足前置推广为整控件禁令。实际失败归属/条件未知沿普通动作上下文判断，无新增永久字段；准备仍由当前观察解锁原任务为pending。实现与有限验证见[调度合同](modules/stepwise/routing.md)和当月日志。
-
-
-## 人工提示审阅工具（2026-10-14）
-
-`tools/prompt_review_editor.py <审阅目录>`提供本地浏览器编辑、修改位置、想法与固定审查快照；只写人工审阅候选，不改遍历运行源。审查由用户把生成请求发回对话后安排，不自动调用代理或Luna。使用和数据边界见[提示审阅记录](modules/stepwise/prompt_review_backlog.md#在浏览器编辑与准备审查)。
-
-
-Prompt调试工具于2026-10-14扩为长期工作区：同页编辑提示与真实请求上下文，查看原固定提示/附图，底部工作记录存项目文件并可在重启后恢复。原运行记录与候选分离；工具及持久数据见[工具说明](../tools/prompt_review_editor/README.md)。这不是遍历历史生产或Luna运行合同变更。
+2026-10-18已完成控件任务的工作区交接优先读取本次已确认entries目标，不再依赖来源区块消失。菜单原帧登记/后续任务归属3调用有限通过；来源仍可见分支为真实快照离线及聚焦范围。尚未解决一般前景门槛、Help任务生成及此前身份理由问题。

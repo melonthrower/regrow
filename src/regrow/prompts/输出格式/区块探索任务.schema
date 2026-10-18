@@ -1,0 +1,84 @@
+{
+  "type": "object",
+  "properties": {
+    "inventory": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "uncertain"
+      ]
+    },
+    "evidence": {
+      "type": "string"
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "click",
+              "double_click",
+              "long_press",
+              "input_text",
+              "scroll",
+              "key_press",
+              "hotkey",
+              "hover",
+              "right_click",
+              "drag"
+            ]
+          },
+          "handling": {
+            "type": "string",
+            "enum": [
+              "explore",
+              "record",
+              "equivalent",
+              "defer"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "equivalent_to": {
+            "type": "string"
+          },
+          "task_type": {
+            "type": "string",
+            "enum": [
+              "single_action",
+              "parameter",
+              "scroll"
+            ]
+          }
+        },
+        "required": [
+          "control",
+          "name",
+          "action",
+          "handling",
+          "reason",
+          "equivalent_to",
+          "task_type"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "inventory",
+    "evidence",
+    "operations"
+  ],
+  "additionalProperties": false
+}

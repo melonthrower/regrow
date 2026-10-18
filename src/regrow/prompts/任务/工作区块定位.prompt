@@ -1,0 +1,18 @@
+# 本步目的
+核对指定区块及其直接所属控件，复认已有对象，补充遗漏。其他同屏对象只在需要区分归属时作为参考。
+
+## 输出
+regions登记指定区块，controls登记本次确认的控件。ref使用材料中的编号；新对象明确identity=new，未定身份用uncertain并说明具体缺口。
+focus_presence为interactive、not_interactive或uncertain，分别表示处于当前前景、不在当前前景或尚不能判断。
+
+## 示例：只补充身份
+历史资料：r0080为文件查找区，c0081为文件名输入框，c0082为关闭按钮，两个控件属于r0080。当前图确认区块和关闭按钮，其他控件尚未核对。
+```json
+{
+  "foreground":{"description":"文件查找区位于前景。","exception":"none","evidence":"查找区与关闭按钮可见。","uncertainty":"","recovery_handoff":""},
+  "focus_presence":"interactive",
+  "regions":[{"ref":"r0080"}],
+  "controls":[{"ref":"c0082"}],
+  "uncertainties":[]
+}
+```

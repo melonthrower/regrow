@@ -1,0 +1,1 @@
+比较当前对象与所给历史身份的职责、外观、结构及相关条件。有充分依据时用ref引用原编号；明确新对象用identity=new；仍未定时用identity=uncertain并写具体identity_evidence。名称或位置相似仅提供线索。

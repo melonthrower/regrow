@@ -38,6 +38,7 @@ def confirmed_information(control):
                         for row in observation_history(control)) else ''
 
 def purpose_text(control, *, unfinished=False):
+    """Describe available knowledge; discovery guesses do not schedule tasks."""
     confirmed = confirmed_information(control)
     if confirmed:
         return '已知功能：' + confirmed
@@ -45,9 +46,7 @@ def purpose_text(control, *, unfinished=False):
     if guess is not None:
         parts = ['推测用途：' + guess]
         if control.get('may_open_content') is True:
-            parts.append('可能打开其他功能内容')
-        decision = control.get('needs_exploration')
-        parts.append('需要探索' if decision is True else ('初步判断无需进一步探索；已有未解任务仍需处理' if unfinished else '无需进一步探索，可以跳过') if decision is False else '是否需要探索尚不确定')
+            parts.append('可能打开其他内容')
         return '；'.join(parts)
     legacy = control.get('knowledge') or last_reported(control, 'knowledge').get('knowledge', '')
     if not isinstance(legacy, str) or not legacy:

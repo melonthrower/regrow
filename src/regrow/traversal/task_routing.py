@@ -61,14 +61,21 @@ def advance(records, previous, state, source, binding, attempt):
         owner = records[binding.get('task_region', source)]
         task = owned_tasks(owner).get(binding['task_name'], {})
         action = owned_actions(records[source]).get(attempt, {})
-        if task.get('control') and task.get('status') == 'done' and (not binding.get('preparatory_action')) and (binding.get('task_region', source) == source) and (task.get('control') == binding.get('control_ref')) and (action.get('operation') in ('click', 'tap')) and (action.get('delivery') == 'executed_receipt_zero') and (action.get('result', {}).get('exception') == 'none'):
+        from regrow.records.task_settlement import completion_target
+        goal = completion_target(owner, task)
+        if (goal.get('control') and task.get('status') == 'done'
+                and not binding.get('preparatory_action') and goal['region'] == source
+                and goal['control'] == binding.get('control_ref') == action.get('control')
+                and action.get('delivery') == 'executed_receipt_zero'
+                and action.get('result', {}).get('exception') == 'none'):
             from regrow.records.action_evidence import entries_for_action
             observed_targets = list(dict.fromkeys(edge['region'] for edge in
                 entries_for_action(records[source], attempt, binding['control_ref'])
                 if edge['region'] in refs and edge['region'] in records and edge['region'] != source))
             # A confirmed effect selects the reached surface even when its source remains visible.
-            # Without a declared destination retain the existing source-disappeared fallback.
-            candidates = observed_targets or (refs if source not in refs else [])
+            # Only click/tap keep the old fallback when no destination was registered.
+            fallback = source not in refs and action.get('operation') in ('click', 'tap')
+            candidates = observed_targets or (refs if fallback else [])
             dest = destination_work(records, candidates)
             if dest is not None:
                 task_audit(task).setdefault('completion_basis', {}).update(destination_region=dest, destination_regions=list(candidates))

@@ -95,34 +95,36 @@ def defer(run, job, reason):
     return decision
 
 def resume_localized(records, refs, call, foreground=None):
-    """Only a newly accepted control crop can release a repair-deferred task."""
-    for rid in refs:
-        region = records[rid]
+    """Queue review when a new control crop resolves a recorded visual blocker."""
+    from regrow.records.task_settlement import completion_target
+    for region in records.values():
         for task in owned_tasks(region).values():
-            if task.get('status') != 'blocked':
+            if task.get('status') != 'blocked' or not _record_in_scope(region, task, records):
                 continue
             blocker = task.get('blocker')
-            if blocker:
-                if blocker.get('exception') == 'unexpected_exit':
-                    continue
-                condition = blocker['condition']
-                if condition == 'foreground_exception':
-                    if not foreground or foreground.get('exception') != 'none':
-                        continue
-                elif condition != 'control_not_visible':
-                    continue
-            elif task.get('equivalent_to') or not task.get('deferral'):
+            # Free-text retry conditions are not established by seeing the control again.
+            if not blocker or blocker.get('exception') == 'unexpected_exit':
                 continue
-            control = owned_controls(region).get(task.get('control'), {})
+            condition = blocker.get('condition')
+            if condition == 'foreground_exception':
+                if not foreground or foreground.get('exception') != 'none':
+                    continue
+            elif condition != 'control_not_visible':
+                continue
+            goal = completion_target(region, task)
+            if goal['region'] not in refs:
+                continue
+            control = owned_controls(records[goal['region']]).get(goal.get('control'), {})
             observations = observation_history(control)
             if not observations:
                 continue
             latest = frame_observation(control, kind='controls', call=call)
             if latest.get('image') and latest.get('evidence', {}).get('source_call') == call:
                 task.setdefault('deferral', {})['trigger'] = {'kind': 'observation', 'source_call': call, 'observation': latest.get('evidence', {}).get('observation')}
-                if blocker:
-                    task_audit(task).setdefault('blocker_history', []).append({**blocker, 'resolved_by': call})
-                    task.pop('blocker', None)
+                task_audit(task).setdefault('blocker_history', []).append({**blocker, 'resolved_by': call})
+                task.pop('blocker', None)
+    for rid in refs:
+        region = records[rid]
         if any(frame_observation(c, kind='controls', call=call).get('image') for c in owned_controls(region).values()):
             gap = region_work(region).get('registration_gaps', {}).get('task_proposal')
             if gap:

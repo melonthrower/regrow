@@ -16,6 +16,8 @@ def rebase_paths(value, old_base, new_base):
         return [rebase_paths(row, old_base, new_base) for row in value]
     if not isinstance(value, dict):
         return value
+    if set(value).issubset({'path', 'conditions'}) and isinstance(value.get('path'), str):
+        return {**value, 'path': os.path.relpath(Path(old_base) / value['path'], new_base)}
     return {key: os.path.relpath(Path(old_base) / item, new_base) if key in PATH_FIELDS and isinstance(item, str) and item else rebase_paths(item, old_base, new_base) for (key, item) in value.items()}
 
 def image_record(original, *, legacy=False):

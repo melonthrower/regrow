@@ -196,6 +196,9 @@ def _display(view, goal_in_task_context=False):
     observation = view['observation'].get('id')
     action_view = bool(view.get('action_material'))
     lines = [] if action_view else ['结构来源：' + str(observation) + '（' + relation + '）'] if observation else ['尚无已登记结构观察']
+    location = view.get('environment_context_text')
+    if location:
+        lines = location.splitlines()
     if view['localization_only'] and (not action_view):
         lines.append('观察类型：图片定位')
     history = view.get('history') or {}
@@ -224,11 +227,11 @@ def _display(view, goal_in_task_context=False):
             tree(node['children'], depth + 1)
     if inventory_region:
         pass
-    if not action_view:
+    if not action_view and not location:
         lines.append(('动作前' if usage == 'before_action' and view['frame_relation'] == 'before_action_frame' else '先前' if usage == 'discovery' else '') + '区块与控件：')
-    if not action_view:
+    if not action_view and not location:
         tree(view['current_tree'])
-    if view['background_regions'] and (not action_view):
+    if view['background_regions'] and not action_view and not location:
         lines.append('该次登记观察的受阻背景：' + '、'.join((n['name'] for n in view['background_regions'])))
     goal = view['goal']
     if goal_in_task_context:
@@ -241,7 +244,7 @@ def _display(view, goal_in_task_context=False):
         history_text = page_history.render(view['history'], current)
         if history_text:
             lines.append(history_text if action_view else page_history.TITLE + '：\n' + history_text)
-    if view['issues'] and (not action_view):
+    if view['issues'] and not action_view and not location:
         lines.append('部分包含关系缺少本轮依据或成环；已保留区块并展开为独立节点。')
     return '\n'.join(lines)
 
@@ -388,6 +391,8 @@ def attach(request, records, state, *, usage='selection', run=None, extra_region
     scope = context_scope.for_request(request, records, state, regions=extra_regions)
     view = build(records, state, run, scope=scope)
     view['history'] = page_history.build(records, state, run, goal=goal, displayed_findings=request.get('context_evidence', {}).get('known_findings', []) if task_present(request, source.get('task_region'), source.get('task_name')) else [], extra_regions=[*extra_regions, *[source.get(k) for k in ('region', 'task_region', 'return_to')]], navigation=bool(request.get('navigation_advice')), extra_attempts=[*incoming, *context_scope.source_attempts(view, scope), *[edge['attempt'] for edge in request.get('navigation_path') or [] if edge.get('attempt')]], planning_region=source.get('region') if request.get('stage') == 'task_proposal' else None)
+    from regrow.records.environment_context import for_request
+    view['environment_context_text'] = for_request(request, records, state)
     view['usage'] = usage
     view['action_material'] = bool(request.get('action_ready') and usage == 'selection')
     if request.get('stage') == 'task_proposal':

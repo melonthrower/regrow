@@ -3,6 +3,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import re
+from regrow.prompts.response_example import guide, complete
 
 def fields(schema):
     from regrow.runtime.model_transport import expand_schema
@@ -20,94 +21,6 @@ def fields(schema):
                 visit(value)
     visit(expand_schema(schema))
     return result
-
-def shape(schema, root=None):
-    """Readable types/choices/requiredness without repeating object scaffolding."""
-    from regrow.runtime.model_transport import expand_schema
-    from regrow.prompts.compose import catalog
-    wording = catalog(root)['output']
-    definitions = []
-    known = {}
-
-    def literal(value):
-        return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
-
-    def render(node, hint):
-        if not isinstance(node, dict):
-            raise ValueError('output schema must be an object')
-        if 'const' in node:
-            return literal(node['const'])
-        if 'enum' in node:
-            return ' | '.join((literal(x) for x in node['enum']))
-        for union in ('anyOf', 'oneOf'):
-            if union in node:
-                value = ' | '.join((render(x, hint + str(i + 1)) for (i, x) in enumerate(node[union])))
-                return '(' + value + ')'
-        kind = node.get('type')
-        if kind == 'object' or 'properties' in node:
-            key = literal(node)
-            if key in known:
-                return known[key]
-            name = hint
-            used = set(known.values())
-            while name in used:
-                name += '2'
-            known[key] = name
-            members = []
-            for (key, value) in node.get('properties', {}).items():
-                optional = '' if key in node.get('required', []) else '?'
-                declaration = key + optional + ': ' + render(value, key)
-                if value.get('description'):
-                    declaration += ' — ' + value['description']
-                members.append(declaration)
-            declaration = name + ' = {\n  ' + ';\n  '.join(members) + '\n}'
-            if node.get('allOf') and 'ref' in node.get('properties', {}):
-                required = list(dict.fromkeys((field for b in node['allOf'] if 'ref' in b.get('if', {}).get('properties', {}) for field in (b.get('else') or b.get('then', {})).get('required', []))))
-                declaration += '\n' + wording['identity_declaration'].format(name=name, fields=', '.join(required))
-            if 'index' in node.get('properties', {}) and node.get('allOf'):
-                fields = list(dict.fromkeys(k for b in node['allOf'] if 'index' in b.get('if', {}).get('required', []) for k in b.get('else', {}).get('required', [])))
-                declaration += '\n' + name + '：复用填写index及变化；新增不填index，填写：' + ', '.join(fields) + '。身份不确定写入uncertainties。'
-            for branch in node.get('allOf', []):
-                crops = set(branch.get('if', {}).get('required', [])) & {'bbox', 'icon_bbox'}
-                if crops:
-                    declaration += '\n' + wording['crop_declaration'].format(name=name, crop=next(iter(crops)), fields=', '.join(branch['then']['required']))
-            definitions.append(declaration)
-            return name
-        if kind == 'array' and node.get('maxItems') == 0:
-            return '[]'
-        if kind == 'array':
-            value = '[' + render(node['items'], hint + '_item') + ']'
-        elif isinstance(kind, list):
-            value = ' | '.join(kind)
-        elif kind:
-            value = kind
-        else:
-            raise ValueError('unsupported output schema node: ' + literal(node)[:100])
-        limits = []
-        for key in ('minItems', 'maxItems', 'minLength', 'maxLength', 'minimum', 'maximum', 'pattern'):
-            if key in node:
-                limits.append(key + '=' + literal(node[key]))
-        if node.get('uniqueItems'):
-            limits.append('uniqueItems=true')
-        return value + (' (' + ', '.join(limits) + ')' if limits else '')
-    render(expand_schema(schema), '回复')
-    from regrow.prompts.compose import catalog
-    return catalog(root)['output']['declaration_intro'] + '\n\n' + '\n\n'.join(reversed(definitions))
-
-def inline_shape(node, depth=0):
-    """A single conditional object, without synthetic type aliases."""
-    if 'enum' in node:
-        return ' | '.join((json.dumps(v, ensure_ascii=False) for v in node['enum']))
-    if 'anyOf' in node:
-        return ' | '.join((inline_shape(v, depth) for v in node['anyOf']))
-    if node.get('type') == 'array':
-        return '[' + inline_shape(node['items'], depth) + ']'
-    if node.get('type') == 'object' or 'properties' in node:
-        pad = '  ' * (depth + 1)
-        rows = [pad + key + ('' if key in node.get('required', []) else '?') + ': ' + inline_shape(value, depth + 1) for (key, value) in node.get('properties', {}).items()]
-        return '{\n' + ';\n'.join(rows) + '\n' + '  ' * depth + '}'
-    kind = node.get('type', 'string')
-    return ' | '.join(kind) if isinstance(kind, list) else kind
 
 def action_shape(schema, root=None, include_actions=True):
     """Describe only the fields of the chosen action, without union aliases."""
@@ -146,13 +59,13 @@ def action_shape(schema, root=None, include_actions=True):
             if completion is not None:
                 for name in completion:
                     declaration['properties'].pop(name, None)
-            lines.extend([*wording['none_with_task'], 'task_update: ' + inline_shape(declaration)])
+            lines.extend([*wording['none_with_task'], 'task_update包含：' + '、'.join(declaration.get('properties', {}))])
         else:
             lines.append(wording['none_reason'])
             if completion is not None:
                 lines.extend(wording['none_progress'])
     if completion:
-        lines.extend(['', wording['products'], inline_shape({'type': 'object', 'properties': completion, 'required': completion_required})])
+        lines.extend(['', wording['products'], '、'.join(completion)])
     return '\n'.join(lines).strip()
 
 def fragments(part, glossary_path=None):
@@ -160,6 +73,7 @@ def fragments(part, glossary_path=None):
     if glossary_path is None:
         from regrow.prompts.compose import catalog
         glossary_path = catalog()['output']['glossary_path']
+    previous_group = '输出要求'
     chunks = re.split('(?m)(?=^#{1,3} )', part['text'])
     for (index, chunk) in enumerate(chunks):
         chunk = chunk.strip()
@@ -173,12 +87,13 @@ def fragments(part, glossary_path=None):
             group = '本步目的与判断'
         elif part['path'].startswith(glossary_path):
             group = '术语定义'
-        elif heading == '示例' or any((x in heading for x in ('假设示例', '正反例', '不是本轮事实', '输出示例'))):
-            group = '示例'
+        elif heading.startswith('示例') or any(x in heading for x in ('假设示例', '正反例', '不是本轮事实', '输出示例')):
+            group = previous_group
         elif heading.startswith(('背景', '问题：', '问题与', '本步要求', '本步目的', '本步判断', '登记范围')):
             group = '本步目的与判断'
         else:
             group = '输出要求'
+        previous_group = group
         yield (group, {'path': path, 'text': '### ' + heading + '\n' + body.strip()})
 
 def ordered_action(request, root):
@@ -232,6 +147,7 @@ def ordered_action(request, root):
     if extra:
         assembled.append({'path':'输出格式/动作顺序-补充要求','text':'# 本轮补充要求'})
         assembled.extend(extra)
+    assembled.append({'path':'输出格式/完整示例', 'text':complete(request['response_schema'], request)})
     request['fixed_parts'] = assembled
     request['system_prompt'] = '\n\n'.join(p['text'] for p in assembled if p['text'])
     return request
@@ -246,7 +162,7 @@ def prepare(request, root):
     from regrow.prompts.compose import catalog
     from regrow.prompts.compose import selected
     config = catalog(root)['output']
-    parts = [p for p in request.get('fixed_parts', []) if not p['path'].startswith(('输出格式/本轮字段', '输出格式/本轮结束', '输出格式/分组-', '输出格式/材料来源', config['glossary_path']))]
+    parts = [p for p in request.get('fixed_parts', []) if not p['path'].startswith(('输出格式/本轮字段', '输出格式/本轮结束', '输出格式/分组-', '输出格式/材料来源', '输出格式/完整示例', config['glossary_path']))]
     original_parts = list(request.get('fixed_parts', []))
     merged = action_contract(root, request, parts)
     if merged:
@@ -306,8 +222,9 @@ def prepare(request, root):
     if merged:
         groups['输出要求'][0:0] = [{'path': '输出格式/本轮字段', 'text': config['action_text']['intro']}, merged, {'path': '输出格式/本轮结束', 'text': action_shape(request['response_schema'], root, include_actions=False)}]
     else:
-        groups['输出要求'].insert(0, {'path': '输出格式/本轮字段', 'text': action_shape(request['response_schema'], root) if request.get('role') == 'action_selection' else shape(request['response_schema'], root)})
+        groups['输出要求'].insert(0, {'path': '输出格式/本轮字段', 'text': action_shape(request['response_schema'], root) if request.get('role') == 'action_selection' else guide(request['response_schema'])})
     request['fixed_parts'] = [part for (name, group) in groups.items() if group for part in [{'path': '输出格式/分组-' + name, 'text': '# ' + name}, *group]]
+    request['fixed_parts'].append({'path':'输出格式/完整示例','text':complete(request['response_schema'], request)})
     request['system_prompt'] = '\n\n'.join((p['text'] for p in request['fixed_parts']))
     return request
 from pathlib import Path

@@ -1,0 +1,719 @@
+{
+  "说明": "实际运行读取的组合定义。题目、材料槽和对应输出放在一起；flow指向同目录已有流程文件。资料内容仍由原角色builder从真实记录产生。当前规则语义保持，尚未接入六份精简草稿。",
+  "calls": {
+    "action_selection": {
+      "groups": [],
+      "flow": "02_动作选择.json",
+      "title": "选择下一步",
+      "builder": "action_proposer.ActionProposer.propose",
+      "render": "action_material",
+      "materials": {
+        "work": "本轮工作",
+        "task": "当前任务",
+        "history": "登记页面组成与访问来路",
+        "recent": "最近观察",
+        "controls": "相关控件"
+      },
+      "sections": [
+        {
+          "key": "scope",
+          "title": "本轮允许范围"
+        },
+        {
+          "key": "task",
+          "title": "当前任务"
+        },
+        {
+          "key": "history",
+          "title": "已做尝试与剩余问题"
+        },
+        {
+          "key": "controls",
+          "title": "相关控件"
+        },
+        {
+          "key": "remaining",
+          "title": ""
+        },
+        {
+          "key": "question",
+          "title": "下一步"
+        }
+      ],
+      "question": "根据当前截图和上述记录，下一步怎样推进这个探索任务？需要操作时给出动作及必要参数，已有答案时提交结论。"
+    },
+    "control_identity_selection": {
+      "groups": [
+        {
+          "question": "当前对象与哪一个历史候选值得进一步比较？",
+          "materials": [
+            "本区块同一当前对象的历史候选",
+            "单图步骤待登记的候选观察",
+            "原任务与实际操作",
+            "原工作",
+            "直接相关历史",
+            "核对原因",
+            "此前修复",
+            "补充观察",
+            "平台"
+          ],
+          "output": "candidate / reason；只选择，不修订提案或记录。"
+        }
+      ],
+      "direct_question": true
+    },
+    "control_identity_comparison": {
+      "groups": [
+        {
+          "question": "给定历史控件在图1能否对应到同一对象，还是不同或仍无法确认？",
+          "materials": [
+            "本次只核对这一对控件",
+            "单图步骤待登记的候选观察",
+            "原任务与实际操作",
+            "原工作",
+            "直接相关历史",
+            "核对原因",
+            "此前修复",
+            "补充观察",
+            "候选选择依据",
+            "复核边界",
+            "平台",
+            "区块状态的已接受依据"
+          ],
+          "output": "control_identity / reason；两图只作判断，不输出几何。"
+        }
+      ],
+      "direct_question": true
+    },
+    "ownership_review": {
+      "groups": [
+        {
+          "question": "哪些旧控件的归属已有依据，是否还需调查？",
+          "materials": [
+            "原区块",
+            "待核对历史控件",
+            "待核对的划分建议",
+            "已观察归属",
+            "归属冲突",
+            "本次复查动作",
+            "说明",
+            "平台"
+          ],
+          "output": "status / reason / observed_assignments / action；必要动作位于 action.operation。"
+        }
+      ],
+      "direct_question": null
+    },
+    "branch_correction": {
+      "groups": [
+        {
+          "question": "原问题还可怎样推进，或应转到哪里？",
+          "materials": [
+            "当前问题",
+            "暂挂区块",
+            "工作任务",
+            "原任务累计证据",
+            "累计证据用途",
+            "可继续的独立区块",
+            "继续原分支",
+            "当前截图",
+            "平台"
+          ],
+          "output": "decision / next_region / reason；不补写原动作结果。"
+        }
+      ],
+      "direct_question": null
+    },
+    "shared_control_review": {
+      "groups": [
+        {
+          "question": "已有证据支持保留共享还是解除这一成员的共享？",
+          "materials": [
+            "待核对共享关系",
+            "原共享理由",
+            "关联成员",
+            "实际动作证据",
+            "框架发现的问题",
+            "证据边界",
+            "上次修订被拒原因",
+            "上次修订回复",
+            "平台"
+          ],
+          "output": "resolution / record_edit / reason；仅核对共享关系，不生成动作或定位。"
+        }
+      ],
+      "direct_question": null
+    },
+    "observation": {
+      "groups": [
+        {
+          "question": "本次需要辨认哪里？",
+          "materials": [
+            "待继续的工作区块",
+            "本轮定位区块",
+            "本轮观察范围",
+            "未检查范围",
+            "目标应用",
+            "平台",
+            "上轮纠正或复查说明"
+          ],
+          "output": "foreground：当前前景与交互范围。"
+        },
+        {
+          "question": "看见的对象对应哪些已有身份？",
+          "materials": [
+            "本次身份候选",
+            "本轮局部控件",
+            "身份候选范围",
+            "登记页面组成与访问来路",
+            "相关历史候选",
+            "本区块控件身份候选",
+            "检索边界",
+            "同帧已确认区块划分",
+            "本区块待补登记"
+          ],
+          "output": "regions / controls：本次观察及身份依据；未看清的范围如实保留。"
+        }
+      ],
+      "parts": [
+        "发现手册/前景与区块.prompt",
+        "共享/当前前景.prompt",
+        "共享/区块身份复用.prompt",
+        "共享/身份图准入.prompt",
+        "发现手册/列表代表项.prompt"
+      ],
+      "title": "发现与识别",
+      "builder": "locator.prepare",
+      "mode_parts": {
+        "local": [
+          "任务/工作区块定位.prompt"
+        ],
+        "default": [
+          "任务/当前区块重定位.prompt"
+        ]
+      },
+      "variants": {
+        "completion": {
+          "question": "旧缺口怎样处理，是否还有遗漏？",
+          "materials": [
+            "已实际登记",
+            "待补事项"
+          ],
+          "output": "completion_updates：逐项保留依据与处理结论；新遗漏登记在 regions / controls，沿用原模式范围。"
+        }
+      },
+      "purposes": {
+        "global": "识别当前前景区块及能确认的控件，为区块探索建立对象记录。",
+        "relocate_focus": "识别当前前景区块及能确认的控件，确认原工作区块是否在其中。",
+        "local": "识别本轮定位区块中的控件及其身份。"
+      }
+    },
+    "task_proposal": {
+      "groups": [
+        {
+          "question": "本区块有哪些控件，哪些问题已经有答案？",
+          "materials": [
+            "区块",
+            "描述",
+            "描述来源",
+            "已有区块知识",
+            "控件",
+            "历史控件身份索引",
+            "已有任务",
+            "可引用同类实例",
+            "当前可关联的入口目标区块"
+          ],
+          "output": "operations：回答允许更新的旧问题；尚有未答功能问题时提出新任务。共享依据成立时填写 shared_instances。"
+        },
+        {
+          "question": "已知未覆盖项和旧缺口是否都已交代？",
+          "materials": [
+            "补充清点原因",
+            "上步观察交接",
+            "上次清点缺口",
+            "发现中尚未确认的事项",
+            "发现缺口说明",
+            "登记页面组成与访问来路",
+            "材料范围",
+            "说明",
+            "环境位置"
+          ],
+          "output": "inventory / evidence：仅判断本次提供的当前区块控件是否已考虑；具体未知交给对应任务，不把参数未穷尽或任务待执行算作清点缺口。"
+        }
+      ],
+      "parts": [
+        "任务/区块探索任务.prompt",
+        "任务/探索范围与退出.prompt",
+        "任务/清点输出约定.prompt"
+      ],
+      "title": "提出探索任务",
+      "builder": "task_proposer.TaskProposer.request",
+      "variants": {
+        "new_tasks": {
+          "question": "当前控件还有哪些值得调查的具体未知？",
+          "materials": [
+            "区块",
+            "描述",
+            "描述来源",
+            "已有区块知识",
+            "控件",
+            "历史控件身份索引",
+            "其他任务背景",
+            "可引用同类实例",
+            "当前可关联的入口目标区块"
+          ],
+          "output": "operations中的新任务行：仅提出有价值的未答问题。共享依据成立时填写shared_instances。"
+        },
+        "old_tasks": {
+          "question": "本轮可判断的旧问题，已有证据支持什么结论？",
+          "materials": [
+            "本轮可判断旧任务",
+            "待补参数事实的原任务证据",
+            "补充清点原因",
+            "上步观察交接",
+            "登记页面组成与访问来路"
+          ],
+          "output": "operations中的旧任务行：引用本组task，给出decision、reason及新增事实或具体缺口。"
+        }
+      },
+      "task_goals": {
+        "function": {
+          "label": "功能探索",
+          "goal": "在目标控件能够正常发挥作用的状态下执行一次适用操作，登记直接语义后即完成本任务；入口通常只需点击。到达、定位、启用或使目标退出已选中状态的准备可包含多步，原目标不变。新出现内容的独立功能交给其所属区块后续提出任务，不延长本入口任务。真实投递失败、遮挡等障碍须保留具体原因，不能把不适合观察作用的状态下没有变化概括为控件无效果。",
+          "region_goal": "了解当前区块的内容与组织方式；必要时滚动或切换视图，依据新增内容和覆盖情况判断是否已回答原问题。新发现控件的独立功能另行探索。"
+        },
+        "parameter": {
+          "label": "参数探索",
+          "goal": "了解目标控件自身的输入或选择方式，以及有证据支持的范围、限制和依赖；选取足够说明规则的代表情况，不穷举取值。入口打开的独立控件或内容由其所属区块探索，不把它们的输入规则挂到原入口按钮。"
+        }
+      }
+    },
+    "observation_update": {
+      "groups": [
+        {
+          "question": "刚才实际做了什么，页面发生了什么变化？",
+          "materials": [
+            "实际来源区块",
+            "实际入口",
+            "实际动作",
+            "动作意图",
+            "动作前对象观察",
+            "回执",
+            "动作后前台应用证据",
+            "目标应用",
+            "登记页面组成与访问来路",
+            "登记说明",
+            "实际对象已有跳转"
+          ],
+          "output": "action_result / previous_regions：对照动作前记录、实际操作和动作后图，分别记录效果和旧区块去向。"
+        },
+        {
+          "question": "出现的对象如何对应已有区块和控件？",
+          "materials": [
+            "已知区块",
+            "当前截图视觉匹配到的既有区块",
+            "本次入口历史落点",
+            "区块名称使用",
+            "区块历史文字对照",
+            "历史匹配对照",
+            "来源区块历史行为比较",
+            "动作前已登记几何"
+          ],
+          "output": "regions / controls：按原动作后图登记新增或变化对象，复用确认的旧身份。"
+        },
+        {
+          "question": "这些观察是否回答了原探索问题？",
+          "materials": [
+            "当前任务",
+            "其他可登记任务",
+            "任务目标",
+            "本轮探索任务",
+            "当前任务引用",
+            "任务与实际对象核对",
+            "来源区块已有任务",
+            "准备动作说明"
+          ],
+          "output": "task_update：只登记原问题实际获得的信息。准备动作可揭示目标内容，但不改写实际点击对象。"
+        }
+      ],
+      "flow": "03_结果核对.json",
+      "title": "实际结果更新",
+      "builder": "result_updater.build_update_request"
+    },
+    "function_registration": {
+      "groups": [
+        {
+          "question": "本区块自身提供哪些用途？",
+          "materials": [
+            "区块",
+            "描述",
+            "已登记操作",
+            "控件用途标注",
+            "同区块已执行动作结果",
+            "动作证据覆盖",
+            "进入本区块的已观察结果"
+          ],
+          "output": "local_knowledge：整理本区块知识；functions 按相对独立的用户目的整理。"
+        },
+        {
+          "question": "这些功能依赖什么参数、条件和其他区块？",
+          "materials": [
+            "共享控件知识",
+            "入口与目标一级摘要",
+            "按本地参数任务披露的支持",
+            "支持知识引用目录",
+            "可引用参数事实",
+            "要求"
+          ],
+          "output": "parameter_definitions / local_knowledge / functions：引用有来源的参数与支持，入口仅披露目标一级摘要。"
+        }
+      ],
+      "parts": [
+        "任务/区块功能登记.prompt"
+      ],
+      "title": "区块功能总结",
+      "builder": "region_functions.request"
+    },
+    "recovery": {
+      "groups": [
+        {
+          "question": "原工作因为什么被中断？",
+          "materials": [
+            "目标应用",
+            "平台",
+            "中断的工作区块",
+            "中断任务（原记录，不代表新增授权）",
+            "触发异常的结果",
+            "异常交接"
+          ],
+          "output": "exception：依据当前图判断是否仍有阻碍；保留原工作目标。"
+        },
+        {
+          "question": "现在怎样恢复，或是否可以交还探索？",
+          "materials": [
+            "重启工具状态",
+            "框架反馈",
+            "本次恢复历史"
+          ],
+          "output": "decision / action / framework_tool / handoff：选择必要恢复或交还；不把恢复当作原任务完成。"
+        }
+      ],
+      "parts": [
+        "异常处理/恢复当前探索.prompt",
+        "异常处理/异常识别.prompt",
+        "异常处理/恢复策略.prompt",
+        "动作/动作空间与字段.prompt",
+        "异常处理/恢复输出.prompt"
+      ],
+      "title": "异常恢复",
+      "builder": "recovery.build_request"
+    },
+    "step_observation": {
+      "groups": [
+        {
+          "question": "原步骤还缺什么观察？",
+          "materials": [
+            "待核对问题",
+            "原任务",
+            "原实际动作",
+            "相关历史记录",
+            "原步骤",
+            "原任务目标"
+          ],
+          "output": "只回答待核对问题，后补图不能证明原动作发生时的因果。"
+        }
+      ]
+    },
+    "task_result_review": {
+      "groups": [
+        {
+          "question": "本轮判断和具体依据是什么？",
+          "materials": [
+            "原任务引用",
+            "任务目标与累计证据",
+            "任务结束条件",
+            "直接相关恢复过程",
+            "原暂挂依据",
+            "历史原图对照"
+          ],
+          "output": "task_update：decision、reason及新增结论；涉及实际动作复核时，同时填写本轮提供的action_result。"
+        }
+      ],
+      "variants": {
+        "coverage": {
+          "question": "其他已验证入口能覆盖原用途吗，条件和缺口是什么？",
+          "materials": [
+            "原控件",
+            "当前定位",
+            "覆盖候选（不是等价结论）"
+          ],
+          "output": "coverage：无依据则 null；采用候选时保留条件、依据与未验证项，task_update.decision为continue，不将未执行任务冒充已执行。"
+        }
+      },
+      "question": "原问题已获回答、仍要继续，还是应暂挂？"
+    },
+    "step_correction": {
+      "title": "原步骤纠错",
+      "inherit": "original_request",
+      "question": "原步骤的回复哪里与证据或输出要求不符，应该如何修正？保留原探索目标，不重放已执行动作。",
+      "builder": "step_repair.request",
+      "parts_note": "纠错/步骤纠正.prompt及真实错误对应模块，由correction_prompts.select选择；原规则沿原请求版本继承。"
+    },
+    "object_registration": {
+      "groups": [
+        {
+          "question": "为本批对象补齐识别外观范围。",
+          "materials": [
+            "待补齐对象",
+            "所属区块"
+          ],
+          "output": "objects：path引用所给对象，bbox仅取本张图。"
+        }
+      ],
+      "direct_question": null
+    }
+  },
+  "work": {
+    "locate": {
+      "question": "当前前景有哪些操作区或展示区，其中有哪些控件？哪些对应已有身份，哪些还需要辨认？",
+      "label": "发现或定位",
+      "guidance": "识别当前前景与指定对象；定位服务于原任务，不代表原问题已回答。"
+    },
+    "task_proposal": {
+      "question": "本区块哪些功能已经了解，哪些仍有值得探索的具体问题？",
+      "label": "区块任务清点",
+      "guidance": "按当前观察补充本区块的未知或本轮指定的旧问题；沿用已有任务。未展开的旧任务仍保留覆盖义务。"
+    },
+    "scope_review": {
+      "question": "这些既有问题是否已有答案，仍需继续调查，还是受阻？",
+      "label": "既有任务范围复核",
+      "guidance": "复核本区块全部需复核的未完成任务，保留原绑定；不能只回报新增项。"
+    },
+    "action": {
+      "label": "推进探索任务",
+      "guidance": "围绕原问题选择下一动作；必要准备不替换原目标。",
+      "question_from": "action_selection"
+    },
+    "navigate": {
+      "label": "到达工作区块",
+      "guidance": "根据当前界面推进到目标区块；实际导航与原探索任务分别保留归属。",
+      "question_from": "action_selection"
+    },
+    "update": {
+      "question": "刚才的实际操作改变了什么？这些观察回答了原探索问题的哪一部分？",
+      "label": "登记实际动作结果",
+      "guidance": "登记本次真实动作及观察，判断它回答了原问题的哪一部分；不以准备代替目标执行。"
+    },
+    "function_registration": {
+      "question": "已有探索材料说明本区块能做什么，以及需要哪些参数和条件？",
+      "label": "整理区块功能",
+      "guidance": "整理已有任务知识和明确支持，不重新执行已知功能。"
+    },
+    "recover": {
+      "question": "什么阻碍了当前探索？怎样解除阻碍并交还原任务？",
+      "label": "恢复探索现场",
+      "guidance": "处理当前异常并保留原工作目标；恢复不等于任务完成。"
+    },
+    "step_observation": {
+      "question": "补充截图能否回答原步骤尚未看清的问题？",
+      "label": "补充原步骤的观察",
+      "guidance": "仅回答原步骤的核对问题；后补截图不是重新执行动作的结果，观察回复不直接登记动作或完成任务。"
+    },
+    "task_result_review": {
+      "label": "复核原任务已有证据",
+      "guidance": "本轮没有执行新动作；按原任务结束条件复核已有登记、历史原图与当前观察。",
+      "question_from": "task_result_review"
+    }
+  },
+  "aliases": {
+    "discovery": "observation",
+    "action": "action_selection",
+    "update": "observation_update"
+  },
+  "platforms": {
+    "desktop": {
+      "path": "平台/桌面执行.prompt",
+      "actions_heading": "### 动作与参数",
+      "action_roles": [
+        "action_selection",
+        "recovery",
+        "ownership_review"
+      ]
+    },
+    "android": {
+      "path": "平台/Android执行.prompt",
+      "action_roles": [
+        "action_selection",
+        "recovery",
+        "ownership_review"
+      ]
+    },
+    "environment": {
+      "path": "平台/遍历环境只读.prompt"
+    },
+    "common_fields": "动作/动作空间与字段.prompt"
+  },
+  "supplements": {
+    "navigation": "动作/探索导航路线.prompt",
+    "preconditions": "任务/前置条件与恢复.prompt",
+    "inventory_gap": "发现手册/补登记.prompt"
+  },
+  "output": {
+    "说明": "本轮迁移原有触发条件，不将此表当作已完成的角色精简方案。$task_assessment和$control_output是程序从真实输出合同确定的能力，非Luna填写字段。",
+    "parts": [
+      {
+        "path": "任务/任务动作登记.prompt",
+        "all": [
+          "task",
+          "decision"
+        ]
+      },
+      {
+        "path": "共享/任务知识与当前观察.prompt",
+        "any": [
+          "knowledge",
+          "local_knowledge",
+          "findings",
+          "entry"
+        ]
+      },
+      {
+        "path": "共享/参数观察值.prompt",
+        "all": [
+          "findings"
+        ]
+      }
+    ],
+    "glossary_path": "共享/术语定义.prompt",
+    "glossary": [
+      {
+        "section": "通用"
+      },
+      {
+        "section": "任务",
+        "any": [
+          "operations",
+          "$task_assessment"
+        ]
+      },
+      {
+        "section": "视觉",
+        "any": [
+          "ref",
+          "identity"
+        ]
+      },
+      {
+        "section": "动作",
+        "any": [
+          "operation",
+          "action_result",
+          "framework_tool"
+        ]
+      },
+      {
+        "section": "功能",
+        "all": [
+          "functions"
+        ]
+      },
+      {
+        "section": "恢复",
+        "all": [
+          "framework_tool"
+        ]
+      }
+    ],
+    "fragments": [
+      {
+        "path": "共享/任务知识与当前观察.prompt",
+        "heading": "控件知识",
+        "all": [
+          "$control_output"
+        ]
+      },
+      {
+        "path": "共享/任务知识与当前观察.prompt",
+        "heading": "任务知识",
+        "any": [
+          "$task_assessment",
+          "operations"
+        ]
+      },
+      {
+        "path_prefix": "任务/任务动作登记.prompt",
+        "heading": "→ knowledge",
+        "all": [
+          "knowledge"
+        ]
+      },
+      {
+        "path_prefix": "任务/任务动作登记.prompt",
+        "heading": "→ findings",
+        "all": [
+          "findings"
+        ]
+      },
+      {
+        "path_prefix": "任务/任务动作登记.prompt",
+        "heading": "→ entry",
+        "all": [
+          "entry"
+        ]
+      },
+      {
+        "path_prefix": "任务/任务动作登记.prompt",
+        "heading": "→ dependency_updates",
+        "all": [
+          "dependency_updates"
+        ]
+      },
+      {
+        "path": "共享/身份图准入.prompt",
+        "heading": "身份图字段",
+        "any": [
+          "bbox"
+        ]
+      }
+    ],
+    "groups": [
+      "术语定义",
+      "本步目的与判断",
+      "输出要求"
+    ],
+    "action_text": {
+      "intro": "直接返回一个JSON对象。先选择action，只填写所选动作需要的字段；未使用的字段省略。",
+      "table_header": "| action | 需要填写的字段 |",
+      "none": "无法选择有依据的操作、原问题仍未回答时填写action=\"none\"。",
+      "none_with_task": [
+        "以下两种情况选一种：",
+        "- 仅说明本步不操作：填写reason。",
+        "- 登记当前任务判断：填写task_update，判断依据写在task_update.reason；外层不填reason。",
+        "task_update只填写本轮所需字段；字段含义及示例见相应说明。"
+      ],
+      "none_reason": "填写reason说明本步不操作的原因。",
+      "merged_table_header": "| action | 需要填写的字段 | 操作含义 |",
+      "complete": "原探索问题已有充分答案时，填写action=\"complete\"和reason；有新增答案时，将下列答案字段填在同一层。complete表示问题已回答，不代表业务操作必然成功。",
+      "products": "本轮答案字段如下：complete提交结论；none可记录已确认的部分答案。字段均放在回复外层。",
+      "none_without_complete": "本步不操作时填写action=\"none\"。",
+      "none_progress": [
+        "已有已确认的部分答案时，可在none回复同层填写对应答案字段，reason说明依据及尚未回答的部分。",
+        "确有推进障碍需要暂挂时，另填retry_when说明何种条件改变后可以重新考虑；没有暂挂判断就省略。"
+      ]
+    }
+  },
+  "messages": {
+    "location_target": "当前截图中的「{target}」在哪里，是否属于原登记对象？",
+    "discovery_global": "当前前景有哪些操作区或展示区，其中能确认哪些控件及其归属和身份？",
+    "discovery_focus": "原工作区块是否在其中？",
+    "discovery_repair_purpose": "定位当前前景区块，为后续核对原问题提供区块身份。",
+    "discovery_local": "指定区块是否仍对应当前表面？有哪些未登记或确有变化的对象需要补充？",
+    "task_focused": "指定旧问题已有怎样的答案或缺口？本轮新发现还需登记什么？",
+    "discovery_completion": "同一截图原观察范围内，哪些待补事项可以确认，哪些仍缺依据，还有什么遗漏？",
+    "discovery_completion_purpose": "补全原观察范围内的未登记内容",
+    "entry_answer": "原入口直接对应哪个内容区块、该区块的一级用途是什么，有什么证据支持此关联？目标区块各控件的后续操作由其自身任务回答。",
+    "discovery_objects_question": "当前区块和控件分别是什么，如何对应已有身份？",
+    "discovery_objects_output": "regions / controls：登记本图能确认的区块、控件及归属；未确认项保留具体缺口。",
+    "inventory_review": "对照原问题和已提供观察补充事实，明确继续、已回答或暂挂；不执行新动作。"
+  }
+}

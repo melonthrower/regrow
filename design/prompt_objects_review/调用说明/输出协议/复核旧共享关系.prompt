@@ -1,0 +1,4 @@
+# 共享关系复核的输出
+resolution填写edit_record或blocked；reason说明依据；proposal不提交新的动作提案。
+blocked_by按本轮合同选择none或shared_control_conflict。
+record_edit填写region、control、field、before、after、evidence。field为shared_behavior；before引用原共享关系名；after填写independent或shared。

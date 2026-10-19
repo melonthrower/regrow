@@ -1,3 +1,4 @@
+from regrow.records.control_records import group_name
 from regrow.records.snapshots import load as _record_load
 'Shared discovery/update Region identity matching; screen placement is not identity.'
 from regrow.records.object_store import owned_controls
@@ -59,7 +60,7 @@ def reuse_list_roles(records, reply):
         if len(owners) != 1:
             continue
         (rid, r) = owners[0]
-        matches = [(cid, old) for (cid, old) in owned_controls(r).items() if old['name'] == c.get('name')]
+        matches = [(cid, old) for (cid, old) in owned_controls(r).items() if old['name'] == c.get('name') or group_name(r, cid) == c.get('list_group')]
         if len(matches) != 1:
             continue
         (cid, old) = matches[0]

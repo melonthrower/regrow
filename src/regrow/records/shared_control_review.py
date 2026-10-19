@@ -61,20 +61,12 @@ def apply(records, state, case, item, call):
     if item['after'] == 'shared':
         if any((m['region'] not in records or m['control'] not in owned_controls(records[m['region']]) for m in group['members'])):
             raise ValueError('共享成员缺失，不能直接确认')
-        expected = {'region': case['owner'], 'name': case['name']}
-        if any((owned_controls(records[m['region']])[m['control']].get('shared_control_ref') != expected for m in group['members'])):
-            raise ValueError('共享成员引用断开，不能直接确认')
         if not group['results'] or any((r['exception'] != 'none' for r in group['results'])):
             raise ValueError('缺少正常结果依据，不能直接确认共享')
         group['reviewed_signature'] = case['signature']
     elif item['after'] == 'independent':
         group['members'].remove(member)
-        owned_controls(records[member['region']])[member['control']].pop('shared_control_ref', None)
         if len(group['members']) < 2:
-            for m in group['members']:
-                control = owned_controls(records.get(m['region'], {})).get(m['control'])
-                if control:
-                    control.pop('shared_control_ref', None)
             group['status'] = 'separated'
         group.pop('reviewed_signature', None)
     else:

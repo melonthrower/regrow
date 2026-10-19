@@ -208,6 +208,8 @@ def render(value, request, readable):
     if isinstance(task, dict):
         head['任务引用'] = task.get('task', task.get('name', ''))
         if task.get('reason'):
+            if head.get('原问题') == task['reason']:
+                head.pop('原问题')
             head['探索内容'] = task['reason']
             remaining['当前任务'] = {k: v for k, v in task.items() if k != 'reason'}
         head.pop('关联任务', None)
@@ -219,7 +221,7 @@ def render(value, request, readable):
             title = definition['messages']['discovery_objects_question']
             output = definition['messages']['discovery_objects_output']
         rows = {key: remaining.pop(key) for key in keys if key in remaining}
-        section = f'## 问题 {number}：' + title + '\n对应输出：' + output
+        section = (f'## 问题 {number}：' + title + '\n' if title != question else '') + '对应输出：' + output
         if rows:
             section += '\n\n对应材料：\n' + readable(rows).replace('## ', '### ')
         sections.append(section)

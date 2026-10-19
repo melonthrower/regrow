@@ -1,3 +1,9 @@
-## 需要异常处理时
-正常菜单和编辑器继续登记。临时提示确实阻挡本步必要判断时填写 blocking_popup；无响应、退出、应用外页面或未分类阻塞按本步格式判断。旧归属冲突仍无法解决时使用 region_ownership_review。
-确有异常时保留证据和缺口，填写相应 exception/recovery_handoff，regions=[]、controls=[]；残留提示不妨碍判断时正常登记。
+## 异常处理 → exception / recovery_handoff
+只有临时提示、错误、退出或应用外页面确实阻挡本步判断时才报告异常；正常业务菜单和弹窗继续登记。
+局部字段例（不是完整回复）：
+```json
+{"foreground":{"exception":"blocking_popup","recovery_handoff":"临时错误提示遮挡目标，需处理提示后继续原问题。"},"regions":[],"controls":[]}
+```
+正例：异常确实阻碍判断时保留依据，填写本步可用的exception及recovery_handoff，暂不登记对象。
+反例：仅因打开正常业务菜单就报告blocking_popup；没有异常却要求执行恢复。
+无异常填写exception="none"、recovery_handoff=""。其他异常可按实际情况使用system_error、unexpected_exit、external_app、unclassified；未解决的旧归属冲突可报告region_ownership_review。

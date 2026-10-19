@@ -81,7 +81,9 @@ def register_entry(value, records, actual, attempt, labels=None, *, knowledge):
     before = set(action.get('evidence', {}).get('before_regions', []))
     if target not in action.get('interactive_regions', []) or (target in before and target not in changed) or action.get('result', {}).get('exception') != 'none':
         raise ValueError('入口去向必须对应本次新出现或发生变化的前景区块，可为展示区；仅同时可见不足以证明跳转')
-    if not knowledge.strip() or not value['evidence'].strip():
+    from regrow.records.control_knowledge import text
+    knowledge = text(knowledge)
+    if not knowledge or not value['evidence'].strip():
         raise ValueError('入口关联需要已登记用途和前后变化依据')
     entry = {**value, 'region': target, 'attempt': attempt, 'meaning': knowledge, 'conditions': list(dict.fromkeys(action.get('conditions', []) + value.get('conditions', [])))}
     return entry
@@ -101,12 +103,17 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
     if record is None:
         raise ValueError('实际操作对象未登记，不能保存目标关联')
     from regrow.records.tasks import store_object_entry
+    from regrow.records.control_routes import update_conditions
+    update_conditions(record, values, action, call)
     for value in values:
+        if 'index' in value:
+            continue
         index = value['region_index']
         if not 0 <= index < len(region_refs):
-            raise ValueError('destinations.region_index必须引用本次regions')
+            raise ValueError('jump_to.region_index必须引用本次regions')
         target = region_refs[index]
-        entry = register_entry({'region': records[target]['name'], 'evidence': value['description']},
+        entry = register_entry({'region': records[target]['name'], 'evidence': value['description'],
+                                'conditions': value.get('conditions', [])},
                                records, actual, attempt, {records[target]['name']: target},
                                knowledge=value['description'])
         if 'control_index' in value:
@@ -124,12 +131,18 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
         store_object_entry(record, entry)
 
 def destination_schema():
-    return {'type': 'array', 'items': {'type': 'object', 'properties': {
+    observed = {'type': 'object', 'properties': {
         'region_index': {'type': 'integer', 'minimum': 0},
         'control_index': {'type': 'integer', 'minimum': 0,
                           'description': '本次controls数组中的位置；不是历史控件index。区块目标省略。'},
-        'description': {'type': 'string', 'minLength': 1}},
-        'required': ['region_index', 'description'], 'additionalProperties': False}}
+        'description': {'type': 'string', 'minLength': 1},
+        'conditions': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}}},
+        'required': ['region_index', 'description', 'conditions'], 'additionalProperties': False}
+    existing = {'type': 'object', 'properties': {
+        'index': {'type': 'integer', 'minimum': 0},
+        'conditions': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}}},
+        'required': ['index', 'conditions'], 'additionalProperties': False}
+    return {'type': 'array', 'items': {'anyOf': [observed, existing]}}
 
 
 def registered_result(task, action, attempt):
@@ -213,7 +226,7 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
         if owns_action and 'conditions' in task:
             action['conditions'] = list(task['conditions'])
         source.update(operation=action.get('operation'), registration_kind=registration_kind(task))
-    new_knowledge = bool(row.get('knowledge')) and row['knowledge'].strip() != task_value(task, 'knowledge', '')
+    new_knowledge = bool(row.get('knowledge'))
     if new_knowledge:
         updates.store_knowledge(task, row['knowledge'], source)
     if row.get('findings'):

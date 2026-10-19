@@ -30,7 +30,7 @@
 | 审计工具 | `tools/stepwise_quality/evidence.py` snapshot:51–54；graph_items:116–169 | 质量检查直接读取旧目录和控件观察。 | 检查工具随新格式识别，不将读不到记录当不存在。 | 缺图/未决项仍明确，原审计证据不丢。 |
 | 动作请求 | `experiments/clock_manual_20260919/action_proposer.py` request_from_run:65–134 | 原任务与当前动作目标分别绑定，读取区块内控件及候选。 | 统一独立控件读取；保留当前任务和准备来源。 | 完整真实请求仍包含正确任务/控件/历史。 |
 | 结果请求与原动作 | `experiments/clock_manual_20260919/result_updater.py` build_attempt_update:121–202；rebuild_retained:205–222 | 按原执行绑定重建更新，并处理保留的旧请求。 | 从新快照查对象，已执行动作仍使用原绑定/后图。 | 中断续接不串任务、不重做动作。 |
-| 历史字段读取 | `experiments/clock_manual_20260919/control_history_context.py` last_reported:3–5；describe:23–42；comparison:45–64 | 从历次观察选择最近明确字段、未决疑问与实际证据。 | 先统一图标字段写读；独立控件不能仅取最后一行而丢未重报字段。 | 图标描述、旧疑问及其来源可供下一次识别。 |
+| 历史字段读取 | `experiments/clock_manual_20260919/control_history_context.py` last_reported:3–5；describe:23–42；comparison:45–64 | 从历次观察选择最近明确字段、未决疑问与实际证据。 | 原图标映射正确，保留写读对应；独立控件不能仅取最后一行而丢未重报字段。 | 图标描述、旧疑问及其来源可供下一次识别。 |
 | 导航读取 | `experiments/clock_manual_20260919/stepwise_flow.py` shortest_known_path:139–169 | 沿区块transitions、actions和controls找已观察路径。 | 对象查找变更后保持实际执行/前景/条件判断。 | 不能因控件不嵌套就丢边或把旧可见性当当前。 |
 | 最终发送与原件 | `experiments/clock_manual_20260919/model_transport.py` call:114–173 | 落盘最终request、字段合同并调用原模型传输。 | 卡片或新存储不新增调用账；正常构造、校验和留存链保持。 | 保存完整请求/原答，含纠错和失败。 |
 | 区块拆分新身份 | `experiments/clock_manual_20260919/region_behavior_split.py` before_objects:17–33；apply:103–141 | 从动作前对象创建新区块/控件；登记separated_from/distinct_regions并建立必要共享链接。 | 全局表中分配新身份，明确与原对象的差异及原帧来源；不能只迁移任务目标。 | 新旧身份不误并，原图/来源/共享关系完整，后续再次识别仍区分。 |

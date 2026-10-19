@@ -137,17 +137,18 @@ def matcher():
 
 def match_control(control, frame):
     """Recall the admitted appearance in the current full screenshot."""
-    if not templates.usable(control):
-        return {'accepted': False, 'box': None, 'candidates': [], 'reason': 'identity template not admitted'}
+    appearances = control.get('appearances') or ([control] if templates.usable(control) else [])
     m = matcher()
-    hit = m.locate(control['image'], frame)
-    hit = {**hit, 'identity_box': hit.get('box'), 'candidates': [{**v, 'identity_box': v.get('box')} for v in hit.get('candidates', [])]}
-    return hit
+    hit = match_appearances(appearances, lambda path: m.locate(path, frame))
+    return {**hit, 'identity_box': hit.get('box'), 'candidates': [
+        {**value, 'identity_box': value.get('box')} for value in hit.get('candidates', [])]}
+
 
 def match_controls(controls, frame):
     from regrow.recognition import matching as control_layout
-    hits = {c['id']: match_control(c, frame) for c in controls if c.get('image') and Path(c['image']).is_file()}
-    return control_layout.refine(controls, hits, frame, matcher())
+    hits = {c['id']: match_control(c, frame) for c in controls if any(Path(row['image']).is_file() for row in c.get('appearances', []) or ([c] if c.get('image') else []))}
+    selected = [{**c, **hits.get(c['id'], {}).get('matched_appearance', {})} for c in controls]
+    return control_layout.refine(selected, hits, frame, matcher())
 
 def prepare(request):
     q = deepcopy(request)
@@ -163,3 +164,34 @@ def prepare(request):
 
 def describe(request):
     return [{'控件': c['name'], '视觉描述': c.get('icon_description', ''), '目标观察': c.get('target_observation', {}), '候选位置': [v['box'] for v in request.get('visual_choices', {}).get(c['id'], [])]} for c in request.get('backend_candidates', []) if c['id'] in request.get('visual_choices', {})]
+
+
+def match_appearances(appearances, locate):
+    """Try recorded states, count a physical position once, retain ambiguity."""
+    rows = []
+    for row in appearances:
+        try:
+            hit = locate(row['image'])
+        except (FileNotFoundError, OSError):
+            hit = {'accepted': False, 'candidates': [], 'reason': 'missing_image'}
+        rows.append((hit, row))
+    if not rows:
+        return {'accepted': False, 'candidates': [], 'reason': 'no_admitted_appearance'}
+    hits = [(hit, row) for hit, row in rows if hit.get('accepted')]
+    best, source = max(hits or rows, key=lambda pair: pair[0].get('score', 0))
+    candidates = []
+    for hit, row in rows:
+        values = hit.get('candidates', []) or ([hit] if hit.get('accepted') and hit.get('box') else [])
+        for value in values:
+            same = next((i for i, old in enumerate(candidates) if overlap(value['box'], old['box']) >= .8), None)
+            candidate = {key: value[key] for key in ('box', 'score', 'scale') if key in value}
+            if same is None:
+                candidates.append(candidate)
+            elif value.get('score', 0) > candidates[same].get('score', 0):
+                candidates[same] = candidate
+    candidates.sort(key=lambda value: value.get('score', 0), reverse=True)
+    truncated = any(hit.get('candidates_truncated') for hit, row in rows)
+    if len(candidates) > 1 or truncated:
+        return {**best, 'accepted': False, 'candidates': candidates, 'candidates_truncated': truncated,
+                'reason': 'ambiguous_recorded_states', 'matched_appearance': source}
+    return {**best, 'candidates': candidates, 'matched_appearance': source}

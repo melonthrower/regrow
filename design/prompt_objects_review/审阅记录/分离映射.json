@@ -1,0 +1,318 @@
+[
+  {
+    "original_id": "控件-01",
+    "destination": [
+      "控件.prompt",
+      "调用说明/前景与登记示例.prompt"
+    ],
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "source_lines": [
+      8,
+      14
+    ]
+  },
+  {
+    "original_id": "控件-02",
+    "destination": "控件.prompt",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "source_lines": [
+      20,
+      32
+    ]
+  },
+  {
+    "original_id": "控件-03",
+    "destination": "调用说明/动作后对象登记.prompt",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "source_lines": [
+      28,
+      35
+    ]
+  },
+  {
+    "original_id": "控件-04",
+    "destination": "控件.prompt",
+    "source": "src/regrow/prompts/共享/区块身份复用.prompt",
+    "source_lines": [
+      1,
+      10
+    ]
+  },
+  {
+    "original_id": "控件-05",
+    "destination": [
+      "控件.prompt",
+      "调用说明/对象登记范围.prompt",
+      "调用说明/前景与登记示例.prompt"
+    ],
+    "source": "src/regrow/prompts/共享/区块身份复用.prompt",
+    "source_lines": [
+      12,
+      21
+    ]
+  },
+  {
+    "original_id": "控件-06",
+    "destination": "控件.prompt",
+    "source": "src/regrow/prompts/共享/任务知识与当前观察.prompt",
+    "source_lines": [
+      1,
+      11
+    ]
+  },
+  {
+    "original_id": "控件-07",
+    "destination": [
+      "控件.prompt",
+      "调用说明/功能任务答案.prompt"
+    ],
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "source_lines": [
+      13,
+      23
+    ]
+  },
+  {
+    "original_id": "控件-08",
+    "destination": "控件.prompt",
+    "source": "src/regrow/prompts/共享/身份图准入.prompt",
+    "source_lines": [
+      1,
+      12
+    ]
+  },
+  {
+    "original_id": "控件-09",
+    "destination": "控件.prompt",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "source_lines": [
+      36,
+      43
+    ]
+  },
+  {
+    "original_id": "控件-10",
+    "destination": "控件.prompt",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "source_lines": [
+      48,
+      59
+    ]
+  },
+  {
+    "original_id": "控件-11",
+    "destination": "区块.prompt",
+    "source": "src/regrow/prompts/发现手册/列表代表项.prompt",
+    "source_lines": [
+      1,
+      10
+    ]
+  },
+  {
+    "original_id": "控件-12",
+    "destination": "区块.prompt",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "source_lines": [
+      13,
+      20
+    ]
+  },
+  {
+    "original_id": "区块-01",
+    "destination": "区块.prompt",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "source_lines": [
+      1,
+      7
+    ]
+  },
+  {
+    "original_id": "区块-02",
+    "destination": "区块.prompt",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "source_lines": [
+      33,
+      40
+    ]
+  },
+  {
+    "original_id": "区块-03",
+    "destination": "调用说明/发现异常.prompt",
+    "source": "src/regrow/prompts/发现手册/前景与区块.prompt",
+    "source_lines": [
+      1,
+      9
+    ]
+  },
+  {
+    "original_id": "区块-04",
+    "destination": "区块.prompt",
+    "source": "src/regrow/prompts/任务/区块功能登记.prompt",
+    "source_lines": [
+      1,
+      39
+    ]
+  },
+  {
+    "original_id": "区块-05",
+    "destination": "调用说明/动作后区块去向.prompt",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "source_lines": [
+      12,
+      27
+    ]
+  },
+  {
+    "original_id": "区块-06",
+    "destination": "调用说明/来源区块差异.prompt",
+    "source": "src/regrow/prompts/共享/行为差异分离.prompt",
+    "source_lines": [
+      1,
+      23
+    ]
+  },
+  {
+    "original_id": "任务-01",
+    "destination": "调用说明/任务提出.prompt",
+    "source": "src/regrow/prompts/任务/区块探索任务.prompt",
+    "source_lines": [
+      1,
+      14
+    ]
+  },
+  {
+    "original_id": "任务-02",
+    "destination": "任务.prompt",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "source_lines": [
+      1,
+      9
+    ]
+  },
+  {
+    "original_id": "任务-03",
+    "destination": "任务.prompt",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "source_lines": [
+      10,
+      12
+    ]
+  },
+  {
+    "original_id": "任务-04",
+    "destination": "调用说明/任务清点.prompt",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "source_lines": [
+      21,
+      25
+    ]
+  },
+  {
+    "original_id": "任务-05",
+    "destination": "任务.prompt",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "source_lines": [
+      24,
+      27
+    ]
+  },
+  {
+    "original_id": "任务-06",
+    "destination": "任务.prompt",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "source_lines": [
+      28,
+      35
+    ]
+  },
+  {
+    "original_id": "任务-07",
+    "destination": "任务.prompt",
+    "source": "src/regrow/prompts/共享/参数观察值.prompt",
+    "source_lines": [
+      1,
+      10
+    ]
+  },
+  {
+    "original_id": "任务-08",
+    "destination": "调用说明/任务范围复核.prompt",
+    "source": "src/regrow/prompts/任务/旧任务范围复核.prompt",
+    "source_lines": [
+      1,
+      3
+    ]
+  },
+  {
+    "original_id": "任务-09",
+    "destination": "调用说明/任务结束条件.prompt",
+    "source": "src/regrow/prompts/共享/任务结束条件.prompt",
+    "source_lines": [
+      1,
+      3
+    ]
+  },
+  {
+    "original_id": "任务-10",
+    "destination": "任务.prompt",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "source_lines": [
+      1,
+      12
+    ]
+  },
+  {
+    "original_id": "动作-01",
+    "destination": "动作.prompt",
+    "source": "src/regrow/prompts/动作/动作空间与字段.prompt",
+    "source_lines": [
+      1,
+      4
+    ]
+  },
+  {
+    "original_id": "动作-02",
+    "destination": "调用说明/桌面动作.prompt",
+    "source": "src/regrow/prompts/平台/桌面执行.prompt",
+    "source_lines": [
+      1,
+      19
+    ]
+  },
+  {
+    "original_id": "动作-03",
+    "destination": "调用说明/Android动作.prompt",
+    "source": "src/regrow/prompts/平台/Android执行.prompt",
+    "source_lines": [
+      1,
+      13
+    ]
+  },
+  {
+    "original_id": "动作-04",
+    "destination": "动作.prompt",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "source_lines": [
+      6,
+      11
+    ]
+  },
+  {
+    "original_id": "动作-05",
+    "destination": "动作.prompt",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "source_lines": [
+      44,
+      47
+    ]
+  },
+  {
+    "original_id": "动作-06",
+    "destination": "调用说明/来源动作对照.prompt",
+    "source": "src/regrow/prompts/共享/来源动作与区块对照.prompt",
+    "source_lines": [
+      1,
+      14
+    ]
+  }
+]

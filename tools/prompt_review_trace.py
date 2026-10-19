@@ -362,7 +362,8 @@ def worker(dest):
             status=read(dest/'status.json');status['calls']=self.account['http_started'];write(dest/'status.json',status)
         adb=command=send_command=no_gui
     transport=Saved();transport.save()
-    frame = (run / preview['screenshots'][0]) if preview.get('screenshots') else None
+    from regrow.prompts.frame_context import primary
+    frame = (run / primary(preview)) if preview.get('screenshots') else None
     def saved_frame(destination):
         if frame is None:raise ValueError('本步没有原截图，不能补造观察')
         path=Path(destination);path.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(frame,path)

@@ -39,20 +39,14 @@ def validate_identity(reply):
             raise ValueError('unresolved or inconsistent identity')
 
 def match_context(match):
-    """Readable candidate evidence; raw scores remain in discovery_context."""
-    boxes = []
-    for item in [match] if match.get('accepted') else [match, *match.get('candidates', [])]:
-        if item.get('box') and item['box'] not in boxes:
-            boxes.append(list(item['box']))
-    note = '程序找到唯一外观匹配，仍需核对身份及前景' if match.get('accepted') else '位置需核对：程序未确认唯一可靠匹配' if boxes else '未获得可靠位置线索，不代表对象不存在'
-    return {'匹配说明': note, '候选位置': boxes}
-
-def identity_library(records, focus=None):
-    """Disclose the actual identity store, independently of visual recall."""
-    if focus is not None:
-        controls = owned_controls(records[focus])
-        return {'范围': '本区块控件：' + records[focus]['name'], '空库': not controls}
-    return {'已登记区块总数': len(records), '空库': not records}
+    """Keep the useful recall result; raw locations stay in the visual plan."""
+    if match.get('accepted'):
+        note = '本图有唯一外观候选，仍结合当前区块核对身份。'
+    elif match.get('candidates') or match.get('box'):
+        note = '外观有多个或不充分的候选，结合本区块语义核对。'
+    else:
+        note = '未获得可靠外观位置，仍可依据当前图及已有记录辨认。'
+    return {'匹配说明': note}
 
 def prepare(root, records, state, frame, foreground=None, *, work=None):
     from regrow.traversal import register_update as _register_update
@@ -81,13 +75,8 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     names = {}
     cnames = {}
     candidates = []
-    history_rows = []
-    identity_rows = {}
     if plan['mode'] != 'local':
         (rows, names) = _history_matching.with_history(records, [{'region_ref': c['region'], 'name': records[c['region']]['name']} for c in plan['regions']])
-        visual_ids = {c['region'] for c in plan['regions']}
-        history_rows = [row for row in rows if names[row['ref']] not in visual_ids]
-        identity_rows = {names[row['ref']]: row for row in rows}
     labels = {rid: label for (label, rid) in names.items()}
     for candidate in plan['regions']:
         rid = candidate['region']
@@ -97,16 +86,16 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
             label += f'（候选{len(names) + 1}）'
         names[rid] = rid
         anchors = [{'名称': owned_controls(r)[h['control']]['name'], '位置': h['box']} for h in candidate['anchors']]
-        candidates.append({'ref': rid, '名称': r['name'], '身份依据': '前景控件匹配线索，身份由本轮视觉核对确认', '定位锚点': anchors})
-        historical = identity_rows.get(rid, {}).get('历史描述（仅供身份核对）')
+        candidates.append({'ref': rid, '名称': r['name']})
+        historical = r.get('description')
         if historical:
-            candidates[-1]['历史描述（仅供身份核对）'] = historical
+            candidates[-1]['最近登记描述'] = historical
         if r.get('behavior_context'):
             candidates[-1]['行为适用上下文'] = r['behavior_context']
     controls = []
     historical_controls = []
     if plan['mode'] != 'local':
-        (historical_controls, cnames) = _region_candidate_names.control_candidates(records, names, {c['region'] for c in plan['regions']})
+        (historical_controls, cnames) = _region_candidate_names.control_candidates(records, names, {focus} if focus in records else {c['region'] for c in plan['regions']})
     if plan['mode'] == 'local':
         from regrow.records.context_scope import identity
         for item in plan['controls']:
@@ -140,24 +129,23 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     if focus in records:
         dynamic['本轮定位区块'] = records[focus]['name']
     if candidates:
-        dynamic['程序匹配候选'] = candidates
+        dynamic['本次身份候选'] = candidates
     if controls:
         dynamic['本轮局部控件'] = controls
-    if historical_controls:
-        dynamic['相关区块控件身份候选'] = historical_controls
+    for group in historical_controls:
+        candidate = next((c for c in candidates if c['ref'] == group['区块']), None)
+        if candidate is not None:
+            candidate['已有控件'] = group['控件']
     if plan['mode'] == 'local':
         dynamic['本轮观察范围'] = '本轮定位区块及其直接所属控件。'
-        dynamic['本次运行身份库'] = identity_library(records, focus)
         if plan.get('partition_context'):
             dynamic['同帧已确认区块划分'] = _local_partition.prompt(plan['partition_context'])
-        _discovery_inventory.supplement(root, records[focus], dynamic, parts)
     if state.get('recovery_handoff'):
         dynamic['恢复交接（历史观察，不代表任务完成）'] = state['recovery_handoff']
     if plan['mode'] != 'local':
-        if history_rows:
-            dynamic['历史身份候选'] = history_rows
-        dynamic['本次运行身份库'] = identity_library(records)
         dynamic['本轮观察范围'] = '当前前景的功能区块，以及本图中能确认的直接所属控件。'
+    if focus in records:
+        _discovery_inventory.supplement(root, records[focus], dynamic, parts)
     if plan.get('foreground_check'):
         dynamic['前景归属核对'] = {'候选独立区块': records[plan['foreground_check']['region']]['name'], '说明': plan['foreground_check']['reason']}
     resolved = state.get('foreground_resolution')
@@ -187,7 +175,7 @@ def request_from_run(root, run, *, work=None):
     frame = str(Path(run).resolve() / state['pending_frame'])
     request = prepare(root, records, state, frame, _foreground_scope.load(run, frame), work=work)
     manifest = Path(run) / 'run_manifest.json'
-    if state.get('correction_context') and (not request['discovery_context'].get('completion')):
+    if state.get('correction_context') and state.get('reason') != 'task_inventory_incomplete' and (not request['discovery_context'].get('completion')):
         dynamic = json.loads(request['user_prompt'])
         dynamic['上轮纠正或复查说明'] = state['correction_context']
         request['user_prompt'] = request['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)

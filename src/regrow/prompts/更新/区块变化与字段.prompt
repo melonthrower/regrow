@@ -3,7 +3,7 @@ previous_regions描述原区块在动作后的前景、背景或不可见状态�
 regions和controls登记动作后当前前景的对象，区块复用ref、控件复用index并补充新对象；身份字段与发现步相同。
 
 ## 用途与问题
-控件的初步用途填写possible_purpose；may_open_content和needs_exploration分别判断是否可能打开其他功能内容、是否需要探索，不确定填null。实际确认的功能和效果通过任务答案knowledge登记。影响本次执行判断的现象写入对应动作结果。
+控件的初步用途和已确认用途都写入knowledge列表，框架根据来源区分；may_open_content和needs_exploration按下方“控件知识与探索判断”填写，结合本次实际观察修订。实际确认的功能和效果通过任务答案knowledge更新同一控件记录。影响本次执行判断的现象写入对应动作结果。
 新的功能未知由任务提出阶段结合已有任务处理。当前身份未决写identity_evidence，未解决的观察或归属问题保留uncertainties；不要把当前不可见或未执行当作新的功能问题。
 
 ## 完整性与范围

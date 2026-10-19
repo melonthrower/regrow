@@ -153,7 +153,8 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             for (j, other) in enumerate(p.get('controls', [])[:i]):
                 oi = other.get('region_index')
                 ob = other.get('bbox')
-                if oi != idx and isinstance(oi, int) and (0 <= oi < len(rids)) and cb and (cb == ob) and (name == (other.get('name') or other.get('text', ''))) and (p['regions'][idx].get('parent_index') == oi or p['regions'][oi].get('parent_index') == idx):
+                same_control = bool(previous and previous == other.get('ref'))
+                if not same_control and oi != idx and isinstance(oi, int) and (0 <= oi < len(rids)) and cb and (cb == ob) and (name == (other.get('name') or other.get('text', ''))) and (p['regions'][idx].get('parent_index') == oi or p['regions'][oi].get('parent_index') == idx):
                     add('duplicate_control_owner', path, obj, {'other': f'/controls/{j}', 'box': cb}, '父子区块同一物理控件只保留一个归属', '核对后只提交实际所属区块中的一份控件；已有重复记录通过现有移动/合并接口保留历史。不同物理对象不可合并。')
             key = (idx, name)
             if key in seen:
@@ -171,14 +172,18 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                 if identity == 'uncertain' or (identity == 'same') != bool(previous):
                     add('control_identity', path + '/identity', obj, identity, 'same需有效对应；new需新对象证据', '核对身份，不把未知编辑能力当作身份不明。')
                 if identity == 'same':
-                    cid = ctx.get('control_names', {}).get(previous)
+                    cid = ctx.get('control_names', {}).get(previous, previous if previous in q.get('control_indexes', []) else None)
             elif c.get('_matched_id') in controls:
                 cid = c['_matched_id']
             elif previous:
-                ids = [previous] if previous in controls else [k for (k, v) in controls.items() if v['name'] == previous]
+                from regrow.records.object_store import control_record
+                ids = [previous] if control_record(records, previous) is not None else [k for (k, v) in controls.items() if v['name'] == previous]
                 if len(ids) == 1:
                     cid = ids[0]
-            if previous and cid not in controls:
+                elif previous in q.get('control_indexes', []):
+                    cid = previous
+            from regrow.records.object_store import control_record
+            if previous and control_record(records, cid) is None:
                 owners = [key for (key, r) in records.items() if cid and cid in owned_controls(r)]
                 if stage == 'discovery' and len(owners) == 1:
                     add('region_ownership_review', path + '/region_index', obj, {'control_id': cid, 'control': previous, 'current_region': records[owners[0]]['name']}, p['regions'][idx]['name'], '已找到旧控件，但新归属尚未确认；进入实地归属复查，不改名绕过、不凭当前标签猜其他标签的归属。')
@@ -194,9 +199,9 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                     else:
                         add('unknown_candidate_control', path + '/ref', obj, previous, list(ctx.get('control_names', {})) if stage == 'discovery' else [v['name'] for v in controls.values()], '只用本轮绑定名称；历史存在但未披露时补充候选核对，不能为绕过错误重复新建。')
             if cid:
-                if cid in bound:
-                    add('duplicate_binding', path + '/ref', obj, previous, bound[cid], '同一旧对象只绑定一次。')
-                bound[cid] = path
+                if (idx, cid) in bound:
+                    add('duplicate_binding', path + '/ref', obj, previous, bound[(idx, cid)], '同一区块的同一旧对象只绑定一次。')
+                bound[(idx, cid)] = path
             conflicts = [k for (k, v) in controls.items() if v['name'] == name and k != cid]
             if conflicts:
                 add('existing_control_conflict', path + '/name', obj, name, {'matching_records': conflicts}, '核对旧对象后复用；已重复登记用merge_into保留历史；不同对象用可区分名称。')

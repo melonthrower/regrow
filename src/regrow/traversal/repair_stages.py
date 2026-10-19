@@ -1,3 +1,5 @@
+from regrow.records.control_records import group_name, set_group
+from regrow.records.control_records import aliases as control_aliases
 from regrow.traversal import action_binding as _action_binding
 from regrow.records.calls import submission as _owner_submission
 from regrow.traversal.observation import focus_task as _owner_focus_task
@@ -34,7 +36,8 @@ def preserve_repair_aliases(original, refreshed, records):
             new['region_names'][label] = rid
     allowed = set(old.get('region_names', {}).values())
     for (label, cid) in old.get('control_names', {}).items():
-        matches = [key for (rid, r) in records.items() if rid in allowed for (key, c) in owned_controls(r).items() if key == cid or any((item['id'] == cid for item in c.get('merged_records', [])))]
+        matches = [key for (rid, r) in records.items() if rid in allowed for (key, c) in owned_controls(r).items() if key == cid or any((item['id'] == cid for item in control_aliases(c)))]
+        matches = list(dict.fromkeys(matches))
         if len(matches) == 1:
             new['control_names'][label] = matches[0]
 
@@ -290,9 +293,9 @@ def context(run, job):
             return {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '条件': task.get('conditions', [])}
         view = {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '覆盖任务': covered, '说明': task.get('reason') or task.get('name', ''), '类型': task.get('task_type'), '尝试事实': describe(effective, history_records)}
         return _map_prompt.task_view(job['request'], owner.get('id'), name, task, view)
-    value = {'区块': [{'名称': r['name'], '描述': r['description'], '控件': [{'名称': c['name'], '说明': c.get('description', ''), '列表分组': c.get('list_group', ''), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮完整提案', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
+    value = {'区块': [{'名称': r['name'], '描述': r['description'], '控件': [{'名称': c['name'], '说明': c.get('description', ''), '列表分组': group_name(r, cid), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮完整提案', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
     if job['stage'] == 'task_proposal':
-        value['区块'] = [{'名称': r['name'], '控件可修订原值': [{'名称': c['name'], 'description': c.get('description', ''), 'list_group': c.get('list_group', '')} for c in owned_controls(r).values()], '记录': '控件身份、完整任务目录和相关知识见原动态上下文；本次拒绝原因与被拒绝回复单独保留。'} for r in records.values()]
+        value['区块'] = [{'名称': r['name'], '控件可修订原值': [{'名称': c['name'], 'description': c.get('description', ''), 'list_group': group_name(r, cid)} for cid, c in owned_controls(r).items()], '记录': '控件身份、完整任务目录和相关知识见原动态上下文；本次拒绝原因与被拒绝回复单独保留。'} for r in records.values()]
     source = job['request'].get('source', {})
     owner = source.get('task_region') or source.get('region')
     name = source.get('task_name')
@@ -550,9 +553,13 @@ def edit_record(root, run, job, edit):
                     if field != 'description':
                         raise ValueError('区块只允许描述修订')
                     target = r
-                if target.get(field, '') != item['before']:
+                before_value = group_name(r, names[0]) if field == 'list_group' else target.get(field, '')
+                if before_value != item['before']:
                     raise ValueError('修订原值已变化')
-                target[field] = item['after']
+                if field == 'list_group':
+                    set_group(r, names[0], item['after'])
+                else:
+                    target[field] = item['after']
         active = deepcopy(state.get('active_task'))
         merge_controls = set()
         for (source, episode) in migrations.items():

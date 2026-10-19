@@ -1,3 +1,4 @@
+from regrow.records.control_records import aliases as control_aliases
 """Per-request control aliases at the model boundary; stable IDs stay in records."""
 from copy import deepcopy
 import json
@@ -137,7 +138,8 @@ def after_record_edit(original, refreshed, records):
     ids = []
     for cid in original['control_indexes']:
         matches = [key for region in records.values() for key, control in owned_controls(region).items()
-                   if key == cid or any(row.get('id') == cid for row in control.get('merged_records', []))]
+                   if key == cid or any(row.get('id') == cid for row in control_aliases(control))]
+        matches = list(dict.fromkeys(matches))
         ids.append(matches[0] if len(matches) == 1 else cid)
     q['control_indexes'] = ids
     if 'discovery_context' in q:

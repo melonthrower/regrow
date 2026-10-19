@@ -1,0 +1,13 @@
+## 本轮平台：Android 触屏
+
+依据本轮动作表选择操作，坐标使用当前原图像素，只填写相应字段。
+| action | 操作含义 |
+|---|---|
+| click、double_click、long_press | 在(x,y)点击、双击或长按。 |
+| input_text | 在(x,y)对应输入框全选并替换为text（可打印ASCII），空字符串清空。无需另派聚焦验证，屏幕键盘是否出现不单独决定输入能力。 |
+| scroll | 从(x,y)滑至(end_x,end_y)；两点位于同一可滚动内容区，避免跨控件。查看下方内容时手指向上滑，查看上方内容时向下滑。 |
+| back | Android系统返回。 |
+| key_press | text仅支持ENTER、TAB、ESC、BACKSPACE。 |
+| wait | 等待新观察；不表示任务完成。 |
+
+Android 不提供 hover、right_click、hotkey 或鼠标 drag。text_delivered=false 表示文字未送达；实际反馈结合回执和后图判断。

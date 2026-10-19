@@ -29,7 +29,9 @@ def entries(region, records):
     from regrow.records.object_store import owned_controls
     registered = set()
     for (cid, control) in owned_controls(region).items():
-        for entry in control.get('entries', []):
+        for route in control.get('jump_to', []):
+            from regrow.records.control_routes import with_source
+            entry = with_source(control, route)
             target = entry['region']
             if target not in records or region_work(records[target]).get('out_of_scope_reason'):
                 continue

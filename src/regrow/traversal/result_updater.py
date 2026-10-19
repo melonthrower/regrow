@@ -32,7 +32,8 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
     schema = json.loads((pr / stage['schema']).read_text())
     from regrow.records.task_settlement import destination_schema
     schema['properties'].pop('destination', None)
-    schema['properties']['destinations'] = destination_schema()
+    schema['properties'].pop('destinations', None)
+    schema['properties']['jump_to'] = destination_schema()
     templates.extend_schema(schema)
     from regrow.recognition import foreground_scope as foreground_scope
     foreground_scope.extend_schema(schema)
@@ -58,6 +59,11 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
             schema['properties']['task_update']['maxItems'] = 0
         schema['required'].append('task_update')
     _control_records.extend_schema(schema)
+    schema['properties']['controls']['items']['properties']['image_conditions'] = {
+        'type': 'array', 'items': {'type': 'string'},
+        'description': '仅add_image=true时描述本张按钮状态图的适用条件；通用图填[]。'}
+    schema['properties']['controls']['items']['properties']['add_image'] = {
+        'type': 'boolean', 'description': '仅真实按钮外观/语义状态变化时补状态图；默认false。文本框内容、位置、区块划分和窗口大小变化不算。'}
     _discovery_delta.schema(schema)
     identity_module = _region_behavior_split
     identity_module.extend_schema(schema)
@@ -160,13 +166,17 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
         dynamic['当前任务引用'] = reference(binding.get('task_region', binding['region_ref']), binding['task_name'])
     from regrow.recognition import history_matching as history_matching
     ranking = history_matching.scan(records, snapshot, folder / 'after.png', scope=foreground_scope.load(run, folder / 'after.png'))
-    dynamic['当前截图视觉匹配到的既有区块'] = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'control_positions': [h['box'] for h in r['anchors']]} for r in ranking if r['anchors']]
+    dynamic['当前截图视觉匹配到的既有区块'] = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'anchors': r['anchors']} for r in ranking if r['anchors']]
     dynamic['已知区块'] = identity_candidates(records, state, binding, dynamic['当前截图视觉匹配到的既有区块'], source_destinations=recalled['destinations'])
+    from regrow.records.control_routes import card as route_card
+    actual_control = owned_controls(owner).get(binding['control_ref'], {}) if binding.get('control_ref') else owner
+    dynamic['实际对象已有跳转'] = route_card(actual_control, records)
     from regrow.recognition.history_matching import with_history as named_candidates
     (dynamic['已知区块'], region_names) = named_candidates(records, dynamic['已知区块'])
     labels = {rid: label for (label, rid) in region_names.items()}
-    dynamic['当前截图视觉匹配到的既有区块'] = [{**{k: v for (k, v) in hit.items() if k != 'region_ref'}, 'name': labels[hit['region_ref']]} for hit in dynamic['当前截图视觉匹配到的既有区块']]
-    dynamic['本次入口历史落点'] = source_candidates.describe(recalled, labels)
+    dynamic.pop('当前截图视觉匹配到的既有区块', None)
+    if recalled['actions'] or not recalled['confirmed']:
+        dynamic['本次入口历史落点'] = source_candidates.describe(recalled, labels)
     dynamic['身份引用'] = 'ref使用已提供的区块或控件编号；name只表示名称。'
     source = {'region': binding['region_ref'], 'working_region': binding['working_region'], 'observation': binding['observation_ref'], 'attempt': folder.name, 'control_ref': binding.get('control_ref')}
     if binding.get('task_name'):
@@ -222,7 +232,7 @@ def resume_update_request(root, transport, folder):
     retained = False
     if (folder / 'update_request.json').exists():
         saved = read(folder / 'update_request.json')
-        if len(saved.get('screenshots', [])) == 2 and 'destinations' in saved.get('response_schema', {}).get('properties', {}):
+        if len(saved.get('screenshots', [])) == 2 and 'jump_to' in saved.get('response_schema', {}).get('properties', {}):
             return saved
         retained = True
     fresh = not (folder / 'after.png').exists()

@@ -33,7 +33,9 @@ def register(owner, task, value, knowledge, records, visible, observation, sourc
         raise ValueError('当前入口观察不能替代参数、前置或异常任务的义务')
     if not observation or not observed or current_owner not in visible or (target not in visible):
         raise ValueError('入口去向必须有本帧入口控件的语义观察及可交互目标区块，历史或纯图片匹配不足')
-    if not set(task.get('conditions', [])).issubset(value['conditions']) or not knowledge.strip():
+    from regrow.records.control_knowledge import text
+    knowledge = text(knowledge)
+    if not set(task.get('conditions', [])).issubset(value['conditions']) or not knowledge:
         raise ValueError('入口观察不能丢弃已有用途条件，并须登记稳定knowledge')
     basis = {'basis': 'observation_only', 'observation': observation, **source}
     if set(value['conditions']) != set(task.get('conditions', [])):

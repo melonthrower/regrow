@@ -1,0 +1,182 @@
+[
+  {
+    "path": "prompts/output.py",
+    "original_sha256": "2f98561ae35efd9b4056bc998b5ae2b5917e20644b465bfc30743d72725ac82b",
+    "export_sha256": "2f98561ae35efd9b4056bc998b5ae2b5917e20644b465bfc30743d72725ac82b",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "prompts/response_example.py",
+    "original_sha256": "43dde677868bb262d33bac192ee83ef34e1f634ab60be12afa3c587a1250f344",
+    "export_sha256": "43dde677868bb262d33bac192ee83ef34e1f634ab60be12afa3c587a1250f344",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "recognition/control_identity_review.py",
+    "original_sha256": "ec76592a5cd33eb60ac84fedfef570e8ef688a33b818ad34f3ecb7739fefc425",
+    "export_sha256": "ec76592a5cd33eb60ac84fedfef570e8ef688a33b818ad34f3ecb7739fefc425",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "recognition/control_indexes.py",
+    "original_sha256": "df8ee03feef4cdd601ec9c761ed144dc3961a353e9458ca3aca780630be1f919",
+    "export_sha256": "df8ee03feef4cdd601ec9c761ed144dc3961a353e9458ca3aca780630be1f919",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "recognition/discovery_completion.py",
+    "original_sha256": "b4f9b4ed1838ef2b5fbd15361e858ee0df9174700d752ede4e9a7c8269fddc80",
+    "export_sha256": "b4f9b4ed1838ef2b5fbd15361e858ee0df9174700d752ede4e9a7c8269fddc80",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "recognition/locator.py",
+    "original_sha256": "c32247cfb66bc20510f968ba58ae17072deabd2ea8079b6aa9cb0b92ebd713ee",
+    "export_sha256": "c32247cfb66bc20510f968ba58ae17072deabd2ea8079b6aa9cb0b92ebd713ee",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "recognition/ownership_review.py",
+    "original_sha256": "d9cecdb4ce7a65d6ba68ee0c8f365b027a27d66ec0698f559f5a398adc8599e7",
+    "export_sha256": "d9cecdb4ce7a65d6ba68ee0c8f365b027a27d66ec0698f559f5a398adc8599e7",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "recognition/discovery_inventory.py",
+    "original_sha256": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7",
+    "export_sha256": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "records/shared_control_review.py",
+    "original_sha256": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee",
+    "export_sha256": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "records/task_updates.py",
+    "original_sha256": "6bfda1e5edb56a054e307bd71feb1cdfd22c45046a645b0d056a9876f77444d5",
+    "export_sha256": "6bfda1e5edb56a054e307bd71feb1cdfd22c45046a645b0d056a9876f77444d5",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "runtime/action_commands.py",
+    "original_sha256": "8b3b485c252447604ddae52d025fd98f8e6d8abc4bdfc9bc564bd9af4cca27da",
+    "export_sha256": "8b3b485c252447604ddae52d025fd98f8e6d8abc4bdfc9bc564bd9af4cca27da",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "runtime/model_transport.py",
+    "original_sha256": "5cfa3f508dda90d799dd5c7766d2f4e97a9b416026d7902c8038510d700d9eab",
+    "export_sha256": "5cfa3f508dda90d799dd5c7766d2f4e97a9b416026d7902c8038510d700d9eab",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "tools/branch_switch.py",
+    "original_sha256": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8",
+    "export_sha256": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/action_context.py",
+    "original_sha256": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4",
+    "export_sha256": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/action_proposer.py",
+    "original_sha256": "bfa7313438db3e02644e686b19e3f735218a75a3e9c2776aa95bd66ee5599ffa",
+    "export_sha256": "bfa7313438db3e02644e686b19e3f735218a75a3e9c2776aa95bd66ee5599ffa",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/correction_prompts.py",
+    "original_sha256": "cf676e932ac38d88f6d104967715d31b4f403e822b7f98d2993631039e90beea",
+    "export_sha256": "cf676e932ac38d88f6d104967715d31b4f403e822b7f98d2993631039e90beea",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/object_registration.py",
+    "original_sha256": "1d3c7789ff61fe4786b21b582794e8f7f76b06ae68a2b2fbc67c483f993ff28d",
+    "export_sha256": "1d3c7789ff61fe4786b21b582794e8f7f76b06ae68a2b2fbc67c483f993ff28d",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/recovery.py",
+    "original_sha256": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c",
+    "export_sha256": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/region_functions.py",
+    "original_sha256": "2b7de048c574c6e94f1122d32f41ab31da1c85ff52e3a6cd995bad014228791d",
+    "export_sha256": "2b7de048c574c6e94f1122d32f41ab31da1c85ff52e3a6cd995bad014228791d",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/repair_stages.py",
+    "original_sha256": "93a1baf6e514824358dc69810f7ca3170937c636fa9de0b098602c52924bb7e6",
+    "export_sha256": "93a1baf6e514824358dc69810f7ca3170937c636fa9de0b098602c52924bb7e6",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/result_updater.py",
+    "original_sha256": "ea178f3f61793fae14a5cba7c1de0853077b1e538a5a349dcc3f7da3b0cfd6a2",
+    "export_sha256": "ea178f3f61793fae14a5cba7c1de0853077b1e538a5a349dcc3f7da3b0cfd6a2",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/step_repair.py",
+    "original_sha256": "e97d996e753aca07b1a0e3f62d808c943f212181c188b05085d09a8bda852e4b",
+    "export_sha256": "b02b4d03964a481b57b45acd079757d06df47f0167e198659565be4b90fbafbe",
+    "trailing_whitespace_removed": true
+  },
+  {
+    "path": "traversal/task_proposer.py",
+    "original_sha256": "1a943fc8101267c2b95c02a86d6eb29d4179f81fd6a24a80bdcd5ba74e35c2b9",
+    "export_sha256": "1a943fc8101267c2b95c02a86d6eb29d4179f81fd6a24a80bdcd5ba74e35c2b9",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/task_result_review.py",
+    "original_sha256": "3be6a567a3f9521494ab3251b19e666a4a67bd5d0636ee78a23822100a825e4f",
+    "export_sha256": "3be6a567a3f9521494ab3251b19e666a4a67bd5d0636ee78a23822100a825e4f",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "traversal/task_prerequisites.py",
+    "original_sha256": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c",
+    "export_sha256": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "流程/01_发现.json",
+    "original_sha256": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785",
+    "export_sha256": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "流程/02_动作选择.json",
+    "original_sha256": "02022ff7d619ebd5fd0d9977c42d86c626820898e8b17118b5df087202272426",
+    "export_sha256": "02022ff7d619ebd5fd0d9977c42d86c626820898e8b17118b5df087202272426",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "流程/03_结果核对.json",
+    "original_sha256": "a45014cdf74dc1eb1721b18e8ebcaa9a70b976801cce6fbccbab41771af7369d",
+    "export_sha256": "a45014cdf74dc1eb1721b18e8ebcaa9a70b976801cce6fbccbab41771af7369d",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "流程/调用组成.json",
+    "original_sha256": "0270066b110b35087343cfd7ab742ff5639fb2d6282590ed9be9ed79452a8a57",
+    "export_sha256": "0270066b110b35087343cfd7ab742ff5639fb2d6282590ed9be9ed79452a8a57",
+    "trailing_whitespace_removed": false
+  },
+  {
+    "path": "流程/README.md",
+    "original_sha256": "0223618a5179b1e471334e9ac421b2686bf73a141c53dc721df0f5a1fa428001",
+    "export_sha256": "0223618a5179b1e471334e9ac421b2686bf73a141c53dc721df0f5a1fa428001",
+    "trailing_whitespace_removed": false
+  }
+]

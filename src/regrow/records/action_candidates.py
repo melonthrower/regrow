@@ -15,24 +15,7 @@ def candidate(region, cid, observation):
     if not current and (not appearance):
         return None
     row = (current or rows)[-1]
-    return {'id': cid, 'name': control['name'], 'region_ref': region['id'], 'image': appearance.get('image'), 'source_image': appearance.get('source_image'), **templates.assessment(appearance), 'icon_description': row.get('icon_description', ''), 'region_image': templates.image(region), **{key: appearance[key] for key in ('bbox',) if key in appearance}}
-
-def use_recorded_icon(item, control):
-    """Reuse an admitted icon as appearance evidence only."""
-    row = templates.latest(control) or {}
-    if not templates.usable(row, 'icon_image'):
-        return
-    (icon, source) = (row['icon_image'], row.get('source_image'))
-    if not source or not Path(source).is_file() or (not Path(icon).is_file()):
-        return
-    from regrow.recognition import matching as image_match
-    original = image_match.locate(icon, source)
-    (box, owner) = (original.get('box'), row.get('bbox'))
-    if not original.get('accepted') or not owner or (not box):
-        return
-    if not (owner['left'] <= box[0] < box[2] <= owner['right'] and owner['top'] <= box[1] < box[3] <= owner['bottom']):
-        return
-    item.update(image=icon, bbox=dict(zip(('left', 'top', 'right', 'bottom'), box)), identity_source='admitted recorded icon located in its original source image')
+    return {'id': cid, 'name': control['name'], 'region_ref': region['id'], 'image': appearance.get('image'), 'appearances': templates.variants(control), 'source_image': appearance.get('source_image'), **templates.assessment(appearance), 'icon_description': control.get('description') or row.get('description') or row.get('icon_description', ''), 'region_image': templates.image(region), **{key: appearance[key] for key in ('bbox',) if key in appearance}}
 
 def attach_related(request, records, state):
     """Complete foreground controls; recall older triggers only when relevant."""
@@ -74,7 +57,6 @@ def attach_related(request, records, state):
             item = candidate(region, cid, (state.get('observation') or {}).get('id'))
             if item is None:
                 continue
-            use_recorded_icon(item, owned_controls(region)[cid])
             item.update(candidate_scope='foreground_entry_trigger', foreground_region=rid, candidate_reason='曾打开当前前景的外层控件；按本图判断是否仍可操作及本次作用，不代表所属后台整体可交互')
             request.setdefault('backend_candidates', []).append(item)
             existing.add((owner, cid))

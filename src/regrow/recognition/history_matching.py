@@ -18,14 +18,18 @@ def match_region(rid, region, match, frame, snapshot=None, scope=None):
     eligible = 0
     shared = 0
     for (cid, control) in owned_controls(region).items():
-        if control.get('shared_control_ref'):
+        records = getattr(region, 'store', {rid: region})
+        from regrow.records.shared_controls import view
+        if view(records, rid, cid):
             shared += 1
             continue
-        path = image(control, rid, snapshot)
-        if not path:
+        appearances = [{**row, 'image': str((Path(snapshot) / row['image']).resolve()) if snapshot is not None else row['image']}
+                       for row in templates.variants(control)]
+        if not appearances:
             continue
         eligible += 1
-        hit = match(path)
+        from regrow.recognition.matching import match_appearances
+        hit = match_appearances(appearances, match)
         if hit.get('accepted'):
             hits.append({'control': cid, **hit})
     unique = []
@@ -62,27 +66,24 @@ def scan(records, snapshot, frame, scope=None):
     return rank([match_region(rid, r, match, frame, snapshot, scope) for (rid, r) in records.items()])
 
 def with_history(records, rows):
-    (rows, mapping) = names.candidates(records, rows)
-    selected = set(mapping.values())
-    evidence = [{**row, 'region_ref': mapping[row['ref']]} for row in rows]
-    evidence.extend(({'region_ref': rid, 'name': r['name'], '提供原因': ['历史身份索引；未进入本轮视觉或来源候选'], '当前状态': '未定位；仅供身份核对', '披露范围': '仅历史身份索引'} for (rid, r) in records.items() if rid not in selected))
-    return names.candidates(records, evidence)
+    """Only disclose identities selected by the caller's current question."""
+    return names.candidates(records, rows)
 
 def attach(request, records, ranking, mapping, snapshot=None):
     """Disclose historical identity as text; preserve only the caller’s evidence frames."""
     result = deepcopy(request)
     labels = {rid: label for (label, rid) in mapping.items()}
     dynamic = json.loads(result['user_prompt'])
-    rows = []
-    for candidate in rank(ranking) if all((r.get('foreground_confirmed') for r in ranking)) else sorted(ranking, key=lambda r: r['region']):
-        rid = candidate['region']
-        if rid not in labels:
-            continue
-        r = records[rid]
-        if not candidate.get('anchors') and (not candidate.get('matched_controls')):
-            continue
-        rows.append({'候选': labels[rid], '行为适用上下文': r.get('behavior_context', ''), '前景独立控件命中数': candidate['matched_controls'] if candidate.get('foreground_confirmed') else None, '状态': '已按同帧前景限定' if candidate.get('foreground_confirmed') else '候选位置尚未经前景核对，不是有效票数', '有合格模板的控件数': candidate['eligible_controls'], '历史控件总数': candidate['total_controls'], '共享控件不参与区分': candidate.get('shared_controls', 0), '命中控件': [{'名称': owned_controls(r)[h['control']]['name'], '当前候选位置': h['box']} for h in candidate['anchors']]})
-    dynamic['历史匹配对照'] = {'候选匹配线索': rows}
+    # Matching details belong to the same candidate, not a second catalog.
+    slots = [dynamic.get(key, []) for key in ('本次身份候选', '程序匹配候选', '已知区块')]
+    selected = {r['region']: r for r in ranking}
+    for rows in slots:
+        for row in rows:
+            rid = mapping.get(row.get('ref'), row.get('ref'))
+            candidate = selected.get(rid)
+            if candidate and candidate.get('anchors'):
+                row['本图外观线索'] = [owned_controls(records[rid])[h['control']]['name'] for h in candidate['anchors']]
+    result['matching_audit'] = deepcopy(ranking)
     result['user_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     if 'dynamic_prompt' in result:
         result['dynamic_prompt'] = result['user_prompt']

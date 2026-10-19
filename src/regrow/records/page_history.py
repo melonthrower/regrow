@@ -105,6 +105,12 @@ def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=F
         else:
             row = function_evidence.action_row(region, aid, action, records)
             event['观察'] = row['结果']
+            if run and state.get('_work_context', {}).get('kind') == 'locate' and action.get('evidence', {}).get('result_call'):
+                from regrow.records.calls import submission
+                accepted, _ = submission(run, action['evidence']['result_call'])
+                reviews = accepted.get('control_identity_reviews', [])
+                if reviews:
+                    event['已有身份核对'] = [{'结论': x['decision'], '依据': x['reason']} for x in reviews]
             if not row['结果'] or row['异常'] not in ('', 'none', None) or (not confirmed):
                 event['证据'] = row['依据']
             if row['异常'] not in ('', 'none', None):
@@ -214,7 +220,7 @@ def event_text(event, *, compact=False):
     if event.get('身份关联') != '已登记':
         lines.append('控件身份：' + event.get('身份关联', '未确认'))
     used = set()
-    for key in ('适用条件', '实际执行', '实际投递', '记录输入', '文字投递', '观察', '证据', '异常', '缺口', '执行明细缺口', '关联', '归属纠正', '参数观察', '已记录参数事实', '该次更新交接', '该次更新未确认事项'):
+    for key in ('适用条件', '实际执行', '实际投递', '记录输入', '文字投递', '观察', '已有身份核对', '证据', '异常', '缺口', '执行明细缺口', '关联', '归属纠正', '参数观察', '已记录参数事实', '该次更新交接', '该次更新未确认事项'):
         value = event.get(key)
         if value in ('', None, [], {}):
             continue

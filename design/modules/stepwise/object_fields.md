@@ -1,0 +1,88 @@
+# 四个业务对象的字段约定
+
+这是当前维护代码的字段说明，不是发给 Luna 的完整 Schema。每步仍只提供该问题需要的材料；历史导入可能带有旧字段，不能把旧字段当作新输出要求。
+
+## 维护约定
+
+本页是控件、区块、任务、实际动作及其附属结构的统一讨论入口。控件七项已整理；区块、任务、动作尚未逐项整理，未列全的字段不能据此删除。先核对本页与实际读写位置，区分已确认职责、待接入说明、已验证行为，不因填写歧义擅自迁移职责或增加字段。
+
+2026-10-19对齐：knowledge仅描述控件功能、跳转效果和条件（含原有参数规则），不加入探索价值评价；入口判断仍在may_open_content，是否还需探索仍在needs_exploration。字段说明现已接入相关Prompt；实际验证范围见月志。
+
+## 区块
+
+| 字段 | 内容与例子 |
+|---|---|
+| id、name、description | 稳定编号、名称、职责，如“城市选择对话框”。 |
+| controls | 引用全局控件 ID 的列表。多个区块可引用同一 ID；不会复制控件记录。 |
+| list_groups | 控件分组名对应控件ID列表；由控件字段迁入，不另存一份分组。 |
+| transitions | 实际动作后观察到的区块去向；不把同时可见等同于因果关系。 |
+| parent_region | 真实界面包含关系。识别/动作更新的 parent_index 登记，不是进入来路。 |
+| local_knowledge | 分段的区块使用说明，如输入、结果与确认如何配合。 |
+| functions | 可独立使用的功能及对象、完成条件、支持记录、参数。与说明存在重叠，尚未合并。 |
+| constraints | 从本地参数任务整理的参数定义目录，尚未退出区块层复制。 |
+| jump_to | 区块本身的操作使目标出现时登记；控件动作的关联保存在控件上。 |
+| image、icon_image | 从已接受观察投影的最新合格外观引用；可缺省。未要求区块完整显示在屏幕上；本次未删除区块图读取路径。 |
+
+仅在发生相应记录纠正时使用的字段：behavior_context（区块行为上下文）、distinct_regions（已确认不同的区块）、separated_from（分离来源）、partition_children（旧区块拆分结果）、merged_records（旧编号/名称别名审计）。历史 shared_controls 保存旧行为共享组；本次不再新建它或 shared_control_ref，旧组仍按原方式读取/纠正，不自动转换为同一对象。
+
+## 控件（已实现的新结构，验收状态见月志）
+
+稳定ID是全局控件表的键。控件本体固定为name、description、image、knowledge、jump_to、may_open_content、needs_exploration七项；多个区块直接引用同一个ID。未确认的布尔判断为null，未取得外观时image为空列表，没有跳转时jump_to为空列表。
+
+- image：path/conditions列表，表示同一控件已登记的不同外观。资格和来源留在对象观察历史；只在动作后明确请求add_image时追加已有控件图片。image_conditions描述该次状态图的条件，路径由框架生成。普通复认复用旧图；文字内容、位置、窗口/区块尺寸变化不是追加理由。同像素但留白不同的图复用旧来源，不造一次新的裁图来源。召回尝试全部合格状态图，同一控件同一位置只计一次；不同位置保留歧义。没有任意缩放语义去重。
+- knowledge：description/conditions列表，用途猜测与实际确认共用同一份当前字段，按程序保存的登记来源区分。确认后修订对应项，本次未输出的其他条件知识项保留。参数规则位于相应项的可选constraints中，规则沿用name/description及现有引用键；旧纯参数项可只有conditions和constraints，不编造用途描述。框架按原任务/来源读取确认规则。
+- jump_to：当前目标region、可选control、conditions。说明由knowledge表达，具体访问、原回复与动作编号留在历史；正常来源查询由同一控制关系实现派生，不在当前对象复制meaning/attempt。
+- may_open_content、needs_exploration：保留内容入口判断和探索判断，任务完成状态仍由任务记录管理。
+
+```json
+{
+  "name": "顶部添加",
+  "description": "公共工具栏中的加号按钮",
+  "image": [{"path": "images/add.png", "conditions": []}],
+  "knowledge": [
+    {"description": "打开城市选择。", "conditions": ["World标签页"]},
+    {"description": "打开新建闹钟。", "conditions": ["Alarms标签页"]}
+  ],
+  "jump_to": [
+    {"region": "r0003", "conditions": ["World标签页"]},
+    {"region": "r0004", "conditions": ["Alarms标签页"]}
+  ],
+  "may_open_content": true,
+  "needs_exploration": false
+}
+```
+
+小时“＋”和分钟“＋”仍是独立控件。控件分组保存于所属区块list_groups（分组名→控件ID列表），同一全局控件在不同区块可以有各自分组。新的共享关系不创建包装；旧行为共享组仍属于区块记录，按成员查询，不能因此把不同控件合并为同一身份。
+
+possible_purpose、顶层constraints、list_group、icon_image、shared_control_ref、merged_records均退出控件本体。旧源码快照/调用/图片不改写；读取旧快照时归一化，合并别名、归属纠正及旧共享任务信息留在历史中，后读复用统一查询。
+
+模型输出中的index、region_index、list_group是本次身份/关系登记字段；动作后另可填add_image、image_conditions，单图外观登记使用bbox。它们不会原样成为控件的长期字段。knowledge内的index只引用本轮提供的知识条目行号。description同时是模型与存储中的控件描述，退出旧icon_appearance名称。
+
+## 入口判断填写说明（2026-10-19已接入Prompt）
+
+may_open_content判断是否可能打开或展开有助于了解应用功能及操作关系的内容，包括页面、菜单、区块或独立控件；例如展开搜索输入框。仅出现新页面不代表有遍历价值，明确无关的宣传等内容不计入；无法判断填null。已了解的功能入口仍可为true，是否还需探索由needs_exploration判断。
+
+填写说明位于共享/区块身份复用.prompt、发现手册/输出填写.prompt、更新/区块变化与字段.prompt。knowledge继续只保存功能、跳转和条件；七字段结构、上下文选择、后读标签和调度逻辑不改。本次只补语义说明，不引入本轮范围重置策略或额外价值字段。原文档将简单说明扩大成范围复用设计，现删除该未采纳方向。
+
+新说明的实际验证以本月日志为准；提示已改不代表模型行为已接受。旧历史原件不改写。
+
+## 任务与实际动作（尚未逐项整理）
+
+任务记录探索对象及进度；实际动作记录真正操作、回执和观察，两者保留原任务与实际来源归属。具体字段以维护实现及模块文档为准，后续逐对象确认后补全本页，不从控件结构推导未经确认的新字段。
+
+## 任务与本轮进度
+
+任务存在 tasks.json，以“区块 ID / 任务名”为键，控件字段引用全局 ID；不在区块中复制任务。实际动作仍有唯一 source_region 和原任务引用。同一控件在其他区块发生的动作可作为历史，但上下文标明来源，不宣称当前区块已经执行。
+
+runtime_work.json 以区块 ID 保存下列本轮字段（与区块功能知识分开）：
+
+- task_inventory：本次已考虑哪些控件、清点是否完整、具体待复核项；不是任务列表。
+- function_inventory：上次功能总结来源及材料摘要，用于材料变化后重新总结。
+- out_of_scope_reason：本次运行范围为何排除该区块。
+- registration_gaps、registration_gap_history：登记缺口与处理历史。
+- support_review_key：功能支持复核标记。
+- partition_review：区块拆分的未分配项/冲突。
+- control_observation_revisions：控件观察纠正历史。
+- prior_local_knowledge、prior_partition_functions：区块合并/拆分前保留的旧总结。
+
+runtime_state.json 保存当前区块、活动任务、观察等调度状态。object_history/action_log/task_history 及原调用保存程序来源与历史；不作为普通提示全文展开，也不新增一套平行事实。

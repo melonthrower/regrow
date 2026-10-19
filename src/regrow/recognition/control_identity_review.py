@@ -142,10 +142,11 @@ def reused_candidates(records, snapshot, frame, request, reply):
             continue
         cid = labels.get(ref, ref)
         matches = [(rid, old) for (rid, region) in records.items() for (key, old) in owned_controls(region).items() if key == cid]
-        if len(matches) != 1:
+        if not matches:
             continue
-        (rid, old) = matches[0]
         ri = row.get('region_index')
+        proposed = owner(records, request, reply['regions'][ri]) if isinstance(ri, int) and 0 <= ri < len(reply.get('regions', [])) else None
+        rid, old = next(((r, c) for r, c in matches if r == proposed), matches[0])
         if ri is None:
             indices = [i for (i, region) in enumerate(reply.get('regions', [])) if owner(records, request, region) == rid]
             if len(indices) != 1:
@@ -166,6 +167,8 @@ def reused_candidates(records, snapshot, frame, request, reply):
         if hit.get('accepted'):
             continue
         pair = {'kind': 'reuse', 'region': rid, 'control': cid, 'region_index': ri, 'control_index': ci, 'region_name': records[rid]['name'], 'region_ref': region.get('ref'), 'old_name': old['name'], 'ref': cid, 'submitted_ref': ref, 'current_name': row.get('name', old['name']), 'current_box': box(row.get('bbox')), 'historical_box': box(observed['bbox']), 'historical_frame': str(source), 'current_frame': str(Path(frame).resolve()), 'historical_evidence': deepcopy(observed.get('evidence', {})), 'historical_description': observed.get('icon_description', ''), 'snapshot': str(snapshot.resolve()), 'current_image': 1}
+        pair['current_candidates'] = [list(p['box']) for p in hit.get('candidates', []) if p.get('box')]
+        pair['region_description'] = records[rid].get('description', '')
         identity = {k: pair[k] for k in ('kind', 'region', 'control', 'current_box', 'historical_frame', 'current_frame', 'snapshot')}
         pair['key'] = hashlib.sha256(json.dumps(identity, sort_keys=True).encode() + source.read_bytes() + Path(frame).read_bytes()).hexdigest()
         from regrow.records import control_history_context as control_history_context
@@ -206,7 +209,7 @@ def review_material(job, original, pairs):
     if '来源区块已有任务' in materials:
         ref = materials.get('当前任务引用')
         materials['来源区块已有任务'] = [row for row in materials['来源区块已有任务'] if ref and row.get('task') == ref]
-    value = {'原工作': deepcopy(original.get('work_context', {})), '原任务与实际操作': {k: deepcopy(v) for (k, v) in materials.items() if k in ('本轮工作', '本轮探索任务', '当前任务', '任务目标', '实际来源区块', '实际入口', '实际动作', '回执', '动作前对象观察', '准备动作说明', '当前任务引用', '来源区块已有任务', '任务与实际对象核对', '动作请求来源上下文', '来源身份说明', '控件关联待核对', '登记说明')}, '核对原因': job.get('error'), '此前修复': deepcopy(job.get('history', [])), '补充观察': deepcopy(job.get('supplements', []))}
+    value = {'原工作': deepcopy(original.get('work_context', {})), '原任务与实际操作': {k: deepcopy(v) for (k, v) in materials.items() if k in ('本轮探索任务', '当前任务', '任务目标', '实际来源区块', '实际入口', '实际动作', '回执', '动作前对象观察', '准备动作说明', '当前任务引用', '来源区块已有任务', '任务与实际对象核对', '动作请求来源上下文', '来源身份说明', '控件关联待核对', '登记说明')}, '核对原因': job.get('error'), '此前修复': deepcopy(job.get('history', [])), '补充观察': deepcopy(job.get('supplements', []))}
     execution(value['原任务与实际操作'])
     for slot in ('任务目标', '当前任务'):
         card = value['原任务与实际操作'].get(slot)
@@ -220,6 +223,10 @@ def review_material(job, original, pairs):
     history = original.get('page_context', {}).get('history', {}).get('events', {})
     identities = {(pair['region'], pair['control']) for pair in pairs}
     value['直接相关历史'] = {aid: deepcopy(row) for (aid, row) in history.items() if (row.get('region'), row.get('control')) in identities or aid == job.get('attempt')}
+    owners = {pair['region'] for pair in pairs}
+    value['区块状态的已接受依据'] = {aid: deepcopy(row) for aid, row in history.items()
+                               if row.get('region') in owners and row.get('已有身份核对')
+                               and aid not in value['直接相关历史']}
     candidate = job.get('candidate') or {}
     if candidate.get('controls'):
         value['单图步骤待登记的候选观察'] = deepcopy(candidate['controls'][pairs[0]['control_index']])
@@ -313,6 +320,8 @@ def attach(root, job, request):
     dynamic['本次只核对这一对控件'] = {'区块': pair['region_name'], '历史对象': {'图片': 2, '名称': pair['old_name'], 'ref': pair['ref'], '身份框': pair['historical_box'], '原观察': pair['historical_evidence'], '外观描述': pair['historical_description'], '历史职责与知识': pair['context']}, '当前对象': {'图片': pair['current_image'], '名称': pair['current_name'], **({'身份框': pair['current_box']} if pair['current_box'] else {})}, '说明': '图1为本步对象所在原场景，图2为历史对象原场景；给定框只用于指认。本次只返回身份判断与理由。'}
     if pair.get('kind') == 'reuse':
         dynamic['本次目的'] = '确认本帧能否复用历史控件 ' + pair['ref'] + '。same表示该历史对象在当前前景中可确认；different表示本次引用了其他对象或历史对象不在当前前景；uncertain表示仍不能判断。different只撤回这条本帧引用，旧身份与历史保留。'
+    if pair.get('kind') == 'reuse' and not pair.get('current_box'):
+        dynamic['本次只核对这一对控件']['当前对象'] = {'图片': 1, '待复核的历史引用':pair['ref'], '所属区块':pair['region_name'], '该区块最近登记描述':pair.get('region_description',''), '本图外观位置候选':pair.get('current_candidates',[]), '说明':'本次没有已绑定的当前框；先在图1确认这个历史控件是否仍可辨认。候选位置只是找对象的线索，不是自动对应。不能自行改为旁边另一个控件进行比较。'}
     if pair.get('selection_reason'):
         if not any((row.get('identity_candidate') == pair['ref'] and same(row.get('reason'), pair['selection_reason']) for row in job.get('history', []))):
             dynamic['候选选择依据'] = pair['selection_reason']

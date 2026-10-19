@@ -1,27 +1,21 @@
-## 对象身份与归属
-已有区块用ref引用材料中的稳定编号；区块的新旧判断仍使用identity。已有控件填写材料给出的index，仅补充本次变化；确认新增的控件不填index，填写名称、所属区块和用途判断。控件身份未确定时写入uncertainties，不提交待猜测的控件记录。
-区块包含操作区和信息展示区。位置、数值、选中、禁用或用途模式变化本身不产生新身份。同一个输入框可承载多种用途，不能按功能名称拆成多个控件；原按钮仍在而新增独立输入框时分别登记。同类实例可共享用途，但仍有各自身份。
-
-## 对象字段
-- name：简洁、稳定的对象名称；不把当前输入值作为名称。
-- description：区块的职责与必要识别特征。
-- ref：已提供的区块编号。
-- index：本轮材料中已有控件的序号，从0开始；不是本次controls输出的位置。
-- region_index：控件直接所属区块在本次regions中的下标。新控件填写；旧控件所属区块已在本轮唯一确认且归属未变时可省略。
-- parent_index：直接包含本区块的父区块在本次regions中的下标；仅有真实包含关系时填写。打开某区块的入口不是父区块。
-- identity_evidence、reason：区块身份未定、歧义或划分修订时的具体依据。控件身份疑问写入uncertainties。
-- context_matches：历史身份附有behavior_context时，判断当前是否符合；无此限制时可省略。已有差异依据仍需核对。
-- out_of_scope_reason：整个区块确实超出本轮允许范围时说明原因；通常省略。
-
-## 示例：新控件与明确用途
-已提供r0080“文件查找区”，本图发现一个此前未登记的关闭按钮。
+## 对象身份与归属 → regions / controls
+同一对象的位置、输入值、选中或禁用状态变化不产生新身份。已有区块用ref引用，已有控件用材料中的index引用，只补必要变化。区块身份不确定时不绑定ref，填写name、description、identity="uncertain"，在identity_evidence中点名候选及具体缺口；控件尚不能对应时写入uncertainties。
+对应字段：ref是旧区块编号；index是材料中的旧控件序号；region_index是所属区块在本次regions数组的位置，从0开始；parent_index只用于真实物理包含，不把进入来路当包含父级。
+局部字段例（假设材料中的index=3属于r0080，不是完整回复）：
 ```json
-{
-  "regions":[{"ref":"r0080"}],
-  "controls":[{"region_index":0,"name":"关闭","possible_purpose":"关闭文件查找区","may_open_content":false,"needs_exploration":false}]
-}
+{"regions":[{"ref":"r0080"},{"name":"示例内容区","description":"示例展示内容","identity":"new"}],"controls":[{"index":3,"region_index":0}]}
 ```
-用途明确可直接登记，不必为了证明关闭功能而操作。
+这里region_index=0表示控件属于第一个区块r0080；若属于第二个区块才填1。它不是旧区块ID，也不是旧控件index。
+正例：输入内容变化仍引用原输入框；新出现的独立输入框单独登记。
+反例：按标题或用途模式变化拆出重复身份；把侧栏输入框挂到中央弹窗。
 
-## 控件用途判断
-possible_purpose简要判断控件可能的用途，不要求固定句式。may_open_content判断是否可能打开其他功能内容；needs_exploration判断是否需要进一步探索，不确定填null。输入方式、限制或反馈未知时，即使不打开新内容也可能需要探索。识别阶段不把猜测登记为knowledge；实际确认的知识由任务答案登记。
+## 控件知识与探索判断 → knowledge / may_open_content / needs_exploration
+新控件填写name、region_index、description及knowledge。description描述稳定外观和作用对象；knowledge是用途知识列表，每项description说明用途，conditions说明适用条件（通用时[]）。识别前的用途猜测与探索后的确认知识都保存在knowledge；框架依据本次登记来源区分。
+may_open_content判断是否可能打开或展开有助于了解应用功能及操作关系的内容，包括页面、菜单、区块或独立控件；例如展开搜索输入框。仅出现新页面不代表有遍历价值，明确无关的宣传等内容不计入；无法判断填null。已了解的功能入口仍可为true，是否还需探索由needs_exploration判断。needs_exploration表示是否有值得探索的具体未知，不确定填null。明确且无需探索的用途可以直接登记，不强制产生任务。
+局部字段例（示意新发现关闭按钮）：
+```json
+{"controls":[{"region_index":0,"name":"关闭","description":"对话框上的叉形按钮","knowledge":[{"description":"关闭当前对话框","conditions":[]}],"may_open_content":false,"needs_exploration":false}]}
+```
+已知控件只补必要变化；没有新用途信息时不重报knowledge。知识项若有参数规则，可选constraints保存name/description规则；不把输入当前值当成规则。
+正例：普通复认沿用原知识与图片，发现新的适用条件时修订相应知识项。反例：把输入文本变化当成新控件或另一张按钮状态图。
+name使用稳定名称；整个区块确实超出用户允许范围时才填out_of_scope_reason。

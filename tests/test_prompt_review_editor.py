@@ -2,13 +2,10 @@
 import importlib.util
 import json
 from pathlib import Path
-
 import pytest
-
 spec = importlib.util.spec_from_file_location('prompt_review_editor', Path(__file__).parents[1] / 'tools/prompt_review_editor.py')
 editor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(editor)
-
 
 @pytest.fixture
 def review_root(tmp_path):
@@ -18,16 +15,14 @@ def review_root(tmp_path):
         path = tmp_path / 'dist' / folder / (name + '.txt')
         path.parent.mkdir(parents=True)
         path.write_text('# 识别\n确认旧对象。\n', encoding='utf-8')
-    return tmp_path, name
-
+    return (tmp_path, name)
 
 def test_save_keeps_baseline_positions_ideas_and_reload(review_root):
-    root, name = review_root
+    (root, name) = review_root
     store = editor.EditorStore(root)
     old = store.read(name)
     text = '# 识别\n确认已有对象；新对象另行登记。\n'
-    note = {'id': 'one', 'body': '这句应只讲身份。', 'quote': '确认已有对象', 'source_text': text,
-            'start_line': 2, 'end_line': 2}
+    note = {'id': 'one', 'body': '这句应只讲身份。', 'quote': '确认已有对象', 'source_text': text, 'start_line': 2, 'end_line': 2}
     saved = store.save({**old, 'text': text, 'idea': '更容易读懂 📝', 'notes': [note]})
     reloaded = editor.EditorStore(root).read(name)
     assert reloaded == saved
@@ -38,9 +33,8 @@ def test_save_keeps_baseline_positions_ideas_and_reload(review_root):
     assert '更容易读懂' not in (root / 'dist/modified.js').read_text()
     assert len(list((root / 'user_edits/history').glob('*.json'))) == 1
 
-
 def test_stale_save_and_unknown_path_do_not_overwrite(review_root):
-    root, name = review_root
+    (root, name) = review_root
     store = editor.EditorStore(root)
     old = store.read(name)
     saved = store.save({**old, 'text': '# 新稿\n保留当前内容。'})
@@ -50,9 +44,8 @@ def test_stale_save_and_unknown_path_do_not_overwrite(review_root):
         store.save({**old, 'path': '../other.py', 'text': 'overwrite'})
     assert store.read(name)['text'] == saved['text']
 
-
 def test_review_snapshot_is_immutable_and_intent_separate(review_root):
-    root, name = review_root
+    (root, name) = review_root
     store = editor.EditorStore(root)
     old = store.read(name)
     saved = store.save({**old, 'idea': '不改正文也想让读者评估这段。'})
@@ -65,17 +58,14 @@ def test_review_snapshot_is_immutable_and_intent_separate(review_root):
     store.save({**saved, 'text': '# 之后的新稿\n继续修改。'})
     assert (folder / 'prompts.json').read_bytes() == frozen
 
-
 def test_annotation_must_point_to_its_frozen_text(review_root):
-    root, name = review_root
+    (root, name) = review_root
     store = editor.EditorStore(root)
     old = store.read(name)
-    note = {'id': 'bad', 'body': '位置错了', 'quote': '确认旧对象', 'source_text': old['text'],
-            'start_line': 1, 'end_line': 1}
+    note = {'id': 'bad', 'body': '位置错了', 'quote': '确认旧对象', 'source_text': old['text'], 'start_line': 1, 'end_line': 1}
     with pytest.raises(ValueError):
         store.save({**old, 'notes': [note]})
     assert store.read(name) == old
-
 
 def test_removed_text_keeps_its_original_section():
     before = '# 识别\n删除这句。\n# 登记\n保留这句。\n'
@@ -84,9 +74,8 @@ def test_removed_text_keeps_its_original_section():
     assert difference[0]['section'] == '# 识别'
     assert difference[0]['before']['start_line'] == 2
 
-
 def test_worklog_survives_restart_and_rejects_stale_write(review_root):
-    root, _ = review_root
+    (root, _) = review_root
     store = editor.EditorStore(root)
     old = store.read_worklog()
     saved = store.save_worklog({**old, 'text': '总体思路：把历史和提示一起看。\n下一步：检查引用。'})
@@ -99,7 +88,6 @@ def test_worklog_survives_restart_and_rejects_stale_write(review_root):
     assert packet['count'] == 0 and packet['has_worklog']
     assert (root / 'user_edits/submissions' / packet['id'] / 'worklog.md').read_text() == saved['text']
 
-
 def saved_context(root):
     import base64
     run = root / 'real-run'
@@ -107,17 +95,15 @@ def saved_context(root):
     call.mkdir(parents=True)
     image = run / 'image.png'
     image.write_bytes(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jN1sAAAAASUVORK5CYII='))
-    request = {'user_prompt': '历史：已有对象甲。', 'system_prompt': '识别当前对象。',
-               'role': 'observation', 'screenshots': [str(image)], 'fixed_parts': []}
+    request = {'user_prompt': '历史：已有对象甲。', 'system_prompt': '识别当前对象。', 'role': 'observation', 'screenshots': [str(image)], 'fixed_parts': []}
     (call / 'request.json').write_text(json.dumps(request, ensure_ascii=False))
     (call / 'user.prompt').write_text(request['user_prompt'])
     (call / 'system.prompt').write_text(request['system_prompt'])
-    return run, call, request
-
+    return (run, call, request)
 
 def test_context_draft_keeps_original_record_and_images(review_root):
-    root, name = review_root
-    run, call, request = saved_context(root)
+    (root, name) = review_root
+    (run, call, request) = saved_context(root)
     raw = (call / 'request.json').read_bytes()
     key = editor.import_context(root, run, '0001', '真实请求素材')
     store = editor.EditorStore(root)
@@ -135,19 +121,17 @@ def test_context_draft_keeps_original_record_and_images(review_root):
     assert '请判断材料' not in (folder / 'contexts.json').read_text()
     assert '请判断材料' in (folder / 'ideas.json').read_text()
 
-
 def test_context_import_refuses_mismatched_record(review_root):
-    root, _ = review_root
-    run, call, _ = saved_context(root)
+    (root, _) = review_root
+    (run, call, _) = saved_context(root)
     (call / 'user.prompt').write_text('与原始请求不同')
     with pytest.raises(ValueError):
         editor.import_context(root, run, '0001', '不匹配的请求')
     assert not (root / 'context_cases.json').exists()
 
-
 def test_read_only_context_can_be_attached_for_review(review_root):
-    root, _ = review_root
-    run, _, request = saved_context(root)
+    (root, _) = review_root
+    (run, _, request) = saved_context(root)
     key = editor.import_context(root, run, '0001', '待检查历史')
     store = editor.EditorStore(root)
     packet = store.submit([key])
@@ -156,17 +140,13 @@ def test_read_only_context_can_be_attached_for_review(review_root):
     assert contexts[0]['text'] == request['user_prompt']
     assert contexts[0]['changes'] == []
 
-
 def test_history_guide_is_separate_and_marks_changed_sources(review_root, monkeypatch):
-    root, name = review_root
+    (root, name) = review_root
     assets = root / 'tools/prompt_review_editor'
     assets.mkdir(parents=True)
     source = root / 'source.py'
     source.write_text('original implementation')
-    catalog = {'notice': '人工说明', 'parts': {name: ['recognition']},
-               'profiles': {'recognition': {'title': '身份历史', 'fields': {'提供什么': '旧对象'},
-                   'sources': [{'file': 'source.py', 'functions': [],
-                                'sha256': editor.sha256(source.read_bytes()).hexdigest()}]}}}
+    catalog = {'notice': '人工说明', 'parts': {name: ['recognition']}, 'profiles': {'recognition': {'title': '身份历史', 'fields': {'提供什么': '旧对象'}, 'sources': [{'file': 'source.py', 'functions': [], 'sha256': editor.sha256(source.read_bytes()).hexdigest()}]}}}
     (assets / 'history_guide.json').write_text(json.dumps(catalog))
     monkeypatch.setattr(editor, 'ASSETS', assets)
     store = editor.EditorStore(root)
@@ -182,16 +162,15 @@ def test_history_guide_is_separate_and_marks_changed_sources(review_root, monkey
     snapshot = (store.data / 'submissions' / packet['id'] / 'prompts.json').read_text()
     assert '人工说明' not in snapshot and '身份历史' not in snapshot
 
-
 def test_fragment_history_links_come_from_saved_request(review_root):
-    root, name = review_root
-    run, call, request = saved_context(root)
+    (root, name) = review_root
+    (run, call, request) = saved_context(root)
     request['fixed_parts'] = [{'path': name + '/片段-1'}, {'path': name + '/片段-2'}]
     (call / 'request.json').write_text(json.dumps(request, ensure_ascii=False))
     key = editor.import_context(root, run, '0001', '分段提示的真实请求')
     catalog = json.loads((root / 'context_cases.json').read_text())
     assert catalog[key]['related_prompts'] == [name]
-    catalog[key]['related_prompts'] = []  # Previously imported fragment paths were not linked.
+    catalog[key]['related_prompts'] = []
     (root / 'context_cases.json').write_text(json.dumps(catalog))
     raw = (root / 'context_cases.json').read_bytes()
     store = editor.EditorStore(root)

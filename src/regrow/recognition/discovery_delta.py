@@ -1,3 +1,4 @@
+from regrow.records.control_records import group_name
 """Discovery references reuse identity facts, never unobserved current state."""
 from regrow.records.object_store import observation_history
 from regrow.records.object_store import owned_controls
@@ -72,8 +73,9 @@ def resolve(records, request, reply, snapshot=None, frame=None, run=None):
             row['region_index'] = matches[0]
         owner_index = row.get('region_index')
         rid = owners[owner_index] if isinstance(owner_index, int) and 0 <= owner_index < len(owners) else None
-        old = owned_controls(records.get(rid, {})).get(cid, {})
-        inherited = {key: value for (key, value) in {'identity': 'same', 'name': old.get('name', previous), **({'list_group': old['list_group']} if 'list_group' in old else {})}.items() if key not in row}
+        from regrow.records.object_store import control_record
+        old = control_record(records, cid) or {}
+        inherited = {key: value for (key, value) in {'identity': 'same', 'name': old.get('name', previous), **({'list_group': group_name(records.get(rid, {}), cid)} if group_name(records.get(rid, {}), cid) else {})}.items() if key not in row}
         row.update(inherited)
         observed = same_frame_observation(old, snapshot, rid, frame, run)
         fields = {'knowledge': 'knowledge'}

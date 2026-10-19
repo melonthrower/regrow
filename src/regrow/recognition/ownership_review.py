@@ -110,8 +110,12 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
         collisions = {key for (key, c) in owned_controls(dest).items() if c['name'] == owned_controls(source)[cid]['name']}
         if cid in owned_controls(dest) or (collisions and (rid, cid, frozenset(collisions)) not in merge_controls):
             raise ValueError('目标区块已有同名控件，先核对是否重复身份')
+        from regrow.records.control_records import group_name, set_group
+        list_group = group_name(source, cid)
         control = owned_controls(source).pop(cid)
         owned_controls(dest)[cid] = reg.rebase(control, snapshot, snapshot)
+        if list_group:
+            set_group(dest, cid, list_group)
         owned_controls(dest)[cid]['ownership_evidence'] = {'previous_region': source_id, **item}
         moved[cid] = rid
         for (name, task) in list(owned_tasks(source).items()):

@@ -80,3 +80,17 @@ def admitted_box(proposal, field='bbox'):
     if quality in proposal and proposal[quality] != 'clear':
         return None
     return proposal.get(field)
+
+
+def variants(item):
+    """Admitted full-control appearances, newest first; each retains its source."""
+    rows = observation_history(item)
+    if not rows and isinstance(item.get('image'), str):
+        rows = [item]
+    result = []
+    seen = set()
+    for row in reversed(rows):
+        if usable(row) and row['image'] not in seen:
+            result.append(row)
+            seen.add(row['image'])
+    return result

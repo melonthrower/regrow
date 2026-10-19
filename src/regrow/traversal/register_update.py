@@ -45,7 +45,6 @@ def commit_update(root, run, call_ref, attempt_ref):
     from regrow.records import task_updates as _task_updates
     from regrow.records import control_context as _control_context
     from regrow.traversal import task_prerequisites as _task_prerequisites
-    from regrow.traversal import region_tasks as _region_tasks
     from regrow.traversal import task_routing as _task_routing
     (root, run) = (Path(root), Path(run).resolve())
     graph = {'action_edges': [], 'observations': []}
@@ -192,7 +191,7 @@ def commit_update(root, run, call_ref, attempt_ref):
     effective_binding = {**binding, 'region_ref': source, 'control_ref': control, 'task_update_ref': original_task_ref}
     _task_prerequisites.apply(records, reply, call_ref, request.get('dependency_candidates', []))
     _record_settle_task(records[binding.get('task_region', source)], effective_binding, reply, attempt_ref, records, receipt=receipt, labels=request.get('region_names'), candidates=request.get('task_update_candidates'))
-    register_destinations(reply.get('destinations'), records, delta_refs, reply['controls'], owner, attempt_ref, call_ref)
+    register_destinations(reply.get('jump_to'), records, delta_refs, reply['controls'], owner, attempt_ref, call_ref)
     binding = effective_binding
     for region in records.values():
         for action in owned_actions(region).values():
@@ -222,7 +221,6 @@ def commit_update(root, run, call_ref, attempt_ref):
     state['recovery_handoff'] = reply['action_result'].get('recovery_handoff', '')
     if historical:
         suspended.complete(records, previous_state, state, historical, call_ref, attempt_ref)
-    _region_tasks.review_observation(records, state, state.get('interactive_regions', []), reply, call_ref)
     snapshot.parent.mkdir(parents=True, exist_ok=True)
     temp = Path(tempfile.mkdtemp(prefix='.pending-', dir=snapshot.parent))
     try:
@@ -231,7 +229,9 @@ def commit_update(root, run, call_ref, attempt_ref):
             observation_history(records[source])[0] = observation_history(split_record)[0]
             for (cid, c) in owned_controls(split_record).items():
                 observation_history(owned_controls(records[source])[cid])[0] = observation_history(c)[0]
-        _owner_save_region_images(records, delta_refs, reply, call_ref, run, edge.get('after_image'), snapshot, temp, observation=edge['after_observation'])
+        _owner_save_region_images(records, delta_refs, reply, call_ref, run, edge.get('after_image'), snapshot, temp,
+                                  observation=edge['after_observation'], update_images=True,
+                                  text_control=control if dispatch.get('action', {}).get('action') == 'input_text' else None)
         from regrow.records.snapshots import commit as commit_snapshot
         source_record = {'record_format': 'flat_region_controls', 'graph': None, 'call': call_ref, 'attempt': attempt_ref, 'digest': digest, 'parent_snapshot': parent_snapshot}
         commit_snapshot(run, temp, snapshot, records, state, source_record, pointer)

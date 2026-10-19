@@ -1,0 +1,2845 @@
+{
+  "date": "2026-10-20",
+  "kind": "current-local-research-snapshot-not-full-acceptance",
+  "parent_remote_commit": "bb27a049c2511daa733574124a062da89ef20762",
+  "local_head": "03d40d5097c00781dc6bbd54fb53612058286334",
+  "source_includes_uncommitted_worktree": true,
+  "runtime_and_review_drafts_separate": true,
+  "offline_focused_tests_passed": 69,
+  "new_Luna_calls": 0,
+  "new_GUI": 0,
+  "files": {
+    "src/README.md": {
+      "source": "a21cf234dc3324e73a7313907c673e452187b3fa63f16f98262a0088ed041b17",
+      "export": "a21cf234dc3324e73a7313907c673e452187b3fa63f16f98262a0088ed041b17"
+    },
+    "src/__main__.py": {
+      "source": "7d0661f901b397656d80f59be4f07e46abb120ee4b978168fac0622525deb965",
+      "export": "7d0661f901b397656d80f59be4f07e46abb120ee4b978168fac0622525deb965"
+    },
+    "src/regrow/__init__.py": {
+      "source": "0915c7f20611203287c5ebd6901edba7cd500d70938adc03baf511c13def6a2d",
+      "export": "0915c7f20611203287c5ebd6901edba7cd500d70938adc03baf511c13def6a2d"
+    },
+    "src/regrow/paths.py": {
+      "source": "262461f64c4e96e067558aef4b1003cba71179521a2d4dbb5b3caa15792aacef",
+      "export": "262461f64c4e96e067558aef4b1003cba71179521a2d4dbb5b3caa15792aacef"
+    },
+    "src/regrow/prompts/README.md": {
+      "source": "b4bd306abd7303cfddb76290836fadd333d3812da1136e7e610e447a6eda4248",
+      "export": "b4bd306abd7303cfddb76290836fadd333d3812da1136e7e610e447a6eda4248"
+    },
+    "src/regrow/prompts/__init__.py": {
+      "source": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "export": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/regrow/prompts/compose.py": {
+      "source": "74403c6fd4789fa122fb4e4003af7141e6289f44c889642145a4c6256ed5a68c",
+      "export": "74403c6fd4789fa122fb4e4003af7141e6289f44c889642145a4c6256ed5a68c"
+    },
+    "src/regrow/prompts/frame_context.py": {
+      "source": "fee9b2aeb83019ed2c460c12c33ffdc7a331a04f2edcfc22f0d5dfa1b6345d68",
+      "export": "fee9b2aeb83019ed2c460c12c33ffdc7a331a04f2edcfc22f0d5dfa1b6345d68"
+    },
+    "src/regrow/prompts/history_disclosure.py": {
+      "source": "422c77aad90a458e5179e085f78d3e09f0f8604ead6856c7dcbcfd42d6d4d6e5",
+      "export": "422c77aad90a458e5179e085f78d3e09f0f8604ead6856c7dcbcfd42d6d4d6e5"
+    },
+    "src/regrow/prompts/map_prompt.py": {
+      "source": "ee4a4986f13711394ce82e9eb02696c27ac57f1e17ada856730b83369d4a1943",
+      "export": "ee4a4986f13711394ce82e9eb02696c27ac57f1e17ada856730b83369d4a1943"
+    },
+    "src/regrow/prompts/output.py": {
+      "source": "2f98561ae35efd9b4056bc998b5ae2b5917e20644b465bfc30743d72725ac82b",
+      "export": "2f98561ae35efd9b4056bc998b5ae2b5917e20644b465bfc30743d72725ac82b"
+    },
+    "src/regrow/prompts/prompt_material.py": {
+      "source": "7cb1146b062ffb200976c8d2fa9178e33cd6651aa231d5a48883e34bda2a0d2e",
+      "export": "7cb1146b062ffb200976c8d2fa9178e33cd6651aa231d5a48883e34bda2a0d2e"
+    },
+    "src/regrow/prompts/response_example.py": {
+      "source": "43dde677868bb262d33bac192ee83ef34e1f634ab60be12afa3c587a1250f344",
+      "export": "43dde677868bb262d33bac192ee83ef34e1f634ab60be12afa3c587a1250f344"
+    },
+    "src/regrow/prompts/target_observation.py": {
+      "source": "5e3fd1057d461c4c6aa44da30a1ecda87be0fde2b13d3e744006c2b7dee2c55a",
+      "export": "5e3fd1057d461c4c6aa44da30a1ecda87be0fde2b13d3e744006c2b7dee2c55a"
+    },
+    "src/regrow/prompts/task_progress.py": {
+      "source": "452d0c4fbd06ed36b24c0448ce4442a5191c77348f7053241d46fa37dc3bb221",
+      "export": "452d0c4fbd06ed36b24c0448ce4442a5191c77348f7053241d46fa37dc3bb221"
+    },
+    "src/regrow/prompts/任务/任务动作登记.prompt": {
+      "source": "723b884a82ca285c3a80e86b16ec323ba616a0d831c5448429f774247a4935cb",
+      "export": "723b884a82ca285c3a80e86b16ec323ba616a0d831c5448429f774247a4935cb"
+    },
+    "src/regrow/prompts/任务/任务登记与补全.prompt": {
+      "source": "473ed743ba1a75efe416fe96bdc3bc3bb48a58db3233cf9769a1af5565d44743",
+      "export": "473ed743ba1a75efe416fe96bdc3bc3bb48a58db3233cf9769a1af5565d44743"
+    },
+    "src/regrow/prompts/任务/任务粒度与反馈.prompt": {
+      "source": "608f81f82311e7b33412ce3a51202f17b2d3e2150182fee04c2e2b5c374f6ee2",
+      "export": "608f81f82311e7b33412ce3a51202f17b2d3e2150182fee04c2e2b5c374f6ee2"
+    },
+    "src/regrow/prompts/任务/前置条件与恢复.prompt": {
+      "source": "ec2ef66bf1c0c8a5daaf5caf90ae6d891985f8fde514c6d8e58ff3d898fc0911",
+      "export": "ec2ef66bf1c0c8a5daaf5caf90ae6d891985f8fde514c6d8e58ff3d898fc0911"
+    },
+    "src/regrow/prompts/任务/动作后Region增量.prompt": {
+      "source": "2c080e961d583fdc6ac0627b3e25f96e4bf7ba50a6513b7ffe775a76840ece48",
+      "export": "2c080e961d583fdc6ac0627b3e25f96e4bf7ba50a6513b7ffe775a76840ece48"
+    },
+    "src/regrow/prompts/任务/区块功能登记.prompt": {
+      "source": "367c43e6b095b3dd622633cb1aaf4d25441ba3a000c6206469973728aa28e4f0",
+      "export": "367c43e6b095b3dd622633cb1aaf4d25441ba3a000c6206469973728aa28e4f0"
+    },
+    "src/regrow/prompts/任务/区块探索任务.prompt": {
+      "source": "79d7628f6015e3b72de76e0515d19a2b3ba76b1bdac3294c3ee08d4b7a0f9471",
+      "export": "79d7628f6015e3b72de76e0515d19a2b3ba76b1bdac3294c3ee08d4b7a0f9471"
+    },
+    "src/regrow/prompts/任务/历史入口与共享复用.prompt": {
+      "source": "84203430d3d506ea629fb111d8487bc56ed7ec21d57d0c9ebca014d253ca53fe",
+      "export": "84203430d3d506ea629fb111d8487bc56ed7ec21d57d0c9ebca014d253ca53fe"
+    },
+    "src/regrow/prompts/任务/参数关系调查.prompt": {
+      "source": "d84ebbd047312ade00a76bcecb9a6193b829044985c725f8d786435aa287a3ee",
+      "export": "d84ebbd047312ade00a76bcecb9a6193b829044985c725f8d786435aa287a3ee"
+    },
+    "src/regrow/prompts/任务/对象识别资料.prompt": {
+      "source": "25f74a16c3aedb20bd917206909144d28bf3c0125155402a9590d17b478205a3",
+      "export": "25f74a16c3aedb20bd917206909144d28bf3c0125155402a9590d17b478205a3"
+    },
+    "src/regrow/prompts/任务/工作区块定位.prompt": {
+      "source": "a01685c5acd4cb2fb322516fa7600422cab265ef336791a4b3759254b12d30cc",
+      "export": "a01685c5acd4cb2fb322516fa7600422cab265ef336791a4b3759254b12d30cc"
+    },
+    "src/regrow/prompts/任务/当前区块重定位.prompt": {
+      "source": "5d06caf77a1a3aca79c791581a339f4e4b120ac14cbf0adb1e94863204a491ac",
+      "export": "5d06caf77a1a3aca79c791581a339f4e4b120ac14cbf0adb1e94863204a491ac"
+    },
+    "src/regrow/prompts/任务/探索范围与退出.prompt": {
+      "source": "2f627f79c1c94dad6f1d4fbfe0902cda6fb2a86b035b3d86c62073228bea3340",
+      "export": "2f627f79c1c94dad6f1d4fbfe0902cda6fb2a86b035b3d86c62073228bea3340"
+    },
+    "src/regrow/prompts/任务/新操作方式检查.prompt": {
+      "source": "52448e80c0b0731a1b6419952356699de71e48d67e7e2985c25fc2df4c032374",
+      "export": "52448e80c0b0731a1b6419952356699de71e48d67e7e2985c25fc2df4c032374"
+    },
+    "src/regrow/prompts/任务/旧任务范围复核.prompt": {
+      "source": "c4f9dab93753002ddb301c94b36070afdd2ec3ba295c85d8f7a38ce7418a9609",
+      "export": "c4f9dab93753002ddb301c94b36070afdd2ec3ba295c85d8f7a38ce7418a9609"
+    },
+    "src/regrow/prompts/任务/清点输出约定.prompt": {
+      "source": "cfaa67b833c6bc9c6f4a208cd71c8c4469f3883a840f8b50622562a790520348",
+      "export": "cfaa67b833c6bc9c6f4a208cd71c8c4469f3883a840f8b50622562a790520348"
+    },
+    "src/regrow/prompts/任务/结果核对示例/单步入口.prompt": {
+      "source": "583549023f8489f43541342ecd85ade735661f63f2f119b639838e3547ce2652",
+      "export": "583549023f8489f43541342ecd85ade735661f63f2f119b639838e3547ce2652"
+    },
+    "src/regrow/prompts/任务/结果核对示例/参数与滚动.prompt": {
+      "source": "d5136a7c005a6a85d6a4a3984f38d61326e3a843587e9f5e8bcde32c7cb7dd4d",
+      "export": "d5136a7c005a6a85d6a4a3984f38d61326e3a843587e9f5e8bcde32c7cb7dd4d"
+    },
+    "src/regrow/prompts/任务/结果核对示例/输入与确认.prompt": {
+      "source": "6a85b640a04d7b8c79b95bdd5c169937310e2b5fdc041db9a80eb370eccb91f6",
+      "export": "6a85b640a04d7b8c79b95bdd5c169937310e2b5fdc041db9a80eb370eccb91f6"
+    },
+    "src/regrow/prompts/任务/输入与搜索探索正反例.prompt": {
+      "source": "26f18f7e9ffa46f62744352e6cdd5da1e98a6c4f3422f57e6273055308ec19ac",
+      "export": "26f18f7e9ffa46f62744352e6cdd5da1e98a6c4f3422f57e6273055308ec19ac"
+    },
+    "src/regrow/prompts/任务/选择探索入口.prompt": {
+      "source": "9a3f89ab7261b914d1a60e83a8ea4709afdecd27dac98f35bd364df15df9dc56",
+      "export": "9a3f89ab7261b914d1a60e83a8ea4709afdecd27dac98f35bd364df15df9dc56"
+    },
+    "src/regrow/prompts/任务/首屏观察.prompt": {
+      "source": "21fdc12b0dc1769c0556b5e489fcd2de041933a01a58976f89233a77887b2335",
+      "export": "21fdc12b0dc1769c0556b5e489fcd2de041933a01a58976f89233a77887b2335"
+    },
+    "src/regrow/prompts/共享/任务知识与当前观察.prompt": {
+      "source": "4d8057a9120b5e39f48acf9096a18ea0ea2c177c0deee72e9e685c2e6ecae57f",
+      "export": "4d8057a9120b5e39f48acf9096a18ea0ea2c177c0deee72e9e685c2e6ecae57f"
+    },
+    "src/regrow/prompts/共享/任务结束条件.prompt": {
+      "source": "461a41ec74e3ec88da868cbfbcfe30ca6602e94bfe6c9c2807aeff17d6162db0",
+      "export": "461a41ec74e3ec88da868cbfbcfe30ca6602e94bfe6c9c2807aeff17d6162db0"
+    },
+    "src/regrow/prompts/共享/区块身份复用.prompt": {
+      "source": "609808033c1310dbe1658033954e6c3c7f4b4cf1afa8c8f783ea1d3a1c6cd962",
+      "export": "609808033c1310dbe1658033954e6c3c7f4b4cf1afa8c8f783ea1d3a1c6cd962"
+    },
+    "src/regrow/prompts/共享/历史原图对照.prompt": {
+      "source": "4f432901c71371f99c64ab1dff2ea52482b9773a2ca0c071b2b60fa32d11253f",
+      "export": "4f432901c71371f99c64ab1dff2ea52482b9773a2ca0c071b2b60fa32d11253f"
+    },
+    "src/regrow/prompts/共享/参数观察值.prompt": {
+      "source": "dcc257cffc45de3c40ab643cdec30bed05fa05810f7f78d6db858c3073f9f938",
+      "export": "dcc257cffc45de3c40ab643cdec30bed05fa05810f7f78d6db858c3073f9f938"
+    },
+    "src/regrow/prompts/共享/当前前景.prompt": {
+      "source": "eeb388e051493a5c17ddb490d59e2d2e1ae87aa9d435c0666941d630d75b718a",
+      "export": "eeb388e051493a5c17ddb490d59e2d2e1ae87aa9d435c0666941d630d75b718a"
+    },
+    "src/regrow/prompts/共享/术语定义.prompt": {
+      "source": "980433f742721ea8714eb3cc7e9dc78deef9bc4e76542d862bf0f39b46923615",
+      "export": "980433f742721ea8714eb3cc7e9dc78deef9bc4e76542d862bf0f39b46923615"
+    },
+    "src/regrow/prompts/共享/来源动作与区块对照.prompt": {
+      "source": "b3d6ee6620fb4467dffb8b572d6ae5d05b9c5c380afe3de5a758f0a4f81409e8",
+      "export": "b3d6ee6620fb4467dffb8b572d6ae5d05b9c5c380afe3de5a758f0a4f81409e8"
+    },
+    "src/regrow/prompts/共享/行为差异分离.prompt": {
+      "source": "cab76a859b5c5870bb0b639548a6b1b165b2326ad9321322108fc01d21648bec",
+      "export": "cab76a859b5c5870bb0b639548a6b1b165b2326ad9321322108fc01d21648bec"
+    },
+    "src/regrow/prompts/共享/身份图准入.prompt": {
+      "source": "9f4f4f7c13e2e70b4202828d639a03717d0ff9c1770c1e2b100c1345ec86e5eb",
+      "export": "9f4f4f7c13e2e70b4202828d639a03717d0ff9c1770c1e2b100c1345ec86e5eb"
+    },
+    "src/regrow/prompts/功能识别/单区块任务判定规则.prompt": {
+      "source": "7ffbd8329a8ea57c1c6e4f41911a0ce8f580e73768e0644c37298e2641cc6f51",
+      "export": "7ffbd8329a8ea57c1c6e4f41911a0ce8f580e73768e0644c37298e2641cc6f51"
+    },
+    "src/regrow/prompts/功能识别/单区块任务正反例.prompt": {
+      "source": "0c9edcf18072ab5496bc3c2817ecf2434779a12b961dfafd1af791a80a962316",
+      "export": "0c9edcf18072ab5496bc3c2817ecf2434779a12b961dfafd1af791a80a962316"
+    },
+    "src/regrow/prompts/动作/动作空间与字段.prompt": {
+      "source": "0cd3e8bbfb96e35af0339e297040ad607adda1ba90e2ffed7ad8ea5013452eb3",
+      "export": "0cd3e8bbfb96e35af0339e297040ad607adda1ba90e2ffed7ad8ea5013452eb3"
+    },
+    "src/regrow/prompts/动作/单步动作建议.prompt": {
+      "source": "20afcf3af0d9c740a104ae7dcbfa31218309d5d8f49e82e26ecb29a8fa8371ad",
+      "export": "20afcf3af0d9c740a104ae7dcbfa31218309d5d8f49e82e26ecb29a8fa8371ad"
+    },
+    "src/regrow/prompts/动作/围绕目标选择动作.prompt": {
+      "source": "cfc28759124ba0e4257006a63344e7677c6e9097aab67f0627ee7f49afcdaca9",
+      "export": "cfc28759124ba0e4257006a63344e7677c6e9097aab67f0627ee7f49afcdaca9"
+    },
+    "src/regrow/prompts/动作/探索导航路线.prompt": {
+      "source": "164658e6621ee7fbf8d62788956d5ef877ab80334259746a4b7d71823a07bf5f",
+      "export": "164658e6621ee7fbf8d62788956d5ef877ab80334259746a4b7d71823a07bf5f"
+    },
+    "src/regrow/prompts/动作/目标观察阅读.prompt": {
+      "source": "8894fff5b095f0d682b6abd2d4116710b4b8211f3af703d13d5c4b6eda487c00",
+      "export": "8894fff5b095f0d682b6abd2d4116710b4b8211f3af703d13d5c4b6eda487c00"
+    },
+    "src/regrow/prompts/动作/结果核对.prompt": {
+      "source": "4329393a5c1b4c2f5d43bb57723f400abed177e7e8790b2ffeb11c7c109f385d",
+      "export": "4329393a5c1b4c2f5d43bb57723f400abed177e7e8790b2ffeb11c7c109f385d"
+    },
+    "src/regrow/prompts/动作/观察与历史.prompt": {
+      "source": "1316c0ceda1b42c102a93751a91fad3e8d0907f8ffcf6aab182d0e50b8c1ca2d",
+      "export": "1316c0ceda1b42c102a93751a91fad3e8d0907f8ffcf6aab182d0e50b8c1ca2d"
+    },
+    "src/regrow/prompts/区块识别/功能区块划分.prompt": {
+      "source": "0e3d9d74e05c228c9dbf812bad2bf0219b9ffd6f5a1cd5710cfe897e58b5dec2",
+      "export": "0e3d9d74e05c228c9dbf812bad2bf0219b9ffd6f5a1cd5710cfe897e58b5dec2"
+    },
+    "src/regrow/prompts/区块识别/区块控件识别.prompt": {
+      "source": "1a5f79adb46976aabe6b3ea8f8515de3c93505570d7ac43f84135cabf851ba6e",
+      "export": "1a5f79adb46976aabe6b3ea8f8515de3c93505570d7ac43f84135cabf851ba6e"
+    },
+    "src/regrow/prompts/区块识别/当前表面识别.prompt": {
+      "source": "17d804d0423ac45287c6c65b58d9ad5375e773e782a5c3e8e7baf3a3e1301211",
+      "export": "17d804d0423ac45287c6c65b58d9ad5375e773e782a5c3e8e7baf3a3e1301211"
+    },
+    "src/regrow/prompts/历史上下文/区块探索披露.prompt": {
+      "source": "abee9d970e7dde159170ed28eb75f2196aaa05f5a8fec86100afae283af574aa",
+      "export": "abee9d970e7dde159170ed28eb75f2196aaa05f5a8fec86100afae283af574aa"
+    },
+    "src/regrow/prompts/历史上下文/探索树阅读.prompt": {
+      "source": "63195e47041c30f994ae5d2eb7e32e1c040642c533ae47238b5d92101e475018",
+      "export": "63195e47041c30f994ae5d2eb7e32e1c040642c533ae47238b5d92101e475018"
+    },
+    "src/regrow/prompts/历史上下文/记忆增量.prompt": {
+      "source": "cbbbb2cf36ac3c33b570f4556ddcb985e6e009c590983d097496b2ce7357923d",
+      "export": "cbbbb2cf36ac3c33b570f4556ddcb985e6e009c590983d097496b2ce7357923d"
+    },
+    "src/regrow/prompts/历史上下文/读取规则.prompt": {
+      "source": "2a99d9b40baae0256770ce5a94187bd7acc7965effafda5a4e1028ff57037e2b",
+      "export": "2a99d9b40baae0256770ce5a94187bd7acc7965effafda5a4e1028ff57037e2b"
+    },
+    "src/regrow/prompts/发现手册/交互控件范围.prompt": {
+      "source": "bf7e395a87547955e38ca84fb3b4af2718bd103059ce6baf3e6475539fb1c20c",
+      "export": "bf7e395a87547955e38ca84fb3b4af2718bd103059ce6baf3e6475539fb1c20c"
+    },
+    "src/regrow/prompts/发现手册/列表代表项.prompt": {
+      "source": "5506939fdd9656aa7130daf73f9c3f8177241cfdcc2c5912e165885f803cf0a5",
+      "export": "5506939fdd9656aa7130daf73f9c3f8177241cfdcc2c5912e165885f803cf0a5"
+    },
+    "src/regrow/prompts/发现手册/前景与区块.prompt": {
+      "source": "3bc003fe9084719c36fedefa0a6eeb378d3679fda71495ae9d4a7648992b2a7d",
+      "export": "3bc003fe9084719c36fedefa0a6eeb378d3679fda71495ae9d4a7648992b2a7d"
+    },
+    "src/regrow/prompts/发现手册/增量补全.prompt": {
+      "source": "5cad2fa92969a8f320daf967f84d32426920c5c531ab439fb196828907ed1d04",
+      "export": "5cad2fa92969a8f320daf967f84d32426920c5c531ab439fb196828907ed1d04"
+    },
+    "src/regrow/prompts/发现手册/补登记.prompt": {
+      "source": "b6780593eacd699d94c8d7831bb9d9475be272896c85804b85d251726d908ac8",
+      "export": "b6780593eacd699d94c8d7831bb9d9475be272896c85804b85d251726d908ac8"
+    },
+    "src/regrow/prompts/发现手册/证据与坐标.prompt": {
+      "source": "91423637a1fc5576ebdb9ecf0113c9b181e11af0e81735ff2d40ef91840b62c4",
+      "export": "91423637a1fc5576ebdb9ecf0113c9b181e11af0e81735ff2d40ef91840b62c4"
+    },
+    "src/regrow/prompts/发现手册/身份核对.prompt": {
+      "source": "63c7da8fc2ff1f99fff8812ae4f8608104b3bac10dcf0201aab50defdaa86839",
+      "export": "63c7da8fc2ff1f99fff8812ae4f8608104b3bac10dcf0201aab50defdaa86839"
+    },
+    "src/regrow/prompts/发现手册/输出填写.prompt": {
+      "source": "4d04060e3591764167d035c639042d0701e60893f0ec0698997e1b8081f73d9a",
+      "export": "4d04060e3591764167d035c639042d0701e60893f0ec0698997e1b8081f73d9a"
+    },
+    "src/regrow/prompts/平台/Android执行.prompt": {
+      "source": "3f5cf82bd273c361547dfe990485b6607ef95c911bd78767eb29d03223ed3cf8",
+      "export": "3f5cf82bd273c361547dfe990485b6607ef95c911bd78767eb29d03223ed3cf8"
+    },
+    "src/regrow/prompts/平台/桌面悬停观察.prompt": {
+      "source": "31760f585afa42d9ae4ebddcef6159727ba02b92862bffdfd409c86a063a59cc",
+      "export": "31760f585afa42d9ae4ebddcef6159727ba02b92862bffdfd409c86a063a59cc"
+    },
+    "src/regrow/prompts/平台/桌面执行.prompt": {
+      "source": "338d9cc722e79f78ccdd013df6ab86de2a6f6745a70067c933393da12e10d2f7",
+      "export": "338d9cc722e79f78ccdd013df6ab86de2a6f6745a70067c933393da12e10d2f7"
+    },
+    "src/regrow/prompts/平台/遍历环境只读.prompt": {
+      "source": "82d883d6bbbd11f3cfc04f71624d46fff46b4dc681648350e834ddf84f2f81e6",
+      "export": "82d883d6bbbd11f3cfc04f71624d46fff46b4dc681648350e834ddf84f2f81e6"
+    },
+    "src/regrow/prompts/异常处理/异常识别.prompt": {
+      "source": "dd97d1ee2c342108d87bc28a8b7b77eea12f1572b0ee51b2101c7c85d43415d6",
+      "export": "dd97d1ee2c342108d87bc28a8b7b77eea12f1572b0ee51b2101c7c85d43415d6"
+    },
+    "src/regrow/prompts/异常处理/恢复当前探索.prompt": {
+      "source": "0fee1117158f060266451a73c5044e7d2691cedddc2e8d3cc613a7f3f50bef50",
+      "export": "0fee1117158f060266451a73c5044e7d2691cedddc2e8d3cc613a7f3f50bef50"
+    },
+    "src/regrow/prompts/异常处理/恢复策略.prompt": {
+      "source": "bad5eeb238ceb1cdf3649a3b35fa0f18ed645a32b3678dbd5d3cc18f6338bbf3",
+      "export": "bad5eeb238ceb1cdf3649a3b35fa0f18ed645a32b3678dbd5d3cc18f6338bbf3"
+    },
+    "src/regrow/prompts/异常处理/恢复输出.prompt": {
+      "source": "1c6ede5808ec1c68065d343c114ea1504501786bf1cd49f6392ca96f669aadf3",
+      "export": "1c6ede5808ec1c68065d343c114ea1504501786bf1cd49f6392ca96f669aadf3"
+    },
+    "src/regrow/prompts/更新/动作后观察与状态更新.prompt": {
+      "source": "89062c7a8cc691d37561e75fa4b5433be2ee5fb754234ef717ff29257d90f20d",
+      "export": "89062c7a8cc691d37561e75fa4b5433be2ee5fb754234ef717ff29257d90f20d"
+    },
+    "src/regrow/prompts/更新/区块变化与字段.prompt": {
+      "source": "baa087c3795280e1dcd03616e56a4ff2e8aec645c84095802cacf67902fcbe4d",
+      "export": "baa087c3795280e1dcd03616e56a4ff2e8aec645c84095802cacf67902fcbe4d"
+    },
+    "src/regrow/prompts/更新/恢复后任务复核.prompt": {
+      "source": "97947b67d972c86c6375a9303ffd44cc8ec4cf0d9914fc8464dd2898c5e77032",
+      "export": "97947b67d972c86c6375a9303ffd44cc8ec4cf0d9914fc8464dd2898c5e77032"
+    },
+    "src/regrow/prompts/更新/暂挂任务复核.prompt": {
+      "source": "ed9b0ca2e3c543ebe2d8f7bc1670e22522c022c8dfee70987d50da2042c2166a",
+      "export": "ed9b0ca2e3c543ebe2d8f7bc1670e22522c022c8dfee70987d50da2042c2166a"
+    },
+    "src/regrow/prompts/更新/累计任务结果核对.prompt": {
+      "source": "378e6a4949e6c174c4edba855836d6cd967ae4fac38cc86d22f5368a1dd6d91e",
+      "export": "378e6a4949e6c174c4edba855836d6cd967ae4fac38cc86d22f5368a1dd6d91e"
+    },
+    "src/regrow/prompts/更新/重复入口覆盖复核.prompt": {
+      "source": "b9a7b231c23e41dd95c9ba51187a68c66b3f4e1b9d220c92f0277e2e7bcb6a04",
+      "export": "b9a7b231c23e41dd95c9ba51187a68c66b3f4e1b9d220c92f0277e2e7bcb6a04"
+    },
+    "src/regrow/prompts/流程/01_发现.json": {
+      "source": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785",
+      "export": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785"
+    },
+    "src/regrow/prompts/流程/02_动作选择.json": {
+      "source": "02022ff7d619ebd5fd0d9977c42d86c626820898e8b17118b5df087202272426",
+      "export": "02022ff7d619ebd5fd0d9977c42d86c626820898e8b17118b5df087202272426"
+    },
+    "src/regrow/prompts/流程/03_结果核对.json": {
+      "source": "a45014cdf74dc1eb1721b18e8ebcaa9a70b976801cce6fbccbab41771af7369d",
+      "export": "a45014cdf74dc1eb1721b18e8ebcaa9a70b976801cce6fbccbab41771af7369d"
+    },
+    "src/regrow/prompts/流程/README.md": {
+      "source": "0223618a5179b1e471334e9ac421b2686bf73a141c53dc721df0f5a1fa428001",
+      "export": "0223618a5179b1e471334e9ac421b2686bf73a141c53dc721df0f5a1fa428001"
+    },
+    "src/regrow/prompts/流程/调用组成.json": {
+      "source": "0270066b110b35087343cfd7ab742ff5639fb2d6282590ed9be9ed79452a8a57",
+      "export": "0270066b110b35087343cfd7ab742ff5639fb2d6282590ed9be9ed79452a8a57"
+    },
+    "src/regrow/prompts/监督/修复候选.prompt": {
+      "source": "1cd98fb4e5609c11dbe37a737b45688db90016c4396da4257f6f3cedaf938764",
+      "export": "1cd98fb4e5609c11dbe37a737b45688db90016c4396da4257f6f3cedaf938764"
+    },
+    "src/regrow/prompts/监督/意图对照.prompt": {
+      "source": "d454ee9b131e15d2334718aba0176234060fc12a1488f993d2f84e7fa305f766",
+      "export": "d454ee9b131e15d2334718aba0176234060fc12a1488f993d2f84e7fa305f766"
+    },
+    "src/regrow/prompts/监督/模型回复验收.prompt": {
+      "source": "a390182aff52a5ef4b033c2c3bf17c404c1c1e8e4687f15e03dcdfc20521cee1",
+      "export": "a390182aff52a5ef4b033c2c3bf17c404c1c1e8e4687f15e03dcdfc20521cee1"
+    },
+    "src/regrow/prompts/监督/陌生读者.prompt": {
+      "source": "0cb9ac1f5a12790b92dd0c7e160fe3dfe3da6d739e7cc72846f7ff0081fdc86f",
+      "export": "0cb9ac1f5a12790b92dd0c7e160fe3dfe3da6d739e7cc72846f7ff0081fdc86f"
+    },
+    "src/regrow/prompts/纠错/任务归属.prompt": {
+      "source": "af036fb3bb119cef588cdf12d3e68e89e88ecedce017a8df12aaa951436527b0",
+      "export": "af036fb3bb119cef588cdf12d3e68e89e88ecedce017a8df12aaa951436527b0"
+    },
+    "src/regrow/prompts/纠错/共享行为核对.prompt": {
+      "source": "44488c9d97d834daa461c9638d6da6987b99eac4d79ebe44b9d01d723f0bc3af",
+      "export": "44488c9d97d834daa461c9638d6da6987b99eac4d79ebe44b9d01d723f0bc3af"
+    },
+    "src/regrow/prompts/纠错/动作归属.prompt": {
+      "source": "4f31e20c672c782de76118dc1e6975fcd322cac757fb1f9706ce9972c3bd7113",
+      "export": "4f31e20c672c782de76118dc1e6975fcd322cac757fb1f9706ce9972c3bd7113"
+    },
+    "src/regrow/prompts/纠错/区块归属.prompt": {
+      "source": "40c1a151d698c51047bc3e9074754755aa60546e5225eb8a2c0a507811b5f5dd",
+      "export": "40c1a151d698c51047bc3e9074754755aa60546e5225eb8a2c0a507811b5f5dd"
+    },
+    "src/regrow/prompts/纠错/区块归属复查.prompt": {
+      "source": "3f8c3c32325db381fb84a08b1f6d3f38e5a91283f4f4733f7b70af18a46850e3",
+      "export": "3f8c3c32325db381fb84a08b1f6d3f38e5a91283f4f4733f7b70af18a46850e3"
+    },
+    "src/regrow/prompts/纠错/回复解析.prompt": {
+      "source": "8947dc31f2eedddfaf0f296431e0c7f9787d44fba9a0bfdfb2e056b616cde04d",
+      "export": "8947dc31f2eedddfaf0f296431e0c7f9787d44fba9a0bfdfb2e056b616cde04d"
+    },
+    "src/regrow/prompts/纠错/定位绑定.prompt": {
+      "source": "cf04110ea21b1eb9234e5ab5db16600b0b6c8823f6781905e791aa0d50527d02",
+      "export": "cf04110ea21b1eb9234e5ab5db16600b0b6c8823f6781905e791aa0d50527d02"
+    },
+    "src/regrow/prompts/纠错/对象识别资料.prompt": {
+      "source": "9d9937462ffeb629a2c97b4b2acb69870a8099b4a6b896b65f9f1ae2d4aa7237",
+      "export": "9d9937462ffeb629a2c97b4b2acb69870a8099b4a6b896b65f9f1ae2d4aa7237"
+    },
+    "src/regrow/prompts/纠错/投递前画面变化.prompt": {
+      "source": "e6525123ea15f1ce731ca2258482d0bb12adb4d85988452f49594ef50b4e704d",
+      "export": "e6525123ea15f1ce731ca2258482d0bb12adb4d85988452f49594ef50b4e704d"
+    },
+    "src/regrow/prompts/纠错/控件候选消歧.prompt": {
+      "source": "09077d86ee25ea28f0c46c303f6d249b087ec052870295abf5f6169cbcde5d1a",
+      "export": "09077d86ee25ea28f0c46c303f6d249b087ec052870295abf5f6169cbcde5d1a"
+    },
+    "src/regrow/prompts/纠错/控件身份候选选择.prompt": {
+      "source": "d7403d4bf73139a017637b53a51830577263f13923165d9d35868eb391eecede",
+      "export": "d7403d4bf73139a017637b53a51830577263f13923165d9d35868eb391eecede"
+    },
+    "src/regrow/prompts/纠错/控件身份复核.prompt": {
+      "source": "9604921f4eb6b533dafbd1528894a67779cbab69277de3b545eb077c034e902d",
+      "export": "9604921f4eb6b533dafbd1528894a67779cbab69277de3b545eb077c034e902d"
+    },
+    "src/regrow/prompts/纠错/暂挂分支并切换.prompt": {
+      "source": "35cda1c4979a6b993409c495301571dde7dc620ccbf3c6d12a1f794745236040",
+      "export": "35cda1c4979a6b993409c495301571dde7dc620ccbf3c6d12a1f794745236040"
+    },
+    "src/regrow/prompts/纠错/更新补充观察.prompt": {
+      "source": "b728f73b4fd86c85c10a7a4016d995fdc86de809b95de4c9fd3acd84156f74dd",
+      "export": "b728f73b4fd86c85c10a7a4016d995fdc86de809b95de4c9fd3acd84156f74dd"
+    },
+    "src/regrow/prompts/纠错/步骤纠正.prompt": {
+      "source": "0f83ce733c127512176538258be194e3655a7051b192f77061320bf6d3538586",
+      "export": "0f83ce733c127512176538258be194e3655a7051b192f77061320bf6d3538586"
+    },
+    "src/regrow/prompts/纠错/登记修订.prompt": {
+      "source": "f27e660b40d6bb2858d862b36e94f350ba5cf361860c654b9f4138a79ce542d7",
+      "export": "f27e660b40d6bb2858d862b36e94f350ba5cf361860c654b9f4138a79ce542d7"
+    },
+    "src/regrow/prompts/纠错/结果证据.prompt": {
+      "source": "83098416841c9cca9dfe0fc64ad8eae3e4c8db63743129d4c8a45fd373fc9128",
+      "export": "83098416841c9cca9dfe0fc64ad8eae3e4c8db63743129d4c8a45fd373fc9128"
+    },
+    "src/regrow/prompts/纠错/身份名称.prompt": {
+      "source": "128717388f15370638a6ec42f6e039fbdcc220725a87b9c73f5c180f30acbd3e",
+      "export": "128717388f15370638a6ec42f6e039fbdcc220725a87b9c73f5c180f30acbd3e"
+    },
+    "src/regrow/prompts/纠错/重复无进展.prompt": {
+      "source": "b32f316cb6d5c3010b7fe7c0325024bfaa9d9095dbabf666f06fe481ac5ff1a5",
+      "export": "b32f316cb6d5c3010b7fe7c0325024bfaa9d9095dbabf666f06fe481ac5ff1a5"
+    },
+    "src/regrow/prompts/视觉记录/坐标与裁剪.prompt": {
+      "source": "cca53c7cf998c6573d921541b4a79aebfef4ee4bd42de07a15ba5dec1b21ffbb",
+      "export": "cca53c7cf998c6573d921541b4a79aebfef4ee4bd42de07a15ba5dec1b21ffbb"
+    },
+    "src/regrow/prompts/身份比较/区块与控件复认.prompt": {
+      "source": "2fd663868cf5761d36103a0e1571a6cb246b607f0e7e5968b78db8994542588a",
+      "export": "2fd663868cf5761d36103a0e1571a6cb246b607f0e7e5968b78db8994542588a"
+    },
+    "src/regrow/prompts/身份比较/跨图身份比较.prompt": {
+      "source": "426d9ce9932ecfce024c084db77dde7139f768ef16bb7e033053f6afe14ebe80",
+      "export": "426d9ce9932ecfce024c084db77dde7139f768ef16bb7e033053f6afe14ebe80"
+    },
+    "src/regrow/prompts/输出格式/动作后Region增量.schema": {
+      "source": "eba03d6a1c05f6752787c8b00adc825a18458cdf1584699d133209b384572bd7",
+      "export": "eba03d6a1c05f6752787c8b00adc825a18458cdf1584699d133209b384572bd7"
+    },
+    "src/regrow/prompts/输出格式/动作后更新.schema": {
+      "source": "c253b2523b338ea7dc47e8c3f36150aa9a2246dc1cde357dbef89d0ef05ad010",
+      "export": "c253b2523b338ea7dc47e8c3f36150aa9a2246dc1cde357dbef89d0ef05ad010"
+    },
+    "src/regrow/prompts/输出格式/区块功能登记.schema": {
+      "source": "9df4cc1933ad8ffd99be895c33d21c726f3b8e67c19d8290a3dc1651c57847e3",
+      "export": "9df4cc1933ad8ffd99be895c33d21c726f3b8e67c19d8290a3dc1651c57847e3"
+    },
+    "src/regrow/prompts/输出格式/区块探索任务.schema": {
+      "source": "65a554544fc24818ff7cb11841b733583b3623bda89202eedbb6e0af3290be14",
+      "export": "65a554544fc24818ff7cb11841b733583b3623bda89202eedbb6e0af3290be14"
+    },
+    "src/regrow/prompts/输出格式/参数发现.schema": {
+      "source": "939b202c5e4f119daebd58fb37a4d11b111dc900e482c970c0587fb19e9c3daa",
+      "export": "939b202c5e4f119daebd58fb37a4d11b111dc900e482c970c0587fb19e9c3daa"
+    },
+    "src/regrow/prompts/输出格式/选择探索入口.schema": {
+      "source": "eec5bc5e555b386a31f62b1cae3e40160aff60bdae732e7713f1b8b337ef16bd",
+      "export": "eec5bc5e555b386a31f62b1cae3e40160aff60bdae732e7713f1b8b337ef16bd"
+    },
+    "src/regrow/prompts/输出格式/首屏观察.schema": {
+      "source": "a6e8c05d80659c89f7307e2a996ea3e37fd2aa0db59b696e2d151b19e68489ae",
+      "export": "a6e8c05d80659c89f7307e2a996ea3e37fd2aa0db59b696e2d151b19e68489ae"
+    },
+    "src/regrow/prompts/通用/探索验证原则.prompt": {
+      "source": "3506d2f74455671395d593d199889645177451041c13e2a511d8824c5551a4ef",
+      "export": "3506d2f74455671395d593d199889645177451041c13e2a511d8824c5551a4ef"
+    },
+    "src/regrow/prompts/通用/证据边界.prompt": {
+      "source": "d85139c56bd9015ec07127fa47e7fe2fc1c716a143708cd4ec3038098b4fa95f",
+      "export": "d85139c56bd9015ec07127fa47e7fe2fc1c716a143708cd4ec3038098b4fa95f"
+    },
+    "src/regrow/recognition/__init__.py": {
+      "source": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "export": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/regrow/recognition/control_identity_review.py": {
+      "source": "ec76592a5cd33eb60ac84fedfef570e8ef688a33b818ad34f3ecb7739fefc425",
+      "export": "ec76592a5cd33eb60ac84fedfef570e8ef688a33b818ad34f3ecb7739fefc425"
+    },
+    "src/regrow/recognition/control_indexes.py": {
+      "source": "df8ee03feef4cdd601ec9c761ed144dc3961a353e9458ca3aca780630be1f919",
+      "export": "df8ee03feef4cdd601ec9c761ed144dc3961a353e9458ca3aca780630be1f919"
+    },
+    "src/regrow/recognition/control_observation_repair.py": {
+      "source": "7173798004d7d9cb9b72f3484454fa4cc4fbbdfc410441f988885ae395fbe3d3",
+      "export": "7173798004d7d9cb9b72f3484454fa4cc4fbbdfc410441f988885ae395fbe3d3"
+    },
+    "src/regrow/recognition/discovery_completion.py": {
+      "source": "b4f9b4ed1838ef2b5fbd15361e858ee0df9174700d752ede4e9a7c8269fddc80",
+      "export": "b4f9b4ed1838ef2b5fbd15361e858ee0df9174700d752ede4e9a7c8269fddc80"
+    },
+    "src/regrow/recognition/discovery_delta.py": {
+      "source": "6ede1d036721d1277329dd0bb3d3a9bfa4156c5c4ddb98b7e9f41c96430c5d2c",
+      "export": "6ede1d036721d1277329dd0bb3d3a9bfa4156c5c4ddb98b7e9f41c96430c5d2c"
+    },
+    "src/regrow/recognition/discovery_inventory.py": {
+      "source": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7",
+      "export": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7"
+    },
+    "src/regrow/recognition/foreground_scope.py": {
+      "source": "7d47f6a4e31a1c75acd34f0d9a4c38081ecac9a16184b98058f4a96124e9545c",
+      "export": "7d47f6a4e31a1c75acd34f0d9a4c38081ecac9a16184b98058f4a96124e9545c"
+    },
+    "src/regrow/recognition/history_matching.py": {
+      "source": "268f0dcd06da018fac4102dd3942d7fff6b502ecc7299b74ad8fbd852f19fa12",
+      "export": "268f0dcd06da018fac4102dd3942d7fff6b502ecc7299b74ad8fbd852f19fa12"
+    },
+    "src/regrow/recognition/identity_templates.py": {
+      "source": "b80ba983c5d6ee2c2ff4261f6e22526a6466b3b924a278daa3c4811925820e7e",
+      "export": "b80ba983c5d6ee2c2ff4261f6e22526a6466b3b924a278daa3c4811925820e7e"
+    },
+    "src/regrow/recognition/local_partition.py": {
+      "source": "6261d6efe6dd0e02371183f1dfc3ed66027385cc36d4a9cf2a88bd815f0dd73a",
+      "export": "6261d6efe6dd0e02371183f1dfc3ed66027385cc36d4a9cf2a88bd815f0dd73a"
+    },
+    "src/regrow/recognition/locator.py": {
+      "source": "c32247cfb66bc20510f968ba58ae17072deabd2ea8079b6aa9cb0b92ebd713ee",
+      "export": "c32247cfb66bc20510f968ba58ae17072deabd2ea8079b6aa9cb0b92ebd713ee"
+    },
+    "src/regrow/recognition/matching.py": {
+      "source": "5e3cde52ce030380b06814585c337cbeca1618fcc08d1a34fc0eb049ef5068e8",
+      "export": "5e3cde52ce030380b06814585c337cbeca1618fcc08d1a34fc0eb049ef5068e8"
+    },
+    "src/regrow/recognition/ownership_review.py": {
+      "source": "d9cecdb4ce7a65d6ba68ee0c8f365b027a27d66ec0698f559f5a398adc8599e7",
+      "export": "d9cecdb4ce7a65d6ba68ee0c8f365b027a27d66ec0698f559f5a398adc8599e7"
+    },
+    "src/regrow/recognition/region_candidate_names.py": {
+      "source": "d48fbc26ebc1812da4cdc72af9b01a40bb2c2df744e13a154799c5ac352ee4aa",
+      "export": "d48fbc26ebc1812da4cdc72af9b01a40bb2c2df744e13a154799c5ac352ee4aa"
+    },
+    "src/regrow/recognition/region_identity.py": {
+      "source": "0dcc495132a94667205e2897355f766505fdf09bd7a0a8d3da2c067e4f7fa62c",
+      "export": "0dcc495132a94667205e2897355f766505fdf09bd7a0a8d3da2c067e4f7fa62c"
+    },
+    "src/regrow/recognition/update_visibility.py": {
+      "source": "6315a540953ef685a9fa46ea46818078cd1ecce65f04e3414f8e1aee56a7f4cf",
+      "export": "6315a540953ef685a9fa46ea46818078cd1ecce65f04e3414f8e1aee56a7f4cf"
+    },
+    "src/regrow/recognition/visual_backtrack.py": {
+      "source": "9c16e1995b4940cf1ad8352d25fa39d869cbe522a301881947c8e6fd15b89187",
+      "export": "9c16e1995b4940cf1ad8352d25fa39d869cbe522a301881947c8e6fd15b89187"
+    },
+    "src/regrow/recognition/visual_region_locator.py": {
+      "source": "25c624a2220bc9da4d25a24235576fa96fea2c4992037fc30421661a203a0ec1",
+      "export": "25c624a2220bc9da4d25a24235576fa96fea2c4992037fc30421661a203a0ec1"
+    },
+    "src/regrow/records/__init__.py": {
+      "source": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "export": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/regrow/records/action_candidates.py": {
+      "source": "468263a4a4542ca46ef16c9a1b58061a61d2d95ca1aa004b2b446e2c5e2e5643",
+      "export": "468263a4a4542ca46ef16c9a1b58061a61d2d95ca1aa004b2b446e2c5e2e5643"
+    },
+    "src/regrow/records/action_evidence.py": {
+      "source": "d56607c879f9b706ec8292254543add1828ff39fbbb2a2e1812c5ab127234336",
+      "export": "d56607c879f9b706ec8292254543add1828ff39fbbb2a2e1812c5ab127234336"
+    },
+    "src/regrow/records/action_owner_correction.py": {
+      "source": "eaab17df45936c5d55961c7fecd767f7c56c7e3ab53aa31468816cc08db99143",
+      "export": "eaab17df45936c5d55961c7fecd767f7c56c7e3ab53aa31468816cc08db99143"
+    },
+    "src/regrow/records/calls.py": {
+      "source": "2e4e29ae821dd9a7a2f2d3f78a5ae74d06a829e44a28e729b234f14573999c58",
+      "export": "2e4e29ae821dd9a7a2f2d3f78a5ae74d06a829e44a28e729b234f14573999c58"
+    },
+    "src/regrow/records/context_scope.py": {
+      "source": "13cef7c3c2d61d6781b210255786bedd96c8340b469c796e02b51d3612614a71",
+      "export": "13cef7c3c2d61d6781b210255786bedd96c8340b469c796e02b51d3612614a71"
+    },
+    "src/regrow/records/control_context.py": {
+      "source": "d483a280900ba7a9518a89d9012455ea530214b9e48bb9dad0ef11b6b2139558",
+      "export": "d483a280900ba7a9518a89d9012455ea530214b9e48bb9dad0ef11b6b2139558"
+    },
+    "src/regrow/records/control_history_context.py": {
+      "source": "8670eddb16a30c8fc844a088c3560d5390aba14068fd8fa13f14eafcaf7ec14f",
+      "export": "8670eddb16a30c8fc844a088c3560d5390aba14068fd8fa13f14eafcaf7ec14f"
+    },
+    "src/regrow/records/control_images.py": {
+      "source": "3df70ed040931ac59d13aadb097f61d887a587776d8a41949514c238c3bcd254",
+      "export": "3df70ed040931ac59d13aadb097f61d887a587776d8a41949514c238c3bcd254"
+    },
+    "src/regrow/records/control_knowledge.py": {
+      "source": "c7c1378e77d641d7b1ead178115caff0506d74922bd895bab3829f2d01f896e2",
+      "export": "c7c1378e77d641d7b1ead178115caff0506d74922bd895bab3829f2d01f896e2"
+    },
+    "src/regrow/records/control_records.py": {
+      "source": "4abb1f390af26c9feba1bbb2f75d66c0392746ca071efa97ea11c656f7615992",
+      "export": "4abb1f390af26c9feba1bbb2f75d66c0392746ca071efa97ea11c656f7615992"
+    },
+    "src/regrow/records/control_routes.py": {
+      "source": "e3b3a55e2f9f11e94fb3c824bdaa606ba762d4f83fd998e8e18b8d7f7ddc51d0",
+      "export": "e3b3a55e2f9f11e94fb3c824bdaa606ba762d4f83fd998e8e18b8d7f7ddc51d0"
+    },
+    "src/regrow/records/coverage_exemption.py": {
+      "source": "f1bcb642c5bc3517b770acd3846748a4135b8894d4c1e0943aa32d77f44f8ccf",
+      "export": "f1bcb642c5bc3517b770acd3846748a4135b8894d4c1e0943aa32d77f44f8ccf"
+    },
+    "src/regrow/records/entry_observation.py": {
+      "source": "1ad5b7fad47166a2056302a3a1daba5471715f70e9e0e9cf26434ece559e9438",
+      "export": "1ad5b7fad47166a2056302a3a1daba5471715f70e9e0e9cf26434ece559e9438"
+    },
+    "src/regrow/records/environment_context.py": {
+      "source": "6f665d9d4cb295172fb217b4e6b38a90be52bdf69c02295ae893a74782b4d8b5",
+      "export": "6f665d9d4cb295172fb217b4e6b38a90be52bdf69c02295ae893a74782b4d8b5"
+    },
+    "src/regrow/records/function_evidence.py": {
+      "source": "9a9fb40402cce8f430fd258b2c31cfd3663889d3b114595525cd61da4687e987",
+      "export": "9a9fb40402cce8f430fd258b2c31cfd3663889d3b114595525cd61da4687e987"
+    },
+    "src/regrow/records/function_scope.py": {
+      "source": "5abbd2b251b53c88ad7c34795d87d4bd641a7890d36aff1646814a6b29434119",
+      "export": "5abbd2b251b53c88ad7c34795d87d4bd641a7890d36aff1646814a6b29434119"
+    },
+    "src/regrow/records/history_context.py": {
+      "source": "35832b15f09b7ffa746ad94d29a3bcc862eaf33b37ed86b43d115105504b987e",
+      "export": "35832b15f09b7ffa746ad94d29a3bcc862eaf33b37ed86b43d115105504b987e"
+    },
+    "src/regrow/records/history_selection.py": {
+      "source": "98498baa2086041d5c86fb0f0e003f366d91dd254e58cdec00f3f42eecd92087",
+      "export": "98498baa2086041d5c86fb0f0e003f366d91dd254e58cdec00f3f42eecd92087"
+    },
+    "src/regrow/records/navigation.py": {
+      "source": "9ecf511d1f2adbce7ef0ecbbec6e2cf2a55bdc5afdafe7f6d9f1f850c4e341ff",
+      "export": "9ecf511d1f2adbce7ef0ecbbec6e2cf2a55bdc5afdafe7f6d9f1f850c4e341ff"
+    },
+    "src/regrow/records/object_store.py": {
+      "source": "978d8f5868fda849e353bbf4fb88c16b1243286476f2e7822fcb618eb91708b9",
+      "export": "978d8f5868fda849e353bbf4fb88c16b1243286476f2e7822fcb618eb91708b9"
+    },
+    "src/regrow/records/observations.py": {
+      "source": "132e2c6750c1e152cf7e3d6a676061eb190b19834ee42fa1b05c380393b88e8c",
+      "export": "132e2c6750c1e152cf7e3d6a676061eb190b19834ee42fa1b05c380393b88e8c"
+    },
+    "src/regrow/records/page_context.py": {
+      "source": "fe3c7ea5688629fe7dcb5bc217877fff658f7c3bb2d20f10910b2885e9e91845",
+      "export": "fe3c7ea5688629fe7dcb5bc217877fff658f7c3bb2d20f10910b2885e9e91845"
+    },
+    "src/regrow/records/page_history.py": {
+      "source": "82645a2b397f63af42de41b78495506ea99b40bca7ee72fd68d275932f878f8f",
+      "export": "82645a2b397f63af42de41b78495506ea99b40bca7ee72fd68d275932f878f8f"
+    },
+    "src/regrow/records/record_history.py": {
+      "source": "555796000632895f90d9b44fc763f5380b549a7ecbd9c688f4bae967f48a4ec7",
+      "export": "555796000632895f90d9b44fc763f5380b549a7ecbd9c688f4bae967f48a4ec7"
+    },
+    "src/regrow/records/region_behavior_split.py": {
+      "source": "41db13fc205701dd8137b415979ce991fb8cfb50665f659631f434beae1a05c5",
+      "export": "41db13fc205701dd8137b415979ce991fb8cfb50665f659631f434beae1a05c5"
+    },
+    "src/regrow/records/region_evidence.py": {
+      "source": "79ea8d10a7aa4822ffbbd663d267bd8c048f451aa6c88887feb6b1c9b2421a53",
+      "export": "79ea8d10a7aa4822ffbbd663d267bd8c048f451aa6c88887feb6b1c9b2421a53"
+    },
+    "src/regrow/records/region_graph.py": {
+      "source": "bffda9b28c4af434a432003aade63f052155a61454161246074f867556aacc7d",
+      "export": "bffda9b28c4af434a432003aade63f052155a61454161246074f867556aacc7d"
+    },
+    "src/regrow/records/region_knowledge.py": {
+      "source": "18279dff0de58ecd7b6df0af3a8d93c25f81dd0f98522a3b4f33bbdabe836ce4",
+      "export": "18279dff0de58ecd7b6df0af3a8d93c25f81dd0f98522a3b4f33bbdabe836ce4"
+    },
+    "src/regrow/records/region_records.py": {
+      "source": "0012ae7216c8e9d118c76cdd7044aa1b6f4752372fda4cb840857c4e69b26446",
+      "export": "0012ae7216c8e9d118c76cdd7044aa1b6f4752372fda4cb840857c4e69b26446"
+    },
+    "src/regrow/records/registration_diagnostics.py": {
+      "source": "0cc8ca757fed5441f6462828534ccdadd9d6fc47df64c5e5c7f215d52726ca79",
+      "export": "0cc8ca757fed5441f6462828534ccdadd9d6fc47df64c5e5c7f215d52726ca79"
+    },
+    "src/regrow/records/review_history.py": {
+      "source": "335871049fb6b1f9a18698fca0242cbe6533e3973c357771e3bb144e98eec7d9",
+      "export": "335871049fb6b1f9a18698fca0242cbe6533e3973c357771e3bb144e98eec7d9"
+    },
+    "src/regrow/records/shared_control_review.py": {
+      "source": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee",
+      "export": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee"
+    },
+    "src/regrow/records/shared_controls.py": {
+      "source": "742f90b6aa0b28d3219d2597c414fd38850203ef7e637fed054abf601c468bb3",
+      "export": "742f90b6aa0b28d3219d2597c414fd38850203ef7e637fed054abf601c468bb3"
+    },
+    "src/regrow/records/shared_tasks.py": {
+      "source": "9465cf62a45ab393db7a326d6371ebc2a2f98cfe46e50e21f443a80186df928a",
+      "export": "9465cf62a45ab393db7a326d6371ebc2a2f98cfe46e50e21f443a80186df928a"
+    },
+    "src/regrow/records/snapshots.py": {
+      "source": "b3ed8f4e5286321644c7566663a21e52fbe4b8a4d12e06860e4d36dc1033886b",
+      "export": "b3ed8f4e5286321644c7566663a21e52fbe4b8a4d12e06860e4d36dc1033886b"
+    },
+    "src/regrow/records/source_region_candidates.py": {
+      "source": "5fb6985740e40856f4fcdcb559dbe39fba916106347dfce39507bcbf9e4b5d61",
+      "export": "5fb6985740e40856f4fcdcb559dbe39fba916106347dfce39507bcbf9e4b5d61"
+    },
+    "src/regrow/records/task_inventory_context.py": {
+      "source": "a66b1fb3054e6a09d18b84df4ecca66bf15f10f04ed44195fc17b720f14ab478",
+      "export": "a66b1fb3054e6a09d18b84df4ecca66bf15f10f04ed44195fc17b720f14ab478"
+    },
+    "src/regrow/records/task_knowledge.py": {
+      "source": "6d36d97b55d8ac12665182d9b06174c30780dbcc9d4c2ec604b2a19fc164243c",
+      "export": "6d36d97b55d8ac12665182d9b06174c30780dbcc9d4c2ec604b2a19fc164243c"
+    },
+    "src/regrow/records/task_settlement.py": {
+      "source": "f3cd26fc7233e2b0e44a79bd273407620ef3644a5a6efef8f0cc1759a8a48be3",
+      "export": "f3cd26fc7233e2b0e44a79bd273407620ef3644a5a6efef8f0cc1759a8a48be3"
+    },
+    "src/regrow/records/task_updates.py": {
+      "source": "6bfda1e5edb56a054e307bd71feb1cdfd22c45046a645b0d056a9876f77444d5",
+      "export": "6bfda1e5edb56a054e307bd71feb1cdfd22c45046a645b0d056a9876f77444d5"
+    },
+    "src/regrow/records/tasks.py": {
+      "source": "d7735c9305439cc0760af09928855af5be73809d3bbb0b0cda3daef1cc54968c",
+      "export": "d7735c9305439cc0760af09928855af5be73809d3bbb0b0cda3daef1cc54968c"
+    },
+    "src/regrow/records/update_semantic_review.py": {
+      "source": "2b0e5a255366811d08fbe90974dd3c9e4d936d986cd9febbc7a31d79d07a4269",
+      "export": "2b0e5a255366811d08fbe90974dd3c9e4d936d986cd9febbc7a31d79d07a4269"
+    },
+    "src/regrow/runtime/__init__.py": {
+      "source": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "export": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/regrow/runtime/action_commands.py": {
+      "source": "8b3b485c252447604ddae52d025fd98f8e6d8abc4bdfc9bc564bd9af4cca27da",
+      "export": "8b3b485c252447604ddae52d025fd98f8e6d8abc4bdfc9bc564bd9af4cca27da"
+    },
+    "src/regrow/runtime/action_executor.py": {
+      "source": "45c613d379bc4c0407c23f7981002dfd6373239f26cd1a51e656aeda266d571a",
+      "export": "45c613d379bc4c0407c23f7981002dfd6373239f26cd1a51e656aeda266d571a"
+    },
+    "src/regrow/runtime/app_launcher.py": {
+      "source": "7631c1bd22bb9e89588d067a08ea287b39d8efa4100d4f0bd17ee8a58c88a535",
+      "export": "7631c1bd22bb9e89588d067a08ea287b39d8efa4100d4f0bd17ee8a58c88a535"
+    },
+    "src/regrow/runtime/batch_runtime.py": {
+      "source": "12fa9976349a02521a723d321dfafe035bd2accf627616114eb69eacaa232172",
+      "export": "12fa9976349a02521a723d321dfafe035bd2accf627616114eb69eacaa232172"
+    },
+    "src/regrow/runtime/call_model_once.py": {
+      "source": "5cef3fbe72cfea52817d4caf4b2fbdc9f511d5810c5b1a5b698acc9027a26f25",
+      "export": "5cef3fbe72cfea52817d4caf4b2fbdc9f511d5810c5b1a5b698acc9027a26f25"
+    },
+    "src/regrow/runtime/desktop_capture.py": {
+      "source": "c6ef49fbeedbcfa04dcca2ed41af4a00f76fd84cdba373f25fd5844b8d7d72c7",
+      "export": "c6ef49fbeedbcfa04dcca2ed41af4a00f76fd84cdba373f25fd5844b8d7d72c7"
+    },
+    "src/regrow/runtime/desktop_lifecycle.py": {
+      "source": "63f567833e056f2c62ab5b10a4477ed460305e6ad669d6fd95a5055a1710c76e",
+      "export": "63f567833e056f2c62ab5b10a4477ed460305e6ad669d6fd95a5055a1710c76e"
+    },
+    "src/regrow/runtime/desktop_transport.py": {
+      "source": "6e3f9acb125163b0cb6bc7f21df63d794616bc7f0f954d6a18f144c9b0d13aa9",
+      "export": "6e3f9acb125163b0cb6bc7f21df63d794616bc7f0f954d6a18f144c9b0d13aa9"
+    },
+    "src/regrow/runtime/input_target.py": {
+      "source": "37bf434f7cf3dc55b9850338c4a15931a187223366655231ba6ca57573d20315",
+      "export": "37bf434f7cf3dc55b9850338c4a15931a187223366655231ba6ca57573d20315"
+    },
+    "src/regrow/runtime/model_reply_parse.py": {
+      "source": "43532b96868c5eb6c83db57e7e66e6e18645f0b79af1557b6822bf1a312d726d",
+      "export": "43532b96868c5eb6c83db57e7e66e6e18645f0b79af1557b6822bf1a312d726d"
+    },
+    "src/regrow/runtime/model_transport.py": {
+      "source": "5cfa3f508dda90d799dd5c7766d2f4e97a9b416026d7902c8038510d700d9eab",
+      "export": "5cfa3f508dda90d799dd5c7766d2f4e97a9b416026d7902c8038510d700d9eab"
+    },
+    "src/regrow/runtime/progress.py": {
+      "source": "65c7a1d99d225f321a326de46d8016f58cfe040592ed367d59f04968257a1cf3",
+      "export": "65c7a1d99d225f321a326de46d8016f58cfe040592ed367d59f04968257a1cf3"
+    },
+    "src/regrow/runtime/recover_external.py": {
+      "source": "c1e222f3b947347222696e4b14bd581634040029eab3d823aafb9b85d0c57465",
+      "export": "c1e222f3b947347222696e4b14bd581634040029eab3d823aafb9b85d0c57465"
+    },
+    "src/regrow/runtime/run_source.py": {
+      "source": "8ff127b3c0dc262c88de35b8cd6aaeb8e665280783281d2e6dfe912ef1de9f8b",
+      "export": "8ff127b3c0dc262c88de35b8cd6aaeb8e665280783281d2e6dfe912ef1de9f8b"
+    },
+    "src/regrow/tools/__init__.py": {
+      "source": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "export": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/regrow/tools/batch_environment.py": {
+      "source": "d16c70eb000c855e203202b31b9649c44424e7eb765fc435a2d4ea865d8d5d84",
+      "export": "d16c70eb000c855e203202b31b9649c44424e7eb765fc435a2d4ea865d8d5d84"
+    },
+    "src/regrow/tools/batch_launch.py": {
+      "source": "f376dae0763dc8d7bafc1bae2a490a991b078bdf1dc0d6b830e283569b5fe40d",
+      "export": "f376dae0763dc8d7bafc1bae2a490a991b078bdf1dc0d6b830e283569b5fe40d"
+    },
+    "src/regrow/tools/branch_switch.py": {
+      "source": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8",
+      "export": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8"
+    },
+    "src/regrow/tools/browser_hub.py": {
+      "source": "a0bfe4cd4546b18793ffd8d1b4a7e1b85584b08a73391439f32386a252e0fcae",
+      "export": "a0bfe4cd4546b18793ffd8d1b4a7e1b85584b08a73391439f32386a252e0fcae"
+    },
+    "src/regrow/tools/debug_candidate.py": {
+      "source": "01c248a40bb973250642db1f73939299d46a03e204c11fddbd1d141830aaf889",
+      "export": "01c248a40bb973250642db1f73939299d46a03e204c11fddbd1d141830aaf889"
+    },
+    "src/regrow/tools/debug_loop.py": {
+      "source": "10e1fa72577039e0c817af64ee9b053d927a18ff03abe0a7cc8c8cd16325dc5f",
+      "export": "10e1fa72577039e0c817af64ee9b053d927a18ff03abe0a7cc8c8cd16325dc5f"
+    },
+    "src/regrow/tools/debug_progress.py": {
+      "source": "87d8ff9acaf17a5bbc2c3fadcf741f1020327cce94206c2da1505f4f03f6d7fd",
+      "export": "87d8ff9acaf17a5bbc2c3fadcf741f1020327cce94206c2da1505f4f03f6d7fd"
+    },
+    "src/regrow/tools/import_records.py": {
+      "source": "ff371b8828c6b80b79c1b4762ef6e01c5ec4fec93887f0432f6eebc83b401803",
+      "export": "ff371b8828c6b80b79c1b4762ef6e01c5ec4fec93887f0432f6eebc83b401803"
+    },
+    "src/regrow/tools/launch_traversal.py": {
+      "source": "c0308cc1e59852232bbddbcdee43f769149d441256cfd65293bbc2973a69d9d7",
+      "export": "c0308cc1e59852232bbddbcdee43f769149d441256cfd65293bbc2973a69d9d7"
+    },
+    "src/regrow/tools/progress_details.py": {
+      "source": "4e207f5ac1cc1bed29900467cad19256b076cbce6776a9dc06f189f90db0787a",
+      "export": "4e207f5ac1cc1bed29900467cad19256b076cbce6776a9dc06f189f90db0787a"
+    },
+    "src/regrow/tools/progress_window.html": {
+      "source": "7bd3b614afb7fa244fdf482ba0bf19d46033fe07a8417a6f1fe68c22d06328f3",
+      "export": "7bd3b614afb7fa244fdf482ba0bf19d46033fe07a8417a6f1fe68c22d06328f3"
+    },
+    "src/regrow/tools/progress_window.py": {
+      "source": "2f8a7802fe5c60a3bcd9d6ca30991b573b8eafe023387e2def848bc1d09521eb",
+      "export": "2f8a7802fe5c60a3bcd9d6ca30991b573b8eafe023387e2def848bc1d09521eb"
+    },
+    "src/regrow/tools/region_graph.html": {
+      "source": "bcafb69fb8a148068a3423aa4400f3806d80a01defa7837bd4c0cc00767fbf48",
+      "export": "bcafb69fb8a148068a3423aa4400f3806d80a01defa7837bd4c0cc00767fbf48"
+    },
+    "src/regrow/tools/render_region_context.py": {
+      "source": "a56986b1ea2ae593a090c7a0c79a0968aace342dadf2251f02b396e39dfd3a8a",
+      "export": "a56986b1ea2ae593a090c7a0c79a0968aace342dadf2251f02b396e39dfd3a8a"
+    },
+    "src/regrow/traversal/__init__.py": {
+      "source": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "export": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/regrow/traversal/action_binding.py": {
+      "source": "d8b1873ec878ea38cc1bef1bdd2c7ea6eef8cc749743dcc93504dc710e4e0153",
+      "export": "d8b1873ec878ea38cc1bef1bdd2c7ea6eef8cc749743dcc93504dc710e4e0153"
+    },
+    "src/regrow/traversal/action_context.py": {
+      "source": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4",
+      "export": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4"
+    },
+    "src/regrow/traversal/action_proposer.py": {
+      "source": "bfa7313438db3e02644e686b19e3f735218a75a3e9c2776aa95bd66ee5599ffa",
+      "export": "bfa7313438db3e02644e686b19e3f735218a75a3e9c2776aa95bd66ee5599ffa"
+    },
+    "src/regrow/traversal/attempt_guard.py": {
+      "source": "d3939c007bb6fc25e227cf8159b41855e2447a6fececfd402660ef2614abd521",
+      "export": "d3939c007bb6fc25e227cf8159b41855e2447a6fececfd402660ef2614abd521"
+    },
+    "src/regrow/traversal/correction_crop_feedback.py": {
+      "source": "69cd9fac822d9fbfb4ff02c219569210d4aaffa783d245615aa28fed6cecde95",
+      "export": "69cd9fac822d9fbfb4ff02c219569210d4aaffa783d245615aa28fed6cecde95"
+    },
+    "src/regrow/traversal/correction_prompts.py": {
+      "source": "cf676e932ac38d88f6d104967715d31b4f403e822b7f98d2993631039e90beea",
+      "export": "cf676e932ac38d88f6d104967715d31b4f403e822b7f98d2993631039e90beea"
+    },
+    "src/regrow/traversal/discovery_step.py": {
+      "source": "1ce2e200bd3a9294a7665d8a6d25d89fcec4df0d64122ddcf2f88a2876377282",
+      "export": "1ce2e200bd3a9294a7665d8a6d25d89fcec4df0d64122ddcf2f88a2876377282"
+    },
+    "src/regrow/traversal/exploration_loop.py": {
+      "source": "c0adb6f2593387ed342c329067cae9be56ce6fbd9bb6f90e67726318f15ec3cd",
+      "export": "c0adb6f2593387ed342c329067cae9be56ce6fbd9bb6f90e67726318f15ec3cd"
+    },
+    "src/regrow/traversal/exploration_summary.py": {
+      "source": "ffb14beadf54271e523cdf619eeeac757eed43046317bcbd5960ec901f35de20",
+      "export": "ffb14beadf54271e523cdf619eeeac757eed43046317bcbd5960ec901f35de20"
+    },
+    "src/regrow/traversal/historical_inventory.py": {
+      "source": "5dae1834d1a9d442e33f0d080fef6ecbfd2fcbec51d686e90cbc5f6452c023f5",
+      "export": "5dae1834d1a9d442e33f0d080fef6ecbfd2fcbec51d686e90cbc5f6452c023f5"
+    },
+    "src/regrow/traversal/inventory_scroll.py": {
+      "source": "cd54d6d438632520fb5a640aaf6934f068d5578e8691917d279d45fc7755c604",
+      "export": "cd54d6d438632520fb5a640aaf6934f068d5578e8691917d279d45fc7755c604"
+    },
+    "src/regrow/traversal/object_registration.py": {
+      "source": "1d3c7789ff61fe4786b21b582794e8f7f76b06ae68a2b2fbc67c483f993ff28d",
+      "export": "1d3c7789ff61fe4786b21b582794e8f7f76b06ae68a2b2fbc67c483f993ff28d"
+    },
+    "src/regrow/traversal/observation.py": {
+      "source": "d900833c0ea1de3eb8911004a82a727935ac375f30784a5525f5f2c0ece7eabd",
+      "export": "d900833c0ea1de3eb8911004a82a727935ac375f30784a5525f5f2c0ece7eabd"
+    },
+    "src/regrow/traversal/operation_blocking.py": {
+      "source": "23209f8e0b1aadd4e886de910eefbde6768ac17f5e4aa894a5eb8173ffb9ccdb",
+      "export": "23209f8e0b1aadd4e886de910eefbde6768ac17f5e4aa894a5eb8173ffb9ccdb"
+    },
+    "src/regrow/traversal/parameter_evidence_review.py": {
+      "source": "4d83cb489709ecd97a325791fd83d7eeb5b1d695e60321c42ef893ffa4563c1b",
+      "export": "4d83cb489709ecd97a325791fd83d7eeb5b1d695e60321c42ef893ffa4563c1b"
+    },
+    "src/regrow/traversal/recover_loop.py": {
+      "source": "d84dbf2c7acaa086def4316657cdbdde3717ca4d483a14bd6ebf77864a5e79d3",
+      "export": "d84dbf2c7acaa086def4316657cdbdde3717ca4d483a14bd6ebf77864a5e79d3"
+    },
+    "src/regrow/traversal/recovery.py": {
+      "source": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c",
+      "export": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c"
+    },
+    "src/regrow/traversal/recovery_stall.py": {
+      "source": "0daf4c916dc78d710c5aa136b89e71bac42effa1681b6d9065edfa343f1e6785",
+      "export": "0daf4c916dc78d710c5aa136b89e71bac42effa1681b6d9065edfa343f1e6785"
+    },
+    "src/regrow/traversal/region_functions.py": {
+      "source": "2b7de048c574c6e94f1122d32f41ab31da1c85ff52e3a6cd995bad014228791d",
+      "export": "2b7de048c574c6e94f1122d32f41ab31da1c85ff52e3a6cd995bad014228791d"
+    },
+    "src/regrow/traversal/region_scroll.py": {
+      "source": "7709050dbd6f14fc90e321d81f865cc1e587776ad943ef4b05128b17babf463b",
+      "export": "7709050dbd6f14fc90e321d81f865cc1e587776ad943ef4b05128b17babf463b"
+    },
+    "src/regrow/traversal/region_tasks.py": {
+      "source": "fcb33d3875fc49af8a6856a9aba391162dd59e41e20e4be23d359899b724ef1b",
+      "export": "fcb33d3875fc49af8a6856a9aba391162dd59e41e20e4be23d359899b724ef1b"
+    },
+    "src/regrow/traversal/register_update.py": {
+      "source": "cc1f590a6c09afb25087d6da695dfef8730ddf75a708c00ab7247cb82a417bf4",
+      "export": "cc1f590a6c09afb25087d6da695dfef8730ddf75a708c00ab7247cb82a417bf4"
+    },
+    "src/regrow/traversal/repair_stages.py": {
+      "source": "93a1baf6e514824358dc69810f7ca3170937c636fa9de0b098602c52924bb7e6",
+      "export": "93a1baf6e514824358dc69810f7ca3170937c636fa9de0b098602c52924bb7e6"
+    },
+    "src/regrow/traversal/result_updater.py": {
+      "source": "ea178f3f61793fae14a5cba7c1de0853077b1e538a5a349dcc3f7da3b0cfd6a2",
+      "export": "ea178f3f61793fae14a5cba7c1de0853077b1e538a5a349dcc3f7da3b0cfd6a2"
+    },
+    "src/regrow/traversal/run_progress_session.py": {
+      "source": "fcb3deab1f94179e1d7c6e6c6241e44d423e7b350b008df513426953132747b7",
+      "export": "fcb3deab1f94179e1d7c6e6c6241e44d423e7b350b008df513426953132747b7"
+    },
+    "src/regrow/traversal/run_task_step.py": {
+      "source": "fd35642315408578a51ef0539c218904590f14ebe517fa7ccc9afa0190d907ad",
+      "export": "fd35642315408578a51ef0539c218904590f14ebe517fa7ccc9afa0190d907ad"
+    },
+    "src/regrow/traversal/step_repair.py": {
+      "source": "e97d996e753aca07b1a0e3f62d808c943f212181c188b05085d09a8bda852e4b",
+      "export": "b02b4d03964a481b57b45acd079757d06df47f0167e198659565be4b90fbafbe"
+    },
+    "src/regrow/traversal/suspended_updates.py": {
+      "source": "300a0fb4d833f635bd2879215d66f13685acc488656845194d869380314a922a",
+      "export": "300a0fb4d833f635bd2879215d66f13685acc488656845194d869380314a922a"
+    },
+    "src/regrow/traversal/task_deferral.py": {
+      "source": "3239e338f1aacb864354ba40da281dcf9314be5da0a738a0920f02ae2ac7e8a7",
+      "export": "3239e338f1aacb864354ba40da281dcf9314be5da0a738a0920f02ae2ac7e8a7"
+    },
+    "src/regrow/traversal/task_prerequisites.py": {
+      "source": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c",
+      "export": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c"
+    },
+    "src/regrow/traversal/task_proposer.py": {
+      "source": "1a943fc8101267c2b95c02a86d6eb29d4179f81fd6a24a80bdcd5ba74e35c2b9",
+      "export": "1a943fc8101267c2b95c02a86d6eb29d4179f81fd6a24a80bdcd5ba74e35c2b9"
+    },
+    "src/regrow/traversal/task_record_repair.py": {
+      "source": "c23140d844f7742497c31fcee49760cb07793f281aa0d1d8538e24353f4fdbce",
+      "export": "c23140d844f7742497c31fcee49760cb07793f281aa0d1d8538e24353f4fdbce"
+    },
+    "src/regrow/traversal/task_result_review.py": {
+      "source": "3be6a567a3f9521494ab3251b19e666a4a67bd5d0636ee78a23822100a825e4f",
+      "export": "3be6a567a3f9521494ab3251b19e666a4a67bd5d0636ee78a23822100a825e4f"
+    },
+    "src/regrow/traversal/task_routing.py": {
+      "source": "7a00d676d9e7ec2ef50e5d2feaa2c252afa76e8018a2c309a5581115aba94f1b",
+      "export": "7a00d676d9e7ec2ef50e5d2feaa2c252afa76e8018a2c309a5581115aba94f1b"
+    },
+    "src/regrow/traversal/traversal_scheduler.py": {
+      "source": "e4208416b03cd0f5a6d498dcd30b8d83cc216e102d227029b48895ed5c354cf0",
+      "export": "e4208416b03cd0f5a6d498dcd30b8d83cc216e102d227029b48895ed5c354cf0"
+    },
+    "src/regrow/traversal/traversal_scope.py": {
+      "source": "6e1ca9ce3816ae30993383a1e753a3ee8cfd34d6c457430bdce2f9daa641d5e2",
+      "export": "6e1ca9ce3816ae30993383a1e753a3ee8cfd34d6c457430bdce2f9daa641d5e2"
+    },
+    "src/regrow/traversal/work_context.py": {
+      "source": "8048938ab5c74a7c499b2c6de9a9fe65ca93ad1c93bc787090454727a9256122",
+      "export": "8048938ab5c74a7c499b2c6de9a9fe65ca93ad1c93bc787090454727a9256122"
+    },
+    "src/scopes/chrome_basic.txt": {
+      "source": "69596975ce79566c7589fe751c453329e4974135e67faa4ff90e3716cd72c941",
+      "export": "69596975ce79566c7589fe751c453329e4974135e67faa4ff90e3716cd72c941"
+    },
+    "DEVELOPMENT.md": {
+      "source": "5fee710596ae4b8b67a89f97f5e029f7f1a6b7eb85a4d37772c58499a8c584c6",
+      "export": "5fee710596ae4b8b67a89f97f5e029f7f1a6b7eb85a4d37772c58499a8c584c6"
+    },
+    "tools/run_stepwise.py": {
+      "source": "b89ac6526b9480184216ae79d640f642d652cd7404acc9e30a1bfee873855d2c",
+      "export": "b89ac6526b9480184216ae79d640f642d652cd7404acc9e30a1bfee873855d2c"
+    },
+    "tools/prompt_review_editor.py": {
+      "source": "a4e6e3a08c1bf4293d78dd210bfad132c517ed047301ccfa9248bb4b7f0f64b1",
+      "export": "a4e6e3a08c1bf4293d78dd210bfad132c517ed047301ccfa9248bb4b7f0f64b1"
+    },
+    "tools/prompt_review_trace.py": {
+      "source": "c4b981c840c37e87f63574b1540db53aac5947e8f1dcf51efe38a97702fdb898",
+      "export": "c4b981c840c37e87f63574b1540db53aac5947e8f1dcf51efe38a97702fdb898"
+    },
+    "tools/prompt_review_work.py": {
+      "source": "9ffd4cefb81f741c13a45402fc708a036445f72ac70f922649aa36073be16432",
+      "export": "9ffd4cefb81f741c13a45402fc708a036445f72ac70f922649aa36073be16432"
+    },
+    "tools/prompt_review_editor/README.md": {
+      "source": "98945e07a73bd846de63783086943f41943173ece0562547cf4f84a95ae1a7fa",
+      "export": "98945e07a73bd846de63783086943f41943173ece0562547cf4f84a95ae1a7fa"
+    },
+    "tools/prompt_review_editor/editor.css": {
+      "source": "e59732babb2eaa67a6b374e7d94f002f0d4e6b26f1ec16f49c6384f9a53c5575",
+      "export": "e59732babb2eaa67a6b374e7d94f002f0d4e6b26f1ec16f49c6384f9a53c5575"
+    },
+    "tools/prompt_review_editor/editor.html": {
+      "source": "053c00ec08a8c47e8f1ae3a1aae723477c5fd3b6cec2d1628136719eedd79003",
+      "export": "053c00ec08a8c47e8f1ae3a1aae723477c5fd3b6cec2d1628136719eedd79003"
+    },
+    "tools/prompt_review_editor/editor.js": {
+      "source": "24ae674ef54fecb1074107be551658c5210f6f2aaaf9be88f96da28a190faa5f",
+      "export": "24ae674ef54fecb1074107be551658c5210f6f2aaaf9be88f96da28a190faa5f"
+    },
+    "tools/prompt_review_editor/history_guide.json": {
+      "source": "8c124bb70e33fa117e1264bae17c490fef4a165e2f13a69b119aca70cad01784",
+      "export": "8c124bb70e33fa117e1264bae17c490fef4a165e2f13a69b119aca70cad01784"
+    },
+    "tools/prompt_review_editor/trace.css": {
+      "source": "9c69efe8540f88147d025bfc90ce06ab2314d7bc5cacd87bafa21881ca70eaf4",
+      "export": "9c69efe8540f88147d025bfc90ce06ab2314d7bc5cacd87bafa21881ca70eaf4"
+    },
+    "tools/prompt_review_editor/trace.js": {
+      "source": "eb30a698368181c0e3853d55cdecc4a748b853afb4e09ac25909438dc2da2121",
+      "export": "eb30a698368181c0e3853d55cdecc4a748b853afb4e09ac25909438dc2da2121"
+    },
+    "tools/prompt_review_editor/worklog.js": {
+      "source": "0d1089189a3cf8e8ff435f679782f2e9bfd8c6faf1dfe270a361ad88dacfcacd",
+      "export": "0d1089189a3cf8e8ff435f679782f2e9bfd8c6faf1dfe270a361ad88dacfcacd"
+    },
+    "tools/prompt_review_editor/worktrace.js": {
+      "source": "8a8b1055a7935ba8ec52073df1e3a1fcbc5f619ca48799bac639157e6e83b8b5",
+      "export": "8a8b1055a7935ba8ec52073df1e3a1fcbc5f619ca48799bac639157e6e83b8b5"
+    },
+    "design/CURRENT_FRAMEWORK.md": {
+      "source": "41777d0422fa8af7f210c892ae20ff3427675aef9390f5318e8c942ab8b5e78e",
+      "export": "41777d0422fa8af7f210c892ae20ff3427675aef9390f5318e8c942ab8b5e78e"
+    },
+    "design/THREE_PART_FRAMEWORK.md": {
+      "source": "df11cf42c5a935c0b610295107f63ce4f88d691166c1c2b938baa3a625daa20d",
+      "export": "df11cf42c5a935c0b610295107f63ce4f88d691166c1c2b938baa3a625daa20d"
+    },
+    "design/THREE_PART_MIGRATION.json": {
+      "source": "042403665babec91f0769c8c12e65adf34029bda574ca788ae9ed18ae009f976",
+      "export": "042403665babec91f0769c8c12e65adf34029bda574ca788ae9ed18ae009f976"
+    },
+    "design/REGION_TRAVERSAL_ALIGNMENT.md": {
+      "source": "97aa523d8e0d3e2930c4accd2f70f63a817fca573e36e2402fa702a05ddcf4c6",
+      "export": "97aa523d8e0d3e2930c4accd2f70f63a817fca573e36e2402fa702a05ddcf4c6"
+    },
+    "design/RESEARCH_GOAL.md": {
+      "source": "86bc3cd0a1e06df34a57b2f9f4425bc0014229aa65f208b679ed9c36bba55635",
+      "export": "86bc3cd0a1e06df34a57b2f9f4425bc0014229aa65f208b679ed9c36bba55635"
+    },
+    "design/modules/stepwise/01_discovery.md": {
+      "source": "ac69b3f07a3d7799da2aac8b704a522676a47978bba56c133f2b12999746f7eb",
+      "export": "ac69b3f07a3d7799da2aac8b704a522676a47978bba56c133f2b12999746f7eb"
+    },
+    "design/modules/stepwise/02_action.md": {
+      "source": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+      "export": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383"
+    },
+    "design/modules/stepwise/03_update.md": {
+      "source": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+      "export": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383"
+    },
+    "design/modules/stepwise/CODE_MAP.md": {
+      "source": "c0ea27bf90a916742483c9ffd2f2f30681a28709f5ecf84485e74e47d79438ed",
+      "export": "c0ea27bf90a916742483c9ffd2f2f30681a28709f5ecf84485e74e47d79438ed"
+    },
+    "design/modules/stepwise/README.md": {
+      "source": "2ec648da667f7c932493cb907c04213a2f0d2b595f27fd7a04ad5dfb8c27e1df",
+      "export": "2ec648da667f7c932493cb907c04213a2f0d2b595f27fd7a04ad5dfb8c27e1df"
+    },
+    "design/modules/stepwise/context.md": {
+      "source": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0",
+      "export": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0"
+    },
+    "design/modules/stepwise/execution.md": {
+      "source": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+      "export": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383"
+    },
+    "design/modules/stepwise/identity.md": {
+      "source": "ac69b3f07a3d7799da2aac8b704a522676a47978bba56c133f2b12999746f7eb",
+      "export": "ac69b3f07a3d7799da2aac8b704a522676a47978bba56c133f2b12999746f7eb"
+    },
+    "design/modules/stepwise/knowledge.md": {
+      "source": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0",
+      "export": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0"
+    },
+    "design/modules/stepwise/object_fields.md": {
+      "source": "6a461cc2dd0230b775ac4f07507f4154bb6635aecce6303dfd225f119934cd85",
+      "export": "6a461cc2dd0230b775ac4f07507f4154bb6635aecce6303dfd225f119934cd85"
+    },
+    "design/modules/stepwise/prompt_review_backlog.md": {
+      "source": "454cc83e5b40db14d2f3df58f9e2cc3d7b88ff798b9044537416c0acd414afa2",
+      "export": "454cc83e5b40db14d2f3df58f9e2cc3d7b88ff798b9044537416c0acd414afa2"
+    },
+    "design/modules/stepwise/prompt_review_change_map.md": {
+      "source": "a9b2e98ead576d1aff6bac1a88d826ebcee6bfd266eee059509fb5971818af27",
+      "export": "a9b2e98ead576d1aff6bac1a88d826ebcee6bfd266eee059509fb5971818af27"
+    },
+    "design/modules/stepwise/recognition.md": {
+      "source": "7d4db5376f62855db928f9448995f160bc113ed85cc439b2f9542d39668633f3",
+      "export": "7d4db5376f62855db928f9448995f160bc113ed85cc439b2f9542d39668633f3"
+    },
+    "design/modules/stepwise/records.md": {
+      "source": "ce0c1158a97810a192b7ae093a6a6f3a27bc9245220ba4af02c081481b5478d9",
+      "export": "ce0c1158a97810a192b7ae093a6a6f3a27bc9245220ba4af02c081481b5478d9"
+    },
+    "design/modules/stepwise/repair.md": {
+      "source": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+      "export": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383"
+    },
+    "design/modules/stepwise/routing.md": {
+      "source": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+      "export": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383"
+    },
+    "design/modules/stepwise/runtime.md": {
+      "source": "710a696272d2fccaa26e616e0d3239d6fbf2a4df338a9b1898c12f918d1c3d0c",
+      "export": "710a696272d2fccaa26e616e0d3239d6fbf2a4df338a9b1898c12f918d1c3d0c"
+    },
+    "design/modules/stepwise/storage_flattening_change_map.md": {
+      "source": "121d700fd395c3e1e84760be523dcad8d6532c302148b17f6ad9eeb63033a97e",
+      "export": "121d700fd395c3e1e84760be523dcad8d6532c302148b17f6ad9eeb63033a97e"
+    },
+    "design/modules/stepwise/storage_organization_audit.md": {
+      "source": "d8bb2e7420d28899abb1020f6842c0de07f794be5de187c408b7ab639525307f",
+      "export": "d8bb2e7420d28899abb1020f6842c0de07f794be5de187c408b7ab639525307f"
+    },
+    "design/modules/stepwise/tasks.md": {
+      "source": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+      "export": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383"
+    },
+    "design/modules/stepwise/traversal.md": {
+      "source": "d83996df812f8ed60c74ec9f8243a55060fac10dc8496324461fd37a0faef6d5",
+      "export": "d83996df812f8ed60c74ec9f8243a55060fac10dc8496324461fd37a0faef6d5"
+    },
+    "design/modules/stepwise/updates.md": {
+      "source": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0",
+      "export": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0"
+    },
+    "design/prompt_objects_review/README.md": {
+      "source": "09966b9ede76f00e2eb932597eebd515654c6baff2a095602b4c3d7075ea5a83",
+      "export": "09966b9ede76f00e2eb932597eebd515654c6baff2a095602b4c3d7075ea5a83"
+    },
+    "design/prompt_objects_review/任务.prompt": {
+      "source": "9638592d05bb3dfc9ec10986b8b22ea386f2a494e882745c60506b058d24f42d",
+      "export": "9638592d05bb3dfc9ec10986b8b22ea386f2a494e882745c60506b058d24f42d"
+    },
+    "design/prompt_objects_review/共用与条件补充.md": {
+      "source": "e95b22b9995b4918e5ff2f5f13b75ddb76e538636d64cd0fa6c7aed5d1f34104",
+      "export": "e95b22b9995b4918e5ff2f5f13b75ddb76e538636d64cd0fa6c7aed5d1f34104"
+    },
+    "design/prompt_objects_review/动作.prompt": {
+      "source": "892a905d579d0eb298560d7e237f15059ccce5f9947d4f7986d834ae23f5ae7b",
+      "export": "892a905d579d0eb298560d7e237f15059ccce5f9947d4f7986d834ae23f5ae7b"
+    },
+    "design/prompt_objects_review/区块.prompt": {
+      "source": "52859c1fd44c5eab58efd72b201d799c788a6d10140977db1082dfe204bd9f01",
+      "export": "52859c1fd44c5eab58efd72b201d799c788a6d10140977db1082dfe204bd9f01"
+    },
+    "design/prompt_objects_review/审阅记录/分离映射.json": {
+      "source": "26c4ef94a73d61a709d5a38c77d92a650916b84fd8f9d10df88773cba2d2327f",
+      "export": "26c4ef94a73d61a709d5a38c77d92a650916b84fd8f9d10df88773cba2d2327f"
+    },
+    "design/prompt_objects_review/审阅记录/分离记录.md": {
+      "source": "d946fe56d7fd5577bf1113d88324af3c9f58ebc02b63fbc90d9a6782ee441ca1",
+      "export": "d946fe56d7fd5577bf1113d88324af3c9f58ebc02b63fbc90d9a6782ee441ca1"
+    },
+    "design/prompt_objects_review/审阅记录/动作输出条件映射.md": {
+      "source": "cf66eb6b34c99e60c437f7a964cf3dad52dbe6ef19b26b15e77d3a9a743a6160",
+      "export": "cf66eb6b34c99e60c437f7a964cf3dad52dbe6ef19b26b15e77d3a9a743a6160"
+    },
+    "design/prompt_objects_review/审阅记录/动态生成机制.md": {
+      "source": "3fb1a453acef818576ea608303f511b393b7d0645a1daacae1f5a760a813e49d",
+      "export": "3fb1a453acef818576ea608303f511b393b7d0645a1daacae1f5a760a813e49d"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/README.md": {
+      "source": "9d1d07d936e05b7856cc78ea417ec247a7cb3d158f4a0d0003327de4eb5bd2a6",
+      "export": "9d1d07d936e05b7856cc78ea417ec247a7cb3d158f4a0d0003327de4eb5bd2a6"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/任务.prompt": {
+      "source": "070d995452a0377dcab627a9663ab4b04f7868f64cabe51cac756e00206d9e27",
+      "export": "070d995452a0377dcab627a9663ab4b04f7868f64cabe51cac756e00206d9e27"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/动作.prompt": {
+      "source": "d093e302c347781e7dad59b1c20c1c2f390b12c2b42cdad38d4ddbdc90a2ee3e",
+      "export": "d093e302c347781e7dad59b1c20c1c2f390b12c2b42cdad38d4ddbdc90a2ee3e"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/区块.prompt": {
+      "source": "cd07bda908c4bf35415e60d32a94b6344afbd614773818f104b7f7a2cbf13f8b",
+      "export": "cd07bda908c4bf35415e60d32a94b6344afbd614773818f104b7f7a2cbf13f8b"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/原文件清单.json": {
+      "source": "19731c055356b33863912d878d5010d7958c08ffca85722bbf03569434fbf7b7",
+      "export": "19731c055356b33863912d878d5010d7958c08ffca85722bbf03569434fbf7b7"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/控件.prompt": {
+      "source": "8591e501e17005104e72b9709bdc4ae88580602205abbe1110cf2d72139a11fe",
+      "export": "8591e501e17005104e72b9709bdc4ae88580602205abbe1110cf2d72139a11fe"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/来源映射.json": {
+      "source": "832a1336f62f283425e5e6ba98ff4dc16a2775d77a9e7dbc6c00fed33049a50b",
+      "export": "832a1336f62f283425e5e6ba98ff4dc16a2775d77a9e7dbc6c00fed33049a50b"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/配置原文.json": {
+      "source": "9c8b194d43c6a7d0c29e70044c5400d789d2b3ee9c61f8cf3c5ef876471b47eb",
+      "export": "9c8b194d43c6a7d0c29e70044c5400d789d2b3ee9c61f8cf3c5ef876471b47eb"
+    },
+    "design/prompt_objects_review/审阅记录/原始摘录/验证记录.md": {
+      "source": "63b86adbc7ca0b82b1b692ab78d467bf2bfca35a2262ce4715dce89235b96d98",
+      "export": "63b86adbc7ca0b82b1b692ab78d467bf2bfca35a2262ce4715dce89235b96d98"
+    },
+    "design/prompt_objects_review/审阅记录/原文件清单.json": {
+      "source": "19731c055356b33863912d878d5010d7958c08ffca85722bbf03569434fbf7b7",
+      "export": "19731c055356b33863912d878d5010d7958c08ffca85722bbf03569434fbf7b7"
+    },
+    "design/prompt_objects_review/审阅记录/完整收录清单.json": {
+      "source": "a622aff0dc35becc7274c0e045b8a11e3888066a1391d75433162434db8fb466",
+      "export": "a622aff0dc35becc7274c0e045b8a11e3888066a1391d75433162434db8fb466"
+    },
+    "design/prompt_objects_review/审阅记录/本次调用收录记录.md": {
+      "source": "c78a42de2cf85f32593921389a46a85c860a13e26b2869a5d37dc6a30b6d8250",
+      "export": "c78a42de2cf85f32593921389a46a85c860a13e26b2869a5d37dc6a30b6d8250"
+    },
+    "design/prompt_objects_review/审阅记录/本次验证.md": {
+      "source": "cb35b73e2f9df43efa9e58533fca906a28a49345fe24eadb5a8fc954c51bc572",
+      "export": "cb35b73e2f9df43efa9e58533fca906a28a49345fe24eadb5a8fc954c51bc572"
+    },
+    "design/prompt_objects_review/审阅记录/来源映射.json": {
+      "source": "832a1336f62f283425e5e6ba98ff4dc16a2775d77a9e7dbc6c00fed33049a50b",
+      "export": "832a1336f62f283425e5e6ba98ff4dc16a2775d77a9e7dbc6c00fed33049a50b"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/prompts/output.py": {
+      "source": "2f98561ae35efd9b4056bc998b5ae2b5917e20644b465bfc30743d72725ac82b",
+      "export": "2f98561ae35efd9b4056bc998b5ae2b5917e20644b465bfc30743d72725ac82b"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/prompts/response_example.py": {
+      "source": "43dde677868bb262d33bac192ee83ef34e1f634ab60be12afa3c587a1250f344",
+      "export": "43dde677868bb262d33bac192ee83ef34e1f634ab60be12afa3c587a1250f344"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/recognition/control_identity_review.py": {
+      "source": "ec76592a5cd33eb60ac84fedfef570e8ef688a33b818ad34f3ecb7739fefc425",
+      "export": "ec76592a5cd33eb60ac84fedfef570e8ef688a33b818ad34f3ecb7739fefc425"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/recognition/control_indexes.py": {
+      "source": "df8ee03feef4cdd601ec9c761ed144dc3961a353e9458ca3aca780630be1f919",
+      "export": "df8ee03feef4cdd601ec9c761ed144dc3961a353e9458ca3aca780630be1f919"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/recognition/discovery_completion.py": {
+      "source": "b4f9b4ed1838ef2b5fbd15361e858ee0df9174700d752ede4e9a7c8269fddc80",
+      "export": "b4f9b4ed1838ef2b5fbd15361e858ee0df9174700d752ede4e9a7c8269fddc80"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/recognition/discovery_inventory.py": {
+      "source": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7",
+      "export": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/recognition/locator.py": {
+      "source": "c32247cfb66bc20510f968ba58ae17072deabd2ea8079b6aa9cb0b92ebd713ee",
+      "export": "c32247cfb66bc20510f968ba58ae17072deabd2ea8079b6aa9cb0b92ebd713ee"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/recognition/ownership_review.py": {
+      "source": "d9cecdb4ce7a65d6ba68ee0c8f365b027a27d66ec0698f559f5a398adc8599e7",
+      "export": "d9cecdb4ce7a65d6ba68ee0c8f365b027a27d66ec0698f559f5a398adc8599e7"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/records/shared_control_review.py": {
+      "source": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee",
+      "export": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/records/task_updates.py": {
+      "source": "6bfda1e5edb56a054e307bd71feb1cdfd22c45046a645b0d056a9876f77444d5",
+      "export": "6bfda1e5edb56a054e307bd71feb1cdfd22c45046a645b0d056a9876f77444d5"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/runtime/action_commands.py": {
+      "source": "8b3b485c252447604ddae52d025fd98f8e6d8abc4bdfc9bc564bd9af4cca27da",
+      "export": "8b3b485c252447604ddae52d025fd98f8e6d8abc4bdfc9bc564bd9af4cca27da"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/runtime/model_transport.py": {
+      "source": "5cfa3f508dda90d799dd5c7766d2f4e97a9b416026d7902c8038510d700d9eab",
+      "export": "5cfa3f508dda90d799dd5c7766d2f4e97a9b416026d7902c8038510d700d9eab"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/tools/branch_switch.py": {
+      "source": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8",
+      "export": "a101c4dd68a79c196eee240a0671e44a1a04a86afad9e388c2e94542fe2e0ac8"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/action_context.py": {
+      "source": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4",
+      "export": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/action_proposer.py": {
+      "source": "bfa7313438db3e02644e686b19e3f735218a75a3e9c2776aa95bd66ee5599ffa",
+      "export": "bfa7313438db3e02644e686b19e3f735218a75a3e9c2776aa95bd66ee5599ffa"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/correction_prompts.py": {
+      "source": "cf676e932ac38d88f6d104967715d31b4f403e822b7f98d2993631039e90beea",
+      "export": "cf676e932ac38d88f6d104967715d31b4f403e822b7f98d2993631039e90beea"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/object_registration.py": {
+      "source": "1d3c7789ff61fe4786b21b582794e8f7f76b06ae68a2b2fbc67c483f993ff28d",
+      "export": "1d3c7789ff61fe4786b21b582794e8f7f76b06ae68a2b2fbc67c483f993ff28d"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/recovery.py": {
+      "source": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c",
+      "export": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/region_functions.py": {
+      "source": "2b7de048c574c6e94f1122d32f41ab31da1c85ff52e3a6cd995bad014228791d",
+      "export": "2b7de048c574c6e94f1122d32f41ab31da1c85ff52e3a6cd995bad014228791d"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/repair_stages.py": {
+      "source": "93a1baf6e514824358dc69810f7ca3170937c636fa9de0b098602c52924bb7e6",
+      "export": "93a1baf6e514824358dc69810f7ca3170937c636fa9de0b098602c52924bb7e6"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/result_updater.py": {
+      "source": "ea178f3f61793fae14a5cba7c1de0853077b1e538a5a349dcc3f7da3b0cfd6a2",
+      "export": "ea178f3f61793fae14a5cba7c1de0853077b1e538a5a349dcc3f7da3b0cfd6a2"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/step_repair.py": {
+      "source": "b02b4d03964a481b57b45acd079757d06df47f0167e198659565be4b90fbafbe",
+      "export": "b02b4d03964a481b57b45acd079757d06df47f0167e198659565be4b90fbafbe"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/task_prerequisites.py": {
+      "source": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c",
+      "export": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/task_proposer.py": {
+      "source": "1a943fc8101267c2b95c02a86d6eb29d4179f81fd6a24a80bdcd5ba74e35c2b9",
+      "export": "1a943fc8101267c2b95c02a86d6eb29d4179f81fd6a24a80bdcd5ba74e35c2b9"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/traversal/task_result_review.py": {
+      "source": "3be6a567a3f9521494ab3251b19e666a4a67bd5d0636ee78a23822100a825e4f",
+      "export": "3be6a567a3f9521494ab3251b19e666a4a67bd5d0636ee78a23822100a825e4f"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/流程/01_发现.json": {
+      "source": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785",
+      "export": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/流程/02_动作选择.json": {
+      "source": "02022ff7d619ebd5fd0d9977c42d86c626820898e8b17118b5df087202272426",
+      "export": "02022ff7d619ebd5fd0d9977c42d86c626820898e8b17118b5df087202272426"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/流程/03_结果核对.json": {
+      "source": "a45014cdf74dc1eb1721b18e8ebcaa9a70b976801cce6fbccbab41771af7369d",
+      "export": "a45014cdf74dc1eb1721b18e8ebcaa9a70b976801cce6fbccbab41771af7369d"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/流程/README.md": {
+      "source": "0223618a5179b1e471334e9ac421b2686bf73a141c53dc721df0f5a1fa428001",
+      "export": "0223618a5179b1e471334e9ac421b2686bf73a141c53dc721df0f5a1fa428001"
+    },
+    "design/prompt_objects_review/审阅记录/源快照/流程/调用组成.json": {
+      "source": "0270066b110b35087343cfd7ab742ff5639fb2d6282590ed9be9ed79452a8a57",
+      "export": "0270066b110b35087343cfd7ab742ff5639fb2d6282590ed9be9ed79452a8a57"
+    },
+    "design/prompt_objects_review/审阅记录/源快照散列.json": {
+      "source": "3534e343ff37d612fa60ec534140adaa0f0e11a06cd9219bdaddd310916c4896",
+      "export": "3534e343ff37d612fa60ec534140adaa0f0e11a06cd9219bdaddd310916c4896"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/prompts__output.py.md": {
+      "source": "bd3cc57e3abd3d972b05a3868b767b6668031cdeeb77dc8fdc2f766845fcc0d9",
+      "export": "bd3cc57e3abd3d972b05a3868b767b6668031cdeeb77dc8fdc2f766845fcc0d9"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/prompts__response_example.py.md": {
+      "source": "fe01bfd6029e810a14dee67528efd83489f12953f136ca64fe03a0a4951b8d6d",
+      "export": "fe01bfd6029e810a14dee67528efd83489f12953f136ca64fe03a0a4951b8d6d"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/recognition__control_identity_review.py.md": {
+      "source": "94fe93a1bd6f4f38d002cb9f638abd2ed013c7a440d8f687fc2badc6a816eea5",
+      "export": "94fe93a1bd6f4f38d002cb9f638abd2ed013c7a440d8f687fc2badc6a816eea5"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/recognition__control_indexes.py.md": {
+      "source": "7895692ba56a081fd4f4383204417e8cfef78386a429863358f901bcfe041882",
+      "export": "7895692ba56a081fd4f4383204417e8cfef78386a429863358f901bcfe041882"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/recognition__discovery_completion.py.md": {
+      "source": "ae509f63222ff79809fb43af1d3be1a8d2a7af98f1575a42b669d537a24b5af8",
+      "export": "ae509f63222ff79809fb43af1d3be1a8d2a7af98f1575a42b669d537a24b5af8"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/recognition__discovery_inventory.py.md": {
+      "source": "b7f28096542adad71a37696dcd5ca39d07d7af3157242f598b6ac72213d4d2e8",
+      "export": "b7f28096542adad71a37696dcd5ca39d07d7af3157242f598b6ac72213d4d2e8"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/recognition__locator.py.md": {
+      "source": "e9f6260c09251e2e89be6f9adc61591df46d7382c8f5c0bdaa5c0c90b621596c",
+      "export": "e9f6260c09251e2e89be6f9adc61591df46d7382c8f5c0bdaa5c0c90b621596c"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/recognition__ownership_review.py.md": {
+      "source": "34e977e15f0d27f81a84d60e7ae22c2585264b6dae1c5f06c0fcb2eeb2fd8f74",
+      "export": "34e977e15f0d27f81a84d60e7ae22c2585264b6dae1c5f06c0fcb2eeb2fd8f74"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/records__shared_control_review.py.md": {
+      "source": "8621df64b18ec53bd9b3c87f87a7d8a09d99aaa561ff9f33d86f2f9d5a50da9a",
+      "export": "8621df64b18ec53bd9b3c87f87a7d8a09d99aaa561ff9f33d86f2f9d5a50da9a"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/records__task_updates.py.md": {
+      "source": "7eeb0b26ee6d01d0f00a29511ae79ef1702d1a5811d0e86e722cfb7a56401ca7",
+      "export": "7eeb0b26ee6d01d0f00a29511ae79ef1702d1a5811d0e86e722cfb7a56401ca7"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/runtime__action_commands.py.md": {
+      "source": "55fa44234be6a7d963ccdffd28cfa8df6ce476464d8c973ab1f8c85321784d9b",
+      "export": "55fa44234be6a7d963ccdffd28cfa8df6ce476464d8c973ab1f8c85321784d9b"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/runtime__model_transport.py.md": {
+      "source": "c335865f52d3f6d83a4a4eb222ae356a181ce6b6adfb2610303a9184557f96de",
+      "export": "c335865f52d3f6d83a4a4eb222ae356a181ce6b6adfb2610303a9184557f96de"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/tools__branch_switch.py.md": {
+      "source": "9c0ca9bb7b42e3d623d87dd38bd479abe8954942a76cf6637d6828dc33eafca6",
+      "export": "9c0ca9bb7b42e3d623d87dd38bd479abe8954942a76cf6637d6828dc33eafca6"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__action_context.py.md": {
+      "source": "36710120567e9a4b52f47c59a8cec6827db28c507ec9dc697a2b078cc56855ee",
+      "export": "36710120567e9a4b52f47c59a8cec6827db28c507ec9dc697a2b078cc56855ee"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__action_proposer.py.md": {
+      "source": "d41c06dcdc08f2fc618409ddc1759c9d77edc6061b7e85923d47499284e34d89",
+      "export": "d41c06dcdc08f2fc618409ddc1759c9d77edc6061b7e85923d47499284e34d89"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__correction_prompts.py.md": {
+      "source": "fa9aa8b94a65c52fef00900af6b613cf8ef579e2843aed6ae63af105a80d528e",
+      "export": "fa9aa8b94a65c52fef00900af6b613cf8ef579e2843aed6ae63af105a80d528e"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__object_registration.py.md": {
+      "source": "6b6cc4ed36876dcbfa488deb5fa582418f2d041c5e96e16272e90e821bda99b0",
+      "export": "6b6cc4ed36876dcbfa488deb5fa582418f2d041c5e96e16272e90e821bda99b0"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__recovery.py.md": {
+      "source": "b6233301d2ae824e8bf2a4c94b6e7fcc5c28c0799cf328ec8dd5aad969ebe446",
+      "export": "b6233301d2ae824e8bf2a4c94b6e7fcc5c28c0799cf328ec8dd5aad969ebe446"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__region_functions.py.md": {
+      "source": "010957748c25045c100b7b057f38310557ce5c05988b9006029e7986213d4d66",
+      "export": "010957748c25045c100b7b057f38310557ce5c05988b9006029e7986213d4d66"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__repair_stages.py.md": {
+      "source": "45f0714ff33106657983b2943baddcffe1fece37aa56010cfc0a19f06fe08a6e",
+      "export": "45f0714ff33106657983b2943baddcffe1fece37aa56010cfc0a19f06fe08a6e"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__result_updater.py.md": {
+      "source": "ad8e4fe4c10d28183fbe8c5d6cc0e75ac6e157e178da06422a68b1f396d2e90c",
+      "export": "ad8e4fe4c10d28183fbe8c5d6cc0e75ac6e157e178da06422a68b1f396d2e90c"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__step_repair.py.md": {
+      "source": "7baddc60d2926bfb8ff11dd92a9ef94279f09999b818a0be5d700b71f5e4a9e6",
+      "export": "7baddc60d2926bfb8ff11dd92a9ef94279f09999b818a0be5d700b71f5e4a9e6"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__task_prerequisites.py.md": {
+      "source": "e54d6b0923f435d54dffc1ea84881f0697a1414fde5bc0e0e8a1338ed3c6b94f",
+      "export": "e54d6b0923f435d54dffc1ea84881f0697a1414fde5bc0e0e8a1338ed3c6b94f"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__task_proposer.py.md": {
+      "source": "5befcd482e3b7fdc4eff9f85406648e3e3c0bc0ab4d43ac971f96d50aa4c8e68",
+      "export": "5befcd482e3b7fdc4eff9f85406648e3e3c0bc0ab4d43ac971f96d50aa4c8e68"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案/traversal__task_result_review.py.md": {
+      "source": "adee1d34ec06ba7a2e3595f832bad20fe299f837ff7dafac3bcba31d7735acae",
+      "export": "adee1d34ec06ba7a2e3595f832bad20fe299f837ff7dafac3bcba31d7735acae"
+    },
+    "design/prompt_objects_review/审阅记录/程序文案清单.json": {
+      "source": "e1660b2d754a7027b62bafa5b3b64e9d49cc1689b895e8f3d1a6fa7a3b182afb",
+      "export": "e1660b2d754a7027b62bafa5b3b64e9d49cc1689b895e8f3d1a6fa7a3b182afb"
+    },
+    "design/prompt_objects_review/审阅记录/补充正文索引.md": {
+      "source": "296ef1353abf0bcf586a3fa9cc79436170f8ddaf5bdccf82bad9c655c2f6347d",
+      "export": "296ef1353abf0bcf586a3fa9cc79436170f8ddaf5bdccf82bad9c655c2f6347d"
+    },
+    "design/prompt_objects_review/审阅记录/调用审查映射.json": {
+      "source": "34b2604b2b0360ef41f23227780a326b9c2ea2845714fe6a87c9b48df65135aa",
+      "export": "34b2604b2b0360ef41f23227780a326b9c2ea2845714fe6a87c9b48df65135aa"
+    },
+    "design/prompt_objects_review/审阅记录/输出协议来源.md": {
+      "source": "1a35431f9496f5c3adc12de49e094c5edd1bb79209b3245b2434860c489307d8",
+      "export": "1a35431f9496f5c3adc12de49e094c5edd1bb79209b3245b2434860c489307d8"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/README.md": {
+      "source": "cdd772b633339be0ecd8f8b33f49a02c81914753a29946f2e835c083ff3b9056",
+      "export": "cdd772b633339be0ecd8f8b33f49a02c81914753a29946f2e835c083ff3b9056"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/动作后Region增量.md": {
+      "source": "3d8c84ce0db7f78c0821b110ed1f404fbc4d57662f4081b462eef89e1a94b2b8",
+      "export": "3d8c84ce0db7f78c0821b110ed1f404fbc4d57662f4081b462eef89e1a94b2b8"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/动作后Region增量.schema": {
+      "source": "eba03d6a1c05f6752787c8b00adc825a18458cdf1584699d133209b384572bd7",
+      "export": "eba03d6a1c05f6752787c8b00adc825a18458cdf1584699d133209b384572bd7"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/动作后更新.md": {
+      "source": "551896fd845fbe5212b08cbdb4a3cee6d3843f741926b032b8781739a6fc4e15",
+      "export": "551896fd845fbe5212b08cbdb4a3cee6d3843f741926b032b8781739a6fc4e15"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/动作后更新.schema": {
+      "source": "c253b2523b338ea7dc47e8c3f36150aa9a2246dc1cde357dbef89d0ef05ad010",
+      "export": "c253b2523b338ea7dc47e8c3f36150aa9a2246dc1cde357dbef89d0ef05ad010"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/区块功能登记.md": {
+      "source": "bc8fa0280ca1aa6e842e87839451049363505d12c31302701dfe1a445da6dd58",
+      "export": "bc8fa0280ca1aa6e842e87839451049363505d12c31302701dfe1a445da6dd58"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/区块功能登记.schema": {
+      "source": "9df4cc1933ad8ffd99be895c33d21c726f3b8e67c19d8290a3dc1651c57847e3",
+      "export": "9df4cc1933ad8ffd99be895c33d21c726f3b8e67c19d8290a3dc1651c57847e3"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/区块探索任务.md": {
+      "source": "a93a562aba6b988ec37c6ea2c37ed99ceefb2f0637e33684314335b90ab4e074",
+      "export": "a93a562aba6b988ec37c6ea2c37ed99ceefb2f0637e33684314335b90ab4e074"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/区块探索任务.schema": {
+      "source": "65a554544fc24818ff7cb11841b733583b3623bda89202eedbb6e0af3290be14",
+      "export": "65a554544fc24818ff7cb11841b733583b3623bda89202eedbb6e0af3290be14"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/参数发现.md": {
+      "source": "fab825e2fa80964c6d318864f63d4eb0460267bc21cc89c5e80db50d623438ad",
+      "export": "fab825e2fa80964c6d318864f63d4eb0460267bc21cc89c5e80db50d623438ad"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/参数发现.schema": {
+      "source": "939b202c5e4f119daebd58fb37a4d11b111dc900e482c970c0587fb19e9c3daa",
+      "export": "939b202c5e4f119daebd58fb37a4d11b111dc900e482c970c0587fb19e9c3daa"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/选择探索入口.md": {
+      "source": "630364c60c8c48cf3c0a89b58b65e8e053001ecb0a52de83875fb1979c2fd528",
+      "export": "630364c60c8c48cf3c0a89b58b65e8e053001ecb0a52de83875fb1979c2fd528"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/选择探索入口.schema": {
+      "source": "eec5bc5e555b386a31f62b1cae3e40160aff60bdae732e7713f1b8b337ef16bd",
+      "export": "eec5bc5e555b386a31f62b1cae3e40160aff60bdae732e7713f1b8b337ef16bd"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/首屏观察.md": {
+      "source": "a535b7d48179fbd434bf9619f0778fa2b9ef82b05fa82445b4785f977d687f80",
+      "export": "a535b7d48179fbd434bf9619f0778fa2b9ef82b05fa82445b4785f977d687f80"
+    },
+    "design/prompt_objects_review/审阅记录/输出字段/首屏观察.schema": {
+      "source": "a6e8c05d80659c89f7307e2a996ea3e37fd2aa0db59b696e2d151b19e68489ae",
+      "export": "a6e8c05d80659c89f7307e2a996ea3e37fd2aa0db59b696e2d151b19e68489ae"
+    },
+    "design/prompt_objects_review/审阅记录/配置原文.json": {
+      "source": "9c8b194d43c6a7d0c29e70044c5400d789d2b3ee9c61f8cf3c5ef876471b47eb",
+      "export": "9c8b194d43c6a7d0c29e70044c5400d789d2b3ee9c61f8cf3c5ef876471b47eb"
+    },
+    "design/prompt_objects_review/审阅记录/验证记录.md": {
+      "source": "63b86adbc7ca0b82b1b692ab78d467bf2bfca35a2262ce4715dce89235b96d98",
+      "export": "63b86adbc7ca0b82b1b692ab78d467bf2bfca35a2262ce4715dce89235b96d98"
+    },
+    "design/prompt_objects_review/控件.prompt": {
+      "source": "a3d5b7aad2fd922e57ca417eed0749f46894763fd8d8cbf93179bd5cb324f2ac",
+      "export": "a3d5b7aad2fd922e57ca417eed0749f46894763fd8d8cbf93179bd5cb324f2ac"
+    },
+    "design/prompt_objects_review/调用审查/01_发现与识别.md": {
+      "source": "3a19d65e462ff72f274131b41e0932790e29257016157bf6b7ac3214f43d75e3",
+      "export": "3a19d65e462ff72f274131b41e0932790e29257016157bf6b7ac3214f43d75e3"
+    },
+    "design/prompt_objects_review/调用审查/02_提出探索任务.md": {
+      "source": "628ae90b38c57e8f18f7dbbcbaa622e4dac72fe4c5c3f3b8680998185228ba6b",
+      "export": "628ae90b38c57e8f18f7dbbcbaa622e4dac72fe4c5c3f3b8680998185228ba6b"
+    },
+    "design/prompt_objects_review/调用审查/03_选择动作.md": {
+      "source": "78d87b041a35d8946657a66e3ff807c08b77291fa1a465b75bc1149b4087fddf",
+      "export": "78d87b041a35d8946657a66e3ff807c08b77291fa1a465b75bc1149b4087fddf"
+    },
+    "design/prompt_objects_review/调用审查/04_动作后更新.md": {
+      "source": "1cd91bc1552968516eea290a19edb9553c7de37d59b976928850fc246e9a73d2",
+      "export": "1cd91bc1552968516eea290a19edb9553c7de37d59b976928850fc246e9a73d2"
+    },
+    "design/prompt_objects_review/调用审查/05_区块功能总结.md": {
+      "source": "b238fef04d7c6d3fa8dad51b2bf3c6d66b7dba3ccf9fc53e2df76f0d7c12204c",
+      "export": "b238fef04d7c6d3fa8dad51b2bf3c6d66b7dba3ccf9fc53e2df76f0d7c12204c"
+    },
+    "design/prompt_objects_review/调用审查/06_补齐对象外观.md": {
+      "source": "b1f2b5ad02ca58c2f040b5f4c5b46ddd8038c4f09d64d5f3d8666f100be29afe",
+      "export": "b1f2b5ad02ca58c2f040b5f4c5b46ddd8038c4f09d64d5f3d8666f100be29afe"
+    },
+    "design/prompt_objects_review/调用审查/07_选择身份候选.md": {
+      "source": "3768ccaca4e94f32a9803064477b4726598c97fba4b0a3a50795daf252a37167",
+      "export": "3768ccaca4e94f32a9803064477b4726598c97fba4b0a3a50795daf252a37167"
+    },
+    "design/prompt_objects_review/调用审查/08_核对控件身份.md": {
+      "source": "afc6ea1dd73a780188e79afe2ec2846dbdfddd07dfd67c0c6508ebb4da5bbcbe",
+      "export": "afc6ea1dd73a780188e79afe2ec2846dbdfddd07dfd67c0c6508ebb4da5bbcbe"
+    },
+    "design/prompt_objects_review/调用审查/09_复查控件归属.md": {
+      "source": "d5405ccf1a68ee25f130efd6f4d49b71ce6a035a72822bc09be8e9e20e47be81",
+      "export": "d5405ccf1a68ee25f130efd6f4d49b71ce6a035a72822bc09be8e9e20e47be81"
+    },
+    "design/prompt_objects_review/调用审查/10_复核任务结果.md": {
+      "source": "6d27f03093cd3feeefdd6ccf4879c99a0cde43faae78986180c53436ef47e6bb",
+      "export": "6d27f03093cd3feeefdd6ccf4879c99a0cde43faae78986180c53436ef47e6bb"
+    },
+    "design/prompt_objects_review/调用审查/11_补充观察.md": {
+      "source": "2a61e1cc00b014b8f6a937c78ae647fb447293edb29faf8dfb4a8b6578eecec0",
+      "export": "2a61e1cc00b014b8f6a937c78ae647fb447293edb29faf8dfb4a8b6578eecec0"
+    },
+    "design/prompt_objects_review/调用审查/12_恢复中断.md": {
+      "source": "28a5d0a13a8043a9acbc94353c3405b224801983e5dfa47e77514ccd7def7242",
+      "export": "28a5d0a13a8043a9acbc94353c3405b224801983e5dfa47e77514ccd7def7242"
+    },
+    "design/prompt_objects_review/调用审查/13_暂挂与切换分支.md": {
+      "source": "1107d94290e7e2513e4f64f3fe74e055fec67fa360a06656c3b04e9caad3142f",
+      "export": "1107d94290e7e2513e4f64f3fe74e055fec67fa360a06656c3b04e9caad3142f"
+    },
+    "design/prompt_objects_review/调用审查/14_复核旧共享关系.md": {
+      "source": "b889a82073b0b6e05fe68b60515cddfe3cc4197c3fcb3dd639659e03fbd35d67",
+      "export": "b889a82073b0b6e05fe68b60515cddfe3cc4197c3fcb3dd639659e03fbd35d67"
+    },
+    "design/prompt_objects_review/调用审查/15_原步骤纠错.md": {
+      "source": "0bd3b36dd7a1aadda13ab9020e79dbc2b510d80817418028479f9dfaa824be49",
+      "export": "0bd3b36dd7a1aadda13ab9020e79dbc2b510d80817418028479f9dfaa824be49"
+    },
+    "design/prompt_objects_review/调用审查目录.md": {
+      "source": "19e29ef00ac9dcb62ebf8c802eda685557138d1f2aeb39f19f755f1aa758a73b",
+      "export": "19e29ef00ac9dcb62ebf8c802eda685557138d1f2aeb39f19f755f1aa758a73b"
+    },
+    "design/prompt_objects_review/调用说明/Android动作.prompt": {
+      "source": "3f5cf82bd273c361547dfe990485b6607ef95c911bd78767eb29d03223ed3cf8",
+      "export": "3f5cf82bd273c361547dfe990485b6607ef95c911bd78767eb29d03223ed3cf8"
+    },
+    "design/prompt_objects_review/调用说明/任务提出.prompt": {
+      "source": "f34c3aa3afd6719e17a41b008dfc15f747a63da432ad2fa9c3d89521e32d55b8",
+      "export": "f34c3aa3afd6719e17a41b008dfc15f747a63da432ad2fa9c3d89521e32d55b8"
+    },
+    "design/prompt_objects_review/调用说明/任务清点.prompt": {
+      "source": "3f5baf43f570a202946f5847860a7ffeeb115222b63c5e92dd18f560e0866a85",
+      "export": "3f5baf43f570a202946f5847860a7ffeeb115222b63c5e92dd18f560e0866a85"
+    },
+    "design/prompt_objects_review/调用说明/任务结束条件.prompt": {
+      "source": "461a41ec74e3ec88da868cbfbcfe30ca6602e94bfe6c9c2807aeff17d6162db0",
+      "export": "461a41ec74e3ec88da868cbfbcfe30ca6602e94bfe6c9c2807aeff17d6162db0"
+    },
+    "design/prompt_objects_review/调用说明/任务范围复核.prompt": {
+      "source": "c4f9dab93753002ddb301c94b36070afdd2ec3ba295c85d8f7a38ce7418a9609",
+      "export": "c4f9dab93753002ddb301c94b36070afdd2ec3ba295c85d8f7a38ce7418a9609"
+    },
+    "design/prompt_objects_review/调用说明/前景与登记示例.prompt": {
+      "source": "7cea4fc317d2f2965f8a366a6d92fc66b00a979bacfc65bbe9f4586202239800",
+      "export": "7cea4fc317d2f2965f8a366a6d92fc66b00a979bacfc65bbe9f4586202239800"
+    },
+    "design/prompt_objects_review/调用说明/功能任务答案.prompt": {
+      "source": "fc0a1baa01ff2a0dbe593f1e201681fb9c5688a0fa040a5d0a279643c04efc99",
+      "export": "fc0a1baa01ff2a0dbe593f1e201681fb9c5688a0fa040a5d0a279643c04efc99"
+    },
+    "design/prompt_objects_review/调用说明/动作后区块去向.prompt": {
+      "source": "d9a0539b7cc82cd42dd159d484246ee9540c2a4304050eb3d306a4ad9532732e",
+      "export": "d9a0539b7cc82cd42dd159d484246ee9540c2a4304050eb3d306a4ad9532732e"
+    },
+    "design/prompt_objects_review/调用说明/动作后对象登记.prompt": {
+      "source": "4d3caeae63ae4385a8da206b6b736dab152f76d9d50b7e394f32714341ed712c",
+      "export": "4d3caeae63ae4385a8da206b6b736dab152f76d9d50b7e394f32714341ed712c"
+    },
+    "design/prompt_objects_review/调用说明/动态输出/动作输出分支.prompt": {
+      "source": "3dd709623d732bfeeb3679907afb98e86a2a15df828df81cc88c9ab70c5b4bfd",
+      "export": "3dd709623d732bfeeb3679907afb98e86a2a15df828df81cc88c9ab70c5b4bfd"
+    },
+    "design/prompt_objects_review/调用说明/发现异常.prompt": {
+      "source": "3bc003fe9084719c36fedefa0a6eeb378d3679fda71495ae9d4a7648992b2a7d",
+      "export": "3bc003fe9084719c36fedefa0a6eeb378d3679fda71495ae9d4a7648992b2a7d"
+    },
+    "design/prompt_objects_review/调用说明/对象登记范围.prompt": {
+      "source": "32076ca2481bc9b1c3707ce904e77196431fb7fbbf2ce80adf1dc3f24494e7b3",
+      "export": "32076ca2481bc9b1c3707ce904e77196431fb7fbbf2ce80adf1dc3f24494e7b3"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/动作后更新.prompt": {
+      "source": "22a635f03943f85317f531084e7dd43831431320859488a55e86d7c99525f28f",
+      "export": "22a635f03943f85317f531084e7dd43831431320859488a55e86d7c99525f28f"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/区块功能总结.prompt": {
+      "source": "c46fa46cd873d0554a7a5d872d7cf30984fe213a64f0f6aa2f9d0ffe8a5019d7",
+      "export": "c46fa46cd873d0554a7a5d872d7cf30984fe213a64f0f6aa2f9d0ffe8a5019d7"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/原步骤纠错.prompt": {
+      "source": "54152f06847f48b0ff03451ff30f28ca4de7c37ce94e179e040553770bbb6bd8",
+      "export": "54152f06847f48b0ff03451ff30f28ca4de7c37ce94e179e040553770bbb6bd8"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/发现与识别.prompt": {
+      "source": "8d3c1569d57f70556070fcbde4c0a7d3f37be1199d7050818c9f27b9a99ea08d",
+      "export": "8d3c1569d57f70556070fcbde4c0a7d3f37be1199d7050818c9f27b9a99ea08d"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/复查控件归属.prompt": {
+      "source": "5052013492a8a54cd7c2cbeab415b53385d4444597e22baa0c639ad8bbd5c2da",
+      "export": "5052013492a8a54cd7c2cbeab415b53385d4444597e22baa0c639ad8bbd5c2da"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/复核任务结果.prompt": {
+      "source": "1188776c0f57ada0e681bcc44e51ba0192b831b74bdbc17d626a1b6af84759ce",
+      "export": "1188776c0f57ada0e681bcc44e51ba0192b831b74bdbc17d626a1b6af84759ce"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/复核旧共享关系.prompt": {
+      "source": "9bb45b79943808ae8fa8d3bd9e20ef688f14dc0f4fc20513ef18962de861fff3",
+      "export": "9bb45b79943808ae8fa8d3bd9e20ef688f14dc0f4fc20513ef18962de861fff3"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/恢复中断.prompt": {
+      "source": "2b8b29b515bf6301d68ea9d988f19ea2fb9c3a768315d56597223aefbdf057ed",
+      "export": "2b8b29b515bf6301d68ea9d988f19ea2fb9c3a768315d56597223aefbdf057ed"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/提出探索任务.prompt": {
+      "source": "40df215bf06e977c2364350a8f1a65d30adae6e09493f56812563dfb4196aa94",
+      "export": "40df215bf06e977c2364350a8f1a65d30adae6e09493f56812563dfb4196aa94"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/暂挂与切换分支.prompt": {
+      "source": "49b3d0cf82c57a5fff350d5c3ad7ceadcd64dbfbb02c407f60f61fd38c89b6c5",
+      "export": "49b3d0cf82c57a5fff350d5c3ad7ceadcd64dbfbb02c407f60f61fd38c89b6c5"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/核对控件身份.prompt": {
+      "source": "4914d71edc48eb47fe461840d2ae076a4cadc8d5f461abc684543f35368e3137",
+      "export": "4914d71edc48eb47fe461840d2ae076a4cadc8d5f461abc684543f35368e3137"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/补充观察.prompt": {
+      "source": "9322c7d7394bb0988500f0cd917d3683a191299547a9b8506fd925e451c41133",
+      "export": "9322c7d7394bb0988500f0cd917d3683a191299547a9b8506fd925e451c41133"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/补齐对象外观.prompt": {
+      "source": "f576f784124ff9808f82df52b430808c7a78e2deadfa89f4592cfd054549248f",
+      "export": "f576f784124ff9808f82df52b430808c7a78e2deadfa89f4592cfd054549248f"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/选择动作.prompt": {
+      "source": "f3e97f974c1bc185a801cdcac24a1bb4fbe15ddfb5ed5bb551ea3ced27fb2b55",
+      "export": "f3e97f974c1bc185a801cdcac24a1bb4fbe15ddfb5ed5bb551ea3ced27fb2b55"
+    },
+    "design/prompt_objects_review/调用说明/本步问题/选择身份候选.prompt": {
+      "source": "ad27eda91a8f07aa9342a0d9c1a445861d7428483d5f855bc2c0e18e51e81500",
+      "export": "ad27eda91a8f07aa9342a0d9c1a445861d7428483d5f855bc2c0e18e51e81500"
+    },
+    "design/prompt_objects_review/调用说明/来源动作对照.prompt": {
+      "source": "b3d6ee6620fb4467dffb8b572d6ae5d05b9c5c380afe3de5a758f0a4f81409e8",
+      "export": "b3d6ee6620fb4467dffb8b572d6ae5d05b9c5c380afe3de5a758f0a4f81409e8"
+    },
+    "design/prompt_objects_review/调用说明/来源区块差异.prompt": {
+      "source": "cab76a859b5c5870bb0b639548a6b1b165b2326ad9321322108fc01d21648bec",
+      "export": "cab76a859b5c5870bb0b639548a6b1b165b2326ad9321322108fc01d21648bec"
+    },
+    "design/prompt_objects_review/调用说明/桌面动作.prompt": {
+      "source": "338d9cc722e79f78ccdd013df6ab86de2a6f6745a70067c933393da12e10d2f7",
+      "export": "338d9cc722e79f78ccdd013df6ab86de2a6f6745a70067c933393da12e10d2f7"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/任务登记与补全.prompt": {
+      "source": "473ed743ba1a75efe416fe96bdc3bc3bb48a58db3233cf9769a1af5565d44743",
+      "export": "473ed743ba1a75efe416fe96bdc3bc3bb48a58db3233cf9769a1af5565d44743"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/任务粒度与反馈.prompt": {
+      "source": "608f81f82311e7b33412ce3a51202f17b2d3e2150182fee04c2e2b5c374f6ee2",
+      "export": "608f81f82311e7b33412ce3a51202f17b2d3e2150182fee04c2e2b5c374f6ee2"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/前置条件与恢复.prompt": {
+      "source": "ec2ef66bf1c0c8a5daaf5caf90ae6d891985f8fde514c6d8e58ff3d898fc0911",
+      "export": "ec2ef66bf1c0c8a5daaf5caf90ae6d891985f8fde514c6d8e58ff3d898fc0911"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/动作后Region增量.prompt": {
+      "source": "2c080e961d583fdc6ac0627b3e25f96e4bf7ba50a6513b7ffe775a76840ece48",
+      "export": "2c080e961d583fdc6ac0627b3e25f96e4bf7ba50a6513b7ffe775a76840ece48"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/历史入口与共享复用.prompt": {
+      "source": "84203430d3d506ea629fb111d8487bc56ed7ec21d57d0c9ebca014d253ca53fe",
+      "export": "84203430d3d506ea629fb111d8487bc56ed7ec21d57d0c9ebca014d253ca53fe"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/参数关系调查.prompt": {
+      "source": "d84ebbd047312ade00a76bcecb9a6193b829044985c725f8d786435aa287a3ee",
+      "export": "d84ebbd047312ade00a76bcecb9a6193b829044985c725f8d786435aa287a3ee"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/对象识别资料.prompt": {
+      "source": "25f74a16c3aedb20bd917206909144d28bf3c0125155402a9590d17b478205a3",
+      "export": "25f74a16c3aedb20bd917206909144d28bf3c0125155402a9590d17b478205a3"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/工作区块定位.prompt": {
+      "source": "a01685c5acd4cb2fb322516fa7600422cab265ef336791a4b3759254b12d30cc",
+      "export": "a01685c5acd4cb2fb322516fa7600422cab265ef336791a4b3759254b12d30cc"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/当前区块重定位.prompt": {
+      "source": "5d06caf77a1a3aca79c791581a339f4e4b120ac14cbf0adb1e94863204a491ac",
+      "export": "5d06caf77a1a3aca79c791581a339f4e4b120ac14cbf0adb1e94863204a491ac"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/探索范围与退出.prompt": {
+      "source": "2f627f79c1c94dad6f1d4fbfe0902cda6fb2a86b035b3d86c62073228bea3340",
+      "export": "2f627f79c1c94dad6f1d4fbfe0902cda6fb2a86b035b3d86c62073228bea3340"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/新操作方式检查.prompt": {
+      "source": "52448e80c0b0731a1b6419952356699de71e48d67e7e2985c25fc2df4c032374",
+      "export": "52448e80c0b0731a1b6419952356699de71e48d67e7e2985c25fc2df4c032374"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/结果核对示例/单步入口.prompt": {
+      "source": "583549023f8489f43541342ecd85ade735661f63f2f119b639838e3547ce2652",
+      "export": "583549023f8489f43541342ecd85ade735661f63f2f119b639838e3547ce2652"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/结果核对示例/参数与滚动.prompt": {
+      "source": "d5136a7c005a6a85d6a4a3984f38d61326e3a843587e9f5e8bcde32c7cb7dd4d",
+      "export": "d5136a7c005a6a85d6a4a3984f38d61326e3a843587e9f5e8bcde32c7cb7dd4d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/结果核对示例/输入与确认.prompt": {
+      "source": "6a85b640a04d7b8c79b95bdd5c169937310e2b5fdc041db9a80eb370eccb91f6",
+      "export": "6a85b640a04d7b8c79b95bdd5c169937310e2b5fdc041db9a80eb370eccb91f6"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/输入与搜索探索正反例.prompt": {
+      "source": "26f18f7e9ffa46f62744352e6cdd5da1e98a6c4f3422f57e6273055308ec19ac",
+      "export": "26f18f7e9ffa46f62744352e6cdd5da1e98a6c4f3422f57e6273055308ec19ac"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/选择探索入口.prompt": {
+      "source": "9a3f89ab7261b914d1a60e83a8ea4709afdecd27dac98f35bd364df15df9dc56",
+      "export": "9a3f89ab7261b914d1a60e83a8ea4709afdecd27dac98f35bd364df15df9dc56"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/任务/首屏观察.prompt": {
+      "source": "21fdc12b0dc1769c0556b5e489fcd2de041933a01a58976f89233a77887b2335",
+      "export": "21fdc12b0dc1769c0556b5e489fcd2de041933a01a58976f89233a77887b2335"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/共享/历史原图对照.prompt": {
+      "source": "4f432901c71371f99c64ab1dff2ea52482b9773a2ca0c071b2b60fa32d11253f",
+      "export": "4f432901c71371f99c64ab1dff2ea52482b9773a2ca0c071b2b60fa32d11253f"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/共享/当前前景.prompt": {
+      "source": "eeb388e051493a5c17ddb490d59e2d2e1ae87aa9d435c0666941d630d75b718a",
+      "export": "eeb388e051493a5c17ddb490d59e2d2e1ae87aa9d435c0666941d630d75b718a"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/共享/术语定义.prompt": {
+      "source": "9d99cf7984e42d1357d2f26f6c0f8a5030f628af0ac69020a54247b07d7b6eec",
+      "export": "9d99cf7984e42d1357d2f26f6c0f8a5030f628af0ac69020a54247b07d7b6eec"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/功能识别/单区块任务判定规则.prompt": {
+      "source": "7ffbd8329a8ea57c1c6e4f41911a0ce8f580e73768e0644c37298e2641cc6f51",
+      "export": "7ffbd8329a8ea57c1c6e4f41911a0ce8f580e73768e0644c37298e2641cc6f51"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/功能识别/单区块任务正反例.prompt": {
+      "source": "0c9edcf18072ab5496bc3c2817ecf2434779a12b961dfafd1af791a80a962316",
+      "export": "0c9edcf18072ab5496bc3c2817ecf2434779a12b961dfafd1af791a80a962316"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/动作/单步动作建议.prompt": {
+      "source": "20afcf3af0d9c740a104ae7dcbfa31218309d5d8f49e82e26ecb29a8fa8371ad",
+      "export": "20afcf3af0d9c740a104ae7dcbfa31218309d5d8f49e82e26ecb29a8fa8371ad"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/动作/围绕目标选择动作.prompt": {
+      "source": "cfc28759124ba0e4257006a63344e7677c6e9097aab67f0627ee7f49afcdaca9",
+      "export": "cfc28759124ba0e4257006a63344e7677c6e9097aab67f0627ee7f49afcdaca9"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/动作/探索导航路线.prompt": {
+      "source": "164658e6621ee7fbf8d62788956d5ef877ab80334259746a4b7d71823a07bf5f",
+      "export": "164658e6621ee7fbf8d62788956d5ef877ab80334259746a4b7d71823a07bf5f"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/动作/目标观察阅读.prompt": {
+      "source": "8894fff5b095f0d682b6abd2d4116710b4b8211f3af703d13d5c4b6eda487c00",
+      "export": "8894fff5b095f0d682b6abd2d4116710b4b8211f3af703d13d5c4b6eda487c00"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/动作/结果核对.prompt": {
+      "source": "4329393a5c1b4c2f5d43bb57723f400abed177e7e8790b2ffeb11c7c109f385d",
+      "export": "4329393a5c1b4c2f5d43bb57723f400abed177e7e8790b2ffeb11c7c109f385d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/动作/观察与历史.prompt": {
+      "source": "1316c0ceda1b42c102a93751a91fad3e8d0907f8ffcf6aab182d0e50b8c1ca2d",
+      "export": "1316c0ceda1b42c102a93751a91fad3e8d0907f8ffcf6aab182d0e50b8c1ca2d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/区块识别/功能区块划分.prompt": {
+      "source": "0e3d9d74e05c228c9dbf812bad2bf0219b9ffd6f5a1cd5710cfe897e58b5dec2",
+      "export": "0e3d9d74e05c228c9dbf812bad2bf0219b9ffd6f5a1cd5710cfe897e58b5dec2"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/区块识别/区块控件识别.prompt": {
+      "source": "1a5f79adb46976aabe6b3ea8f8515de3c93505570d7ac43f84135cabf851ba6e",
+      "export": "1a5f79adb46976aabe6b3ea8f8515de3c93505570d7ac43f84135cabf851ba6e"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/区块识别/当前表面识别.prompt": {
+      "source": "17d804d0423ac45287c6c65b58d9ad5375e773e782a5c3e8e7baf3a3e1301211",
+      "export": "17d804d0423ac45287c6c65b58d9ad5375e773e782a5c3e8e7baf3a3e1301211"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/历史上下文/区块探索披露.prompt": {
+      "source": "abee9d970e7dde159170ed28eb75f2196aaa05f5a8fec86100afae283af574aa",
+      "export": "abee9d970e7dde159170ed28eb75f2196aaa05f5a8fec86100afae283af574aa"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/历史上下文/探索树阅读.prompt": {
+      "source": "63195e47041c30f994ae5d2eb7e32e1c040642c533ae47238b5d92101e475018",
+      "export": "63195e47041c30f994ae5d2eb7e32e1c040642c533ae47238b5d92101e475018"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/历史上下文/记忆增量.prompt": {
+      "source": "cbbbb2cf36ac3c33b570f4556ddcb985e6e009c590983d097496b2ce7357923d",
+      "export": "cbbbb2cf36ac3c33b570f4556ddcb985e6e009c590983d097496b2ce7357923d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/历史上下文/读取规则.prompt": {
+      "source": "2a99d9b40baae0256770ce5a94187bd7acc7965effafda5a4e1028ff57037e2b",
+      "export": "2a99d9b40baae0256770ce5a94187bd7acc7965effafda5a4e1028ff57037e2b"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/发现手册/交互控件范围.prompt": {
+      "source": "bf7e395a87547955e38ca84fb3b4af2718bd103059ce6baf3e6475539fb1c20c",
+      "export": "bf7e395a87547955e38ca84fb3b4af2718bd103059ce6baf3e6475539fb1c20c"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/发现手册/增量补全.prompt": {
+      "source": "5cad2fa92969a8f320daf967f84d32426920c5c531ab439fb196828907ed1d04",
+      "export": "5cad2fa92969a8f320daf967f84d32426920c5c531ab439fb196828907ed1d04"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/发现手册/补登记.prompt": {
+      "source": "b6780593eacd699d94c8d7831bb9d9475be272896c85804b85d251726d908ac8",
+      "export": "b6780593eacd699d94c8d7831bb9d9475be272896c85804b85d251726d908ac8"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/发现手册/证据与坐标.prompt": {
+      "source": "91423637a1fc5576ebdb9ecf0113c9b181e11af0e81735ff2d40ef91840b62c4",
+      "export": "91423637a1fc5576ebdb9ecf0113c9b181e11af0e81735ff2d40ef91840b62c4"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/发现手册/身份核对.prompt": {
+      "source": "63c7da8fc2ff1f99fff8812ae4f8608104b3bac10dcf0201aab50defdaa86839",
+      "export": "63c7da8fc2ff1f99fff8812ae4f8608104b3bac10dcf0201aab50defdaa86839"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/发现手册/输出填写.prompt": {
+      "source": "4d04060e3591764167d035c639042d0701e60893f0ec0698997e1b8081f73d9a",
+      "export": "4d04060e3591764167d035c639042d0701e60893f0ec0698997e1b8081f73d9a"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/平台/桌面悬停观察.prompt": {
+      "source": "31760f585afa42d9ae4ebddcef6159727ba02b92862bffdfd409c86a063a59cc",
+      "export": "31760f585afa42d9ae4ebddcef6159727ba02b92862bffdfd409c86a063a59cc"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/平台/遍历环境只读.prompt": {
+      "source": "82d883d6bbbd11f3cfc04f71624d46fff46b4dc681648350e834ddf84f2f81e6",
+      "export": "82d883d6bbbd11f3cfc04f71624d46fff46b4dc681648350e834ddf84f2f81e6"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/异常处理/异常识别.prompt": {
+      "source": "dd97d1ee2c342108d87bc28a8b7b77eea12f1572b0ee51b2101c7c85d43415d6",
+      "export": "dd97d1ee2c342108d87bc28a8b7b77eea12f1572b0ee51b2101c7c85d43415d6"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/异常处理/恢复当前探索.prompt": {
+      "source": "0fee1117158f060266451a73c5044e7d2691cedddc2e8d3cc613a7f3f50bef50",
+      "export": "0fee1117158f060266451a73c5044e7d2691cedddc2e8d3cc613a7f3f50bef50"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/异常处理/恢复策略.prompt": {
+      "source": "bad5eeb238ceb1cdf3649a3b35fa0f18ed645a32b3678dbd5d3cc18f6338bbf3",
+      "export": "bad5eeb238ceb1cdf3649a3b35fa0f18ed645a32b3678dbd5d3cc18f6338bbf3"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/异常处理/恢复输出.prompt": {
+      "source": "1c6ede5808ec1c68065d343c114ea1504501786bf1cd49f6392ca96f669aadf3",
+      "export": "1c6ede5808ec1c68065d343c114ea1504501786bf1cd49f6392ca96f669aadf3"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/更新/动作后观察与状态更新.prompt": {
+      "source": "befd013c92a079782a71769dfa585566f74b60b681f1c85ecb3a7ff4705c3672",
+      "export": "befd013c92a079782a71769dfa585566f74b60b681f1c85ecb3a7ff4705c3672"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/更新/区块变化与字段.prompt": {
+      "source": "baa087c3795280e1dcd03616e56a4ff2e8aec645c84095802cacf67902fcbe4d",
+      "export": "baa087c3795280e1dcd03616e56a4ff2e8aec645c84095802cacf67902fcbe4d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/更新/恢复后任务复核.prompt": {
+      "source": "97947b67d972c86c6375a9303ffd44cc8ec4cf0d9914fc8464dd2898c5e77032",
+      "export": "97947b67d972c86c6375a9303ffd44cc8ec4cf0d9914fc8464dd2898c5e77032"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/更新/暂挂任务复核.prompt": {
+      "source": "ed9b0ca2e3c543ebe2d8f7bc1670e22522c022c8dfee70987d50da2042c2166a",
+      "export": "ed9b0ca2e3c543ebe2d8f7bc1670e22522c022c8dfee70987d50da2042c2166a"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/更新/累计任务结果核对.prompt": {
+      "source": "378e6a4949e6c174c4edba855836d6cd967ae4fac38cc86d22f5368a1dd6d91e",
+      "export": "378e6a4949e6c174c4edba855836d6cd967ae4fac38cc86d22f5368a1dd6d91e"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/更新/重复入口覆盖复核.prompt": {
+      "source": "b9a7b231c23e41dd95c9ba51187a68c66b3f4e1b9d220c92f0277e2e7bcb6a04",
+      "export": "b9a7b231c23e41dd95c9ba51187a68c66b3f4e1b9d220c92f0277e2e7bcb6a04"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/监督/修复候选.prompt": {
+      "source": "1cd98fb4e5609c11dbe37a737b45688db90016c4396da4257f6f3cedaf938764",
+      "export": "1cd98fb4e5609c11dbe37a737b45688db90016c4396da4257f6f3cedaf938764"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/监督/意图对照.prompt": {
+      "source": "d454ee9b131e15d2334718aba0176234060fc12a1488f993d2f84e7fa305f766",
+      "export": "d454ee9b131e15d2334718aba0176234060fc12a1488f993d2f84e7fa305f766"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/监督/模型回复验收.prompt": {
+      "source": "a390182aff52a5ef4b033c2c3bf17c404c1c1e8e4687f15e03dcdfc20521cee1",
+      "export": "a390182aff52a5ef4b033c2c3bf17c404c1c1e8e4687f15e03dcdfc20521cee1"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/监督/陌生读者.prompt": {
+      "source": "0cb9ac1f5a12790b92dd0c7e160fe3dfe3da6d739e7cc72846f7ff0081fdc86f",
+      "export": "0cb9ac1f5a12790b92dd0c7e160fe3dfe3da6d739e7cc72846f7ff0081fdc86f"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/任务归属.prompt": {
+      "source": "af036fb3bb119cef588cdf12d3e68e89e88ecedce017a8df12aaa951436527b0",
+      "export": "af036fb3bb119cef588cdf12d3e68e89e88ecedce017a8df12aaa951436527b0"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/共享行为核对.prompt": {
+      "source": "44488c9d97d834daa461c9638d6da6987b99eac4d79ebe44b9d01d723f0bc3af",
+      "export": "44488c9d97d834daa461c9638d6da6987b99eac4d79ebe44b9d01d723f0bc3af"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/动作归属.prompt": {
+      "source": "4f31e20c672c782de76118dc1e6975fcd322cac757fb1f9706ce9972c3bd7113",
+      "export": "4f31e20c672c782de76118dc1e6975fcd322cac757fb1f9706ce9972c3bd7113"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/区块归属.prompt": {
+      "source": "40c1a151d698c51047bc3e9074754755aa60546e5225eb8a2c0a507811b5f5dd",
+      "export": "40c1a151d698c51047bc3e9074754755aa60546e5225eb8a2c0a507811b5f5dd"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/区块归属复查.prompt": {
+      "source": "3f8c3c32325db381fb84a08b1f6d3f38e5a91283f4f4733f7b70af18a46850e3",
+      "export": "3f8c3c32325db381fb84a08b1f6d3f38e5a91283f4f4733f7b70af18a46850e3"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/回复解析.prompt": {
+      "source": "8947dc31f2eedddfaf0f296431e0c7f9787d44fba9a0bfdfb2e056b616cde04d",
+      "export": "8947dc31f2eedddfaf0f296431e0c7f9787d44fba9a0bfdfb2e056b616cde04d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/定位绑定.prompt": {
+      "source": "cf04110ea21b1eb9234e5ab5db16600b0b6c8823f6781905e791aa0d50527d02",
+      "export": "cf04110ea21b1eb9234e5ab5db16600b0b6c8823f6781905e791aa0d50527d02"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/对象识别资料.prompt": {
+      "source": "9d9937462ffeb629a2c97b4b2acb69870a8099b4a6b896b65f9f1ae2d4aa7237",
+      "export": "9d9937462ffeb629a2c97b4b2acb69870a8099b4a6b896b65f9f1ae2d4aa7237"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/投递前画面变化.prompt": {
+      "source": "e6525123ea15f1ce731ca2258482d0bb12adb4d85988452f49594ef50b4e704d",
+      "export": "e6525123ea15f1ce731ca2258482d0bb12adb4d85988452f49594ef50b4e704d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/控件候选消歧.prompt": {
+      "source": "09077d86ee25ea28f0c46c303f6d249b087ec052870295abf5f6169cbcde5d1a",
+      "export": "09077d86ee25ea28f0c46c303f6d249b087ec052870295abf5f6169cbcde5d1a"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/控件身份候选选择.prompt": {
+      "source": "d7403d4bf73139a017637b53a51830577263f13923165d9d35868eb391eecede",
+      "export": "d7403d4bf73139a017637b53a51830577263f13923165d9d35868eb391eecede"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/控件身份复核.prompt": {
+      "source": "9604921f4eb6b533dafbd1528894a67779cbab69277de3b545eb077c034e902d",
+      "export": "9604921f4eb6b533dafbd1528894a67779cbab69277de3b545eb077c034e902d"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/暂挂分支并切换.prompt": {
+      "source": "35cda1c4979a6b993409c495301571dde7dc620ccbf3c6d12a1f794745236040",
+      "export": "35cda1c4979a6b993409c495301571dde7dc620ccbf3c6d12a1f794745236040"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/更新补充观察.prompt": {
+      "source": "b728f73b4fd86c85c10a7a4016d995fdc86de809b95de4c9fd3acd84156f74dd",
+      "export": "b728f73b4fd86c85c10a7a4016d995fdc86de809b95de4c9fd3acd84156f74dd"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/步骤纠正.prompt": {
+      "source": "0f83ce733c127512176538258be194e3655a7051b192f77061320bf6d3538586",
+      "export": "0f83ce733c127512176538258be194e3655a7051b192f77061320bf6d3538586"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/登记修订.prompt": {
+      "source": "f27e660b40d6bb2858d862b36e94f350ba5cf361860c654b9f4138a79ce542d7",
+      "export": "f27e660b40d6bb2858d862b36e94f350ba5cf361860c654b9f4138a79ce542d7"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/结果证据.prompt": {
+      "source": "83098416841c9cca9dfe0fc64ad8eae3e4c8db63743129d4c8a45fd373fc9128",
+      "export": "83098416841c9cca9dfe0fc64ad8eae3e4c8db63743129d4c8a45fd373fc9128"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/身份名称.prompt": {
+      "source": "128717388f15370638a6ec42f6e039fbdcc220725a87b9c73f5c180f30acbd3e",
+      "export": "128717388f15370638a6ec42f6e039fbdcc220725a87b9c73f5c180f30acbd3e"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/纠错/重复无进展.prompt": {
+      "source": "b32f316cb6d5c3010b7fe7c0325024bfaa9d9095dbabf666f06fe481ac5ff1a5",
+      "export": "b32f316cb6d5c3010b7fe7c0325024bfaa9d9095dbabf666f06fe481ac5ff1a5"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/视觉记录/坐标与裁剪.prompt": {
+      "source": "cca53c7cf998c6573d921541b4a79aebfef4ee4bd42de07a15ba5dec1b21ffbb",
+      "export": "cca53c7cf998c6573d921541b4a79aebfef4ee4bd42de07a15ba5dec1b21ffbb"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/身份比较/区块与控件复认.prompt": {
+      "source": "2fd663868cf5761d36103a0e1571a6cb246b607f0e7e5968b78db8994542588a",
+      "export": "2fd663868cf5761d36103a0e1571a6cb246b607f0e7e5968b78db8994542588a"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/身份比较/跨图身份比较.prompt": {
+      "source": "426d9ce9932ecfce024c084db77dde7139f768ef16bb7e033053f6afe14ebe80",
+      "export": "426d9ce9932ecfce024c084db77dde7139f768ef16bb7e033053f6afe14ebe80"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/通用/探索验证原则.prompt": {
+      "source": "3506d2f74455671395d593d199889645177451041c13e2a511d8824c5551a4ef",
+      "export": "3506d2f74455671395d593d199889645177451041c13e2a511d8824c5551a4ef"
+    },
+    "design/prompt_objects_review/调用说明/补充正文/通用/证据边界.prompt": {
+      "source": "d85139c56bd9015ec07127fa47e7fe2fc1c716a143708cd4ec3038098b4fa95f",
+      "export": "d85139c56bd9015ec07127fa47e7fe2fc1c716a143708cd4ec3038098b4fa95f"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/原步骤纠错.prompt": {
+      "source": "5112a0704c3d87a285847bb55fb06a89716ac98bc214485a3f6935cd130c9fff",
+      "export": "5112a0704c3d87a285847bb55fb06a89716ac98bc214485a3f6935cd130c9fff"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/复查控件归属.prompt": {
+      "source": "9c812ca5eb488be928039c0447247622345f34412729de9265b276b751841584",
+      "export": "9c812ca5eb488be928039c0447247622345f34412729de9265b276b751841584"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/复核任务结果.prompt": {
+      "source": "8ffb632120fb67251413b479c9078b99cf58f6c562be63e335d344592b0a19d8",
+      "export": "8ffb632120fb67251413b479c9078b99cf58f6c562be63e335d344592b0a19d8"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/复核旧共享关系.prompt": {
+      "source": "9196df51739ecf4804f269bda30c676a256508b8f7e432660558315e6875bc93",
+      "export": "9196df51739ecf4804f269bda30c676a256508b8f7e432660558315e6875bc93"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/恢复中断.prompt": {
+      "source": "551e80abb56e13a678c11ad34b1e39167c16d4d34f81d5f7a84c877363f9a1ca",
+      "export": "551e80abb56e13a678c11ad34b1e39167c16d4d34f81d5f7a84c877363f9a1ca"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/暂挂与切换分支.prompt": {
+      "source": "79903da05199e5457f1e6bd4782f093570294c5ef70721841f44358de3ffda84",
+      "export": "79903da05199e5457f1e6bd4782f093570294c5ef70721841f44358de3ffda84"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/核对控件身份.prompt": {
+      "source": "f0095423b91c436b39cb87b19d898880d736dbb3f1d9dfa9bd68a5630f57e3b4",
+      "export": "f0095423b91c436b39cb87b19d898880d736dbb3f1d9dfa9bd68a5630f57e3b4"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/补充观察.prompt": {
+      "source": "d4a37bb51094ef2fd3e44febf3e84f110c00c6499da7f509b8ae6d0b05b579e6",
+      "export": "d4a37bb51094ef2fd3e44febf3e84f110c00c6499da7f509b8ae6d0b05b579e6"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/补齐对象外观.prompt": {
+      "source": "2726121490138d794f80f9c51d605e4550068bce57f3f5932586b5ee9a66ea82",
+      "export": "2726121490138d794f80f9c51d605e4550068bce57f3f5932586b5ee9a66ea82"
+    },
+    "design/prompt_objects_review/调用说明/输出协议/选择身份候选.prompt": {
+      "source": "665a92f9966c2cd990206c493f205a2c1b4cc981f6f8b308bdcde226ddcef774",
+      "export": "665a92f9966c2cd990206c493f205a2c1b4cc981f6f8b308bdcde226ddcef774"
+    },
+    "tests/framework_modules.py": {
+      "source": "05039721c8423bda26f480743bbf0dc95dd5b9004d670b4fb19301cd6dec36e6",
+      "export": "05039721c8423bda26f480743bbf0dc95dd5b9004d670b4fb19301cd6dec36e6"
+    },
+    "tests/test_action_correction_single_frame.py": {
+      "source": "cdaa3d7a849f0154e6cc31d415a7b1a2ab96bb71082a8cd0cae2d454fb81536b",
+      "export": "cdaa3d7a849f0154e6cc31d415a7b1a2ab96bb71082a8cd0cae2d454fb81536b"
+    },
+    "tests/test_action_dispatch_review.py": {
+      "source": "6dd2903d1592adeae94d25ba5f9599b91df85b53e05191bfcb1106ad9e0ed9f8",
+      "export": "6dd2903d1592adeae94d25ba5f9599b91df85b53e05191bfcb1106ad9e0ed9f8"
+    },
+    "tests/test_action_executor_component.py": {
+      "source": "a25c8cea0524d94b9bc597e27b0332f6291962fe8b9a8271eefc39dfa634958b",
+      "export": "a25c8cea0524d94b9bc597e27b0332f6291962fe8b9a8271eefc39dfa634958b"
+    },
+    "tests/test_action_material_contract.py": {
+      "source": "e268c1dddb20437114ff69ae05a7ba23e6e7b793ca28dac6db9cff8e9abb1649",
+      "export": "e268c1dddb20437114ff69ae05a7ba23e6e7b793ca28dac6db9cff8e9abb1649"
+    },
+    "tests/test_action_platform_contract.py": {
+      "source": "96c25cc237f9e5dec1baa08d1b0af71dfd203df34bd50994dfab4c205e7b2a40",
+      "export": "96c25cc237f9e5dec1baa08d1b0af71dfd203df34bd50994dfab4c205e7b2a40"
+    },
+    "tests/test_action_prompt_order.py": {
+      "source": "fed679c1c704194e9b7083cb580b89bcb351b465b8595c4570f0b98951503956",
+      "export": "fed679c1c704194e9b7083cb580b89bcb351b465b8595c4570f0b98951503956"
+    },
+    "tests/test_action_source_observation.py": {
+      "source": "beefd34b370a4748128eaf735ceaf2b5646376f999d2a6775608f98046906316",
+      "export": "beefd34b370a4748128eaf735ceaf2b5646376f999d2a6775608f98046906316"
+    },
+    "tests/test_batch_entry.py": {
+      "source": "03843f3743c3cb78b7e77d5c654e7b0b32636c767f4059254f0c7e25a82bbd3d",
+      "export": "03843f3743c3cb78b7e77d5c654e7b0b32636c767f4059254f0c7e25a82bbd3d"
+    },
+    "tests/test_blocked_goal_routing.py": {
+      "source": "20fbdaea430f32d98fe4ed69463858cbbf2801a6fe1df1609bce2b8d872ec9bb",
+      "export": "20fbdaea430f32d98fe4ed69463858cbbf2801a6fe1df1609bce2b8d872ec9bb"
+    },
+    "tests/test_chrome_basic_scope.py": {
+      "source": "01872bf35747c27b23d77955639792cea2c09836917427389e3338fce5354cef",
+      "export": "01872bf35747c27b23d77955639792cea2c09836917427389e3338fce5354cef"
+    },
+    "tests/test_clock_registration_provenance.py": {
+      "source": "05dde86e7c06b1f0b27f660c3524a62dfe54b22c0fe7a5920f1b346ba0959f38",
+      "export": "05dde86e7c06b1f0b27f660c3524a62dfe54b22c0fe7a5920f1b346ba0959f38"
+    },
+    "tests/test_confirmed_destination_routing.py": {
+      "source": "a3deb76b561997e9a1292bd14396e8a3bdfe61b61a9f772b1331df8be18718ee",
+      "export": "a3deb76b561997e9a1292bd14396e8a3bdfe61b61a9f772b1331df8be18718ee"
+    },
+    "tests/test_context_batch_selection.py": {
+      "source": "eca4f7816ab063618d88784b1a64b9b15bedb6e462244bc6b40b6bfedabd997a",
+      "export": "eca4f7816ab063618d88784b1a64b9b15bedb6e462244bc6b40b6bfedabd997a"
+    },
+    "tests/test_context_handoff.py": {
+      "source": "dcb5a85bd939c62a06cda8a0005b9e27d84036edcad454a1cb227aa9987dbb24",
+      "export": "dcb5a85bd939c62a06cda8a0005b9e27d84036edcad454a1cb227aa9987dbb24"
+    },
+    "tests/test_context_relevance.py": {
+      "source": "d0ccf8a0de7bb1d8a1551acd412eae8e7a838bcd2b3134731076a9fe1f46725d",
+      "export": "d0ccf8a0de7bb1d8a1551acd412eae8e7a838bcd2b3134731076a9fe1f46725d"
+    },
+    "tests/test_contextual_controls.py": {
+      "source": "233feb65ed045df3d776e6625637bba88b0b0e75b692ea3c4000bee86d9dc422",
+      "export": "233feb65ed045df3d776e6625637bba88b0b0e75b692ea3c4000bee86d9dc422"
+    },
+    "tests/test_control_context.py": {
+      "source": "11b94e6aa9496a1ddc8f0dd1cbb9c910dcd0fde56776d3c2225bcd483ba5df86",
+      "export": "11b94e6aa9496a1ddc8f0dd1cbb9c910dcd0fde56776d3c2225bcd483ba5df86"
+    },
+    "tests/test_control_current_structure.py": {
+      "source": "7805b59c20b2eb4e6f23d9f3ebf5daad206b4fb5598c5fc1155c76f275d47b88",
+      "export": "7805b59c20b2eb4e6f23d9f3ebf5daad206b4fb5598c5fc1155c76f275d47b88"
+    },
+    "tests/test_control_hypotheses.py": {
+      "source": "05fe735354d17b8fc5a09e662681ef4cbf29dddd43f6f2e7f53840188eba92c9",
+      "export": "05fe735354d17b8fc5a09e662681ef4cbf29dddd43f6f2e7f53840188eba92c9"
+    },
+    "tests/test_control_identity_only.py": {
+      "source": "f00d36f320c3cca114adf80a3becf71283bd7eebbca57c6d926033871c778a07",
+      "export": "f00d36f320c3cca114adf80a3becf71283bd7eebbca57c6d926033871c778a07"
+    },
+    "tests/test_control_identity_review.py": {
+      "source": "9d935ee696a77d1f639c13ed979849213a7df654b4c50dd6d0aca7dc8d0d22f6",
+      "export": "9d935ee696a77d1f639c13ed979849213a7df654b4c50dd6d0aca7dc8d0d22f6"
+    },
+    "tests/test_control_indexes.py": {
+      "source": "620d60ee0a3f3388cf48ecbb5c2ebf544313cb307925a0d962d3827dbc03c95f",
+      "export": "620d60ee0a3f3388cf48ecbb5c2ebf544313cb307925a0d962d3827dbc03c95f"
+    },
+    "tests/test_control_inventory_progress.py": {
+      "source": "7c63ebe0026d9be1c89c3b9f783cd2ca0cb7ce28e26fa5880dc2d9d9c5cc21c9",
+      "export": "7c63ebe0026d9be1c89c3b9f783cd2ca0cb7ce28e26fa5880dc2d9d9c5cc21c9"
+    },
+    "tests/test_control_owner_diagnostic.py": {
+      "source": "4e6a91a5cbe020bef935a26c75123020fa0d4153c613fafb0d913a3436386ca2",
+      "export": "4e6a91a5cbe020bef935a26c75123020fa0d4153c613fafb0d913a3436386ca2"
+    },
+    "tests/test_control_reuse_review.py": {
+      "source": "0334d6816eefe95d7cc1982a52809db8d8786957c38e8b633b8071c41bc2f73a",
+      "export": "0334d6816eefe95d7cc1982a52809db8d8786957c38e8b633b8071c41bc2f73a"
+    },
+    "tests/test_coverage_exemption.py": {
+      "source": "d2d6541b8f3d320513fd98f84ec0e17c44630b860839705a7d2d246b2cbb8365",
+      "export": "d2d6541b8f3d320513fd98f84ec0e17c44630b860839705a7d2d246b2cbb8365"
+    },
+    "tests/test_current_frame_answer.py": {
+      "source": "02d5c3b80771f4568561f547959d18c318946af9198081cd1cb64232f31610f7",
+      "export": "02d5c3b80771f4568561f547959d18c318946af9198081cd1cb64232f31610f7"
+    },
+    "tests/test_current_page_context.py": {
+      "source": "a22486cb82dfc5a18affad60d05a94fab81788f40e8b05363d9021f210efbb31",
+      "export": "a22486cb82dfc5a18affad60d05a94fab81788f40e8b05363d9021f210efbb31"
+    },
+    "tests/test_debug_candidate.py": {
+      "source": "02bbfe0fad3b462cf49f8dd226793c43be79808608f9ea6663ceec3a104be22b",
+      "export": "02bbfe0fad3b462cf49f8dd226793c43be79808608f9ea6663ceec3a104be22b"
+    },
+    "tests/test_debug_loop.py": {
+      "source": "0020c32ac3388821ac30822cfe9f3b514fe822de4c975cc301536c2178fe6bbb",
+      "export": "0020c32ac3388821ac30822cfe9f3b514fe822de4c975cc301536c2178fe6bbb"
+    },
+    "tests/test_debug_replay_evidence.py": {
+      "source": "7cc1b5b2f759f735d03a7af02ec996e760aa3f89b8fecf691f73ecc8afd15fa9",
+      "export": "7cc1b5b2f759f735d03a7af02ec996e760aa3f89b8fecf691f73ecc8afd15fa9"
+    },
+    "tests/test_deferred_task_review.py": {
+      "source": "55c8f6bfd46cb292e23f69c0ca0e6511b3ae7fae9359c61458ca1a63114a0498",
+      "export": "55c8f6bfd46cb292e23f69c0ca0e6511b3ae7fae9359c61458ca1a63114a0498"
+    },
+    "tests/test_desktop_lifecycle.py": {
+      "source": "072a578cbd0dc9995c3fc59ec042c1fbdbad136d65bda2224e0fd7f7b26eee3a",
+      "export": "072a578cbd0dc9995c3fc59ec042c1fbdbad136d65bda2224e0fd7f7b26eee3a"
+    },
+    "tests/test_discovery_delta.py": {
+      "source": "00a277ace07c460facb43b601a96388b53494efce3ed76b1f2ad6997c0e23213",
+      "export": "00a277ace07c460facb43b601a96388b53494efce3ed76b1f2ad6997c0e23213"
+    },
+    "tests/test_discovery_incremental.py": {
+      "source": "8a10cca82e3236d0b65af52f7592e0e0c6481285dcd98964965712a156768864",
+      "export": "8a10cca82e3236d0b65af52f7592e0e0c6481285dcd98964965712a156768864"
+    },
+    "tests/test_discovery_inventory_supplement.py": {
+      "source": "0d346de690a90bfc15241e10d9b317d10b68cd0b394ae6543b5c247de1a1d143",
+      "export": "0d346de690a90bfc15241e10d9b317d10b68cd0b394ae6543b5c247de1a1d143"
+    },
+    "tests/test_entry_observation.py": {
+      "source": "982c3bfc03715cae8a51bfb7204dfc81aaf77009dde2296ebda29cf8131bd118",
+      "export": "982c3bfc03715cae8a51bfb7204dfc81aaf77009dde2296ebda29cf8131bd118"
+    },
+    "tests/test_entry_reassessment.py": {
+      "source": "1667a364194894181c277c0ed1de0603273b81272e593df23a4d8e0d3ff367fa",
+      "export": "1667a364194894181c277c0ed1de0603273b81272e593df23a4d8e0d3ff367fa"
+    },
+    "tests/test_explicit_task_decisions.py": {
+      "source": "b6542c432d3332dfa0a1618e1cbc1d226586e8f2a31c097ec0216a0f5c737903",
+      "export": "b6542c432d3332dfa0a1618e1cbc1d226586e8f2a31c097ec0216a0f5c737903"
+    },
+    "tests/test_exploration_summary.py": {
+      "source": "1c192258b111816b575a075582367ad549cc3571d972ea7bf826c6d40828f51f",
+      "export": "1c192258b111816b575a075582367ad549cc3571d972ea7bf826c6d40828f51f"
+    },
+    "tests/test_failed_supplement_evidence.py": {
+      "source": "bf9df52a2a91f554000bf55c5e2df25286ac9fc1da12cfaa3472e285a3cd8b1d",
+      "export": "bf9df52a2a91f554000bf55c5e2df25286ac9fc1da12cfaa3472e285a3cd8b1d"
+    },
+    "tests/test_flat_action_reply.py": {
+      "source": "57be246726bae1e8126c1ce9bd181dadfca77c892f216d4dea69a7f8de541aca",
+      "export": "57be246726bae1e8126c1ce9bd181dadfca77c892f216d4dea69a7f8de541aca"
+    },
+    "tests/test_flat_object_store.py": {
+      "source": "e0f2c7d134a9b6e9bb421dbfc60d0c92bcc7c81727a71bcc07bd9bb1f4518787",
+      "export": "e0f2c7d134a9b6e9bb421dbfc60d0c92bcc7c81727a71bcc07bd9bb1f4518787"
+    },
+    "tests/test_function_evidence_projection.py": {
+      "source": "79e715268f55a022473fd782868835f0fba6cdb366f60e5b7927b31758ed1d78",
+      "export": "79e715268f55a022473fd782868835f0fba6cdb366f60e5b7927b31758ed1d78"
+    },
+    "tests/test_function_scope.py": {
+      "source": "c9e1d9361df4a85695adc1c6bc04a8be75927f653884a635d45224a14ef037e3",
+      "export": "c9e1d9361df4a85695adc1c6bc04a8be75927f653884a635d45224a14ef037e3"
+    },
+    "tests/test_function_task_destination.py": {
+      "source": "e8f65a775ab202be73ef42294e88e0b65da702c771fed6017624e3ad9d9402f7",
+      "export": "e8f65a775ab202be73ef42294e88e0b65da702c771fed6017624e3ad9d9402f7"
+    },
+    "tests/test_historical_answer_evidence.py": {
+      "source": "353be682441ff6eb50af665e2f803e07b82ed540959a953b16e207740c6d13be",
+      "export": "353be682441ff6eb50af665e2f803e07b82ed540959a953b16e207740c6d13be"
+    },
+    "tests/test_history_current_state.py": {
+      "source": "7f50762ff86d9c45e659ac02c05c03a98f47cfd9d506b125f44b5dccca326b6b",
+      "export": "7f50762ff86d9c45e659ac02c05c03a98f47cfd9d506b125f44b5dccca326b6b"
+    },
+    "tests/test_history_disclosure.py": {
+      "source": "37c3582a4bc69c509c5024136ac430f8e81c782d95ad1a120b39df15f80ab982",
+      "export": "37c3582a4bc69c509c5024136ac430f8e81c782d95ad1a120b39df15f80ab982"
+    },
+    "tests/test_history_identity_index.py": {
+      "source": "cd9be39755a1d0ffe80eafc1f47257816e27877fa3cc437de4df84892c8b88b7",
+      "export": "cd9be39755a1d0ffe80eafc1f47257816e27877fa3cc437de4df84892c8b88b7"
+    },
+    "tests/test_identity_entry_context.py": {
+      "source": "7b5b393ffd5232967f95d5a6b6c65c38eb4cf1158fdfaf257e016358367210ea",
+      "export": "7b5b393ffd5232967f95d5a6b6c65c38eb4cf1158fdfaf257e016358367210ea"
+    },
+    "tests/test_identity_operation_separation.py": {
+      "source": "689734fd21b12c4f35235c5dfa14cac25f5c3e8c8d1df70a29cd82f20153869d",
+      "export": "689734fd21b12c4f35235c5dfa14cac25f5c3e8c8d1df70a29cd82f20153869d"
+    },
+    "tests/test_identity_template_admission.py": {
+      "source": "d8a4491ac5766f6349c2ae777bdc4d0e389e2b28669d46fbf71bdabea4099661",
+      "export": "d8a4491ac5766f6349c2ae777bdc4d0e389e2b28669d46fbf71bdabea4099661"
+    },
+    "tests/test_idle_continuation.py": {
+      "source": "5dbc3930b94798fceb645e870b5073ed21ce375eb7c2f28fc08708c72b6ce1da",
+      "export": "5dbc3930b94798fceb645e870b5073ed21ce375eb7c2f28fc08708c72b6ce1da"
+    },
+    "tests/test_input_focus_surface_fallback.py": {
+      "source": "c0265abfa19062f92890c1023d934ea9685b17f7d770a1874cba4f98143b73a1",
+      "export": "c0265abfa19062f92890c1023d934ea9685b17f7d770a1874cba4f98143b73a1"
+    },
+    "tests/test_instance_knowledge.py": {
+      "source": "188fbdcc17788d15039e9e059ce88832b6db957299e06ca9b78a0f505c5c375b",
+      "export": "188fbdcc17788d15039e9e059ce88832b6db957299e06ca9b78a0f505c5c375b"
+    },
+    "tests/test_joint_discovery.py": {
+      "source": "6a759f701f589dc4a18f9cd7683426985d362935358ee778b02f86bd3fdccc03",
+      "export": "6a759f701f589dc4a18f9cd7683426985d362935358ee778b02f86bd3fdccc03"
+    },
+    "tests/test_legacy_purpose_origin.py": {
+      "source": "989241f69f04412189f0e6412300df6d02e0b88824ad1d776d465ff04307bdf5",
+      "export": "989241f69f04412189f0e6412300df6d02e0b88824ad1d776d465ff04307bdf5"
+    },
+    "tests/test_local_knowledge_disclosure.py": {
+      "source": "b90c313e99ceba2e38939232909860aa59a8625bc5f9a8e51fe12d820af0c3c9",
+      "export": "b90c313e99ceba2e38939232909860aa59a8625bc5f9a8e51fe12d820af0c3c9"
+    },
+    "tests/test_local_partition_context.py": {
+      "source": "00b6b009c3f34e47982c0f9a81f2b58bc19a0f6066681921ef04d3700d6d6aa4",
+      "export": "00b6b009c3f34e47982c0f9a81f2b58bc19a0f6066681921ef04d3700d6d6aa4"
+    },
+    "tests/test_local_region_discovery.py": {
+      "source": "d8ca7d050f7a8dd816514ed86045f5738257d1f05f2d6bb8b174da2a063a6291",
+      "export": "d8ca7d050f7a8dd816514ed86045f5738257d1f05f2d6bb8b174da2a063a6291"
+    },
+    "tests/test_manual_prompt_assembly.py": {
+      "source": "f61de92a273bf4b40a764454906ba77640c81b33ee1dacde64f1ded6c0ab80ca",
+      "export": "f61de92a273bf4b40a764454906ba77640c81b33ee1dacde64f1ded6c0ab80ca"
+    },
+    "tests/test_minimal_traversal.py": {
+      "source": "7d47e5cbcde038f96257192e0e3b204d39c1cdf345f16f320c05a5067602c5df",
+      "export": "7d47e5cbcde038f96257192e0e3b204d39c1cdf345f16f320c05a5067602c5df"
+    },
+    "tests/test_missing_control_feedback.py": {
+      "source": "018d4d72464c346cf1a2ef3d92bb9b98f45abb202cef72acc2d6f74f3e50f655",
+      "export": "018d4d72464c346cf1a2ef3d92bb9b98f45abb202cef72acc2d6f74f3e50f655"
+    },
+    "tests/test_object_knowledge_contract.py": {
+      "source": "22cfa3bfeadcd8ffededb2754530661bc4be2e83c83ae8f05cc0892acb967e1f",
+      "export": "22cfa3bfeadcd8ffededb2754530661bc4be2e83c83ae8f05cc0892acb967e1f"
+    },
+    "tests/test_object_observation_events.py": {
+      "source": "8b4a74fc24eba08bc9850a2917b8a79b9a5429f06084c0bd05b2a77b96378e15",
+      "export": "8b4a74fc24eba08bc9850a2917b8a79b9a5429f06084c0bd05b2a77b96378e15"
+    },
+    "tests/test_output_contract_delivery.py": {
+      "source": "acc20a5905ccfc63a8f410bdd6220a83e5a28cd48bddace55ae33b1336934864",
+      "export": "acc20a5905ccfc63a8f410bdd6220a83e5a28cd48bddace55ae33b1336934864"
+    },
+    "tests/test_page_control_history.py": {
+      "source": "a6c6e4be7498769187d4b9bc9eeea2bf2a4d65ec630d2c3cf3930604df255757",
+      "export": "a6c6e4be7498769187d4b9bc9eeea2bf2a4d65ec630d2c3cf3930604df255757"
+    },
+    "tests/test_parameter_evidence_review.py": {
+      "source": "3fa5a6fd8b2e025ea3df438d7140f96c2f3a660b880fe142b6f75c00ea418ce3",
+      "export": "3fa5a6fd8b2e025ea3df438d7140f96c2f3a660b880fe142b6f75c00ea418ce3"
+    },
+    "tests/test_parameter_observation_handoff.py": {
+      "source": "064d3291df514a6c652a0b8f96c2052855f00b55ec6d75cf040042f4078335da",
+      "export": "064d3291df514a6c652a0b8f96c2052855f00b55ec6d75cf040042f4078335da"
+    },
+    "tests/test_parameter_prose.py": {
+      "source": "8af1d7883592a5fd26763c8b5f5a0673978c8d229e97fdbce8c16c90351dd050",
+      "export": "8af1d7883592a5fd26763c8b5f5a0673978c8d229e97fdbce8c16c90351dd050"
+    },
+    "tests/test_partial_sharing.py": {
+      "source": "7205f4d6b06df00559ad18a5fc752b9f86353224b0b64dff79dd0ea492a6b2c2",
+      "export": "7205f4d6b06df00559ad18a5fc752b9f86353224b0b64dff79dd0ea492a6b2c2"
+    },
+    "tests/test_plain_inventory.py": {
+      "source": "83482b1f4012dfc41fa819f7d750224ae71def9f78447fd2e80fa68ab8833eff",
+      "export": "83482b1f4012dfc41fa819f7d750224ae71def9f78447fd2e80fa68ab8833eff"
+    },
+    "tests/test_prompt_assembly.py": {
+      "source": "2a7b49c74d08f85436014f2df940b1e4129f2baa6ee372b113b1f2e0c40b63bc",
+      "export": "2a7b49c74d08f85436014f2df940b1e4129f2baa6ee372b113b1f2e0c40b63bc"
+    },
+    "tests/test_prompt_entry_catalog.py": {
+      "source": "6e4e9694ced04f1b8eca2c6b8f497ac18860b2d91516d0bbb211ca9156a67f00",
+      "export": "6e4e9694ced04f1b8eca2c6b8f497ac18860b2d91516d0bbb211ca9156a67f00"
+    },
+    "tests/test_prompt_review_consistency.py": {
+      "source": "6a12d4511cb338f5425bce18ac5db1e22226cc22436d043764a2ffe12de1ba20",
+      "export": "6a12d4511cb338f5425bce18ac5db1e22226cc22436d043764a2ffe12de1ba20"
+    },
+    "tests/test_prompt_review_editor.py": {
+      "source": "dafce467416429fce0ea409e4a6f8cf2287cea7d4021179443893ea155aec579",
+      "export": "dafce467416429fce0ea409e4a6f8cf2287cea7d4021179443893ea155aec579"
+    },
+    "tests/test_prompt_review_trace.py": {
+      "source": "9a70d15acac3ba8a036b92189bb3eeb54c28b06f5b9739b931d47458b10e1d63",
+      "export": "9a70d15acac3ba8a036b92189bb3eeb54c28b06f5b9739b931d47458b10e1d63"
+    },
+    "tests/test_prompt_review_work.py": {
+      "source": "fc00602c847f1c07f7e98216be6e4a08dee7bb8363fcda42cd6c50a69bb2be0b",
+      "export": "fc00602c847f1c07f7e98216be6e4a08dee7bb8363fcda42cd6c50a69bb2be0b"
+    },
+    "tests/test_purpose_specific_material.py": {
+      "source": "138335e2fc98737f0de6c576e8f6c316d6529d136b4a0bb97ecbece72cadff64",
+      "export": "138335e2fc98737f0de6c576e8f6c316d6529d136b4a0bb97ecbece72cadff64"
+    },
+    "tests/test_readable_task_identity.py": {
+      "source": "a3c843b872c49015bf82b97c749ca434f86a70cee3ee8866fa86ca893c5ce357",
+      "export": "a3c843b872c49015bf82b97c749ca434f86a70cee3ee8866fa86ca893c5ce357"
+    },
+    "tests/test_recognition_grounding_contract.py": {
+      "source": "b18e94cc02f14bcad17ce78710eadfb79264e4c3ef79f1e741361e74e5267e2a",
+      "export": "b18e94cc02f14bcad17ce78710eadfb79264e4c3ef79f1e741361e74e5267e2a"
+    },
+    "tests/test_recovery_discovery.py": {
+      "source": "abdd7da517721d1bd928f480ac23c9dd00ee9112b560e334c7d89c292fa877e3",
+      "export": "abdd7da517721d1bd928f480ac23c9dd00ee9112b560e334c7d89c292fa877e3"
+    },
+    "tests/test_recovery_stall_action.py": {
+      "source": "9cdc2248a798ef16b5cb82e79a964d076b7ba6373f950065bbb0b2e99eedcb4d",
+      "export": "9cdc2248a798ef16b5cb82e79a964d076b7ba6373f950065bbb0b2e99eedcb4d"
+    },
+    "tests/test_region_function_inventory.py": {
+      "source": "f22dd518a331b353d60d45bb82b38398ac9a196067f8de16373e289f1a098696",
+      "export": "f22dd518a331b353d60d45bb82b38398ac9a196067f8de16373e289f1a098696"
+    },
+    "tests/test_region_history_contract.py": {
+      "source": "649e626736c2d9d5ecd4cc8decb7c6f137749500ca5c7bc4e9e7d4a74c2dcfee",
+      "export": "649e626736c2d9d5ecd4cc8decb7c6f137749500ca5c7bc4e9e7d4a74c2dcfee"
+    },
+    "tests/test_region_knowledge_paragraphs.py": {
+      "source": "29dbc53d0f2adf840ce0d3afe6549ab93116a99ded9bae0b5c07081808f313a7",
+      "export": "29dbc53d0f2adf840ce0d3afe6549ab93116a99ded9bae0b5c07081808f313a7"
+    },
+    "tests/test_region_position_evidence.py": {
+      "source": "8addffb7dfd2f54a6a7df44f3f2834d6f1b0420b925dcb0ea02a1bf92dda0996",
+      "export": "8addffb7dfd2f54a6a7df44f3f2834d6f1b0420b925dcb0ea02a1bf92dda0996"
+    },
+    "tests/test_region_registration.py": {
+      "source": "3e30de9067ead76d9dbceae12d2c6199442bd956f51748fae9680156e0a56528",
+      "export": "3e30de9067ead76d9dbceae12d2c6199442bd956f51748fae9680156e0a56528"
+    },
+    "tests/test_region_scroll.py": {
+      "source": "e032ed493c0990e49eae4e63b967cd75361ac601fb54c77be7fb35730fc3470a",
+      "export": "e032ed493c0990e49eae4e63b967cd75361ac601fb54c77be7fb35730fc3470a"
+    },
+    "tests/test_region_stepwise_context.py": {
+      "source": "439cbea7121be988b63a1372df981746ac75a9e29f4ef15dcca92913e2414ba8",
+      "export": "439cbea7121be988b63a1372df981746ac75a9e29f4ef15dcca92913e2414ba8"
+    },
+    "tests/test_region_work_boundary.py": {
+      "source": "cdc152b23aad7ed0ce2c7bd9ecffcc34f73f649889a7ceb8eca798aa7e3e5c8f",
+      "export": "cdc152b23aad7ed0ce2c7bd9ecffcc34f73f649889a7ceb8eca798aa7e3e5c8f"
+    },
+    "tests/test_registration_fault_recovery.py": {
+      "source": "5aac897cee7532fa20f5abd4a8b01314da2391d29a706b273550e2305224b2a9",
+      "export": "5aac897cee7532fa20f5abd4a8b01314da2391d29a706b273550e2305224b2a9"
+    },
+    "tests/test_repeated_entry_review.py": {
+      "source": "5ef8711af51fe17a5c8c76df7586ec55e1a5ae309faedd1743459d5afe3789d2",
+      "export": "5ef8711af51fe17a5c8c76df7586ec55e1a5ae309faedd1743459d5afe3789d2"
+    },
+    "tests/test_reuse_accepted_answer.py": {
+      "source": "f0116d39a299bb30d7491847956f5da4e0ff20936a34ee8459e988a7336beaf3",
+      "export": "f0116d39a299bb30d7491847956f5da4e0ff20936a34ee8459e988a7336beaf3"
+    },
+    "tests/test_run_work_and_action_sources.py": {
+      "source": "e937f72d54c0b965c8c61dccbe63cca4874514a3ada510764d2a883506690ae5",
+      "export": "e937f72d54c0b965c8c61dccbe63cca4874514a3ada510764d2a883506690ae5"
+    },
+    "tests/test_scoped_task_blocking.py": {
+      "source": "0af604bb52e961a0f455b92414ebd3bd755c0ff34bf4b7a77f3f4b840dbeb6f6",
+      "export": "0af604bb52e961a0f455b92414ebd3bd755c0ff34bf4b7a77f3f4b840dbeb6f6"
+    },
+    "tests/test_scroll_task_owner.py": {
+      "source": "0c3c87c9535baf3f6d06244c0dd67c9354328895a23b176bc8715a905ea087ce",
+      "export": "0c3c87c9535baf3f6d06244c0dd67c9354328895a23b176bc8715a905ea087ce"
+    },
+    "tests/test_search_parameter_prompt.py": {
+      "source": "6b5c2b489a05ac3dd7fc6d5bbecc3c33bfca44b6e489d499f5d6a630683a0049",
+      "export": "6b5c2b489a05ac3dd7fc6d5bbecc3c33bfca44b6e489d499f5d6a630683a0049"
+    },
+    "tests/test_session_budget_tail.py": {
+      "source": "625d5b369080c1676146f5428c92e8e8f3fd6457f45dfab086f455d261131f99",
+      "export": "625d5b369080c1676146f5428c92e8e8f3fd6457f45dfab086f455d261131f99"
+    },
+    "tests/test_shared_control_conflict_repair.py": {
+      "source": "b05689bdea592086e08052dc07610ff1fd673eea9ddbbbefdb0d762e604a4694",
+      "export": "b05689bdea592086e08052dc07610ff1fd673eea9ddbbbefdb0d762e604a4694"
+    },
+    "tests/test_shared_step_repair.py": {
+      "source": "e291e5689a787d88cd803579a1f8f5f11629dc23ab77db07587922e0d01b4bd9",
+      "export": "e291e5689a787d88cd803579a1f8f5f11629dc23ab77db07587922e0d01b4bd9"
+    },
+    "tests/test_single_frame_contract.py": {
+      "source": "df69cbd7ce7dcbdd2c80db03ea0c63fdfeb588b858f36edf36beeddf03c87f75",
+      "export": "df69cbd7ce7dcbdd2c80db03ea0c63fdfeb588b858f36edf36beeddf03c87f75"
+    },
+    "tests/test_sparse_identity_history.py": {
+      "source": "0fdff2f27fef67ff5365eb05cd47db4cce2bb9bd80ef1ba623d35b4deeb5b0bd",
+      "export": "0fdff2f27fef67ff5365eb05cd47db4cce2bb9bd80ef1ba623d35b4deeb5b0bd"
+    },
+    "tests/test_stepwise_capture_pipeline.py": {
+      "source": "12a007b0d2978bf3d23ed55f81bac9749a8cf429b2aeff11a027e9f6fbceb158",
+      "export": "12a007b0d2978bf3d23ed55f81bac9749a8cf429b2aeff11a027e9f6fbceb158"
+    },
+    "tests/test_stepwise_control_boxes.py": {
+      "source": "4bdb809d2954a933c164e2f5043ddc297b77ffe9b901daacc3c82b8af342dde4",
+      "export": "4bdb809d2954a933c164e2f5043ddc297b77ffe9b901daacc3c82b8af342dde4"
+    },
+    "tests/test_stepwise_deferral.py": {
+      "source": "7eb15226732ae6b79e1903186936745b37822b733d63ae36cf123a0aa16b163d",
+      "export": "7eb15226732ae6b79e1903186936745b37822b733d63ae36cf123a0aa16b163d"
+    },
+    "tests/test_stepwise_desktop.py": {
+      "source": "62b3cc41a34c6088cff2d4e1d1c3da540478d1581b818fc4f773716c4b0272c7",
+      "export": "62b3cc41a34c6088cff2d4e1d1c3da540478d1581b818fc4f773716c4b0272c7"
+    },
+    "tests/test_stepwise_desktop_extended_actions.py": {
+      "source": "0542c84fc59f7c789a0bdf7c860f0299f030f1314616fbe43483a892cb25e058",
+      "export": "0542c84fc59f7c789a0bdf7c860f0299f030f1314616fbe43483a892cb25e058"
+    },
+    "tests/test_stepwise_diagnostics.py": {
+      "source": "8bf6b01c63792c9fbf4b8fe6df399e1eece2a3b1823c12ccac257cedd2f8b616",
+      "export": "8bf6b01c63792c9fbf4b8fe6df399e1eece2a3b1823c12ccac257cedd2f8b616"
+    },
+    "tests/test_stepwise_discovery_dispatch.py": {
+      "source": "b3412f2453174d20a4a44fa498dd133c28b6299268bc4359b1b127a6a4153a5b",
+      "export": "b3412f2453174d20a4a44fa498dd133c28b6299268bc4359b1b127a6a4153a5b"
+    },
+    "tests/test_stepwise_discovery_manual.py": {
+      "source": "4394ced7d19aa366215c0b8a4b02aad6ad89a9d76f0facefb7afbf61a4d823cb",
+      "export": "4394ced7d19aa366215c0b8a4b02aad6ad89a9d76f0facefb7afbf61a4d823cb"
+    },
+    "tests/test_stepwise_empty_identity_handoff.py": {
+      "source": "0bd5431387a77a3cda74324b0e576f9101af91f570be5b8c7e3d86ae0093bbf7",
+      "export": "0bd5431387a77a3cda74324b0e576f9101af91f570be5b8c7e3d86ae0093bbf7"
+    },
+    "tests/test_stepwise_entry_evidence.py": {
+      "source": "a1546088070ab9595e1af0fb85c0488cba70dab95e5c636f5931456bb71ff3d1",
+      "export": "a1546088070ab9595e1af0fb85c0488cba70dab95e5c636f5931456bb71ff3d1"
+    },
+    "tests/test_stepwise_environment_scope.py": {
+      "source": "0fffa8a48f7dd2f03789960d13a62f30e4b047bf8c3a98659a2ba0f551738230",
+      "export": "0fffa8a48f7dd2f03789960d13a62f30e4b047bf8c3a98659a2ba0f551738230"
+    },
+    "tests/test_stepwise_equivalent_context.py": {
+      "source": "9e13f53da38fa0197cd5b1cbbacba29db5786d629a9a173c4af7e50b5cd76ce1",
+      "export": "9e13f53da38fa0197cd5b1cbbacba29db5786d629a9a173c4af7e50b5cd76ce1"
+    },
+    "tests/test_stepwise_external_scope.py": {
+      "source": "73b335479982705262983b77154282716cd9e18c311a0ad8d8230d9c938afb34",
+      "export": "73b335479982705262983b77154282716cd9e18c311a0ad8d8230d9c938afb34"
+    },
+    "tests/test_stepwise_fault_campaign.py": {
+      "source": "4006e90ba1d267bd06ad09295f04a558a53f3e64bdb712771e083cf884ba37b3",
+      "export": "4006e90ba1d267bd06ad09295f04a558a53f3e64bdb712771e083cf884ba37b3"
+    },
+    "tests/test_stepwise_foreground_evidence.py": {
+      "source": "7b16901a620805ffe9663953feef37d62da8231bb3e7162dcd5e3312277f4bbe",
+      "export": "7b16901a620805ffe9663953feef37d62da8231bb3e7162dcd5e3312277f4bbe"
+    },
+    "tests/test_stepwise_function_support_handoff.py": {
+      "source": "ef51b4c607b4f6bea4956d6b97ad18667ffaedb4064eb3a90664e7d9f13be900",
+      "export": "ef51b4c607b4f6bea4956d6b97ad18667ffaedb4064eb3a90664e7d9f13be900"
+    },
+    "tests/test_stepwise_historical_inventory.py": {
+      "source": "fcc63ab86ba79e05574aa2d6295845febb49f1fc6cf2f146629321f14efa2788",
+      "export": "fcc63ab86ba79e05574aa2d6295845febb49f1fc6cf2f146629321f14efa2788"
+    },
+    "tests/test_stepwise_hover_guidance.py": {
+      "source": "39017a610b834a0bcd84b90d9ac3179c4de90ed74bbf2b1fdecc70abdae6a7ef",
+      "export": "39017a610b834a0bcd84b90d9ac3179c4de90ed74bbf2b1fdecc70abdae6a7ef"
+    },
+    "tests/test_stepwise_identity_provenance.py": {
+      "source": "6feb1788cd1ffefba30001a8f02bd54be304e89d2bc51a1ee04ebc3b6aa3c247",
+      "export": "6feb1788cd1ffefba30001a8f02bd54be304e89d2bc51a1ee04ebc3b6aa3c247"
+    },
+    "tests/test_stepwise_input_target.py": {
+      "source": "d14d2e680bc98fe1a8b9a9a87d8a816d093dc37e1b6885ab1b2a8ecd7a4fdc45",
+      "export": "d14d2e680bc98fe1a8b9a9a87d8a816d093dc37e1b6885ab1b2a8ecd7a4fdc45"
+    },
+    "tests/test_stepwise_launcher.py": {
+      "source": "dcd6470506b9eec6706343904999cf6f1cfd99df3e15a54b3bc9edae5cedec91",
+      "export": "dcd6470506b9eec6706343904999cf6f1cfd99df3e15a54b3bc9edae5cedec91"
+    },
+    "tests/test_stepwise_list_input.py": {
+      "source": "63a0f30956adab0d327e22b5fa755c6d86635425bbf279e034c7fcc00267f854",
+      "export": "63a0f30956adab0d327e22b5fa755c6d86635425bbf279e034c7fcc00267f854"
+    },
+    "tests/test_stepwise_local_effect_graph.py": {
+      "source": "b404065794ae952b7e9a8bd56fc2425807af0372b512f63d55969c3d5d94c78e",
+      "export": "b404065794ae952b7e9a8bd56fc2425807af0372b512f63d55969c3d5d94c78e"
+    },
+    "tests/test_stepwise_local_failures.py": {
+      "source": "a12d0432bc47ad278a0a6eb3720777e4cbf2486f7c6a977975d7cd08fa154074",
+      "export": "a12d0432bc47ad278a0a6eb3720777e4cbf2486f7c6a977975d7cd08fa154074"
+    },
+    "tests/test_stepwise_match_batch.py": {
+      "source": "2f939eef4095bfa42927a47a6d72ecb174147af5c49b91d11fc802a283757981",
+      "export": "2f939eef4095bfa42927a47a6d72ecb174147af5c49b91d11fc802a283757981"
+    },
+    "tests/test_stepwise_module_boundaries.py": {
+      "source": "e6a6974e5ab4045021909f7e70e3235a80490b26dcd7a99761b03ae7def703c2",
+      "export": "e6a6974e5ab4045021909f7e70e3235a80490b26dcd7a99761b03ae7def703c2"
+    },
+    "tests/test_stepwise_no_route_discovery.py": {
+      "source": "1e363e7b8e9787b4d523f8b1db2a299555000b71264311afe559021278d7c283",
+      "export": "1e363e7b8e9787b4d523f8b1db2a299555000b71264311afe559021278d7c283"
+    },
+    "tests/test_stepwise_pipeline_unblock.py": {
+      "source": "1f3bee06953456a9b0c69df6d70ccde682c7b3e6263c50c2270594d620943ffe",
+      "export": "1f3bee06953456a9b0c69df6d70ccde682c7b3e6263c50c2270594d620943ffe"
+    },
+    "tests/test_stepwise_progress.py": {
+      "source": "22102bbb462f7a330b9b2aff74532e465e3eb4040bffaa320e9ccd58278f3f67",
+      "export": "22102bbb462f7a330b9b2aff74532e465e3eb4040bffaa320e9ccd58278f3f67"
+    },
+    "tests/test_stepwise_prohibited_task_skip.py": {
+      "source": "d49c253081990531e4a88844ed8078318c9b479e61a85863540f059980b5d3de",
+      "export": "d49c253081990531e4a88844ed8078318c9b479e61a85863540f059980b5d3de"
+    },
+    "tests/test_stepwise_prompt_audit_fixes.py": {
+      "source": "8a779475d5f2cfb11f8864445c26b43e8af4ff5cb55b31f3cb39249efeab583c",
+      "export": "8a779475d5f2cfb11f8864445c26b43e8af4ff5cb55b31f3cb39249efeab583c"
+    },
+    "tests/test_stepwise_prompt_semantics.py": {
+      "source": "b0b7b229d6af6d250ad9b6563b8ec1836a1dd565a38b68432ae9a47d4fd751e1",
+      "export": "b0b7b229d6af6d250ad9b6563b8ec1836a1dd565a38b68432ae9a47d4fd751e1"
+    },
+    "tests/test_stepwise_recovery_continuation.py": {
+      "source": "e9285fc49f3b79ec8807c9d5ffd498bc0c8e2d23ec804b6567696a6292b99b83",
+      "export": "e9285fc49f3b79ec8807c9d5ffd498bc0c8e2d23ec804b6567696a6292b99b83"
+    },
+    "tests/test_stepwise_region_graph.py": {
+      "source": "f8a0b7ecc4bb0c2c64713734bc56b544bf3da69b47e20f3e43832a2d0d2be3be",
+      "export": "f8a0b7ecc4bb0c2c64713734bc56b544bf3da69b47e20f3e43832a2d0d2be3be"
+    },
+    "tests/test_stepwise_region_merge.py": {
+      "source": "d31ac162e787d5cd84054566a3c9a95b60998d2c0ab75d5b44ffabb6ff939fa1",
+      "export": "d31ac162e787d5cd84054566a3c9a95b60998d2c0ab75d5b44ffabb6ff939fa1"
+    },
+    "tests/test_stepwise_region_tasks.py": {
+      "source": "127411a095ce5f83cdc825c5dff6e76e0ed2a2121aac8db3f4cb8b33686f8ffd",
+      "export": "127411a095ce5f83cdc825c5dff6e76e0ed2a2121aac8db3f4cb8b33686f8ffd"
+    },
+    "tests/test_stepwise_related_results.py": {
+      "source": "90ebb4aec94781ce7ee764b6c67dcb1bb789a96a8bf3990b1aeed7c78f7e2623",
+      "export": "90ebb4aec94781ce7ee764b6c67dcb1bb789a96a8bf3990b1aeed7c78f7e2623"
+    },
+    "tests/test_stepwise_resume_route.py": {
+      "source": "8ee9ad8e41cfd5e63670828af532b54fc7c21b134d3db424fb1590e5c020828c",
+      "export": "8ee9ad8e41cfd5e63670828af532b54fc7c21b134d3db424fb1590e5c020828c"
+    },
+    "tests/test_stepwise_review_fixes.py": {
+      "source": "40194f03b516062198cba6235ceeaa664b4d3845ca63c2b05a1291b828df17aa",
+      "export": "40194f03b516062198cba6235ceeaa664b4d3845ca63c2b05a1291b828df17aa"
+    },
+    "tests/test_stepwise_run_source.py": {
+      "source": "b55e44cb67140a8c5c3dd1c64ce7da619cc2cd3bc6dafbf5234b2a01bf73bbc3",
+      "export": "b55e44cb67140a8c5c3dd1c64ce7da619cc2cd3bc6dafbf5234b2a01bf73bbc3"
+    },
+    "tests/test_stepwise_screen_coordinates.py": {
+      "source": "21c0891324dcd5ff18abec80d1d5d8c229734fc6e5bf501f77d58fd167c0ce8d",
+      "export": "21c0891324dcd5ff18abec80d1d5d8c229734fc6e5bf501f77d58fd167c0ce8d"
+    },
+    "tests/test_stepwise_shared_region_identity.py": {
+      "source": "784145f27869de1461d71e9675ce20c97868b14c89bbab96b1ef3cf471160d4c",
+      "export": "784145f27869de1461d71e9675ce20c97868b14c89bbab96b1ef3cf471160d4c"
+    },
+    "tests/test_stepwise_task_correction.py": {
+      "source": "c9c71f0720f9febb5a4721a6fa2787ba5b4ec1364b7bcf0ec4fa66a2baa2235d",
+      "export": "c9c71f0720f9febb5a4721a6fa2787ba5b4ec1364b7bcf0ec4fa66a2baa2235d"
+    },
+    "tests/test_stepwise_update_exception.py": {
+      "source": "92093737105648500d5e3075dbd7eda9acb87f6c6e9af51fd931efaff6bb7603",
+      "export": "92093737105648500d5e3075dbd7eda9acb87f6c6e9af51fd931efaff6bb7603"
+    },
+    "tests/test_stepwise_update_region_matching.py": {
+      "source": "6510effa0ef9c709097ddf355f5d9884d0b0625fbf6ca7fb7a7ac45215013469",
+      "export": "6510effa0ef9c709097ddf355f5d9884d0b0625fbf6ca7fb7a7ac45215013469"
+    },
+    "tests/test_stepwise_update_visibility.py": {
+      "source": "da243ea73fa463bb7119112094e7d61517edd569026054fd48951ff9532fff5c",
+      "export": "da243ea73fa463bb7119112094e7d61517edd569026054fd48951ff9532fff5c"
+    },
+    "tests/test_stepwise_visual_backtrack.py": {
+      "source": "fdeb565833678ff97f9f1dba79c147cc2f8fb5831d88775353aa79d29b60cb7f",
+      "export": "fdeb565833678ff97f9f1dba79c147cc2f8fb5831d88775353aa79d29b60cb7f"
+    },
+    "tests/test_supervised_step_review.py": {
+      "source": "6d6451ebb6d5c1ad5e07b0687c3d3b09950cf8a10703bce490d5c8261d2fa10c",
+      "export": "6d6451ebb6d5c1ad5e07b0687c3d3b09950cf8a10703bce490d5c8261d2fa10c"
+    },
+    "tests/test_system_error_recovery.py": {
+      "source": "02dc60fcbb54c6235d4aedaa329b48610fab30e65e812c60e8e1634d7ea48b25",
+      "export": "02dc60fcbb54c6235d4aedaa329b48610fab30e65e812c60e8e1634d7ea48b25"
+    },
+    "tests/test_task_action_binding.py": {
+      "source": "ca8a628554e4c3c19c646510f30cf0f2ac0eb943567cd395377219c88e22dbd0",
+      "export": "ca8a628554e4c3c19c646510f30cf0f2ac0eb943567cd395377219c88e22dbd0"
+    },
+    "tests/test_task_closure.py": {
+      "source": "6203d64c08daec2536d93723a384bcdfe4b6e18ac3a3fdd4fb2ec4fb6722267a",
+      "export": "6203d64c08daec2536d93723a384bcdfe4b6e18ac3a3fdd4fb2ec4fb6722267a"
+    },
+    "tests/test_task_context_diagnostics.py": {
+      "source": "56ded77f4201350d8f65ae0360329fe5e6de94d609c6b8c9c5723a7ac8e022d1",
+      "export": "56ded77f4201350d8f65ae0360329fe5e6de94d609c6b8c9c5723a7ac8e022d1"
+    },
+    "tests/test_task_inventory_context.py": {
+      "source": "344798e68d43084691b40a3add01e9d98f410065c1d9bc665c78d93e4ab67a1c",
+      "export": "344798e68d43084691b40a3add01e9d98f410065c1d9bc665c78d93e4ab67a1c"
+    },
+    "tests/test_task_knowledge_flow.py": {
+      "source": "70d109b729a4dab98768b85e684f2bb83bef0627286d28d5a0ee8c8665ee0dd9",
+      "export": "70d109b729a4dab98768b85e684f2bb83bef0627286d28d5a0ee8c8665ee0dd9"
+    },
+    "tests/test_task_product_storage.py": {
+      "source": "2fcb53c59f161939e3c86e163cbc299e4b4713568b037c32315c5275ece3160a",
+      "export": "2fcb53c59f161939e3c86e163cbc299e4b4713568b037c32315c5275ece3160a"
+    },
+    "tests/test_task_proposal_question_fields.py": {
+      "source": "2ac172594f2927e95a83c864868462b91a2997c56a822caf130237e0a90a551f",
+      "export": "2ac172594f2927e95a83c864868462b91a2997c56a822caf130237e0a90a551f"
+    },
+    "tests/test_task_question_contract.py": {
+      "source": "c24466a6f7fa2ddb7088d13953a7ab2c6a6d737e5d6f1c8fba2d163b5c8390d3",
+      "export": "c24466a6f7fa2ddb7088d13953a7ab2c6a6d737e5d6f1c8fba2d163b5c8390d3"
+    },
+    "tests/test_task_registration_requirement.py": {
+      "source": "312d124ed396136cf4d4ce4fd94b515dc91a50dfdee63fd311fc21cd79ee9a3a",
+      "export": "312d124ed396136cf4d4ce4fd94b515dc91a50dfdee63fd311fc21cd79ee9a3a"
+    },
+    "tests/test_task_settlement_routing.py": {
+      "source": "f38d04cb8bf2091e5ed4ed1285285e777f56abdd518c665c8cf7eefcb76c2a29",
+      "export": "f38d04cb8bf2091e5ed4ed1285285e777f56abdd518c665c8cf7eefcb76c2a29"
+    },
+    "tests/test_task_update_list.py": {
+      "source": "ebc0ba90cba0bc830fb17e472af1ebc57f1245ef82f03e7aa6b4e97fb04f249c",
+      "export": "ebc0ba90cba0bc830fb17e472af1ebc57f1245ef82f03e7aa6b4e97fb04f249c"
+    },
+    "tests/test_traversal_scheduler.py": {
+      "source": "0a62edbd14118034830701670660b4649168423bcb728aa559e05c900e332926",
+      "export": "0a62edbd14118034830701670660b4649168423bcb728aa559e05c900e332926"
+    },
+    "tests/test_traversal_scope_chain.py": {
+      "source": "80ce7d6ed31f7714414b6c714dd0f56e9b6ec617bfefbc734d480d3068b3a87c",
+      "export": "80ce7d6ed31f7714414b6c714dd0f56e9b6ec617bfefbc734d480d3068b3a87c"
+    },
+    "tests/test_unified_map_prompt.py": {
+      "source": "2f01064b31ee83ae123983d01077fc4e3ccd59ab905a322a7ee5028bc6d83820",
+      "export": "2f01064b31ee83ae123983d01077fc4e3ccd59ab905a322a7ee5028bc6d83820"
+    },
+    "tests/test_unified_stepwise_recovery.py": {
+      "source": "bb3cd1a743dff32b6648e7bb56f68ff5675443a6e901f1924e843c564cad91d7",
+      "export": "bb3cd1a743dff32b6648e7bb56f68ff5675443a6e901f1924e843c564cad91d7"
+    },
+    "tests/test_update_object_registration.py": {
+      "source": "907fed5a7634a8efa218cd84c0802afc577fcd9ef826a97ecb309250b405259c",
+      "export": "907fed5a7634a8efa218cd84c0802afc577fcd9ef826a97ecb309250b405259c"
+    },
+    "tests/test_work_context.py": {
+      "source": "bd0116d6f900f32041d8939daedd16d7c3b647b7f9615e963f21fa0cf817d3b1",
+      "export": "bd0116d6f900f32041d8939daedd16d7c3b647b7f9615e963f21fa0cf817d3b1"
+    },
+    "design/CONTROL_IDENTITY_REVIEW.md": {
+      "source": "abbc34eca979aa1cef90d2fed3dda46dfcbf6922dbf078be3f5a0c2b67d7a611",
+      "export": "abbc34eca979aa1cef90d2fed3dda46dfcbf6922dbf078be3f5a0c2b67d7a611"
+    },
+    "design/CURRENT_FRAMEWORK_DETAILS.md": {
+      "source": "f8c2d7a24ee012c90feb22decbe3b667a115c46e43949ae2eca959bb9c86486d",
+      "export": "f8c2d7a24ee012c90feb22decbe3b667a115c46e43949ae2eca959bb9c86486d"
+    }
+  }
+}

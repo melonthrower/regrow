@@ -38,7 +38,8 @@ def missing(candidate):
     rows = []
     for kind in ('regions', 'controls'):
         for i, row in enumerate(candidate.get(kind, [])):
-            if row.get('ref') or (kind == 'controls' and 'index' in row) or row.get('bbox'):
+            known = row.get('ref') or (kind == 'controls' and 'index' in row)
+            if (known and not (kind == 'controls' and row.get('add_image'))) or row.get('bbox'):
                 continue
             rows.append({'path': f'/{kind}/{i}', **deepcopy(row)})
     return rows

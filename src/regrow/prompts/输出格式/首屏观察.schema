@@ -104,10 +104,6 @@
             "type": "integer",
             "description": "唯一直接所属Region的0起始行号"
           },
-          "icon_appearance": {
-            "type": "string",
-            "description": "需要辅助辨认时写图标外观；不把功能含义当作外观。"
-          },
           "bbox": {
             "anyOf": [
               {
@@ -140,64 +136,13 @@
             ],
             "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
           },
-          "icon_bbox": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "left": {
-                    "type": "integer"
-                  },
-                  "top": {
-                    "type": "integer"
-                  },
-                  "right": {
-                    "type": "integer"
-                  },
-                  "bottom": {
-                    "type": "integer"
-                  }
-                },
-                "required": [
-                  "left",
-                  "top",
-                  "right",
-                  "bottom"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "可选的独立图标裁图范围；不作为操作坐标。"
-          },
-          "knowledge": {
+          "description": {
             "type": "string",
-            "description": "控件可供后续复用的稳定功能、操作效果及适用条件；有新知识时整合已有内容。当前值和选中/禁用属于本帧观察。"
+            "description": "控件的稳定外观和作用对象描述。"
           }
         },
         "required": [
           "region_index"
-        ],
-        "additionalProperties": false
-      }
-    },
-    "excluded": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string"
-          },
-          "reason": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "description",
-          "reason"
         ],
         "additionalProperties": false
       }

@@ -17,6 +17,9 @@ WORK_FIELDS = {'function_inventory', 'task_inventory', 'out_of_scope_reason', 'r
 def normalize_constraints(value):
     """Import the former object field once; old snapshots remain untouched."""
     result = dict(value)
+    old_routes = result.pop('entries', None)
+    if old_routes and 'jump_to' not in result:
+        result['jump_to'] = old_routes
     old = result.pop('parameters', None)
     if old:
         constraints = deepcopy(old)
@@ -101,9 +104,6 @@ class RegionControls(MutableMapping):
         return self.store.controls[key]
 
     def __setitem__(self, key, value):
-        for (rid, region) in self.store.items():
-            if rid != self.region and key in region['controls']:
-                region['controls'].remove(key)
         members = self.store[self.region]['controls']
         if key not in members:
             members.append(key)
@@ -115,7 +115,10 @@ class RegionControls(MutableMapping):
     def __delitem__(self, key):
         self[key]
         self.store[self.region]['controls'].remove(key)
-        del self.store.controls[key]
+        from regrow.records.control_records import set_group
+        set_group(self.store[self.region], key, '')
+        if not any(key in r['controls'] for r in self.store.values()):
+            del self.store.controls[key]
 
     def __iter__(self):
         return iter(list(self.store[self.region]['controls']))
@@ -128,6 +131,9 @@ class RegionControls(MutableMapping):
 
     def setdefault(self, key, default=None):
         if key not in self:
+            if key in self.store.controls:
+                self.store[self.region]['controls'].append(key)
+                return self.store.controls[key]
             self[key] = default
         return self[key]
 
@@ -250,8 +256,8 @@ class Records(dict):
             if not owners and control.get('region') in self:
                 owners = [control['region']]
                 self[owners[0]]['controls'].append(cid)
-            if len(owners) != 1:
-                raise ValueError('控件需要唯一所属区块：' + cid)
+            if not owners:
+                raise ValueError('控件需要至少一个引用区块：' + cid)
             item = {k: v for (k, v) in control.items() if k not in ('task_refs', 'action_refs', 'region')}
             item['observations'] = observation_history(control)
             self.controls[cid] = Control(item)
@@ -268,6 +274,8 @@ class Records(dict):
             raise ValueError('区块引用了不存在的控件')
         from regrow.records.tasks import import_products
         import_products(self)
+        from regrow.records.control_records import normalize
+        normalize(self)
         from regrow.records.action_evidence import compact
         compact(self)
 
@@ -305,7 +313,7 @@ class Records(dict):
         owned_tasks(self[key]).clear()
         owned_actions(self[key]).clear()
         for cid in list(owned_controls(self[key])):
-            del self.controls[cid]
+            del owned_controls(self[key])[cid]
         super().__delitem__(key)
 
     def pop(self, key, *default):
@@ -350,6 +358,12 @@ def owned_tasks(region, *, create=False):
     if isinstance(region, Region):
         return RegionTasks(region.store, region['id'])
     return region.setdefault('tasks', {}) if create else region.get('tasks', {})
+
+def control_record(records, cid):
+    """One global control; multiple Regions may reference it."""
+    if isinstance(records, Records):
+        return records.controls.get(cid)
+    return next((c for r in records.values() for key, c in owned_controls(r).items() if key == cid), None)
 
 def owned_actions(region, *, create=False):
     if isinstance(region, Region):
@@ -404,6 +418,9 @@ def rebase(value, old_base, new_base):
         return [rebase(row, old_base, new_base) for row in value]
     if not isinstance(value, dict):
         return value
+    if set(value).issubset({'path', 'conditions'}) and 'path' in value:
+        from regrow.records.record_history import rebase_paths
+        return rebase_paths(value, old_base, new_base)
     return {key: os.path.relpath(Path(old_base) / item, new_base) if key in PATH_FIELDS and isinstance(item, str) and item else rebase(item, old_base, new_base) for (key, item) in value.items()}
 
 def load(snapshot):
@@ -459,6 +476,8 @@ def load(snapshot):
 def save(records, snapshot, writer):
     if not isinstance(records, Records):
         records = Records(records)
+    from regrow.records.control_records import normalize
+    normalize(records)
     from regrow.records.action_evidence import compact
     compact(records)
     from regrow.records.record_history import write
@@ -476,7 +495,10 @@ def save(records, snapshot, writer):
             task_history[ref]['unplaced_products'] = orphaned
     for (ref, row) in [*payload['regions'].items(), *payload['controls'].items()]:
         rows = history.get(ref, [])
-        for field in ('image', 'icon_image'):
+        if ref in payload['controls']:
+            row['image'] = records.controls[ref]['image']
+            row.pop('icon_image', None)
+        for field in (() if ref in payload['controls'] else ('image', 'icon_image')):
             latest = next((observed for observed in reversed(rows) if usable(observed, field)), None)
             if latest:
                 row[field] = latest[field]

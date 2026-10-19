@@ -1,89 +1,65 @@
-"""The public entry points and frozen source keep one implementation per responsibility."""
-from pathlib import Path
+"""Current package ownership and frozen-source entry checks; no model or GUI."""
+import json
 import os
+from pathlib import Path
 import subprocess
 import sys
+from regrow.paths import SOURCE_ROOT
+from regrow.records import snapshots as io
+from regrow.records import snapshots
+from regrow.records import snapshots as knowledge_transaction
+from regrow.traversal import discovery_step
+from regrow.tools.debug_loop import freeze
+from regrow.runtime.run_source import source_hash
+from regrow.runtime.run_source import session_command
 
-import pytest
+def test_record_implementations_have_one_owner():
+    assert snapshots.load.__module__ == 'regrow.records.snapshots'
+    assert snapshots.commit.__module__ == 'regrow.records.snapshots'
+    assert not hasattr(discovery_step, 'load')
+    assert not hasattr(discovery_step, 'publish')
+    from regrow.records import calls
+    assert calls.read is io.read
 
-ROOT = Path(__file__).resolve().parents[1] / "experiments/clock_manual_20260919"
+def test_reads_and_writes_share_the_same_transaction_pointer(tmp_path):
+    pointer = tmp_path / 'knowledge_current.json'
+    io.write_json(pointer, {'snapshot': 'before'})
+    with knowledge_transaction.transaction(tmp_path):
+        io.write_json(pointer, {'snapshot': 'after'})
+        assert json.loads(pointer.read_text()) == {'snapshot': 'before'}
+        assert io.read(pointer) == {'snapshot': 'after'}
+    assert json.loads(pointer.read_text()) == {'snapshot': 'after'}
+    try:
+        with knowledge_transaction.transaction(tmp_path):
+            io.write_json(pointer, {'snapshot': 'failed'})
+            raise ValueError('abort this registration')
+    except ValueError:
+        pass
+    assert io.read(pointer) == {'snapshot': 'after'}
 
+def test_frozen_source_runs_its_own_package_and_prompt_resources(tmp_path):
+    frozen = freeze(SOURCE_ROOT, tmp_path / 'source')
+    assert source_hash(frozen) == source_hash(SOURCE_ROOT)
+    script = "\nfrom pathlib import Path\nfrom regrow.paths import SOURCE_ROOT\nfrom regrow.records import snapshots\nfrom regrow.prompts.compose import catalog\nassert SOURCE_ROOT == Path.cwd()\nassert Path(snapshots.__file__).is_relative_to(Path.cwd())\nassert catalog()['calls']['action_selection']['question']\n"
+    result = subprocess.run([sys.executable, '-c', script], cwd=frozen, env={**os.environ, 'PYTHONPATH': str(frozen), 'PYTHONDONTWRITEBYTECODE': '1'}, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    run = tmp_path / 'run'
+    run.mkdir()
+    io.write_json(run / 'run_manifest.json', {'framework_source': str(frozen)})
+    command = session_command(run, tmp_path / 'output', 'step')
+    assert command[1:3] == [str(frozen), 'session']
+    help_result = subprocess.run([sys.executable, str(frozen), 'step', '--help'], capture_output=True, text=True)
+    assert help_result.returncode == 0, help_result.stderr
 
-@pytest.mark.parametrize("order", [
-    ["region_tasks", "stepwise_flow", "recover_external"],
-    ["task_selection", "task_settlement", "action_binding", "region_evidence", "model_transport"],
-    ["task_settlement", "task_selection", "desktop_transport", "region_evidence", "action_binding"],
-])
-def test_public_exports_and_direct_imports_share_one_implementation(order):
-    script = """
-import importlib
-for name in ORDER:
-    importlib.import_module(name)
-import region_tasks, task_selection, task_settlement, stepwise_flow, region_evidence, action_binding
-import recover_external, model_transport, desktop_transport
-from pathlib import Path
-for public, implementation, names in [
-    (region_tasks, task_selection, ['attach', 'render', 'render_current']),
-    (region_tasks, task_settlement, ['task_object_context', 'settle_task', 'store_findings']),
-    (stepwise_flow, action_binding, ['bind_action_target', '_bind_action_target']),
-    (stepwise_flow, region_evidence, ['region_transitions', 'new_region', 'region_observation',
-        'control_observation', 'control_name', 'action_record', 'index_actions', 'region_records', 'graph_state']),
-    (recover_external, model_transport, ['with_environment_scope', 'with_run_scope', 'with_frame_context']),
-]:
-    for name in names:
-        # Existing sibling loading creates module instances; each public symbol
-        # must still resolve directly to the one implementation source.
-        exported = getattr(public, name)
-        original = getattr(implementation, name)
-        assert exported.__code__.co_filename == original.__code__.co_filename, name
-        assert exported.__code__.co_code == original.__code__.co_code, name
-        assert Path(getattr(implementation, name).__code__.co_filename).parent.resolve() == SOURCE
-assert region_tasks.attach is region_tasks._selection.attach
-assert region_tasks.settle_task is region_tasks._settlement.settle_task
-assert recover_external.RecoveryRun.call is model_transport.ModelTransport.call
-assert issubclass(desktop_transport.DesktopRun, model_transport.ModelTransport)
-assert Path(region_tasks.__file__).parent.resolve() == SOURCE
-"""
-    script = "from pathlib import Path\nORDER = " + repr(order) + "\nSOURCE = Path(" + repr(str(ROOT)) + ").resolve()\n" + script
-    result = subprocess.run([sys.executable, "-c", script], cwd=ROOT,
-        env={**os.environ, "PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1"},
-        capture_output=True, text=True)
-    assert result.returncode == 0, result.stdout + result.stderr
+def test_invalid_source_is_rejected_before_any_device_observation(tmp_path):
+    from types import SimpleNamespace
+    import pytest
+    from regrow.runtime.action_executor import ActionExecutor
 
-
-def test_normal_source_freeze_carries_extracted_implementations(tmp_path):
-    from tests.test_recovery_discovery import mod
-    debug = mod("debug_loop")
-    frozen = tmp_path / "source"
-    debug.freeze(ROOT, frozen)
-    for name in ("task_selection", "task_settlement", "model_transport", "action_binding", "region_evidence"):
-        assert (frozen / (name + ".py")).read_bytes() == (ROOT / (name + ".py")).read_bytes()
-    assert debug.source_hash(ROOT) == debug.source_hash(frozen)
-    # A normal session starts a new process from its selected frozen source.
-    script = "import region_tasks, task_selection, stepwise_flow, region_evidence, model_transport; from pathlib import Path; assert all(Path(m.__file__).parent.resolve() == Path.cwd() for m in (region_tasks, task_selection, stepwise_flow, region_evidence, model_transport)); assert region_tasks.attach is region_tasks._selection.attach; assert stepwise_flow.new_region is region_evidence.new_region"
-    result = subprocess.run([sys.executable, "-c", script], cwd=frozen,
-        env={**os.environ, "PYTHONPATH": str(frozen), "PYTHONDONTWRITEBYTECODE": "1"},
-        capture_output=True, text=True)
-    assert result.returncode == 0, result.stdout + result.stderr
-
-def test_old_supervisor_can_read_new_candidate_without_new_modules_on_host_path(tmp_path):
-    import json
-    import shutil
-    host = tmp_path / "old-supervisor"
-    host.mkdir()
-    # These unchanged host modules are sufficient for the read-only summary.
-    extracted = {"task_selection", "task_settlement", "action_binding", "region_evidence", "model_transport"}
-    for path in ROOT.glob("*.py"):
-        if path.stem not in extracted:
-            shutil.copy2(path, host / path.name)
-    run = tmp_path / "run"
-    (run / "initial/regions").mkdir(parents=True)
-    (run / "knowledge_current.json").write_text(json.dumps({"snapshot": "initial"}))
-    (run / "initial/runtime_state.json").write_text("{}")
-    script = ("from pathlib import Path; from debug_loop import graph_summary; "
-        + "result = graph_summary(Path(" + repr(str(run)) + "), Path(" + repr(str(ROOT)) + ")); "
-        + "assert result['regions'] == 0 and not result['complete']")
-    result = subprocess.run([sys.executable, "-c", script], cwd=host,
-        env={**os.environ, "PYTHONPATH": str(host), "PYTHONDONTWRITEBYTECODE": "1"},
-        capture_output=True, text=True)
-    assert result.returncode == 0, result.stdout + result.stderr
+    def no_device(*args, **kwargs):
+        raise AssertionError('invalid source reached the device')
+    transport = SimpleNamespace(run=tmp_path, account={'http_started': 0, 'max_http': 1}, screenshot=no_device)
+    accepted = {'result': {'request': {}, 'call': 'missing', 'proposal': {'action': 'click'}, 'binding': {'status': 'matched', 'observation_ref': 'o1', 'region_ref': 'r1', 'control_ref': 'c1'}}}
+    with pytest.raises(ValueError, match='source request is missing'):
+        ActionExecutor(transport, tmp_path, None).execute(accepted, None, [])
+    assert not (tmp_path / 'action_attempts').exists()

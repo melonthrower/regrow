@@ -1,3 +1,15 @@
+# regrow 当前本地研究快照（2026-10-20）
+
+- [活动源码](src/regrow) · [开发入口](DEVELOPMENT.md)
+- [Prompt调用审查目录](design/prompt_objects_review/调用审查目录.md) · [四对象审查入口](design/prompt_objects_review/README.md)
+- [本快照说明与验证边界](design/TRAVERSAL_SNAPSHOT_20261020.md)
+
+本分支保存当前本地框架，Prompt审阅稿尚未接入。当前代码含未整体验收的研究候选，不是发布版；不覆盖远端原分支，也不宣称已合并其全部行为修复。运行数据及凭据未上传。
+
+---
+
+## 上次导出说明（历史）
+
 # 当前遍历源码快照（2026-10-18）
 当前维护入口为 [src/regrow](src/regrow)，运行入口为 `python src step ...` / `python src session ...`。历史 experiments 目录保留历史版本，不是本快照的活动实现。
 本分支是研究快照，部分行为仅经聚焦测试及原始保存帧验证，不是发布或全框架验收。已知身份复核理由、部分前景门槛、辅助介绍任务生成及参数探索收敛问题仍在；详见 [快照说明](design/TRAVERSAL_SNAPSHOT_20261018.md)。

@@ -1,0 +1,308 @@
+[
+  {
+    "id": "控件-01",
+    "object": "控件",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "start": 8,
+    "end": 14,
+    "sha256": "5ff3a6809a9c258108dc7c12c16501a9d73a1549e5cca28f656625c7ac1798b2",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "控件-02",
+    "object": "控件",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "start": 20,
+    "end": 32,
+    "sha256": "ea4f019a1d6f793e6c525d04d733fb0085b3eb931221b2b853b7f7592e138ac0",
+    "note": "辨认范围不等于操作范围；动作稿引用此处。"
+  },
+  {
+    "id": "控件-03",
+    "object": "控件",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "start": 28,
+    "end": 35,
+    "sha256": "0fe5bde728b7276da181783ad814342fbf309f84dcd3c7ecefeb88caf1d5fbba",
+    "note": "包含动作后对象身份与观察协议；不是所有controls持久字段。"
+  },
+  {
+    "id": "控件-04",
+    "object": "控件",
+    "source": "src/regrow/prompts/共享/区块身份复用.prompt",
+    "start": 1,
+    "end": 10,
+    "sha256": "96ae2b80244e605cd3a1f1550b2299ec54e28f062c25dec65ea66f7750337f15",
+    "note": "共同身份与归属段落，含区块字段；区块稿交叉引用此处，未在本轮拆句改写。"
+  },
+  {
+    "id": "控件-05",
+    "object": "控件",
+    "source": "src/regrow/prompts/共享/区块身份复用.prompt",
+    "start": 12,
+    "end": 21,
+    "sha256": "99d9f3626e071e5b2f9f9efe6af1d17980e8d7d8db456036065f7bbdb52140bc",
+    "note": "含旧may_open_content取值及措辞；不是最新确认版本，见本稿开头。"
+  },
+  {
+    "id": "控件-06",
+    "object": "控件",
+    "source": "src/regrow/prompts/共享/任务知识与当前观察.prompt",
+    "start": 1,
+    "end": 11,
+    "sha256": "4d8057a9120b5e39f48acf9096a18ea0ea2c177c0deee72e9e685c2e6ecae57f",
+    "note": "含任务知识归属，任务稿引用此处。"
+  },
+  {
+    "id": "控件-07",
+    "object": "控件",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "start": 13,
+    "end": 23,
+    "sha256": "83c4b6d12e69cc9dfd32a92927ad3e4c0d24dd45c6c725b2eb8edd3d175623d1",
+    "note": "含任务答案提交语境，不是所有识别调用都适用。保留以审查knowledge内部结构与条件例。"
+  },
+  {
+    "id": "控件-08",
+    "object": "控件",
+    "source": "src/regrow/prompts/共享/身份图准入.prompt",
+    "start": 1,
+    "end": 12,
+    "sha256": "9f4f4f7c13e2e70b4202828d639a03717d0ff9c1770c1e2b100c1345ec86e5eb",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "控件-09",
+    "object": "控件",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "start": 36,
+    "end": 43,
+    "sha256": "41df95711eb4be53649979cde453b3481a88c3af1404d2e188e6aa98c5eb7604",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "控件-10",
+    "object": "控件",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "start": 48,
+    "end": 59,
+    "sha256": "e220a259ac91078eda0251705299853d540bfc8654bc45ed816069a0634d79cc",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "控件-11",
+    "object": "控件",
+    "source": "src/regrow/prompts/发现手册/列表代表项.prompt",
+    "start": 1,
+    "end": 10,
+    "sha256": "5506939fdd9656aa7130daf73f9c3f8177241cfdcc2c5912e165885f803cf0a5",
+    "note": "list_group是登记协议，最终归区块list_groups；区块稿引用。"
+  },
+  {
+    "id": "控件-12",
+    "object": "控件",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "start": 13,
+    "end": 20,
+    "sha256": "1231f20067d08883683d16da0412525955662514c18e551d7ad02b4508a9433a",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "区块-01",
+    "object": "区块",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "start": 1,
+    "end": 7,
+    "sha256": "9b6e3ccb8a3f36465703d05e053811ea598bee0f8f7b3bab3e5135738d30a95a",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "区块-02",
+    "object": "区块",
+    "source": "src/regrow/prompts/共享/术语定义.prompt",
+    "start": 33,
+    "end": 40,
+    "sha256": "4ee97613d3667ebb1a73a82fc059eab8932b8201b44d7b4eda539d170224358a",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "区块-03",
+    "object": "区块",
+    "source": "src/regrow/prompts/发现手册/前景与区块.prompt",
+    "start": 1,
+    "end": 9,
+    "sha256": "3bc003fe9084719c36fedefa0a6eeb378d3679fda71495ae9d4a7648992b2a7d",
+    "note": "含foreground/异常等调用观察协议，不全部属于区块持久字段；后续逐项审查。"
+  },
+  {
+    "id": "区块-04",
+    "object": "区块",
+    "source": "src/regrow/prompts/任务/区块功能登记.prompt",
+    "start": 1,
+    "end": 39,
+    "sha256": "367c43e6b095b3dd622633cb1aaf4d25441ba3a000c6206469973728aa28e4f0",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "区块-05",
+    "object": "区块",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "start": 12,
+    "end": 27,
+    "sha256": "c2df75b65cc44d905b56b9de642b1a3be521f339263693fc6fbe83201297e592",
+    "note": "这是本次观察协议，不直接等同区块本体。"
+  },
+  {
+    "id": "区块-06",
+    "object": "区块",
+    "source": "src/regrow/prompts/共享/行为差异分离.prompt",
+    "start": 1,
+    "end": 23,
+    "sha256": "cab76a859b5c5870bb0b639548a6b1b165b2326ad9321322108fc01d21648bec",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "任务-01",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/区块探索任务.prompt",
+    "start": 1,
+    "end": 14,
+    "sha256": "79d7628f6015e3b72de76e0515d19a2b3ba76b1bdac3294c3ee08d4b7a0f9471",
+    "note": "task_goals占位符的原配置另列于本稿；本轮不替换为新目标。"
+  },
+  {
+    "id": "任务-02",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "start": 1,
+    "end": 9,
+    "sha256": "7f515d24b4f89bae1a729a297b6084bba095a17d62bcc368f0805caf1c36e282",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "任务-03",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "start": 10,
+    "end": 12,
+    "sha256": "864da5d90d458d0f9b5d911048dd11bb855ac5a3d33024d911d77a28d81de987",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "任务-04",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "start": 21,
+    "end": 25,
+    "sha256": "3f5baf43f570a202946f5847860a7ffeeb115222b63c5e92dd18f560e0866a85",
+    "note": "清点属于本轮进度，不是任务本体，保留边界说明。"
+  },
+  {
+    "id": "任务-05",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "start": 24,
+    "end": 27,
+    "sha256": "245ec7829eeda1fc46bae55d8f20b2810431e220ac9a91d43de0600dc18443af",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "任务-06",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "start": 28,
+    "end": 35,
+    "sha256": "067f7714c13b012f9e9b9f6d1699d1b391de40beace1393ffbcd9bcfc7a15462",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "任务-07",
+    "object": "任务",
+    "source": "src/regrow/prompts/共享/参数观察值.prompt",
+    "start": 1,
+    "end": 10,
+    "sha256": "dcc257cffc45de3c40ab643cdec30bed05fa05810f7f78d6db858c3073f9f938",
+    "note": "findings为参数任务答案；不是控件constraints的完整嵌套格式例。"
+  },
+  {
+    "id": "任务-08",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/旧任务范围复核.prompt",
+    "start": 1,
+    "end": 3,
+    "sha256": "c4f9dab93753002ddb301c94b36070afdd2ec3ba295c85d8f7a38ce7418a9609",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "任务-09",
+    "object": "任务",
+    "source": "src/regrow/prompts/共享/任务结束条件.prompt",
+    "start": 1,
+    "end": 3,
+    "sha256": "461a41ec74e3ec88da868cbfbcfe30ca6602e94bfe6c9c2807aeff17d6162db0",
+    "note": "原文仍含入口关联等分类表述，与function/parameter需后续核对；本轮不提升为已确认的新定义。"
+  },
+  {
+    "id": "任务-10",
+    "object": "任务",
+    "source": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "start": 1,
+    "end": 12,
+    "sha256": "f938b3d9fe90712b17729f1090f41ee0ed5779833b9bffa7374acac2e64f2e44",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "动作-01",
+    "object": "动作",
+    "source": "src/regrow/prompts/动作/动作空间与字段.prompt",
+    "start": 1,
+    "end": 4,
+    "sha256": "0cd3e8bbfb96e35af0339e297040ad607adda1ba90e2ffed7ad8ea5013452eb3",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "动作-02",
+    "object": "动作",
+    "source": "src/regrow/prompts/平台/桌面执行.prompt",
+    "start": 1,
+    "end": 19,
+    "sha256": "338d9cc722e79f78ccdd013df6ab86de2a6f6745a70067c933393da12e10d2f7",
+    "note": "平台动作参数；操作提案不是执行事实。"
+  },
+  {
+    "id": "动作-03",
+    "object": "动作",
+    "source": "src/regrow/prompts/平台/Android执行.prompt",
+    "start": 1,
+    "end": 13,
+    "sha256": "3f5cf82bd273c361547dfe990485b6607ef95c911bd78767eb29d03223ed3cf8",
+    "note": "平台动作参数；不是为两个平台新增统一策略。"
+  },
+  {
+    "id": "动作-04",
+    "object": "动作",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "start": 6,
+    "end": 11,
+    "sha256": "1e84a815e7612a3c6a78ca5cdadc18e115e00298b604fc7896da0004292e3ee9",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "动作-05",
+    "object": "动作",
+    "source": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "start": 44,
+    "end": 47,
+    "sha256": "ac11650625179e3989f248fa7100bf985168387ed0d70cbc2b62843751c80783",
+    "note": "原文摘录；本轮不修改语义。"
+  },
+  {
+    "id": "动作-06",
+    "object": "动作",
+    "source": "src/regrow/prompts/共享/来源动作与区块对照.prompt",
+    "start": 1,
+    "end": 14,
+    "sha256": "b3d6ee6620fb4467dffb8b572d6ae5d05b9c5c380afe3de5a758f0a4f81409e8",
+    "note": "原文摘录；本轮不修改语义。"
+  }
+]

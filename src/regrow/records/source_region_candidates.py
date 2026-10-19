@@ -15,6 +15,8 @@ def recall(records, binding, operation, attempt):
                 continue
             targets = [r for r in action.get('interactive_regions', []) if r in records and r != binding['region_ref']]
             changed = {r['region'] for r in action.get('region_changes', []) if r.get('state') == 'changed_interactive'}
+            if not targets:
+                continue
             targets.sort(key=lambda r: r not in changed)
             rows.append({'attempt': ref, 'description': action.get('result', {}).get('description', ''), 'destinations': targets, 'changed': [r for r in targets if r in changed], 'result_call': action.get('evidence', {}).get('result_call'), 'after_observation': action.get('evidence', {}).get('after_observation')})
     rows = rows[-3:]

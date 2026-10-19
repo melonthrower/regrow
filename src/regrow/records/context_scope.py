@@ -1,3 +1,4 @@
+from regrow.records.control_knowledge import parameters
 from regrow.records.action_evidence import entries_for_action
 from regrow.records.tasks import read as task_value
 'Select request materials by the working Region and explicit task references.\n\nThis is a read-only request view, not another task ledger. Identity matching and\nregistration keep the full graph; prompt consumers use these same selections.\n'
@@ -170,9 +171,10 @@ def control_information(region, cid, scope):
     records = getattr(region, 'store', {region['id']: region})
     pending = [owned_tasks(records.get(ref['region'], {})).get(ref['name'], {}) for ref in scope.get('tasks', [])]
     needed = any((task.get('status') in ('pending', 'blocked') and (task.get('completion_action') or {}).get('control', task.get('control')) == cid for task in pending))
-    if needed and control.get('constraints'):
-        result['constraints'] = deepcopy(control['constraints'])
-    if control.get('shared_control_ref'):
+    if needed and parameters(control):
+        result['constraints'] = deepcopy(parameters(control))
+    from regrow.records.shared_controls import view
+    if view(records, region['id'], cid):
         from regrow.records.task_knowledge import control_knowledge
         shared = {key: value for (key, value) in control_knowledge(region, cid, getattr(region, 'store', None)).items() if value.get('source', {}).get('shared')}
         if shared:

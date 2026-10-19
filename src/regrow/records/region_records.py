@@ -51,6 +51,9 @@ def merge(records, state, sources, target, *, snapshot, rebase, evidence):
                 if field == 'actions' and isinstance(rs, object_store.Records):
                     owned_actions(rs[source]).pop(name, None)
                 values[name] = item
+        for label, members in src.get('list_groups', {}).items():
+            values = dst.setdefault('list_groups', {}).setdefault(label, [])
+            values[:] = list(dict.fromkeys(values + members))
         for item in observation_history(src):
             if item not in observation_history(dst):
                 observation_history(dst).append(item)

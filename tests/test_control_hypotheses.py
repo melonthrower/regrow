@@ -1,18 +1,17 @@
-import pytest
 from regrow.records.control_history_context import purpose_text, confirmed_information
 from regrow.records.control_records import extend_schema
 from regrow.recognition.discovery_delta import schema as delta
 from regrow.records.region_evidence import control_observation
 from regrow.records.tasks import merge_products
 
-@pytest.mark.parametrize('decision', [True, False, None])
-@pytest.mark.parametrize('unfinished', [True, False])
-def test_guesses_do_not_decide_whether_to_schedule_or_skip(decision, unfinished):
-    c={'possible_purpose':'搜索设置项','may_open_content':True,'needs_exploration':decision}
-    assert purpose_text(c, unfinished=unfinished)=='推测用途：搜索设置项；可能打开其他内容'
+def test_guesses_are_plain_text_and_not_confirmed_knowledge():
+    c={'possible_purpose':'搜索设置项','may_open_content':True,'needs_exploration':True}
+    assert purpose_text(c)=='推测用途：搜索设置项；可能打开其他功能内容；需要探索'
     assert not confirmed_information(c)
-    c['may_open_content']=False
-    assert purpose_text(c, unfinished=unfinished)=='推测用途：搜索设置项'
+    c.update(may_open_content=False,needs_exploration=False)
+    assert '无需进一步探索，可以跳过' in purpose_text(c)
+    c['needs_exploration']=None
+    assert '尚不确定' in purpose_text(c)
 
 def test_confirmed_answer_replaces_guess_and_legacy_is_not_promoted():
     c={'knowledge':'打开搜索并筛选设置','possible_purpose':'猜测','observations':[{'knowledge':'打开搜索并筛选设置','evidence':{'source_field':'/controls/0'}}]}
@@ -49,32 +48,3 @@ def test_old_graph_import_keeps_legacy_purpose_without_confirming_it():
     assert c['knowledge']=='旧用途'
     assert not confirmed_information(c)
     assert '缺少确认依据' in purpose_text(c)
-
-def test_task_request_keeps_failure_conditions_and_open_question_without_skip_advice():
-    import json
-    from regrow.paths import SOURCE_ROOT
-    from regrow.records.object_store import Records, owned_controls, owned_actions, owned_tasks
-    from regrow.records.region_evidence import new_region
-    from regrow.records.tasks import audit
-    from regrow.traversal.task_proposer import plan_request
-    records=Records({'r1':new_region('r1','本地选项')})
-    region=records['r1']
-    owned_controls(region)['c1']={'name':'筛选','possible_purpose':'筛选本地选项',
-        'may_open_content':True,'needs_exploration':False}
-    owned_actions(region)['a1']={'control':'c1','operation':'input_text',
-        'delivery':'not_executed','text_delivered':False,
-        'result':{'exception':'none','description':'输入投递失败'},'conditions':['仅当前列表']}
-    owned_tasks(region)['question']={'name':'功能探索','task_type':'function','control':'c1',
-        'status':'pending','conditions':['仅当前列表']}
-    task=owned_tasks(region)['question']
-    audit(task)['latest_update']={'decision':'continue','reason':'已有尝试未发送文字',
-                                  'remaining_question':'尚未确认实际筛选结果'}
-    state={'working_region':'r1','interactive_regions':['r1'],
-           'observation':{'id':'obs','image':'screen.png','region_refs':['r1'],'control_refs':['c1']}}
-    request=plan_request(SOURCE_ROOT,records,state,'r1')
-    material=json.loads(request['user_prompt'])['控件']
-    for text in ['推测用途：筛选本地选项','可能打开其他内容','输入投递失败',
-                 '文字未发送','仅当前列表','尚未确认实际筛选结果','功能探索待完成']:
-        assert text in material
-    assert '可以跳过' not in material and '需要探索' not in material
-    assert task['status']=='pending'

@@ -1,3 +1,4 @@
+from regrow.records.control_records import group_name
 from regrow.records.object_store import region_work
 'Same-frame incremental discovery and bounded historical identity recall.'
 from regrow.records.object_store import observation_history
@@ -27,7 +28,7 @@ def retrieve(records, queries, limit=5):
             for rid in exact + named:
                 scores[rid] = 10
             continue
-        a = tokens(query + ' ' + q.get('description', '') + ' ' + q.get('icon_appearance', ''))
+        a = tokens(query + ' ' + q.get('description', '') + ' ' + q.get('description', ''))
         for (rid, r) in records.items():
             b = tokens(r['name'] + ' ' + r.get('description', '') + ' ' + ' '.join((c['name'] for c in owned_controls(r).values())))
             score = len(a & b) / max(1, len(a))
@@ -142,7 +143,7 @@ def supplement(root, records, state, frame):
     receipt = []
     for rid in batch['regions']:
         r = records[rid]
-        label = next((n for (n, k) in names.items() if k == rid), r['name'])
+        label = rid
         base = label
         n = 1
         while label in names and names[label] != rid:
@@ -167,7 +168,7 @@ def supplement(root, records, state, frame):
             n += 1
             label = f"{c['name']}（候选{n}）"
         ctx['control_names'][label] = cid
-    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': list(ctx['control_names']), '检索边界': '重定位包含全部历史身份；局部补全仅提供缺口相关身份。均不证明当前可见，不能凭名称自动认定身份。', '用途': '沿用原截图补交待补事项，并检查原观察范围是否还有遗漏。'}
+    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '只提供缺口相关及本批已登记身份；不证明当前可见，不能凭名称自动认定身份。', '用途': '沿用原截图补交待补事项，并检查原观察范围是否还有遗漏。'}
     if ctx['mode'] != 'local':
         from regrow.recognition.region_candidate_names import control_candidates
         owners = set(ids) | {rid for (rid, r) in records.items() if set(owned_controls(r)) & set(batch['controls']) or any((g.get('owner') == r['name'] for g in batch['pending']))}
@@ -177,8 +178,6 @@ def supplement(root, records, state, frame):
             dynamic['相关区块控件身份候选'] = control_rows
     if not dynamic['本轮定位区块']:
         dynamic.pop('本轮定位区块')
-    from regrow.recognition.locator import identity_library
-    dynamic['本次运行身份库'] = identity_library(records, focus if ctx['mode'] == 'local' else None)
     if ctx.get('partition_context'):
         from regrow.recognition.local_partition import prompt
         dynamic['同帧已确认区块划分'] = prompt(ctx['partition_context'], completion=True)
@@ -240,7 +239,7 @@ def prepare_registration(reply, request, known, batch, diagnostics):
             rid = request['discovery_context']['region_names'].get(region.get('ref'))
             cid = request['discovery_context']['control_names'].get(c.get('ref'))
             group = c.get('list_group')
-            if group and any((k in batch['controls'] and k != cid and (old.get('list_group') == group) for (k, old) in owned_controls(known.get(rid, {})).items())):
+            if group and any((k in batch['controls'] and k != cid and (group_name(known.get(rid, {}), k) == group) for (k, old) in owned_controls(known.get(rid, {})).items())):
                 raise ValueError('同一观察的同类列表已有代表控件；补交不能重复登记')
     return (accepted, remaining, rm, cm)
 

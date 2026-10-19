@@ -20,6 +20,8 @@ def diagnostic(error):
     if hasattr(error, 'report'):
         return error.report
     if isinstance(error, jsonschema.ValidationError):
+        if error.validator == 'maxItems':
+            return '/'.join(map(str, error.absolute_path)) + ': 数组最多允许' + str(error.validator_value) + '项，实际提交' + str(len(error.instance)) + '项；这是条目数量限制，不是文字长度限制。'
         return '/'.join(map(str, error.absolute_path)) + ': ' + error.message
     return str(error)
 
@@ -630,7 +632,7 @@ class Runner:
                             original, revised = semantic_revision(reviewed, candidate)
                             job.update(request=original, candidate=revised)
                             job.pop('registration_submission', None)
-                            job.update(status='repair', error='该旧控件复用已被否定。请修正本次对象登记及相关任务知识、destinations和下一步：旧对象未出现则撤回引用；当前为新对象则不填index并补充资料；不要把新对象作用继续写到旧控件。依据：' + reply['reason'])
+                            job.update(status='repair', error='该旧控件复用已被否定。请修正本次对象登记及相关任务知识、jump_to和下一步：旧对象未出现则撤回引用；当前为新对象则不填index并补充资料；不要把新对象作用继续写到旧控件。依据：' + reply['reason'])
                         self.save(job)
                         continue
                     repeated = reply.get('proposal') if isinstance(reply, dict) else None

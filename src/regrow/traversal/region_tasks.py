@@ -1,3 +1,4 @@
+from regrow.records.control_records import aliases as control_aliases
 """Register task proposals and hand their accepted results back to traversal."""
 from regrow.records.calls import submission as _owner_submission
 from regrow.records.tasks import equivalent_source as _record_equivalent_source
@@ -23,12 +24,14 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
         raise ValueError('inventory needs evidence')
     records = records or {region['id']: region}
     shared_rows = reply.get('shared_instances', [])
-    _shared_controls.propose_instances(records, region['id'], shared_rows, call)
-    shared_names = {row['control'] for row in shared_rows}
+    renamed = _shared_controls.propose_instances(records, region['id'], shared_rows, call, state=state)
     old = owned_tasks(region)
     tasks = dict(old)
     seen = set()
     considered = set(owned_controls(region) if reviewed_controls is None else reviewed_controls)
+    considered = {next((cid for cid, c in owned_controls(region).items()
+                       if old_id == cid or any(v['id'] == old_id for v in control_aliases(c))), old_id)
+                  for old_id in considered}
     if not considered.issubset(owned_controls(region)):
         raise ValueError('本次清点的控件身份已变化，需重新读取问题范围')
     updates = _task_updates
@@ -54,9 +57,8 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
             basis = {'basis': 'observation_only', 'source_call': call, 'observation': ((state or {}).get('observation') or {}).get('id')}
             updates.store_increment(region, task, name, row, records, state or {}, basis, observed=observed)
             continue
-        row = {**row, 'name': settlement.task_definition(row)['label']}
-        if row['control'] in shared_names:
-            raise ValueError('同类实例已引用代表控件，不能再分别提出探索任务')
+        row = {**row, 'name': settlement.task_definition(row)['label'],
+               'control': renamed.get(row['control'], row['control'])}
         names = [cid for (cid, c) in owned_controls(region).items() if c['name'] == row['control']]
         if not row['control']:
             names = [None]
@@ -99,11 +101,6 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
     replace_owned_tasks(region, tasks)
     _shared_controls.refresh(records)
     tasks = owned_tasks(region)
-    for row in shared_rows:
-        cid = next((cid for (cid, c) in owned_controls(region).items() if c['name'] == row['control']))
-        if not _shared_tasks.automatic_tasks(region, cid):
-            raise ValueError('代表控件尚无可引用任务，请在同轮为代表提出任务或引用已有任务')
-    replace_owned_tasks(region, tasks)
     region_work(region)['task_inventory'] = {'inventory': reply['inventory'], 'evidence': reply['evidence'], 'controls': sorted(considered), 'source_call': call}
 
 def commit_plan(root, run, call):
@@ -156,16 +153,7 @@ def commit_plan(root, run, call):
                 state.update(next_action_mode='explore', phase='ready_for_next_action')
                 state.pop('required_control', None)
                 return
-            state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=q['screenshots'][0], discovery_mode='local', inspection_region=rid, reason='task_inventory_incomplete', correction_context='任务清点反馈（来源区块：' + records[rid]['name'] + '）：\n' + reply['evidence'] + '\n请结合截图核对上述缺口；补充可见但未登记的控件，已登记的控件复用原身份。反馈只是待核对线索，不据此虚构控件、改挂旧任务或宣布探索完成。')
+            state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=q['screenshots'][0], discovery_mode='local', inspection_region=rid, reason='task_inventory_incomplete')
+            state.pop('correction_context', None)
             state.pop('required_control', None)
     return _record_publish(run, 'task-plan-' + call, mutate)
-
-def review_observation(records, state, regions, reply, call):
-    """Hand observed open questions to task proposal; never invent tasks here."""
-    questions = reply.get('uncertainties') or []
-    owner = state.get('working_region')
-    if not questions or owner not in regions or owner not in records:
-        return
-    inventory = region_work(records[owner]).get('task_inventory')
-    if inventory is not None:
-        inventory['review'] = {'reason': '核对本次观察中的未答问题与已有任务', 'questions': list(questions), 'source_call': call}

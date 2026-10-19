@@ -1,0 +1,245 @@
+[
+  {
+    "role": "observation",
+    "page": "调用审查/01_发现与识别.md",
+    "fixed_refs": [
+      "任务/工作区块定位.prompt",
+      "任务/当前区块重定位.prompt",
+      "共享/区块身份复用.prompt",
+      "共享/当前前景.prompt",
+      "共享/身份图准入.prompt",
+      "发现手册/列表代表项.prompt",
+      "发现手册/前景与区块.prompt"
+    ],
+    "conditional_refs": [
+      "发现手册/补登记.prompt",
+      "任务/前置条件与恢复.prompt",
+      "发现手册/增量补全.prompt"
+    ],
+    "builders": [
+      "recognition/locator.py",
+      "recognition/discovery_completion.py",
+      "traversal/task_prerequisites.py",
+      "runtime/model_transport.py",
+      "recognition/discovery_inventory.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "task_proposal",
+    "page": "调用审查/02_提出探索任务.md",
+    "fixed_refs": [
+      "任务/区块探索任务.prompt",
+      "任务/探索范围与退出.prompt",
+      "任务/清点输出约定.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "traversal/task_proposer.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "action_selection",
+    "page": "调用审查/03_选择动作.md",
+    "fixed_refs": [
+      "任务/任务动作登记.prompt",
+      "共享/任务知识与当前观察.prompt",
+      "共享/参数观察值.prompt",
+      "共享/术语定义.prompt",
+      "动作/动作空间与字段.prompt",
+      "动作/围绕目标选择动作.prompt"
+    ],
+    "conditional_refs": [
+      "动作/探索导航路线.prompt"
+    ],
+    "builders": [
+      "traversal/action_proposer.py",
+      "traversal/action_context.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "observation_update",
+    "page": "调用审查/04_动作后更新.md",
+    "fixed_refs": [
+      "共享/区块身份复用.prompt",
+      "共享/当前前景.prompt",
+      "共享/行为差异分离.prompt",
+      "共享/身份图准入.prompt",
+      "发现手册/列表代表项.prompt",
+      "更新/动作后观察与状态更新.prompt",
+      "更新/区块变化与字段.prompt"
+    ],
+    "conditional_refs": [
+      "任务/前置条件与恢复.prompt"
+    ],
+    "builders": [
+      "traversal/result_updater.py",
+      "traversal/task_prerequisites.py",
+      "runtime/model_transport.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "function_registration",
+    "page": "调用审查/05_区块功能总结.md",
+    "fixed_refs": [
+      "任务/区块功能登记.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "traversal/region_functions.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "object_registration",
+    "page": "调用审查/06_补齐对象外观.md",
+    "fixed_refs": [
+      "任务/对象识别资料.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "traversal/object_registration.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "control_identity_selection",
+    "page": "调用审查/07_选择身份候选.md",
+    "fixed_refs": [
+      "纠错/控件身份候选选择.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "recognition/control_identity_review.py"
+    ],
+    "related_module_refs": [
+      "纠错/控件身份复核.prompt"
+    ]
+  },
+  {
+    "role": "control_identity_comparison",
+    "page": "调用审查/08_核对控件身份.md",
+    "fixed_refs": [
+      "纠错/控件身份复核.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "recognition/control_identity_review.py"
+    ],
+    "related_module_refs": [
+      "纠错/控件身份候选选择.prompt"
+    ]
+  },
+  {
+    "role": "ownership_review",
+    "page": "调用审查/09_复查控件归属.md",
+    "fixed_refs": [
+      "纠错/区块归属复查.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "recognition/ownership_review.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "task_result_review",
+    "page": "调用审查/10_复核任务结果.md",
+    "fixed_refs": [
+      "任务/任务动作登记.prompt",
+      "共享/任务知识与当前观察.prompt",
+      "动作/结果核对.prompt",
+      "更新/重复入口覆盖复核.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "traversal/task_result_review.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "step_observation",
+    "page": "调用审查/11_补充观察.md",
+    "fixed_refs": [
+      "纠错/更新补充观察.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "traversal/repair_stages.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "recovery",
+    "page": "调用审查/12_恢复中断.md",
+    "fixed_refs": [
+      "动作/动作空间与字段.prompt",
+      "异常处理/异常识别.prompt",
+      "异常处理/恢复当前探索.prompt",
+      "异常处理/恢复策略.prompt",
+      "异常处理/恢复输出.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "traversal/recovery.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "branch_correction",
+    "page": "调用审查/13_暂挂与切换分支.md",
+    "fixed_refs": [
+      "纠错/暂挂分支并切换.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "tools/branch_switch.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "shared_control_review",
+    "page": "调用审查/14_复核旧共享关系.md",
+    "fixed_refs": [
+      "纠错/共享行为核对.prompt"
+    ],
+    "conditional_refs": [],
+    "builders": [
+      "records/shared_control_review.py"
+    ],
+    "related_module_refs": []
+  },
+  {
+    "role": "step_correction",
+    "page": "调用审查/15_原步骤纠错.md",
+    "fixed_refs": [
+      "纠错/任务归属.prompt",
+      "纠错/动作归属.prompt",
+      "纠错/区块归属.prompt",
+      "纠错/回复解析.prompt",
+      "纠错/定位绑定.prompt",
+      "纠错/对象识别资料.prompt",
+      "纠错/投递前画面变化.prompt",
+      "纠错/控件候选消歧.prompt",
+      "纠错/步骤纠正.prompt",
+      "纠错/登记修订.prompt",
+      "纠错/结果证据.prompt",
+      "纠错/身份名称.prompt",
+      "纠错/重复无进展.prompt"
+    ],
+    "conditional_refs": [
+      "动作/目标观察阅读.prompt"
+    ],
+    "builders": [
+      "traversal/step_repair.py",
+      "traversal/correction_prompts.py",
+      "traversal/repair_stages.py"
+    ],
+    "related_module_refs": [
+      "纠错/更新补充观察.prompt"
+    ]
+  }
+]

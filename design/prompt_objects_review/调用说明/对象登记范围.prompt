@@ -1,0 +1,4 @@
+新控件填写name、region_index、description及knowledge。
+整个区块确实超出用户允许范围时才填out_of_scope_reason。
+
+区块身份不确定时不绑定ref，填写name、description、identity="uncertain"，在identity_evidence中点名候选及具体缺口。parent_index只用于真实物理包含，不把进入来路当包含父级。

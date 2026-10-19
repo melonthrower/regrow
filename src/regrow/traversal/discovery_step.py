@@ -121,14 +121,14 @@ def commit(root, run, call_ref):
         if c['identity'] == 'same':
             cid = ctx['control_names'].get(c['ref'], c['ref'] if c['ref'] in request.get('control_indexes', []) else None)
             rid = reply['regions'][c['region_index']].get('_matched_id')
-            if cid not in owned_controls(known.get(rid, {})):
+            from regrow.records.object_store import control_record
+            if control_record(known, cid) is None:
                 raise ValueError('unknown candidate control')
             c['_matched_id'] = cid
 
     def mutate(records, state, snapshot, temp):
         from regrow.recognition import visual_region_locator as _visual_region_locator
         from regrow.traversal import task_deferral as _task_deferral
-        from regrow.traversal import region_tasks as _region_tasks
         from regrow.traversal import task_prerequisites as _task_prerequisites
         if stale_batch:
             state.setdefault('discovery_completion_history', []).append(stale_batch)
@@ -144,11 +144,11 @@ def commit(root, run, call_ref):
         for rid in refs:
             r = records[rid]
             for c in owned_controls(r).values():
-                for v in observation_history(c)[-1:]:
-                    if v['evidence'].get('source_call') == call_ref:
-                        i = int(v['evidence']['source_field'].split('/')[-1])
-                        v['evidence']['source_field'] = f'/controls/{control_indices[i]}'
-            observation_history(r)[-1]['evidence']['source_field'] = f'/regions/{region_indices[refs.index(rid)]}'
+                v = frame_observation(c, kind='controls', call=call_ref, region=rid)
+                if v:
+                    i = int(v['evidence']['source_field'].split('/')[-1])
+                    v['evidence']['source_field'] = f'/controls/{control_indices[i]}'
+            frame_observation(r, kind='regions', call=call_ref)['evidence']['source_field'] = f'/regions/{region_indices[refs.index(rid)]}'
             if rid in retained:
                 old = retained[rid]
                 for (k, v) in old.items():
@@ -159,14 +159,14 @@ def commit(root, run, call_ref):
                 for (cid, c) in owned_controls(old).items():
                     if cid in batch.get('controls', []):
                         owned_controls(r)[cid] = c
-            new_controls.extend((cid for (cid, c) in owned_controls(r).items() if frame_observation(c, kind='controls', call=call_ref)))
+            new_controls.extend((cid for (cid, c) in owned_controls(r).items() if frame_observation(c, kind='controls', call=call_ref, region=rid)))
         refs = list(dict.fromkeys(batch.get('regions', []) + refs))
         all_controls = list(dict.fromkeys(batch.get('controls', []) + new_controls))
         for rid in refs:
             pending = [g for g in missing if g.get('owner') == records[rid]['name']]
             old = region_work(records[rid]).get('registration_gaps', {}).get('discovery')
             if old:
-                confirmed = {c['name'] for c in owned_controls(records[rid]).values() if any((v.get('evidence', {}).get('source_call') == call_ref for v in observation_history(c)[-1:]))}
+                confirmed = {c['name'] for c in owned_controls(records[rid]).values() if frame_observation(c, kind='controls', call=call_ref, region=rid)}
                 addressed = {g['item'] for g in batch.get('pending', [])}
                 pending = [g for g in old['pending'] if g['item'] not in addressed and g.get('name') not in confirmed] + pending
                 pending = list({g['item']: g for g in pending}.values())
@@ -184,7 +184,6 @@ def commit(root, run, call_ref):
             state['discovery_completion'] = {'frame': str((run / frame).resolve()), 'sha256': completion.fingerprint(run / frame), 'observation': obs, 'regions': refs, 'controls': all_controls, 'pending': missing, 'calls': batch.get('calls', []) + [call_ref], 'request': batch.get('request') or request}
             _record_write_json(temp / 'discovery_receipt.json', {'source_call': call_ref, 'registered_regions': refs, 'registered_controls': all_controls, 'pending': missing, 'region_source_indices': region_indices, 'control_source_indices': control_indices})
         _task_deferral.resume_localized(records, refs, call_ref, foreground=reply['foreground'])
-        _region_tasks.review_observation(records, state, refs, reply, call_ref)
         interactive = list(refs)
         partition = ctx.get('partition_context') or {}
         if ctx['mode'] == 'local' and partition.get('sha256') and (partition['sha256'] == completion.fingerprint(run / frame)):

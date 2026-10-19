@@ -22,6 +22,8 @@ def schema(kinds=None, refs=None):
     if 'parameter' in (kinds or ('parameter',)):
         fields['findings'] = {'type': 'array', 'minItems': 1, 'items': json.loads((SOURCE_ROOT / 'regrow/prompts/输出格式/参数发现.schema').read_text())}
     result = object_schema(fields)
+    from regrow.records.control_knowledge import schema as knowledge_schema
+    result['properties']['knowledge'] = knowledge_schema()
     result['required'] = ['task', 'decision', 'reason']
     return result
 
@@ -115,12 +117,18 @@ def store_knowledge(task, knowledge, basis):
     from regrow.records.tasks import store_knowledge as store
     store(task, knowledge, basis)
 
-def current_observation(run, request, owner, task, state):
-    """A fresh action frame cannot silently borrow an older semantic observation."""
-    from regrow.records.page_context import _digest
-    frame = (request.get('screenshots') or request.get('image_refs') or [None])[0]
+def current_frame(run, request, owner, task, state):
+    """Read the sent frame for the still-bound request, without reusing old semantics."""
+    from regrow.prompts.frame_context import primary
+    from regrow.records.task_settlement import completion_target
     observation = (state or {}).get('observation') or {}
-    return bool(frame and observation.get('image') and (request.get('source', {}).get('observation') == observation.get('id')) and (_digest(Path(run) / frame) == _digest(Path(run) / observation['image'])) and observed_control(owner, task, state))
+    if not observation.get('id') or request.get('source', {}).get('observation') != observation['id']:
+        return None
+    if completion_target(owner, task)['region'] not in state.get('interactive_regions', []) or observation.get('foreground', {}).get('exception', 'none') != 'none':
+        return None
+    frame = primary(request)
+    path = Path(run) / frame if frame else None
+    return path.resolve() if path and path.is_file() else None
 
 def answer_evidence(run, request, owner, task, state):
     """Resolve admitted evidence for stable answers, without declaring an old frame current."""
@@ -130,18 +138,21 @@ def answer_evidence(run, request, owner, task, state):
     same_task = getattr(task, 'ref', None) == expected if hasattr(task, 'ref') else name in owned_tasks(owner) and owned_tasks(owner)[name] is task
     if source.get('task_region') != owner['id'] or not same_task:
         return None
-    if current_observation(run, request, owner, task, state):
-        return {'basis':'observation_only','observation':state['observation']['id']}
+    frame = current_frame(run, request, owner, task, state)
+    current = {'basis':'observation_only','observation':state['observation']['id'],
+               'source_image':str(frame)} if frame else None
     from regrow.records.snapshots import load, read
-    from regrow.records.task_settlement import completion_target, registration_kind
-    # Entry association still uses its existing observation/transition validation.
+    from regrow.records.task_settlement import completion_target
+    # Retain admitted history alongside the current image, not as its replacement.
     if task.get('prepares'):
-        return None
+        return current
+    history=request.get('page_context', {}).get('history', {})
+    if not history.get('events'):
+        return current
     (_, records, _) = load(run)
     target=completion_target(owner, task)
     if target.get('control') is None:
-        return None
-    history=request.get('page_context', {}).get('history', {})
+        return current
     invalid={row.get('invalidated_attempt') for row in task_value(task,'ownership_history',[])} | set(task.get('completion_action',{}).get('excluded_attempts',[]))
     supplied=request.get('user_prompt','')
     sources=[];direct=False
@@ -176,7 +187,7 @@ def answer_evidence(run, request, owner, task, state):
                         'attempt':aid,'source_call':result_call,'observation':evidence['after_observation']})
     # At least one admitted observation must concern this task's actual target;
     # related actions can support interpretation but do not become this task's executions.
-    return {'basis':'observation_only','sources':sources} if direct else None
+    return {**(current or {'basis':'observation_only'}),'sources':sources} if direct else current
 
 
 def preparation_product(task, row, records, basis):
@@ -215,9 +226,17 @@ def catalog(records, binding):
             if not current and (not answered) and (not preparation):
                 continue
             row = {'task': reference(rid, name), 'region': rid, 'name': name, 'control': task.get('control'), 'control_name': (find_control(region, task.get('control')) or {}).get('name', '区块本身'), 'status': task.get('status'), 'task_type': registration_kind(task), 'conditions': task.get('conditions', [])}
-            if task.get('control') not in provided_knowledge and task_value(task, 'knowledge'):
-                row['目标已知知识'] = task_value(task, 'knowledge')
-                provided_knowledge.add(task.get('control'))
+            if current:
+                from regrow.records.history_context import question_state
+                row.update(question_state(task))
+            identity = task.get('control') or ('region', rid)
+            if identity not in provided_knowledge:
+                from regrow.records.control_knowledge import card
+                if task.get('control'):
+                    row['当前控件知识'] = card(find_control(region, task.get('control')) or {})
+                elif task_value(task, 'knowledge'):
+                    row['目标已知知识'] = task_value(task, 'knowledge')
+                provided_knowledge.add(identity)
             if task.get('status') in ('pending', 'blocked'):
                 row.update(reason=exploration_goal(task), blocker=task.get('blocker', {}), prerequisite=describe(task.get('prerequisite')))
                 from regrow.records.task_settlement import registration_requirement
@@ -264,7 +283,7 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
         if ref != active and (not task.get('prepares')):
             target = completion_target(region, task)
             blocker = task.get('blocker', {})
-            if registration_kind(task) != 'function' or task.get('prepares') or blocker.get('exception') or (blocker.get('condition') not in (None, 'review_required')) or task.get('prerequisite') or row.get('entry') or row.get('findings') or (row.get('next_action') is not None) or (not (row.get('knowledge') or task_value(task, 'knowledge', '')).strip()) or row.get('remaining_question') or (row.get('decision') != 'answered'):
+            if registration_kind(task) != 'function' or task.get('prepares') or blocker.get('exception') or (blocker.get('condition') not in (None, 'review_required')) or task.get('prerequisite') or row.get('entry') or row.get('findings') or (row.get('next_action') is not None) or (not (row.get('knowledge') or task_value(task, 'knowledge', ''))) or row.get('remaining_question') or (row.get('decision') != 'answered'):
                 raise ValueError('其他任务仅可登记本次实际控件已回答的用途问题；不得顺带结束参数、前置或异常任务')
             if target.get('control') is None or not recorded_match(actual, attempt, action, target, receipt) or action.get('result', {}).get('exception') != 'none':
                 raise ValueError('旧问题答案必须来自同一已确认实际控件的成功投递与观察')

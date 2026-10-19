@@ -34,11 +34,11 @@ def region_observation(proposal, evidence, image=None):
     return {**{key: deepcopy(proposal[key]) for key in ('description', 'bbox') if key in proposal}, 'image': image, **templates.assessment(proposal), 'evidence': deepcopy(evidence)}
 
 def control_observation(proposal, evidence, image=None, icon_image=None):
-    fields = {'icon_description': 'icon_appearance', 'possible_purpose':'possible_purpose', 'may_open_content':'may_open_content', 'needs_exploration':'needs_exploration', 'bbox': 'bbox', 'click_bbox': 'click_bbox'}
-    return {**{dest: deepcopy(proposal[source]) for (dest, source) in fields.items() if source in proposal}, **templates.assessment(proposal), 'image': image, 'icon_image': icon_image, 'evidence': deepcopy(evidence)}
+    fields = {'description': 'description', 'may_open_content':'may_open_content', 'needs_exploration':'needs_exploration', 'bbox': 'bbox', 'click_bbox': 'click_bbox'}
+    return {**{dest: deepcopy(proposal[source]) for (dest, source) in fields.items() if source in proposal}, **templates.assessment(proposal), 'image': image, 'evidence': deepcopy(evidence)}
 
 def control_name(proposal):
-    return proposal.get('name') or proposal.get('text') or proposal.get('icon_appearance') or '未命名控件'
+    return proposal.get('name') or proposal.get('text') or proposal.get('description') or '未命名控件'
 
 def action_record(edge):
     evidence = {k: deepcopy(edge[k]) for k in ('before_observation', 'after_observation', 'before_image', 'after_image', 'selection_call', 'result_call') if k in edge}
@@ -123,6 +123,8 @@ def region_records(graph, observation_ref=None):
     from regrow.records.record_history import image_record
     for record in [*records.values(), *records.controls.values()]:
         object_store.replace_observation_history(record, [image_record(row, legacy=True) for row in observation_history(record)])
+    from regrow.records.control_records import normalize
+    normalize(records)
     return records
 
 def graph_state(graph, observation_ref=None):

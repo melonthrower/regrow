@@ -32,9 +32,9 @@ def valid(records, task):
         member = e.get('shared_member')
         if member:
             control = owned_controls(records[member['region']])[member['control']]
-            if control.get('shared_control_ref') != member['ref']:
-                return False
             group = _shared_controls.view(records, member['region'], member['control'])
+            if group != records.get(member['ref']['region'], {}).get('shared_controls', {}).get(member['ref']['name']):
+                return False
             if not group or group['status'] != 'confirmed':
                 return False
         return support(records, e['support']) == e['support_digest']

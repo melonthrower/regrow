@@ -122,7 +122,8 @@ def reconcile_detached_tasks(records, state, affected, member, call):
                 continue
             control = owned_controls(region)[task['control']]
             from regrow.records.tasks import detached
-            control.setdefault('shared_task_history', []).append({'name': name, 'record': detached(task), 'source_call': call})
+            from regrow.records.object_store import observation_history
+            observation_history(control, create=True).append({'shared_task_history': [{'name': name, 'record': detached(task), 'source_call': call}]})
             if task_value(task, 'attempts') or task_value(task, 'findings'):
                 task.update(status='blocked', reason='共享已解除；保留本地尝试，重新核对任务定义')
                 task.pop('shared_task_ref', None)

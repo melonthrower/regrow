@@ -1,0 +1,3 @@
+# 原步骤纠错的输出
+使用本轮能力表开放的resolution、blocked_by、reason及相关proposal、record_edit字段。proposal须符合原步骤的输出格式。
+修正能力和可编辑字段随原步骤及诊断确定；本步未开放的修正方式不自行添加。原动作已经执行时，只修登记，不重复执行。

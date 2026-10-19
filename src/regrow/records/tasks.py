@@ -1,5 +1,6 @@
 """Stored task facts, their audit history and read-only task queries."""
 from copy import deepcopy
+from regrow.records.control_knowledge import parameters, put_parameter, remove_parameter
 PRODUCTS = {'knowledge', 'findings', 'entry_registration', 'knowledge_source'}
 AUDIT = {'source_call', 'completion_basis', 'latest_update', 'update_history', 'result_evidence', 'history', 'navigation_history', 'condition_history', 'ownership_history', 'blocker_history', 'deferral_history', 'coverage_history', 'scope_history', 'shared_history', 'revisions', 'visited_regions', 'prerequisite_history', 'entry'}
 
@@ -101,34 +102,42 @@ def invalidate_products(record, attempt, source):
     prior_bad = invalidated(record)
     bad = prior_bad | {attempt}
     changed = []
-    current = next((row for row in reversed(history) if row.get('knowledge') == record.get('knowledge') and 'knowledge' in row and (not prior_bad & source_attempts(row.get('evidence', {})))), {})
-    if attempt in source_attempts(current.get('evidence', {})):
-        independent = any((row.get('knowledge') == record.get('knowledge') and row.get('evidence') and (not row.get('visual_only')) and (not bad & source_attempts(row['evidence'])) for row in history))
-        if not independent:
-            record['knowledge'] = ''
+    if isinstance(record.get('knowledge'), list):
+        from regrow.records.control_knowledge import invalidate
+        if invalidate(record, attempt, bad):
             changed.append('knowledge')
+    else:
+        current = next((row for row in reversed(history) if row.get('knowledge') == record.get('knowledge') and 'knowledge' in row and (not prior_bad & source_attempts(row.get('evidence', {})))), {})
+        if attempt in source_attempts(current.get('evidence', {})):
+            independent = any((row.get('knowledge') == record.get('knowledge') and row.get('evidence') and (not row.get('visual_only')) and (not bad & source_attempts(row['evidence'])) for row in history))
+            if not independent:
+                record['knowledge'] = ''
+                changed.append('knowledge')
     kept = []
-    for entry in record.get('entries', []):
-        if entry.get('attempt') == attempt or attempt in source_attempts(entry.get('source', {})):
+    for entry in record.get('jump_to', []):
+        from regrow.records.control_routes import with_source
+        prior = with_source(record, entry)
+        independent = with_source(record, entry, bad)
+        if (prior.get('attempt') == attempt or attempt in source_attempts(prior.get('source', {}))) and not independent.get('attempt'):
             changed.append('entry:' + entry['region'])
         else:
             kept.append(entry)
-    if 'entries' in record:
-        record['entries'] = kept
-    for (key, fact) in list(record.get('constraints', {}).items()):
+    if 'jump_to' in record:
+        record['jump_to'] = kept
+    for (key, fact) in list(parameters(record).items()):
         related = [(row, value) for row in history for value in row.get('parameter_findings', []) if value.get('name') == fact.get('name', key) and value.get('conditions', []) == fact.get('conditions', [])]
         if not any((attempt in source_attempts(row.get('evidence', {})) for (row, value) in related)):
             continue
         valid = [value for (row, value) in related if not bad & source_attempts(row.get('evidence', {}))]
         if not valid:
-            del record['constraints'][key]
+            remove_parameter(record, key)
         else:
             value = {k: deepcopy(v) for (k, v) in valid[-1].items() if k not in ('evidence', 'source', 'sources', 'observations')}
             if value.get('domain', {}).get('type') == 'enum':
                 value['domain']['values'] = list(dict.fromkeys((v for row in valid for v in row.get('domain', {}).get('values', []))))
             elif 'domain' in value:
                 value['domain']['values'] = []
-            record['constraints'][key] = value
+            put_parameter(record, key, value)
         changed.append('parameter:' + key)
     history.append({'invalidated_attempt': attempt, 'withdrawn_fields': changed, 'evidence': deepcopy(source)})
     return changed
@@ -179,13 +188,17 @@ def read(task, field, default=None):
             return confirmed_information(record) or default
         return next((row['knowledge'] for row in reversed(rows) if 'knowledge' in row), default)
     if field == 'knowledge_source':
-        return next((deepcopy(row.get('evidence', {})) for row in reversed(rows) if 'knowledge' in row and (target_control(task) is None or row['knowledge'] == record.get('knowledge'))), default)
+        if target_control(task) is not None:
+            from regrow.records.control_knowledge import evidence
+            return evidence(record) or default
+        return next((deepcopy(row.get('evidence', {})) for row in reversed(rows) if 'knowledge' in row), default)
     if field == 'entry_registration':
-        values = record.get('entries', [])
-        return next((deepcopy(row) for row in reversed(values) if row.get('conditions', []) == task.get('conditions', [])), default)
+        values = record.get('jump_to', [])
+        from regrow.records.control_routes import with_source
+        return next((with_source(record, row) for row in reversed(values) if row.get('conditions', []) == task.get('conditions', [])), default)
     result = {}
     refs = {task.ref, task.audit.get('original_ref'), *task.audit.get('prior_refs', [])}
-    for (key, fact) in record.get('constraints', {}).items():
+    for (key, fact) in parameters(record).items():
         item = deepcopy(fact)
         sources = []
         observations = []
@@ -209,14 +222,18 @@ def store_knowledge(task, value, source):
     if record is None:
         if isinstance(task, Task):
             raise ValueError('知识更新缺少已登记目标对象')
-        task['knowledge'] = value.strip()
+        from regrow.records.control_knowledge import text
+        task['knowledge'] = text(value)
         task['knowledge_source'] = deepcopy(source)
         return
     from regrow.records.object_store import observation_history
-    value = value.strip()
     source = {**deepcopy(source), 'task_ref': task.ref}
     if target_control(task) is not None:
-        record['knowledge'] = value
+        from regrow.records.control_knowledge import update
+        update(record, value, source)
+        return
+    from regrow.records.control_knowledge import text
+    value = text(value)
     row = {'knowledge': value, 'evidence': source}
     if not observation_history(record) or observation_history(record)[-1] != row:
         observation_history(record, create=True).append(row)
@@ -226,7 +243,7 @@ def store_findings(task, findings, source):
     if record is None:
         raise ValueError('参数事实缺少已登记目标对象')
     from regrow.records.object_store import observation_history
-    values = record.setdefault('constraints', {})
+    values = parameters(record)
     changed = []
     for fact in findings:
         key = parameter_key(fact, values)
@@ -248,6 +265,7 @@ def store_findings(task, findings, source):
             if independent:
                 changed.append({k: deepcopy(fact[k]) for k in ('name', 'description', 'domain', 'conditions', 'evidence') if k in fact})
         else:
+            put_parameter(record, key, item, task.get('conditions', []))
             values[key] = item
             changed.append({k: deepcopy(fact[k]) for k in ('name', 'description', 'domain', 'conditions', 'evidence') if k in fact})
     if changed:
@@ -266,7 +284,7 @@ def store_object_entry(record, entry, task_ref=None):
     """Persist a relation on its actual source object, independently of task ownership."""
     from regrow.records.object_store import observation_history
     observation_history(record, create=True).append({'entry': deepcopy(entry), 'evidence': {**entry.get('source', {}), **({'task_ref': task_ref} if task_ref else {}), **({'attempt': entry['attempt']} if entry.get('attempt') else {})}})
-    values = record.setdefault('entries', [])
+    values = record.setdefault('jump_to', [])
     current = entry_value(entry)
     key = (entry['region'], entry.get('control'), entry.get('conditions', []))
     for (i, old) in enumerate(values):
@@ -277,42 +295,34 @@ def store_object_entry(record, entry, task_ref=None):
         values.append(current)
 
 def entry_value(entry):
-    """Current relation; detailed evidence stays in the observation event."""
-    value = {k: deepcopy(entry[k]) for k in ('region', 'control', 'meaning', 'conditions', 'attempt') if k in entry}
-    source = entry.get('source', {})
-    if not value.get('attempt') and source.get('attempt') and (source.get('basis') != 'observation_only'):
-        value['attempt'] = source['attempt']
-    return value
+    """A current route has targets and conditions; its visit stays in history."""
+    return {**{key: deepcopy(entry[key]) for key in ('region', 'control') if key in entry},
+            'conditions': list(entry.get('conditions', []))}
 
 def merge_products(target, source):
     """A confirmed identity merge preserves both records' accepted information."""
     from regrow.records.object_store import observation_history
-    for field in ('possible_purpose', 'may_open_content', 'needs_exploration'):
+    for field in ('may_open_content', 'needs_exploration'):
         if field not in source:
             continue
         if field not in target:
             target[field] = deepcopy(source[field])
         elif source[field] != target[field]:
-            target[field] = '；'.join(dict.fromkeys([target[field], source[field]])) if field == 'possible_purpose' else None
-    from regrow.records.control_history_context import confirmed_information
-    confirmed = [confirmed_information(record) for record in (target, source)]
-    selected = confirmed if any(confirmed) else [target.get('knowledge', ''), source.get('knowledge', '')]
-    texts = list(dict.fromkeys(text for text in selected if text))
-    if texts:
-        sources = [deepcopy(next((v.get('evidence', {}) for v in reversed(observation_history(record)) if v.get('knowledge') == text), {}))
-                   for record, text in zip((target, source), selected) if text]
-        target['knowledge'] = '\n'.join(texts)
-        observation_history(target, create=True).append({'knowledge': target['knowledge'], 'evidence': {'basis': 'identity_merge', 'sources': sources}})
-    values = target.setdefault('constraints', {}) if source.get('constraints') else target.get('constraints', {})
+            target[field] = None
+    from regrow.records.control_knowledge import merge
+    merge(target, source)
+    values = parameters(target)
     aliases = {}
-    for (old_key, fact) in source.get('constraints', {}).items():
+    for (old_key, fact) in parameters(source).items():
         key = parameter_key(fact, values)
         if key in values and any(values[key].get(field) != fact.get(field) for field in ('description', 'domain')):
             raise ValueError('重复控件的参数定义存在冲突，先核对：' + fact['name'])
-        values.setdefault(key, deepcopy(fact))
+        if key not in values:
+            put_parameter(target, key, deepcopy(fact), fact.get('conditions', []))
+            values[key] = deepcopy(fact)
         aliases[old_key] = key
-    entries = target.setdefault('entries', []) if source.get('entries') else target.get('entries', [])
-    for entry in source.get('entries', []):
+    entries = target.setdefault('jump_to', []) if source.get('jump_to') else target.get('jump_to', [])
+    for entry in source.get('jump_to', []):
         if not any(((row['region'], row.get('control'), row.get('conditions', [])) == (entry['region'], entry.get('control'), entry.get('conditions', [])) for row in entries)):
             entries.append(deepcopy(entry))
     return aliases
@@ -363,11 +373,12 @@ def import_products(records):
                 row = {**fact, **previous, 'evidence': previous.get('source', {}).get('evidence', fact.get('evidence', ''))}
                 store_findings(task, [row], previous.get('source', source))
             if observed:
-                values = record.setdefault('constraints', {})
+                values = parameters(record)
                 key = parameter_key(fact, values)
                 values[key] = {k: deepcopy(v) for (k, v) in fact.items() if k not in ('evidence', 'source', 'sources', 'observations')}
                 if 'domain' in values[key] and values[key]['domain']['type'] != 'enum':
                     values[key]['domain']['values'] = []
+                put_parameter(record, key, values[key], fact.get('conditions', []))
             else:
                 store_findings(task, [fact], fact.get('source', source))
         if old.get('entry_registration'):
@@ -391,6 +402,16 @@ def effective_task(tasks, task):
         return canonical
     return {**task, 'status': 'blocked', 'result_evidence': '等价任务的登记类别不一致或代表任务无效，需复核对应信息产物'}
 
+def inventory_review(region):
+    """Only explicit inventory obligations block closure.
+
+    Old free-form observation questions were copied into this field as a second
+    todo list. They remain in their original observations, not an inventory gate.
+    """
+    from regrow.records.object_store import region_work
+    review = region_work(region).get('task_inventory', {}).get('review') or {}
+    return {} if review.get('questions') is not None and not review.get('kind') else review
+
 def coverage(region, records=None):
     from regrow.records.object_store import region_work, owned_controls, owned_tasks
     from regrow.records import coverage_exemption as _coverage_exemption
@@ -399,7 +420,7 @@ def coverage(region, records=None):
     plan = region_work(region).get('task_inventory')
     tasks = owned_tasks(region)
     missing = set(owned_controls(region)) - set((plan or {}).get('controls', []))
-    complete = bool(plan and plan['inventory'] == 'complete' and (not plan.get('review')) and (not missing) and (not region_work(region).get('registration_gaps', {}).get('task_proposal')) and (not region_work(region).get('registration_gaps', {}).get('discovery', {}).get('pending')))
+    complete = bool(plan and plan['inventory'] == 'complete' and (not inventory_review(region)) and (not missing) and (not region_work(region).get('registration_gaps', {}).get('task_proposal')) and (not region_work(region).get('registration_gaps', {}).get('discovery', {}).get('pending')))
     pending = []
     blocked = []
     done = []

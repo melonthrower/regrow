@@ -1,3 +1,4 @@
+from regrow.records.control_knowledge import parameters
 from regrow.records.object_store import region_work
 'Read-only task inventory projection; the complete graph stays in storage.'
 from regrow.records.tasks import read as task_value
@@ -74,11 +75,9 @@ def external_sources(records, state, rid, reasons):
     """Local visual scope plus explicit sharing links, never a whole-app scan."""
     from regrow.records import shared_controls as _shared_controls
     result = set()
-    visible = set((state.get('observation') or {}).get('control_refs', []))
-    for rr in state.get('interactive_regions', []):
-        if rr != rid:
-            result.update(((rr, cid) for cid in owned_controls(records.get(rr, {})) if cid in visible))
     for cid in reasons:
+        result.update((rr, cid) for rr, owner in records.items()
+                      if rr != rid and cid in owned_controls(owner))
         group = _shared_controls.view(records, rid, cid)
         if group:
             result.update(((m['region'], m['control']) for m in group['members'] if m['region'] != rid))
@@ -96,6 +95,9 @@ def control_progress(region, cid):
         result = action.get('result') or {}
         row = {'动作记录': aid, '操作': action.get('operation', ''),
                '执行': '已执行' if executed else '未确认执行'}
+        if action.get('source_region') and action['source_region'] != region['id']:
+            owner = region.store.get(action['source_region'], {}) if hasattr(region, 'store') else {}
+            row['来源区块'] = owner.get('name', action['source_region'])
         if result.get('description'):
             row['观察结果'] = result['description']
         if result.get('exception') not in (None, '', 'none'):
@@ -138,7 +140,7 @@ def parameter_text(control):
         return str(value)
     return '；'.join(fact.get('name', '参数') + '：' + '；'.join(
         prose(fact[k]) for k in ('description', 'domain', 'conditions') if fact.get(k))
-        for fact in control.get('constraints', {}).values())
+        for fact in parameters(control).values())
 
 def project(records, state, rid):
     """Select prose for inventory; expose machine references only for output binding."""
@@ -153,8 +155,8 @@ def project(records, state, rid):
         known = known_information(control, unfinished=any(t.get('control') == cid and t.get('status') in ('pending','blocked') for t in owned_tasks(region).values()))
         from regrow.records.control_history_context import confirmed_information
         progress = control_progress(region, cid)
-        if not confirmed_information(control) and control.get('possible_purpose') is not None:
-            known = ('已尝试，功能尚未确认。' if progress.get('实际交互') else '未探索。') + known
+        if not confirmed_information(control) and bool(control.get('knowledge')):
+            known = ('' if any(t.get('control') == cid and t.get('status') in ('done','record_only') for t in owned_tasks(region).values()) else '已尝试，功能尚未确认。' if progress.get('实际交互') else '未探索。') + known
         if not isinstance(known, str):
             from regrow.prompts.history_disclosure import knowledge_text
             known = knowledge_text(known)
@@ -169,7 +171,7 @@ def project(records, state, rid):
         progress = control_progress(region, cid)
         for item in progress.get('实际交互', []):
             action = {'click':'点击','tap':'点击','input_text':'输入','scroll':'滚动'}.get(item['操作'], item['操作'])
-            detail = ('已' + action if item['执行'] == '已执行' else action + '未确认执行')
+            detail = ('在' + item['来源区块'] + '中' if item.get('来源区块') else '') + ('已' + action if item['执行'] == '已执行' else action + '未确认执行')
             if item.get('观察结果') and (not control.get('knowledge') or item.get('异常') or item['执行'] != '已执行'):
                 detail += '；' + item['观察结果']
             if item.get('异常'):
@@ -219,7 +221,7 @@ def project(records, state, rid):
     for rr, cid in external_sources(records, state, rid, reasons):
         source = records[rr]
         if any(t.get('control') == cid for t in owned_tasks(source).values()):
-            external.append({'region':rr, 'control':cid, '区块':source['name'], '名称':owned_controls(source)[cid]['name'], '已知功能':known_information(owned_controls(source)[cid]), '参数说明':parameter_text(owned_controls(source)[cid]), '任务条件':['；'.join(t.get('conditions', [])) for t in owned_tasks(source).values() if t.get('control') == cid and t.get('conditions')]})
-    visible = [records[rr]['name'] + '：' + records[rr].get('description','') for rr in state.get('interactive_regions', []) if rr in records and rr != rid]
-    return {'控件': '\n'.join(lines).strip(), '当前已观察区块':'；'.join(visible),
+            external.append({'region':rr, 'control':cid, '区块':source['name'], '名称':owned_controls(source)[cid]['name'], '用途与依据':known_information(owned_controls(source)[cid]), '参数说明':parameter_text(owned_controls(source)[cid]), '任务条件':['；'.join(t.get('conditions', [])) for t in owned_tasks(source).values() if t.get('control') == cid and t.get('conditions')]})
+    from regrow.records.environment_context import render
+    return {'控件': '\n'.join(lines).strip(), '环境位置':render(records,state,rid,kind='task_proposal'),
             '本次观察的未确认事项':'；'.join((state.get('observation') or {}).get('uncertainties', [])), '已有任务': task_catalog(region, state, records), '可引用同类实例': external}

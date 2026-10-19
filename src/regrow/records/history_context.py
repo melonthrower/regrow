@@ -93,10 +93,30 @@ def identity_candidates(records, state, binding, visual_hits, source_destination
             why.append('截图外观匹配候选（不等于前景）')
         return why or ['相关历史去向或返回路径']
     from regrow.records import context_scope as context_scope
+    from regrow.records.function_scope import entries
+    direct_targets = {(edge['region'], edge.get('target_control')) for edge in entries(records.get(binding.get('region_ref'), {}), records) if edge.get('control') == binding.get('control_ref') and edge.get('target_control')}
+    matched_controls = {rid: {h['control'] for h in hit.get('anchors', [])} for hit in visual_hits if (rid := hit.get('region_ref')) in records}
     source = {**binding, 'region': binding.get('region_ref')}
     work = {'kind': 'update', 'region': binding.get('working_region') or binding.get('region_ref'), 'task': {'region': binding.get('task_region') or binding.get('region_ref'), 'name': binding.get('task_name')} if binding.get('task_name') else None}
     scope = context_scope.select(records, state, work=work, source=source, regions=selected | hit_ids)
-    return [{'region_ref': rid, 'name': r['name'], '历史描述': r['description'], '提供原因': reasons(rid, r), '当前状态': '未由这份历史记录确认', 'controls': [context_scope.identity(r, cid, detailed=cid in scope['controls'].get(rid, []), records=records) for cid in owned_controls(r)], **({'行为适用上下文': r['behavior_context']} if r.get('behavior_context') else {}), **({'已确认不同身份的区块': [records[x['region']]['name'] for x in r['distinct_regions'] if x.get('region') in records]} if r.get('distinct_regions') else {})} for (rid, r) in records.items() if rid in selected or rid in hit_ids]
+    rows = []
+    for rid, region in records.items():
+        if rid not in selected and rid not in hit_ids:
+            continue
+        needed = set(scope['controls'].get(rid, []))
+        offered = needed | matched_controls.get(rid, set()) | {cid for rr, cid in direct_targets if rr == rid}
+        controls = [context_scope.identity(region, cid, records=records) if cid in needed
+                    else {'name': owned_controls(region)[cid]['name'], 'ref': cid}
+                    for cid in owned_controls(region) if cid in offered]
+        row = {'region_ref': rid, 'name': region['name'], '历史描述': region['description'],
+               '提供原因': reasons(rid, region), '当前状态': '未由这份历史记录确认', 'controls': controls}
+        if region.get('behavior_context'):
+            row['行为适用上下文'] = region['behavior_context']
+        if region.get('distinct_regions'):
+            row['已确认不同身份的区块'] = [records[x['region']]['name'] for x in region['distinct_regions'] if x.get('region') in records]
+        rows.append(row)
+    return rows
+
 
 def disclose(region, control, records):
     from regrow.records import navigation as _entry_evidence
@@ -254,6 +274,18 @@ def question(region, name, task, *, detailed=True):
         row['共享知识来源'] = deepcopy_value(task.get('shared_result') or task['shared_task_ref'])
     return row
 
+def question_state(task):
+    """Read the current gap and accepted rules from the task's own record."""
+    value = {}
+    latest = task_value(task, 'latest_update', {})
+    gap = latest.get('remaining_question') or task_value(task, 'remaining_question')
+    if gap:
+        value['未答部分'] = gap
+    rules = [fact['description'] for fact in task_value(task, 'findings', {}).values() if fact.get('description')]
+    if rules:
+        value['已确认规则'] = rules
+    return value
+
 def action_context(records, state, task_region, name, task):
     from copy import deepcopy
     from regrow.records.task_updates import latest_suggestion
@@ -281,10 +313,7 @@ def action_context(records, state, task_region, name, task):
     condition = (task.get('prerequisite') or {}).get('condition')
     if condition:
         card['所需条件'] = condition
-    latest = task_value(task, 'latest_update', {})
-    gap = latest.get('remaining_question') or task_value(task, 'remaining_question')
-    if gap:
-        card['未答部分'] = gap
+    card.update(question_state(task))
     if task.get('blocker', {}).get('reason'):
         card['当前阻碍'] = task['blocker']['reason']
     material = {'当前任务': card}

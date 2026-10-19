@@ -1,0 +1,2 @@
+# 分支判断的输出
+decision填写switch、stop，或本轮允许时的resume；next_region引用本轮给定的候选区块；reason说明依据。是否允许resume及可选区块以本轮提供内容为准。

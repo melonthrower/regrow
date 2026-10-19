@@ -1,0 +1,15 @@
+## 旧区块去向 → previous_regions
+
+逐项回应动作前区块。每项用ref引用区块编号，state填写以下状态之一，evidence写支持该变化判断的具体观察：
+- retained_interactive：仍在当前前景，且无实质变化。
+- changed_interactive：仍在前景，但内容/结构改变，或重新进入旧表面。
+- visible_background_blocked：仍可见，但已被另一表面接管。
+- not_visible：本图不再可见。
+- uncertain：前景归属或身份依据不足。
+前两项也适用于纯展示区，不代表坐标可操作。新页面替换旧页时记录旧页消失；历史身份仍存在不表示持续可见。
+局部字段例（假设材料中的旧区块为r0080，不是完整回复）：
+```json
+{"previous_regions":[{"ref":"r0080","state":"visible_background_blocked","evidence":"新弹窗覆盖原页面并接管交互，原页面仍可见。"}]}
+```
+正例：按本次对照结果填写state，并给出对应的画面依据。
+反例：只描述“旧页面还在”而不区分前景、背景与不可见；用未声明的status字段代替state。

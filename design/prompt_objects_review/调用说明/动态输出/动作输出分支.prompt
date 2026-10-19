@@ -1,0 +1,36 @@
+# 动作输出的条件分支
+
+直接返回一个JSON对象。先选择action，只填写所选动作需要的字段；未使用的字段省略。
+
+## 本步提供complete时
+
+原探索问题已有充分答案时，填写action="complete"和reason；有新增答案时，将下列答案字段填在同一层。complete表示问题已回答，不代表业务操作必然成功。
+
+本轮答案字段如下：complete提交结论；none可记录已确认的部分答案。字段均放在回复外层。
+
+## 本步提供none时
+
+### 同时提供complete
+
+无法选择有依据的操作、原问题仍未回答时填写action="none"。
+
+### 未提供complete
+
+本步不操作时填写action="none"。
+
+## none的填写方式
+
+### 本步none分支提供task_update
+
+以下两种情况选一种：
+- 仅说明本步不操作：填写reason。
+- 登记当前任务判断：填写task_update，判断依据写在task_update.reason；外层不填reason。
+task_update只填写本轮所需字段；字段含义及示例见相应说明。
+
+### 本步none分支不提供task_update
+
+填写reason说明本步不操作的原因。
+
+若本步还提供complete，可按以下说明提交部分答案或暂挂判断：
+已有已确认的部分答案时，可在none回复同层填写对应答案字段，reason说明依据及尚未回答的部分。
+确有推进障碍需要暂挂时，另填retry_when说明何种条件改变后可以重新考虑；没有暂挂判断就省略。

@@ -1,0 +1,492 @@
+[
+  {
+    "path": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/任务/任务登记与补全.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/任务粒度与反馈.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/前置条件与恢复.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/动作后Region增量.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/区块功能登记.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/任务/区块探索任务.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/任务/历史入口与共享复用.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/参数关系调查.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/对象识别资料.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/工作区块定位.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/当前区块重定位.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/探索范围与退出.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/新操作方式检查.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/旧任务范围复核.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/任务/结果核对示例/单步入口.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/结果核对示例/参数与滚动.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/结果核对示例/输入与确认.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/输入与搜索探索正反例.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/选择探索入口.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/任务/首屏观察.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/共享/任务知识与当前观察.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/任务结束条件.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/区块身份复用.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/历史原图对照.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/共享/参数观察值.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/当前前景.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/共享/术语定义.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/来源动作与区块对照.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/行为差异分离.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/共享/身份图准入.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/功能识别/单区块任务判定规则.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/功能识别/单区块任务正反例.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/动作/动作空间与字段.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/动作/单步动作建议.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/动作/围绕目标选择动作.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/动作/探索导航路线.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/动作/目标观察阅读.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/动作/结果核对.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/动作/观察与历史.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/区块识别/功能区块划分.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/区块识别/区块控件识别.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/区块识别/当前表面识别.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/历史上下文/区块探索披露.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/历史上下文/探索树阅读.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/历史上下文/记忆增量.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/历史上下文/读取规则.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/交互控件范围.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/列表代表项.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/前景与区块.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/增量补全.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/补登记.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/证据与坐标.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/身份核对.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/输出填写.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/平台/Android执行.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/平台/桌面悬停观察.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/平台/桌面执行.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/平台/遍历环境只读.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/异常识别.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/恢复当前探索.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/恢复策略.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/恢复输出.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "selected": true,
+    "note": "已选部分见来源映射"
+  },
+  {
+    "path": "src/regrow/prompts/更新/区块变化与字段.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/更新/恢复后任务复核.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/更新/暂挂任务复核.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/更新/累计任务结果核对.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/更新/重复入口覆盖复核.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/监督/修复候选.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/监督/意图对照.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/监督/模型回复验收.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/监督/陌生读者.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/任务归属.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/共享行为核对.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/动作归属.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/区块归属.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/区块归属复查.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/回复解析.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/定位绑定.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/对象识别资料.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/投递前画面变化.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/控件候选消歧.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/控件身份候选选择.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/控件身份复核.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/暂挂分支并切换.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/更新补充观察.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/步骤纠正.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/登记修订.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/结果证据.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/身份名称.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/纠错/重复无进展.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/视觉记录/坐标与裁剪.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/身份比较/区块与控件复认.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/身份比较/跨图身份比较.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/通用/探索验证原则.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  },
+  {
+    "path": "src/regrow/prompts/通用/证据边界.prompt",
+    "selected": false,
+    "note": "未迁入；保留原处的调用/平台/纠错/历史说明或旧文件，不能据本索引认定已弃用"
+  }
+]

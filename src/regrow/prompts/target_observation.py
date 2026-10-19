@@ -1,3 +1,4 @@
+from regrow.records.control_knowledge import parameters
 """Shared read-only target observations for action selection and correction."""
 from regrow.records.object_store import observation_history
 from regrow.records.object_store import owned_controls
@@ -62,9 +63,12 @@ def render_handoff(request):
     value = {}
     if context.get('交接说明') and context['交接说明'] not in supplied:
         value['最近观察'] = context['交接说明']
-    if context.get('未确认事项'):
-        value['未确认事项'] = context['未确认事项']
-    return assign(request, value, remove=('上步观察交接', '最近观察', '未确认事项'))
+    supplied_gaps = {gap for event in history.get('events', {}).values()
+                     for gap in event.get('该次更新未确认事项', [])}
+    gaps = [gap for gap in context.get('未确认事项', []) if gap not in supplied_gaps]
+    if gaps:
+        value['页面观察未确认事项'] = gaps
+    return assign(request, value, remove=('上步观察交接', '最近观察', '未确认事项', '页面观察未确认事项'))
 
 def attach(request, records):
     if not request.get('action_ready'):
@@ -80,8 +84,8 @@ def attach(request, records):
         candidate['region_name'] = owner.get('name', '')
         from regrow.records.control_history_context import known_information
         candidate['knowledge'] = known_information(control, parameters=False)
-        if candidate['id'] == source.get('task_control') and control.get('constraints'):
-            candidate['constraints'] = control['constraints']
+        if candidate['id'] == source.get('task_control') and parameters(control):
+            candidate['constraints'] = parameters(control)
     return refresh(request)
 
 def refresh(request):

@@ -1,117 +1,140 @@
-import json,sys
+import json
+import sys
 from pathlib import Path
 import pytest
-ROOT=Path(__file__).resolve().parents[1]/'experiments/clock_manual_20260919'
+ROOT = Path(__file__).resolve().parents[1] / 'src'
 
 @pytest.fixture
 def modules(monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT))
-    import app_launcher,progress
-    monkeypatch.setattr(app_launcher, "configured_model", lambda: "offline-fixture-model")
-    return app_launcher,progress
+    from regrow.runtime import app_launcher as app_launcher
+    from regrow.runtime import progress as progress
+    monkeypatch.setattr(app_launcher, 'configured_model', lambda : 'offline-fixture-model')
+    return (app_launcher, progress)
 
-
-def test_new_run_has_empty_knowledge_and_no_clock_history(tmp_path,modules):
+def test_new_run_has_empty_knowledge_and_no_clock_history(tmp_path, modules):
     from PIL import Image
-    launcher,_=modules
-    frame=tmp_path/'frame.png';Image.new('RGB',(100,200)).save(frame)
-    first=launcher.create_run(tmp_path/'runs','org.example.notes','Notes','emulator-test',frame)
-    second=launcher.create_run(tmp_path/'runs','org.example.notes','Notes','emulator-test',frame)
-    assert first!=second
-    pointer=json.loads((first/'knowledge_current.json').read_text());snapshot=first/pointer['snapshot']
-    state=json.loads((snapshot/'runtime_state.json').read_text())
-    assert state['working_region'] is None and state['next_action_mode']=='discover'
-    assert list((snapshot/'regions').iterdir())==[]
-    assert not (first/'graph_snapshots/0003.json').exists()
-    assert (first/'call_once.py').is_file()
-    assert json.loads((first/'run_manifest.json').read_text())['framework_source']==str(ROOT.resolve())
+    (launcher, _) = modules
+    frame = tmp_path / 'frame.png'
+    Image.new('RGB', (100, 200)).save(frame)
+    first = launcher.create_run(tmp_path / 'runs', 'org.example.notes', 'Notes', 'emulator-test', frame)
+    second = launcher.create_run(tmp_path / 'runs', 'org.example.notes', 'Notes', 'emulator-test', frame)
+    assert first != second
+    pointer = json.loads((first / 'knowledge_current.json').read_text())
+    snapshot = first / pointer['snapshot']
+    state = json.loads((snapshot / 'runtime_state.json').read_text())
+    assert state['working_region'] is None and state['next_action_mode'] == 'discover'
+    assert list((snapshot / 'regions').iterdir()) == []
+    assert not (first / 'graph_snapshots/0003.json').exists()
+    assert (first / 'call_once.py').is_file()
+    assert json.loads((first / 'run_manifest.json').read_text())['framework_source'] == str(ROOT.resolve())
 
-
-def test_notice_names_the_missing_control_without_blocking(tmp_path,modules):
+def test_notice_names_the_missing_control_without_blocking(tmp_path, modules):
     from tests.test_stepwise_progress import fixture
-    _,progress=modules
-    r,path=fixture(tmp_path)
-    r.update(task_inventory={'inventory':'complete','controls':['one']},tasks={'查看设置':{'control':'one','handling':'explore','status':'pending'}})
+    (_, progress) = modules
+    (r, path) = fixture(tmp_path)
+    r.update(task_inventory={'inventory': 'complete', 'controls': ['one']}, tasks={'查看设置': {'control': 'one', 'handling': 'explore', 'status': 'pending'}})
     path.write_text(json.dumps(r))
-    statefile=path.parents[2]/'runtime_state.json';state=json.loads(statefile.read_text())
-    state.update(interactive_regions=['menu'],observation={'control_refs':[]});statefile.write_text(json.dumps(state))
-    result=progress.snapshot(tmp_path)
+    statefile = path.parents[2] / 'runtime_state.json'
+    state = json.loads(statefile.read_text())
+    state.update(interactive_regions=['menu'], observation={'control_refs': []})
+    statefile.write_text(json.dumps(state))
+    result = progress.snapshot(tmp_path)
     assert result['blocker'] is None
-    assert result['localization_notice']=={'region':'溢出菜单','controls':['Settings']}
-
-    r['tasks']['查看设置'].update(status='done',registration_kind='control_effect')
-    r['tasks']['调查入口']={'control':'one','handling':'equivalent','status':'pending',
-        'equivalent_to':'查看设置','registration_kind':'entry'}
+    assert result['localization_notice'] == {'region': '溢出菜单', 'controls': ['Settings']}
+    r['tasks']['查看设置'].update(status='done', registration_kind='control_effect')
+    r['tasks']['调查入口'] = {'control': 'one', 'handling': 'equivalent', 'status': 'pending', 'equivalent_to': '查看设置', 'registration_kind': 'entry'}
     path.write_text(json.dumps(r))
-    result=progress.snapshot(tmp_path)
-    alias=next(t for t in result['tasks'] if t['name']=='调查入口')
-    assert alias['status']=='blocked' and '登记类别' in alias['reason']
-    assert result['progress']['blocked']==['调查入口']
+    result = progress.snapshot(tmp_path)
+    alias = next((t for t in result['tasks'] if t['name'] == '调查入口'))
+    assert alias['status'] == 'blocked' and '登记类别' in alias['reason']
+    assert result['progress']['blocked'] == ['调查入口']
 
-
-def test_application_selection_preserves_old_runs_and_reobserves_resume(tmp_path,modules):
+def test_application_selection_preserves_old_runs_and_reobserves_resume(tmp_path, modules):
     from PIL import Image
-    launcher,_=modules
-    frame=tmp_path/'frame.png';Image.new('RGB',(100,200)).save(frame)
+    (launcher, _) = modules
+    frame = tmp_path / 'frame.png'
+    Image.new('RGB', (100, 200)).save(frame)
+
     class Device:
-        serial='test-device'
-        def applications(self):return [{'name':'Notes','package':'org.example.notes','component':'org.example.notes/.Main'}]
-        def activate(self,component,folder):return frame
-    started=[]
+        serial = 'test-device'
+
+        def applications(self):
+            return [{'name': 'Notes', 'package': 'org.example.notes', 'component': 'org.example.notes/.Main'}]
+
+        def activate(self, component, folder):
+            return frame
+    started = []
+
     class Runner:
-        def __init__(self,run):self.run=run
-        def status(self):return {'running':False}
-        def start(self,mode):started.append((self.run,mode));return {'running':True}
-    hub=launcher.ApplicationHub(tmp_path/'runs',Device(),Runner)
-    hub.select('org.example.notes','new');first=hub.run
-    before=(first/'knowledge_current.json').read_text()
-    hub.select('org.example.notes','new');second=hub.run
-    assert first!=second and (first/'knowledge_current.json').read_text()==before
-    hub.select('org.example.notes','resume',first.name)
-    assert hub.run==first and len(started)==3
-    pointer=json.loads((first/'knowledge_current.json').read_text());state=json.loads((first/pointer['snapshot']/'runtime_state.json').read_text())
-    assert state['next_action_mode']=='discover' and state['observation'] is None
-    with pytest.raises(ValueError):hub.select('org.example.notes','resume','../../arbitrary')
 
+        def __init__(self, run):
+            self.run = run
 
-def test_fresh_run_enters_existing_discovery_without_old_graph(tmp_path,modules):
-    import locator
+        def status(self):
+            return {'running': False}
+
+        def start(self, mode):
+            started.append((self.run, mode))
+            return {'running': True}
+    hub = launcher.ApplicationHub(tmp_path / 'runs', Device(), Runner)
+    hub.select('org.example.notes', 'new')
+    first = hub.run
+    before = (first / 'knowledge_current.json').read_text()
+    hub.select('org.example.notes', 'new')
+    second = hub.run
+    assert first != second and (first / 'knowledge_current.json').read_text() == before
+    hub.select('org.example.notes', 'resume', first.name)
+    assert hub.run == first and len(started) == 3
+    pointer = json.loads((first / 'knowledge_current.json').read_text())
+    state = json.loads((first / pointer['snapshot'] / 'runtime_state.json').read_text())
+    assert state['next_action_mode'] == 'discover' and state['observation'] is None
+    with pytest.raises(ValueError):
+        hub.select('org.example.notes', 'resume', '../../arbitrary')
+
+def test_fresh_run_enters_existing_discovery_without_old_graph(tmp_path, modules):
+    from regrow.recognition import locator as locator
     from PIL import Image
-    launcher,_=modules
-    import discovery_step
-    frame=tmp_path/'frame.png';Image.new('RGB',(100,200)).save(frame)
-    run=launcher.create_run(tmp_path/'runs','org.example.notes','Notes','test',frame)
-    request=locator.request_from_run(ROOT,run)
-    assert request['discovery_context']['mode']=='relocate'
-    assert request['discovery_context']['region_names']=={}
-    assert json.loads(request['user_prompt'])['目标应用']=='org.example.notes'
+    (launcher, _) = modules
+    from regrow.traversal import discovery_step as discovery_step
+    frame = tmp_path / 'frame.png'
+    Image.new('RGB', (100, 200)).save(frame)
+    run = launcher.create_run(tmp_path / 'runs', 'org.example.notes', 'Notes', 'test', frame)
+    request = locator.request_from_run(ROOT, run)
+    assert request['discovery_context']['mode'] == 'relocate'
+    assert request['discovery_context']['region_names'] == {}
+    assert json.loads(request['user_prompt'])['目标应用'] == 'org.example.notes'
 
-
-def test_interruption_explains_schema_error_without_private_body(tmp_path,modules):
+@pytest.mark.parametrize('filename,payload,expected', [('http_error.json', {'status': 400, 'body': 'private endpoint or credential'}, 'HTTP 400'), ('transport_error.json', {'exception_type': 'ReadTimeout', 'seconds': 180.5, 'response_returned': False, 'request_attempts': 1}, '回复超时')])
+def test_interruption_explains_schema_error_without_private_body(tmp_path, modules, filename, payload, expected):
     from tests.test_stepwise_progress import fixture
-    _,progress=modules;fixture(tmp_path)
-    (tmp_path/'calls/0001').mkdir(parents=True)
-    (tmp_path/'run_manifest.json').write_text(json.dumps({'last_call':'0001'}))
-    (tmp_path/'calls/0001/http_error.json').write_text(json.dumps({'status':400,'body':'private endpoint or credential'}))
+    (_, progress) = modules
+    fixture(tmp_path)
+    (tmp_path / 'calls/0001').mkdir(parents=True)
+    (tmp_path / 'run_manifest.json').write_text(json.dumps({'last_call': '0001'}))
+    (tmp_path / 'calls/0001' / filename).write_text(json.dumps(payload))
     import subprocess
     with pytest.raises(subprocess.CalledProcessError):
-        with progress.round_status(tmp_path,tmp_path/'output'):raise subprocess.CalledProcessError(1,['python',str(tmp_path/'call_once.py'),'0001'])
-    blocker=progress.snapshot(tmp_path)['blocker']
-    assert 'HTTP 400' in blocker['reason'] and 'private' not in json.dumps(blocker)
+        with progress.round_status(tmp_path, tmp_path / 'output'):
+            raise subprocess.CalledProcessError(1, ['python', str(tmp_path / 'call_once.py'), '0001'])
+    blocker = progress.snapshot(tmp_path)['blocker']
+    assert expected in blocker['reason'] and 'private' not in json.dumps(blocker)
 
+def test_launcher_finds_repository_above_framework_copy(tmp_path, modules, monkeypatch):
+    (launcher, _) = modules
+    (tmp_path / 'gui_rewalk').mkdir()
+    (tmp_path / 'tools').mkdir()
+    (tmp_path / 'tools/android_web_mirror.py').touch()
+    copy = tmp_path / 'experiments/copy'
+    (copy / 'gui_rewalk').mkdir(parents=True)
+    (copy / 'stepwise').mkdir()
+    monkeypatch.setattr(launcher, '__file__', str(copy / 'stepwise/app_launcher.py'))
+    assert launcher.repository() == tmp_path
 
-def test_launcher_finds_repository_above_framework_copy(tmp_path,modules,monkeypatch):
-    launcher,_=modules
-    (tmp_path/'gui_rewalk').mkdir();(tmp_path/'tools').mkdir();(tmp_path/'tools/android_web_mirror.py').touch()
-    copy=tmp_path/'experiments/copy';(copy/'gui_rewalk').mkdir(parents=True);(copy/'stepwise').mkdir()
-    monkeypatch.setattr(launcher,'__file__',str(copy/'stepwise/app_launcher.py'))
-    assert launcher.repository()==tmp_path
-
-
-def test_old_http_error_is_not_reported_as_new_registration_failure(tmp_path,modules):
-    _,progress=modules
-    (tmp_path/'calls/0001').mkdir(parents=True)
-    (tmp_path/'run_manifest.json').write_text(json.dumps({'last_call':'0001'}))
-    (tmp_path/'calls/0001/http_error.json').write_text(json.dumps({'status':400}))
-    reason=progress.failure_reason(ValueError('task owner ambiguous or missing'),tmp_path)
+def test_old_http_error_is_not_reported_as_new_registration_failure(tmp_path, modules):
+    (_, progress) = modules
+    (tmp_path / 'calls/0001').mkdir(parents=True)
+    (tmp_path / 'run_manifest.json').write_text(json.dumps({'last_call': '0001'}))
+    (tmp_path / 'calls/0001/http_error.json').write_text(json.dumps({'status': 400}))
+    reason = progress.failure_reason(ValueError('task owner ambiguous or missing'), tmp_path)
     assert '控件' in reason['reason'] and 'HTTP' not in reason['reason']

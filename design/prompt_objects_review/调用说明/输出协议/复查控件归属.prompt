@@ -1,0 +1,4 @@
+# 控件归属复查的输出
+status填写continue、resolved或defer；reason说明判断。
+observed_assignments逐项填写control、region、description、evidence。control引用本轮给定的历史控件名，只登记当前图可确认的归属。
+需要继续调查时，action沿本轮提供的操作合同填写；不把历史清单当成当前可见清单。

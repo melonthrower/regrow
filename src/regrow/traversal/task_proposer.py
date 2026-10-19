@@ -58,7 +58,20 @@ def plan_request(root, records, state, rid, *, work=None):
     controls = [c['name'] for (cid, c) in owned_controls(region).items() if not _shared_tasks.automatic_tasks(region, cid)] + ['']
     refs = [_task_updates.reference(rid, name) for name in update_names(region, scope_review=work.get('kind') == 'scope_review')]
     catalog = material.pop('已有任务')
-    material['本轮可判断旧任务'] = [{k:v for k,v in row.items() if k not in ('control', 'region', 'name')} for row in catalog if row['task'] in refs]
+    material['本轮可判断旧任务'] = []
+    from regrow.records.control_knowledge import card
+    from regrow.records.tasks import target, target_control
+    provided = set()
+    for row in catalog:
+        if row['task'] not in refs:
+            continue
+        item = {k: v for k, v in row.items() if k not in ('control', 'region', 'name')}
+        task = owned_tasks(region)[row['task'].split('/', 1)[1]]
+        cid = target_control(task)
+        if cid and cid not in provided:
+            item['当前控件知识'] = card(target(task) or {})
+            provided.add(cid)
+        material['本轮可判断旧任务'].append(item)
     material['其他任务背景'] = [row for row in catalog if row['task'] not in refs and not row.get('control')]
     allowed = []
     for branch in schema['properties']['operations']['items']['anyOf']:

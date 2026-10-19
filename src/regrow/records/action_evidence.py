@@ -51,7 +51,7 @@ def compact(records):
             control = find_control(region, action.get('control'))
             entry = action.get('entry_registration')
             if entry and control:
-                values = control.setdefault('entries', [])
+                values = control.setdefault('jump_to', [])
                 if not any(((v['region'], v.get('conditions', [])) == (entry['region'], entry.get('conditions', [])) for v in values)):
                     values.append(entry_value(entry))
                 historical = {**deepcopy(entry), 'attempt': entry.get('attempt', aid)}
@@ -77,13 +77,13 @@ def compact(records):
     from regrow.records.object_store import owned_controls
     for region in records.values():
         for record in [region, *owned_controls(region).values()]:
-            for entry in record.get('entries', []):
+            for entry in record.get('jump_to', []):
                 if 'source' in entry or 'evidence' in entry:
                     history = observation_history(record, create=True)
                     if not any((row.get('entry') == entry for row in history)):
                         history.append({'entry': deepcopy(entry), 'evidence': deepcopy(entry.get('source', {}))})
-            if 'entries' in record:
-                record['entries'] = [entry_value(v) for v in record['entries']]
+            if 'jump_to' in record:
+                record['jump_to'] = [entry_value(v) for v in record['jump_to']]
 
 def entries_for_action(region, aid, control):
     from copy import deepcopy
@@ -93,9 +93,16 @@ def entries_for_action(region, aid, control):
     record = find_control(region, control)
     if aid in invalidated(record):
         return []
+    # Current routes take priority, then the latest accepted relation for this
+    # particular action. A later visit must not erase an earlier visit's proof.
+    history = observation_history(record)
+    historical = [row.get('jump_to_update', {}).get('after') or row.get('entry')
+                  for row in reversed(history)]
     entries = []
-    for value in [*record.get('entries', []), *(row['entry'] for row in observation_history(record) if row.get('entry'))]:
-        if value.get('attempt') == aid and (not any(((v['region'], v.get('control'), v.get('conditions', [])) == (value['region'], value.get('control'), value.get('conditions', [])) for v in entries))):
+    from regrow.records.control_routes import current_conditions
+    for value in [*record.get('jump_to', []), *(v for v in historical if v)]:
+        value = current_conditions(record, value)
+        if value.get('attempt') == aid and (not any(((v['region'], v.get('control')) == (value['region'], value.get('control')) for v in entries))):
             entries.append(deepcopy(value))
     return entries
 

@@ -1,0 +1,1109 @@
+[
+  {
+    "source": "任务/任务动作登记.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "任务.prompt",
+      "控件.prompt",
+      "调用说明/功能任务答案.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/任务登记与补全.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/任务登记与补全.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/任务粒度与反馈.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/任务粒度与反馈.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/前置条件与恢复.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/前置条件与恢复.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/动作后Region增量.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/动作后Region增量.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/区块功能登记.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "区块.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/区块探索任务.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/任务提出.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/历史入口与共享复用.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/历史入口与共享复用.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/参数关系调查.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/参数关系调查.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/对象识别资料.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/对象识别资料.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/工作区块定位.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/工作区块定位.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/当前区块重定位.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/当前区块重定位.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/探索范围与退出.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/探索范围与退出.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/新操作方式检查.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/新操作方式检查.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/旧任务范围复核.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/任务范围复核.prompt"
+    ],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/清点输出约定.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "任务.prompt",
+      "区块.prompt",
+      "调用说明/任务清点.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "任务/结果核对示例/单步入口.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/结果核对示例/单步入口.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/结果核对示例/参数与滚动.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/结果核对示例/参数与滚动.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/结果核对示例/输入与确认.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/结果核对示例/输入与确认.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/输入与搜索探索正反例.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/输入与搜索探索正反例.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/选择探索入口.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/选择探索入口.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "任务/首屏观察.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/任务/首屏观察.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "共享/任务知识与当前观察.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "控件.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "共享/任务结束条件.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/任务结束条件.prompt"
+    ],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "共享/区块身份复用.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "控件.prompt",
+      "调用说明/前景与登记示例.prompt",
+      "调用说明/对象登记范围.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "共享/历史原图对照.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/共享/历史原图对照.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "共享/参数观察值.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "任务.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "共享/当前前景.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/共享/当前前景.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "共享/术语定义.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40
+    ],
+    "remainder": "调用说明/补充正文/共享/术语定义.prompt",
+    "candidate_destinations": [
+      "区块.prompt",
+      "控件.prompt",
+      "调用说明/前景与登记示例.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "共享/来源动作与区块对照.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/来源动作对照.prompt"
+    ],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "共享/行为差异分离.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/来源区块差异.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "共享/身份图准入.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "控件.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "功能识别/单区块任务判定规则.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/功能识别/单区块任务判定规则.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "功能识别/单区块任务正反例.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/功能识别/单区块任务正反例.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "动作/动作空间与字段.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "动作.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "动作/单步动作建议.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/动作/单步动作建议.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "动作/围绕目标选择动作.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/动作/围绕目标选择动作.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "动作/探索导航路线.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/动作/探索导航路线.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "动作/目标观察阅读.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/动作/目标观察阅读.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "动作/结果核对.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/动作/结果核对.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "动作/观察与历史.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/动作/观察与历史.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "区块识别/功能区块划分.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/区块识别/功能区块划分.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "区块识别/区块控件识别.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/区块识别/区块控件识别.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "区块识别/当前表面识别.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/区块识别/当前表面识别.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "历史上下文/区块探索披露.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/历史上下文/区块探索披露.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "历史上下文/探索树阅读.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/历史上下文/探索树阅读.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "历史上下文/记忆增量.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/历史上下文/记忆增量.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "历史上下文/读取规则.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/历史上下文/读取规则.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "发现手册/交互控件范围.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/发现手册/交互控件范围.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "发现手册/列表代表项.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "区块.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "发现手册/前景与区块.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/发现异常.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "发现手册/增量补全.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/发现手册/增量补全.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "发现手册/补登记.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/发现手册/补登记.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "发现手册/证据与坐标.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/发现手册/证据与坐标.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "发现手册/身份核对.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/发现手册/身份核对.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "发现手册/输出填写.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/发现手册/输出填写.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "平台/Android执行.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/Android动作.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "平台/桌面悬停观察.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/平台/桌面悬停观察.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "平台/桌面执行.prompt",
+    "mapped_ranges": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "remainder": null,
+    "candidate_destinations": [
+      "调用说明/桌面动作.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "平台/遍历环境只读.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/平台/遍历环境只读.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "异常处理/异常识别.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/异常处理/异常识别.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "异常处理/恢复当前探索.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/异常处理/恢复当前探索.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "异常处理/恢复策略.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/异常处理/恢复策略.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "异常处理/恢复输出.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/异常处理/恢复输出.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "更新/动作后观察与状态更新.prompt",
+    "mapped_ranges": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59
+    ],
+    "remainder": "调用说明/补充正文/更新/动作后观察与状态更新.prompt",
+    "candidate_destinations": [
+      "动作.prompt",
+      "控件.prompt",
+      "调用说明/动作后区块去向.prompt",
+      "调用说明/动作后对象登记.prompt"
+    ],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "更新/区块变化与字段.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/更新/区块变化与字段.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "更新/恢复后任务复核.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/更新/恢复后任务复核.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "更新/暂挂任务复核.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/更新/暂挂任务复核.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "更新/累计任务结果核对.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/更新/累计任务结果核对.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "更新/重复入口覆盖复核.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/更新/重复入口覆盖复核.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "监督/修复候选.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/监督/修复候选.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "监督/意图对照.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/监督/意图对照.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "监督/模型回复验收.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/监督/模型回复验收.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "监督/陌生读者.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/监督/陌生读者.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "纠错/任务归属.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/任务归属.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/共享行为核对.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/共享行为核对.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/动作归属.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/动作归属.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/区块归属.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/区块归属.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/区块归属复查.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/区块归属复查.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/回复解析.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/回复解析.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/定位绑定.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/定位绑定.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/对象识别资料.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/对象识别资料.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/投递前画面变化.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/投递前画面变化.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/控件候选消歧.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/控件候选消歧.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/控件身份候选选择.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/控件身份候选选择.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/控件身份复核.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/控件身份复核.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/暂挂分支并切换.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/暂挂分支并切换.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/更新补充观察.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/更新补充观察.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/步骤纠正.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/步骤纠正.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/登记修订.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/登记修订.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/结果证据.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/结果证据.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/身份名称.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/身份名称.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "纠错/重复无进展.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/纠错/重复无进展.prompt",
+    "candidate_destinations": [],
+    "reference_status": "配置或生产入口引用（可能有条件）"
+  },
+  {
+    "source": "视觉记录/坐标与裁剪.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/视觉记录/坐标与裁剪.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "身份比较/区块与控件复认.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/身份比较/区块与控件复认.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "身份比较/跨图身份比较.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/身份比较/跨图身份比较.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "通用/探索验证原则.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/通用/探索验证原则.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  },
+  {
+    "source": "通用/证据边界.prompt",
+    "mapped_ranges": [],
+    "remainder": "调用说明/补充正文/通用/证据边界.prompt",
+    "candidate_destinations": [],
+    "reference_status": "未在本轮入口扫描确认引用；保留供核对，不视作现行必发规则"
+  }
+]

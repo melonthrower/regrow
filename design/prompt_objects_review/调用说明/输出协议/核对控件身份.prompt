@@ -1,0 +1,2 @@
+# 控件身份核对的输出
+control_identity填写same、different或uncertain，reason说明依据。图1是当前对象所在原场景，图2是历史对象原场景；两图核对身份，不输出几何。

@@ -45,18 +45,18 @@ def setup_records():
 def test_multiple_same_region_targets_survive_and_can_be_read():
     records,r=setup_records()
     controls=[{'region_index':0}]*3
-    register_destinations([{'region_index':0,'control_index':i,'description':'点击展开输入框'} for i in [1,2]],records,['r0001'],controls,r,'a1','9')
-    entries=owned_controls(r)['c0001']['entries']
+    register_destinations([{'region_index':0,'control_index':i,'description':'点击展开输入框','conditions':[]} for i in [1,2]],records,['r0001'],controls,r,'a1','9')
+    entries=owned_controls(r)['c0001']['jump_to']
     assert {v['control'] for v in entries}=={'c0002','c0003'}
     assert access_routes(records,'r0001','c0002')==['面板 / 展开按钮：点击展开输入框']
-    assert owned_controls(r)['c0002'].get('entries') is None
+    assert owned_controls(r)['c0002'].get('jump_to') is None
 
 def test_relation_rejects_wrong_owner_and_unregistered_target():
     records,r=setup_records()
     with pytest.raises(ValueError):
-        register_destinations([{'region_index':0,'control_index':0,'description':'打开'}],records,['r0001'],[{'region_index':1}],r,'a1','9')
+        register_destinations([{'region_index':0,'control_index':0,'description':'打开','conditions':[]}],records,['r0001'],[{'region_index':1}],r,'a1','9')
     with pytest.raises(ValueError):
-        register_destinations([{'region_index':0,'control_index':0,'description':'打开'}],records,['r0001'],[{'region_index':0}],r,'a1','9')
+        register_destinations([{'region_index':0,'control_index':0,'description':'打开','conditions':[]}],records,['r0001'],[{'region_index':0}],r,'a1','9')
 
 def test_rejected_reuse_keeps_dependent_draft_for_correction():
     from regrow.recognition.control_identity_review import compared_candidate

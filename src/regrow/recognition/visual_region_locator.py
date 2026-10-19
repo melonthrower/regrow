@@ -69,7 +69,7 @@ def plan(records, focus, frame, *, force_relocate=False, required_control=None, 
     confirmed = (foreground or {}).get('region_bounds', {}).get(focus)
     if local and focus in (foreground or {}).get('regions', (foreground or {}).get('region_bounds', {})):
         local = {**local, 'strong': True, 'bounds': confirmed, 'basis': 'same_frame_model_identity'}
-    if local and local['strong'] and (not foreground_check):
+    if local and not foreground_check:
         ids = list(owned_controls(records[focus]))
         chosen = [required_control] if required_control in ids else ids[offset:offset + CONTROL_BATCH]
         surface = frame

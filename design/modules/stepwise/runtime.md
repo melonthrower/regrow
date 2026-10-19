@@ -44,3 +44,10 @@ UI把内部work_context.reason放进“内部调度与调用来源”，任务�
 2026-10-18新图Settings第03轮：49/50调用、11逻辑动作/21GUI命令，剩1次因下一轮至少需2次而停止，无未登记动作。4任务done/18pending；404398tokens含纠错。a0008真实输入和筛选通过、独立审查通过；输入回退模拟回执2分支通过。整体未通过：按钮/输入框身份混用，different移除引用后后续仍用旧控件，14次身份复核，参数结束仍未收敛。证据根artifacts/runs/desktop_settings_20261018_03及to_astra/settings_fresh50_20261018_03，未追加调用。已有未跟踪src重构不能安全隔离提交，未提交/推送。
 
 2026-10-18对象补登记：新增object_registration角色使用原动作后单图，批量补齐本次对象外观；正常Runner计费/纠错/暂停，不执行GUI。语义双图与外观单图原答分别保留，registration_request/candidate仅为带来源的派生提交。最终14项聚焦通过，12调用保存帧结果及限制见月志。
+
+2026-10-19：compose.render仅合并完全同文的任务头部目标，并省略与顶层问题完全相同的分组题头，输出说明/材料及底层structured context保留。观察交接不重复发送history已披露的同文未确认事项，剩余项标“页面观察”；不改历史选取或任务归属。实际完整请求和最终身份Luna原答已有限保存帧核验，详见月志。
+
+
+2026-10-19：Schema仅在框架本地保存校验；正常call_model_once维持json_object发送，不把Schema上传接口。输出呈现改为本步字段说明、紧随各概念的局部格式/正反例，以及一份从实际Schema生成并本地校验的完整JSON格式例；退役长类型声明与按标题搬走示例。普通识别/更新退出excluded数组；具体补登记排除仍使用原completion_updates。response_example为格式例生产模块，不生成业务判断。
+
+字段说明显式呈现本步maxItems=0的空数组合同；正常纠错的maxItems错误明确是条目数，避免误读为文字长度。旧区块去向局部例及完整例展示ref/state/evidence。保存帧工作台补观察使用frame_context.primary，双图更新保持原动作后图；没有新执行入口。

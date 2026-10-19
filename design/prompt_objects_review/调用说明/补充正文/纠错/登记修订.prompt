@@ -1,0 +1,28 @@
+## 修复重复或误登记控件
+
+record_edit 可为一个修订对象或同格式对象数组。普通控件修订使用 region、control、field、before、after、evidence；任务和单笔动作使用本轮能力表对应格式。
+
+- merge_into：同一物理对象重复登记时，control、before 为来源名称，after 为保留名称。完全同名重复也可填写相同名称。不同城市等独立数据实例不因此合并。
+- remove：仅删除无动作/任务引用、误登记或不再需要的冗余条目；control、before 为原名称，after 为空字符串。
+- name：修订稳定名称。
+- description：before 为已提供的控件原说明，未登记时为空；after 为有依据的新说明，不使用区块描述冒充原值。具体显示数据仍留在观察记录中。
+区块级修订的 control 为空字符串；控件修订使用已提供的名称。
+
+## 完整处理诊断
+errors 逐项列出对象、字段路径、实际值、期望值及建议。一起修正全部有依据的问题；unchecked 表示前置结构尚未允许检查，不是已通过。历史候选仍需结合当前图确认。
+仅新提案重复时，修正 proposal 即可；旧记录本身重复时，修订旧记录并让完整 proposal 引用保留身份。把任务设为 equivalent 不会自动解决底层控件重复。
+
+## 列表分组
+不同功能入口误入同一 list_group：提案中清空错误分组并保留各入口；已有记录可用 field="list_group"、before=原分组、after="" 修订。
+同一列表同一种操作存在两个旧身份：使用 merge_into 保留一个，不以清空其中一个 list_group 绕过重复。双方有历史时仍按实际身份判断；行选择与独立播放属于不同操作，不合并。
+
+## 回复示例
+observe 示例：
+{"blocked_by":"control_not_visible","reason":"需要重新观察顶部搜索框，确认其与中央提示的区别","resolution":"observe","proposal":null,"record_edit":null}
+
+已提供对象及准确原值时，description 修订可写为：
+{"blocked_by":"review_required","reason":"原控件说明与图中形状不符","resolution":"edit_record","proposal":null,"record_edit":{"region":"工具栏","control":"排序入口","field":"description","before":"圆点图标","after":"三条横线图标","evidence":"截图右上角为三条横线"}}
+
+## 正反例
+正例：同一个返回箭头重复登记，合并身份并保留全部真实动作和任务引用。
+反例：把不同城市的点击历史合并成一次执行，或删除失败任务来制造完成状态。

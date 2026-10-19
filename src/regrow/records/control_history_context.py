@@ -1,3 +1,4 @@
+from regrow.records.control_knowledge import parameters
 from regrow.records.object_store import control_actions
 'Small identity evidence summaries; historical names are not role proof.'
 from regrow.records.object_store import owned_actions
@@ -26,36 +27,24 @@ def uncertain_observations(control, *, latest_only=True):
 
 def confirmed_information(control):
     """Only accepted task knowledge is a confirmed function; discovery guesses stay separate."""
-    value = control.get('knowledge')
-    if not isinstance(value, str) or not value.strip():
-        return ''
-    from regrow.records.tasks import invalidated, source_attempts
-    bad = invalidated(control)
-    def accepted(source):
-        return bool(source.get('task_ref') or (source.get('basis') == 'identity_merge' and source.get('sources') and all(accepted(item) for item in source['sources'])))
-    return value if any(row.get('knowledge') == value and accepted(row.get('evidence', {}))
-                        and not row.get('visual_only') and not (bad & source_attempts(row.get('evidence', {})))
-                        for row in observation_history(control)) else ''
+    from regrow.records.control_knowledge import confirmed, text
+    return text(confirmed(control))
 
 def purpose_text(control, *, unfinished=False):
-    """Describe available knowledge; discovery guesses do not schedule tasks."""
     confirmed = confirmed_information(control)
     if confirmed:
         return '已知功能：' + confirmed
-    guess = control.get('possible_purpose')
-    if guess is not None:
-        parts = ['推测用途：' + guess]
-        if control.get('may_open_content') is True:
-            parts.append('可能打开其他内容')
-        return '；'.join(parts)
-    legacy = control.get('knowledge') or last_reported(control, 'knowledge').get('knowledge', '')
-    if not isinstance(legacy, str) or not legacy:
+    from regrow.records.control_knowledge import text
+    guess = text(control.get('knowledge'))
+    if not guess:
         return ''
-    origin = last_reported(control, 'knowledge')
-    evidence = origin.get('evidence', {})
-    if origin.get('knowledge') == legacy and str(evidence.get('observation', '')).startswith('discovery:') and not origin.get('visual_only'):
-        return '推测用途：' + legacy
-    return '历史用途（缺少确认依据）：' + legacy
+    parts = ['推测用途：' + guess]
+    if control.get('may_open_content') is True:
+        parts.append('可能打开其他功能内容')
+    decision = control.get('needs_exploration')
+    parts.append('需要探索' if decision is True else ('初步判断无需进一步探索；已有未解任务仍需处理' if unfinished else '无需进一步探索，可以跳过') if decision is False else '是否需要探索尚不确定')
+    return '；'.join(parts)
+
 
 def known_information(control, *, parameters=True, unfinished=False):
     """Current functional content; machine provenance stays in the audit record."""
@@ -71,9 +60,9 @@ def describe(region, cid, *, detailed=True):
     knowledge = known_information(control, parameters=detailed)
     if knowledge:
         result['knowledge'] = knowledge
-    if detailed and control.get('constraints'):
+    if detailed and parameters(control):
         from copy import deepcopy
-        result['constraints'] = deepcopy(control['constraints'])
+        result['constraints'] = deepcopy(parameters(control))
     return result
 
 def comparison(records, rid, cid):
@@ -107,7 +96,9 @@ def access_routes(records, region_ref, control_ref):
     routes = []
     for owner in records.values():
         for source in [owner, *owned_controls(owner).values()]:
-            for edge in source.get('entries', []):
+            for route in source.get('jump_to', []):
+                from regrow.records.control_routes import with_source
+                edge = with_source(source, route)
                 if edge.get('region') == region_ref and edge.get('control') == control_ref:
                     text = owner['name'] + ' / ' + source['name'] + '：' + edge.get('meaning', '')
                     if edge.get('conditions'):

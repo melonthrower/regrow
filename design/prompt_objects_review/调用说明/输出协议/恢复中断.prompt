@@ -1,0 +1,4 @@
+# 恢复判断的输出
+exception填写none、blocking_popup、system_error、unexpected_exit、external_app或unclassified。
+decision填写act、resume_exploration或stop；reason说明判断，handoff说明交还原探索的信息。
+act时选择action或framework_tool中的一种；framework_tool只提供restart_app，是否适用按恢复规则判断。action沿本轮平台操作合同填写。

@@ -1,3 +1,4 @@
+from regrow.records.control_knowledge import parameters
 """Read current object knowledge and shared references; tasks contain questions."""
 from copy import deepcopy
 from regrow.records.object_store import owned_tasks
@@ -15,8 +16,8 @@ def completed(task):
 def observed_purpose(control):
     from regrow.records.control_history_context import confirmed_information, last_reported
     value = confirmed_information(control)
-    row = last_reported(control, 'knowledge')
-    return {'knowledge': value, 'evidence': deepcopy(row.get('evidence', {}))} if value else {}
+    from regrow.records.control_knowledge import evidence
+    return {'knowledge': value, 'evidence': evidence(control)} if value else {}
 
 def control_knowledge(region, cid, records=None):
     if cid is None:
@@ -24,14 +25,14 @@ def control_knowledge(region, cid, records=None):
     control = owned_controls(region).get(cid, {})
     purpose = observed_purpose(control)
     result = {}
-    if purpose or control.get('constraints'):
+    if purpose or parameters(control):
         evidence = purpose.get('evidence', {})
         source = {key: deepcopy(evidence[key]) for key in ('basis', 'shared', 'local_execution') if key in evidence}
-        result['已知用途'] = {'description': purpose.get('knowledge', ''), 'constraints': deepcopy(control.get('constraints', {})), 'source': {'region': region['id'], 'control': cid, **source}}
+        result['已知用途'] = {'description': purpose.get('knowledge', ''), 'constraints': deepcopy(parameters(control)), 'source': {'region': region['id'], 'control': cid, **source}}
     if not records:
         return result
-    ref = control.get('shared_control_ref')
-    group = records.get((ref or {}).get('region'), {}).get('shared_controls', {}).get((ref or {}).get('name'), {})
+    from regrow.records.shared_controls import view
+    group = view(records, region['id'], cid) or {}
     if group.get('status') != 'confirmed':
         return result
     for member in group.get('members', []):
@@ -39,9 +40,9 @@ def control_knowledge(region, cid, records=None):
             continue
         origin = owned_controls(records.get(member['region'], {})).get(member['control'], {})
         value = observed_purpose(origin)
-        if not value and (not origin.get('constraints')):
+        if not value and (not parameters(origin)):
             continue
-        result['共享知识 ' + member['control']] = {'description': value.get('knowledge', ''), 'constraints': deepcopy(origin.get('constraints', {})), 'source': {**member, 'shared': True, 'local_execution': False}}
+        result['共享知识 ' + member['control']] = {'description': value.get('knowledge', ''), 'constraints': deepcopy(parameters(origin)), 'source': {**member, 'shared': True, 'local_execution': False}}
     return result
 
 def refresh(records, state):

@@ -1,0 +1,102 @@
+{
+  "prompts/output.py": {
+    "review": "审阅记录/程序文案/prompts__output.py.md",
+    "strings": 28
+  },
+  "prompts/response_example.py": {
+    "review": "审阅记录/程序文案/prompts__response_example.py.md",
+    "strings": 7
+  },
+  "recognition/control_identity_review.py": {
+    "review": "审阅记录/程序文案/recognition__control_identity_review.py.md",
+    "strings": 41
+  },
+  "recognition/control_indexes.py": {
+    "review": "审阅记录/程序文案/recognition__control_indexes.py.md",
+    "strings": 8
+  },
+  "recognition/discovery_completion.py": {
+    "review": "审阅记录/程序文案/recognition__discovery_completion.py.md",
+    "strings": 23
+  },
+  "recognition/locator.py": {
+    "review": "审阅记录/程序文案/recognition__locator.py.md",
+    "strings": 18
+  },
+  "recognition/ownership_review.py": {
+    "review": "审阅记录/程序文案/recognition__ownership_review.py.md",
+    "strings": 15
+  },
+  "records/shared_control_review.py": {
+    "review": "审阅记录/程序文案/records__shared_control_review.py.md",
+    "strings": 15
+  },
+  "records/task_updates.py": {
+    "review": "审阅记录/程序文案/records__task_updates.py.md",
+    "strings": 24
+  },
+  "runtime/action_commands.py": {
+    "review": "审阅记录/程序文案/runtime__action_commands.py.md",
+    "strings": 7
+  },
+  "tools/branch_switch.py": {
+    "review": "审阅记录/程序文案/tools__branch_switch.py.md",
+    "strings": 28
+  },
+  "traversal/action_context.py": {
+    "review": "审阅记录/程序文案/traversal__action_context.py.md",
+    "strings": 13
+  },
+  "traversal/action_proposer.py": {
+    "review": "审阅记录/程序文案/traversal__action_proposer.py.md",
+    "strings": 3
+  },
+  "traversal/correction_prompts.py": {
+    "review": "审阅记录/程序文案/traversal__correction_prompts.py.md",
+    "strings": 13
+  },
+  "traversal/object_registration.py": {
+    "review": "审阅记录/程序文案/traversal__object_registration.py.md",
+    "strings": 7
+  },
+  "traversal/recovery.py": {
+    "review": "审阅记录/程序文案/traversal__recovery.py.md",
+    "strings": 7
+  },
+  "traversal/region_functions.py": {
+    "review": "审阅记录/程序文案/traversal__region_functions.py.md",
+    "strings": 23
+  },
+  "traversal/repair_stages.py": {
+    "review": "审阅记录/程序文案/traversal__repair_stages.py.md",
+    "strings": 72
+  },
+  "traversal/result_updater.py": {
+    "review": "审阅记录/程序文案/traversal__result_updater.py.md",
+    "strings": 29
+  },
+  "traversal/step_repair.py": {
+    "review": "审阅记录/程序文案/traversal__step_repair.py.md",
+    "strings": 63
+  },
+  "traversal/task_proposer.py": {
+    "review": "审阅记录/程序文案/traversal__task_proposer.py.md",
+    "strings": 7
+  },
+  "traversal/task_result_review.py": {
+    "review": "审阅记录/程序文案/traversal__task_result_review.py.md",
+    "strings": 25
+  },
+  "traversal/task_prerequisites.py": {
+    "review": "审阅记录/程序文案/traversal__task_prerequisites.py.md",
+    "strings": 3
+  },
+  "recognition/discovery_inventory.py": {
+    "review": "审阅记录/程序文案/recognition__discovery_inventory.py.md",
+    "strings": 1
+  },
+  "runtime/model_transport.py": {
+    "review": "审阅记录/程序文案/runtime__model_transport.py.md",
+    "strings": 3
+  }
+}

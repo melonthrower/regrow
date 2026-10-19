@@ -39,7 +39,7 @@ def candidates(records, rows):
         row['ref'] = rid
         if r.get('description'):
             row['历史描述'] = r['description']
-        if row.get('披露范围') != '仅历史身份索引':
+        if provided_controls is not None:
             from regrow.records.context_scope import identity
             row['controls'] = provided_controls if provided_controls is not None else [identity(r, cid, records=records) for cid in owned_controls(r)]
         if r.get('behavior_context'):
@@ -71,6 +71,8 @@ def control_candidates(records, region_names, selected, existing=None):
     mapping = dict(existing or {})
     from regrow.records.context_scope import identity
     for (rid, owner) in owners.items():
+        if rid not in selected:
+            continue
         controls = []
         for (cid, c) in owned_controls(records[rid]).items():
             label = next((label for (label, ref) in mapping.items() if ref == cid), None)

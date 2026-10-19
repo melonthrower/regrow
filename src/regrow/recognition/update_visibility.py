@@ -38,12 +38,11 @@ def locate_retained(records, changes, call, snapshot, frame, matcher, *, observa
             latest = frame_observation(control, kind='controls', call=call, observation=observation)
             if latest.get('evidence', {}).get('source_call') == call and (observation is None or latest.get('evidence', {}).get('observation') == observation):
                 continue
-            image = templates.image(control)
-            if image:
-                path = (snapshot / image).resolve()
-                if not path.is_file():
-                    continue
-                hit = matcher.locate(str(path), str(frame))
+            appearances = [{**row, 'image': str((snapshot / row['image']).resolve())}
+                           for row in templates.variants(control) if (snapshot / row['image']).is_file()]
+            if appearances:
+                from regrow.recognition.matching import match_appearances
+                hit = match_appearances(appearances, lambda path: matcher.locate(path, str(frame)))
                 if not hit['accepted']:
                     continue
                 box = hit.get('box')

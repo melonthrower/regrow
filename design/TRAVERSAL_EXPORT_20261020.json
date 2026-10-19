@@ -2,7 +2,7 @@
   "date": "2026-10-20",
   "kind": "current-local-research-snapshot-not-full-acceptance",
   "parent_remote_commit": "bb27a049c2511daa733574124a062da89ef20762",
-  "local_head": "220d8de1d092d332787e4dd2f0babf5b8d1a158e",
+  "local_head": "7c1cc809c7b900801813be28ec413030132a17be",
   "source_includes_uncommitted_worktree": true,
   "runtime_and_review_drafts_separate": true,
   "offline_focused_tests_passed": 69,
@@ -1598,8 +1598,8 @@
       "export": "63b86adbc7ca0b82b1b692ab78d467bf2bfca35a2262ce4715dce89235b96d98"
     },
     "design/prompt_objects_review/控件.prompt": {
-      "source": "a3d5b7aad2fd922e57ca417eed0749f46894763fd8d8cbf93179bd5cb324f2ac",
-      "export": "a3d5b7aad2fd922e57ca417eed0749f46894763fd8d8cbf93179bd5cb324f2ac"
+      "source": "351ba6c3005ded5628a6a99cd843fbdd6c6f820288319c14ab0057618f08eb82",
+      "export": "351ba6c3005ded5628a6a99cd843fbdd6c6f820288319c14ab0057618f08eb82"
     },
     "design/prompt_objects_review/调用审查/01_发现与识别.md": {
       "source": "3a19d65e462ff72f274131b41e0932790e29257016157bf6b7ac3214f43d75e3",
@@ -2844,7 +2844,23 @@
     "design/prompt_objects_review/审阅记录/动作字段修订.md": {
       "source": "77307370d6d491037e2c56308c08f6be51607e2a674cd078ee688dbfdb38eb3c",
       "export": "77307370d6d491037e2c56308c08f6be51607e2a674cd078ee688dbfdb38eb3c"
+    },
+    "design/prompt_objects_review/审阅记录/控件附件原文_20261020.md": {
+      "source": "36b91148c9ed42c09cf4ddf7147e1a83d140ccde30dbf562c291eb0f7638cc11",
+      "export": "36b91148c9ed42c09cf4ddf7147e1a83d140ccde30dbf562c291eb0f7638cc11"
+    },
+    "design/prompt_objects_review/审阅记录/控件组装说明_20261020.md": {
+      "source": "fb51eda853b482ce8147b1d922d874e453eb90b3973ae6ae1dbdaad09cb7dbe1",
+      "export": "fb51eda853b482ce8147b1d922d874e453eb90b3973ae6ae1dbdaad09cb7dbe1"
+    },
+    "design/prompt_objects_review/审阅记录/控件块索引_20261020.json": {
+      "source": "b173d0cff427876c115e0e04184d4350d709621b55458c3d95f5e5ae9679b997",
+      "export": "b173d0cff427876c115e0e04184d4350d709621b55458c3d95f5e5ae9679b997"
+    },
+    "design/prompt_objects_review/审阅记录/控件导入记录_20261020.md": {
+      "source": "9393754ca1168eb9fd2fd14c07882c4fbd148c2ab515c454813ce5ae019edb51",
+      "export": "9393754ca1168eb9fd2fd14c07882c4fbd148c2ab515c454813ce5ae019edb51"
     }
   },
-  "review_only_followup": "2026-10-20: adopt user action-field prose; runtime source unchanged; Tier 1 text checks and independent review only"
+  "review_only_followup": "2026-10-20: import 22 attachment control blocks; earlier adopted action prose retained; runtime unchanged, Tier 1 only"
 }

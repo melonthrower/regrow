@@ -1,0 +1,254 @@
+{
+  "source": "控件附件原文_20261020.md",
+  "source_sha256": "36b91148c9ed42c09cf4ddf7147e1a83d140ccde30dbf562c291eb0f7638cc11",
+  "prompt": "../控件.prompt",
+  "blocks": [
+    {
+      "id": "shared.output_contract",
+      "requires": [],
+      "source_start_line": 69,
+      "source_end_line": 79,
+      "prompt_start_line": 3,
+      "prompt_end_line": 13,
+      "body_sha256": "8492dd5222d25a200f2c9b1144a1fc04d44925a775c9fde5a8a53cfb34580a7e"
+    },
+    {
+      "id": "control.definition",
+      "requires": [
+        "shared.output_contract"
+      ],
+      "source_start_line": 83,
+      "source_end_line": 91,
+      "prompt_start_line": 15,
+      "prompt_end_line": 23,
+      "body_sha256": "bf463442fd02ee7314f72cb267354bf28fd47004eae912f75a7ea5222aa06c36"
+    },
+    {
+      "id": "control.references",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 95,
+      "source_end_line": 120,
+      "prompt_start_line": 25,
+      "prompt_end_line": 50,
+      "body_sha256": "8b9eee3136158a1a1edc63034e0d5b4f9e06ec6cb304b811654292d0eca25539"
+    },
+    {
+      "id": "control.identity",
+      "requires": [
+        "control.references"
+      ],
+      "source_start_line": 124,
+      "source_end_line": 144,
+      "prompt_start_line": 52,
+      "prompt_end_line": 72,
+      "body_sha256": "5ff96e8ea214c3b499b9e024c1c0409fff7a0ec6e330d0a8b12e0518a46c8b8f"
+    },
+    {
+      "id": "control.name_description",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 148,
+      "source_end_line": 165,
+      "prompt_start_line": 74,
+      "prompt_end_line": 91,
+      "body_sha256": "e3ca51db7d52f4e30bb91c766cde5d3175c0028b272b370899c8bb36076bbcbf"
+    },
+    {
+      "id": "shared.conditions",
+      "requires": [
+        "shared.output_contract"
+      ],
+      "source_start_line": 169,
+      "source_end_line": 181,
+      "prompt_start_line": 93,
+      "prompt_end_line": 105,
+      "body_sha256": "b01d017f4efee0fa4d0cd0b53a60b3492a5f1419de3ea665ce8d03c65448bfed"
+    },
+    {
+      "id": "task.ownership",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 185,
+      "source_end_line": 195,
+      "prompt_start_line": 107,
+      "prompt_end_line": 117,
+      "body_sha256": "dd4aa8c4a7c4073befac2aa5366c105ff9b139515f3e395c06b4404ccf4f5e7f"
+    },
+    {
+      "id": "control.knowledge_base",
+      "requires": [
+        "control.definition",
+        "shared.conditions"
+      ],
+      "source_start_line": 199,
+      "source_end_line": 224,
+      "prompt_start_line": 119,
+      "prompt_end_line": 144,
+      "body_sha256": "7a0d298bc4af622c6914f3cd8c8c19f943c735119c1146207fc613e2efb2d7cb"
+    },
+    {
+      "id": "control.knowledge_initial",
+      "requires": [
+        "control.knowledge_base"
+      ],
+      "source_start_line": 228,
+      "source_end_line": 251,
+      "prompt_start_line": 146,
+      "prompt_end_line": 169,
+      "body_sha256": "d544343d8a9cae931f6fd40d41eb5ac7bb145e14452f643bc9553541098e094e"
+    },
+    {
+      "id": "control.knowledge_result",
+      "requires": [
+        "control.knowledge_base",
+        "task.ownership"
+      ],
+      "source_start_line": 255,
+      "source_end_line": 269,
+      "prompt_start_line": 171,
+      "prompt_end_line": 185,
+      "body_sha256": "64a6796336abd6c31d0b8d0aef96ef2a4ea712216e7ad42be25a1301a3475acd"
+    },
+    {
+      "id": "control.knowledge_revision",
+      "requires": [
+        "control.knowledge_base"
+      ],
+      "source_start_line": 273,
+      "source_end_line": 303,
+      "prompt_start_line": 187,
+      "prompt_end_line": 217,
+      "body_sha256": "de573a8bcd71ad5df6fec68af04e566cecb663ddf6505cd2999b5be361dba4a0"
+    },
+    {
+      "id": "control.knowledge_constraints",
+      "requires": [
+        "control.knowledge_base"
+      ],
+      "source_start_line": 307,
+      "source_end_line": 326,
+      "prompt_start_line": 219,
+      "prompt_end_line": 238,
+      "body_sha256": "36b378b619f24d4e0592b4978e20e1dfed3b01848967df9422837f6f99006aa4"
+    },
+    {
+      "id": "control.may_open_content",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 330,
+      "source_end_line": 342,
+      "prompt_start_line": 240,
+      "prompt_end_line": 252,
+      "body_sha256": "80269c105e2cf59099599150e82e35941407311d338bd64f229df3d1589f1bca"
+    },
+    {
+      "id": "control.needs_exploration",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 346,
+      "source_end_line": 379,
+      "prompt_start_line": 254,
+      "prompt_end_line": 287,
+      "body_sha256": "19112cb3e92d9c697a7e58b5e7163db5a998074083735243b97ccc8d0c97fe6f"
+    },
+    {
+      "id": "control.visual_scope",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 383,
+      "source_end_line": 393,
+      "prompt_start_line": 289,
+      "prompt_end_line": 299,
+      "body_sha256": "b56f2a04f5a7d46373564f4ef1fa9867ddce74405e4b20edd386a6300807568e"
+    },
+    {
+      "id": "control.action_availability",
+      "requires": [
+        "control.definition"
+      ],
+      "source_start_line": 397,
+      "source_end_line": 405,
+      "prompt_start_line": 301,
+      "prompt_end_line": 309,
+      "body_sha256": "7aa45e42836bbb88e8fc9a0d416160c5ecd1930a31182f3e0965e1427e6cc029"
+    },
+    {
+      "id": "control.bbox",
+      "requires": [
+        "control.visual_scope"
+      ],
+      "source_start_line": 409,
+      "source_end_line": 445,
+      "prompt_start_line": 311,
+      "prompt_end_line": 347,
+      "body_sha256": "d1f4ff3cb86ace1de028fbe992d1db5be28f375af5236ded400d8d8f0f585eeb"
+    },
+    {
+      "id": "control.add_image",
+      "requires": [
+        "control.visual_scope",
+        "control.identity",
+        "shared.conditions"
+      ],
+      "source_start_line": 449,
+      "source_end_line": 476,
+      "prompt_start_line": 349,
+      "prompt_end_line": 376,
+      "body_sha256": "96ad21ab60f03fd3893a47ecbacef719da19101fda524bc536e5196c5a1e8553"
+    },
+    {
+      "id": "control.jump_base",
+      "requires": [
+        "control.definition",
+        "shared.conditions"
+      ],
+      "source_start_line": 480,
+      "source_end_line": 494,
+      "prompt_start_line": 378,
+      "prompt_end_line": 392,
+      "body_sha256": "1d73356789325ebed8755a63d9e1370d5e071c472e42a065824efccfae7aaf71"
+    },
+    {
+      "id": "control.jump_new",
+      "requires": [
+        "control.jump_base",
+        "control.identity"
+      ],
+      "source_start_line": 498,
+      "source_end_line": 532,
+      "prompt_start_line": 394,
+      "prompt_end_line": 428,
+      "body_sha256": "ec7d54fe2b8a58c176a5c61a2336c3debba2e37fdaaf54f1ecefdd66542a281f"
+    },
+    {
+      "id": "control.jump_revision",
+      "requires": [
+        "control.jump_base"
+      ],
+      "source_start_line": 536,
+      "source_end_line": 559,
+      "prompt_start_line": 430,
+      "prompt_end_line": 453,
+      "body_sha256": "e4d12c6806767ac44a364236163b529d8bb38c058efc15095e3262d83483aace"
+    },
+    {
+      "id": "task.completion",
+      "requires": [
+        "task.ownership"
+      ],
+      "source_start_line": 563,
+      "source_end_line": 575,
+      "prompt_start_line": 455,
+      "prompt_end_line": 467,
+      "body_sha256": "1625269955ba09f51e9e8ddb1dbbea84bf997b3462205c72ba02001390a2ee06"
+    }
+  ],
+  "status": "正文已提取，分块依赖仅保存；尚未接入运行组装。行号和散列对应本次导入，后续编辑需同步索引。"
+}

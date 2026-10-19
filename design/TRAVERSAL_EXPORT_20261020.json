@@ -2,7 +2,7 @@
   "date": "2026-10-20",
   "kind": "current-local-research-snapshot-not-full-acceptance",
   "parent_remote_commit": "bb27a049c2511daa733574124a062da89ef20762",
-  "local_head": "7c1cc809c7b900801813be28ec413030132a17be",
+  "local_head": "593c82a4d5449e19b06c4f4abeca4751ba77c98b",
   "source_includes_uncommitted_worktree": true,
   "runtime_and_review_drafts_separate": true,
   "offline_focused_tests_passed": 69,
@@ -1214,8 +1214,8 @@
       "export": "2b533805295bdaad07a285fb81a767030b4fce364ea51ad976ea23ec0cc5ffc9"
     },
     "design/prompt_objects_review/区块.prompt": {
-      "source": "52859c1fd44c5eab58efd72b201d799c788a6d10140977db1082dfe204bd9f01",
-      "export": "52859c1fd44c5eab58efd72b201d799c788a6d10140977db1082dfe204bd9f01"
+      "source": "35dc38379aae143ed3f057087a15273168e0937add74956239dbc4fa5f21423e",
+      "export": "35dc38379aae143ed3f057087a15273168e0937add74956239dbc4fa5f21423e"
     },
     "design/prompt_objects_review/审阅记录/分离映射.json": {
       "source": "26c4ef94a73d61a709d5a38c77d92a650916b84fd8f9d10df88773cba2d2327f",
@@ -2860,7 +2860,11 @@
     "design/prompt_objects_review/审阅记录/控件导入记录_20261020.md": {
       "source": "9393754ca1168eb9fd2fd14c07882c4fbd148c2ab515c454813ce5ae019edb51",
       "export": "9393754ca1168eb9fd2fd14c07882c4fbd148c2ab515c454813ce5ae019edb51"
+    },
+    "design/prompt_objects_review/审阅记录/区块正文导入_20261020.md": {
+      "source": "74f4d45cd4136d647ca659618dbdb941c1d825329af21dc14d29ca2dc34f49b5",
+      "export": "74f4d45cd4136d647ca659618dbdb941c1d825329af21dc14d29ca2dc34f49b5"
     }
   },
-  "review_only_followup": "2026-10-20: import 22 attachment control blocks; earlier adopted action prose retained; runtime unchanged, Tier 1 only"
+  "review_only_followup": "2026-10-20: adopt user region prose verbatim; earlier control/action drafts retained; runtime unchanged; Tier 1 only"
 }

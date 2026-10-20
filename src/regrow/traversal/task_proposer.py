@@ -11,7 +11,10 @@ def proposal_schema():
     fields = {'control': {'type': 'string'}, 'task_type': {'type': 'string', 'enum': ['function', 'parameter']}}
     definition = object_schema(fields)
     definition['required'] = ['control', 'task_type']
-    return object_schema({'inventory': {'type': 'string', 'enum': ['complete', 'partial', 'uncertain']}, 'evidence': string, 'operations': {'type': 'array', 'items': {'anyOf': [definition, update_schema()]}}, 'shared_instances': {'type': 'array', 'items': object_schema({k: string for k in ('control', 'source_region', 'source_control', 'reason')})}})
+    result = object_schema({'inventory': {'type': 'string', 'enum': ['complete', 'partial', 'uncertain']}, 'evidence': string, 'operations': {'type': 'array', 'items': definition}, 'task_update': {'type': 'array', 'items': update_schema()}, 'shared_instances': {'type': 'array', 'items': object_schema({k: string for k in ('control', 'source_region', 'source_control', 'reason')})}})
+
+    result['required'].remove('task_update')
+    return result
 
 def update_names(region, *, scope_review=False):
     """A focused evidence review assesses its original question, not its neighbors."""
@@ -73,17 +76,11 @@ def plan_request(root, records, state, rid, *, work=None):
             provided.add(cid)
         material['本轮可判断旧任务'].append(item)
     material['其他任务背景'] = [row for row in catalog if row['task'] not in refs and not row.get('control')]
-    allowed = []
-    for branch in schema['properties']['operations']['items']['anyOf']:
-        fields = branch['properties']
-        if 'control' in fields:
-            fields['control']['enum'] = controls
-        elif refs:
-            fields['task']['enum'] = refs
-        else:
-            continue
-        allowed.append(branch)
-    schema['properties']['operations']['items']['anyOf'] = allowed
+    schema['properties']['operations']['items']['properties']['control']['enum'] = controls
+    if refs:
+        schema['properties']['task_update']['items']['properties']['task']['enum'] = refs
+    else:
+        schema['properties']['task_update']['maxItems'] = 0
     dynamic = {'区块': region['name'], '描述': region['description'], '补充清点原因': context.inventory_reason(region_work(region).get('task_inventory', {}).get('review', {})), **material}
     dynamic = {k: v for (k, v) in dynamic.items() if v not in (None, '', [], {})}
     if region.get('local_knowledge'):

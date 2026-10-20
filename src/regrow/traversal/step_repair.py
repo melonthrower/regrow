@@ -20,10 +20,24 @@ def diagnostic(error):
     if hasattr(error, 'report'):
         return error.report
     if isinstance(error, jsonschema.ValidationError):
+        message = error.message
         if error.validator == 'maxItems':
-            return '/'.join(map(str, error.absolute_path)) + ': 数组最多允许' + str(error.validator_value) + '项，实际提交' + str(len(error.instance)) + '项；这是条目数量限制，不是文字长度限制。'
-        return '/'.join(map(str, error.absolute_path)) + ': ' + error.message
+            message = '数组最多允许' + str(error.validator_value) + '项，实际提交' + str(len(error.instance)) + '项；这是条目数量限制，不是文字长度限制。'
+        return {'errors': [{'code': 'schema', 'path': '/' + '/'.join(map(str, error.absolute_path)),
+                            'object': 'reply', 'actual': error.instance, 'expected': message,
+                            'repair': '按字段格式修订，不改变真实证据。'}],
+                'unchecked': ['结构尚未通过，后续语义检查未执行。']}
     return str(error)
+
+
+def support_review_eligible(error):
+    """A malformed reply needs correction, not invented support tasks."""
+    if isinstance(error, jsonschema.ValidationError):
+        return False
+    report = getattr(error, 'report', error)
+    if isinstance(report, dict) and any(row.get('code') == 'schema' for row in report.get('errors', [])):
+        return False
+    return True
 
 def atomic(path, value):
     path = Path(path)
@@ -230,8 +244,7 @@ def request(root, job, context):
             if obj.get('properties', {}).get(key, {}).get('type') == 'boolean':
                 obj['required'] = list(dict.fromkeys(obj.get('required', []) + [key]))
     if job['stage'] == 'task_proposal':
-        for branch in fields['proposal']['anyOf'][0]['properties']['operations']['items'].get('anyOf', []):
-            branch.get('properties', {}).get('control', {}).pop('enum', None)
+        fields['proposal']['anyOf'][0]['properties']['operations']['items']['properties']['control'].pop('enum', None)
     schema = {'type': 'object', 'properties': fields, 'required': [name for name in fields if name != 'record_edit'], 'additionalProperties': False,
               'allOf': [{'if': {'properties': {'resolution': {'const': 'edit_record'}}, 'required':['resolution']},
                          'then': {'required':['record_edit'], 'properties':{'record_edit':{'not':{'type':'null'}}}}}]}
@@ -458,7 +471,7 @@ class Runner:
         if stage == 'update' and self.review_update is not None and (not job.get('requires_update_review')):
             job['requires_update_review'] = True
             self.save(job)
-        if job['stage'] == 'function_registration' and job.get('status') in ('repair', 'blocked') and (not job.get('attempt')) and (not (self.run / 'execution_pending.json').exists()) and (not (job.get('service_failure') or job.get('service_retry_request'))):
+        if job['stage'] == 'function_registration' and support_review_eligible(job.get('error')) and job.get('status') in ('repair', 'blocked') and (not job.get('attempt')) and (not (self.run / 'execution_pending.json').exists()) and (not (job.get('service_failure') or job.get('service_retry_request'))):
             rid = job['request'].get('source', {}).get('region')
             if _region_functions.request_support_review(self.run, rid, job.get('call')):
                 job.update(status='superseded_by_support_review')
@@ -534,7 +547,7 @@ class Runner:
                             job.update(request=refreshed, status='initial', candidate=None, record_edit=None)
                             self.save(job)
                             continue
-                    if job['stage'] == 'function_registration' and (not job.get('attempt')) and _region_functions.request_support_review(self.run, job['request'].get('source', {}).get('region'), job.get('call')):
+                    if job['stage'] == 'function_registration' and support_review_eligible(error) and (not job.get('attempt')) and _region_functions.request_support_review(self.run, job['request'].get('source', {}).get('region'), job.get('call')):
                         job.update(status='superseded_by_support_review', error=diagnostic(error))
                         self.save(job)
                         (self.run / self.pointer_name).unlink(missing_ok=True)
@@ -560,7 +573,10 @@ class Runner:
             if self.available() < 1:
                 raise Paused('repair_pending', '等待下一轮额度继续原步骤')
             repairing = job['status'] == 'repair'
-            if job.get('service_retry_request'):
+            if job.get('identity_recheck_request'):
+                q = job.pop('identity_recheck_request')
+                self.save(job)
+            elif job.get('service_retry_request'):
                 q = job.pop('service_retry_request')
                 self.save(job)
             elif repairing:
@@ -624,7 +640,8 @@ class Runner:
                             self.stop(job, '身份比较仍未确认：' + reply['reason'])
                         atomic(self.run / 'calls' / ref / 'effective_request.json', reviewed)
                         atomic(self.run / 'calls' / ref / 'effective_candidate.json', candidate)
-                        job['repairs'] = max(0, job['repairs'] - 1)
+                        if not q.get('identity_rules_recheck'):
+                            job['repairs'] = max(0, job['repairs'] - 1)
                         job.pop('control_identity_pair', None)
                         job.update(request=reviewed, candidate=candidate, status='accept')
                         if reply['control_identity'] == 'different' and q['control_identity_pair'].get('kind') == 'reuse':

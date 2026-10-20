@@ -1,5 +1,6 @@
 # 区块
 
+<!-- BEGIN_PROMPT_BLOCK id="region.common" requires="" -->
 ## 通用
 
 ### 对象定义
@@ -16,7 +17,9 @@
 仅填写本步要求的字段。字段结构、必填性、引用格式及空值含义遵循本步输出格式；不自行补出未要求的字段。
 
 本文件中的 JSON 示例只展示对应字段，不代表完整回复。只有明确规定增量更新的字段采用增量语义，不将其推广到其他字段。
+<!-- END_PROMPT_BLOCK id="region.common" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.function" requires="region.common" -->
 ## 功能的含义与归属
 
 功能是围绕独立业务目的组织的能力，可由多个操作、多个区块共同实现。
@@ -27,7 +30,9 @@
 
 正例：新建闹钟主表单组织时间填写、相关配置和保存；响铃时长菜单提供参数知识。“创建闹钟”登记在主表单，关联使用时长菜单提供的支持。
 反例：仅因响铃时长菜单参与了一项配置操作，就在该菜单下再次登记整个“创建闹钟”；仅提供编辑器入口的菜单登记编辑器整套创建能力。
+<!-- END_PROMPT_BLOCK id="region.function" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.list_group" requires="region.common" -->
 ## 同类交互分组 → list_group
 
 ### 字段含义与填写条件
@@ -62,7 +67,9 @@
 
 正例：多条同构文件结果登记为一个“文件搜索结果项”代表，名称不绑定当前文件名。
 反例：把进入不同功能的内容、搜索、设置标签合并成一个控件；仅因两个独立控件属于同组，就通过 `shared_instances` 将它们合并为同一控件记录。
+<!-- END_PROMPT_BLOCK id="region.list_group" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.shared_instances" requires="region.common" -->
 ## 共享控件身份 → shared_instances
 
 ### 字段含义与填写条件
@@ -107,7 +114,9 @@
 
 正例：有明确身份延续依据的同一个顶部按钮，在两个区块的成员记录中复用；不同条件下的用途另行保留条件。
 反例：只因外观都是“＋”，就合并调小时与调分钟两个独立控件；复用来源知识后宣称本区块已执行过来源动作。
+<!-- END_PROMPT_BLOCK id="region.shared_instances" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.registration" requires="region.common" -->
 ## 区块功能登记：本步目的
 
 整理本区块已经取得的用途、参数和功能知识，仅依据本次提供的已有材料总结。
@@ -115,7 +124,9 @@
 `local_knowledge` 保存可复用的用途、操作方式和限制；`functions` 将已有知识按独立业务目的整理成能力条目。信息展示区可以仅登记用途知识，尚无独立业务功能时 `functions` 可以为空。
 
 用途明确的功能无需为登记而补做操作。功能用途已明确，不表示本次已经执行成功；实际执行结果按已有证据表达。
+<!-- END_PROMPT_BLOCK id="region.registration" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.local_knowledge" requires="region.common" -->
 ## 本地用途知识 → local_knowledge
 
 ### 内容范围
@@ -153,7 +164,9 @@
 
 正例：在统计展示区记录“展示所选时间范围内的条目数量”，即使其中没有控件。
 反例：将“本次查找测试文件得到三条结果”写成稳定用途；更新某段操作知识时丢掉仍成立的前置条件。
+<!-- END_PROMPT_BLOCK id="region.local_knowledge" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.target_summary" requires="region.common" -->
 ## 入口与目标摘要：输入材料的解释
 
 入口目标摘要用于说明已有材料能够确认的去向。
@@ -164,7 +177,9 @@
 
 正例：材料已明确某入口打开条目编辑区，记录该去向；编辑区其他能力未提供时保持未知。
 反例：只因存在到编辑区的关联，就推断编辑区支持分类、附件和同步，并将这些能力登记为入口区块自身的功能。
+<!-- END_PROMPT_BLOCK id="region.target_summary" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.parameter_definitions" requires="region.common" -->
 ## 参数定义 → parameter_definitions
 
 ### 引用与定义范围
@@ -183,7 +198,9 @@
 
 正例：材料明确显示“5 分钟、10 分钟、15 分钟”为可选时长，将其保留为已知选项；本次选中了“5 分钟”另留在证据中。
 反例：因为选项包含具体时间，就从参数知识中删除这些已知选项；仅成功输入过一次“5”，就推断参数只能取“5”。
+<!-- END_PROMPT_BLOCK id="region.parameter_definitions" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.functions" requires="region.common" -->
 ## 功能目录 → functions
 
 ### 内容范围与粒度
@@ -260,7 +277,9 @@
 
 正例：某项与功能使用直接相关的效果在已有材料中存在尚未解决的疑问，保留该具体效果及未知范围。
 反例：为每项功能机械添加“所有参数组合是否有效未知”“重启后是否保留未知”，即使这些问题与该功能当前用途无关。
+<!-- END_PROMPT_BLOCK id="region.functions" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.evidence" requires="region.common" -->
 ## 结论证据 → evidence
 
 `evidence` 说明实际来源及其支持的事实，保留理解结论所需的适用条件。`supports` 负责引用来源，`evidence` 说明材料具体支持了什么；不将来源引用本身当成执行成功的证明。
@@ -271,7 +290,9 @@
 
 正例：新材料明确解决了原条件下的保存疑问，更新对应结论；另一条件下仍未解决的失败继续保留。
 反例：仅因后续答案更晚，就覆盖此前的相反证据；将归属不明的变化直接绑定到某个控件。
+<!-- END_PROMPT_BLOCK id="region.evidence" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="region.exploration_status" requires="region.common" -->
 ## 探索登记状态与实际效果：输入材料的解释
 
 输入材料中的 `done` 只说明相应探索信息已经登记，不表示业务已经执行成功。
@@ -280,3 +301,10 @@
 
 正例：已看到时长选项，登记已知选项；实际是否改值或保存按操作证据分别说明。
 反例：因为任务标为 `done`，就宣称已修改并保存；只看到当前回显，就宣称重启后仍然保留。
+<!-- END_PROMPT_BLOCK id="region.exploration_status" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.identity" requires="region.common" -->
+## 区块引用与包含
+已有区块用材料给定的ref引用，新区块按本步格式填写identity。区块身份不确定时不绑定ref，填写name、description、identity="uncertain"，在identity_evidence中说明候选与缺口。
+parent_index只表示本次regions中真实物理包含的父区块位置，不表示从哪个区块进入。整个区块确实超出本轮允许范围时才填写out_of_scope_reason。
+<!-- END_PROMPT_BLOCK id="region.identity" -->

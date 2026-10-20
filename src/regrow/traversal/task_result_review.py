@@ -122,7 +122,7 @@ def request(root, run, source, frames):
     if task is None or not (task.get('status') == 'pending' or deferred or later):
         raise ValueError('需要待完成任务或有未复核恢复/循环证据的暂挂任务')
     recovered = bool(recovery_evidence(run, task)[0])
-    paths = ['任务/任务动作登记.prompt', '共享/任务知识与当前观察.prompt']
+    paths = []  # Unified object blocks are selected from the final output contract.
     parts = [{'path': path, 'text': (Path(root) / 'regrow/prompts' / path).read_text()} for path in paths]
     history = later or _action_owner_correction.control_history(records[rid], task)
     history = [a for a in history if a not in task_value(task, 'attempts', [])]

@@ -25,7 +25,7 @@
 - 外观图用于身份，动作坐标取当前图；匹配不证明可操作或成功。两图比较不输出几何。
 - 必要条件、未解问题、真实失败与证据来源保留。预算只在框架计数，不写入 Luna prompt。
 - 普通、纠错和恢复调用同一记录发布；读写遵守同一个事务指针。已执行动作登记失败不能重做 GUI。
-- 提示组成入口是 `src/regrow/prompts/流程/调用组成.json`。工作台持久数据仍在项目根 `artifacts/prompt_review/20261012_01/`。
+- 提示组成入口是 `src/regrow/prompts/流程/调用组成.json`；四对象正文唯一维护在 `src/regrow/prompts/对象/`，按稳定块ID与依赖选择。工作台持久数据仍在项目根 `artifacts/prompt_review/20261012_01/`。
 
 ## 遍历设计原则：Luna 理解与探索，框架提供记忆与可靠执行
 
@@ -102,3 +102,9 @@
 2026-10-19 按调用选择材料/字段示例为当前工作树候选，尚未语义接受：保存帧22次Luna/0新GUI显示参数身份复核仍会因标题变化误拆对象，清点仍会重开已确认身份疑问，功能总结存在非空输出格式/引用错误。不要将该候选作为长遍历已通过版本；原Settings运行停留72/100，未恢复。证据在根artifacts/runs/purpose_material_20261019_01，详见本月日志。
 
 控件当前合同：全局稳定ID对应name/description/image/knowledge/jump_to/may_open_content/needs_exploration七项。多个Region直接引用同ID，区块保存list_groups；knowledge为description/conditions列表，可含参数constraints，猜测与确认由历史来源区分；image为path/conditions状态图列表；jump_to只保存目标与条件。原任务和实际动作归属保留。模型字段与本地Schema同步，字段说明显示布尔取值和必要下一层对象枚举，完整Schema仅本地校验。具体字段见modules/stepwise/object_fields.md，实际验证与限制见本月日志；不据控件小样本宣称此前Settings长遍历问题解决。
+
+## 2026-10-20 四对象模块接入（本批验证记录见月志）
+控件/区块/任务/动作统一使用BEGIN_PROMPT_BLOCK标记、稳定ID和requires依赖。object_blocks按本次输出字段选择同一正文，退出旧字段语义重复加载；原平台/场景/纠错专用要求保留。原审阅入口链接到运行对象文件，历史草稿不再是第二维护源。
+任务提出operations仅新任务，task_update为已有任务判断；同控件同类型重复提交不能绕过复核。next_action省略保留、null清空，defer/answered不暴露旧建议。任务类型目标从task.type读取，不再强制每个已知功能补一次证明动作。may_open_content输出为boolean，原历史空值保留读入。
+
+本批状态：四对象模块接线候选与83项聚焦检查完成；原生保存帧10HTTP/0GUI及新Settings48/100真实调用证据已保留。身份复核在完整共同定义及连续历史下仍误判并阻塞，剩52次未执行、实际a0010未结算，整体未接受。不得将文件统一/接线检查通过解释为长遍历完成。行为未接受；用户另行授权同步未完成研究检查点，见OBJECT_PROMPT_HANDOFF_20261020.md及2026-10月志。

@@ -36,7 +36,7 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
         raise ValueError('本次清点的控件身份已变化，需重新读取问题范围')
     updates = _task_updates
     settlement = _task_settlement
-    for row in reply['operations']:
+    for row in [*reply.get('task_update', []), *reply['operations']]:
         if 'task' in row:
             matched = [name for name in old if updates.reference(region['id'], name) == row['task']]
             if len(matched) != 1:
@@ -71,16 +71,7 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
         task = {**{k: v for (k, v) in row.items() if k not in ('reason', 'remaining_question', 'retry_when')}, 'control': cid, 'status': row.get('status', 'pending'), 'source_call': call, 'attempts': []}
         same = [n for (n, t) in tasks.items() if t.get('control') == cid and settlement.registration_kind(t) == settlement.registration_kind(task)]
         if same:
-            if len(same) != 1:
-                raise ValueError('该控件有多个历史同类型任务，请引用本轮提供的旧任务')
-            prior = same[0]
-            existing = tasks[prior]
-            seen.add(prior)
-            if existing.get('status') in ('done', 'record_only'):
-                from regrow.records.tasks import audit
-                audit(existing).setdefault('revisions', []).append({'source_call': call, 'previous_status': existing['status'], 'reason': reply['evidence'], 'change': 'selected_for_further_exploration'})
-                existing['status'] = 'pending'
-            continue
+            raise ValueError('已有同控件同类型任务，不要放入operations；需要判断时使用本轮允许的task_update引用')
         if name in tasks:
             name = (cid or region['id']) + ' / ' + name
             if name in tasks:

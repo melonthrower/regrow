@@ -37,11 +37,11 @@ def validate(row, task, ref=None):
         raise ValueError('继续或暂挂需说明原问题尚未回答的具体部分')
     if row['decision'] == 'defer' and (not row.get('retry_when', '').strip()):
         raise ValueError('暂挂需说明何时重新考虑')
-    if row['decision'] == 'answered' and any((k in row for k in ('remaining_question', 'retry_when', 'next_action'))):
+    if row['decision'] == 'answered' and any((k in row for k in ('remaining_question', 'retry_when'))):
         raise ValueError('answered不提交活动缺口、重试条件或下一步建议')
     if row['decision'] != 'defer' and 'retry_when' in row:
         raise ValueError('retry_when只属于defer判断')
-    if row['decision'] != 'continue' and 'next_action' in row:
+    if row['decision'] != 'continue' and row.get('next_action') is not None:
         raise ValueError('next_action只属于continue判断')
 
 def resolve_suggestion(records, value, labels=None):
@@ -74,8 +74,13 @@ def decide(task, row, basis, *, product_complete, records, labels=None):
         from regrow.records.task_settlement import missing_product_fields
         missing = '准备目标的dependency_updates确认' if task.get('prepares') else '、'.join(missing_product_fields(task)) or '有效观察来源'
         raise ValueError('任务 ' + row['task'] + ' 尚不能结算，缺少：' + missing + '。请依据已提供的观察登记所需答案；reason中的说明不会自动写入这些产物。')
-    suggestion = resolve_suggestion(records, row.get('next_action'), labels)
     previous = task_value(task, 'latest_update')
+    if decision != 'continue':
+        suggestion = None
+    elif 'next_action' in row:
+        suggestion = resolve_suggestion(records, row['next_action'], labels)
+    else:
+        suggestion = deepcopy((previous or {}).get('next_action'))
     if previous:
         task_audit(task).setdefault('update_history', []).append(deepcopy(previous))
     task_audit(task)['latest_update'] = {**{k: deepcopy(row[k]) for k in ('decision', 'reason', 'remaining_question', 'retry_when') if k in row}, 'next_action': suggestion, 'source': deepcopy(basis)}
@@ -303,4 +308,6 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
 
 def latest_suggestion(records, task):
     value = task_value(task, 'latest_update', {})
+    if value.get('decision') != 'continue':
+        return None
     return deepcopy(value.get('next_action'))

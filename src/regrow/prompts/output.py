@@ -65,7 +65,7 @@ def action_shape(schema, root=None, include_actions=True):
             if completion is not None:
                 lines.extend(wording['none_progress'])
     if completion:
-        lines.extend(['', wording['products'], '、'.join(completion)])
+        lines.extend(['', wording['products'], '、'.join(name + ('（必填）' if name in completion_required else '（按需）') for name in completion)])
     return '\n'.join(lines).strip()
 
 def fragments(part, glossary_path=None):
@@ -150,7 +150,8 @@ def ordered_action(request, root):
     assembled.append({'path':'输出格式/完整示例', 'text':complete(request['response_schema'], request)})
     request['fixed_parts'] = assembled
     request['system_prompt'] = '\n\n'.join(p['text'] for p in assembled if p['text'])
-    return request
+    from regrow.prompts.object_blocks import apply
+    return apply(root, request)
 
 
 def prepare(request, root):
@@ -226,7 +227,8 @@ def prepare(request, root):
     request['fixed_parts'] = [part for (name, group) in groups.items() if group for part in [{'path': '输出格式/分组-' + name, 'text': '# ' + name}, *group]]
     request['fixed_parts'].append({'path':'输出格式/完整示例','text':complete(request['response_schema'], request)})
     request['system_prompt'] = '\n\n'.join((p['text'] for p in request['fixed_parts']))
-    return request
+    from regrow.prompts.object_blocks import apply
+    return apply(root, request)
 from pathlib import Path
 import re
 from regrow.prompts.compose import catalog
@@ -284,8 +286,6 @@ def action_contract(root, request, parts):
         return None
     common = definition['platforms']['common_fields']
     fields = next((p for p in parts if p['path'] == common), None)
-    if fields is None:
-        return None
     from regrow.runtime.model_transport import expand_schema
     schema = expand_schema(request['response_schema'])
     schema = schema.get('properties', {}).get('operation', schema)
@@ -316,7 +316,7 @@ def action_contract(root, request, parts):
             tail.append(line)
     if seen != set(required):
         raise ValueError('平台动作说明缺少：' + ', '.join(sorted(set(required) - seen)))
-    field_text = fields['text'].split('\n', 1)[1].strip()
+    field_text = ''  # Object action.proposal owns target/reason/coordinate semantics.
     header = definition['output']['action_text']['merged_table_header']
     return {'path': marker, 'text': '### ' + heading + '\n' + field_text + '\n\n' + header + '\n|---|---|---|\n' + '\n'.join(rows) + ('\n\n' + '\n'.join(tail) if tail else '')}
 

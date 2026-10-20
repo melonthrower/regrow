@@ -215,7 +215,7 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if not op['control']:
                 continue
             if len(ids) != 1:
-                add('task_owner', f'/operations/{i}/control', op['name'], op['control'], {'matches': ids}, '多条匹配先核对并修订重复记录；无匹配先发现登记，不猜控件名称。')
+                add('task_owner', f'/operations/{i}/control', op['control'], op['control'], {'matches': ids}, '多条匹配先核对并修订重复记录；无匹配先发现登记，不猜控件名称。')
         for (i, row) in enumerate(p.get('shared_instances', [])):
             ids = [cid for (cid, c) in controls.items() if c['name'] == row['control']]
             if len(ids) != 1:

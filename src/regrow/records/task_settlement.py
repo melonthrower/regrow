@@ -23,8 +23,8 @@ def region_task(task):
     return bool(task) and task.get('control') is None
 
 def task_definition(task):
-    from regrow.prompts.compose import entry
-    return entry(SOURCE_ROOT, 'task_proposal')['task_goals'][registration_kind(task)]
+    from regrow.prompts.object_blocks import task_definition as definition
+    return definition(registration_kind(task), SOURCE_ROOT)
 
 def exploration_goal(task):
     if task.get('prepares'):

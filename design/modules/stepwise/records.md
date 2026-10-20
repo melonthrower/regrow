@@ -38,3 +38,5 @@
 `history_context.question_state`统一读取当前任务的已确认参数规则与最新具体未答部分，动作卡和更新catalog共用；不靠模型从动作流水重新推导已接受事实。清点投影保留本区块控件的实际失败、条件与关联边界，不以最后一条动作替代全部记录。
 
 控件持久合同：七项见[object_fields.md](object_fields.md)。参数规则嵌入knowledge，分组属于Region.list_groups，图片列表保存真实状态；来源、旧共享包装和合并别名归既有历史，读者复用control_knowledge/control_records/control_routes。Region可直接引用同一Control，解除一处引用不删除其他引用；任务/实际动作仍保留原区块归属。功能合并按条件保留确认及其他条件猜测，复用有效确认来源，不因参数追加丢失确认。发现登记复用frame_observation按kind/call/region读取真实观察，知识事件不作为裁图来源。实际验收边界见月志。
+
+2026-10-20：任务判断next_action显式null清空，continue省略保留先前建议；defer/answered不向后读暴露。新任务与旧判断分属operations/task_update，正常校验、纠错及登记共用新合同。may_open_content新输出只收boolean，历史未确认值不改写。验证范围见本月日志。

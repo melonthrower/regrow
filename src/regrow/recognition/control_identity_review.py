@@ -365,3 +365,48 @@ def compared_candidate(request, reply):
 
 def reviewed_request(request, reply):
     return compared_candidate(request, reply)[0]
+
+
+def recheck_request(root, job, previous_request, previous_reply, reason):
+    """Rebuild the same real identity question after an explicit rule repair."""
+    if previous_request.get('role') != 'control_identity_comparison':
+        raise ValueError('需要真实身份比较请求')
+    if previous_request['original_request'].get('source', {}).get('attempt') != job.get('attempt'):
+        raise ValueError('身份复核必须属于同一实际动作')
+    current = deepcopy(job)
+    current.pop('registration_submission', None)
+    current.pop('control_identity_candidates', None)
+    current['control_identity_pair'] = deepcopy(previous_request['control_identity_pair'])
+    current['candidate'] = deepcopy(previous_request['identity_candidate'])
+    current['error'] = {'kind': 'identity_rules_recheck', 'reason': reason,
+                        '先前身份判断（本次待复核）': deepcopy(previous_reply)}
+    request = deepcopy(previous_request)
+    request['original_request']['control_identity_reviews'] = deepcopy(job['request'].get('control_identity_reviews', []))
+    request = attach(root, current, request)
+    request['identity_rules_recheck'] = True
+    return request
+
+
+def queue_recheck(root, run, comparison_call, reason):
+    """Queue one model recheck; keep original replies, attempt and repair count."""
+    from regrow.traversal.step_repair import pending, atomic, read
+    run = Path(run)
+    job = pending(run)
+    if not job or job.get('status') != 'blocked' or job.get('stage') != 'update' or not job.get('attempt'):
+        raise ValueError('仅续接有真实未结算动作的身份阻塞')
+    if job.get('identity_recheck_history'):
+        raise ValueError('同一阻塞已安排过身份复核，不重复请求同一证据')
+    request = read(run / 'calls' / comparison_call / 'request.json')
+    reply = read(run / 'calls' / comparison_call / 'response.json')
+    fresh = recheck_request(root, job, request, reply, reason)
+    archive = Path(job['path']).with_name('before-identity-rule-recheck.json')
+    if (run / archive).exists():
+        raise ValueError('复核归档已存在')
+    atomic(run / archive, job)
+    job['identity_recheck_request'] = fresh
+    job['identity_recheck_history'] = [{'comparison_call': comparison_call, 'reason': reason,
+                                        'archive': str(archive), 'repairs_before': job['repairs']}]
+    job.pop('registration_submission', None)
+    job['status'] = 'repair'
+    atomic(run / job['path'], job)
+    return fresh

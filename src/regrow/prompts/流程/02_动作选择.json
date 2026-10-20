@@ -1,8 +1,7 @@
 {
   "stage": "action_selection",
   "parts": [
-    "动作/围绕目标选择动作.prompt",
-    "动作/动作空间与字段.prompt"
+    "动作/围绕目标选择动作.prompt"
   ],
   "schema": "输出格式/选择探索入口.schema",
   "system_order": [
@@ -28,43 +27,6 @@
     {
       "title": "输出要求",
       "kind": "action_contract"
-    },
-    {
-      "title": "功能知识",
-      "path": "共享/任务知识与当前观察.prompt",
-      "section": "功能知识的内容",
-      "fields": [
-        "knowledge"
-      ]
-    },
-    {
-      "path": "共享/任务知识与当前观察.prompt",
-      "section": "任务知识的归属 → knowledge",
-      "fields": [
-        "knowledge"
-      ]
-    },
-    {
-      "title": "参数答案",
-      "path": "任务/任务动作登记.prompt",
-      "section": "输出：参数答案 → findings",
-      "fields": [
-        "findings"
-      ]
-    },
-    {
-      "path": "共享/参数观察值.prompt",
-      "fields": [
-        "findings"
-      ]
-    },
-    {
-      "title": "入口答案",
-      "path": "任务/任务动作登记.prompt",
-      "section": "输出：入口关联 → entry",
-      "fields": [
-        "entry"
-      ]
     },
     {
       "title": "操作与结算局部示例",

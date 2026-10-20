@@ -64,12 +64,6 @@ def parts(root, stage, *, before=(), after=(), selection=None):
         options = value['mode_parts']
         leading = options.get(selection.get('mode'), options['default'])
     result = load(root, (*before, *leading, *value.get('parts', ()), *after))
-    if value.get('task_goals'):
-        goals = value['task_goals']
-        description = '\n'.join('- ' + kind + '：' + row['goal'] for kind, row in goals.items())
-        description += '\n- 区块本身的function任务：' + goals['function']['region_goal']
-        for part in result:
-            part['text'] = part['text'].replace('{{task_goals}}', description)
     return result
 
 def compose(*groups):

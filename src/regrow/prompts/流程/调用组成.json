@@ -1,5 +1,5 @@
 {
-  "说明": "实际运行读取的组合定义。题目、材料槽和对应输出放在一起；flow指向同目录已有流程文件。资料内容仍由原角色builder从真实记录产生。当前规则语义保持，尚未接入六份精简草稿。",
+  "说明": "实际运行读取的调用组成；四对象统一分块，字段与含义来自对象目录，同一块不按调用改写。",
   "calls": {
     "action_selection": {
       "groups": [],
@@ -177,10 +177,7 @@
       ],
       "parts": [
         "发现手册/前景与区块.prompt",
-        "共享/当前前景.prompt",
-        "共享/区块身份复用.prompt",
-        "共享/身份图准入.prompt",
-        "发现手册/列表代表项.prompt"
+        "共享/当前前景.prompt"
       ],
       "title": "发现与识别",
       "builder": "locator.prepare",
@@ -223,7 +220,7 @@
             "可引用同类实例",
             "当前可关联的入口目标区块"
           ],
-          "output": "operations：回答允许更新的旧问题；尚有未答功能问题时提出新任务。共享依据成立时填写 shared_instances。"
+          "output": "operations只提交新任务；task_update提交本轮允许的已有任务判断。"
         },
         {
           "question": "已知未覆盖项和旧缺口是否都已交代？",
@@ -274,17 +271,6 @@
             "登记页面组成与访问来路"
           ],
           "output": "operations中的旧任务行：引用本组task，给出decision、reason及新增事实或具体缺口。"
-        }
-      },
-      "task_goals": {
-        "function": {
-          "label": "功能探索",
-          "goal": "在目标控件能够正常发挥作用的状态下执行一次适用操作，登记直接语义后即完成本任务；入口通常只需点击。到达、定位、启用或使目标退出已选中状态的准备可包含多步，原目标不变。新出现内容的独立功能交给其所属区块后续提出任务，不延长本入口任务。真实投递失败、遮挡等障碍须保留具体原因，不能把不适合观察作用的状态下没有变化概括为控件无效果。",
-          "region_goal": "了解当前区块的内容与组织方式；必要时滚动或切换视图，依据新增内容和覆盖情况判断是否已回答原问题。新发现控件的独立功能另行探索。"
-        },
-        "parameter": {
-          "label": "参数探索",
-          "goal": "了解目标控件自身的输入或选择方式，以及有证据支持的范围、限制和依赖；选取足够说明规则的代表情况，不穷举取值。入口打开的独立控件或内容由其所属区块探索，不把它们的输入规则挂到原入口按钮。"
         }
       }
     },
@@ -368,9 +354,7 @@
           "output": "parameter_definitions / local_knowledge / functions：引用有来源的参数与支持，入口仅披露目标一级摘要。"
         }
       ],
-      "parts": [
-        "任务/区块功能登记.prompt"
-      ],
+      "parts": [],
       "title": "区块功能总结",
       "builder": "region_functions.request"
     },
@@ -402,7 +386,6 @@
         "异常处理/恢复当前探索.prompt",
         "异常处理/异常识别.prompt",
         "异常处理/恢复策略.prompt",
-        "动作/动作空间与字段.prompt",
         "异常处理/恢复输出.prompt"
       ],
       "title": "异常恢复",
@@ -560,30 +543,7 @@
   },
   "output": {
     "说明": "本轮迁移原有触发条件，不将此表当作已完成的角色精简方案。$task_assessment和$control_output是程序从真实输出合同确定的能力，非Luna填写字段。",
-    "parts": [
-      {
-        "path": "任务/任务动作登记.prompt",
-        "all": [
-          "task",
-          "decision"
-        ]
-      },
-      {
-        "path": "共享/任务知识与当前观察.prompt",
-        "any": [
-          "knowledge",
-          "local_knowledge",
-          "findings",
-          "entry"
-        ]
-      },
-      {
-        "path": "共享/参数观察值.prompt",
-        "all": [
-          "findings"
-        ]
-      }
-    ],
+    "parts": [],
     "glossary_path": "共享/术语定义.prompt",
     "glossary": [
       {
@@ -597,24 +557,11 @@
         ]
       },
       {
-        "section": "视觉",
-        "any": [
-          "ref",
-          "identity"
-        ]
-      },
-      {
         "section": "动作",
         "any": [
           "operation",
           "action_result",
           "framework_tool"
-        ]
-      },
-      {
-        "section": "功能",
-        "all": [
-          "functions"
         ]
       },
       {
@@ -624,58 +571,7 @@
         ]
       }
     ],
-    "fragments": [
-      {
-        "path": "共享/任务知识与当前观察.prompt",
-        "heading": "控件知识",
-        "all": [
-          "$control_output"
-        ]
-      },
-      {
-        "path": "共享/任务知识与当前观察.prompt",
-        "heading": "任务知识",
-        "any": [
-          "$task_assessment",
-          "operations"
-        ]
-      },
-      {
-        "path_prefix": "任务/任务动作登记.prompt",
-        "heading": "→ knowledge",
-        "all": [
-          "knowledge"
-        ]
-      },
-      {
-        "path_prefix": "任务/任务动作登记.prompt",
-        "heading": "→ findings",
-        "all": [
-          "findings"
-        ]
-      },
-      {
-        "path_prefix": "任务/任务动作登记.prompt",
-        "heading": "→ entry",
-        "all": [
-          "entry"
-        ]
-      },
-      {
-        "path_prefix": "任务/任务动作登记.prompt",
-        "heading": "→ dependency_updates",
-        "all": [
-          "dependency_updates"
-        ]
-      },
-      {
-        "path": "共享/身份图准入.prompt",
-        "heading": "身份图字段",
-        "any": [
-          "bbox"
-        ]
-      }
-    ],
+    "fragments": [],
     "groups": [
       "术语定义",
       "本步目的与判断",
@@ -693,8 +589,8 @@
       ],
       "none_reason": "填写reason说明本步不操作的原因。",
       "merged_table_header": "| action | 需要填写的字段 | 操作含义 |",
-      "complete": "原探索问题已有充分答案时，填写action=\"complete\"和reason；有新增答案时，将下列答案字段填在同一层。complete表示问题已回答，不代表业务操作必然成功。",
-      "products": "本轮答案字段如下：complete提交结论；none可记录已确认的部分答案。字段均放在回复外层。",
+      "complete": "选择action=\"complete\"时，填写reason及本轮要求的答案字段。",
+      "products": "complete的答案字段（与action同层；以下必填标记仅约束complete，none的部分答案按其格式选填）：",
       "none_without_complete": "本步不操作时填写action=\"none\"。",
       "none_progress": [
         "已有已确认的部分答案时，可在none回复同层填写对应答案字段，reason说明依据及尚未回答的部分。",
@@ -715,5 +611,317 @@
     "discovery_objects_question": "当前区块和控件分别是什么，如何对应已有身份？",
     "discovery_objects_output": "regions / controls：登记本图能确认的区块、控件及归属；未确认项保留具体缺口。",
     "inventory_review": "对照原问题和已提供观察补充事实，明确继续、已回答或暂挂；不执行新动作。"
+  },
+  "object_modules": {
+    "files": [
+      "对象/控件.prompt",
+      "对象/区块.prompt",
+      "对象/任务.prompt",
+      "对象/动作.prompt"
+    ],
+    "rules": [
+      {
+        "ids": [
+          "control.identity",
+          "control.name_description"
+        ],
+        "all": [
+          "@controls"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.knowledge_initial"
+        ],
+        "all": [
+          "@control_knowledge"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.knowledge_result"
+        ],
+        "all": [
+          "@task_knowledge"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.knowledge_revision",
+          "control.knowledge_constraints"
+        ],
+        "all": [
+          "knowledge"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.may_open_content"
+        ],
+        "all": [
+          "may_open_content"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.needs_exploration"
+        ],
+        "all": [
+          "needs_exploration"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.bbox"
+        ],
+        "all": [
+          "bbox"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.add_image"
+        ],
+        "all": [
+          "add_image"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.jump_new"
+        ],
+        "all": [
+          "jump_to"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.shared_instances"
+        ],
+        "all": [
+          "shared_instances"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.list_group"
+        ],
+        "all": [
+          "list_group"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.local_knowledge"
+        ],
+        "all": [
+          "local_knowledge"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.functions"
+        ],
+        "all": [
+          "functions"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.parameter_definitions"
+        ],
+        "all": [
+          "parameter_definitions"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "task.operations"
+        ],
+        "all": [
+          "operations"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "task.findings"
+        ],
+        "all": [
+          "findings"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "task.dependency_updates"
+        ],
+        "all": [
+          "dependency_updates"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "control.jump_revision"
+        ],
+        "all": [
+          "jump_to"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.identity"
+        ],
+        "all": [
+          "@regions"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "region.function",
+          "region.registration",
+          "region.target_summary",
+          "region.evidence",
+          "region.exploration_status"
+        ],
+        "all": [],
+        "any": [],
+        "roles": [
+          "function_registration"
+        ]
+      },
+      {
+        "ids": [
+          "task.update",
+          "task.decision",
+          "task.remaining_question",
+          "task.retry_when",
+          "task.next_action"
+        ],
+        "all": [
+          "@task_update"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "action.proposal",
+          "control.action_availability",
+          "control.visual_scope"
+        ],
+        "all": [
+          "@action"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "action.result",
+          "action.ownership"
+        ],
+        "all": [
+          "action_result"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "action.complete",
+          "action.none"
+        ],
+        "all": [],
+        "any": [],
+        "roles": [
+          "action_selection"
+        ]
+      },
+      {
+        "ids": [
+          "task.type",
+          "task.definition"
+        ],
+        "all": [],
+        "any": [],
+        "roles": [
+          "action_selection",
+          "task_result_review"
+        ]
+      },
+      {
+        "ids": [
+          "control.identity"
+        ],
+        "all": [],
+        "any": [],
+        "roles": [
+          "control_identity_selection",
+          "control_identity_comparison"
+        ]
+      }
+    ],
+    "retired_paths": [
+      "共享/区块身份复用.prompt",
+      "共享/任务知识与当前观察.prompt",
+      "共享/身份图准入.prompt",
+      "共享/参数观察值.prompt",
+      "任务/任务动作登记.prompt",
+      "任务/区块功能登记.prompt",
+      "发现手册/列表代表项.prompt",
+      "动作/动作空间与字段.prompt",
+      "更新/区块变化与字段.prompt",
+      "发现手册/输出填写.prompt"
+    ],
+    "retired_sections": {
+      "更新/动作后观察与状态更新.prompt": [
+        "实际结果 → action_result",
+        "控件外观追加 → controls[].add_image",
+        "出现与访问关系 → jump_to",
+        "实际对象归属举例"
+      ],
+      "任务/清点输出约定.prompt": [
+        "必要任务 → operations",
+        "已有任务",
+        "复用同一控件 → shared_instances"
+      ]
+    }
   }
 }

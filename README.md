@@ -1,10 +1,11 @@
 # regrow 当前本地研究快照（2026-10-20）
 
+- [Astra接手说明](design/OBJECT_PROMPT_HANDOFF_20261020.md)
 - [活动源码](src/regrow) · [开发入口](DEVELOPMENT.md)
 - [Prompt调用审查目录](design/prompt_objects_review/调用审查目录.md) · [四对象审查入口](design/prompt_objects_review/README.md)
 - [本快照说明与验证边界](design/TRAVERSAL_SNAPSHOT_20261020.md)
 
-本分支保存当前本地框架，Prompt审阅稿尚未接入。当前代码含未整体验收的研究候选，不是发布版；不覆盖远端原分支，也不宣称已合并其全部行为修复。运行数据及凭据未上传。
+本分支保存当前本地框架，四对象Prompt已接入正常调用，唯一正文在[src/regrow/prompts/对象](src/regrow/prompts/对象)。当前代码含未整体验收的研究候选，不是发布版；不覆盖远端原分支，也不宣称已合并其全部行为修复。运行数据及凭据未上传。
 
 ---
 

@@ -1,5 +1,6 @@
 # 控件
 
+<!-- BEGIN_PROMPT_BLOCK id="shared.output_contract" requires="" -->
 ## 共用输出约定
 
 只填写本步输出格式允许的字段。本步要求的字段按格式提供；可选字段在有相应信息或更新时填写。完成本步所需的引用也应遵守该输出格式。完整结构、必填项和可用字段以本次输出格式为准；加载某个字段的说明，不表示必须在本次回复中填写该字段。
@@ -11,7 +12,9 @@
 材料中的编号照材料填写；本次输出数组的位置从 0 开始。不同层级的 `index` 不共享编号空间，按对应字段说明引用。
 
 下列 JSON 均为局部字段示例，未展示的字段不表示可以省略本步的其他必填项。
+<!-- END_PROMPT_BLOCK id="shared.output_contract" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.definition" requires="shared.output_contract" -->
 ## 控件对象定义
 
 控件（control）是承载操作的界面对象。一个控件身份在全局保存一份记录，由区块通过同一控件 ID 引用。
@@ -21,7 +24,9 @@
 **正例：** 将编辑区内的“保存”按钮登记为控件，即使本次按钮禁用，仍保留该控件。
 
 **反例：** 将仅用于说明、无交互用途的“尚无条目”文字登记为按钮。
+<!-- END_PROMPT_BLOCK id="control.definition" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.references" requires="control.definition" -->
 ## 身份引用与本次关联：index / region_index
 
 `controls[].index` 引用材料中的已有控件编号，回答“这是材料中的哪个控件”。新控件不填写已有控件 `index`；不要自行编造历史编号。
@@ -48,7 +53,9 @@
 **正例：** 用材料中的控件编号复用音量滑块，并关联到本次列出的播放设置区。
 
 **反例：** 把侧栏里的输入框关联到中央弹窗；把 r0080 中的数字当成 `region_index`。
+<!-- END_PROMPT_BLOCK id="control.references" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.references" -->
 ## 复用已有身份与新建控件
 
 结合当前截图及已有材料，根据所属界面结构、相关标签、作用对象和已知变化判断身份。有依据认作同一控件时，继续引用原 `index`；不要求每次重新证明全部外观和用途都一致。
@@ -70,7 +77,9 @@
 - 为了复用相似名称，把侧栏输入框认作中央弹窗的输入框。
 
 明确的新对象正常登记。存在具体已有候选、但尚不能确认对应关系时，不猜填 `index`，也不只因本次匹配不确定就另建副本。按本步提供的 `uncertainties` 或其他指定方式记录具体候选和疑点；其他已确认对象和任务照常处理。
+<!-- END_PROMPT_BLOCK id="control.identity" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.name_description" requires="control.definition" -->
 ## 稳定名称与描述：name / description
 
 `name` 使用稳定、便于辨认的名称。`description` 描述控件的稳定外观及明确、稳定的作用对象，不记录本次输入值、选中项或临时状态。
@@ -89,7 +98,9 @@
 **正例：** 已知同一顶部“＋”跨标签页复用时，使用“顶部新增按钮”等稳定名称，并分别记录各标签页中的用途。
 
 **反例：** 将“当前音量为 50%”写成稳定描述；已知按钮在多个标签页承担不同用途，仍将它永久命名为“新建闹钟按钮”。
+<!-- END_PROMPT_BLOCK id="control.name_description" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="shared.conditions" requires="shared.output_contract" -->
 ## 条件数组的共同约定
 
 条件使用字符串数组，每项写清可判断的适用上下文或状态。数组中的各项须同时成立；同一用途的备选情况可在一项中明确写“或”。不同用途分别登记，不把不同用途和条件混成一句。
@@ -103,19 +114,9 @@
 **正例：** 两项条件“文件面板已打开”“处于多选模式”表示两项都需成立；“世界时钟标签页已选中”可以限定该页中顶部按钮的用途。
 
 **反例：** 看到保存按钮禁用，就推断“必须登录”；把本次停在“下载”目录写成打开文件面板的必要条件。
+<!-- END_PROMPT_BLOCK id="shared.conditions" -->
 
-## 任务信息的归属
-
-区分原任务询问的对象、实际操作的对象，以及操作后出现的目标对象。
-
-控件的用途知识归该控件；区块问题中已确认的区块事实归相应区块。入口打开的目标区块，其内部字段、选项和独立控件功能记录到实际目标，不都堆在入口控件上。
-
-准备动作中得到的知识和访问关系，保留实际来源；原任务不因准备过程中操作了其他对象而自动改绑。回答原问题时，可以使用相关准备证据，但不能用“完成了一次准备操作”代替原任务的判断。
-
-**正例：** 为研究文件名输入框，先点击文件入口。入口打开面板的知识归入口；输入与筛选的知识归输入框；原任务仍回答输入框的问题。
-
-**反例：** 原任务询问输入框如何筛选，因准备过程中点击了入口，就把任务改成“入口能打开面板”并宣布完成。
-
+<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_base" requires="control.definition,shared.conditions" -->
 ## 功能知识：knowledge 的含义与结构
 
 `knowledge` 是当前控件的可复用用途知识列表，回答“这个控件用来做什么、作用于什么对象、在什么条件下如何使用”。
@@ -142,7 +143,9 @@
 **正例：** 保存按钮的用途写“保存当前文件”；本次按钮禁用写入观察。若已有依据表明菜单提供 5、10、15 分钟三个选项，可以记录该可选范围。
 
 **反例：** 因本次选中 5 分钟，就写“该控件固定设置为 5 分钟”；把目标区块所有内部操作都写成入口按钮的功能。
+<!-- END_PROMPT_BLOCK id="control.knowledge_base" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_initial" requires="control.knowledge_base" -->
 ## 识别时的用途推测
 
 本块适用于仅根据界面和材料识别用途的对象。可以依据文字、图标、上下文和已有知识，登记有依据的用途推测；明确且无需探索的用途可以直接登记，不强制先操作一次。
@@ -167,7 +170,9 @@
 **正例：** 根据叉形图标和对话框位置，将关闭用途按识别来源登记。
 
 **反例：** 尚未操作就声称“已验证点击后关闭成功”；仅凭图标猜测，登记一条已经访问过目标的 `jump_to`。
+<!-- END_PROMPT_BLOCK id="control.knowledge_initial" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_result" requires="control.knowledge_base,task.ownership" -->
 ## 根据操作结果更新知识
 
 依据实际动作、前后观察和已有证据，记录本次确认的用途、作用对象及必要条件。只确认这些证据支持的结论，不延伸到尚未观察的后续操作或目标内部功能。
@@ -183,10 +188,12 @@
 **正例：** 仅确认入口实际打开的面板，将面板内新输入框尚未知的匹配规则留给对应对象和任务。
 
 **反例：** 因成功打开保存对话框，就将入口用途记为“已成功保存文件”；因新输入框看起来像搜索框，就把其筛选行为写成已验证结果。
+<!-- END_PROMPT_BLOCK id="control.knowledge_result" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_revision" requires="control.knowledge_base" -->
 ## 新增与修订知识条目
 
-只提交新增或需要修订的知识项。没有实质更新时省略 `knowledge`；未列出的已有条目保留。
+只提交新增或需要修订的知识项。`knowledge` 为可选更新字段且没有实质更新时省略；未列出的已有条目保留。本步将其列为必填答案时，提交有依据的答案，不用省略约定替代必填要求。
 
 修订材料中该控件“当前控件知识”的已有条目时，在该项添加 `index`。这个 `index` 是所属控件的知识条目编号，不是 `controls[].index`，也不是其他控件的知识编号。新增项不填写 `index`；材料中的知识列表为空时，不自行编造旧条目编号。
 
@@ -215,7 +222,9 @@
 **正例：** 给已有且仍成立的城市选择用途补条件，再新增闹钟用途；同一控件保留一个身份。
 
 **反例：** 用闹钟用途覆盖仍成立的城市选择用途；没有旧用途的上下文依据，仅凭本次结果猜改其条件。
+<!-- END_PROMPT_BLOCK id="control.knowledge_revision" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_constraints" requires="control.knowledge_base" -->
 ## 参数规则：knowledge[].constraints
 
 `constraints` 保存该知识项适用的参数规则，例如输入格式、长度、范围或枚举选项。没有需要登记的参数规则时省略，不把本次输入值当成规则。
@@ -236,7 +245,9 @@
 **正例：** 根据明确的界面限制或已有验证依据记录小时范围，并保留该规则所属用途的条件。
 
 **反例：** 本次输入 7 成功，就写成“必须输入 7”；仅凭 7 有效，就推断完整取值范围是 0 至 23。
+<!-- END_PROMPT_BLOCK id="control.knowledge_constraints" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.may_open_content" requires="control.definition" -->
 ## 主要功能入口：may_open_content
 
 `may_open_content` 表示操作该控件是否能打开或展开与应用主要功能相关、具有探索价值的内容。包括进入主要功能页面、展开相关菜单或显示相关操作控件；业务范围按本次应用和遍历目标判断。
@@ -250,7 +261,9 @@
 **正例：** 打开业务设置面板、展开与任务相关的操作菜单或显示独立文件名输入框，属于此类入口。
 
 **反例：** 仅因按钮改变一个当前值就填 `true`；把与本次应用主要功能无关的内容算作主要功能入口；因入口用途已知就改成 `false`。
+<!-- END_PROMPT_BLOCK id="control.may_open_content" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.needs_exploration" requires="control.definition" -->
 ## 是否仍需探索：needs_exploration
 
 `needs_exploration` 判断当前控件自身是否存在值得探索的具体未知：
@@ -285,7 +298,9 @@
 **正例：** 已知按钮打开业务面板，入口判断可为 `may_open_content=true`，自身没有问题时 `needs_exploration=false`。输入框不打开内容，但重要输入规则未知时，两者可分别为 `false`、`true`。
 
 **反例：** 因按钮能打开面板就必填 `needs_exploration=true`；因控件用途明确就要求先点击一次才能填 `false`。
+<!-- END_PROMPT_BLOCK id="control.needs_exploration" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.visual_scope" requires="control.definition" -->
 ## 身份辨认范围与操作范围
 
 身份图用于后续辨认对象；动作坐标用于本次实际交互。两者根据各自任务指定的截图确定，不能直接相互替代。
@@ -297,7 +312,9 @@
 **正例：** 滑块旁有仅用于说明的“音量”标签。身份图包含标签与滑块；拖动范围对应实际可操作的滑轨和滑块。
 
 **反例：** 因说明标签和周围留白位于身份图内，就把它们纳入可拖动区域；把保存的身份图边界直接当作当前动作坐标。
+<!-- END_PROMPT_BLOCK id="control.visual_scope" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.action_availability" requires="control.definition" -->
 ## 当前动作的可执行性
 
 执行动作前，结合当前前景、遮挡情况、控件状态及本步截图判断能否操作。识别出控件，说明知道它是什么，不保证本次动作能够执行或达到预期业务结果。
@@ -307,7 +324,9 @@
 **正例：** 识别出禁用的“保存”按钮后，仍认作原控件，保存用途保持；本次是否能点击并成功保存，按当前状态与实际结果判断。
 
 **反例：** 仅凭识别结果就认定点击可以完成保存；忽略前景弹窗，直接点击后方同名按钮的旧坐标。
+<!-- END_PROMPT_BLOCK id="control.action_availability" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.bbox" requires="control.visual_scope" -->
 ## 身份图范围：bbox
 
 本块适用于本步直接提供身份图范围的调用。新对象或确需补充、更新身份外观时，`bbox` 填写本步指定原图中的完整辨认范围。
@@ -345,7 +364,9 @@
 **正例：** 保留按钮完整外观及有助于辨认的标签；按当前指定原图重新确定需要补充的范围。
 
 **反例：** 只裁纯色或笔画内部；将与该控件辨认无关的系统状态栏纳入身份图；将身份图框直接当成未来点击区域。
+<!-- END_PROMPT_BLOCK id="control.bbox" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.add_image" requires="control.visual_scope,control.identity,shared.conditions" -->
 ## 请求追加身份外观：add_image / image_conditions
 
 已有控件通常复用原身份图。只有本步允许提出图片追加请求，且图标或可辨外观确有变化、值得保留为另一种身份外观时，才在对应控件项填写 `add_image=true`。省略或 `false` 表示本次不请求追加，不清空已有图片。
@@ -374,7 +395,9 @@
 **正例：** 同一播放控制按钮出现值得保留的另一种图标外观，追加图片并保留原身份。
 
 **反例：** 仅因输入文字、控件位置、区块划分范围或窗口尺寸改变，就追加图片或新建控件。这些变化本身不构成追加理由；若同时出现具有辨认价值的实质外观变化，再按实际情况判断。
+<!-- END_PROMPT_BLOCK id="control.add_image" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.jump_base" requires="control.definition,shared.conditions" -->
 ## 访问关系：jump_to 的基本含义
 
 `jump_to` 保存实际操作的来源控件与可访问目标之间的已验证关系，用于后续选择访问路线。目标可以是区块，也可以是独立控件；关系归实际产生该访问效果的来源控件。
@@ -390,7 +413,9 @@
 **正例：** 记录文件入口打开文件面板的已验证路线，后续需要时用于导航；当前面板已打开时可以直接研究其中对象。
 
 **反例：** 把用途猜测当成已验证路线；仅修订旧路线条件，却声称本次重新到达旧目标。
+<!-- END_PROMPT_BLOCK id="control.jump_base" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.jump_new" requires="control.jump_base,control.identity" -->
 ## 登记本次新增访问关系
 
 本次实际操作使目标区块或独立控件出现、切换、展开或变得可访问时，根据动作与前后观察确认关系，再登记新的 `jump_to` 项。
@@ -426,7 +451,9 @@
 **正例：** 根据实际点击和前后图，记录入口展开独立输入框的关系。
 
 **反例：** 把输入框中改写文字登记为一个新输入框目标；把材料中的控件编号填进 `control_index`；把无关弹窗的出现归因于本次点击。
+<!-- END_PROMPT_BLOCK id="control.jump_new" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="control.jump_revision" requires="control.jump_base" -->
 ## 修订已有访问路线的条件
 
 材料列出实际来源控件的“已有跳转”时，可以用 `jump_to[].index` 定位该列表中的已有路线；此写法只修订其 `conditions`。该 `index` 不是控件编号、知识条目编号，也不是本次目标数组的位置。
@@ -451,17 +478,4 @@
 **正例：** 保留城市选择路线，只根据已有依据将其限定在世界时钟页。
 
 **反例：** 因本次在闹钟页打开新建闹钟，就用新目标覆盖仍成立的城市选择路线；补写旧条件时声称本次也访问了城市选择。
-
-## 按原问题判断任务是否完成
-
-任务完成判断应回答原问题，依据本次或已有材料中的相关证据。不要因为出现新对象，就自动扩大原任务的完成范围；也不要把一次准备动作或界面变化当成所有问题的答案。
-
-若原问题只询问入口会打开什么，已观察到相应目标即可据此回答。新目标内部的输入、匹配或其他独立功能，留给对应对象和任务，不要求全部探索后才结束入口任务。
-
-若原问题询问输入规则、匹配行为或保存是否成功，仅打开入口或相关面板还不能回答；继续围绕尚未确认的原问题判断。当前材料已经足够回答时，也不要求仅为重验而重复操作。
-
-任务结论写入本步规定的位置，不因本块提到完成判断就自行新增状态字段。是否继续建立其他任务，结合其具体未知、探索范围和已有任务决定，避免重复创建。
-
-**正例：** 任务询问“点击文件入口会出现什么”，已观察到文件选择面板，就据此完成；文件名输入框的筛选规则另行判断。
-
-**反例：** 已确认入口打开面板，却因面板内部仍有未知而反复重做入口任务；原问题是“文件是否保存成功”，仅看到保存对话框出现就宣布成功。
+<!-- END_PROMPT_BLOCK id="control.jump_revision" -->

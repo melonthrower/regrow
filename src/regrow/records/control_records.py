@@ -15,7 +15,7 @@ def extend_schema(schema, required=False):
     item['properties'].update(
         description={'type': 'string', 'description': '控件的稳定外观和作用对象描述；用途写knowledge。'},
         knowledge=knowledge_schema(),
-        may_open_content={'type':['boolean','null'], 'description':'是否可能打开、切换或展开其他功能内容；不确定填null。'},
+        may_open_content={'type':'boolean', 'description':'是否打开或展开与应用主要功能相关、具有探索价值的内容。'},
         needs_exploration={'type':['boolean','null'], 'description':'是否需要进一步探索；不确定填null。'})
     item['required'] = list(dict.fromkeys([k for k in item['required'] if k not in ('possible_purpose', 'icon_appearance', 'icon_bbox')] + ['knowledge','may_open_content','needs_exploration']))
 

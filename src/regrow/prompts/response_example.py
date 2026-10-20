@@ -29,8 +29,17 @@ def guide(schema):
         if choices:
             description = ' / '.join(json.dumps(v, ensure_ascii=False) for v in choices)
         if field.get('type') == 'array' and field.get('maxItems') == 0:
-            description = '本步没有可提交项，必须填写空数组 []'
+            description = '本步没有可提交项，必须填写空数组 []' if name in required else '本步没有可提交项；如填写，必须为空数组 []'
         lines.append('- ' + name + '（' + mark + '）' + ('：' + description if description else ''))
+        if field.get('type') == 'object':
+            for child, definition in field.get('properties', {}).items():
+                item = definition.get('items', {})
+                shape = definition.get('type', '按分支')
+                if shape == 'array':
+                    shape += '<' + str(item.get('type', '按分支')) + '>'
+                lines.append('  ' + name + '.' + _field_label(child, definition) + '：' + str(shape))
+                if item.get('properties'):
+                    lines.append('    每项字段：' + '、'.join(_field_label(k, v) for k, v in item['properties'].items()))
         if field.get('type') == 'array' and field.get('maxItems') != 0:
             item = field.get('items', {})
             branches = item.get('anyOf', [item])
@@ -42,6 +51,13 @@ def guide(schema):
                 for child, definition in children.items():
                     detail.append(_field_label(child, definition))
                 lines.append('  每项' + ('方案' + str(i + 1) if len(branches) > 1 else '') + '可用字段：' + '、'.join(detail))
+                if branch.get('required'):
+                    lines.append('    每项必填：' + '、'.join(branch['required']))
+                for condition in branch.get('allOf', []):
+                    references = condition.get('if', {}).get('required', [])
+                    needed = condition.get('else', {}).get('required', [])
+                    if references and needed:
+                        lines.append('    不填写' + '、'.join(references) + '时必填：' + '、'.join(needed))
                 for child, definition in children.items():
                     for nested in definition.get('anyOf', [definition]):
                         fields = nested.get('properties', {})

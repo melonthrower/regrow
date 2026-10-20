@@ -47,43 +47,44 @@
         {
           "question": "当前对象与哪一个历史候选值得进一步比较？",
           "materials": [
-            "本区块同一当前对象的历史候选",
-            "单图步骤待登记的候选观察",
-            "原任务与实际操作",
-            "原工作",
-            "直接相关历史",
-            "核对原因",
-            "此前修复",
+            "核对对象",
+            "当前任务与本次操作",
+            "相关历史与已登记认识",
+            "同区块的已接受状态依据",
+            "仍需注意",
+            "先前身份判断（本次待复核）",
             "补充观察",
+            "本轮允许范围",
             "平台"
           ],
           "output": "candidate / reason；只选择，不修订提案或记录。"
         }
       ],
-      "direct_question": true
+      "direct_question": true,
+      "declared_materials_only": true,
+      "render": "identity_material"
     },
     "control_identity_comparison": {
       "groups": [
         {
           "question": "给定历史控件在图1能否对应到同一对象，还是不同或仍无法确认？",
           "materials": [
-            "本次只核对这一对控件",
-            "单图步骤待登记的候选观察",
-            "原任务与实际操作",
-            "原工作",
-            "直接相关历史",
-            "核对原因",
-            "此前修复",
+            "核对对象",
+            "当前任务与本次操作",
+            "相关历史与已登记认识",
+            "同区块的已接受状态依据",
+            "仍需注意",
+            "先前身份判断（本次待复核）",
             "补充观察",
-            "候选选择依据",
-            "复核边界",
-            "平台",
-            "区块状态的已接受依据"
+            "本轮允许范围",
+            "平台"
           ],
           "output": "control_identity / reason；两图只作判断，不输出几何。"
         }
       ],
-      "direct_question": true
+      "direct_question": true,
+      "declared_materials_only": true,
+      "render": "identity_material"
     },
     "ownership_review": {
       "groups": [
@@ -622,7 +623,7 @@
     "rules": [
       {
         "ids": [
-          "control.identity",
+          "control.references",
           "control.name_description"
         ],
         "all": [
@@ -653,11 +654,10 @@
       },
       {
         "ids": [
-          "control.knowledge_revision",
-          "control.knowledge_constraints"
+          "control.knowledge_revision"
         ],
         "all": [
-          "knowledge"
+          "@knowledge_revision"
         ],
         "any": [],
         "roles": []
@@ -829,10 +829,7 @@
       {
         "ids": [
           "task.update",
-          "task.decision",
-          "task.remaining_question",
-          "task.retry_when",
-          "task.next_action"
+          "task.decision"
         ],
         "all": [
           "@task_update"
@@ -865,10 +862,11 @@
       },
       {
         "ids": [
-          "action.complete",
-          "action.none"
+          "action.complete"
         ],
-        "all": [],
+        "all": [
+          "@action_complete"
+        ],
         "any": [],
         "roles": [
           "action_selection"
@@ -896,6 +894,71 @@
           "control_identity_selection",
           "control_identity_comparison"
         ]
+      },
+      {
+        "ids": [
+          "control.knowledge_constraints"
+        ],
+        "all": [
+          "@knowledge_constraints"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "task.remaining_question"
+        ],
+        "all": [
+          "@task_update",
+          "remaining_question"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "task.retry_when"
+        ],
+        "all": [
+          "@task_update",
+          "retry_when"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "task.next_action"
+        ],
+        "all": [
+          "@task_update",
+          "next_action"
+        ],
+        "any": [],
+        "roles": []
+      },
+      {
+        "ids": [
+          "action.none"
+        ],
+        "all": [
+          "@action_none"
+        ],
+        "any": [],
+        "roles": [
+          "action_selection"
+        ]
+      },
+      {
+        "ids": [
+          "task.completion"
+        ],
+        "all": [
+          "@task_completion"
+        ],
+        "any": [],
+        "roles": []
       }
     ],
     "retired_paths": [

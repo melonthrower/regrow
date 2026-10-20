@@ -108,3 +108,7 @@
 任务提出operations仅新任务，task_update为已有任务判断；同控件同类型重复提交不能绕过复核。next_action省略保留、null清空，defer/answered不暴露旧建议。任务类型目标从task.type读取，不再强制每个已知功能补一次证明动作。may_open_content输出为boolean，原历史空值保留读入。
 
 本批状态：四对象模块接线候选与83项聚焦检查完成；原生保存帧10HTTP/0GUI及新Settings48/100真实调用证据已保留。身份复核在完整共同定义及连续历史下仍误判并阻塞，剩52次未执行、实际a0010未结算，整体未接受。不得将文件统一/接线检查通过解释为长遍历完成。行为未接受；用户另行授权同步未完成研究检查点，见OBJECT_PROMPT_HANDOFF_20261020.md及2026-10月志。
+
+## 2026-10-20 身份材料披露本地候选
+
+基于 `e22481b` 的候选增加内部 `material_needs`：身份选择/比较声明冻结对象，由既有发送边界统一生成语义材料；历史来源保留在请求中，正文按需要显示事实、条件、限制和候选句柄。对象规则按现有输出能力选块，拆开身份定义和登记引用。具体合同见 [runtime](modules/stepwise/runtime.md)、[recognition](modules/stepwise/recognition.md) 和 [records](modules/stepwise/records.md)。当前仅离线代码及展示检查，无实际 Luna/GUI；未修复或续跑上述阻塞运行，不宣称行为接受，也不作为已部署版本。

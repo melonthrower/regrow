@@ -142,6 +142,88 @@ def action_material(value, request, readable, definition=None):
         sections.append(('## ' + section['title'] + (('\n\n' if section['key'] == 'task' else '\n') if body else '') if section['title'] else '') + body)
     return '\n\n'.join(sections)
 
+
+def identity_material(value, request, readable, definition):
+    """Render selected identity facts as a short reading, not nested ledger rows."""
+    import json
+    from regrow.prompts.prompt_material import same
+    layout = definition['calls'][request['role']]
+    group = layout['groups'][0]
+    sections = ['## 本步问题\n\n' + group['question'] + '\n\n对应输出：' + group['output']]
+
+    def steps(rows):
+        parts = []
+        for row in rows:
+            action = row['操作']
+            arguments = []
+            for key, item in row.items():
+                if key == '操作':
+                    continue
+                text = json.dumps(item, ensure_ascii=False) if isinstance(item, (str, list)) else str(item)
+                arguments.append((key + '=' if key != '文本' else '') + text)
+            parts.append(action + ('（' + '，'.join(arguments) + '）' if arguments else ''))
+        return ' → '.join(parts)
+
+    def event(row):
+        row = deepcopy(row)
+        if '实际操作' in row:
+            row = {'操作': steps(row.pop('实际操作')), **row}
+        return readable(row, 1)
+
+    def bullet(text):
+        first, *rest = text.splitlines()
+        return '- ' + first + ''.join('\n  ' + line for line in rest)
+
+    def fact_text(row):
+        row = deepcopy(row)
+        name, description = row.pop('名称', ''), row.pop('说明', '')
+        head = '：'.join(part for part in (name, description) if part)
+        return head + ('\n' if head and row else '') + (readable(row, 1) if row else '')
+
+    def history(card):
+        card = deepcopy(card)
+        facts = card.pop('已登记规则', [])
+        events = card.pop('历史尝试（不代表本次执行）', [])
+        problems = card.pop('关联问题', [])
+        doubts = card.pop('历史疑点（未自动解除）', [])
+        lines = [readable(card, 1)] if card else []
+        if facts:
+            lines.append('已登记认识：\n\n' + '\n'.join(bullet(fact_text(fact)) for fact in facts))
+        if events:
+            common = {k: events[0][k] for k in ('区块', '实际对象', '该动作原任务')
+                      if k in events[0] and all(k in e and same(e[k], events[0][k]) for e in events)}
+            for row in events:
+                for key in common:
+                    row.pop(key)
+            header = '历史尝试（不代表本次执行）'
+            if common:
+                header += '：\n' + readable(common, 1)
+            lines.append(header + '\n\n' + '\n\n'.join(bullet(event(row)) for row in events))
+        if problems:
+            lines.append('关联问题：\n' + readable(problems, 1))
+        if doubts:
+            lines.append('历史疑点（未自动解除）：\n' + readable(doubts, 1))
+        return '\n\n'.join(lines)
+
+    for key in group['materials']:
+        if key not in value:
+            continue
+        item = deepcopy(value[key])
+        if key == '相关历史与已登记认识':
+            body = '\n\n'.join(history(card) for card in item) if isinstance(item, list) else history(item)
+        elif key == '当前任务与本次操作':
+            if '本次记录的操作' in item:
+                item['本次记录的操作'] = steps(item['本次记录的操作'])
+            body = readable(item, 1)
+        elif key == '仍需注意':
+            body = '\n'.join('- ' + note for note in item)
+        else:
+            body = readable(item, 1)
+        if body:
+            sections.append('## ' + key + '\n\n' + body)
+    return '\n\n'.join(sections)
+
+
 def render(value, request, readable):
     """Display native work as questions with the corresponding materials below."""
     definition = catalog()
@@ -152,6 +234,8 @@ def render(value, request, readable):
         role = 'shared_control_review'
     if definition['calls'].get(role, {}).get('render') == 'action_material':
         return action_material(value, request, readable, definition)
+    if definition['calls'].get(role, {}).get('render') == 'identity_material' and '核对对象' in value:
+        return identity_material(value, request, readable, definition)
     if role not in groups_by_role:
         return readable(value)
     remaining = dict(value)
@@ -219,6 +303,6 @@ def render(value, request, readable):
         if rows:
             section += '\n\n对应材料：\n' + readable(rows).replace('## ', '### ')
         sections.append(section)
-    if remaining:
+    if remaining and not definition['calls'][role].get('declared_materials_only'):
         sections.append('## 本步的补充依据与限制\n' + readable(remaining).replace('## ', '### '))
     return '\n\n'.join(sections)

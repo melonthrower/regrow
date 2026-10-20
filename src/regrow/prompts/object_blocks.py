@@ -50,38 +50,54 @@ def task_definition(kind, root=None):
             'goal': goal, 'region_goal': goal}
 
 
+def enabled_fields(value, path=()):
+    """Output-bearing paths in our schemas, including correction wrappers.
+
+    A closed array contributes neither its field nor its item capabilities.
+    Conditional guards describe tests, not additional output fields.
+    """
+    if not isinstance(value, dict) or value.get('maxItems') == 0:
+        return
+    for field, spec in value.get('properties', {}).items():
+        if spec is False or isinstance(spec, dict) and spec.get('maxItems') == 0:
+            continue
+        yield path + (field,), spec
+        yield from enabled_fields(spec, path + (field,))
+    yield from enabled_fields(value.get('items'), path)
+    for choice in ('anyOf', 'oneOf', 'allOf'):
+        for child in value.get(choice, []):
+            yield from enabled_fields(child, path)
+    for branch in ('then', 'else'):
+        yield from enabled_fields(value.get(branch), path)
+
+
 def capabilities(schema, role):
     from regrow.runtime.model_transport import expand_schema
-    from regrow.prompts.output import fields
-    schema = expand_schema(schema)
-    keys = fields(schema)
-    def nodes(value, name, *, skip=()):
-        if not isinstance(value, dict):
-            return
-        for field, spec in value.get('properties', {}).items():
-            if spec.get('maxItems') == 0 or field in skip:
-                continue
-            if field == name:
-                yield spec
-            yield from nodes(spec, name, skip=skip)
-        if isinstance(value.get('items'), dict):
-            yield from nodes(value['items'], name, skip=skip)
-        for choice in ('anyOf', 'oneOf', 'allOf'):
-            for child in value.get(choice, []):
-                yield from nodes(child, name, skip=skip)
-    props = schema.get('properties', {})
-    keys.difference_update(name for name, spec in props.items() if spec.get('maxItems') == 0)
-    controls = list(nodes(schema, 'controls'))
-    if controls:
+    fields = list(enabled_fields(expand_schema(schema)))
+    keys = {path[-1] for path, _ in fields}
+    if 'controls' in keys:
         keys.add('@controls')
-        if any('knowledge' in fields(spec) for spec in controls):
+        if any(path[-2:] == ('controls', 'knowledge') for path, _ in fields):
             keys.add('@control_knowledge')
-    if list(nodes(schema, 'regions')):
+    if 'regions' in keys:
         keys.add('@regions')
-    if list(nodes(schema, 'knowledge', skip=('controls',))):
+    if any(path[-1] == 'knowledge' and 'controls' not in path for path, _ in fields):
         keys.add('@task_knowledge')
+    for field in ('index', 'constraints'):
+        if any(path[-2:] == ('knowledge', field) for path, _ in fields):
+            keys.add('@knowledge_' + ('revision' if field == 'index' else field))
     if 'decision' in keys and ('task_update' in keys or 'task' in keys):
         keys.add('@task_update')
+    for path, spec in fields:
+        if not isinstance(spec, dict):
+            continue
+        values = spec.get('enum', [spec.get('const')])
+        if path[-1] == 'action':
+            keys.update('@action_' + action for action in ('complete', 'none') if action in values)
+        if path[-1] == 'decision' and 'answered' in values:
+            keys.add('@task_completion')
+    if '@action_complete' in keys:
+        keys.add('@task_completion')
     if role in ('action_selection', 'recovery', 'ownership_review'):
         keys.add('@action')
     return keys

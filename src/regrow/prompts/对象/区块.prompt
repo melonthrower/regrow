@@ -303,7 +303,7 @@
 反例：因为任务标为 `done`，就宣称已修改并保存；只看到当前回显，就宣称重启后仍然保留。
 <!-- END_PROMPT_BLOCK id="region.exploration_status" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="region.identity" requires="region.common" -->
+<!-- BEGIN_PROMPT_BLOCK id="region.identity" requires="region.common,shared.registration" -->
 ## 区块引用与包含
 已有区块用材料给定的ref引用，新区块按本步格式填写identity。区块身份不确定时不绑定ref，填写name、description、identity="uncertain"，在identity_evidence中说明候选与缺口。
 parent_index只表示本次regions中真实物理包含的父区块位置，不表示从哪个区块进入。整个区块确实超出本轮允许范围时才填写out_of_scope_reason。

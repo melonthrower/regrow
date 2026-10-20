@@ -199,7 +199,7 @@ def check_request(run, request, reply):
     frame = Path(run) / chosen if chosen else None
     check(records, snapshot, frame, request, reply)
 
-def review_material(job, original, pairs):
+def review_material(job, original, pairs, *, candidate=None):
     """Select facts for identity questions, without ordinary repair permissions."""
     from regrow.prompts.prompt_material import body
     from regrow.prompts.prompt_material import execution
@@ -227,7 +227,7 @@ def review_material(job, original, pairs):
     value['区块状态的已接受依据'] = {aid: deepcopy(row) for aid, row in history.items()
                                if row.get('region') in owners and row.get('已有身份核对')
                                and aid not in value['直接相关历史']}
-    candidate = job.get('candidate') or {}
+    candidate = candidate if candidate is not None else job.get('candidate') or {}
     if candidate.get('controls'):
         value['单图步骤待登记的候选观察'] = deepcopy(candidate['controls'][pairs[0]['control_index']])
     return value
@@ -249,17 +249,25 @@ def selection_request(root, job, request):
         pair['current_image'] = 1
         pair['context'] = recorded_history(pair)
     q = request
-    from regrow.prompts.frame_context import label
-    if q.get('screenshots'):
-        label(q, q['screenshots'][0], '原动作后图（身份候选选择）' if job['stage'] == 'update' else '原发现图（身份候选选择）')
+    completed = job.get('registration_submission')
+    if completed:
+        q['original_request'] = deepcopy(completed['request'])
+    q['identity_candidate'] = deepcopy(completed['candidate'] if completed else job.get('candidate'))
+    if len({pair['current_frame'] for pair in group}) != 1:
+        raise ValueError('同一当前对象的候选必须来自同一原场景')
+    from regrow.prompts.frame_context import select
+    select(q, group[0]['current_frame'],
+           '原动作后图（身份候选选择）' if job['stage'] == 'update' else '原发现图（身份候选选择）')
     q['control_identity_candidates'] = deepcopy(group)
     q.update(role='control_identity_selection', stage='control_identity_selection')
+    from regrow.prompts.prompt_material import identity_needs
+    identity_needs(q, group, job.get('attempt'))
     path = '纠错/控件身份候选选择.prompt'
     part = {'path': path, 'text': (Path(root) / 'regrow/prompts' / path).read_text()}
     q['fixed_parts'] = [part]
     q['system_prompt'] = part['text']
     q['response_schema'] = {'type': 'object', 'additionalProperties': False, 'properties': {'candidate': {'type': ['string', 'null'], 'enum': [p['ref'] for p in group] + [None]}, 'reason': {'type': 'string', 'minLength': 1}}, 'required': ['candidate', 'reason']}
-    dynamic = review_material(job, q['original_request'], group)
+    dynamic = review_material(job, q['original_request'], group, candidate=q['identity_candidate'])
     dynamic['本次目的'] = '为同一当前对象选择一个有依据的历史候选；本步不修提案或记录。'
     dynamic['本区块同一当前对象的历史候选'] = {'区块': group[0]['region_name'], '当前对象': group[0]['current_name'], '当前图': group[0]['current_image'], '当前身份框': group[0]['current_box'], '候选': [{'candidate': p['ref'], '历史上下文': p['context']} for p in group]}
     q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
@@ -305,17 +313,19 @@ def attach(root, job, request):
     q['screenshots'] = [pair['current_frame'], pair['historical_frame']]
     q['image_refs'] = list(q['screenshots'])
     label(q, pair['current_frame'], selected_purpose)
-    label(q, pair['historical_frame'], '历史对象原场景：' + str(pair['historical_evidence']))
+    label(q, pair['historical_frame'], '历史对象原场景（给定控件的历史外观）')
     q['control_identity_pair'] = deepcopy(pair)
     q['identity_candidate'] = deepcopy(completed['candidate'] if completed else job.get('candidate'))
     q.update(role='control_identity_comparison', stage='control_identity_comparison')
+    from regrow.prompts.prompt_material import identity_needs
+    identity_needs(q, [pair], job.get('attempt'))
     q['response_schema'] = {'type': 'object', 'properties': {'control_identity': {'type': 'string', 'enum': ['same', 'different', 'uncertain']}, 'reason': {'type': 'string', 'minLength': 1}}, 'required': ['control_identity', 'reason'], 'additionalProperties': False}
     path = '纠错/控件身份复核.prompt'
     part = {'path': path, 'text': (Path(root) / 'regrow/prompts' / path).read_text()}
     q['fixed_parts'] = [part]
     q['system_prompt'] = part['text']
     from regrow.prompts.prompt_material import same
-    dynamic = review_material(job, original, [pair])
+    dynamic = review_material(job, original, [pair], candidate=q['identity_candidate'])
     dynamic['本次目的'] = '核对指定控件是否沿用历史身份；原步骤的其余判断保留。'
     dynamic['本次只核对这一对控件'] = {'区块': pair['region_name'], '历史对象': {'图片': 2, '名称': pair['old_name'], 'ref': pair['ref'], '身份框': pair['historical_box'], '原观察': pair['historical_evidence'], '外观描述': pair['historical_description'], '历史职责与知识': pair['context']}, '当前对象': {'图片': pair['current_image'], '名称': pair['current_name'], **({'身份框': pair['current_box']} if pair['current_box'] else {})}, '说明': '图1为本步对象所在原场景，图2为历史对象原场景；给定框只用于指认。本次只返回身份判断与理由。'}
     if pair.get('kind') == 'reuse':

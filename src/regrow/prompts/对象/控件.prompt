@@ -5,14 +5,18 @@
 
 只填写本步输出格式允许的字段。本步要求的字段按格式提供；可选字段在有相应信息或更新时填写。完成本步所需的引用也应遵守该输出格式。完整结构、必填项和可用字段以本次输出格式为准；加载某个字段的说明，不表示必须在本次回复中填写该字段。
 
-新对象按本步要求登记。已有对象仍按本步要求报告身份，其余属性只提交新增或需要修订的内容；没有实质变化的属性不重报。省略更新字段不表示删除或清空原记录，不为“补齐字段”擅自填写空数组、`null` 或 `false`；这些值的含义按各字段说明处理。
-
-各块提到的观察、疑问和任务结论，写入本步指定的现有字段。例如，本步若把观察说明放在 `reason` 或 `action_result`，就使用指定位置；没有开放的字段不自行添加，也不改变已有字段的用途。
-
-材料中的编号照材料填写；本次输出数组的位置从 0 开始。不同层级的 `index` 不共享编号空间，按对应字段说明引用。
+各块提到的观察、疑问和任务结论，写入本步指定的现有字段；没有开放的字段不自行添加，也不改变已有字段的用途。
 
 下列 JSON 均为局部字段示例，未展示的字段不表示可以省略本步的其他必填项。
 <!-- END_PROMPT_BLOCK id="shared.output_contract" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="shared.registration" requires="shared.output_contract" -->
+## 对象登记与更新约定
+
+新对象按本步要求登记。已有对象仍按本步要求报告身份，其余属性只提交新增或需要修订的内容；没有实质变化的属性不重报。省略更新字段不表示删除或清空原记录，不为“补齐字段”擅自填写空数组、`null` 或 `false`；这些值的含义按各字段说明处理。
+
+材料中的编号照材料填写；本次输出数组的位置从 0 开始。不同层级的 `index` 不共享编号空间，按对应字段说明引用。
+<!-- END_PROMPT_BLOCK id="shared.registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.definition" requires="shared.output_contract" -->
 ## 控件对象定义
@@ -26,7 +30,7 @@
 **反例：** 将仅用于说明、无交互用途的“尚无条目”文字登记为按钮。
 <!-- END_PROMPT_BLOCK id="control.definition" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.references" requires="control.definition" -->
+<!-- BEGIN_PROMPT_BLOCK id="control.references" requires="control.identity,shared.registration" -->
 ## 身份引用与本次关联：index / region_index
 
 `controls[].index` 引用材料中的已有控件编号，回答“这是材料中的哪个控件”。新控件不填写已有控件 `index`；不要自行编造历史编号。
@@ -53,12 +57,14 @@
 **正例：** 用材料中的控件编号复用音量滑块，并关联到本次列出的播放设置区。
 
 **反例：** 把侧栏里的输入框关联到中央弹窗；把 r0080 中的数字当成 `region_index`。
+
+有依据认作同一控件时，继续引用原 `index`。明确的新对象正常登记。存在具体已有候选、但尚不能确认对应关系时，不猜填 `index`，也不只因本次匹配不确定就另建副本。按本步提供的 `uncertainties` 或其他指定方式记录具体候选和疑点；其他已确认对象和任务照常处理。
 <!-- END_PROMPT_BLOCK id="control.references" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.references" -->
+<!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.definition" -->
 ## 复用已有身份与新建控件
 
-结合当前截图及已有材料，根据所属界面结构、相关标签、作用对象和已知变化判断身份。有依据认作同一控件时，继续引用原 `index`；不要求每次重新证明全部外观和用途都一致。
+结合当前截图及已有材料，根据所属界面结构、相关标签、作用对象和已知变化判断身份。有依据认作同一控件时，保留原身份；不要求每次重新证明全部外观和用途都一致。
 
 同一控件的位置、输入值、标题、模式、用途或选中、禁用状态变化，都不能单独成为新建身份的理由。同样，名称、图标或位置相同，也不能单独证明两个对象就是同一控件。
 
@@ -76,7 +82,7 @@
 - 仅因都是“＋”，把同时存在的小时增加按钮和分钟增加按钮合并。
 - 为了复用相似名称，把侧栏输入框认作中央弹窗的输入框。
 
-明确的新对象正常登记。存在具体已有候选、但尚不能确认对应关系时，不猜填 `index`，也不只因本次匹配不确定就另建副本。按本步提供的 `uncertainties` 或其他指定方式记录具体候选和疑点；其他已确认对象和任务照常处理。
+存在具体已有候选、但尚不能确认对应关系时，保留具体候选和疑点，按本步指定方式表达不确定；不能把本次匹配不确定直接当成新对象。
 <!-- END_PROMPT_BLOCK id="control.identity" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.name_description" requires="control.definition" -->

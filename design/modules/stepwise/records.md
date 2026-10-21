@@ -42,3 +42,6 @@
 2026-10-20：任务判断next_action显式null清空，continue省略保留先前建议；defer/answered不向后读暴露。新任务与旧判断分属operations/task_update，正常校验、纠错及登记共用新合同。may_open_content新输出只收boolean，历史未确认值不改写。验证范围见本月日志。
 
 2026-10-20身份披露候选：`page_context.refresh` 对身份选择/比较保留内部 `page_context`，不再向正文补入第二份通用地图/历史；这两类角色的展示由冻结 pair/context 和 `prompt_material.identity_view` 负责。原始 provenance、任务/动作绑定及记录格式未改；共享与仅观察来源转为可读使用限制，而不是删除限制。其他角色刷新路径保持。本批只有离线候选检查，未进行原生登记验收。
+
+
+2026-10-22访问关系提示：`control.jump_base`统一要求已确认实际来源→目标且缺边时填写jump_to，已有关系复用/按原格式修订条件；任务continue/defer与去向登记分开，不因目标相同合并入口身份。原输出合同不变，不为无关变化或仅控件状态变化强制建边。原0029完整保存帧1模型调用/0GUI确认边在任务仍pending时正式登记；非实机或全框架验收，详见月志。

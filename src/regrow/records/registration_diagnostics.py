@@ -11,6 +11,30 @@ class Rejected(ValueError):
         self.report = report
         super().__init__(json.dumps(report, ensure_ascii=False))
 
+def schema_errors(error):
+    """Descend a union only when its instance has one applicable type branch."""
+    if error.validator in ('anyOf', 'oneOf'):
+        checker = jsonschema.Draft202012Validator.TYPE_CHECKER
+        branches = error.validator_value
+        compatible = [i for i, branch in enumerate(branches)
+                      if 'type' not in branch or any(checker.is_type(error.instance, t)
+                      for t in ([branch['type']] if isinstance(branch['type'], str) else branch['type']))]
+        if len(compatible) == 1:
+            children = [e for e in error.context if list(e.schema_path)[0] == compatible[0]]
+            if children:
+                return [row for child in children for row in schema_errors(child)]
+    message = error.message
+    if error.validator in ('minItems', 'maxItems'):
+        bound = '至少' if error.validator == 'minItems' else '最多'
+        message = f'要求{bound} {error.validator_value} 项，实际提交 {len(error.instance)} 项。'
+    elif error.validator == 'required':
+        missing = [key for key in error.validator_value if key not in error.instance]
+        message = '缺少必填字段：' + '、'.join(missing)
+    elif error.validator == 'type':
+        message = '值的类型不符，要求：' + str(error.validator_value)
+    return [dict(code='schema', path='/' + '/'.join(map(str, error.absolute_path)),
+                 object='reply', actual=error.instance, expected=message)]
+
 def visibility_errors(reply, region_refs, changes):
     current = {region_refs[c['region_index']] for c in reply.get('controls', []) if isinstance(c.get('region_index'), int) and 0 <= c['region_index'] < len(region_refs)} - {None}
     errors = []
@@ -89,8 +113,7 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
         if stage == 'update' and 'working_context' not in schema.get('properties', {}):
             p = {k: v for (k, v) in p.items() if k != 'working_context'}
         for e in jsonschema.Draft202012Validator(schema).iter_errors(p):
-            e = jsonschema.exceptions.best_match([e])
-            add('schema', '/' + '/'.join(map(str, e.absolute_path)), stage, e.instance, e.message, '按该字段格式修订，不修改其他真实证据。')
+            errors.extend(schema_errors(e))
         if errors:
             return {'errors': errors, 'unchecked': ['结构不合格，依赖这些字段的身份、归属和结果校验尚未执行。']}
     if stage in ('discovery', 'update'):

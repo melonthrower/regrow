@@ -74,3 +74,5 @@ UI把内部work_context.reason放进“内部调度与调用来源”，任务�
 
 
 2026-10-22：Prompt回放工具recorded_source对缺source的历史动作更新，从真实截图唯一attempt及dispatch→selection恢复元数据；不编辑原请求/回复，仍走正常结果builder与Runner。多attempt无法唯一确定时拒绝。保存帧仅观察/登记，不执行GUI。
+
+2026-10-22 上下文可读性候选：沿用 prompt_material.view；结果更新只在展示副本中去除内部来源地址、完全重复的动作对象几何及描述，原始记录和身份引用保留。用途文字不附调度指令，任务提出单独呈现历史探索判断。纠错通过 correction_feedback 将诊断映射为对象名和具体问题，不重复验证历史；step_repair 保留最新失败回复，与当前诊断配对。原始失败材料仍在 episode/calls。验证见月志，不代表长跑验收。

@@ -161,6 +161,9 @@ def project(records, state, rid):
             from regrow.prompts.history_disclosure import knowledge_text
             known = knowledge_text(known)
         sentences = [known or control.get('description', '')]
+        decision = control.get('needs_exploration')
+        if decision is not None:
+            sentences.append('此前判断：' + ('需探索' if decision else '无需探索'))
         if parameter_text(control):
             sentences.append(parameter_text(control))
         from regrow.prompts.target_observation import describe

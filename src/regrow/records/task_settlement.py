@@ -119,7 +119,9 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
         if 'control_index' in value:
             ci = value['control_index']
             if not 0 <= ci < len(controls) or controls[ci]['region_index'] != index:
-                raise ValueError('目标控件必须属于所给目标区块')
+                target_name = records[target]['name']
+                control_name = controls[ci].get('name', '未命名控件') if 0 <= ci < len(controls) else '未找到的控件'
+                raise ValueError(f'访问关系指向“{target_name}”中的“{control_name}”，但该控件不属于这个区块。若到达的是整个区块，只填写目标区块，不填写目标控件。')
             matches = [cid for cid,c in owned_controls(records[target]).items()
                        if any(o.get('evidence', {}).get('source_call') == call and
                               o['evidence'].get('source_field') == f'/controls/{ci}'

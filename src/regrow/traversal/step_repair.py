@@ -20,12 +20,8 @@ def diagnostic(error):
     if hasattr(error, 'report'):
         return error.report
     if isinstance(error, jsonschema.ValidationError):
-        message = error.message
-        if error.validator == 'maxItems':
-            message = '数组最多允许' + str(error.validator_value) + '项，实际提交' + str(len(error.instance)) + '项；这是条目数量限制，不是文字长度限制。'
-        return {'errors': [{'code': 'schema', 'path': '/' + '/'.join(map(str, error.absolute_path)),
-                            'object': 'reply', 'actual': error.instance, 'expected': message,
-                            'repair': '按字段格式修订，不改变真实证据。'}],
+        from regrow.records.registration_diagnostics import schema_errors
+        return {'errors': schema_errors(error),
                 'unchecked': ['结构尚未通过，后续语义检查未执行。']}
     return str(error)
 
@@ -255,7 +251,7 @@ def request(root, job, context):
     schema = {'type': 'object', 'properties': fields, 'required': [name for name in fields if name != 'record_edit'], 'additionalProperties': False,
               'allOf': [{'if': {'properties': {'resolution': {'const': 'edit_record'}}, 'required':['resolution']},
                          'then': {'required':['record_edit'], 'properties':{'record_edit':{'not':{'type':'null'}}}}}]}
-    dynamic = {'失败步骤': job['stage'], '原动态上下文': original['user_prompt'], '相关记录与可用能力': context, '被拒绝回复': job.get('candidate'), '上次失败或停止诊断（保留原文，非当前能力清单）': job.get('error'), '框架错误分类': job.get('blocked_by', 'none'), '执行状态': '原动作已执行；本次纠错只登记其结果，不再次投递原动作。next_action描述后续尚未执行的步骤，仍按原问题与动作后图判断；无需因本次是纠错而清空。' if job.get('attempt') else '本步骤未执行动作', '本次修复历史': job['history'], '补充观察': job.get('supplements', []), '图片说明': '前面的图片仍为原请求证据；追加图片仅用于稍后的补充观察，不能代替原动作后图。'}
+    dynamic = {'失败步骤': job['stage'], '原动态上下文': original['user_prompt'], '相关记录与可用能力': context, '被拒绝回复': job.get('rejected_reply', job.get('candidate')), '上次失败或停止诊断（保留原文，非当前能力清单）': job.get('error'), '框架错误分类': job.get('blocked_by', 'none'), '执行状态': '原动作已执行；本次纠错只登记其结果，不再次投递原动作。next_action描述后续尚未执行的步骤，仍按原问题与动作后图判断；无需因本次是纠错而清空。' if job.get('attempt') else '本步骤未执行动作', '本次修复历史': job['history'], '补充观察': job.get('supplements', []), '图片说明': '前面的图片仍为原请求证据；追加图片仅用于稍后的补充观察，不能代替原动作后图。'}
     dynamic.update(_correction_prompts.parse_disclosure(job))
     (dynamic['原动态上下文'], shared_map) = _page_context.separate_map(original)
     if shared_map:
@@ -718,8 +714,10 @@ class Runner:
                 if fingerprint in job['seen']:
                     self.stop(job, '重复提交同一证据下已拒绝的提案')
                 job['seen'].append(fingerprint)
+                job.pop('rejected_reply', None)
                 job.update(candidate=candidate, status='accept')
                 self.save(job)
             except (ValueError, jsonschema.ValidationError) as error:
-                job.update(error=diagnostic(error), status='repair')
+                job.update(error=diagnostic(error), status='repair', rejected_reply=deepcopy(reply))
+                job['history'].append({'call': ref, 'error': diagnostic(error)})
                 self.save(job)

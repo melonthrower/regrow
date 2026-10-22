@@ -38,12 +38,7 @@ def purpose_text(control, *, unfinished=False):
     guess = text(control.get('knowledge'))
     if not guess:
         return ''
-    parts = ['推测用途：' + guess]
-    if control.get('may_open_content') is True:
-        parts.append('可能打开其他功能内容')
-    decision = control.get('needs_exploration')
-    parts.append('需要探索' if decision is True else ('初步判断无需进一步探索；已有未解任务仍需处理' if unfinished else '无需进一步探索，可以跳过') if decision is False else '是否需要探索尚不确定')
-    return '；'.join(parts)
+    return '推测用途：' + guess
 
 
 def known_information(control, *, parameters=True, unfinished=False):

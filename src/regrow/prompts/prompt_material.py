@@ -128,6 +128,45 @@ def execution(value):
     if isinstance(window, dict) and window.get('目标应用') == value.get('目标应用'):
         window.pop('目标应用')
 
+def observation_details(value):
+    """Keep geometry and uncertainties; omit internal addresses in this view."""
+    before = value.get('动作前已登记几何')
+    if isinstance(before, dict):
+        def without_addresses(row):
+            if isinstance(row, list):
+                return [without_addresses(item) for item in row]
+            if not isinstance(row, dict):
+                return row
+            result = {k: without_addresses(v) for k, v in row.items()
+                      if k not in ('source_field', 'source_call', 'observation')}
+            if isinstance(result.get('evidence'), dict) and not result['evidence']:
+                result.pop('evidence')
+            return result
+        before = without_addresses(before)
+        acted = before.get('acted_control')
+        if isinstance(acted, dict) and any(same(acted, row) for row in before.get('controls', [])):
+            before.pop('acted_control')
+        known = value.get('已知区块', [])
+        for region in known:
+            old_region = before.get('region', {})
+            if region.get('name') == old_region.get('name') and region.get('历史描述') == old_region.get('description'):
+                old_region.pop('description', None)
+            for control in region.get('controls', []):
+                matches = [row for row in before.get('controls', [])
+                           if row.get('name') == control.get('name')]
+                if len(matches) == 1 and control.get('description') == matches[0].get('description'):
+                    matches[0].pop('description', None)
+        value['动作前已登记几何'] = before
+    prior = value.get('动作前对象观察')
+    if isinstance(prior, dict):
+        prior.pop('来源', None)
+        if set(prior) <= {'控件'}:
+            value.pop('动作前对象观察')
+    window = value.get('动作后前台应用证据')
+    if isinstance(window, dict) and window.get('与目标应用一致') is True:
+        window.pop('窗口记录', None)
+        window.pop('来源', None)
+
 def matching(value):
     """Offer one named coordinate list, never collapse competing identities."""
     match = value.get('历史匹配对照')
@@ -193,40 +232,6 @@ def summary(value, request):
             edge['destination'] = {'region': card['region'], '摘要正文': '见' + match}
         else:
             prior.append((deepcopy(card), f'入口与目标一级摘要第{i + 1}项 / destination'))
-
-def diagnostic_references(value):
-    """Reference only exact values in the intact rejected candidate."""
-    candidate = value.get('被拒绝回复', MISSING)
-
-    def pointer(path):
-        if candidate is MISSING or not isinstance(path, str):
-            return MISSING
-        if path == '':
-            return candidate
-        if not path.startswith('/'):
-            return MISSING
-        node = candidate
-        for token in path[1:].split('/'):
-            token = token.replace('~1', '/').replace('~0', '~')
-            if isinstance(node, dict) and token in node:
-                node = node[token]
-            elif isinstance(node, list) and token.isdigit() and (str(int(token)) == token) and (int(token) < len(node)):
-                node = node[int(token)]
-            else:
-                return MISSING
-        return node
-
-    def walk(node):
-        if isinstance(node, dict):
-            if 'actual' in node and same(node['actual'], pointer(node.get('path'))):
-                node['actual'] = {'候选引用': '被拒绝回复（根节点）' if node['path'] == '' else '被拒绝回复#' + node['path']}
-            for (key, item) in node.items():
-                if key != 'actual':
-                    walk(item)
-        elif isinstance(node, list):
-            for item in node:
-                walk(item)
-    walk(value.get('具体校验错误'))
 
 def target_cards(rows):
     """Factor shared reading guidance before A's cards become plain text."""
@@ -762,7 +767,8 @@ def view(value, request):
     if role == 'observation_update':
         update_task(material)
     if role in ('step_correction', 'control_identity_selection'):
-        diagnostic_references(material)
+        from regrow.prompts.correction_feedback import present
+        present(material, request)
         nested = material.get('原动态上下文')
         if isinstance(nested, dict) and isinstance(nested.get('上下文'), dict):
             nested['上下文'] = view(nested['上下文'], request.get('original_request', {}))
@@ -779,6 +785,7 @@ def view(value, request):
         if result.get('工作区块') == result.get('本轮工作', {}).get('范围'):
             result.pop('工作区块', None)
         execution(result)
+        observation_details(result)
         first = ('本轮工作', '当前任务', '其他可登记任务', '实际来源区块', '实际入口', '实际动作', '回执', '登记页面组成与访问来路')
         result = {**{k: result[k] for k in first if k in result}, **{k: v for (k, v) in result.items() if k not in first}}
     if role in ('observation', 'observation_update'):

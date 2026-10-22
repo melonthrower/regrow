@@ -441,7 +441,7 @@ def coverage(region, records=None):
             blocked.append(name)
         else:
             pending.append(name)
-    return {'inventory_complete': complete, 'complete': complete and (not pending) and (not blocked), 'pending': pending, 'blocked': blocked, 'done': done, 'record_only': recorded}
+    return {'inventory_complete': complete, 'complete': complete and (not pending) and (not blocked) and not region_work(region).get('registration_gaps', {}).get('suspended_branch'), 'pending': pending, 'blocked': blocked, 'done': done, 'record_only': recorded}
 
 def purpose_controls(region):
     from regrow.records.object_store import owned_controls

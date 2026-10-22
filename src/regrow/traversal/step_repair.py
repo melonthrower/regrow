@@ -548,6 +548,10 @@ class Runner:
                     from regrow.traversal.object_registration import complete as complete_objects
                     complete_objects(self, job)
                     result = self.adapters.accept(self.root, self.run, job)
+                except Paused as error:
+                    if job['stage'] == 'update' and error.status == 'correction_blocked':
+                        self.stop(job, error.reason)
+                    raise
                 except (ValueError, jsonschema.ValidationError) as error:
                     if job['stage'] == 'action' and getattr(error, 'refresh_request', False):
                         try:

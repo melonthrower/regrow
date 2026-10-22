@@ -10,7 +10,6 @@ from regrow.records.object_store import owned_tasks
 import json
 import hashlib
 from pathlib import Path
-import shutil
 import jsonschema
 discovery_step = _discovery_step
 atomic = _step_repair.atomic
@@ -159,13 +158,9 @@ def commit(run, job, q, reply, call):
         receipt = run / 'action_attempts' / attempt / 'receipt.json'
         if not receipt.exists() or read(receipt).get('exit_code') != 0:
             raise ValueError('delivery remains unconfirmed')
-    folder = run / 'suspended_steps' / call
-    folder.mkdir(parents=True, exist_ok=False)
-    shutil.copy2(run / 'pending_step.json', folder / 'pending_step.json')
-    if execution.exists():
-        shutil.copy2(execution, folder / 'execution_pending.json')
+    from regrow.traversal.suspended_updates import archive_pending
+    folder = archive_pending(run, call, q['screenshots'][0])
     frame = folder / 'current.png'
-    shutil.copy2(q['screenshots'][0], frame)
     evidence = {'episode': job['path'], 'attempt': attempt, 'failed_call': ctx['failed_call'], 'switch_call': call, 'trigger': cause, 'reason': reply['reason'], 'status': 'unresolved', 'archive': str(folder.relative_to(run))}
 
     def mutate(records, state, snapshot, temp):

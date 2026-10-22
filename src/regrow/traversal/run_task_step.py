@@ -103,7 +103,7 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
             transport.save()
             return
     state = _record_load(run)[2]
-    if state.get('reason') == 'historical_update_registered' and state.get('next_action_mode') == 'discover':
+    if state.get('reason') in ('historical_update_registered', 'result_registration_deferred') and state.get('next_action_mode') == 'discover':
         discovery_step.await_discovery(run, str(out / 'current.png'), 'historical-update-' + out.name)
     navigation = visual_backtrack.resume_pending(transport, out / 'current.png')
     if navigation:

@@ -40,7 +40,7 @@ def await_discovery(run, frame, evidence, handoff=''):
         batch = state.pop('discovery_completion', None)
         if batch and batch.get('pending'):
             state.setdefault('discovery_completion_history', []).append(batch)
-        state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=frame, discovery_trigger=evidence, reason='recovery_finished_discovery_required', recovery_handoff=handoff, handoff_summary='已回到目标应用；当前区块身份待发现步确认。' + handoff)
+        state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=frame, discovery_trigger=evidence, reason='recovery_finished_discovery_required', recovery_handoff=handoff, handoff_summary='当前区块身份待发现步确认。' + handoff)
     return _record_publish(run, 'await-discovery-' + evidence, mutate)
 
 def commit(root, run, call_ref):

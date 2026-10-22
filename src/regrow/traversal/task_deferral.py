@@ -41,6 +41,9 @@ def choose(records, state):
 def defer(run, job, reason):
     """Return None when the failure cannot be isolated without trusting new facts."""
     from regrow.traversal import discovery_step as _discovery_step
+    if job['stage'] == 'update' and job.get('attempt'):
+        from regrow.traversal.suspended_updates import defer_result
+        return defer_result(run, job, reason)
     if job.get('attempt') or job.get('requires_observation') or (Path(run) / 'execution_pending.json').exists():
         return None
     stage = job['stage']

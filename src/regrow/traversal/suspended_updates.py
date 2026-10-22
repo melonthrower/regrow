@@ -7,6 +7,66 @@ from copy import deepcopy
 from pathlib import Path
 from regrow.traversal import step_repair as repair
 
+def archive_pending(run, name, frame=None):
+    """Use the existing suspended-step layout; original execution files stay put."""
+    import shutil
+    run = Path(run)
+    folder = run / 'suspended_steps' / name
+    folder.mkdir(parents=True, exist_ok=False)
+    shutil.copy2(run / 'pending_step.json', folder / 'pending_step.json')
+    if (run / 'execution_pending.json').exists():
+        shutil.copy2(run / 'execution_pending.json', folder / 'execution_pending.json')
+    if frame is not None:
+        shutil.copy2(frame, folder / 'current.png')
+    return folder
+
+
+def defer_result(run, job, reason):
+    """Keep an unregistered execution as a gap; resume current-scene discovery."""
+    from regrow.records.snapshots import load, publish
+    run = Path(run)
+    attempt = job.get('attempt')
+    execution = run / 'execution_pending.json'
+    pointer = run / 'pending_step.json'
+    if job['stage'] != 'update' or not attempt or not execution.exists() or not pointer.exists():
+        return None
+    if repair.read(execution).get('attempt') != attempt or repair.read(pointer).get('episode') != job['path']:
+        return None
+    folder = run / 'action_attempts' / attempt
+    if not all((folder / name).is_file() for name in ('receipt.json', 'binding.json', 'before.png', 'after.png')):
+        return None
+    binding = repair.read(folder / 'binding.json')
+    _, records, _ = load(run)
+    rid = binding.get('task_region') or binding['region_ref']
+    name = binding.get('task_name')
+    if rid not in records:
+        return None
+    archive = archive_pending(run, 'result-' + Path(job['path']).parent.name)
+    evidence = {'episode': job['path'], 'attempt': attempt, 'failed_call': job.get('call'),
+                'reason': reason, 'status': 'unresolved', 'archive': str(archive.relative_to(run))}
+    def mutate(records, state, *_):
+        region_work(records[rid]).setdefault('registration_gaps', {})['suspended_branch'] = evidence
+        task = owned_tasks(records[rid]).get(name)
+        if task is not None:
+            task.update(status='blocked', deferral=evidence,
+                        blocker={'condition': 'result_registration_pending'})
+        state.setdefault('suspended_updates', []).append(evidence)
+        state.update(next_action_mode='discover', discovery_mode='relocate',
+                     phase='awaiting_discovery', interactive_regions=[], observation=None,
+                     pending_frame=str((folder / 'after.png').relative_to(run)),
+                     reason='result_registration_deferred')
+        for key in ('active_task', 'inspection_region', 'required_control', 'deferred_routing_target', 'navigation_handoff'):
+            state.pop(key, None)
+    knowledge = publish(run, 'defer-result-' + Path(job['path']).parent.name, mutate)
+    repair.atomic(archive / 'decision.json', {'knowledge': knowledge, 'evidence': evidence})
+    # 'deferred' is deliberately not the auto-resumed 'suspended' service state.
+    job.update(status='deferred', deferred_result=evidence)
+    repair.atomic(run / job['path'], job)
+    execution.unlink()
+    return {'region': rid, 'task': name, 'stage': 'update', 'reason': reason,
+            'archive': evidence['archive'], 'next': {'stage': 'discovery', 'region': rid}}
+
+
 def context(run, attempt):
     path = Path(run) / 'execution_pending.json'
     if not path.exists():

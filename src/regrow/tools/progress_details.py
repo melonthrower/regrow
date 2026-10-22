@@ -4,7 +4,7 @@ from regrow.records.tasks import read as task_value
 from regrow.records.object_store import owned_tasks
 import json
 from pathlib import Path
-STAGES = {'discovery': '发现与登记', 'task_proposal': '任务登记', 'function_registration': '功能登记', 'action': '动作定位', 'update': '结果更新'}
+STAGES = {'discovery': '发现与登记', 'task_proposal': '任务登记', 'function_registration': '功能登记', 'action': '动作定位', 'update': '结果更新', 'suspended_branch': '暂挂登记'}
 RESOLUTIONS = {'revise': '修正本轮提案', 'observe': '补充观察', 'edit_record': '修订记录', 'defer': '暂挂局部问题', 'blocked': '保留阻塞'}
 
 def read(path):
@@ -27,7 +27,7 @@ def details(run, regions):
             if t.get('status') != 'blocked':
                 continue
             evidence = t.get('deferral', {})
-            gaps.append({'region': r['name'], 'task': name, 'reason': evidence.get('reason') or task_value(t, 'result_evidence') or t.get('reason', '原因未登记'), 'retry': '前置条件或允许范围变化后需显式复核；当前不自动解除暂挂' if t.get('blocker', {}).get('condition') == 'review_required' else '发现步重新定位到该控件后再尝试' if evidence else '前置条件满足后再评估', 'episode': evidence.get('episode')})
+            gaps.append({'region': r['name'], 'task': name, 'reason': evidence.get('reason') or task_value(t, 'result_evidence') or t.get('reason', '原因未登记'), 'retry': '等待补登记；本轮不自动重做原动作' if t.get('blocker', {}).get('condition') == 'result_registration_pending' else '前置条件或允许范围变化后需显式复核；当前不自动解除暂挂' if t.get('blocker', {}).get('condition') == 'review_required' else '发现步重新定位到该控件后再尝试' if evidence else '前置条件满足后再评估', 'episode': evidence.get('episode')})
         for (stage, gap) in region_work(r).get('registration_gaps', {}).items():
             gaps.append({'region': r['name'], 'task': STAGES.get(stage, stage) + '缺口', 'reason': gap_reason(gap), 'retry': '补充相关观察或记录后重新检查', 'episode': gap.get('episode')})
     for gap in gaps:

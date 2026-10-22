@@ -71,3 +71,6 @@ UI把内部work_context.reason放进“内部调度与调用来源”，任务�
 
 
 2026-10-22 面板操作凭据刷新：控制POST遇到403时，只重新读取同源页面取得当前令牌并重试一次；成功、409、服务器错误与网络异常不自动重发。暂停仍走原session标记，已投递动作先保留结果，非即时取消模型请求。
+
+
+2026-10-22：Prompt回放工具recorded_source对缺source的历史动作更新，从真实截图唯一attempt及dispatch→selection恢复元数据；不编辑原请求/回复，仍走正常结果builder与Runner。多attempt无法唯一确定时拒绝。保存帧仅观察/登记，不执行GUI。

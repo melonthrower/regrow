@@ -280,7 +280,7 @@ def question_state(task):
     latest = task_value(task, 'latest_update', {})
     gap = latest.get('remaining_question') or task_value(task, 'remaining_question')
     if gap:
-        value['未答部分'] = gap
+        value['未答部分'] = ('历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：' + gap) if latest.get('remaining_question') else gap
     rules = [fact['description'] for fact in task_value(task, 'findings', {}).values() if fact.get('description')]
     if rules:
         value['已确认规则'] = rules
@@ -297,7 +297,7 @@ def action_context(records, state, task_region, name, task):
     from regrow.records.task_settlement import registration_kind
     control = find_control(records[target['region']], target.get('control')) if target.get('control') else None
     label = control['name'] if control else records[target['region']]['name']
-    question = '输入或选择方式及限制' if registration_kind(task) == 'parameter' else '功能及必要使用条件'
+    question = '可指定的候选、取值或输入依据及必要设置方式' if registration_kind(task) == 'parameter' else '功能及直接操作效果'
     card['任务'] = '了解「' + label + '」的' + question
     from regrow.records.task_settlement import exploration_goal
     card['探索内容'] = exploration_goal(task)

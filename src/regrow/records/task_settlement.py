@@ -245,7 +245,12 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
         product = updates.preparation_product(task, row, records, source)
     else:
         product = task_product(task)
-    updates.decide(task, row, source, product_complete=product, records=records, labels=labels)
+    suggestion = (task_value(task, 'latest_update') or {}).get('next_action')
+    consumed = bool(owns_action and suggestion
+                    and action_name(suggestion['action']) == action_name(action.get('operation'))
+                    and recorded_match(actual, attempt, action, suggestion, receipt))
+    updates.decide(task, row, source, product_complete=product, records=records,
+                   labels=labels, consumed_suggestion=consumed)
 
 def reconcile(records):
     """Retain unresolved real action ownership without guessing completion."""

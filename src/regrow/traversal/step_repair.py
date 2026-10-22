@@ -173,17 +173,24 @@ def confirmed_dispatch_review(run, job, current_calls, window, current_frame):
     current = evidence['current']
     return frames == [current] and job['request'].get('screenshots') == [current] and (sent.get('original_request', {}).get('screenshots') == [current]) and (reply.get('proposal') == job.get('candidate'))
 
-def reopen_blocked(run, frame):
-    """A new run may reobserve an unexecuted blocked proposal, keeping its audit."""
-    from regrow.traversal import discovery_step as _discovery_step
+def reobservable_block(run):
+    """Return only a blocked proposal with no executed action left to register."""
     job = pending(run)
     if not job or job['status'] != 'blocked' or job.get('attempt'):
-        return False
+        return None
     if job.get('service_failure') and content_rejection(job['service_failure']['error']):
-        return False
+        return None
     if job['stage'] not in ('action', 'discovery', 'task_proposal', 'function_registration', 'task_result_review'):
-        return False
+        return None
     if any(((Path(run) / p).exists() for p in ('execution_pending.json', 'visual_navigation_pending.json'))):
+        return None
+    return job
+
+def reopen_blocked(run, frame):
+    """Reobserve an unexecuted blocked proposal, keeping its audit."""
+    from regrow.traversal import discovery_step as _discovery_step
+    job = reobservable_block(run)
+    if job is None:
         return False
     _discovery_step.await_discovery(run, str(Path(frame).resolve()), 'blocked-' + Path(job['path']).parent.name)
     job.update(status='superseded_by_observation', resume_frame=str(Path(frame).resolve()))
@@ -315,6 +322,10 @@ class Runner:
             q = read(path)
             if not repairing:
                 job['request'] = deepcopy(q)
+            elif q.get('role') == 'step_correction' and q.get('original_request'):
+                # Transport may append disclosed identities and bind a new schema.
+                # Validate/interpret the proposal using that exact sent contract.
+                job['request'] = deepcopy(q['original_request'])
         return q
 
     def repair_parse_failure(self, job):

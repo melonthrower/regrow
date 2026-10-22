@@ -38,3 +38,16 @@ def test_current_packed_records_are_visible_in_trace(tmp_path):
     trace.write(folder/'runtime_state.json',{'working_region':'r0001'})
     view=trace.records_at(tmp_path,'knowledge_snapshots/current')
     assert view['regions']['r0001']['controls']['c0001']['name']=='Save'
+
+
+def test_legacy_update_metadata_comes_from_real_dispatch(tmp_path):
+    q={'role':'observation_update','screenshots':['action_attempts/a2/before.png','action_attempts/a2/after.png']}
+    trace.write(tmp_path/'action_attempts/a2/dispatch.json',{'source_call':'0004'})
+    source={'snapshot':'knowledge_snapshots/accepted','task_region':'r1','task_name':'options'}
+    trace.write(tmp_path/'calls/0004/request.json',{'source':source})
+    assert trace.recorded_source(tmp_path,q)=={**source,'attempt':'a2'}
+    assert trace.before_snapshot(tmp_path,'0005',q)==source['snapshot']
+    assert 'source' not in q
+    import pytest
+    with pytest.raises(ValueError,match='唯一实际动作'):
+        trace.recorded_source(tmp_path,{**q,'screenshots':q['screenshots']+['action_attempts/a3/after.png']})

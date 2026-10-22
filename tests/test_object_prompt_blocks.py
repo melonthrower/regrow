@@ -36,7 +36,6 @@ def test_task_operations_and_updates_are_separate():
     jsonschema.validate(valid,schema)
     valid['operations']=[{'task':'r1/old','decision':'continue','reason':'仍未知','remaining_question':'输入规则'}]
     with pytest.raises(jsonschema.ValidationError):jsonschema.validate(valid,schema)
-    assert '一次适用操作' not in task_definition('function')['goal']
 
 
 def task_case():

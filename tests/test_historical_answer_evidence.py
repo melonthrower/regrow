@@ -61,7 +61,7 @@ def test_complete_required_products_do_not_force_partial_answers():
     complete=next(b for b in flat['anyOf'] if 'complete' in b['properties']['action']['enum'])
     none=next(b for b in flat['anyOf'] if 'none' in b['properties']['action']['enum'])
     assert 'findings' in complete['required'] and 'findings' not in none['required']
-    text=output.action_shape(flat);assert 'findings:' in text and 'findings?:' not in text
+    text=output.action_shape(flat);assert 'findings（必填）' in text and 'findings（可选）' not in text
 
 def test_correction_can_omit_unused_edit_but_not_requested_edit(tmp_path):
     from regrow.traversal.step_repair import request

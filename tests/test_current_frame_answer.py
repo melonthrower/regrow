@@ -25,11 +25,12 @@ def test_current_image_answer_saves_knowledge_without_inventing_execution(tmp_pa
     assert not task_updates.observed_control(owner,task,state)
     basis=task_updates.answer_evidence(tmp_path,q,owner,task,state)
     answer={'task':'r1/功能探索','decision':'answered','reason':'Selected item and page title agree.',
-            'knowledge':'Network selects the network settings page.'}
+            'knowledge':[{'description':'Network selects the network settings page.','conditions':[]}]}
     task_updates.store_increment(owner,task,'功能探索',answer,records,state,
         {**basis,'source_call':'7'},observed=bool(basis))
     assert task['status']=='done'
-    assert owned_controls(owner)['c1']['knowledge']==answer['knowledge']
+    from regrow.records.control_knowledge import text
+    assert text(owned_controls(owner)['c1']['knowledge'])==text(answer['knowledge'])
     source=task_updates.task_value(task,'knowledge_source')
     assert source['source_image']==q['screenshots'][0] and source['source_call']=='7'
     assert source['basis']=='observation_only' and 'attempt' not in source

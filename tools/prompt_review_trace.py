@@ -42,8 +42,24 @@ def source_call(root, key, call):
     return run, read(run / 'calls' / call / 'request.json')
 
 
+def recorded_source(run, request):
+    """Recover old update metadata only from its real attempt and dispatch record."""
+    if request.get('source'):
+        return request['source']
+    if request.get('role') != 'observation_update':
+        return {}
+    attempts = {Path(frame).parts[Path(frame).parts.index('action_attempts') + 1]
+                for frame in request.get('screenshots', []) if 'action_attempts' in Path(frame).parts}
+    if len(attempts) != 1:
+        raise ValueError('历史更新没有唯一实际动作来源')
+    attempt = attempts.pop()
+    dispatch = read(Path(run) / 'action_attempts' / attempt / 'dispatch.json')
+    selection = read(Path(run) / 'calls' / dispatch['source_call'] / 'request.json')
+    return {**selection['source'], 'attempt': attempt}
+
+
 def before_snapshot(run, call, q):
-    source = q.get('source') or {}
+    source = recorded_source(run, q)
     if source.get('snapshot'):
         return source['snapshot']
     if source.get('attempt'):
@@ -284,7 +300,7 @@ def worker(dest):
             archive.parent.mkdir(exist_ok=True)
             shutil.move(pending, archive)
     if original['role'] == 'observation_update':
-        write(run / 'execution_pending.json', {'attempt': original['source']['attempt']})
+        write(run / 'execution_pending.json', {'attempt': recorded_source(origin, original)['attempt']})
     write(run / 'knowledge_current.json', {'snapshot': spec['snapshot']})
     write(dest / 'inherited-calls.json', [p.name for p in (run / 'calls').iterdir()])
     manifest = read(run / 'run_manifest.json');manifest['framework_source'] = str(source)
@@ -302,7 +318,7 @@ def worker(dest):
         write(new_base / 'source.json', {'parent_snapshot': spec['snapshot'], 'stage': 'manual_case_context', 'revision': spec.get('revision')})
         write(run / 'knowledge_current.json', {'snapshot': str(new_base.relative_to(run))})
     snapshot, records, state = snapshots.load(run)
-    role = original['role'];src = original.get('source', {});attempt = src.get('attempt')
+    role = original['role'];src = recorded_source(origin, original);attempt = src.get('attempt')
     if role == 'observation':
         # Same historical screenshot and stored discovery state, normal builder.
         q = locator.request_from_run(source, run)

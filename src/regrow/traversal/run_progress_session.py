@@ -71,6 +71,15 @@ def run_session(root, run, out, mode, step=run_step):
         if mode == 'step':
             account['status'] = 'paused_after_step'
             break
+        if result['status'] == 'correction_blocked' and not account.get('blocked_observation_retry'):
+            from regrow.traversal.step_repair import reobservable_block
+            blocked = reobservable_block(run)
+            if blocked is not None:
+                # The next normal step archives this episode and takes a fresh
+                # observation. One retry per session prevents repeated empty work.
+                account['blocked_observation_retry'] = blocked['path']
+                save()
+                continue
         continuation = after_round(result['status'], idle_recheck)
         if continuation == 'knowledge' and (account['max_http'] is None or account['http_started'] < account['max_http']):
             knowledge_count += 1

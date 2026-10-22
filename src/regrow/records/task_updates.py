@@ -63,7 +63,7 @@ def hard_block(task):
     blocker = task.get('blocker', {})
     return bool(blocker.get('exception') or blocker.get('condition') not in (None, 'review_required') or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or (task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review'))
 
-def decide(task, row, basis, *, product_complete, records, labels=None):
+def decide(task, row, basis, *, product_complete, records, labels=None, consumed_suggestion=False):
     """Publish an explicit assessment; facts and real execution blockers survive."""
     validate(row, task)
     decision = row['decision']
@@ -79,6 +79,8 @@ def decide(task, row, basis, *, product_complete, records, labels=None):
         suggestion = None
     elif 'next_action' in row:
         suggestion = resolve_suggestion(records, row['next_action'], labels)
+    elif consumed_suggestion:
+        suggestion = None
     else:
         suggestion = deepcopy((previous or {}).get('next_action'))
     if previous:

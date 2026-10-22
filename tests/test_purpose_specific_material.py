@@ -125,7 +125,9 @@ def test_update_task_card_reuses_current_task_rules_and_gap():
     owner=panel();owner['tasks']={'parameter':{'control':'c0001','task_type':'parameter','status':'pending','latest_update':{'remaining_question':'Empty result behavior'},'findings':{'matching':{'description':'Matches labels and names'}}}}
     records={'r0001':owner};task=owner['tasks']['parameter']
     expected=history_context.question_state(task)
-    assert expected=={'未答部分':'Empty result behavior','已确认规则':['Matches labels and names']}
+    assert expected['未答部分'].endswith('Empty result behavior') and '历史模型更新' in expected['未答部分']
+    assert expected['已确认规则']==['Matches labels and names']
+    assert task['latest_update']['remaining_question']=='Empty result behavior'
     rows=task_updates.catalog(records,{'region_ref':'r0001','task_region':'r0001','task_name':'parameter','control_ref':'c0001'})
     body={'来源区块已有任务':rows,'当前任务引用':'r0001/parameter','任务目标':{}}
     update_task(body)

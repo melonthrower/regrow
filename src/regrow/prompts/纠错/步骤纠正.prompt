@@ -6,6 +6,10 @@
 
 proposal 返回符合原步骤输出格式的完整提案，保留其余真实内容。被拒的新提案尚未登记，修正提案与修改已有记录分别处理。
 
+动作已经执行、原任务仍无法回答时，也用 revise 完成真实结果登记：在 proposal 中保留实际动作与对象变化，对原任务填写 task_update.decision=continue 或 defer 及相应缺口，不写入来自其他控件的用途知识。task_update 的 defer 是原任务的判断，与外层 resolution=defer（暂挂整个修复步骤）不同。
+
+若历史未解问题已经偏到另一个控件，以给定原任务的控件和类型目标为准修正该问题；这不需要改变任务绑定，也不能把当前准备动作的结果冒充原控件的结果。
+
 ## 记录修订 → edit_record
 
 仅修改本轮开放的已登记对象和字段，提供准确 before、after、evidence。可单独 edit_record，也可在 revise 中附有依据的 record_edit。

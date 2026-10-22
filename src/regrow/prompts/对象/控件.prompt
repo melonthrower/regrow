@@ -233,7 +233,7 @@
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_constraints" requires="control.knowledge_base" -->
 ## 参数规则：knowledge[].constraints
 
-`constraints` 保存该知识项适用的参数规则，例如输入格式、长度、范围或枚举选项。没有需要登记的参数规则时省略，不把本次输入值当成规则。
+`constraints` 保存已有证据支持、且影响该用途选择或设置的参数约束及已知候选。这些是可记录的信息类型，不是必须逐项测试的清单。没有相关依据时省略，不为补齐格式、长度或范围而安排额外测试；不把一次输入值当成通用规则。
 
 `conditions` 说明“该用途在什么上下文中适用”；`constraints` 说明“使用该用途时，参数需要满足什么要求”。规则随所属知识项适用，不自动扩展到同一控件的其他用途。
 

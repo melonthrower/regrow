@@ -217,6 +217,11 @@ def request(root, job, context):
     if job['stage'] == 'shared_control_review':
         return _shared_control_review.correction_request(root, job)
     original = deepcopy(job['request'])
+    if job['stage'] == 'update' and original.get('semantic_request'):
+        # Registration uses the after-frame for geometry. Correcting the action
+        # result must return to its original semantic pair and output contract.
+        from regrow.traversal.object_registration import semantic_revision
+        original, _ = semantic_revision(original, job.get('candidate') or {})
     if not task_review_images(original):
         _frame_context.select(original, _frame_context.primary(original))
     original['response_schema'] = _model_transport.expand_schema(original['response_schema'])

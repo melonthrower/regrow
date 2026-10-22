@@ -65,3 +65,6 @@ UI把内部work_context.reason放进“内部调度与调用来源”，任务�
 对象规则将 `shared.registration` 与通用输出约定分开，身份判断只依赖控件定义与身份正反例。`object_blocks.enabled_fields` 按现有 schema 的输出路径选块，关闭数组不触发子树；`complete/none/answered` 按直属枚举选择。组合分支按路径并集处理，不是任意 JSON Schema 求解器；也不意味着每个保留块内的文字都按字段逐句裁剪。
 
 验证及交付范围见本月日志“身份材料披露候选”。无新模型、GUI 或远端部署；真实原记录、原图、Luna 原答及正常登记的行为验收仍待补齐。
+
+
+2026-10-22 进度面板：runtime.progress.snapshot补齐owned_controls导入，coverage直接读取Region对象，保留独立work中的任务清点信息，避免展开为dict后丢失。复用既有progress_window显示区块、任务、动作结果与图；实时试跑使用独立展示源码读取冻结运行记录，不热更新遍历。

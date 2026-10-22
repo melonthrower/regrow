@@ -4,6 +4,7 @@ from regrow.records.tasks import read as task_value
 from regrow.records.object_store import control_actions
 from regrow.records.object_store import owned_actions
 from regrow.records.object_store import owned_tasks
+from regrow.records.object_store import owned_controls
 from regrow.records import object_store as object_store
 'Read-only traversal view plus small, optional execution-status hooks.'
 from contextlib import contextmanager
@@ -127,7 +128,7 @@ def snapshot(run, tasks=None):
     work = regions.get(state.get('working_region'), {})
     if tasks is None:
         from regrow.traversal import region_tasks as tasks
-    cov = _record_coverage({**work, 'controls': dict(owned_controls(work))}, regions)
+    cov = _record_coverage(work, regions)
     total = sum((len(cov[k]) for k in ('done', 'pending', 'blocked')))
     cov['total'] = total
     cov['percent'] = round(100 * len(cov['done']) / total) if cov['inventory_complete'] and total else None

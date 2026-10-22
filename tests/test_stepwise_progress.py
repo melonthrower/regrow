@@ -18,7 +18,7 @@ def fixture(tmp_path):
         path.write_text(json.dumps(value))
     save(tmp_path / 'knowledge_current.json', {'snapshot': 'snapshot'})
     save(snapshot / 'runtime_state.json', {'working_region': 'menu', 'interactive_regions': [], 'next_action_mode': 'explore'})
-    region = {'id': 'menu', 'name': '溢出菜单', 'description': '入口列表', 'controls': {'one': {'name': 'Settings', 'action_refs': ['a']}}, 'actions': {'a': {'result': {'description': '打开设置'}}}, 'tasks': {}}
+    region = {'id': 'menu', 'name': '溢出菜单', 'description': '入口列表', 'controls': {'one': {'name': 'Settings', 'action_refs': ['a']}}, 'actions': {'a': {'control': 'one', 'result': {'description': '打开设置'}}}, 'tasks': {}}
     save(snapshot / 'regions/menu/region.json', region)
     return (region, snapshot / 'regions/menu/region.json')
 
@@ -31,13 +31,13 @@ def test_legacy_region_does_not_turn_observed_clicks_into_completion(tmp_path):
     assert v['progress']['percent'] is None
     assert v['observed_controls'] == 1 and v['current_task'] is None
 
-def test_progress_uses_tasks_and_excludes_record_only(tmp_path):
+def test_progress_preserves_region_work_inventory(tmp_path):
     (region, path) = fixture(tmp_path)
-    region.update(task_inventory={'inventory': 'complete', 'controls': ['one']}, tasks={'已完成': {'control': 'one', 'handling': 'explore', 'status': 'done'}, '受阻': {'control': 'one', 'handling': 'explore', 'status': 'blocked'}, '仅记录': {'control': 'one', 'handling': 'record', 'status': 'record_only'}})
+    region.update(task_inventory={'inventory': 'complete', 'controls': ['one']}, tasks={'已完成': {'control': 'one', 'handling': 'explore', 'status': 'done'}, '受阻': {'control': 'one', 'handling': 'explore', 'status': 'blocked'}})
     path.write_text(json.dumps(region))
     v = module().snapshot(tmp_path)
     assert v['progress']['percent'] == 50 and (not v['progress']['complete'])
-    assert v['progress']['blocked'] == ['受阻'] and v['progress']['record_only'] == ['仅记录']
+    assert v['progress']['blocked'] == ['受阻'] and v['progress']['done'] == ['已完成']
 
 def test_stage_events_pause_and_dead_process_do_not_look_running(tmp_path):
     fixture(tmp_path)

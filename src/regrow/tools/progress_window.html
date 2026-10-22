@@ -66,12 +66,26 @@ for(const result of v.action_results){const box=document.createElement('div');bo
 put('source','登记来源：'+(v.source_call?'调用 '+v.source_call:'暂无')+' · '+(v.updated_at?'阶段更新 '+new Date(v.updated_at).toLocaleTimeString():'尚未运行带进度记录的新回合'));
 }catch(error){put('connection','状态连接中断，以下保留上次数据；正在重连');put('status','连接中断');$('next').disabled=true;$('auto').disabled=true;document.querySelectorAll('.step').forEach(el=>el.classList.remove('active'))}finally{setTimeout(refresh,1500)}}
 function frame(){const image=$('frame');image.onload=()=>{put('mirror-status','最近缓存画面（非实时投屏）；框架取图后自动更新');setTimeout(frame,2000)};image.onerror=()=>{put('mirror-status','缓存画面暂不可用，正在重读；不影响框架独立取图');setTimeout(frame,3000)};image.src='/frame.png?t='+Date.now()}
-async function submit(path){submitting=true;for(const id of ['auto','next','pause'])$(id).disabled=true;put('connection','正在提交请求…');try{const response=await fetch(path,{method:'POST',headers:{'X-Run-Token':document.querySelector('meta[name="run-token"]').content}});if(!response.ok)throw Error(response.status===409?'运行状态已变化，请等待刷新':'请求失败，请检查日志');put('connection',path==='/pause'?'暂停请求已收到':'已启动')}catch(error){put('connection',error.message)}finally{submitting=false}}
+async function postControl(path, body){
+ const meta=document.querySelector('meta[name="run-token"]');
+ const send=()=>fetch(path,{method:'POST',headers:{'X-Run-Token':meta.content,...(body===undefined?{}:{'Content-Type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+ let response=await send();
+ if(response.status===403){
+  const page=await fetch('/',{cache:'no-store'});
+  if(!page.ok)throw Error('无法刷新操作连接，请刷新页面');
+  const token=new DOMParser().parseFromString(await page.text(),'text/html').querySelector('meta[name="run-token"]')?.content;
+  if(!token)throw Error('操作连接失效，请刷新页面');
+  meta.content=token;
+  response=await send();
+ }
+ return response;
+}
+async function submit(path){submitting=true;for(const id of ['auto','next','pause'])$(id).disabled=true;put('connection','正在提交请求…');try{const response=await postControl(path);if(!response.ok)throw Error(response.status===409?'运行状态已变化，请等待刷新':'请求失败，请检查日志');put('connection',path==='/pause'?'暂停请求已收到':'已启动')}catch(error){put('connection',error.message)}finally{submitting=false}}
 $('next').onclick=()=>submit('/next');$('auto').onclick=()=>submit('/start');$('pause').onclick=()=>submit('/pause');
 let applications=[];
 function savedRuns(){const app=applications.find(a=>a.package===$('application').value);$('saved-run').replaceChildren();for(const r of app?.runs||[]){const option=document.createElement('option');option.value=r.id;option.textContent=(r.created?r.created.slice(0,19).replace('T',' '):'已有记录')+' · '+r.name;$('saved-run').append(option)}$('resume-app').disabled=!$('saved-run').value}
 async function catalog(){try{const response=await fetch('/applications.json'),data=await response.json();applications=data.apps||[];if(!applications.length)return;$('app-picker').hidden=false;put('device-label','当前设备：'+data.device);const previous=$('application').value;$('application').replaceChildren();for(const app of applications){const option=document.createElement('option');option.value=app.package;option.textContent=app.name+' · '+app.package;$('application').append(option)}if(previous)$('application').value=previous;else{const selected=applications.find(a=>a.runs.some(r=>r.id===data.selected_run));if(selected)$('application').value=selected.package}savedRuns();if([...$('saved-run').options].some(option=>option.value===data.selected_run))$('saved-run').value=data.selected_run}catch(e){put('selection-message','应用列表读取失败，请刷新重试')}}
-async function selectApplication(mode){submitting=true;$('resume-app').disabled=true;$('new-app').disabled=true;put('selection-message','正在打开应用并准备观察…');try{const response=await fetch('/select',{method:'POST',headers:{'Content-Type':'application/json','X-Run-Token':document.querySelector('meta[name="run-token"]').content},body:JSON.stringify({package:$('application').value,mode,run_id:$('saved-run').value})});if(!response.ok)throw Error(response.status===409?'请先暂停当前遍历':'启动失败，请检查启动日志');put('selection-message','已启动，旧记录已保留');$('app-picker').open=false;await catalog()}catch(e){put('selection-message',e.message)}finally{submitting=false}}
+async function selectApplication(mode){submitting=true;$('resume-app').disabled=true;$('new-app').disabled=true;put('selection-message','正在打开应用并准备观察…');try{const response=await postControl('/select',{package:$('application').value,mode,run_id:$('saved-run').value});if(!response.ok)throw Error(response.status===409?'请先暂停当前遍历':'启动失败，请检查启动日志');put('selection-message','已启动，旧记录已保留');$('app-picker').open=false;await catalog()}catch(e){put('selection-message',e.message)}finally{submitting=false}}
 $('application').onchange=savedRuns;$('resume-app').onclick=()=>selectApplication('resume');$('new-app').onclick=()=>selectApplication('new');
 catalog();refresh();frame();
 </script></html>

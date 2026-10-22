@@ -17,7 +17,7 @@ def test_nested_schema_errors_name_the_current_control():
     assert len(errors) == 1
     assert errors[0]['path'] == '/proposal/controls/0/knowledge'
     shown = describe({'errors': errors}, reply)
-    assert shown == [{'对象': 'Help', '字段': '用途知识', '问题': '要求至少 1 项，实际提交 0 项。'}]
+    assert shown == [{'对象': '控件：Help', '字段': '用途知识', '问题': '要求至少 1 项，实际提交 0 项。'}]
     value = {'被拒绝回复': reply, '上次失败或停止诊断（保留原文，非当前能力清单）': {'errors': errors},
              '本次修复历史': [{'call': '1', 'error': errors}, {'call': '2', 'role': 'step_correction'}]}
     present(value)
@@ -67,7 +67,7 @@ def test_semantic_errors_keep_named_requirements_without_string_assumptions():
         {'code': 'existing_control_conflict', 'path': '/controls/1/name', 'expected': {'matching_records': ['Help']}, 'repair': '核对旧对象后复用。'}]
     shown = describe({'errors': errors}, reply)
     assert len(shown) == 3 and '菜单区' in shown[0]['问题']
-    assert shown[1]['对象'] == 'Help' and shown[1]['问题'] == 'Help'
+    assert shown[1]['对象'] == '控件：Help' and shown[1]['问题'] == '同一对象被重复提交。'
     assert all('修正要求' in row for row in shown)
     assert '/controls/' not in str(shown)
 
@@ -77,11 +77,11 @@ def test_same_names_in_distinct_regions_keep_both_errors():
         {'name': 'Help', 'region_index': 0}, {'name': 'Help', 'region_index': 1}]}
     errors = [{'path': f'/controls/{i}/knowledge', 'expected': '缺少用途知识'} for i in range(2)]
     shown = describe({'errors': errors}, reply)
-    assert [row['对象'] for row in shown] == ['菜单中的Help', '工具栏中的Help']
+    assert [row['对象'] for row in shown] == ['控件：菜单中的Help', '控件：工具栏中的Help']
 
 
 def test_old_control_reference_uses_supplied_identity_name():
     reply = {'controls': [{'index': 0}]}
     request = {'control_indexes': ['c0001'], 'page_context': {'names': {'c0001': 'Help'}, 'history': {'names': {'r1': '菜单'}}}}
     shown = describe({'errors': [{'path': '/controls/0/knowledge', 'expected': '缺少用途知识'}]}, reply, request)
-    assert shown[0]['对象'] == 'Help'
+    assert shown[0]['对象'] == '控件：Help'

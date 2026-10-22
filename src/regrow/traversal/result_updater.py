@@ -104,8 +104,6 @@ def route_update(root, reply, receipt, *, schema=None):
         reply = {k: v for (k, v) in reply.items() if k != 'working_context'}
     if 'exploration_update' not in schema.get('properties', {}):
         reply = {k: v for (k, v) in reply.items() if k != 'exploration_update'}
-    from regrow.records.task_settlement import validation_reply
-    reply = validation_reply(reply)
     try:
         jsonschema.validate(reply, schema)
     except jsonschema.ValidationError as exc:

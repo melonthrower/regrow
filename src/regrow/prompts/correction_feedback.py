@@ -2,12 +2,52 @@
 from copy import deepcopy
 import re
 
-LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': '已有对象引用',
+LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': '引用',
           'name': '名称', 'description': '描述', 'conditions': '适用条件',
           'controls': '控件', 'regions': '区块', 'proposal': '修订回复',
           'task_update': '任务更新', 'action_result': '动作结果',
+          'findings': '参数发现', 'may_open_content': '是否打开内容',
+          'needs_exploration': '是否需要探索',
           'matching_records': '匹配的旧对象', 'matches': '匹配对象',
           'proposed_region_name': '提出的所属区块', 'proposed_region': '区块引用'}
+
+
+TYPES = {'array': '列表', 'object': '对象', 'string': '文字', 'boolean': 'true 或 false',
+         'integer': '整数', 'number': '数值', 'null': 'null'}
+
+
+def schema_feedback(item, text):
+    """Explain validator rules, independent of the failing field's name."""
+    rule, required = item.get('validator'), item.get('requirement')
+    fields = '、'.join(LABELS.get(k, k) for k in item.get('fields', []))
+    if rule == 'required':
+        return fields, '缺少必填字段，请补写。'
+    if rule == 'additionalProperties':
+        allowed = '、'.join(LABELS.get(k, k) for k in item.get('allowed_fields', []))
+        return fields, '多写了不允许的字段。' + ('这里只允许：' + allowed + '。' if allowed else '此处不允许额外字段。')
+    if rule == 'type':
+        kinds = required if isinstance(required, list) else [required]
+        return None, '应填写' + '或'.join(TYPES.get(k, str(k)) for k in kinds) + '。'
+    if rule in ('enum', 'const'):
+        if item.get('path', '').endswith('/index'):
+            return None, '引用的条目不存在，请使用本次提供的有效引用。'
+        return None, '允许填写：' + text(required) + '。'
+    if rule in ('minLength', 'maxLength', 'minProperties', 'maxProperties'):
+        bound = '至少' if rule.startswith('min') else '最多'
+        unit = '个字符' if rule.endswith('Length') else '个字段'
+        return None, f'要求{bound} {required} {unit}。'
+    if rule in ('minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum'):
+        op = {'minimum':'大于或等于', 'maximum':'小于或等于',
+              'exclusiveMinimum':'大于', 'exclusiveMaximum':'小于'}[rule]
+        return None, '应' + op + str(required) + '。'
+    if rule == 'multipleOf':
+        return None, '应为' + str(required) + '的整数倍。'
+    if rule == 'pattern':
+        return None, '文字不符合要求的格式：' + str(required)
+    if rule == 'uniqueItems':
+        return None, '列表含重复条目，每项须唯一。'
+    # Unknown validators still expose their specific original reason.
+    return None, text(item.get('expected') or item.get('reason') or item.get('repair') or required)
 
 
 def describe(error, reply, request=None):
@@ -41,6 +81,10 @@ def describe(error, reply, request=None):
             name = names.get(indexes[index])
         if not name:
             name = names.get(obj.get('ref'))
+        if not name and isinstance(obj.get('task'), str):
+            ref = obj['task']
+            owner, separator, task = ref.partition('/')
+            name = (names.get(owner, owner) + '的' + task) if separator else ref
         if not name:
             return None
         ri = obj.get('region_index')
@@ -55,32 +99,41 @@ def describe(error, reply, request=None):
         node = reply
         subject = '本次回复'
         field = ''
+        collection = ''
         for token in item.get('path', '').strip('/').split('/'):
             token = token.replace('~1', '/').replace('~0', '~')
             if isinstance(node, dict):
                 if label(node):
-                    subject = label(node)
+                    subject = (collection + '：' if collection else '') + label(node)
                 field = LABELS.get(token, token) if token else field
                 node = node.get(token)
             elif isinstance(node, list) and token.isdigit() and int(token) < len(node):
+                collection = field
                 node = node[int(token)]
             else:
                 break
             if isinstance(node, dict) and label(node):
-                subject = label(node)
+                subject = (collection + '：' if collection else '') + label(node)
                 field = ''
         reason = item.get('expected') or item.get('reason') or item.get('repair')
         if not reason:
             continue
         reason = text(reason)
-        # Aggregate union errors contain the entire instance. Keep the concrete
-        # branch alternatives without repeating the failed reply in prose.
-        if 'is not valid under any of the given schemas' in reason:
-            reason = '该内容不符合允许的回复结构，尚未定位到唯一分支。'
+        if item.get('validator'):
+            affected, reason = schema_feedback(item, text)
+            if affected:
+                field = affected
         row = {'对象': subject, **({'字段': field} if field else {}), '问题': reason}
+        actual = item.get('actual')
+        if item.get('validator') in ('type', 'enum', 'const', 'minimum', 'maximum',
+                                     'exclusiveMinimum', 'exclusiveMaximum', 'pattern', 'multipleOf'):
+            if not isinstance(actual, (dict, list)):
+                row['实际填写'] = actual
         repair = item.get('repair')
         if repair and repair not in ('按该字段格式修订，不修改其他真实证据。', '按字段格式修订，不改变真实证据。'):
             row['修正要求'] = text(repair)
+        if item.get('code') in ('duplicate_submission', 'duplicate_binding'):
+            row['问题'] = '同一对象被重复提交。'
         if item.get('code') == 'owner':
             regions = proposal.get('regions', [])
             row['问题'] = '所属区块引用不存在；本次区块为：' + '、'.join(r.get('name', '未命名区块') for r in regions)

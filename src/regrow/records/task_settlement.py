@@ -315,16 +315,6 @@ def partition_findings(findings, task=None):
         accepted.append(fact)
     return (accepted, gaps)
 
-def validation_reply(reply, task=None):
-    from copy import deepcopy
-    result = deepcopy(reply)
-    for field in ('task_update', 'task_result'):
-        value = result.get(field)
-        for row in value if isinstance(value, list) else [value]:
-            if isinstance(row, dict) and 'findings' in row:
-                row['findings'] = partition_findings(row['findings'], task)[0]
-    return result
-
 def store_findings(task, findings, source):
     from regrow.records.tasks import store_findings as store
     (accepted, gaps) = partition_findings(findings, task)

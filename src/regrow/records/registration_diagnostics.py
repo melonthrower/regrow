@@ -4,6 +4,7 @@ from regrow.records.object_store import owned_tasks
 from regrow.records.object_store import owned_controls
 import json
 import jsonschema
+import re
 
 class Rejected(ValueError):
 
@@ -32,8 +33,19 @@ def schema_errors(error):
         message = '缺少必填字段：' + '、'.join(missing)
     elif error.validator == 'type':
         message = '值的类型不符，要求：' + str(error.validator_value)
-    return [dict(code='schema', path='/' + '/'.join(map(str, error.absolute_path)),
-                 object='reply', actual=error.instance, expected=message)]
+    row = dict(code='schema', path='/' + '/'.join(map(str, error.absolute_path)),
+               object='reply', actual=error.instance, expected=message,
+               validator=error.validator, requirement=error.validator_value)
+    if error.validator == 'required':
+        row['fields'] = [key for key in error.validator_value if key not in error.instance]
+    elif error.validator == 'additionalProperties' and isinstance(error.instance, dict):
+        allowed = error.schema.get('properties', {})
+        patterns = error.schema.get('patternProperties', {})
+        row['fields'] = [key for key in error.instance if key not in allowed
+                         and not any(re.search(pattern, key) for pattern in patterns)]
+        row['allowed_fields'] = list(allowed)
+    return [row]
+
 
 def visibility_errors(reply, region_refs, changes):
     current = {region_refs[c['region_index']] for c in reply.get('controls', []) if isinstance(c.get('region_index'), int) and 0 <= c['region_index'] < len(region_refs)} - {None}
@@ -98,13 +110,6 @@ def parent_cycles(records, rows, refs):
 def collect(stage, q, p, records, binding=None, *, frame=None):
     errors = []
     unchecked = []
-    if stage == 'update':
-        from regrow.records.task_settlement import validation_reply
-        owner = records.get((binding or {}).get('task_region', (binding or {}).get('region_ref')), {})
-        p = validation_reply(p, owned_tasks(owner).get((binding or {}).get('task_name')))
-    elif stage == 'correction' and q.get('original_stage') == 'update' and isinstance(p.get('proposal'), dict):
-        from regrow.records.task_settlement import validation_reply
-        p = {**p, 'proposal': validation_reply(p['proposal'])}
 
     def add(code, path, obj, actual, expected, repair):
         errors.append(dict(code=code, path=path, object=obj, actual=actual, expected=expected, repair=repair))
@@ -113,7 +118,9 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
         if stage == 'update' and 'working_context' not in schema.get('properties', {}):
             p = {k: v for (k, v) in p.items() if k != 'working_context'}
         for e in jsonschema.Draft202012Validator(schema).iter_errors(p):
-            errors.extend(schema_errors(e))
+            for row in schema_errors(e):
+                if row not in errors:
+                    errors.append(row)
         if errors:
             return {'errors': errors, 'unchecked': ['结构不合格，依赖这些字段的身份、归属和结果校验尚未执行。']}
     if stage in ('discovery', 'update'):

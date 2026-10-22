@@ -98,6 +98,35 @@ def locate_task_control(run, q, frame):
     _record_publish(run, 'task-location-' + uuid.uuid4().hex, mutate)
     return True
 
+def register_action_target(run, request, proposal, binding, call):
+    """Register unbound click/input targets through discovery before delivery."""
+    if binding.get('association', {}).get('status') != 'unconfirmed':
+        return False
+    if proposal.get('action') not in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'input_text'):
+        return False
+    frame = str((Path(run) / request['screenshots'][0]).resolve())
+    if not Path(frame).is_file():
+        raise ValueError('missing action selection frame')
+    explanation = (
+        '动作选择发现了尚未关联身份的实际控件；该提案尚未执行。'
+        '请在本张动作前图中登记拟操作控件及其真实所属区块，已有对象核对后复用，没有旧身份则正常新建。'
+        '不因原任务所在区块而改变实际控件归属；不将未执行提案登记为效果或完成任务。'
+        '登记后将重新看图选择动作。拟操作提案：' + json.dumps(proposal, ensure_ascii=False))
+
+    def mutate(records, state, *_):
+        from regrow.traversal.work_context import from_request
+        state['active_task'] = from_request(request, records, state).get('task')
+        batch = state.pop('discovery_completion', None)
+        if batch:
+            state.setdefault('discovery_completion_history', []).append(batch)
+        state.pop('inspection_region', None)
+        state.pop('required_control', None)
+        state.update(next_action_mode='discover', phase='awaiting_discovery',
+                     pending_frame=frame, discovery_mode='relocate',
+                     reason='action_target_needs_registration', correction_context=explanation)
+    _record_publish(run, 'action-target-' + call, mutate)
+    return True
+
 class Locator:
 
     def __init__(self, root, run, frame, call, repair):

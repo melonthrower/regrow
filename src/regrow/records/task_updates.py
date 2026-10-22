@@ -216,6 +216,16 @@ def observed_control(owner, task, state):
 def reference(region, name):
     return region + '/' + name
 
+def related_to_action(task, region, binding):
+    """Only unfinished local questions on the actual operated control."""
+    return (region == binding['region_ref'] and binding.get('control_ref') is not None
+            and task.get('control') == binding['control_ref']
+            and task.get('status') in ('pending', 'blocked')
+            and not any(task.get(key) for key in ('prepares', 'prerequisite', 'equivalent_to',
+                                                 'shared_task_ref', 'coverage_exemption'))
+            and not hard_block(task))
+
+
 def catalog(records, binding):
     from regrow.records.tasks import describe
     'Keep task ownership; disclose local goals, not another pending ledger.'
@@ -227,10 +237,10 @@ def catalog(records, binding):
         region = records[rid]
         for (name, task) in owned_tasks(region).items():
             current = rid == binding.get('task_region', binding['region_ref']) and name == binding.get('task_name')
-            answered = rid == binding['region_ref'] and binding.get('control_ref') is not None and (task.get('control') == binding['control_ref']) and (registration_kind(task) == 'function') and (task.get('status') in ('pending', 'blocked'))
+            related = related_to_action(task, rid, binding)
             goal = task.get('prepares', {})
             preparation = bool(goal.get('region') in scope and task.get('status') in ('pending', 'blocked'))
-            if not current and (not answered) and (not preparation):
+            if not current and (not related) and (not preparation):
                 continue
             row = {'task': reference(rid, name), 'region': rid, 'name': name, 'control': task.get('control'), 'control_name': (find_control(region, task.get('control')) or {}).get('name', '区块本身'), 'status': task.get('status'), 'task_type': registration_kind(task), 'conditions': task.get('conditions', [])}
             if current:
@@ -266,7 +276,6 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
     """Called within the normal update transaction after real identity registration."""
     from regrow.records.task_settlement import completion_target
     from regrow.records.task_settlement import recorded_match
-    from regrow.records.task_settlement import registration_kind
     rows = reply['task_update']
     allowed = {row['task']: row for row in candidates or []}
     selected = {}
@@ -289,9 +298,10 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
             raise ValueError('任务身份或适用条件已变化，需重新核对本次候选')
         if ref != active and (not task.get('prepares')):
             target = completion_target(region, task)
-            blocker = task.get('blocker', {})
-            if registration_kind(task) != 'function' or task.get('prepares') or blocker.get('exception') or (blocker.get('condition') not in (None, 'review_required')) or task.get('prerequisite') or row.get('entry') or row.get('findings') or (row.get('next_action') is not None) or (not (row.get('knowledge') or task_value(task, 'knowledge', ''))) or row.get('remaining_question') or (row.get('decision') != 'answered'):
-                raise ValueError('其他任务仅可登记本次实际控件已回答的用途问题；不得顺带结束参数、前置或异常任务')
+            if not related_to_action(task, region['id'], binding):
+                raise ValueError('相关任务必须属于本次实际操作控件，且没有尚未解决的前提或执行阻塞')
+            if row.get('entry') or row.get('next_action') is not None:
+                raise ValueError('相关任务本步只登记判断和已得知识，不另排后续动作或改写访问关系')
             if target.get('control') is None or not recorded_match(actual, attempt, action, target, receipt) or action.get('result', {}).get('exception') != 'none':
                 raise ValueError('旧问题答案必须来自同一已确认实际控件的成功投递与观察')
         selected[ref] = (region, task, row)
@@ -305,7 +315,7 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
             continue
         if not set(task.get('conditions', [])).issubset(set(action.get('conditions', []))):
             raise ValueError('本次动作没有确认旧问题所需适用条件，不能借用其他条件用途的结果')
-        related = {**binding, 'task_region': region['id'], 'task_name': allowed[ref]['name'], 'answered_related_task': not bool(task.get('prepares')), 'related_assessment': True, 'task_update_ref': ref}
+        related = {**binding, 'task_region': region['id'], 'task_name': allowed[ref]['name'], 'related_assessment': True, 'task_update_ref': ref}
         settle(region, related, {**reply, 'task_update': row}, attempt, records, receipt=receipt, labels=labels, explicit=True)
 
 def latest_suggestion(records, task):

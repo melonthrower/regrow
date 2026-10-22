@@ -217,12 +217,10 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
     updates.validate(row, task)
     actual = records[binding['region_ref']]
     action = owned_actions(actual)[attempt]
-    owns_action = not binding.get('answered_related_task') and (not binding.get('related_assessment'))
+    owns_action = not binding.get('related_assessment')
     if owns_action:
         action.setdefault('task', owner['id'] + '/' + name)
     matched = recorded_match(actual, attempt, action, completion_target(owner, task), receipt)
-    if binding.get('answered_related_task'):
-        matched = True
     source = {'basis': 'explored' if matched else 'observation_only', 'source_call': action.get('evidence', {}).get('result_call'), 'observation': action.get('evidence', {}).get('after_observation'), 'region': actual['id'], 'control': action.get('control'), **({'attempt': attempt} if matched else {'source_attempt': attempt})}
     if matched:
         if owns_action and 'conditions' in task:

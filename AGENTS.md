@@ -291,3 +291,21 @@ matching source/diff and a portable review package when needed.
 ## Long-term prompt debugging workspace
 
 User instruction (2026-10-14): keep using the existing Prompt debugging workspace for prompt text, historical context, original request images, user ideas and work notes together. Reuse `tools/prompt_review_editor.py` and read `tools/prompt_review_editor/README.md`; do not rebuild another review site. The local GUI-ReWalk data root is `artifacts/prompt_review/20261012_01/` and is durable user work, not disposable test output. Preserve `user_edits/`, `context_sources/`, original texts and review snapshots. Reopen the same data root after a browser/server restart. Candidate/history editing does not itself authorize replacing traversal source or running Luna. Use unfamiliar-reader independent reading before author-intent comparison.
+
+## 词项/字段对齐与变更前讨论（用户确认 2026-10-23）
+
+- 每当一个词项/字段出现问题，或准备修改它的定义、输入输出、解释方式、判定条件及引发的行为，先调查现状，再用定义和具体示例与用户讨论清楚；不得先改实现或 prompt 再解释。
+- 对齐时明确四件事：它表示什么、不表示什么、谁负责判断和写入、变化后框架应该做什么。给出具体正例、反例和必要边界例；优先使用当时的真实案例，并区分已有事实与拟议行为。
+- 修改前展示“当前定义/行为 → 问题及原因 → 拟修改定义/行为”，点明会影响哪些已有约定。不能只说“理解了”，不能在实现时偷偷增加没有对齐的前提、门槛或另一套判断。
+- 讨论清楚后按用户授权范围执行；如果实现中发现需要改变已对齐的含义，再拿出具体例子讨论。不能以重命名字段、增加校验或修复 bug 为由绕过语义对齐。
+- 始终分别说明：已约定的目标语义、代码实际实现、真实验证结果。确认定义不等于代码已实现，程序检查通过不等于模型/GUI行为已经接受。
+- 确认后的定义写回现有对象说明和 prompt，保持一个维护来源；不另建需要手动同步的平行术语表。以下是协作及目标语义约定，不宣称当前候选已全部实现或验收。
+
+当前核心约定：
+- task 是待解决探索问题的唯一清单。Luna判断问题及进展，框架保存归属、状态和真实过程；不在 tasks 之外再维护必须清零的“清点疑问清单”。pending、blocked 均表示未解决；blocked 可先保留，继续顺序中的其他可推进任务。
+- knowledge 是对控件或区块已有的认识，包含适用条件和不确定性，归对应对象保存；后续任务直接使用，不另存一套重复的任务答案。
+- inventory 服务于本次给定范围的考虑和必要任务提出，不是另一套待解决问题，也不成为区块完成的第二道独立门槛。
+- 区块探索完成：已经进行过任务提出，且本区块范围内有效任务均已解决。第一次提出任务前不能因空列表判完成；不额外要求总结刷新、所有历史控件重现或每个按钮都点过。
+- 离开区块与区块完成不同：当前没有可推进工作时可转去其他区块，同时保留未完成任务；不为了把完成标记置真而困住遍历。
+
+共同核对例：历史 Show All 当前未出现且不影响已有任务，不因此强制解释、补查或新建验证任务；“闹钟”标签用途明显但目标内容尚未了解，仍须提出入口探索任务；某任务暂挂而下一任务可执行，继续下一任务；对象知识已足够回答原问题时直接结算，不要求重复提交任务答案。漏任务修任务提出，任务困难落回对应 task，不增设平行完成标准。

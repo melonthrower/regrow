@@ -105,6 +105,8 @@ def commit_update(root, run, call_ref, attempt_ref):
         raise ValueError('current record snapshot is required before registering an action')
     prior = run / _record_read(current)['snapshot']
     records = rebase(object_store.load(prior), prior, snapshot)
+    from regrow.records.control_images import label_appearances
+    label_appearances(records, snapshot, request.get('appearance_labels', []))
     suspended = _suspended_updates
     historical = suspended.validate_commit(run, attempt_ref, reply, request, binding, snapshot, records)
     coordinate_action = control is None and binding.get('association', {}).get('status') == 'unconfirmed'

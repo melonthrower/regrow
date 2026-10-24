@@ -45,8 +45,15 @@ def missing(candidate):
     return rows
 
 
-def request(root, original, candidate, rows):
+def request(root, original, candidate, rows, *, grounding=None):
     text = (Path(root) / 'regrow/prompts/任务/对象识别资料.prompt').read_text()
+    rows = deepcopy(rows)
+    grounding = grounding or {}
+    for row in rows:
+        if row['path'] in grounding:
+            info = grounding[row['path']]
+            row['名称'] = info['name']
+            row['当前外观'] = info['state']
     paths = [row['path'] for row in rows]
     item = {'type': 'object', 'properties': {
         'path': {'type': 'string', 'enum': paths}, 'bbox': {'anyOf':[deepcopy(BOX), {'type':'null'}]}, 'reason': {'type':'string'}},
@@ -59,6 +66,12 @@ def request(root, original, candidate, rows):
              'type': 'array', 'items': item, 'minItems': len(rows), 'maxItems': len(rows)}},
              'required': ['objects'], 'additionalProperties': False},
          'registration_paths': paths}
+    if grounding:
+        q['response_schema']['properties']['objects']['items']['required'].append('reason')
+        material = json.loads(q['user_prompt'])
+        material['定位要求'] = '给定旧控件已完成历史身份与状态比较。现在逐一确认当前图中的具体对象，并框出符合其名称和当前外观的控件；reason简述框内对象的辨认依据，不把旁边相似对象作为它。无法确认时bbox填null。'
+        q['user_prompt'] = json.dumps(material, ensure_ascii=False)
+        q['appearance_grounding'] = deepcopy(grounding)
     label(q, primary(original), '原动作后图；仅补齐本批对象外观，不判断动作效果')
     return q
 
@@ -86,27 +99,61 @@ def complete(runner, job):
         return
     candidate = job.get('candidate') or {}
     jsonschema.validate(candidate, job['request']['response_schema'])
-    rows = missing(candidate)
-    if not rows:
-        return
     digest = hashlib.sha256(json.dumps([candidate, job['request'].get('control_indexes')],
                                       sort_keys=True).encode()).hexdigest()[:16]
-    pointer = str(Path(job['path']).parent / ('objects-' + digest + '.json'))
-    saved = job.get('object_registration', {})
-    if saved.get('digest') == digest:
-        result = saved['result']
-    else:
-        child = type(runner)(runner.root, runner.run, runner.call, runner.screenshot,
-                             runner.available, pointer_name=pointer)
-        from regrow.traversal.step_repair import pending
-        q = None if pending(runner.run, pointer) else request(runner.root, job['request'], candidate, rows)
-        result = child.perform('object_registration', q)
-        job['object_registration'] = {'digest': digest, 'result': result}
-        runner.save(job)
     enriched = deepcopy(candidate)
-    for row in result['candidate']['objects']:
-        _, kind, index = row['path'].split('/')
-        enriched[kind][int(index)]['bbox'] = row['bbox']
+    labels = []
+    confirmed = set()
+    grounding = {}
+    from regrow.recognition import appearance_comparison
+    from regrow.traversal.step_repair import pending
+    for number, (source, batch) in enumerate(appearance_comparison.batches(runner.run, job['request'], candidate)):
+        pointer = str(Path(job['path']).parent / ('appearance-' + digest + '-' + str(number) + '.json'))
+        saved = job.setdefault('appearance_comparisons', {}).get(pointer)
+        if saved is None:
+            child = type(runner)(runner.root, runner.run, runner.call, runner.screenshot,
+                                 runner.available, pointer_name=pointer)
+            q = None if pending(runner.run, pointer) else appearance_comparison.request(
+                runner.root, runner.run, job['request'], source, batch)
+            saved = child.perform('appearance_comparison', q)
+            job['appearance_comparisons'][pointer] = saved
+            runner.save(job)
+        replies = {row['index']: row for row in saved['candidate']['comparisons']}
+        for old in batch:
+            reply = replies[old['index']]
+            if reply['relation'] in ('different_control', 'uncertain'):
+                raise ValueError(old['name'] + '的外观比较未确认本次复用：' + reply['reason'] + '；请在原动作更新中修正该控件引用或追加提议')
+            current = enriched['controls'][old['position']]
+            current['add_image'] = reply['relation'] == 'new_appearance'
+            current['image_conditions'] = [reply['current_state']] if current['add_image'] else []
+            labels.append({'control': old['control'], 'image': old['image'],
+                           'state': reply['historical_state'], 'source_call': saved['call'],
+                           'reason': reply['reason']})
+            confirmed.add(old['control'])
+            if current['add_image']:
+                grounding['/controls/' + str(old['position'])] = {
+                    'control': old['control'], 'name': old['name'],
+                    'state': reply['current_state'], 'comparison_call': saved['call']}
+    rows = missing(enriched)
+    if not rows and not labels:
+        return
+    appearance_call = None
+    if rows:
+        pointer = str(Path(job['path']).parent / ('objects-' + digest + '.json'))
+        saved = job.get('object_registration', {})
+        if saved.get('digest') == digest:
+            result = saved['result']
+        else:
+            child = type(runner)(runner.root, runner.run, runner.call, runner.screenshot,
+                                 runner.available, pointer_name=pointer)
+            q = None if pending(runner.run, pointer) else request(runner.root, job['request'], enriched, rows, grounding=grounding)
+            result = child.perform('object_registration', q)
+            job['object_registration'] = {'digest': digest, 'result': result}
+            runner.save(job)
+        appearance_call = result['call']
+        for row in result['candidate']['objects']:
+            _, kind, index = row['path'].split('/')
+            enriched[kind][int(index)]['bbox'] = row['bbox']
     q = deepcopy(job['request'])
     from regrow.runtime.model_transport import expand_schema
     q['response_schema'] = expand_schema(q['response_schema'])
@@ -114,7 +161,23 @@ def complete(runner, job):
         q['response_schema']['properties'][kind]['items']['properties']['bbox'] = deepcopy(BOX)
     select(q, primary(job['request']), '原动作后图；识别范围由单图补登记取得')
     q['semantic_request'] = deepcopy(job['request'])
-    q['registration_sources'] = {'semantic_call': job['call'], 'appearance_call': result['call']}
+    q['registration_sources'] = {'semantic_call': job['call'], 'appearance_call': appearance_call}
+    q['appearance_labels'] = labels
+    # Identity/state and current-box grounding have separate model evidence.
+    # Preserve both sources when satisfying the existing publication review.
+    if confirmed:
+        from regrow.recognition.control_identity_review import reused_candidates
+        from regrow.recognition.control_indexes import decode
+        from regrow.records.snapshots import load
+        snapshot, records, _ = load(runner.run)
+        for pair in reused_candidates(records, snapshot, runner.run / primary(q), q, decode(q, enriched)):
+            if pair['control'] in confirmed:
+                q.setdefault('control_identity_reviews', []).append({
+                    'key': pair['key'], 'decision': 'same',
+                    'reason': ('双图比较确认旧身份与状态；当前框由单图定位独立确认'
+                               if pair.get('current_box') else '双图比较确认本帧旧身份及相同外观'),
+                    'comparison_calls': [r['source_call'] for r in labels if r['control'] == pair['control']],
+                    'grounding_call': appearance_call if pair.get('current_box') else None})
     folder = runner.run / 'calls' / job['call']
     job['registration_submission'] = {'request': q, 'candidate': enriched}
     runner.save(job)

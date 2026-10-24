@@ -113,6 +113,9 @@ def accept_candidate(root, run, job):
     if job.get('attempt'):
         binding = _record_read(Path(run) / 'action_attempts' / job['attempt'] / 'binding.json')
     q = job['request']
+    if job['stage'] == 'appearance_comparison':
+        from regrow.recognition.appearance_comparison import validate
+        return validate(q, job['candidate'], run)
     if job['stage'] == 'object_registration':
         from regrow.traversal.object_registration import validate
         return validate(q, job['candidate'], run)
@@ -254,6 +257,8 @@ def record_capabilities(stage=None, request=None):
     return ([] if stage == 'action' else historical) + reopen + task_edits + ['edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。', 'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。', 'edit_record / merge_into：同一物理控件的重复记录可合并；完全同名可用同名作为来源和目标，迁移历史及任务引用。', 'edit_record / merge_into（区块）：control留空，region与before写重复区块名称，after写保留区块名称，提供同一物理区块的证据；合并本轮披露的对应区块并迁移引用。', 'edit_record / remove：可删除无动作、任务或跳转引用的误登记控件；已有历史不能直接删除。', 'revise也可同时填写record_edit和完整proposal。']
 
 def context(run, job):
+    if job['stage'] == 'appearance_comparison':
+        return {'比较对象': json.loads(job['request']['user_prompt']), '要求': '仅修正本批控件的身份与可见状态说明；不输出坐标或执行动作。'}
     if job['stage'] == 'object_registration':
         return {'待补齐对象': json.loads(job['request']['user_prompt']),
                 '要求': '仅修正本批识别范围；无法定位时明确说明，不能猜测。'}

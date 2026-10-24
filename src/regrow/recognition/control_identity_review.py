@@ -162,8 +162,9 @@ def reused_candidates(records, snapshot, frame, request, reply):
         template = (snapshot / observed['image']).resolve()
         if not source.is_file() or not template.is_file():
             continue
-        with Image.open(template) as im:
-            hit = image_match._search(np.asarray(im.convert('RGB')), pixels)
+        appearances = [{**row, 'image': str((snapshot / row['image']).resolve())}
+                       for row in identity_templates.variants(old)]
+        hit = image_match.match_appearances(appearances, lambda path: image_match.locate(path, frame))
         if hit.get('accepted'):
             continue
         pair = {'kind': 'reuse', 'region': rid, 'control': cid, 'region_index': ri, 'control_index': ci, 'region_name': records[rid]['name'], 'region_ref': region.get('ref'), 'old_name': old['name'], 'ref': cid, 'submitted_ref': ref, 'current_name': row.get('name', old['name']), 'current_box': box(row.get('bbox')), 'historical_box': box(observed['bbox']), 'historical_frame': str(source), 'current_frame': str(Path(frame).resolve()), 'historical_evidence': deepcopy(observed.get('evidence', {})), 'historical_description': observed.get('icon_description', ''), 'snapshot': str(snapshot.resolve()), 'current_image': 1}

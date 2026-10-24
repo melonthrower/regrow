@@ -173,6 +173,20 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     dynamic['实际对象已有跳转'] = route_card(actual_control, records)
     from regrow.recognition.history_matching import with_history as named_candidates
     (dynamic['已知区块'], region_names) = named_candidates(records, dynamic['已知区块'])
+    # State descriptions come from admitted appearance records, not task knowledge.
+    for region in dynamic['已知区块']:
+        controls = owned_controls(records[region['ref']])
+        for row in region.get('controls', []):
+            appearances = templates.variants(controls.get(row.get('ref'), {}))
+            if appearances:
+                descriptions = []
+                for appearance in appearances:
+                    conditions = appearance.get('image_conditions', [])
+                    description = '、'.join(conditions) if conditions else (
+                        appearance.get('description', '').rstrip('。') + '，状态未注明').lstrip('，')
+                    if description not in descriptions:
+                        descriptions.append(description)
+                row['已保存外观'] = '；'.join(descriptions)
     labels = {rid: label for (label, rid) in region_names.items()}
     dynamic.pop('当前截图视觉匹配到的既有区块', None)
     if recalled['actions'] or not recalled['confirmed']:

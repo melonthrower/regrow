@@ -83,7 +83,7 @@ def readable(value, depth=0):
         else:
             lines.append(label + '：' + readable(item, depth + 1))
     return '\n\n'.join(lines) if depth == 0 else '\n'.join(lines)
-ROLES = {'task_result_review', 'observation', 'task_proposal', 'action_selection', 'observation_update', 'function_registration', 'step_correction', 'control_identity_selection', 'control_identity_comparison', 'ownership_review', 'recovery', 'branch_correction', 'step_observation'}
+ROLES = {'appearance_comparison', 'task_result_review', 'observation', 'task_proposal', 'action_selection', 'observation_update', 'function_registration', 'step_correction', 'control_identity_selection', 'control_identity_comparison', 'ownership_review', 'recovery', 'branch_correction', 'step_observation'}
 
 def render(value, depth=0):
     compact = lambda item: json.dumps(item, ensure_ascii=False, separators=(',', ':'))

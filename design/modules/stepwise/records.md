@@ -42,3 +42,5 @@
 2026-10-20：任务判断next_action显式null清空，continue省略保留先前建议；defer/answered不向后读暴露。新任务与旧判断分属operations/task_update，正常校验、纠错及登记共用新合同。may_open_content新输出只收boolean，历史未确认值不改写。验证范围见本月日志。
 
 2026-10-20身份披露候选：`page_context.refresh` 对身份选择/比较保留内部 `page_context`，不再向正文补入第二份通用地图/历史；这两类角色的展示由冻结 pair/context 和 `prompt_material.identity_view` 负责。原始 provenance、任务/动作绑定及记录格式未改；共享与仅观察来源转为可读使用限制，而不是删除限制。其他角色刷新路径保持。本批只有离线候选检查，未进行原生登记验收。
+
+2026-10-24 首次外观状态说明：外观比较结果不单独发布；register_update在原事务中以精确图片来源匹配旧观察，写入image_conditions及image_conditions_evidence（比较调用与理由），保留原图片和观察evidence。新外观仍由原save_region_images保存，图片列表派生自同一观察历史；比较/定位来源分别保留。两种状态及已有状态复用的保存帧结果见月志。

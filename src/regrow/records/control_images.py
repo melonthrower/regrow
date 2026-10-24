@@ -55,3 +55,19 @@ def images(record):
         elif entry['conditions']:
             previous['conditions'] = entry['conditions']
     return deepcopy(result)
+
+
+def label_appearances(records, snapshot, labels):
+    """Apply reviewed state labels to the original image observation in a commit."""
+    from regrow.records.object_store import control_record, observation_history
+    for label in labels:
+        control = control_record(records, label['control'])
+        found = False
+        for row in observation_history(control):
+            if row.get('image') and (Path(snapshot) / row['image']).resolve() == Path(label['image']).resolve():
+                row['image_conditions'] = [label['state']]
+                row['image_conditions_evidence'] = {'source_call': label['source_call'], 'reason': label['reason']}
+                found = True
+        if not found:
+            raise ValueError('已比较的历史外观不存在，不能把状态说明写到其他图片上')
+        control['image'] = images(control)

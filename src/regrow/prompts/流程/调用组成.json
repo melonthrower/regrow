@@ -455,6 +455,19 @@
         }
       ],
       "direct_question": null
+    },
+    "appearance_comparison": {
+      "groups": [
+        {
+          "question": "这些控件的历史外观和当前外观是否相同，各是什么可见状态？",
+          "materials": [
+            "原步骤",
+            "比较对象"
+          ],
+          "output": "comparisons：沿用给定index，分别说明历史与当前状态；不输出坐标。"
+        }
+      ],
+      "direct_question": null
     }
   },
   "work": {

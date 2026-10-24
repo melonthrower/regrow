@@ -194,7 +194,7 @@ def reopen_blocked(run, frame):
 def task_review_images(value):
     """A review and its saved correction retain the same validated evidence pair."""
     original = value.get('original_request', value)
-    if original.get('role') not in ('task_result_review', 'observation_update'):
+    if original.get('role') not in ('task_result_review', 'observation_update', 'appearance_comparison'):
         return False
     from regrow.prompts.frame_context import validate
     validate(value)
@@ -235,7 +235,7 @@ def request(root, job, context):
     if not edits:
         fields['record_edit'] = {'type': 'null'}
         fields['resolution']['enum'].remove('edit_record')
-    if job['stage'] == 'object_registration':
+    if job['stage'] in ('object_registration', 'appearance_comparison'):
         fields['resolution']['enum'] = ['revise', 'defer', 'blocked']
         fields['record_edit'] = {'type':'null'}
     if job['stage'] == 'update':

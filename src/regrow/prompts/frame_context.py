@@ -18,7 +18,7 @@ def primary(request):
     frames = request.get('screenshots') or request.get('image_refs') or []
     if not frames:
         return None
-    if len(frames) == 1 or request.get('role') == 'control_identity_comparison':
+    if len(frames) == 1 or request.get('role') in ('control_identity_comparison', 'appearance_comparison'):
         return frames[0]
     original = request.get('original_request', request)
     if original.get('role') == 'observation_update' or original.get('pipeline_step') == 'update':

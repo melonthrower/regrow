@@ -51,8 +51,8 @@
   },
   {
     "path": "SNAPSHOT.md",
-    "sha256": "10ea1fbf9702e8a6b5180e7ef784248a959fe0d01e278a672f2cfff9d6e038f1",
-    "bytes": 1182
+    "sha256": "f7448043ed655d20f5571fc7641f8436870e5bd7e73332af13d3b5014978019b",
+    "bytes": 1914
   },
   {
     "path": "aliyun.env.example",
@@ -71,8 +71,8 @@
   },
   {
     "path": "design/CURRENT_FRAMEWORK.md",
-    "sha256": "bdd0f74a9fc0a710bce0fdd079f0eebd9d4a09bbe4c8d3f4e9ea0581fef4205e",
-    "bytes": 31627
+    "sha256": "1de0482262ed5d2e6093eafeb38d45ed2c819ff93852c39b89762e64df72742d",
+    "bytes": 31944
   },
   {
     "path": "design/E1_BASELINE.md",
@@ -226,8 +226,8 @@
   },
   {
     "path": "design/changelog/2026-10.md",
-    "sha256": "d51fefebcd2ba0129f8b15b2f0f138ea2ca5d7baa5e95439e5e7a19a6c2d10d2",
-    "bytes": 346315
+    "sha256": "9108f9452da0ebd8764a52fe7c887895cb8f606636fc367d0c7861101f111ef3",
+    "bytes": 348752
   },
   {
     "path": "design/changelog/framework_history_through_2026-07-19.md",
@@ -536,8 +536,8 @@
   },
   {
     "path": "design/modules/stepwise/records.md",
-    "sha256": "8b74cc9bd353d45827ff99e3af0f8acbc934278c7ed1a6558ba7fa5463183c7b",
-    "bytes": 19050
+    "sha256": "724e53ff1bf8ea03884ac3b397f9feec2f40b0b14c92fcf520e880bfb870b8d8",
+    "bytes": 19377
   },
   {
     "path": "design/modules/stepwise/repair.md",
@@ -551,8 +551,8 @@
   },
   {
     "path": "design/modules/stepwise/runtime.md",
-    "sha256": "b19e041b399772629de09bad59be4578e7e373f658ce6e059f4f5377cc890a49",
-    "bytes": 28946
+    "sha256": "b2cb0ad466ddc1b94111d4798f865aa6e84741e63b476065860639c29975b972",
+    "bytes": 30894
   },
   {
     "path": "design/modules/stepwise/tasks.md",
@@ -561,8 +561,8 @@
   },
   {
     "path": "design/modules/stepwise/traversal.md",
-    "sha256": "99d4adfd7847fdbbe88b8629eaba9119e885f1dadc46ccd03448a233f8f3f1e6",
-    "bytes": 26659
+    "sha256": "6800441206037fa59b2f52e31750dc7bc5d3c978ddd5b5211a90464f046073ba",
+    "bytes": 27029
   },
   {
     "path": "design/modules/stepwise/updates.md",
@@ -2856,8 +2856,8 @@
   },
   {
     "path": "src/regrow/prompts/修改指引.md",
-    "sha256": "d9a8299038b9c245d9f41f51be67d3a44344fa5db71497c9d02f30ddc5ea4fc8",
-    "bytes": 9579
+    "sha256": "701a9bd906905c46d35cb27b0b0397fc903558d0b0d0a0ee59757a242aa12d8f",
+    "bytes": 9722
   },
   {
     "path": "src/regrow/prompts/共享/任务知识与当前观察.prompt",
@@ -3066,8 +3066,8 @@
   },
   {
     "path": "src/regrow/prompts/流程/调用组成.json",
-    "sha256": "0fe61c5b5101a33d35d6ea32b08910c435b2c4305dbf7b5db0f8a2033f713cce",
-    "bytes": 37029
+    "sha256": "28df932fe50254354fd6a16f797469b700847d85ddb889342266b378d3ab3e80",
+    "bytes": 36324
   },
   {
     "path": "src/regrow/prompts/监督/修复候选.prompt",
@@ -3116,23 +3116,13 @@
   },
   {
     "path": "src/regrow/prompts/纠错/原格式重答.prompt",
-    "sha256": "551870706f423c54a3dfd58709e5fe0ba05dffecb112f9bdbea571a916b2a3ea",
-    "bytes": 543
-  },
-  {
-    "path": "src/regrow/prompts/纠错/回复解析.prompt",
-    "sha256": "8947dc31f2eedddfaf0f296431e0c7f9787d44fba9a0bfdfb2e056b616cde04d",
-    "bytes": 827
+    "sha256": "89968ee5029b98f8bd79cb871097266b0663e205e239d57370a9e830fac93a08",
+    "bytes": 784
   },
   {
     "path": "src/regrow/prompts/纠错/定位绑定.prompt",
     "sha256": "3d550adfa71ef7e05769bf72f5baf10c79a00bc08740c06a46ffcf686d711e27",
     "bytes": 1172
-  },
-  {
-    "path": "src/regrow/prompts/纠错/对象识别资料.prompt",
-    "sha256": "9d9937462ffeb629a2c97b4b2acb69870a8099b4a6b896b65f9f1ae2d4aa7237",
-    "bytes": 312
   },
   {
     "path": "src/regrow/prompts/纠错/投递前画面变化.prompt",
@@ -3163,11 +3153,6 @@
     "path": "src/regrow/prompts/纠错/更新补充观察.prompt",
     "sha256": "b728f73b4fd86c85c10a7a4016d995fdc86de809b95de4c9fd3acd84156f74dd",
     "bytes": 1052
-  },
-  {
-    "path": "src/regrow/prompts/纠错/步骤纠正.prompt",
-    "sha256": "177519b24b1cb5def8024db72788f8ca8f93f89386434b0a36a624d62129bad5",
-    "bytes": 2589
   },
   {
     "path": "src/regrow/prompts/纠错/登记修订.prompt",
@@ -3396,8 +3381,8 @@
   },
   {
     "path": "src/regrow/recognition/ownership_review.py",
-    "sha256": "c5bbafb57986130146e673a8cd96b8978a4a174417a68d153b3af19cc87a0501",
-    "bytes": 17907
+    "sha256": "855c70a54cd35f8153d231694c7358594cc2b34a4f3714ec52389d65fe96deb2",
+    "bytes": 18826
   },
   {
     "path": "src/regrow/recognition/region_candidate_names.py",
@@ -3446,8 +3431,8 @@
   },
   {
     "path": "src/regrow/records/calls.py",
-    "sha256": "299324b6a0d07f3705c81b43fb9d39e54f56a230367ea352ee792e2a92ab4ab8",
-    "bytes": 1832
+    "sha256": "771be0d32dfe1f1069b8b73817486e611c42ad4aa7cbd1f79c83359ca0691ddd",
+    "bytes": 2141
   },
   {
     "path": "src/regrow/records/context_scope.py",
@@ -3711,8 +3696,8 @@
   },
   {
     "path": "src/regrow/runtime/model_transport.py",
-    "sha256": "d45cdee397a224c8f2d7fcd8675e345b5c394209617c0c7069762c0353e0f58e",
-    "bytes": 8898
+    "sha256": "989754a8a79a5f73b5e8e64589188728b7ba6cf9692db01850e718c1a4292606",
+    "bytes": 9011
   },
   {
     "path": "src/regrow/runtime/progress.py",
@@ -3723,6 +3708,11 @@
     "path": "src/regrow/runtime/recover_external.py",
     "sha256": "c1e222f3b947347222696e4b14bd581634040029eab3d823aafb9b85d0c57465",
     "bytes": 3355
+  },
+  {
+    "path": "src/regrow/runtime/reply_correction.py",
+    "sha256": "1599f9767c615fecb9788d43281bfac09340d31ff9cb1b31349d15cb33942e9b",
+    "bytes": 5237
   },
   {
     "path": "src/regrow/runtime/reply_fields.py",
@@ -3841,8 +3831,8 @@
   },
   {
     "path": "src/regrow/traversal/correction_prompts.py",
-    "sha256": "a6d55edc822fdfbf4eb74773b89b6c1fb1dff8846894e58e63eec9f89de79d99",
-    "bytes": 6567
+    "sha256": "b9ef378a173940f069c2891753c85cfbfef8d74c79dffff8b013c70b8e058fb8",
+    "bytes": 6163
   },
   {
     "path": "src/regrow/traversal/discovery_step.py",
@@ -3896,8 +3886,8 @@
   },
   {
     "path": "src/regrow/traversal/recover_loop.py",
-    "sha256": "20528ce0db24939c790f3f66df7c21441b4ec59a8a0aeef7183d2472666d0d25",
-    "bytes": 14224
+    "sha256": "2e1871b983bcdd209c0a69b0885db51bfb5a8c104e18c119903d5fe25847fc19",
+    "bytes": 15451
   },
   {
     "path": "src/regrow/traversal/recovery.py",
@@ -3931,8 +3921,8 @@
   },
   {
     "path": "src/regrow/traversal/repair_stages.py",
-    "sha256": "4edfd1406786427f4dcd0ad81b60f287fcbdbd4ba7a049bde46f85dff7a65c20",
-    "bytes": 57452
+    "sha256": "625738c11c1a1a4356537609138cadf3cfe89e8ab651e7c3ab885deea7d99106",
+    "bytes": 57722
   },
   {
     "path": "src/regrow/traversal/result_updater.py",
@@ -3946,13 +3936,13 @@
   },
   {
     "path": "src/regrow/traversal/run_task_step.py",
-    "sha256": "e21e91e1d5a557d73519128cfa75b47c8403b40a01e299c79e003985880dcff0",
-    "bytes": 13456
+    "sha256": "8a655acb6e8012cd42501bc22a31f62bca0a24c8df9dff720d6f67e71651f1be",
+    "bytes": 13521
   },
   {
     "path": "src/regrow/traversal/step_repair.py",
-    "sha256": "39e00d4be8993e9071208e5be174281d9ef260cd0732b89fcc4a3344ef1421ed",
-    "bytes": 51694
+    "sha256": "c1116d0bdfe0ba6a966d135c733fa1bb9c44386ae6c6ed812d9a5ec9cdbe247a",
+    "bytes": 52361
   },
   {
     "path": "src/regrow/traversal/suspended_updates.py",

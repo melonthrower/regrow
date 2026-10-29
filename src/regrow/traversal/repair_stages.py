@@ -654,13 +654,15 @@ def observe(runner, job):
     reg = _register_update
     if job['stage'] in ('action', 'task_proposal', 'function_registration', 'task_result_review'):
         return observe_registered(runner, job)
-    if job['observations'] >= 1:
+    if job['observations'] >= 1 and not job.get('observation_request'):
         raise ValueError('补观察已尝试；使用已保存证据，不重复调用')
     folder = runner.run / Path(job['path']).parent
     frame = folder / 'supplement.png'
     if not frame.exists():
         runner.screenshot(frame)
-    if job['stage'] == 'update':
+    if job.get('observation_request'):
+        q = deepcopy(job['observation_request'])
+    elif job['stage'] == 'update':
         q = update_observation_request(runner.root, runner.run, job, frame)
     else:
         (_, records, state) = _record_load(runner.run)
@@ -684,9 +686,12 @@ def observe(runner, job):
         manifest = _record_read(runner.run / 'run_manifest.json') if (runner.run / 'run_manifest.json').exists() else {}
         dynamic['目标应用'] = manifest.get('app', '')
         q['user_prompt'] = json.dumps(dynamic, ensure_ascii=False)
-    job['observations'] += 1
-    runner.save(job)
+    if not job.get('observation_request'):
+        job['observation_request'] = deepcopy(q)
+        job['observations'] += 1
+        runner.save(job)
     (ref, reply) = runner.call(q)
+    job.pop('observation_request', None)
     q = runner.sent_request(job, q, ref, repairing=True)
     evidence = {'source_call': ref, 'image': str(frame.resolve()), 'reply': reply, 'validation': {'status': 'pending'}}
     job['supplements'].append(evidence)

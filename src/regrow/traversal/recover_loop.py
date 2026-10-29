@@ -68,17 +68,41 @@ def run(root, transport, out, call, repair=None):
             save()
             return {'status': 'ready_next_round', 'gui_actions': transport.account['gui_started'] - initial, 'episode': str(path)}
         index = len(episode['actions'])
-        observations = folder / f"observation-{episode.get('observations', 0) + 1:04d}"
-        observations.mkdir()
-        episode['observations'] = episode.get('observations', 0) + 1
-        save()
-        transport.screenshot(observations / 'current.png')
+        resumed_reply = bool(episode.get('pending_request'))
+        if resumed_reply:
+            q = episode['pending_request']
+            observations = Path(episode['pending_observation'])
+        else:
+            observations = folder / f"observation-{episode.get('observations', 0) + 1:04d}"
+            observations.mkdir()
+            episode['observations'] = episode.get('observations', 0) + 1
+            save()
+            transport.screenshot(observations / 'current.png')
+            q = policy.build_request(root, episode, transport.package, work, trigger, str((observations / 'current.png').resolve()))
+            episode.update(pending_request=q, pending_observation=str(observations))
+            save()
         repeated_surface = stalled(episode, observations / 'current.png')
         save()
-        q = policy.build_request(root, episode, transport.package, work, trigger, str((observations / 'current.png').resolve()))
-        (ref, raw_reply) = call(q)
+        from regrow.runtime.reply_correction import Failed
+        try:
+            (ref, raw_reply) = call(q)
+        except Failed as error:
+            episode.update(status='stopped', reason=str(error))
+            episode.pop('pending_request', None)
+            episode.pop('pending_observation', None)
+            save()
+            return recovery_result(episode, transport.account['gui_started'] - initial, path)
+        episode.pop('pending_request', None)
+        episode.pop('pending_observation', None)
+        save()
         reply = policy.resolve(raw_reply, getattr(transport, 'platform', 'android'))
         _record_write_json(observations / 'framework_decision.json', {'source_call': ref, 'decision': reply, 'overrode_model': reply != raw_reply})
+        if resumed_reply and reply['decision'] != 'stop':
+            # This answer belongs to the saved frame. Do not dispatch old
+            # coordinates after a cross-round pause; obtain a current decision.
+            episode['framework_feedback'] = '原观察的格式回复已补齐，但建议动作未执行；请依据新截图继续恢复。'
+            save()
+            continue
         if episode['actions']:
             episode['actions'][-1]['observed_result'] = {'exception': reply['exception'], 'description': reply['reason'], 'source_call': ref}
         episode['handoff'] = reply['handoff']

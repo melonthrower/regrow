@@ -167,7 +167,11 @@ class ModelTransport:
     """Run adapters supply root, run, account, ledger and save()."""
 
     def call(self, request):
-        request = prepare_request(self.root, self.run, request, getattr(self, 'platform', 'android'))
+        from regrow.runtime.reply_correction import call
+        return call(self, request)
+
+    def _call_once(self, request):
+        """Persist and send one prepared request; every retry is separately billed."""
         progress.request(request)
         if self.account['http_started'] >= self.account['max_http']:
             raise BudgetExhausted('HTTP budget exhausted')

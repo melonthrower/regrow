@@ -339,6 +339,8 @@ class Runner:
         path = self.run / 'calls' / str(ref) / 'request.json'
         if path.exists():
             q = read(path)
+            from regrow.records.calls import business_request
+            q = business_request(self.run, q)
             if not repairing:
                 job['request'] = deepcopy(q)
             elif q.get('role') == 'step_correction' and q.get('original_request'):
@@ -347,19 +349,16 @@ class Runner:
                 job['request'] = deepcopy(q['original_request'])
         return q
 
-    def repair_parse_failure(self, job):
-        manifest = self.run / 'run_manifest.json'
-        failed = read(manifest).get('last_call') if manifest.exists() else None
-        path = self.run / 'calls' / str(failed) / 'parse_error.json'
-        if not path.exists():
-            return False
-        detail = read(path)
-        job.update(status='repair', candidate=None, blocked_by='model_response_parse_error', parse_failure={'call': failed, **detail}, error='模型回复解析错误：' + detail['reason'])
-        job['history'].append({'call': failed, 'error': job['error']})
-        self.save(job)
-        return True
+    def format_budget(self, job):
+        from regrow.runtime.reply_correction import budget
+        def consume():
+            job['repairs'] += 1
+            self.save(job)
+        return budget(lambda: 2 - job['repairs'], consume)
 
     def stop(self, job, reason):
+        from regrow.runtime.reply_correction import abandon
+        abandon(self.run, str(reason))
         from regrow.traversal import task_deferral as _task_deferral
         if not isinstance(reason, str):
             reason = json.dumps(reason, ensure_ascii=False)
@@ -422,6 +421,8 @@ class Runner:
                 self.stop(job, reason)
         if self.available() < 1:
             raise Paused('repair_pending', '本轮调用额度已用完；下一轮继续原纠错请求')
+        from regrow.runtime.reply_correction import abandon
+        abandon(self.run, '原业务分支暂挂，转入分支继续策略')
         decision = _branch_switch.correct(self, job)
         if decision:
             raise Paused('ready_next_round' if decision.get('resumed') else 'task_deferred', '纠错已解决本次循环判断；重新发现后按新办法继续' if decision.get('resumed') else '纠错已暂挂当前分支；重新发现后继续独立区块')
@@ -541,19 +542,23 @@ class Runner:
                 (self.run / self.pointer_name).unlink(missing_ok=True)
                 return job
             if job['status'] == 'observe':
+                from regrow.runtime import reply_correction
                 if self.available() < 1:
                     raise Paused('repair_pending', '等待下一轮额度补观察')
                 try:
-                    self.adapters.observe(self, job)
+                    with self.format_budget(job):
+                        self.adapters.observe(self, job)
                     if job['stage'] == 'action' and job['request'].get('action_ready'):
                         job['request'].pop('action_target_confirmation', None)
                         job.pop('action_target_doubt', None)
                         job['status'] = 'initial'
                         self.save(job)
                         continue
-                except subprocess.CalledProcessError:
-                    if not self.repair_parse_failure(job):
-                        raise
+                except reply_correction.Pending as error:
+                    self.save(job)
+                    raise Paused('repair_pending', str(error))
+                except reply_correction.Failed as error:
+                    self.stop(job, str(error))
                 except (ValueError, jsonschema.ValidationError) as error:
                     job['error'] = diagnostic(error)
                     job['history'].append({'observation_error': diagnostic(error)})
@@ -643,14 +648,23 @@ class Runner:
             else:
                 q = job['request']
             try:
-                (ref, reply) = self.call(q)
+                from regrow.runtime import reply_correction
+                with self.format_budget(job):
+                    (ref, reply) = self.call(q)
+            except reply_correction.Pending as error:
+                job['service_retry_request'] = deepcopy(error.state['next'])
+                self.save(job)
+                raise Paused('repair_pending', str(error))
+            except reply_correction.Failed as error:
+                job['error'] = error.state['error']
+                job['call'] = error.state['last_call']
+                self.save(job)
+                self.stop(job, str(error))
             except subprocess.CalledProcessError:
                 manifest = Path(self.run) / 'run_manifest.json'
                 failed = read(manifest).get('last_call') if manifest.exists() else None
                 folder = Path(self.run) / 'calls' / str(failed)
                 q = self.sent_request(job, q, failed, repairing)
-                if self.repair_parse_failure(job):
-                    continue
                 failure = _model_transport.read_service_error(folder)
                 if failure is None:
                     raise

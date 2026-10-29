@@ -203,18 +203,37 @@ def run(root, transport, out, call):
     pointer = json.loads((run / 'ownership_review.json').read_text())
     path = run / pointer['episode']
     episode = json.loads(path.read_text())
+    if episode.get('status') == 'blocked':
+        return {'status': 'correction_blocked', 'reason': episode['reason']}
     if episode['actions'] and episode['actions'][-1]['status'] == 'dispatching':
         return {'status': 'execution_unconfirmed', 'reason': '归属复查动作投递结果待核对，不重复执行'}
-    frame = Path(out) / 'ownership-current.png'
-    transport.screenshot(frame)
-    q = request(root, run, episode, frame)
-    (ref, reply) = call(q)
+    resumed_reply = bool(episode.get('pending_request'))
+    if resumed_reply:
+        q = episode['pending_request']
+        frame = Path(q['screenshots'][0])
+    else:
+        frame = Path(out) / 'ownership-current.png'
+        transport.screenshot(frame)
+        q = request(root, run, episode, frame)
+        episode['pending_request'] = q
+        atomic(path, episode)
+    from regrow.runtime.reply_correction import Failed
+    try:
+        (ref, reply) = call(q)
+    except Failed as error:
+        episode.update(status='blocked', reason=str(error))
+        episode.pop('pending_request', None)
+        atomic(path, episode)
+        return {'status': 'correction_blocked', 'reason': str(error)}
+    episode.pop('pending_request', None)
     jsonschema.validate(reply, q['response_schema'])
     if not reply['reason'].strip():
         raise ValueError('ownership review needs reason')
     (_, records, _) = _record_load(run)
     record_observation(episode, reply, ref, frame, records)
     atomic(path, episode)
+    if resumed_reply and reply['status'] == 'continue':
+        return {'status': 'ready_next_round', 'reason': '原图归属观察已补齐，建议动作未执行；下一轮按当前截图继续复查'}
     if reply['status'] in ('resolved', 'defer'):
         if reply['action'] is not None:
             raise ValueError('finishing ownership review cannot execute an action')

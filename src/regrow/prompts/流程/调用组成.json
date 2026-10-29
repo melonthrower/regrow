@@ -479,7 +479,7 @@
       "inherit": "original_request",
       "question": "原步骤的回复哪里与证据或输出要求不符，应该如何修正？保留原探索目标，不重放已执行动作。",
       "builder": "step_repair.request",
-      "parts_note": "纠错/步骤纠正.prompt及真实错误对应模块，由correction_prompts.select选择；原规则沿原请求版本继承。",
+      "parts_note": "业务纠错按具体语义选择专用说明；所有调用的格式错误由模型接收入口使用纠错/原格式重答.prompt处理。",
       "template": "调用/原步骤纠错.prompt",
       "supplement_paths": [
         "任务/前置条件与恢复.prompt"
@@ -675,35 +675,6 @@
         "heading": "任务与功能的关联",
         "all": [
           "function_refs"
-        ]
-      },
-      {
-        "path": "纠错/步骤纠正.prompt",
-        "heading": "已执行动作的结果登记",
-        "all": [
-          "action_result"
-        ]
-      },
-      {
-        "path": "纠错/步骤纠正.prompt",
-        "heading": "原任务未完成时的结果登记",
-        "all": [
-          "action_result",
-          "@task_update"
-        ]
-      },
-      {
-        "path": "纠错/步骤纠正.prompt",
-        "heading": "记录修订 → edit_record",
-        "all": [
-          "@resolution_edit_record"
-        ]
-      },
-      {
-        "path": "纠错/步骤纠正.prompt",
-        "heading": "补充观察 → observe",
-        "all": [
-          "@resolution_observe"
         ]
       },
       {

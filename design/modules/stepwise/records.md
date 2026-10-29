@@ -92,3 +92,6 @@ function_updates.py统一应用功能add/update/remove，先对象知识、再�
 `environment_context.links/structure/forest/local_progress` 是唯一派生入口：使用现有 jump_to 的登记来源和实际动作记录，保留条件与共享目标，已标记返回不画边，Cancel仍为控件。跨归属共享控件注明实际观察来源。目录包含范围外对象并标注；不据目录授权操作。每个区块展开一次，其他边引用，展示父级不等于物理parent_region或路由。操作树读取functions及其已有参数/支持引用，不推导完整业务流程。进度复用tasks.coverage。没有新增树账本或删除记录字段；旧3层/2兄弟截断展示退役。历史返回未标记时仍会误显为向前边，不用名称猜测修图。
 
 2026-10-29：普通动作更新的动作归属与jump_to来源固定由上一步dispatch/binding决定，不再接受回复改选、来源拆分或入口合并。目标regions/controls及其知识由同次Luna更新并正常materialize；原任务归属保留。登记端移除对应改写分支，并拒绝旧来源变更payload。此约定不证明动作选择中的ID和坐标一定一致；该问题在选择/执行关联层，本轮不改。历史已接受快照与原回复不重写。
+
+
+2026-10-29：格式重答保持业务role/schema，request.format_original_call引用首个实际业务请求；calls.business_request统一恢复业务请求，submission继续用最终未经改写的response登记。最终reply与原schema/索引一致已在Settings保存帧登记核对，1HTTP/0GUI；见runtime模块。

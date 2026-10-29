@@ -118,3 +118,6 @@ result_updater不再提供source_region_split与entry_identity及其来源几何
 2026-10-29 普通纠错原格式重答：原步骤字段/格式及普通验收失败默认沿用实际已发送的完整schema、索引、任务/历史和截图，追加最新原答与具名问题；Luna返回完整原格式回复，不再输出resolution/proposal或做局部合并。发送边界不重建这份已绑定合同，calls.submission按原请求读回。结构错误一次汇总；任务提出的可读取控件名称引用独立检查，依赖未通过字段的语义检查明确待查。原次数上限、停点、暂挂和已执行不重放保持。
 保留的专门路径：共享关系、身份比较、操作目标核对、投递前画面变化、缺少定位的补观察、task_owner及历史对象冲突/record_edit仍沿原能力处理，不能宣称已替代全部纠错。record_edit由原事务内检查，不用修改前记录提前拒绝修订。新提示维护在纠错/原格式重答.prompt，旧调用/原步骤纠错.prompt仅用于上述仍需修复决策的路径。
 验证：9项当前合同聚焦检查通过；真实Settings0192原答不改，经正常build_attempt_update/Runner重放，0193一次新Luna直接完整重答并登记。Remote Desktop知识归c0084（index82），搜索框c0024保持，任务pending；1HTTP/0GUI，无导航成功声明。独立阅读、意图比较、修订复审及实际结果复审均保存于artifacts/runs/direct_reply_correction_20261029_01/。两项旧测试因初始化仍调用5参数commit_update而不可用，替代为当前记录修订分流/事务顺序聚焦检查；未改旧测试。
+
+
+2026-10-29：格式错误统一在model_transport接收层重答，Runner只借出原repairs剩余额度并处理语义；补观察/恢复/归属复查保存未完成请求及原图归属，暂停后正常收尾，不执行跨轮旧图动作。停止/切换业务时归档释放格式pending，特殊业务协议保留。限定验证与保存位置见runtime模块。

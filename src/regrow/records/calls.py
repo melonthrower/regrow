@@ -3,11 +3,19 @@ from pathlib import Path
 import jsonschema
 from regrow.records.snapshots import read
 
+
+def business_request(run, request):
+    """A format retry answers the same business request, never another wrapper."""
+    if request.get('format_original_call'):
+        return read(Path(run) / 'calls' / request['format_original_call'] / 'request.json')
+    return request
+
 def submission(run, ref):
     """Resolve a corrected candidate without modifying the actual model artifacts."""
     from regrow.recognition import control_identity_review as _control_identity_review
     folder = Path(run) / 'calls' / ref
     q = read(folder / 'request.json')
+    q = business_request(run, q)
     reply = read(folder / 'response.json')
     if (folder / 'registration_candidate.json').exists():
         return read(folder / 'registration_request.json'), read(folder / 'registration_candidate.json')

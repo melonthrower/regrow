@@ -76,7 +76,6 @@ def select(job, context):
     stage = job['stage']
     q = job['request']
     if current_parse_failure(job):
-        modules.append('回复解析')
         if not codes or codes <= {'schema'}:
             return modules
     if stage == 'action' or job.get('blocked_by') in ('binding_conflict', 'control_not_visible'):
@@ -98,18 +97,13 @@ def select(job, context):
     return list(dict.fromkeys(modules))
 
 def parts(root, job, context):
-    if job['stage'] == 'object_registration':
-        from regrow.prompts.compose import load
-        return load(root, ['纠错/对象识别资料.prompt'])
-    names = ['步骤纠正', *select(job, context)]
+    names = select(job, context)
     from regrow.prompts.compose import load
     from regrow.prompts.compose import sections
     from regrow.prompts.output import fields
     keys = fields(job['request']['response_schema'])
     result = load(root, ['纠错/' + name + '.prompt' for name in names])
     for part in result:
-        if part['path'] == '纠错/步骤纠正.prompt' and (not job['request'].get('screenshots')):
-            part['text'] = sections(part['text'], {'## 记录修订 → edit_record'})
         if part['path'] == '纠错/结果证据.prompt':
             conditions = {'## 原任务判断 → task_update': {'task_update'}, '## 已执行动作与旧区块 → action_result / previous_regions': {'action_result', 'previous_regions'}, '## 功能整理 → functions / local_knowledge': {'functions', 'local_knowledge'}}
             part['text'] = sections(part['text'], {heading for (heading, needed) in conditions.items() if not keys.intersection(needed)})

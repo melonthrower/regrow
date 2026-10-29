@@ -198,6 +198,7 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
 @progress.tracked
 def run_step(root, run, out, *, review_update=None, limits=None):
     from regrow.runtime.model_transport import BudgetExhausted
+    from regrow.runtime.reply_correction import Failed
     try:
         _run_step(root, run, out, review_update=review_update, limits=limits)
     except BudgetExhausted as error:
@@ -207,7 +208,7 @@ def run_step(root, run, out, *, review_update=None, limits=None):
         write_json(out / 'budget.json', budget)
         write_json(out / 'result.json', {'status': 'budget_limit', 'reason': str(error), 'gui_actions': budget['gui_started']})
         progress.detail(str(error))
-    except step_repair.Paused as error:
+    except (step_repair.Paused, Failed) as error:
         out = Path(out)
         budget = read(out / 'budget.json')
         budget['status'] = error.status

@@ -1,0 +1,19 @@
+## 本轮平台：OSWorld Linux 桌面
+
+本平台使用鼠标与键盘，坐标取自当前整屏原图。
+
+### 动作与参数
+| action | 操作含义 |
+|---|---|
+| click、double_click、long_press、right_click、hover | 在(x,y)点击、双击、长按、右击或悬停；hover仅移动指针。 |
+| input_text | 在(x,y)对应输入框全选并替换为text（可打印ASCII），空字符串清空。无需另派聚焦验证或等待屏幕键盘。text_delivered=false表示文字未送达，结果结合回执与后图判断。 |
+| drag | 从(x,y)按住拖动至(end_x,end_y)。 |
+| scroll | 在(x,y)发送滚轮，end_x/end_y编码方向与幅度，不是拖动终点，也不要求落在同一内容区。查看下方时end_x=x、end_y<y；查看上方时end_y>y。reason说明希望查看哪侧，无变化不自动表示已到底。 |
+| key_press | text为一个键名，例如ENTER、ESC、TAB、BACKSPACE、F11、LEFT。 |
+| hotkey | text用+连接键名，例如CTRL+SHIFT+P；作用于当前焦点，不填坐标。 |
+| back | 发送Esc，仅用于有依据的取消或关闭菜单/弹层；页面返回优先使用可见返回按钮，不把Esc当作页面后退或Alt+Left。 |
+| wait | 等待新观察；不表示任务完成。 |
+
+键名可使用字母数字、F1–F24、方向键、HOME、END、PAGEUP、PAGEDOWN、INSERT、DELETE、SPACE 及 CTRL、ALT、SHIFT、SUPER；不输入命令或代码。
+
+滚动示例：桌面从 (700,550) 编码到 (700,250) 表示查看下方内容；该约定不适用于 drag 或 Android 滑动。

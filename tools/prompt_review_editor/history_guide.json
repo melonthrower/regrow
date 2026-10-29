@@ -1,5 +1,5 @@
 {
-  "notice": "供我们审阅的说明，不发送给 Luna。依据 2026-10-14 活动源码核对；其中含未验收实现。下列“未接入”内容仅是讨论方向。",
+  "notice": "供人工审阅，不发送给 Luna。发现、清点、动作、更新、总结说明于2026-10-15按活动代码重核；其他部分保留原核对状态。实际发送请求见关联历史，候选正文不自动覆盖用户编辑。",
   "profiles": {
     "global": {
       "title": "发现与识别：整个当前前景",
@@ -11,38 +11,38 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/locator.py",
+          "file": "src/regrow/recognition/locator.py",
           "functions": [
             "prepare",
             "request_from_run"
           ],
-          "sha256": "a6cbb893119e6e356199960bee4cb2b9444ab2ad89d309c1b094f0428de2b21f"
+          "sha256": "017dc839b7da85c4f3d14094e328f6ee67b768059c444a730425550a0a7da59e"
         },
         {
-          "file": "experiments/clock_manual_20260919/history_matching.py",
+          "file": "src/regrow/recognition/history_matching.py",
           "functions": [
             "with_history",
             "attach"
           ],
-          "sha256": "c4048cfe40dafe7d8f8555d92d9f4039776206ca1f9806d5f12c3c50767c0610"
+          "sha256": "75171c0932aade48cc907b3b148088b9d18a1153c96e8f88b28450f6a367e839"
         },
         {
-          "file": "experiments/clock_manual_20260919/region_candidate_names.py",
+          "file": "src/regrow/recognition/region_candidate_names.py",
           "functions": [
             "candidates",
             "control_candidates"
           ],
-          "sha256": "34e8dd6e83599277f2c4ad5d40019a77fd568dd0397101090fef57ef730be9f9"
+          "sha256": "5cc73aec86e664eac1b173cc35c691a6af5c8a5cb967dffe2ffa31e1a237a2d0"
         },
         {
-          "file": "experiments/clock_manual_20260919/page_context.py",
+          "file": "src/regrow/records/page_context.py",
           "functions": [
             "attach"
           ],
-          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+          "sha256": "46981c3e795fc432f1ee01129e875b5d75702422483be46fed22d4c2947f005c"
         }
       ],
-      "pending": "当前仍发送指定定位区块，并可能要求 focus_presence；旧身份用候选名称和 previous_name 引用。取消额外目标判断、改用稳定 ref 都还在讨论。"
+      "pending": "旧对象使用稳定ref；当前发现可同时登记区块与控件。指定定位区块与focus_presence仍保留。历史描述明确标为历史，旧图不充当当前坐标。"
     },
     "local": {
       "title": "发现与识别：补充指定区块",
@@ -54,89 +54,89 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/locator.py",
+          "file": "src/regrow/recognition/locator.py",
           "functions": [
             "prepare",
             "request_from_run"
           ],
-          "sha256": "a6cbb893119e6e356199960bee4cb2b9444ab2ad89d309c1b094f0428de2b21f"
+          "sha256": "017dc839b7da85c4f3d14094e328f6ee67b768059c444a730425550a0a7da59e"
         },
         {
-          "file": "experiments/clock_manual_20260919/page_context.py",
+          "file": "src/regrow/records/page_context.py",
           "functions": [
             "attach"
           ],
-          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+          "sha256": "46981c3e795fc432f1ee01129e875b5d75702422483be46fed22d4c2947f005c"
         }
       ]
     },
     "tasks": {
       "title": "提出区块探索任务",
       "fields": {
-        "提供什么": "本区块控件、已知用途和参数、已有任务及状态、相关来源；必要时提供可引用的同类实例、旧参数证据、上步交接和真实清点缺口。",
+        "提供什么": "本区块控件及稳定用途、按需constraints；已有问题、目标、类型、状态和条件；未解问题保留具体缺口/阻碍及相关操作，完成问题不再重复答案。",
         "如何选取": "以当前区块的任务与知识为主。其他区块按关联来源加入；旧任务分为“本轮可判断旧任务”和“其他任务背景”。并非每个旧任务的全部执行流水。",
         "放在哪里": "user prompt 的“控件”“历史控件身份索引”、两类旧任务和“可引用同类实例”等材料，随后按问题整理，并补共同地图。",
         "图片": "本步使用当前观察图，历史事实以登记内容及来源提供。"
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/task_proposer.py",
+          "file": "src/regrow/traversal/task_proposer.py",
           "functions": [
             "plan_request"
           ],
-          "sha256": "32bc42897eee450fcf675fa227115ca506b04cac0e236d30b2c531d32b95104e"
+          "sha256": "f3654eb2c9a581c1b750b159dbf05cafb84568047b755fe149fd36aa0e8fdf8b"
         },
         {
-          "file": "experiments/clock_manual_20260919/task_inventory_context.py",
+          "file": "src/regrow/records/task_inventory_context.py",
           "functions": [
             "project"
           ],
-          "sha256": "efbad464e71000ad5bd4a7bddf20a5c7e2f5ec9583a4bffd4775717a77d372ce"
+          "sha256": "db9ced21e8eb33aee1a5680e6f9d59205f7d124ed215e1d4c8401f0c2ea23dc6"
         },
         {
-          "file": "experiments/clock_manual_20260919/page_context.py",
+          "file": "src/regrow/records/page_context.py",
           "functions": [
             "attach"
           ],
-          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+          "sha256": "46981c3e795fc432f1ee01129e875b5d75702422483be46fed22d4c2947f005c"
         }
       ],
-      "pending": "网页候选只提出新任务。当前运行仍让清点回复兼顾旧任务结算、明确用途和共享关系；这些路由与登记尚未按新稿改造。"
+      "pending": "当前清点仍可回应明确允许的旧任务并提出新问题；共享关系与参数产物接口保持。对象parameters已改为constraints，具体样本写观察证据。"
     },
     "actions": {
       "title": "选择下一步动作",
       "fields": {
-        "提供什么": "原探索问题、条件和完成目标，当前可操作对象，原任务尝试及结果、直接准备过程和相关来路；必要时带入既有知识和实际失败。",
-        "如何选取": "从当前任务引用、完成依据、准备关联及事实来源查找相关尝试。不是固定取最近两条，也不是把全部运行事件逐条塞入。",
-        "放在哪里": "user prompt 的任务材料、目标观察、动作候选和共同地图/相关历史中；平台片段只说明可执行动作。",
+        "提供什么": "完整原探索问题、目标及必要条件；一份按区块组织的相关控件目录（含区块知识/约束、控件引用与用途）；相关操作参数与结果。",
+        "如何选取": "前景区块的已知控件；外层历史入口仅在任务、直接准备、路线或当前观察明确相关时提供。原任务和准备的实际过程保留，观察来源/匹配矩形留后台。",
+        "放在哪里": "动态正文按当前任务、一个本步问题、相关控件、相关历史组织。控件身份与用途合并，导航原问题不丢失，输出字段在system说明一次。",
         "图片": "动作根据当前图定位；旧记录说明已知结果与条件，不提供可沿用的当前点击坐标。"
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/action_proposer.py",
+          "file": "src/regrow/traversal/action_proposer.py",
           "functions": [
             "render_work",
             "request_from_run"
           ],
-          "sha256": "c70d3985372f973de698cb39c717234f0bd3b0d24cbc8ffda99c7274b8b57389"
+          "sha256": "c8bd97b109d8e2a2f9ef2171fc29e7f6a7286fccacd896e9ac0db85422334187"
         },
         {
-          "file": "experiments/clock_manual_20260919/history_selection.py",
+          "file": "src/regrow/records/history_selection.py",
           "functions": [
             "task_attempts",
             "related_tasks"
           ],
-          "sha256": "fd403f5e3cca5687611b0c63c61d239a79f055992854f8fc315bb4c309c3e357"
+          "sha256": "4304b49cf5c00cc069deaf5629e51975c181ee3db2eafbbae83ab9c0f5eab7e5"
         },
         {
-          "file": "experiments/clock_manual_20260919/page_context.py",
+          "file": "src/regrow/records/page_context.py",
           "functions": [
             "attach"
           ],
-          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+          "sha256": "46981c3e795fc432f1ee01129e875b5d75702422483be46fed22d4c2947f005c"
         }
       ],
-      "pending": "新任务不预设 action 的方向尚未接入运行。当前动作材料仍读取旧任务 action 和完成目标。"
+      "pending": "本批已离线接入并生成真实记录预览，0新Luna/GUI；尚未进行本次选择策略的模型行为验收。旧任务引用保留，完整探索说明用于正文。"
     },
     "update": {
       "title": "动作后核对与登记",
@@ -148,29 +148,29 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/result_updater.py",
+          "file": "src/regrow/traversal/result_updater.py",
           "functions": [
             "build_attempt_update",
             "build_update_request"
           ],
-          "sha256": "93b4b1bd3ee800a3757e51cbd1d2e8fd094a18c2ecc6983987d1aed411679425"
+          "sha256": "2cfffda4cc9b9bc9a5ca6f73fb2cbf5f02b711d34bf591787c449cd1f557c8c7"
         },
         {
-          "file": "experiments/clock_manual_20260919/history_matching.py",
+          "file": "src/regrow/recognition/history_matching.py",
           "functions": [
             "with_history"
           ],
-          "sha256": "c4048cfe40dafe7d8f8555d92d9f4039776206ca1f9806d5f12c3c50767c0610"
+          "sha256": "75171c0932aade48cc907b3b148088b9d18a1153c96e8f88b28450f6a367e839"
         },
         {
-          "file": "experiments/clock_manual_20260919/page_context.py",
+          "file": "src/regrow/records/page_context.py",
           "functions": [
             "attach"
           ],
-          "sha256": "a00e562b662007d5d804c70ceb6961057ca80b6bfb0cc7b3a324b38bee54425c"
+          "sha256": "46981c3e795fc432f1ee01129e875b5d75702422483be46fed22d4c2947f005c"
         }
       ],
-      "pending": "网页已精简知识、参数和任务结算写法；运行字段、历史选择及后续读取仍须一起接入，不能用网页例子推断已改变。"
+      "pending": "原动作/回执与原任务继续绑定；历史按实际动作编号和简短结果提供。异常、未发送、身份不明或归属撤销会在对应动作行保留必要说明。"
     },
     "summary": {
       "title": "整理区块功能",
@@ -182,15 +182,15 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/region_functions.py",
+          "file": "src/regrow/traversal/region_functions.py",
           "functions": [
             "summary_projection",
             "request"
           ],
-          "sha256": "24035c12ebcbc90be0445d435fd3dc0064aaccaab4496e8a7ac9c1d7a9b5d242"
+          "sha256": "b1b32c408fadde50603141254df67cc38d1b3f973c6862abf3f484b6b7164901"
         }
       ],
-      "pending": "候选稿允许已有参数直接引用；运行仍有参数定义的输出和校验要求，尚未统一修改。"
+      "pending": "local_knowledge按稳定段落整理，复用与knowledge相同的内容定义；parameter_definitions仍是当前输出字段，功能支持引用的物理精简尚未在本批实施。总结时机保持。"
     },
     "recovery": {
       "title": "恢复被阻塞的探索",
@@ -202,18 +202,18 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/recovery.py",
+          "file": "src/regrow/traversal/recovery.py",
           "functions": [
             "build_request"
           ],
-          "sha256": "a9c686ff736aea5ff3fa4f1251ec7bdf808e0e7fb31b0e40207322c880f1b58a"
+          "sha256": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c"
         },
         {
-          "file": "experiments/clock_manual_20260919/recover_loop.py",
+          "file": "src/regrow/traversal/recover_loop.py",
           "functions": [
             "run"
           ],
-          "sha256": "ae8a590469f291a19d10be9ee8ffce5713938decd640719d5666bd7f229477e0"
+          "sha256": "d84dbf2c7acaa086def4316657cdbdde3717ca4d483a14bd6ebf77864a5e79d3"
         }
       ]
     },
@@ -227,18 +227,18 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/step_repair.py",
+          "file": "src/regrow/traversal/step_repair.py",
           "functions": [
             "request"
           ],
-          "sha256": "fda3a452954b751c162d1af49fcc0703cce3786b6ee92b1153334b04835f91bd"
+          "sha256": "c2e89e6c0c2f979e73afd55372f30974190e561a775ab05f53d805181cb73033"
         },
         {
-          "file": "experiments/clock_manual_20260919/correction_prompts.py",
+          "file": "src/regrow/traversal/correction_prompts.py",
           "functions": [
             "parse_disclosure"
           ],
-          "sha256": "33bfb934960e7b798c82df9b19b36cbd73f553c62fd8c229917a4430508d8308"
+          "sha256": "c2e2ce5adbe12d22476779ffbd1bd087f9d0915cb9a071fd725599d47ef7c8e8"
         }
       ],
       "pending": "目前仍主要要求完整回复或正式记录修订；只返回出错字段的补丁模式尚未实现。"
@@ -252,18 +252,18 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/output_contract.py",
+          "file": "src/regrow/prompts/output.py",
           "functions": [
             "prepare"
           ],
-          "sha256": "ad4823664c72a22e0494c2c746de60518d740460d31333e379ef65036ed5060b"
+          "sha256": "b09ff52fb4ff3c952869061670b5f8c44d44d9019a37948f190afbe8604e96aa"
         },
         {
-          "file": "experiments/clock_manual_20260919/prompt_rules.py",
+          "file": "src/regrow/prompts/compose.py",
           "functions": [
             "parts"
           ],
-          "sha256": "4c765ae76d5fc0448cf8c53ce5971fc7a5af95e123f05dcc1b51b056bf3e9930"
+          "sha256": "58958ed933e5212422f40144b1f3564a021fab4afeb9031b3642b48e1db2c351"
         }
       ],
       "pending": "网页按讨论主题放在一起，不代表运行时一起发送；新的知识/参数字段和路由仍待接入。"
@@ -278,11 +278,11 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/task_prerequisites.py",
+          "file": "src/regrow/traversal/task_prerequisites.py",
           "functions": [
             "augment"
           ],
-          "sha256": "f90ecd563a91cd9c52cff14de08df94b9d62d80d03265f78787a3da2c168251c"
+          "sha256": "6e94b2e21c61bcd240ed641bace22cffcc015185e0fcb65396cf17ca4e3798af"
         }
       ]
     },
@@ -295,18 +295,18 @@
       },
       "sources": [
         {
-          "file": "experiments/clock_manual_20260919/model_transport.py",
+          "file": "src/regrow/runtime/model_transport.py",
           "functions": [
             "with_environment_scope"
           ],
-          "sha256": "90cbc7626a522b5c9d102e2ffa7276742a0b90cb935bfcb90a6664aa582a6e48"
+          "sha256": "62946cec1b535a266ba1968bc051cfcf4b0c2ca80204fa39defb109e9e84dd48"
         },
         {
-          "file": "experiments/clock_manual_20260919/prompt_delivery.py",
+          "file": "src/regrow/prompts/output.py",
           "functions": [
             "environment_part"
           ],
-          "sha256": "9e282016fae3c50dbd04fc722838dbf24f9c447cfe1b7d3836107c65640615bb"
+          "sha256": "b09ff52fb4ff3c952869061670b5f8c44d44d9019a37948f190afbe8604e96aa"
         }
       ]
     }

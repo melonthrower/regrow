@@ -46,6 +46,7 @@
       try{
         const result=await json('/api/editor/save',payload);documentState.version=result.version;documentState.saved_at=result.saved_at;
         if(sent===generation)dirty=false;
+        window.dispatchEvent(new Event('prompt-draft-saved'));localStorage.setItem('regrow-prompt-change',String(Date.now()));
         showChanges(result.changes);status(dirty?'还有新输入待保存…':'已保存到服务器');return true;
       }catch(error){status(error.message+' 未保存的文字仍在右侧，请勿关闭页面。',true);return false;}
     })();
@@ -61,6 +62,7 @@
     }
     $('document').value=documentState.path;$('base').textContent=documentState.base;$('draft').value=documentState.text;$('idea').value=documentState.idea;
     showHistoryGuide(result.history_guide);
+    window.dispatchEvent(new CustomEvent('prompt-document-loaded',{detail:documentState.path}));
     showNotes();showChanges(documentState.changes);$('annotate').disabled=true;
     const contextual=documentState.kind==='context';$('context-details').hidden=!contextual;
     $('context-images').replaceChildren();$('related-prompts').replaceChildren();

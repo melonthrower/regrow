@@ -1,0 +1,117 @@
+from regrow.paths import SOURCE_ROOT
+'Drive bounded steps and resume normal scheduling after idle knowledge work.'
+import argparse
+from itertools import count
+import json
+from pathlib import Path
+from regrow.traversal.run_task_step import run_step
+from regrow.traversal.run_task_step import finalize_knowledge
+from regrow.runtime.progress import CapturePaused
+from regrow.traversal.traversal_scheduler import after_round
+
+def run_session(root, run, out, mode, step=run_step):
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=False)
+    account = {'mode': mode, 'status': 'running', 'http_started': 0, 'gui_started': 0, 'max_http': None, 'max_gui_commands': None, 'rounds': []}
+    manifest = Path(run) / 'run_manifest.json'
+    limits = json.loads(manifest.read_text()).get('session_limits', {}) if manifest.exists() else {}
+    for key in ('max_http', 'max_gui_commands'):
+        if limits.get(key) is not None:
+            account[key] = int(limits[key])
+    account['max_rounds'] = int(limits['max_rounds']) if limits.get('max_rounds') is not None else None
+    account['start_call'] = int(json.loads(manifest.read_text()).get('last_call', 0)) if manifest.exists() else 0
+    pause = out.with_suffix('.pause')
+
+    def save():
+        account['end_call'] = int(json.loads(manifest.read_text()).get('last_call', 0)) if manifest.exists() else account['start_call']
+        target = out / 'session.json'
+        temp = out / 'session.tmp'
+        temp.write_text(json.dumps(account, ensure_ascii=False, indent=2))
+        temp.replace(target)
+    save()
+    idle_recheck = False
+    knowledge_count = 0
+    for index in count():
+        if account['max_rounds'] is not None and index >= account['max_rounds']:
+            account['status'] = 'round_limit'
+            break
+        if pause.exists():
+            account['status'] = 'paused_by_user'
+            break
+        allowance = {limit: min(6, account[limit] - account[used]) if account[limit] is not None else 6 for (used, limit) in [('http_started', 'max_http'), ('gui_started', 'max_gui_commands')]}
+        if any((value <= 0 for value in allowance.values())):
+            account['status'] = 'budget_limit'
+            break
+        folder = out / f'round-{index + 1:04d}'
+        try:
+            step(root, run, folder, limits=allowance)
+        except CapturePaused:
+            account['status'] = 'paused_by_user'
+            break
+        except BaseException:
+            account['status'] = 'interrupted'
+            raise
+        finally:
+            if (folder / 'budget.json').exists():
+                budget = json.loads((folder / 'budget.json').read_text())
+                account['http_started'] += budget['http_started']
+                account['gui_started'] += budget['gui_started']
+            account['rounds'].append(str(folder.name))
+            save()
+        result = json.loads((folder / 'result.json').read_text())
+        if pause.exists():
+            account['status'] = 'paused_by_user'
+            break
+        if result['status'] == 'review_pending':
+            account.update(status='review_pending', last_result='review_pending')
+            break
+        if result['status'] == 'budget_limit':
+            account.update(status='budget_limit', last_result='budget_limit')
+            break
+        if mode == 'step':
+            account['status'] = 'paused_after_step'
+            break
+        if result['status'] == 'correction_blocked' and not account.get('blocked_observation_retry'):
+            from regrow.traversal.step_repair import reobservable_block
+            blocked = reobservable_block(run)
+            if blocked is not None:
+                # The next normal step archives this episode and takes a fresh
+                # observation. One retry per session prevents repeated empty work.
+                account['blocked_observation_retry'] = blocked['path']
+                save()
+                continue
+        continuation = after_round(result['status'], idle_recheck)
+        if continuation == 'knowledge' and (account['max_http'] is None or account['http_started'] < account['max_http']):
+            knowledge_count += 1
+            folder = out / ('knowledge' if knowledge_count == 1 else f'knowledge-{knowledge_count:04d}')
+            try:
+                remaining = min(6, account['max_http'] - account['http_started']) if account['max_http'] is not None else 6
+                knowledge = finalize_knowledge(root, run, folder, max_http=remaining)
+                account['knowledge_status'] = knowledge['status']
+            except CapturePaused:
+                account['status'] = 'paused_by_user'
+                break
+            except BaseException:
+                account['status'] = 'interrupted'
+                raise
+            finally:
+                if (folder / 'budget.json').exists():
+                    budget = json.loads((folder / 'budget.json').read_text())
+                    account['http_started'] += budget['http_started']
+                    account['gui_started'] += budget['gui_started']
+                save()
+            idle_recheck = True
+            continue
+        if continuation != 'continue':
+            account.update(status='needs_review_or_complete', last_result=result['status'])
+            break
+        idle_recheck = False
+    save()
+    return account
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('run', type=Path)
+    p.add_argument('output', type=Path)
+    p.add_argument('mode', choices=['step', 'auto'])
+    a = p.parse_args()
+    run_session(SOURCE_ROOT, a.run, a.output, a.mode)

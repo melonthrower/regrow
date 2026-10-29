@@ -1,8 +1,13 @@
 [
   {
     "path": ".gitignore",
-    "sha256": "09f97b4f1650aacde368dc6030c2dca8de55e37d0e768011f4fd71bf8e02a7db",
-    "bytes": 3943
+    "sha256": "8ac87a794c7849e52c548de4c95c187b945517d2073d5810787d4710c5296790",
+    "bytes": 4620
+  },
+  {
+    "path": ".ignore",
+    "sha256": "0866345932d778a7b93a488709e836b6253a62ec0f35e34f3a0bcacbc24d86b0",
+    "bytes": 239
   },
   {
     "path": "AGENTS.md",
@@ -20,6 +25,11 @@
     "bytes": 2186
   },
   {
+    "path": "DEVELOPMENT.md",
+    "sha256": "58eaf3e4d0f52ec61579279a1639e71ad3a3ed69bed7df818b1cbc41c67dc9e3",
+    "bytes": 3704
+  },
+  {
     "path": "GUI_REWALK_PARTIAL_ADMISSION_AND_TARGETED_REVISIT_20260918.md",
     "sha256": "e42d396d679f1c19533a2aea156b0036643fed9a07d49c7b68c441dc8cc8c865",
     "bytes": 13224
@@ -31,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "ba2606b21ff64be1760ae6d6aa0e37ffd63cb1d73f05f227ba07a26e38abc7c6",
-    "bytes": 561
+    "sha256": "4a9159096ecfff10c93bcee350d847983a48b5a8e479757ec9826f527907b564",
+    "bytes": 633
   },
   {
     "path": "README.upstream.md",
@@ -41,8 +51,8 @@
   },
   {
     "path": "SNAPSHOT.md",
-    "sha256": "5e198bb4605a22b5eac3dd1d65abbba28f6a1a4f26af9ec85c08efdc1fc3af55",
-    "bytes": 1029
+    "sha256": "10ea1fbf9702e8a6b5180e7ef784248a959fe0d01e278a672f2cfff9d6e038f1",
+    "bytes": 1182
   },
   {
     "path": "aliyun.env.example",
@@ -61,8 +71,8 @@
   },
   {
     "path": "design/CURRENT_FRAMEWORK.md",
-    "sha256": "f73cb6dfe65e8a22dfc0cce29f44d135c009f2aff82b100bac0f8728693df4d1",
-    "bytes": 285402
+    "sha256": "bdd0f74a9fc0a710bce0fdd079f0eebd9d4a09bbe4c8d3f4e9ea0581fef4205e",
+    "bytes": 31627
   },
   {
     "path": "design/E1_BASELINE.md",
@@ -100,6 +110,11 @@
     "bytes": 43290
   },
   {
+    "path": "design/ROOT_MIGRATION_20261025.md",
+    "sha256": "606835f7c87b7be8957f6dc90f4c456f838b7da1ddce5cfe215a4ef0c5748723",
+    "bytes": 2440
+  },
+  {
     "path": "design/SERVER_HANDOFF.md",
     "sha256": "e6ef9948e7237748d79a2c33ee1f4129ffca73235f068941e06552a83ff6d71e",
     "bytes": 45482
@@ -108,6 +123,11 @@
     "path": "design/SOL_REGION_TRAVERSAL_ISSUE_REVIEW.md",
     "sha256": "9d39b309f58755e955538d2a93e36bb9e43748f0a2494151a2cd1a3f51c44868",
     "bytes": 14290
+  },
+  {
+    "path": "design/THREE_PART_FRAMEWORK.md",
+    "sha256": "13bdd08369ab591461b05f559a115f8e56dac5ba580b3d2643dadce2d1eea6a2",
+    "bytes": 1816
   },
   {
     "path": "design/VLC_EXPLORATION_EXAMPLE.md",
@@ -203,6 +223,11 @@
     "path": "design/changelog/2026-09.md",
     "sha256": "928a68b011a46bee0ea5c9b9b0218a95e2753cbd0e5fca2398cfeac63d31d4c0",
     "bytes": 522603
+  },
+  {
+    "path": "design/changelog/2026-10.md",
+    "sha256": "d51fefebcd2ba0129f8b15b2f0f138ea2ca5d7baa5e95439e5e7a19a6c2d10d2",
+    "bytes": 346315
   },
   {
     "path": "design/changelog/framework_history_through_2026-07-19.md",
@@ -453,6 +478,96 @@
     "path": "design/modules/state_graph.md",
     "sha256": "ca4a848c348b99494372824670ce010b168f457a10ce94a35a51e201fead2e13",
     "bytes": 28231
+  },
+  {
+    "path": "design/modules/stepwise/01_discovery.md",
+    "sha256": "ac69b3f07a3d7799da2aac8b704a522676a47978bba56c133f2b12999746f7eb",
+    "bytes": 197
+  },
+  {
+    "path": "design/modules/stepwise/02_action.md",
+    "sha256": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+    "bytes": 193
+  },
+  {
+    "path": "design/modules/stepwise/03_update.md",
+    "sha256": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+    "bytes": 193
+  },
+  {
+    "path": "design/modules/stepwise/CODE_MAP.md",
+    "sha256": "c0ea27bf90a916742483c9ffd2f2f30681a28709f5ecf84485e74e47d79438ed",
+    "bytes": 2417
+  },
+  {
+    "path": "design/modules/stepwise/README.md",
+    "sha256": "2ec648da667f7c932493cb907c04213a2f0d2b595f27fd7a04ad5dfb8c27e1df",
+    "bytes": 950
+  },
+  {
+    "path": "design/modules/stepwise/context.md",
+    "sha256": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0",
+    "bytes": 189
+  },
+  {
+    "path": "design/modules/stepwise/execution.md",
+    "sha256": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+    "bytes": 193
+  },
+  {
+    "path": "design/modules/stepwise/identity.md",
+    "sha256": "ac69b3f07a3d7799da2aac8b704a522676a47978bba56c133f2b12999746f7eb",
+    "bytes": 197
+  },
+  {
+    "path": "design/modules/stepwise/knowledge.md",
+    "sha256": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0",
+    "bytes": 189
+  },
+  {
+    "path": "design/modules/stepwise/object_fields.md",
+    "sha256": "8de95e53cf85e0b54c7a08632a7c6a97c02213715c8ad1f4d8ee7701890d458c",
+    "bytes": 28494
+  },
+  {
+    "path": "design/modules/stepwise/recognition.md",
+    "sha256": "5c886d869ffd4603fdb1ff0485d58658998ea408803469ac5913ce443370a0f4",
+    "bytes": 12604
+  },
+  {
+    "path": "design/modules/stepwise/records.md",
+    "sha256": "8b74cc9bd353d45827ff99e3af0f8acbc934278c7ed1a6558ba7fa5463183c7b",
+    "bytes": 19050
+  },
+  {
+    "path": "design/modules/stepwise/repair.md",
+    "sha256": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+    "bytes": 193
+  },
+  {
+    "path": "design/modules/stepwise/routing.md",
+    "sha256": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+    "bytes": 193
+  },
+  {
+    "path": "design/modules/stepwise/runtime.md",
+    "sha256": "b19e041b399772629de09bad59be4578e7e373f658ce6e059f4f5377cc890a49",
+    "bytes": 28946
+  },
+  {
+    "path": "design/modules/stepwise/tasks.md",
+    "sha256": "021ca7c7161ec310d00836baf1df6a4065f1db92dc6d1cdb3c0d08174fb85383",
+    "bytes": 193
+  },
+  {
+    "path": "design/modules/stepwise/traversal.md",
+    "sha256": "99d4adfd7847fdbbe88b8629eaba9119e885f1dadc46ccd03448a233f8f3f1e6",
+    "bytes": 26659
+  },
+  {
+    "path": "design/modules/stepwise/updates.md",
+    "sha256": "0e360e6cb125e29250a6ed381812eb28019c2da53699584d7a4a9f8beb18a4a0",
+    "bytes": 189
   },
   {
     "path": "design/modules/stepwise_debug_loop.md",
@@ -2476,8 +2591,8 @@
   },
   {
     "path": "ops/coverage100_environment.py",
-    "sha256": "60bb13d11b0faceb41ad392c6275fcc387b67d737b374f7508ab7019ffe0270d",
-    "bytes": 6848
+    "sha256": "bcaf608ff29234bc96672329e831b1998ff643ca98f0ca7c401d1b53c75faebf",
+    "bytes": 7370
   },
   {
     "path": "ops/fix_osworld_x11_connections.py",
@@ -2588,6 +2703,1311 @@
     "path": "run_visual_vscode.ps1",
     "sha256": "87fbcb7eff0b5574a88bde9dbd311df5dbbc69a59f39b996414552b5921c1455",
     "bytes": 1531
+  },
+  {
+    "path": "src/README.md",
+    "sha256": "a21cf234dc3324e73a7313907c673e452187b3fa63f16f98262a0088ed041b17",
+    "bytes": 846
+  },
+  {
+    "path": "src/__main__.py",
+    "sha256": "7d0661f901b397656d80f59be4f07e46abb120ee4b978168fac0622525deb965",
+    "bytes": 654
+  },
+  {
+    "path": "src/regrow/__init__.py",
+    "sha256": "0915c7f20611203287c5ebd6901edba7cd500d70938adc03baf511c13def6a2d",
+    "bytes": 68
+  },
+  {
+    "path": "src/regrow/paths.py",
+    "sha256": "262461f64c4e96e067558aef4b1003cba71179521a2d4dbb5b3caa15792aacef",
+    "bytes": 124
+  },
+  {
+    "path": "src/regrow/prompts/README.md",
+    "sha256": "58d03a16d709dd0d6373dd07aa778501cb49e40acb54e9ea0a21b027824f2bb5",
+    "bytes": 1845
+  },
+  {
+    "path": "src/regrow/prompts/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
+    "path": "src/regrow/prompts/compose.py",
+    "sha256": "61a28bf3d6579f460a02ca4986eec2c0b6a0bdb2b784e2f6224c5d2304e0dea4",
+    "bytes": 16333
+  },
+  {
+    "path": "src/regrow/prompts/correction_feedback.py",
+    "sha256": "ee7c2dce5a12f24634a2de0f6d7f43955f9333da1b9faf5e3b84d1241a312026",
+    "bytes": 10074
+  },
+  {
+    "path": "src/regrow/prompts/frame_context.py",
+    "sha256": "78035aa2854d8bbe518962456b5dbeab7c561ca800d506ba87fd3f8c3272324f",
+    "bytes": 2226
+  },
+  {
+    "path": "src/regrow/prompts/history_disclosure.py",
+    "sha256": "00918bab54f7fd9b613f3c455f535269361f04107b9f72af3242cd237dd130eb",
+    "bytes": 9606
+  },
+  {
+    "path": "src/regrow/prompts/map_prompt.py",
+    "sha256": "ee4a4986f13711394ce82e9eb02696c27ac57f1e17ada856730b83369d4a1943",
+    "bytes": 2370
+  },
+  {
+    "path": "src/regrow/prompts/object_blocks.py",
+    "sha256": "d5ef1ab2b78d9a680894e32f24e1f3f20f82f06afa91f3cae201628d28423d5b",
+    "bytes": 9178
+  },
+  {
+    "path": "src/regrow/prompts/output.py",
+    "sha256": "607000752b7672ff073703097ec7b5745b91d23b4c0f2c2609326576a795af03",
+    "bytes": 18306
+  },
+  {
+    "path": "src/regrow/prompts/prompt_material.py",
+    "sha256": "119db40476d23421605ea2a6743e4052f34c814cc18c82558118246fb7c3e9bb",
+    "bytes": 45584
+  },
+  {
+    "path": "src/regrow/prompts/response_example.py",
+    "sha256": "22cb210771cbd6d3566e2b4e1577a7d10e69a8a5c54e8734f3f09675cea98104",
+    "bytes": 14351
+  },
+  {
+    "path": "src/regrow/prompts/run_context.py",
+    "sha256": "a6fe6359d0575373cb6db1ae2d4760d218d58e16393d1ec51d58ab5b34ef0bb8",
+    "bytes": 6412
+  },
+  {
+    "path": "src/regrow/prompts/target_observation.py",
+    "sha256": "bb61d473d5992ba4f67fbab4e642519bacf54a2bbb16ba154422a2d60efd5965",
+    "bytes": 9723
+  },
+  {
+    "path": "src/regrow/prompts/task_progress.py",
+    "sha256": "452d0c4fbd06ed36b24c0448ce4442a5191c77348f7053241d46fa37dc3bb221",
+    "bytes": 2605
+  },
+  {
+    "path": "src/regrow/prompts/任务/任务动作登记.prompt",
+    "sha256": "87401c8b46f1a036cbe6f8a0926cbde6728392d2a7387450dd7a0324e07d5ed8",
+    "bytes": 3871
+  },
+  {
+    "path": "src/regrow/prompts/任务/前置条件与恢复.prompt",
+    "sha256": "ec2ef66bf1c0c8a5daaf5caf90ae6d891985f8fde514c6d8e58ff3d898fc0911",
+    "bytes": 676
+  },
+  {
+    "path": "src/regrow/prompts/任务/区块功能登记.prompt",
+    "sha256": "2b5687456569f3a68d4ac9534a457bc8d3cac22925d16e8e4ab6bde311bc25cf",
+    "bytes": 1172
+  },
+  {
+    "path": "src/regrow/prompts/任务/区块探索任务.prompt",
+    "sha256": "7f44e66c74eb0d50279198d36cbd2cf45dc8b886da2051d26ce58932f6d21e6d",
+    "bytes": 1125
+  },
+  {
+    "path": "src/regrow/prompts/任务/对象识别资料.prompt",
+    "sha256": "e6cfae665b92a63f12827c6d9f165bff116f258650f3aa853868a672480f6c4c",
+    "bytes": 726
+  },
+  {
+    "path": "src/regrow/prompts/任务/工作区块定位.prompt",
+    "sha256": "76b2d08633c20ed38468bd9e134022a4bd7364c3752e0f1ec3b6d3ee208edb66",
+    "bytes": 871
+  },
+  {
+    "path": "src/regrow/prompts/任务/当前区块重定位.prompt",
+    "sha256": "3692928ef2d8896ee23f6f347d9d97a7107786dbee4b995f96389326475e4a23",
+    "bytes": 850
+  },
+  {
+    "path": "src/regrow/prompts/任务/探索范围与退出.prompt",
+    "sha256": "2f627f79c1c94dad6f1d4fbfe0902cda6fb2a86b035b3d86c62073228bea3340",
+    "bytes": 1432
+  },
+  {
+    "path": "src/regrow/prompts/任务/控件外观状态比较.prompt",
+    "sha256": "c1100cfd19f3f0b3645aeb7fe837aa525aa8ba061f7e2fb1df5c7527b94e6d0b",
+    "bytes": 956
+  },
+  {
+    "path": "src/regrow/prompts/任务/旧任务范围复核.prompt",
+    "sha256": "c4f9dab93753002ddb301c94b36070afdd2ec3ba295c85d8f7a38ce7418a9609",
+    "bytes": 514
+  },
+  {
+    "path": "src/regrow/prompts/任务/清点输出约定.prompt",
+    "sha256": "ba35fde8238f1fa5b64d2ae1c2edf68c62aaf4648ac0d4984743a38b1245a324",
+    "bytes": 3110
+  },
+  {
+    "path": "src/regrow/prompts/任务/首屏观察.prompt",
+    "sha256": "21fdc12b0dc1769c0556b5e489fcd2de041933a01a58976f89233a77887b2335",
+    "bytes": 358
+  },
+  {
+    "path": "src/regrow/prompts/修改指引.md",
+    "sha256": "d9a8299038b9c245d9f41f51be67d3a44344fa5db71497c9d02f30ddc5ea4fc8",
+    "bytes": 9579
+  },
+  {
+    "path": "src/regrow/prompts/共享/任务知识与当前观察.prompt",
+    "sha256": "4d8057a9120b5e39f48acf9096a18ea0ea2c177c0deee72e9e685c2e6ecae57f",
+    "bytes": 1580
+  },
+  {
+    "path": "src/regrow/prompts/共享/任务结束条件.prompt",
+    "sha256": "461a41ec74e3ec88da868cbfbcfe30ca6602e94bfe6c9c2807aeff17d6162db0",
+    "bytes": 682
+  },
+  {
+    "path": "src/regrow/prompts/共享/区块身份复用.prompt",
+    "sha256": "609808033c1310dbe1658033954e6c3c7f4b4cf1afa8c8f783ea1d3a1c6cd962",
+    "bytes": 2927
+  },
+  {
+    "path": "src/regrow/prompts/共享/参数观察值.prompt",
+    "sha256": "8875bcc9db760abc0158a6b52026d7886bd93acd40ad23bf4155b7c9037e410d",
+    "bytes": 683
+  },
+  {
+    "path": "src/regrow/prompts/共享/当前前景.prompt",
+    "sha256": "eb746312e62024078fb673220efa2d8555cec3d173cef529be7f932ceca98932",
+    "bytes": 696
+  },
+  {
+    "path": "src/regrow/prompts/共享/探索角色.prompt",
+    "sha256": "a68c0b0ca8b913d7af6f02344df6b30e8deb0cd6f65656135e0ea6f93f6c04f9",
+    "bytes": 190
+  },
+  {
+    "path": "src/regrow/prompts/共享/术语定义.prompt",
+    "sha256": "a39e7c3683dce9be29d3535c5f0b6768d1e68511c8436dd3d39d5632a15a4bf9",
+    "bytes": 999
+  },
+  {
+    "path": "src/regrow/prompts/共享/行为差异分离.prompt",
+    "sha256": "cab76a859b5c5870bb0b639548a6b1b165b2326ad9321322108fc01d21648bec",
+    "bytes": 1847
+  },
+  {
+    "path": "src/regrow/prompts/共享/身份图准入.prompt",
+    "sha256": "9f4f4f7c13e2e70b4202828d639a03717d0ff9c1770c1e2b100c1345ec86e5eb",
+    "bytes": 963
+  },
+  {
+    "path": "src/regrow/prompts/动作/动作空间与字段.prompt",
+    "sha256": "0cd3e8bbfb96e35af0339e297040ad607adda1ba90e2ffed7ad8ea5013452eb3",
+    "bytes": 305
+  },
+  {
+    "path": "src/regrow/prompts/动作/围绕目标选择动作.prompt",
+    "sha256": "32a07c11de35aedc543a95fe0f9814fcf94cf03c4b534723e270473b691337d4",
+    "bytes": 3151
+  },
+  {
+    "path": "src/regrow/prompts/动作/探索导航路线.prompt",
+    "sha256": "164658e6621ee7fbf8d62788956d5ef877ab80334259746a4b7d71823a07bf5f",
+    "bytes": 1373
+  },
+  {
+    "path": "src/regrow/prompts/动作/目标观察阅读.prompt",
+    "sha256": "8894fff5b095f0d682b6abd2d4116710b4b8211f3af703d13d5c4b6eda487c00",
+    "bytes": 914
+  },
+  {
+    "path": "src/regrow/prompts/动作/结果核对.prompt",
+    "sha256": "4329393a5c1b4c2f5d43bb57723f400abed177e7e8790b2ffeb11c7c109f385d",
+    "bytes": 353
+  },
+  {
+    "path": "src/regrow/prompts/区块识别/功能区块划分.prompt",
+    "sha256": "0e3d9d74e05c228c9dbf812bad2bf0219b9ffd6f5a1cd5710cfe897e58b5dec2",
+    "bytes": 903
+  },
+  {
+    "path": "src/regrow/prompts/区块识别/区块控件识别.prompt",
+    "sha256": "1a5f79adb46976aabe6b3ea8f8515de3c93505570d7ac43f84135cabf851ba6e",
+    "bytes": 1015
+  },
+  {
+    "path": "src/regrow/prompts/区块识别/当前表面识别.prompt",
+    "sha256": "17d804d0423ac45287c6c65b58d9ad5375e773e782a5c3e8e7baf3a3e1301211",
+    "bytes": 1023
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/列表代表项.prompt",
+    "sha256": "5506939fdd9656aa7130daf73f9c3f8177241cfdcc2c5912e165885f803cf0a5",
+    "bytes": 897
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/前景与区块.prompt",
+    "sha256": "3bc003fe9084719c36fedefa0a6eeb378d3679fda71495ae9d4a7648992b2a7d",
+    "bytes": 855
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/增量补全.prompt",
+    "sha256": "5cad2fa92969a8f320daf967f84d32426920c5c531ab439fb196828907ed1d04",
+    "bytes": 2067
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/补登记.prompt",
+    "sha256": "b6780593eacd699d94c8d7831bb9d9475be272896c85804b85d251726d908ac8",
+    "bytes": 711
+  },
+  {
+    "path": "src/regrow/prompts/发现手册/输出填写.prompt",
+    "sha256": "4d04060e3591764167d035c639042d0701e60893f0ec0698997e1b8081f73d9a",
+    "bytes": 1489
+  },
+  {
+    "path": "src/regrow/prompts/对象/任务.prompt",
+    "sha256": "f004e82e3d9d34e2fcbc2086d7597bf4505757467b4738071bb631b1b555d6bb",
+    "bytes": 24516
+  },
+  {
+    "path": "src/regrow/prompts/对象/功能引用.prompt",
+    "sha256": "aed19950a5e39fa1633b39aac97e887966d1ab0e17330a9cd2f9f154c6231987",
+    "bytes": 1187
+  },
+  {
+    "path": "src/regrow/prompts/对象/动作.prompt",
+    "sha256": "5af9271debf7c48f9a60c32600619ffce1822491323c941234426d6cfb676732",
+    "bytes": 5057
+  },
+  {
+    "path": "src/regrow/prompts/对象/区块.prompt",
+    "sha256": "2716251c41e4b2157e7f019834872fc89aefd4ef8a058e9d0bf2a27b6b729349",
+    "bytes": 21447
+  },
+  {
+    "path": "src/regrow/prompts/对象/控件.prompt",
+    "sha256": "c90321fefa45a5d5689fe71dffdc88ab6b3294ff6fedc1eef714c65c76baf9eb",
+    "bytes": 33322
+  },
+  {
+    "path": "src/regrow/prompts/平台/Android执行.prompt",
+    "sha256": "3f5cf82bd273c361547dfe990485b6607ef95c911bd78767eb29d03223ed3cf8",
+    "bytes": 904
+  },
+  {
+    "path": "src/regrow/prompts/平台/桌面执行.prompt",
+    "sha256": "338d9cc722e79f78ccdd013df6ab86de2a6f6745a70067c933393da12e10d2f7",
+    "bytes": 1554
+  },
+  {
+    "path": "src/regrow/prompts/平台/遍历环境只读.prompt",
+    "sha256": "d49edb999007df73a909bc7c995daa32537159d93d21e938dcfa32d1af3825de",
+    "bytes": 1551
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/异常识别.prompt",
+    "sha256": "dd97d1ee2c342108d87bc28a8b7b77eea12f1572b0ee51b2101c7c85d43415d6",
+    "bytes": 2200
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/恢复当前探索.prompt",
+    "sha256": "0fee1117158f060266451a73c5044e7d2691cedddc2e8d3cc613a7f3f50bef50",
+    "bytes": 655
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/恢复策略.prompt",
+    "sha256": "bad5eeb238ceb1cdf3649a3b35fa0f18ed645a32b3678dbd5d3cc18f6338bbf3",
+    "bytes": 2751
+  },
+  {
+    "path": "src/regrow/prompts/异常处理/恢复输出.prompt",
+    "sha256": "b45c34fb24bb035786c524d61c6c460cc46efa4b42b6709acb29a44879c553bf",
+    "bytes": 710
+  },
+  {
+    "path": "src/regrow/prompts/更新/动作后观察与状态更新.prompt",
+    "sha256": "fc204c1f10d16fb247e8f196c1d1cf6cd9a57b849b73f4ef6d3306f955d393ac",
+    "bytes": 6207
+  },
+  {
+    "path": "src/regrow/prompts/更新/区块变化与字段.prompt",
+    "sha256": "8003659256e0125e6b64e416acc21959dc00283aee2250a31111493dfb332673",
+    "bytes": 1189
+  },
+  {
+    "path": "src/regrow/prompts/更新/重复入口覆盖复核.prompt",
+    "sha256": "b9a7b231c23e41dd95c9ba51187a68c66b3f4e1b9d220c92f0277e2e7bcb6a04",
+    "bytes": 1279
+  },
+  {
+    "path": "src/regrow/prompts/流程/01_发现.json",
+    "sha256": "9788c93795e9d2f0f11faa5aec8a890a442c81eba1dc7bcf4acdece1b30af785",
+    "bytes": 341
+  },
+  {
+    "path": "src/regrow/prompts/流程/02_动作选择.json",
+    "sha256": "22d34b5632a2d99c534d63c19ec10d8d7ea2221361d4e6c8a2617d14a5c89892",
+    "bytes": 1565
+  },
+  {
+    "path": "src/regrow/prompts/流程/03_结果核对.json",
+    "sha256": "4186bc161a0f3c99f6eb86237ed855f31994a0f04ad2c7a563c4ec05cc737583",
+    "bytes": 230
+  },
+  {
+    "path": "src/regrow/prompts/流程/README.md",
+    "sha256": "44e083873dd07dab0666224fe92e6c734be889acb7ae03aeeaae6aaf6f122dee",
+    "bytes": 1553
+  },
+  {
+    "path": "src/regrow/prompts/流程/调用组成.json",
+    "sha256": "0fe61c5b5101a33d35d6ea32b08910c435b2c4305dbf7b5db0f8a2033f713cce",
+    "bytes": 37029
+  },
+  {
+    "path": "src/regrow/prompts/监督/修复候选.prompt",
+    "sha256": "1cd98fb4e5609c11dbe37a737b45688db90016c4396da4257f6f3cedaf938764",
+    "bytes": 2106
+  },
+  {
+    "path": "src/regrow/prompts/监督/意图对照.prompt",
+    "sha256": "d454ee9b131e15d2334718aba0176234060fc12a1488f993d2f84e7fa305f766",
+    "bytes": 1497
+  },
+  {
+    "path": "src/regrow/prompts/监督/模型回复验收.prompt",
+    "sha256": "a390182aff52a5ef4b033c2c3bf17c404c1c1e8e4687f15e03dcdfc20521cee1",
+    "bytes": 1030
+  },
+  {
+    "path": "src/regrow/prompts/监督/陌生读者.prompt",
+    "sha256": "0cb9ac1f5a12790b92dd0c7e160fe3dfe3da6d739e7cc72846f7ff0081fdc86f",
+    "bytes": 1323
+  },
+  {
+    "path": "src/regrow/prompts/纠错/任务归属.prompt",
+    "sha256": "af036fb3bb119cef588cdf12d3e68e89e88ecedce017a8df12aaa951436527b0",
+    "bytes": 1244
+  },
+  {
+    "path": "src/regrow/prompts/纠错/共享行为核对.prompt",
+    "sha256": "44488c9d97d834daa461c9638d6da6987b99eac4d79ebe44b9d01d723f0bc3af",
+    "bytes": 1419
+  },
+  {
+    "path": "src/regrow/prompts/纠错/动作归属.prompt",
+    "sha256": "4f31e20c672c782de76118dc1e6975fcd322cac757fb1f9706ce9972c3bd7113",
+    "bytes": 1042
+  },
+  {
+    "path": "src/regrow/prompts/纠错/区块归属.prompt",
+    "sha256": "40c1a151d698c51047bc3e9074754755aa60546e5225eb8a2c0a507811b5f5dd",
+    "bytes": 1203
+  },
+  {
+    "path": "src/regrow/prompts/纠错/区块归属复查.prompt",
+    "sha256": "497282b5c5c8809509464fde19b768643ecca3b5a40bc18a0b1da953dc2f6b2b",
+    "bytes": 3221
+  },
+  {
+    "path": "src/regrow/prompts/纠错/原格式重答.prompt",
+    "sha256": "551870706f423c54a3dfd58709e5fe0ba05dffecb112f9bdbea571a916b2a3ea",
+    "bytes": 543
+  },
+  {
+    "path": "src/regrow/prompts/纠错/回复解析.prompt",
+    "sha256": "8947dc31f2eedddfaf0f296431e0c7f9787d44fba9a0bfdfb2e056b616cde04d",
+    "bytes": 827
+  },
+  {
+    "path": "src/regrow/prompts/纠错/定位绑定.prompt",
+    "sha256": "3d550adfa71ef7e05769bf72f5baf10c79a00bc08740c06a46ffcf686d711e27",
+    "bytes": 1172
+  },
+  {
+    "path": "src/regrow/prompts/纠错/对象识别资料.prompt",
+    "sha256": "9d9937462ffeb629a2c97b4b2acb69870a8099b4a6b896b65f9f1ae2d4aa7237",
+    "bytes": 312
+  },
+  {
+    "path": "src/regrow/prompts/纠错/投递前画面变化.prompt",
+    "sha256": "e6525123ea15f1ce731ca2258482d0bb12adb4d85988452f49594ef50b4e704d",
+    "bytes": 986
+  },
+  {
+    "path": "src/regrow/prompts/纠错/控件候选消歧.prompt",
+    "sha256": "09077d86ee25ea28f0c46c303f6d249b087ec052870295abf5f6169cbcde5d1a",
+    "bytes": 2071
+  },
+  {
+    "path": "src/regrow/prompts/纠错/控件身份候选选择.prompt",
+    "sha256": "b127f7a856d9664cb4c6cca767c49859c6cad7085685694e1ec44d50a9ffccba",
+    "bytes": 698
+  },
+  {
+    "path": "src/regrow/prompts/纠错/控件身份复核.prompt",
+    "sha256": "315dcbff97b5f415bc459773957cbaf53f9556844dba83e2e25144837a5889d0",
+    "bytes": 1339
+  },
+  {
+    "path": "src/regrow/prompts/纠错/暂挂分支并切换.prompt",
+    "sha256": "6dae572a2d6feb1539b6e518e9afb46ad32e630792ecaefbde03bf0edad3ed4d",
+    "bytes": 1502
+  },
+  {
+    "path": "src/regrow/prompts/纠错/更新补充观察.prompt",
+    "sha256": "b728f73b4fd86c85c10a7a4016d995fdc86de809b95de4c9fd3acd84156f74dd",
+    "bytes": 1052
+  },
+  {
+    "path": "src/regrow/prompts/纠错/步骤纠正.prompt",
+    "sha256": "177519b24b1cb5def8024db72788f8ca8f93f89386434b0a36a624d62129bad5",
+    "bytes": 2589
+  },
+  {
+    "path": "src/regrow/prompts/纠错/登记修订.prompt",
+    "sha256": "f27e660b40d6bb2858d862b36e94f350ba5cf361860c654b9f4138a79ce542d7",
+    "bytes": 2580
+  },
+  {
+    "path": "src/regrow/prompts/纠错/结果证据.prompt",
+    "sha256": "7f450fb31cec4f382c51651d0a1954d609643c12d2f3dedbad37d0b1fc6d4981",
+    "bytes": 1049
+  },
+  {
+    "path": "src/regrow/prompts/纠错/身份名称.prompt",
+    "sha256": "128717388f15370638a6ec42f6e039fbdcc220725a87b9c73f5c180f30acbd3e",
+    "bytes": 316
+  },
+  {
+    "path": "src/regrow/prompts/纠错/重复无进展.prompt",
+    "sha256": "b32f316cb6d5c3010b7fe7c0325024bfaa9d9095dbabf666f06fe481ac5ff1a5",
+    "bytes": 1665
+  },
+  {
+    "path": "src/regrow/prompts/视觉记录/坐标与裁剪.prompt",
+    "sha256": "cca53c7cf998c6573d921541b4a79aebfef4ee4bd42de07a15ba5dec1b21ffbb",
+    "bytes": 515
+  },
+  {
+    "path": "src/regrow/prompts/调用/任务结果复核.prompt",
+    "sha256": "5248ca2d30c5ea1911e9a69caa04fdfcdd2b0a9c1410e468e77ba148f0195c68",
+    "bytes": 4182
+  },
+  {
+    "path": "src/regrow/prompts/调用/共享控件行为核对.prompt",
+    "sha256": "5a181eaefd7f7c0c514ede09d3643087435cee03bf00ac5eaadcaf6acf0cc9e7",
+    "bytes": 2011
+  },
+  {
+    "path": "src/regrow/prompts/调用/动作后结果更新.prompt",
+    "sha256": "308df48f78a108b88cfd8ef9b0acbe1615e135f00b78df7e074a326b2ce2504a",
+    "bytes": 10365
+  },
+  {
+    "path": "src/regrow/prompts/调用/区块功能总结.prompt",
+    "sha256": "51cc107d07bf534734c11ba7b5dd1736ce293b67f763d1660708c832ef488742",
+    "bytes": 4082
+  },
+  {
+    "path": "src/regrow/prompts/调用/区块归属复查.prompt",
+    "sha256": "d36efe21fff1932d22b64358488465178cbcd9ca55073ff27b8091518534d497",
+    "bytes": 3110
+  },
+  {
+    "path": "src/regrow/prompts/调用/原步骤纠错.prompt",
+    "sha256": "7d61ee71d36166e1bebc74bebb7dfabd1c3e1ceb5d386eeb73e6a6b43f8eca30",
+    "bytes": 2788
+  },
+  {
+    "path": "src/regrow/prompts/调用/对象外观补登记.prompt",
+    "sha256": "57bf39c5cf9c1330226cea8e1fa40ed2e23308f6feb414a64736d3f696374fe9",
+    "bytes": 1081
+  },
+  {
+    "path": "src/regrow/prompts/调用/异常恢复.prompt",
+    "sha256": "040cca6bc932b3a3c482435f67a890972e6e2622db79202861ecfdfd3744d369",
+    "bytes": 4587
+  },
+  {
+    "path": "src/regrow/prompts/调用/控件外观状态比较.prompt",
+    "sha256": "14dd9833314d8380721000937b745cbeacf17d283978f668b4c543a6a7173ae4",
+    "bytes": 1150
+  },
+  {
+    "path": "src/regrow/prompts/调用/控件身份候选选择.prompt",
+    "sha256": "2355823e22d75481547689c1ffb1584ae486e0caea7b64af3e2eab6923dc67d3",
+    "bytes": 1554
+  },
+  {
+    "path": "src/regrow/prompts/调用/控件身份比较.prompt",
+    "sha256": "307cb6aeabcaa27775559a6818b9607406a1b14cec4a8ef2097b54fd2b1e1a09",
+    "bytes": 1937
+  },
+  {
+    "path": "src/regrow/prompts/调用/提出探索任务.prompt",
+    "sha256": "8f87c9a7fde87ac2a4ef14e5a2c858ff090f0103c4f00f49da96d34695127bf0",
+    "bytes": 7982
+  },
+  {
+    "path": "src/regrow/prompts/调用/操作目标核对.prompt",
+    "sha256": "9944e4c675181016eb5aabc3f64a8844fd6da128da85f46b7738deb844bd8a33",
+    "bytes": 989
+  },
+  {
+    "path": "src/regrow/prompts/调用/暂挂分支与继续策略.prompt",
+    "sha256": "ee274b099cf4a590850419e0fdf7e618c0a430fbc6e00037a0087b9db5cead80",
+    "bytes": 1460
+  },
+  {
+    "path": "src/regrow/prompts/调用/界面识别.prompt",
+    "sha256": "3dec8733d2776f7a68200845a28def66972b0cdfdb65ddc52837be85b6db8a7c",
+    "bytes": 6766
+  },
+  {
+    "path": "src/regrow/prompts/调用/结果登记补充观察.prompt",
+    "sha256": "6cbe88473b0d65b52cfd4ae52d0b27a47f08bb53bac60675e2480f565782dda4",
+    "bytes": 1098
+  },
+  {
+    "path": "src/regrow/prompts/调用/选择下一步.prompt",
+    "sha256": "0473dba1c3183decdfb2682f3862e5529f8b96ea7a63f5eac1b5e6b5774c9370",
+    "bytes": 6045
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/动作后Region增量.schema",
+    "sha256": "44b2f37115429e4409b96c7c6ced304554b5ba82b201ee13e7d510120de3ffdd",
+    "bytes": 5358
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/动作后更新.schema",
+    "sha256": "8b02b233cd7b1050d68d882a16bc59a2e21c7ae49eab08a81eecba1f77145232",
+    "bytes": 5875
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/区块功能登记.schema",
+    "sha256": "ed9a87ff80f878067070b61b96687aaae37ab68818b86b7d797eaab6ca6dba35",
+    "bytes": 5260
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/区块探索任务.schema",
+    "sha256": "a86a815233fa86211efad2eebdb0aad30962d6d3cf6b4851c06cdedf04451555",
+    "bytes": 6079
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/参数发现.schema",
+    "sha256": "939b202c5e4f119daebd58fb37a4d11b111dc900e482c970c0587fb19e9c3daa",
+    "bytes": 224
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/选择探索入口.schema",
+    "sha256": "eec5bc5e555b386a31f62b1cae3e40160aff60bdae732e7713f1b8b337ef16bd",
+    "bytes": 9916
+  },
+  {
+    "path": "src/regrow/prompts/输出格式/首屏观察.schema",
+    "sha256": "4273820a8bb0c09a5487c2533afff3018d95c65f3b382e9c9083f596907965e5",
+    "bytes": 4005
+  },
+  {
+    "path": "src/regrow/prompts/通用/证据边界.prompt",
+    "sha256": "d85139c56bd9015ec07127fa47e7fe2fc1c716a143708cd4ec3038098b4fa95f",
+    "bytes": 486
+  },
+  {
+    "path": "src/regrow/recognition/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
+    "path": "src/regrow/recognition/action_target_review.py",
+    "sha256": "fc47722485f02f2a8d692e16c93d1d93ecbd9339631cf26df513f277224b7595",
+    "bytes": 5970
+  },
+  {
+    "path": "src/regrow/recognition/appearance_comparison.py",
+    "sha256": "015f21f1dc3bb40f2c2a652d74a0b297e223689d4b2f14fde6b2fdad4d870f4f",
+    "bytes": 5904
+  },
+  {
+    "path": "src/regrow/recognition/control_identity_review.py",
+    "sha256": "00b5fd1243cdd11d15d99aaa245694604e3ff4da8f36ca0700a777c7aa3c09c2",
+    "bytes": 27242
+  },
+  {
+    "path": "src/regrow/recognition/control_indexes.py",
+    "sha256": "f6bed597d0e5f823621f7e2ba89604acdb8f6500852e93368fa7cc218bf73f3e",
+    "bytes": 8296
+  },
+  {
+    "path": "src/regrow/recognition/control_observation_repair.py",
+    "sha256": "7173798004d7d9cb9b72f3484454fa4cc4fbbdfc410441f988885ae395fbe3d3",
+    "bytes": 10197
+  },
+  {
+    "path": "src/regrow/recognition/discovery_completion.py",
+    "sha256": "0282d741997eda86a8e17cdc11a56836949efe7766fd4bc5e1fd8304283489c5",
+    "bytes": 16514
+  },
+  {
+    "path": "src/regrow/recognition/discovery_delta.py",
+    "sha256": "68e6ccdd3ff49f29121981613dc1e8891fdb9ee718bd7f34c8235cd6b113c480",
+    "bytes": 6521
+  },
+  {
+    "path": "src/regrow/recognition/discovery_inventory.py",
+    "sha256": "6b4a610a29716daac29bd8057d554cf861bf09f593f60d377f5cef8f9ebb0be7",
+    "bytes": 778
+  },
+  {
+    "path": "src/regrow/recognition/foreground_scope.py",
+    "sha256": "7d47f6a4e31a1c75acd34f0d9a4c38081ecac9a16184b98058f4a96124e9545c",
+    "bytes": 5255
+  },
+  {
+    "path": "src/regrow/recognition/history_matching.py",
+    "sha256": "268f0dcd06da018fac4102dd3942d7fff6b502ecc7299b74ad8fbd852f19fa12",
+    "bytes": 4355
+  },
+  {
+    "path": "src/regrow/recognition/identity_templates.py",
+    "sha256": "b80ba983c5d6ee2c2ff4261f6e22526a6466b3b924a278daa3c4811925820e7e",
+    "bytes": 4884
+  },
+  {
+    "path": "src/regrow/recognition/local_partition.py",
+    "sha256": "6261d6efe6dd0e02371183f1dfc3ed66027385cc36d4a9cf2a88bd815f0dd73a",
+    "bytes": 4694
+  },
+  {
+    "path": "src/regrow/recognition/locator.py",
+    "sha256": "a0bca0c39092964fd5daa6283ed354771e8b7121f8efad5ab3c0f029cce88ae6",
+    "bytes": 12545
+  },
+  {
+    "path": "src/regrow/recognition/matching.py",
+    "sha256": "5e3cde52ce030380b06814585c337cbeca1618fcc08d1a34fc0eb049ef5068e8",
+    "bytes": 10118
+  },
+  {
+    "path": "src/regrow/recognition/ownership_review.py",
+    "sha256": "c5bbafb57986130146e673a8cd96b8978a4a174417a68d153b3af19cc87a0501",
+    "bytes": 17907
+  },
+  {
+    "path": "src/regrow/recognition/region_candidate_names.py",
+    "sha256": "d48fbc26ebc1812da4cdc72af9b01a40bb2c2df744e13a154799c5ac352ee4aa",
+    "bytes": 4232
+  },
+  {
+    "path": "src/regrow/recognition/region_identity.py",
+    "sha256": "77f5bbd6ba7c78ca6d7bbf1cbf0dc456a0d52e5ebb8bbc991f5764f40a99d57a",
+    "bytes": 5303
+  },
+  {
+    "path": "src/regrow/recognition/update_visibility.py",
+    "sha256": "6315a540953ef685a9fa46ea46818078cd1ecce65f04e3414f8e1aee56a7f4cf",
+    "bytes": 3306
+  },
+  {
+    "path": "src/regrow/recognition/visual_backtrack.py",
+    "sha256": "9c16e1995b4940cf1ad8352d25fa39d869cbe522a301881947c8e6fd15b89187",
+    "bytes": 4072
+  },
+  {
+    "path": "src/regrow/recognition/visual_region_locator.py",
+    "sha256": "25c624a2220bc9da4d25a24235576fa96fea2c4992037fc30421661a203a0ec1",
+    "bytes": 5555
+  },
+  {
+    "path": "src/regrow/records/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
+    "path": "src/regrow/records/action_candidates.py",
+    "sha256": "9676e5f43ff563298cb7cad2cdec9ae6231fd2d2d6d63a782a2ac3a292ea5d9a",
+    "bytes": 6217
+  },
+  {
+    "path": "src/regrow/records/action_evidence.py",
+    "sha256": "feede129047bab5529c0afe311607db40cc5d908cab3b10b61f912c19b44897b",
+    "bytes": 10505
+  },
+  {
+    "path": "src/regrow/records/action_owner_correction.py",
+    "sha256": "eaab17df45936c5d55961c7fecd767f7c56c7e3ab53aa31468816cc08db99143",
+    "bytes": 10140
+  },
+  {
+    "path": "src/regrow/records/calls.py",
+    "sha256": "299324b6a0d07f3705c81b43fb9d39e54f56a230367ea352ee792e2a92ab4ab8",
+    "bytes": 1832
+  },
+  {
+    "path": "src/regrow/records/context_scope.py",
+    "sha256": "d8f85796555a6d6ee5dc7471b20b369c3419697977d3e90524a8b6c9ca05a3d6",
+    "bytes": 10829
+  },
+  {
+    "path": "src/regrow/records/control_context.py",
+    "sha256": "d483a280900ba7a9518a89d9012455ea530214b9e48bb9dad0ef11b6b2139558",
+    "bytes": 3867
+  },
+  {
+    "path": "src/regrow/records/control_history_context.py",
+    "sha256": "bd4c5b946d30d688cd405e1bbc0421e552a97436e599003a8fd48fbeed0fd3a6",
+    "bytes": 5390
+  },
+  {
+    "path": "src/regrow/records/control_images.py",
+    "sha256": "9e9a0c844f64096e381dffc565b05f8cfe0e97346cb849d5ea8acae2333888d3",
+    "bytes": 3259
+  },
+  {
+    "path": "src/regrow/records/control_knowledge.py",
+    "sha256": "c2a06e4d2114e106cffbd90f7fd3276b50555a1939458ee0d1ab73c60f9f6aee",
+    "bytes": 14175
+  },
+  {
+    "path": "src/regrow/records/control_records.py",
+    "sha256": "fd4745c96b2c7c918406e470d3684f994cca8db3fe74eedf1e1e2bf956cf840b",
+    "bytes": 9759
+  },
+  {
+    "path": "src/regrow/records/control_routes.py",
+    "sha256": "e3b3a55e2f9f11e94fb3c824bdaa606ba762d4f83fd998e8e18b8d7f7ddc51d0",
+    "bytes": 3006
+  },
+  {
+    "path": "src/regrow/records/coverage_exemption.py",
+    "sha256": "f1bcb642c5bc3517b770acd3846748a4135b8894d4c1e0943aa32d77f44f8ccf",
+    "bytes": 9899
+  },
+  {
+    "path": "src/regrow/records/entry_identity.py",
+    "sha256": "d889655aaaaea6117acc32fbf266b51864e3e405a6f4f6d86908e2b7c83b45d8",
+    "bytes": 5829
+  },
+  {
+    "path": "src/regrow/records/entry_observation.py",
+    "sha256": "1ad5b7fad47166a2056302a3a1daba5471715f70e9e0e9cf26434ece559e9438",
+    "bytes": 5409
+  },
+  {
+    "path": "src/regrow/records/environment_context.py",
+    "sha256": "2e668e4fa62c1b4500a494d5cb00b82c3dd0e8407bdcd12f9ec681d5b5ca3dd2",
+    "bytes": 10293
+  },
+  {
+    "path": "src/regrow/records/function_evidence.py",
+    "sha256": "9a9fb40402cce8f430fd258b2c31cfd3663889d3b114595525cd61da4687e987",
+    "bytes": 4663
+  },
+  {
+    "path": "src/regrow/records/function_scope.py",
+    "sha256": "75fe459b133562338bd8e170a4f32570b18f34b595d3d98ddcb3c6fa0401f763",
+    "bytes": 7477
+  },
+  {
+    "path": "src/regrow/records/function_updates.py",
+    "sha256": "1e4372a0dd6e3b929884865ea80820bc60d1721227c5526d781a13015565685f",
+    "bytes": 10457
+  },
+  {
+    "path": "src/regrow/records/history_context.py",
+    "sha256": "0a3b879ccee34d0cf0226347ffe324a2d30cf5114271f0f49ae8a7cf15e8b33a",
+    "bytes": 20356
+  },
+  {
+    "path": "src/regrow/records/history_selection.py",
+    "sha256": "98498baa2086041d5c86fb0f0e003f366d91dd254e58cdec00f3f42eecd92087",
+    "bytes": 2632
+  },
+  {
+    "path": "src/regrow/records/navigation.py",
+    "sha256": "9ecf511d1f2adbce7ef0ecbbec6e2cf2a55bdc5afdafe7f6d9f1f850c4e341ff",
+    "bytes": 1493
+  },
+  {
+    "path": "src/regrow/records/object_knowledge.py",
+    "sha256": "0f21b7ee8397e061cc6f8154bef7b90319a75b6e18a3825053e562275410c631",
+    "bytes": 3013
+  },
+  {
+    "path": "src/regrow/records/object_store.py",
+    "sha256": "978d8f5868fda849e353bbf4fb88c16b1243286476f2e7822fcb618eb91708b9",
+    "bytes": 24097
+  },
+  {
+    "path": "src/regrow/records/observations.py",
+    "sha256": "77a7f28089d8a76c7da282d186ea1c7531f09333af11ce7ea45c7d61c12a0a13",
+    "bytes": 11248
+  },
+  {
+    "path": "src/regrow/records/page_context.py",
+    "sha256": "2f4fc1a8a1cbcd49108f708fafa38c1dc414ff62239a77f1128203b774223ca1",
+    "bytes": 25779
+  },
+  {
+    "path": "src/regrow/records/page_history.py",
+    "sha256": "252ea34937b4a2c21cb38ae1e78de3f69f6fcef29a528b8670304d36aa0c7c98",
+    "bytes": 19904
+  },
+  {
+    "path": "src/regrow/records/record_history.py",
+    "sha256": "555796000632895f90d9b44fc763f5380b549a7ecbd9c688f4bae967f48a4ec7",
+    "bytes": 5466
+  },
+  {
+    "path": "src/regrow/records/region_behavior_split.py",
+    "sha256": "41db13fc205701dd8137b415979ce991fb8cfb50665f659631f434beae1a05c5",
+    "bytes": 9421
+  },
+  {
+    "path": "src/regrow/records/region_evidence.py",
+    "sha256": "e3d079be89fc7edda3bbb9e641596949a8d5a54221843eab57472244408df1d2",
+    "bytes": 9682
+  },
+  {
+    "path": "src/regrow/records/region_graph.py",
+    "sha256": "b7b0f6d97f6842d57c17f1cdd965e9ce9e625eb6ec75cac220f8d389f40b2528",
+    "bytes": 4657
+  },
+  {
+    "path": "src/regrow/records/region_knowledge.py",
+    "sha256": "18279dff0de58ecd7b6df0af3a8d93c25f81dd0f98522a3b4f33bbdabe836ce4",
+    "bytes": 2049
+  },
+  {
+    "path": "src/regrow/records/region_records.py",
+    "sha256": "0012ae7216c8e9d118c76cdd7044aa1b6f4752372fda4cb840857c4e69b26446",
+    "bytes": 6381
+  },
+  {
+    "path": "src/regrow/records/registration_diagnostics.py",
+    "sha256": "24cb151af2445c6c89e4459694bb6c1d65d2840231ec78fbdaa8837b426814c4",
+    "bytes": 19592
+  },
+  {
+    "path": "src/regrow/records/review_history.py",
+    "sha256": "335871049fb6b1f9a18698fca0242cbe6533e3973c357771e3bb144e98eec7d9",
+    "bytes": 851
+  },
+  {
+    "path": "src/regrow/records/shared_control_review.py",
+    "sha256": "a41d15d64939f6d97a417a4eb859647af515c4be61a1847811a6975a8d47c7ee",
+    "bytes": 9193
+  },
+  {
+    "path": "src/regrow/records/shared_controls.py",
+    "sha256": "742f90b6aa0b28d3219d2597c414fd38850203ef7e637fed054abf601c468bb3",
+    "bytes": 6625
+  },
+  {
+    "path": "src/regrow/records/shared_tasks.py",
+    "sha256": "9465cf62a45ab393db7a326d6371ebc2a2f98cfe46e50e21f443a80186df928a",
+    "bytes": 9960
+  },
+  {
+    "path": "src/regrow/records/snapshots.py",
+    "sha256": "b3ed8f4e5286321644c7566663a21e52fbe4b8a4d12e06860e4d36dc1033886b",
+    "bytes": 3945
+  },
+  {
+    "path": "src/regrow/records/source_region_candidates.py",
+    "sha256": "d90b32edc111bb300d8ff4294d0cf1b96d947002c9586b2c169fc41e6c4abc93",
+    "bytes": 3002
+  },
+  {
+    "path": "src/regrow/records/task_inventory_context.py",
+    "sha256": "3ee46af30c1624968778f93dd17ed3183455d6992d9742a0c66e7a393372a7cf",
+    "bytes": 13682
+  },
+  {
+    "path": "src/regrow/records/task_knowledge.py",
+    "sha256": "ea5facb72dd75fbfe7d2de4d161d6d2ee8d24f398234b055a6eb5c645fc2d498",
+    "bytes": 3625
+  },
+  {
+    "path": "src/regrow/records/task_settlement.py",
+    "sha256": "d2520b4c0b457ae7315e96b91d615dd5c46e173e42095e93803a64e15c6da178",
+    "bytes": 19661
+  },
+  {
+    "path": "src/regrow/records/task_updates.py",
+    "sha256": "e6de4b75e987a6cb1e155bccbe90a22f66a4db0bcc3cc3661c5ada73dc57e6d8",
+    "bytes": 20706
+  },
+  {
+    "path": "src/regrow/records/tasks.py",
+    "sha256": "fe27d73d0139d0d2549cf6c9f98a33d3f45bf0b9944480d0f9251f4c7b54422b",
+    "bytes": 24407
+  },
+  {
+    "path": "src/regrow/records/update_semantic_review.py",
+    "sha256": "2b0e5a255366811d08fbe90974dd3c9e4d936d986cd9febbc7a31d79d07a4269",
+    "bytes": 4067
+  },
+  {
+    "path": "src/regrow/runtime/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
+    "path": "src/regrow/runtime/action_commands.py",
+    "sha256": "38680cb25f4d32dde2478e83bd5dd7f0d02cce7d72b97619cde8359a73406542",
+    "bytes": 13003
+  },
+  {
+    "path": "src/regrow/runtime/action_executor.py",
+    "sha256": "a8cbe7be4b4741b608223ce841173b61293376a2c749348bec4c9a8fe505f0f7",
+    "bytes": 9185
+  },
+  {
+    "path": "src/regrow/runtime/app_launcher.py",
+    "sha256": "7631c1bd22bb9e89588d067a08ea287b39d8efa4100d4f0bd17ee8a58c88a535",
+    "bytes": 7452
+  },
+  {
+    "path": "src/regrow/runtime/batch_runtime.py",
+    "sha256": "12fa9976349a02521a723d321dfafe035bd2accf627616114eb69eacaa232172",
+    "bytes": 5283
+  },
+  {
+    "path": "src/regrow/runtime/call_model_once.py",
+    "sha256": "0771b78926d32cb00754a01aa1f73f6372ef72229328d70280cbe2cf5fc213de",
+    "bytes": 3416
+  },
+  {
+    "path": "src/regrow/runtime/desktop_capture.py",
+    "sha256": "c6ef49fbeedbcfa04dcca2ed41af4a00f76fd84cdba373f25fd5844b8d7d72c7",
+    "bytes": 1631
+  },
+  {
+    "path": "src/regrow/runtime/desktop_lifecycle.py",
+    "sha256": "63f567833e056f2c62ab5b10a4477ed460305e6ad669d6fd95a5055a1710c76e",
+    "bytes": 1486
+  },
+  {
+    "path": "src/regrow/runtime/desktop_transport.py",
+    "sha256": "1fbaa325c9261a5dfabe5238befd5f827235724af60f91539720160244604e78",
+    "bytes": 10083
+  },
+  {
+    "path": "src/regrow/runtime/input_target.py",
+    "sha256": "37bf434f7cf3dc55b9850338c4a15931a187223366655231ba6ca57573d20315",
+    "bytes": 2783
+  },
+  {
+    "path": "src/regrow/runtime/model_reply_parse.py",
+    "sha256": "43532b96868c5eb6c83db57e7e66e6e18645f0b79af1557b6822bf1a312d726d",
+    "bytes": 1602
+  },
+  {
+    "path": "src/regrow/runtime/model_transport.py",
+    "sha256": "d45cdee397a224c8f2d7fcd8675e345b5c394209617c0c7069762c0353e0f58e",
+    "bytes": 8898
+  },
+  {
+    "path": "src/regrow/runtime/progress.py",
+    "sha256": "059afaab59ba9719e7df2e7338b3db7444b091deb9ac7f1a541c0f7f34440755",
+    "bytes": 10009
+  },
+  {
+    "path": "src/regrow/runtime/recover_external.py",
+    "sha256": "c1e222f3b947347222696e4b14bd581634040029eab3d823aafb9b85d0c57465",
+    "bytes": 3355
+  },
+  {
+    "path": "src/regrow/runtime/reply_fields.py",
+    "sha256": "7e845e39ef90a19de25cc7a335f9d7b0050e280185290d0dbf37feb903ad29fb",
+    "bytes": 1568
+  },
+  {
+    "path": "src/regrow/runtime/run_source.py",
+    "sha256": "8ff127b3c0dc262c88de35b8cd6aaeb8e665280783281d2e6dfe912ef1de9f8b",
+    "bytes": 2270
+  },
+  {
+    "path": "src/regrow/tools/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
+    "path": "src/regrow/tools/batch_environment.py",
+    "sha256": "d16c70eb000c855e203202b31b9649c44424e7eb765fc435a2d4ea865d8d5d84",
+    "bytes": 5961
+  },
+  {
+    "path": "src/regrow/tools/batch_launch.py",
+    "sha256": "f376dae0763dc8d7bafc1bae2a490a991b078bdf1dc0d6b830e283569b5fe40d",
+    "bytes": 9839
+  },
+  {
+    "path": "src/regrow/tools/branch_switch.py",
+    "sha256": "6114fa91b327e7c5c2169fd02cc01c0baf231d994182c17c782f24d6ece1ff64",
+    "bytes": 15946
+  },
+  {
+    "path": "src/regrow/tools/browser_hub.py",
+    "sha256": "a0bfe4cd4546b18793ffd8d1b4a7e1b85584b08a73391439f32386a252e0fcae",
+    "bytes": 10628
+  },
+  {
+    "path": "src/regrow/tools/debug_candidate.py",
+    "sha256": "01c248a40bb973250642db1f73939299d46a03e204c11fddbd1d141830aaf889",
+    "bytes": 15255
+  },
+  {
+    "path": "src/regrow/tools/debug_loop.py",
+    "sha256": "10e1fa72577039e0c817af64ee9b053d927a18ff03abe0a7cc8c8cd16325dc5f",
+    "bytes": 25064
+  },
+  {
+    "path": "src/regrow/tools/debug_progress.py",
+    "sha256": "87d8ff9acaf17a5bbc2c3fadcf741f1020327cce94206c2da1505f4f03f6d7fd",
+    "bytes": 2822
+  },
+  {
+    "path": "src/regrow/tools/import_records.py",
+    "sha256": "ff371b8828c6b80b79c1b4762ef6e01c5ec4fec93887f0432f6eebc83b401803",
+    "bytes": 3470
+  },
+  {
+    "path": "src/regrow/tools/launch_traversal.py",
+    "sha256": "c0308cc1e59852232bbddbcdee43f769149d441256cfd65293bbc2973a69d9d7",
+    "bytes": 2903
+  },
+  {
+    "path": "src/regrow/tools/progress_details.py",
+    "sha256": "16d663d45fc297114f509004096bafb44fe345eeb9c094465348116e60fcc1a7",
+    "bytes": 4064
+  },
+  {
+    "path": "src/regrow/tools/progress_window.html",
+    "sha256": "f9be090ceb305297cb3888f7b4b175ceffd729dd52b699db14e94783e6bf5b30",
+    "bytes": 19782
+  },
+  {
+    "path": "src/regrow/tools/progress_window.py",
+    "sha256": "2f8a7802fe5c60a3bcd9d6ca30991b573b8eafe023387e2def848bc1d09521eb",
+    "bytes": 9525
+  },
+  {
+    "path": "src/regrow/tools/region_graph.html",
+    "sha256": "7ccf6d965f626a4085b1b130ba0f65d181975585c4fd2805870b03c7f427e528",
+    "bytes": 22055
+  },
+  {
+    "path": "src/regrow/tools/render_region_context.py",
+    "sha256": "a56986b1ea2ae593a090c7a0c79a0968aace342dadf2251f02b396e39dfd3a8a",
+    "bytes": 2155
+  },
+  {
+    "path": "src/regrow/traversal/__init__.py",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
+    "path": "src/regrow/traversal/action_binding.py",
+    "sha256": "d8b1873ec878ea38cc1bef1bdd2c7ea6eef8cc749743dcc93504dc710e4e0153",
+    "bytes": 7022
+  },
+  {
+    "path": "src/regrow/traversal/action_context.py",
+    "sha256": "62acbe0a75617a3e0dccf559f97611782169aa4b5e4de06c9f3e7133f855a6d4",
+    "bytes": 13269
+  },
+  {
+    "path": "src/regrow/traversal/action_proposer.py",
+    "sha256": "fff354a90cb6e9373b86116bd836a7ebb9dd940297d6eadd74116d0fb9a15449",
+    "bytes": 10387
+  },
+  {
+    "path": "src/regrow/traversal/attempt_guard.py",
+    "sha256": "d3939c007bb6fc25e227cf8159b41855e2447a6fececfd402660ef2614abd521",
+    "bytes": 3888
+  },
+  {
+    "path": "src/regrow/traversal/correction_crop_feedback.py",
+    "sha256": "69cd9fac822d9fbfb4ff02c219569210d4aaffa783d245615aa28fed6cecde95",
+    "bytes": 3716
+  },
+  {
+    "path": "src/regrow/traversal/correction_prompts.py",
+    "sha256": "a6d55edc822fdfbf4eb74773b89b6c1fb1dff8846894e58e63eec9f89de79d99",
+    "bytes": 6567
+  },
+  {
+    "path": "src/regrow/traversal/discovery_step.py",
+    "sha256": "5907b26767e07ee8c1e7f3801df408b72180014a19e1dfaa3b7f4bd585f097be",
+    "bytes": 16288
+  },
+  {
+    "path": "src/regrow/traversal/exploration_loop.py",
+    "sha256": "3d2ddc513f1f1b2a6acce85c7c24c9a0f1516f86ed16f8b21899ff3fa2d05b0f",
+    "bytes": 4956
+  },
+  {
+    "path": "src/regrow/traversal/exploration_summary.py",
+    "sha256": "ffb14beadf54271e523cdf619eeeac757eed43046317bcbd5960ec901f35de20",
+    "bytes": 5063
+  },
+  {
+    "path": "src/regrow/traversal/historical_inventory.py",
+    "sha256": "5dae1834d1a9d442e33f0d080fef6ecbfd2fcbec51d686e90cbc5f6452c023f5",
+    "bytes": 5420
+  },
+  {
+    "path": "src/regrow/traversal/inventory_scroll.py",
+    "sha256": "85ad19ebcb842e154b4383bc4a37e7fb9db604811f3a1e3be73af2bfefba6bce",
+    "bytes": 3079
+  },
+  {
+    "path": "src/regrow/traversal/object_registration.py",
+    "sha256": "a63fe58364e516757e1555e041f98e2e0bb4be63b466758b6cc37a1e25d6f537",
+    "bytes": 13341
+  },
+  {
+    "path": "src/regrow/traversal/observation.py",
+    "sha256": "4af75bfd82f68dedcc8d4b83e852e99576b7baadea7c06af73e3deebb256d7e4",
+    "bytes": 7421
+  },
+  {
+    "path": "src/regrow/traversal/operation_blocking.py",
+    "sha256": "23209f8e0b1aadd4e886de910eefbde6768ac17f5e4aa894a5eb8173ffb9ccdb",
+    "bytes": 5493
+  },
+  {
+    "path": "src/regrow/traversal/parameter_evidence_review.py",
+    "sha256": "4d83cb489709ecd97a325791fd83d7eeb5b1d695e60321c42ef893ffa4563c1b",
+    "bytes": 4395
+  },
+  {
+    "path": "src/regrow/traversal/proposal_revision.py",
+    "sha256": "131b8eb6f4a4d33b2754fc4c11a954ab9765022e7ed874cc032dea770dc61c11",
+    "bytes": 976
+  },
+  {
+    "path": "src/regrow/traversal/recover_loop.py",
+    "sha256": "20528ce0db24939c790f3f66df7c21441b4ec59a8a0aeef7183d2472666d0d25",
+    "bytes": 14224
+  },
+  {
+    "path": "src/regrow/traversal/recovery.py",
+    "sha256": "68145bf72fd736820c14f1629cafc4a694ea935dbc52bfdc7bd30ff6c3dbfa4c",
+    "bytes": 5040
+  },
+  {
+    "path": "src/regrow/traversal/recovery_stall.py",
+    "sha256": "0daf4c916dc78d710c5aa136b89e71bac42effa1681b6d9065edfa343f1e6785",
+    "bytes": 733
+  },
+  {
+    "path": "src/regrow/traversal/region_functions.py",
+    "sha256": "cb66d3b3f598bc72a5e2557f13bf14ef6d972f3c3733df02e8bdfe913079fd2c",
+    "bytes": 8176
+  },
+  {
+    "path": "src/regrow/traversal/region_scroll.py",
+    "sha256": "7709050dbd6f14fc90e321d81f865cc1e587776ad943ef4b05128b17babf463b",
+    "bytes": 1321
+  },
+  {
+    "path": "src/regrow/traversal/region_tasks.py",
+    "sha256": "815e65ebc162573a128ae1c60f3374a6374e4103115458a6e623227943ef9fd8",
+    "bytes": 12037
+  },
+  {
+    "path": "src/regrow/traversal/register_update.py",
+    "sha256": "9ea2c2b548c059f962b3f2f8640d064b30017d276ae92fdad5e3ee994ade8411",
+    "bytes": 15796
+  },
+  {
+    "path": "src/regrow/traversal/repair_stages.py",
+    "sha256": "4edfd1406786427f4dcd0ad81b60f287fcbdbd4ba7a049bde46f85dff7a65c20",
+    "bytes": 57452
+  },
+  {
+    "path": "src/regrow/traversal/result_updater.py",
+    "sha256": "547809f8e1feb911dd5988700536b65dc763735abc5fe1b85577377b8af397d0",
+    "bytes": 20180
+  },
+  {
+    "path": "src/regrow/traversal/run_progress_session.py",
+    "sha256": "935d5563e118fd968c4959cbe88eb1da57c5fa4643d72b0f01543b816db826c5",
+    "bytes": 5633
+  },
+  {
+    "path": "src/regrow/traversal/run_task_step.py",
+    "sha256": "e21e91e1d5a557d73519128cfa75b47c8403b40a01e299c79e003985880dcff0",
+    "bytes": 13456
+  },
+  {
+    "path": "src/regrow/traversal/step_repair.py",
+    "sha256": "39e00d4be8993e9071208e5be174281d9ef260cd0732b89fcc4a3344ef1421ed",
+    "bytes": 51694
+  },
+  {
+    "path": "src/regrow/traversal/suspended_updates.py",
+    "sha256": "e985aab27c4c9c9fc87ee934b1c13013b1d4333128f935510381d60c916a60c2",
+    "bytes": 13595
+  },
+  {
+    "path": "src/regrow/traversal/task_deferral.py",
+    "sha256": "12131abc0f47077869877a59725cacfcbe2fd15f56521c861dace5338d9cccc2",
+    "bytes": 10899
+  },
+  {
+    "path": "src/regrow/traversal/task_prerequisites.py",
+    "sha256": "9d4055b4135662ba6f53c8f7fc2b628377dda5dfe32f0255c203f315cf8fc37c",
+    "bytes": 8487
+  },
+  {
+    "path": "src/regrow/traversal/task_proposer.py",
+    "sha256": "d6ebcf47a30e7257a00aca4682d23e20089c4a577da5000fe8c73dca1156afbe",
+    "bytes": 9138
+  },
+  {
+    "path": "src/regrow/traversal/task_record_repair.py",
+    "sha256": "c23140d844f7742497c31fcee49760cb07793f281aa0d1d8538e24353f4fdbce",
+    "bytes": 3285
+  },
+  {
+    "path": "src/regrow/traversal/task_result_review.py",
+    "sha256": "cacd0dc060ec1be464102cf4842160cbd01ac0b760d58f716ebc22866b62ee89",
+    "bytes": 19389
+  },
+  {
+    "path": "src/regrow/traversal/task_routing.py",
+    "sha256": "7a00d676d9e7ec2ef50e5d2feaa2c252afa76e8018a2c309a5581115aba94f1b",
+    "bytes": 4612
+  },
+  {
+    "path": "src/regrow/traversal/traversal_scheduler.py",
+    "sha256": "1a54a85170aec86a95497d3dda807b45dbd398ab75084b1b49e899df4b3f1780",
+    "bytes": 18748
+  },
+  {
+    "path": "src/regrow/traversal/traversal_scope.py",
+    "sha256": "b9f26590abdad7a2350be09d82c0b8409624cdbe0aa0b7e4195dd3e9629a39f0",
+    "bytes": 3904
+  },
+  {
+    "path": "src/regrow/traversal/work_context.py",
+    "sha256": "3f721427323f978af1e31be592755bbd31e8c3769b12e546d7e112efc0f09789",
+    "bytes": 6663
+  },
+  {
+    "path": "src/scopes/chrome_basic.txt",
+    "sha256": "69596975ce79566c7589fe751c453329e4974135e67faa4ff90e3716cd72c941",
+    "bytes": 3099
   },
   {
     "path": "synthetic_app/README.md",
@@ -4845,6 +6265,71 @@
     "bytes": 4732
   },
   {
+    "path": "tools/prompt_review_apply.py",
+    "sha256": "e5ea3d364699d257012244d1c19f1d6a9da0921c0747170c34aa1c2eda0244ca",
+    "bytes": 4162
+  },
+  {
+    "path": "tools/prompt_review_editor.py",
+    "sha256": "f456027e3ed6c33de1c3b7e1e4f07e0f23e8900bfcc705f94e8a6e7f46f20861",
+    "bytes": 24141
+  },
+  {
+    "path": "tools/prompt_review_editor/README.md",
+    "sha256": "f5b63b6f69afe956f81518ac70032f1e14e0a1ed3512d7acb8a9aa4c7f0165f7",
+    "bytes": 8405
+  },
+  {
+    "path": "tools/prompt_review_editor/editor.css",
+    "sha256": "e59732babb2eaa67a6b374e7d94f002f0d4e6b26f1ec16f49c6384f9a53c5575",
+    "bytes": 3206
+  },
+  {
+    "path": "tools/prompt_review_editor/editor.html",
+    "sha256": "053c00ec08a8c47e8f1ae3a1aae723477c5fd3b6cec2d1628136719eedd79003",
+    "bytes": 4003
+  },
+  {
+    "path": "tools/prompt_review_editor/editor.js",
+    "sha256": "24ae674ef54fecb1074107be551658c5210f6f2aaaf9be88f96da28a190faa5f",
+    "bytes": 11621
+  },
+  {
+    "path": "tools/prompt_review_editor/history_guide.json",
+    "sha256": "8c124bb70e33fa117e1264bae17c490fef4a165e2f13a69b119aca70cad01784",
+    "bytes": 18562
+  },
+  {
+    "path": "tools/prompt_review_editor/trace.css",
+    "sha256": "9c69efe8540f88147d025bfc90ce06ab2314d7bc5cacd87bafa21881ca70eaf4",
+    "bytes": 1166
+  },
+  {
+    "path": "tools/prompt_review_editor/trace.js",
+    "sha256": "a1481a799051e06f03a8232d6983aa1d0afe0cfd40189c956654a11e9cb196be",
+    "bytes": 11838
+  },
+  {
+    "path": "tools/prompt_review_editor/worklog.js",
+    "sha256": "0d1089189a3cf8e8ff435f679782f2e9bfd8c6faf1dfe270a361ad88dacfcacd",
+    "bytes": 5939
+  },
+  {
+    "path": "tools/prompt_review_editor/worktrace.js",
+    "sha256": "8a8b1055a7935ba8ec52073df1e3a1fcbc5f619ca48799bac639157e6e83b8b5",
+    "bytes": 7105
+  },
+  {
+    "path": "tools/prompt_review_trace.py",
+    "sha256": "0d3e7db1d41bbb8a3a290e493d46e2434a3126fabcdfa611f175507a5cde0e7e",
+    "bytes": 25423
+  },
+  {
+    "path": "tools/prompt_review_work.py",
+    "sha256": "c2fbebaf34de73c46785a53060468a5d1dbd44ab90d539baf71fdf49cedb5eb2",
+    "bytes": 14201
+  },
+  {
     "path": "tools/read_pq.py",
     "sha256": "7001f3cd27d22e1d1e33fe35f6175ba6f93529c310a01adecb028c9c3b7a4f6a",
     "bytes": 1410
@@ -4880,6 +6365,11 @@
     "bytes": 6498
   },
   {
+    "path": "tools/run_stepwise.py",
+    "sha256": "b89ac6526b9480184216ae79d640f642d652cd7404acc9e30a1bfee873855d2c",
+    "bytes": 245
+  },
+  {
     "path": "tools/seed_app_data.py",
     "sha256": "5f3d8d4d1d540c66238e140e2b9ba0fd8d0de1c92a569de15fcb759221a7301c",
     "bytes": 4056
@@ -4913,6 +6403,21 @@
     "path": "tools/state_comparator.py",
     "sha256": "7b6aef6f86279602a5ce0e891f081b174cdf0a5363f69f220d6098bc45da144d",
     "bytes": 13248
+  },
+  {
+    "path": "tools/stepwise_dashboard.html",
+    "sha256": "ee4bdfa58e7af0b3caa82419bb1be9e71037b29abc159dddde05b736515f2622",
+    "bytes": 19070
+  },
+  {
+    "path": "tools/stepwise_dashboard.py",
+    "sha256": "3cccc11b34d9fa4d014d826312bfb505aef5bda0908259f09aad2d7740e93e58",
+    "bytes": 7341
+  },
+  {
+    "path": "tools/stepwise_dashboard_view.py",
+    "sha256": "702b102d7c1f14c9972d1abfc1d45ebaa62a72b996e47b02bcaf2808b4026e38",
+    "bytes": 7330
   },
   {
     "path": "tools/tap_text.py",

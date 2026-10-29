@@ -1,0 +1,250 @@
+{
+  "type": "object",
+  "properties": {
+    "inventory": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "uncertain"
+      ]
+    },
+    "evidence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control": {
+            "type": "string"
+          },
+          "task_type": {
+            "type": "string",
+            "enum": [
+              "function",
+              "parameter",
+              "region_content"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "control",
+          "task_type"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "task_type": {
+                  "const": "region_content"
+                }
+              },
+              "required": [
+                "task_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "control": {
+                  "const": ""
+                }
+              },
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "task_update": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "continue",
+              "answered",
+              "defer"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "remaining_question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retry_when": {
+            "type": "string",
+            "minLength": 1
+          },
+          "next_action": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "region": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "control": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "click",
+                      "double_click",
+                      "long_press",
+                      "input_text",
+                      "scroll",
+                      "key_press",
+                      "hotkey",
+                      "hover",
+                      "right_click",
+                      "drag",
+                      "back",
+                      "wait"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "region",
+                  "control",
+                  "action",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "knowledge": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "修订给定已有知识时引用其序号；新增省略。"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "constraints": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "description"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "findings": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "task",
+          "decision",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "shared_instances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_region": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_control": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "control",
+          "source_region",
+          "source_control",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "inventory",
+    "evidence",
+    "operations",
+    "shared_instances"
+  ],
+  "additionalProperties": false
+}

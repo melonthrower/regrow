@@ -1,0 +1,8 @@
+# Historical code/evidence are retained, but are not current development sources.
+# Read a specific historical path explicitly only when investigating that run.
+/artifacts/
+/to_astra/
+/.worktrees/
+/_scratch/
+/experiments/
+/design/archive/

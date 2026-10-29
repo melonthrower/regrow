@@ -1,0 +1,75 @@
+{
+  "stage": "action_selection",
+  "parts": [
+    "动作/围绕目标选择动作.prompt"
+  ],
+  "schema": "输出格式/选择探索入口.schema",
+  "system_order": [
+    {
+      "title": "本步目的",
+      "path": "动作/围绕目标选择动作.prompt",
+      "section": "本步目的"
+    },
+    {
+      "title": "对象与当前场景",
+      "path": "共享/术语定义.prompt",
+      "section": "通用"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "objects"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "task_context"
+    },
+    {
+      "title": "选择下一步",
+      "path": "动作/围绕目标选择动作.prompt",
+      "section": "选择下一步"
+    },
+    {
+      "title": "输出要求",
+      "kind": "action_contract"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "common"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "action"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "settlement"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "identity",
+      "title": "本轮可引用的知识对象"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "knowledge",
+      "title": "none/complete：对象知识填写"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "functions",
+      "title": "none/complete：功能增量填写"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "result"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "tasks"
+    },
+    {
+      "kind": "object_blocks",
+      "group": "routes"
+    }
+  ]
+}

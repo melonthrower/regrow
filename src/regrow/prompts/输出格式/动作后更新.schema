@@ -1,0 +1,217 @@
+{
+  "type": "object",
+  "properties": {
+    "foreground": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parent_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "本轮regions数组0起始父行号；无父级为null。不是跨图身份ID。"
+          },
+          "description": {
+            "type": "string"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+          },
+          "ref": {
+            "type": "string",
+            "description": "已有对象的名称/文字；新对象为空；同名不证明身份。"
+          }
+        },
+        "required": [
+          "name",
+          "parent_index",
+          "description",
+          "ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region_index": {
+            "type": "integer",
+            "description": "唯一直接所属Region的0起始行号"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+          },
+          "ref": {
+            "type": "string",
+            "description": "已有对象的名称/文字；新对象为空；同名不证明身份。"
+          },
+          "description": {
+            "type": "string",
+            "description": "控件的稳定外观和作用对象描述。"
+          }
+        },
+        "required": [
+          "region_index",
+          "ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_result": {
+      "type": "object",
+      "properties": {
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none",
+            "blocking_popup",
+            "unexpected_exit",
+            "external_app",
+            "unclassified",
+            "uncertain",
+            "system_error"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "实际观察到的结果和未确认事项，不把预期当事实。"
+        },
+        "recovery_handoff": {
+          "type": "string"
+        },
+        "returns_to_previous": {
+          "type": "boolean",
+          "description": "刚执行的动作是否已返回进入前的位置，或已关闭浮层恢复下方界面。打开菜单/对话框为false，不因之后可关闭而填true；固定目标导航或语义未确认也为false"
+        }
+      },
+      "required": [
+        "exception",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "previous_regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "retained_interactive",
+              "changed_interactive",
+              "visible_background_blocked",
+              "not_visible",
+              "uncertain"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "description": "仅在状态判断存在歧义时说明依据。"
+          },
+          "ref": {
+            "type": "string",
+            "description": "动作前已登记区块的稳定编号。"
+          }
+        },
+        "required": [
+          "state",
+          "ref"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "foreground",
+    "regions",
+    "controls",
+    "uncertainties",
+    "action_result",
+    "previous_regions"
+  ],
+  "additionalProperties": false
+}

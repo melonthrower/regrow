@@ -146,3 +146,26 @@ _*.js
 !/synthetic_mobile_app/*.json
 !/synthetic_mobile_app/*.html
 !/synthetic_mobile_app/app/src/main/assets/*.html
+
+# Active regrow source baseline: code and runtime prompt/UI resources.
+!/src/**/*.py
+!/src/**/*.json
+!/src/**/*.html
+
+# Research tests and optional local utilities remain on disk, not in this baseline.
+# Already tracked files are unaffected.
+/tests/*
+/tools/*
+!/tools/run_stepwise.py
+!/tools/prompt_review_editor.py
+!/tools/prompt_review_trace.py
+!/tools/prompt_review_work.py
+!/tools/prompt_review_apply.py
+!/tools/prompt_review_editor/
+!/tools/prompt_review_editor/*.html
+!/tools/prompt_review_editor/*.json
+!/tools/stepwise_dashboard.py
+!/tools/stepwise_dashboard_view.py
+!/tools/stepwise_dashboard.html
+!/design/ROOT_MIGRATION_20261025.md
+!/design/THREE_PART_FRAMEWORK.md

@@ -1,0 +1,10 @@
+## 同类数据与不同功能 → list_group
+同一参数的选项、同构搜索结果可用一个稳定交互代表；不同功能入口分别登记。仅在确有同类交互组时填写list_group，普通控件省略。
+局部字段例（假设有多条同构文件结果，仅展示分组字段）：
+```json
+{"controls":[{"region_index":0,"name":"文件搜索结果项","list_group":"文件搜索结果","knowledge":[{"description":"打开对应文件","conditions":[]}],"may_open_content":true,"needs_exploration":null}]}
+```
+正例：多条同构文件结果保留一个结果项代表，名称不绑定当前文件名。
+反例：把进入不同功能的内容、搜索、设置标签合并成一个控件；把同组不同实例当成同一身份。
+
+list_group登记所属区块的同类控件关系。框架把它存入区块list_groups并引用控件ID，不保存到控件本体。

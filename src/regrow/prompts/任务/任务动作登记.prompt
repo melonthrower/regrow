@@ -1,0 +1,35 @@
+## 任务判断字段
+
+decision 表示本次判断，reason 说明采用的已有/新增证据与未解事项。需要填写task时，引用本轮给定任务。
+只判断本轮给定且有证据可用的任务。原目标、类别和条件不重报。
+
+- continue：仍需调查，填写具体 remaining_question。可附 next_action，说明如何补足缺口。
+- defer：存在实际推进障碍，填写 remaining_question 和重新考虑条件 retry_when，不填 next_action。
+- answered：原问题已获回答，说明旧缺口如何解决或为何仅构成证据限制；不填活动 remaining_question、retry_when、next_action，reason 说明仍影响结论的失败或限制。
+
+next_action 一旦填写，须有 region、control、action、reason 四项。action填写本步字段声明中的动作名称（如click），具体操作意图写reason。region只填给定区块ID或名称，control只填该区块给定的控件名称，不拼接编号、括号说明或本次controls行号。新对象尚无给定的归属身份、无法确定后续操作或不再采用旧建议时，省略整个next_action或填null；remaining_question仍说明原问题的缺口。仅区块滚动、返回、等待、按键、快捷键允许control为空字符串。
+continue/defer也可记录已确认的部分。已有明确用途或足够参数答案时，可以直接登记。
+
+## 输出：用途答案 → knowledge
+
+功能探索以knowledge为答案；已有答案足够时可直接采用，不重复改写。控件function达到给定的单次目标操作要求并登记直接语义后，本轮使用answered；新出现对象的独立探索不填为原任务的remaining_question或next_action。准备动作尚未完成原目标，或原目标确有投递失败、遮挡等障碍时，按实际continue或defer。区块本身、参数和独立准备任务仍按各自给定目标判断。
+
+knowledge填写列表，每项是description（功能描述）和conditions（适用条件字符串数组；通用功能填[]），有参数规则的项可带constraints（按规则名保存name/description）；其他项省略constraints。只提交新增或需要修订的项；修订材料中“当前控件知识”的已有条目时加index，其他项保留。这里的index是知识条目序号，不是controls里的控件序号；材料为空列表时新增知识不填写index。相同条件下补充说明须保留原项仍成立的内容；条件变化应修订原项，避免旧的无条件结论继续适用。
+局部例：顶部同一个“＋”在世界时钟页打开城市选择、在闹钟页打开新建闹钟；材料中的旧知识index=0原先没有条件：
+```json
+{"knowledge":[{"index":0,"description":"打开城市选择。","conditions":["世界时钟标签页"]},{"description":"打开新建闹钟。","conditions":["闹钟标签页"]}]}
+```
+正例：同一个顶部“＋”保留一个控件，分别记录两种上下文。反例：把小时“＋”和分钟“＋”合并；它们是同时独立存在、作用对象不同的控件。
+
+## 输出：参数答案 → 控件knowledge中的参数规则
+
+参数问题以有效控件knowledge中的参数规则为答案，无须重复同义knowledge。可采用已登记的参数答案，在reason说明本次判断。
+
+## 输出：准备结果 → dependency_updates
+
+每项填写region（给定目标区块名称）、task（给定任务名称）、ready和evidence；不用target或ref代替这两个字段。核对原目标是否在当前图中确实解锁/可用。准备任务 answered 须与该前提观察一致；仅打开入口或回执成功不足。
+
+准备结果的局部格式例（名称须替换为本轮给定原目标）：
+```json
+{"dependency_updates":[{"region":"示例对话框","task":"示例原任务","ready":false,"evidence":"尚未选中必要条目。"}]}
+```

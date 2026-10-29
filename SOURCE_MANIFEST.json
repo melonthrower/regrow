@@ -51,8 +51,8 @@
   },
   {
     "path": "SNAPSHOT.md",
-    "sha256": "f7448043ed655d20f5571fc7641f8436870e5bd7e73332af13d3b5014978019b",
-    "bytes": 1914
+    "sha256": "fb0932fe19079be20c132d70e02dd5ad9dc64054408423dd2ad4eced1777c13b",
+    "bytes": 2124
   },
   {
     "path": "aliyun.env.example",
@@ -226,8 +226,8 @@
   },
   {
     "path": "design/changelog/2026-10.md",
-    "sha256": "9108f9452da0ebd8764a52fe7c887895cb8f606636fc367d0c7861101f111ef3",
-    "bytes": 348752
+    "sha256": "b16f1c660440a2e76de08dc9e0417dc94244cd2c1dbf53867d741e7fd16458cb",
+    "bytes": 349089
   },
   {
     "path": "design/changelog/framework_history_through_2026-07-19.md",
@@ -551,8 +551,8 @@
   },
   {
     "path": "design/modules/stepwise/runtime.md",
-    "sha256": "b2cb0ad466ddc1b94111d4798f865aa6e84741e63b476065860639c29975b972",
-    "bytes": 30894
+    "sha256": "1625d26362ab34febdba5c49a54267a1c0d0e443efc293d63f64660d280aec2b",
+    "bytes": 31092
   },
   {
     "path": "design/modules/stepwise/tasks.md",
@@ -3711,8 +3711,8 @@
   },
   {
     "path": "src/regrow/runtime/reply_correction.py",
-    "sha256": "1599f9767c615fecb9788d43281bfac09340d31ff9cb1b31349d15cb33942e9b",
-    "bytes": 5237
+    "sha256": "d399dc783a80775bee708715ebd3a046ea44b242a6d3ecee77c32f907087f71d",
+    "bytes": 5340
   },
   {
     "path": "src/regrow/runtime/reply_fields.py",
@@ -3941,8 +3941,8 @@
   },
   {
     "path": "src/regrow/traversal/step_repair.py",
-    "sha256": "c1116d0bdfe0ba6a966d135c733fa1bb9c44386ae6c6ed812d9a5ec9cdbe247a",
-    "bytes": 52361
+    "sha256": "922b369a71ed8374534ae962de563e7d56b4ba94a9d526a7e9a89e190cf95206",
+    "bytes": 52472
   },
   {
     "path": "src/regrow/traversal/suspended_updates.py",

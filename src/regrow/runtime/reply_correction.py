@@ -30,8 +30,9 @@ class Failed(ValueError):
 
 
 class Pending(BudgetExhausted):
-    def __init__(self, state):
+    def __init__(self, state, *, different_request=False):
         self.state = state
+        self.different_request = different_request
         super().__init__('格式重答尚未完成，保留原调用继续；不能切换到其他请求')
 
 
@@ -69,7 +70,7 @@ def call(transport, incoming):
     if pointer.exists():
         state = read(pointer)
         if all(incoming != state[key] for key in ('input', 'original', 'next')):
-            raise Pending(state)
+            raise Pending(state, different_request=True)
     else:
         prepared = prepare_request(transport.root, transport.run, incoming, getattr(transport, 'platform', 'android'))
         state = {'input': deepcopy(incoming), 'original': prepared, 'next': prepared,

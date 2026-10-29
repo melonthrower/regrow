@@ -160,3 +160,5 @@ Runner通过上下文借出既有剩余repairs额度；格式尝试在发送前�
 最终request中的format_original_call指向最初实际业务请求，records.calls.business_request恢复业务身份；原答不改。step_repair不再自行处理解析失败。补观察、恢复和归属复查保存未完成请求，续接使用原图片完成原收尾；跨轮旧图动作不直接执行，重新观察再决策。
 已删除重复的纠错/回复解析.prompt、纠错/步骤纠正.prompt、纠错/对象识别资料.prompt及加载/旧片段配置。调用/原步骤纠错.prompt仍只负责需要记录修订、观察等能力选择的业务纠错。
 限定验证：14项聚焦检查通过；真实上下文的补观察暂停/续接使用模拟回复，0HTTP/0GUI，仅辅助检查。Settings真实0192原答不改重放，0193经统一入口1次新Luna后正常登记，0GUI；原schema/索引及持久读回保持，知识归Remote Desktop c0084而非搜索框，任务pending。特殊纠错自身的格式重试由离线合同检查覆盖，未逐类实机验证。证据artifacts/runs/unified_format_reply_20261029_01/。
+
+补充：pending属于另一请求时Runner保持阻塞，不采用其他业务的待重答请求。最终15项聚焦通过；这项异请求保护仅离线验证，1HTTP保存帧对应c0d56ea5。

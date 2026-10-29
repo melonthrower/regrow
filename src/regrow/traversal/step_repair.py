@@ -652,6 +652,8 @@ class Runner:
                 with self.format_budget(job):
                     (ref, reply) = self.call(q)
             except reply_correction.Pending as error:
+                if error.different_request:
+                    raise Paused('correction_blocked', str(error))
                 job['service_retry_request'] = deepcopy(error.state['next'])
                 self.save(job)
                 raise Paused('repair_pending', str(error))

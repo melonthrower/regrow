@@ -1,6 +1,38 @@
 """Named correction diagnostics; raw errors remain in the repair episode."""
 from copy import deepcopy
 import re
+import json
+
+
+def organize(root, request, instruction, issues, reply, notes=None):
+    """Put the current repair question before the original business context."""
+    from regrow.prompts.compose import shared_paths, unindexed
+    from regrow.prompts.run_context import SCOPE_PATH
+    q = deepcopy(request)
+    original_parts = q.get('fixed_parts', [])
+    shared = set(shared_paths(root)) | {SCOPE_PATH}
+    role = [p for p in original_parts if p['path'].split('/片段-', 1)[0] in shared]
+    background = [p for p in original_parts if p not in role and p['path'] != instruction['path']]
+    extra = unindexed(q['system_prompt'], original_parts)
+    if extra:
+        background.append({'path': '原调用未索引说明', 'text': extra})
+    for p in background:
+        p['text'] = re.sub(r'^# (?:本步问题|本步任务|任务)$', '# 原调用任务', p['text'], flags=re.M)
+    q['fixed_parts'] = [*role, instruction,
+                        {'path': '纠错/业务参考标题', 'text': '# 业务参考'}, *background]
+    q['system_prompt'] = '\n\n'.join(p['text'] for p in q['fixed_parts'] if p['text'])
+    context = request['user_prompt'].removesuffix('请按上述字段与输出要求返回一个JSON对象。').rstrip()
+    # Demote the saved question headings; they are background for this repair.
+    context = re.sub(r'^(#+) ', r'\1# ', context, flags=re.M)
+    sections = ['# 本次问题\n' + json.dumps(issues, ensure_ascii=False, indent=2)]
+    if notes:
+        sections.append('# 本次补充材料\n' + json.dumps(notes, ensure_ascii=False, indent=2))
+    sections += ['# 原任务与相关材料\n' + context,
+                 '# 待修正回复\n```json\n' + json.dumps(reply, ensure_ascii=False, indent=2) + '\n```']
+    q['user_prompt'] = q['dynamic_prompt'] = '\n\n'.join(sections)
+    for key in ('_structured_user_prompt', '_presentation_digest'):
+        q.pop(key, None)
+    return q
 
 LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': '引用',
           'name': '名称', 'description': '描述', 'conditions': '适用条件',
@@ -131,6 +163,15 @@ def describe(error, reply, request=None):
             if affected:
                 field = (field + '中的' if field else '') + affected
         row = {'对象': subject, **({'字段': field} if field else {}), '问题': reason}
+        if item.get('validator'):
+            location = [t for t in item.get('path', '').strip('/').split('/') if t and not t.isdigit()]
+            if location:
+                row['所在字段'] = ' → '.join(location)
+            if item.get('fields'):
+                row['字段名'] = item['fields']
+            if item.get('validator') == 'additionalProperties':
+                row['问题'] = '这些字段不在本次格式中，请移除。'
+                row['允许的字段名'] = item.get('allowed_fields', [])
         actual = item.get('actual')
         if item.get('validator') in ('type', 'enum', 'const', 'minimum', 'maximum',
                                      'exclusiveMinimum', 'exclusiveMaximum', 'pattern', 'multipleOf'):

@@ -151,6 +151,8 @@ def prepare(request, root):
         remainder = unindexed(original.get('system_prompt', ''), original.get('fixed_parts', []))
         if remainder:
             inherited.append({'path': '原步骤保存规则', 'text': remainder})
+        for part in inherited:
+            part['text'] = re.sub(r'^# (?:本步问题|本步任务|任务)$', '# 原调用任务', part['text'], flags=re.M)
         known = {(p['path'], p['text']) for p in inherited}
         for part in original_parts:
             base = part['path'].split('/片段-', 1)[0]
@@ -180,7 +182,7 @@ def prepare(request, root):
     can_complete = bool(selected and any('complete' in b.get('properties', {}).get('action', {}).get('enum', []) for b in selected[1].get('anyOf', [])))
     replacements = {
         '功能引用说明': (directory / '对象/功能引用.prompt').read_text().strip(),
-        '本次修订方式': ('proposal仅填写本次需要修改的顶层字段；省略字段沿用下方“本次合并基准”的完整提案。每个提交的数组或对象完整替换该字段，不按数组位置合并。框架合并后仍检查完整提案，未报错不代表其余内容已通过。只修具体问题；若证据确实要求变更身份，明确说明依据并按原身份规则处理。' if 'proposal_base' in request else 'proposal给符合原步骤格式的完整修订，保留其余真实内容。'),
+        '本次修订方式': ('revise时，proposal填写要修改的顶层字段；省略字段沿用给出的合并基准，数组和对象整项替换。' if 'proposal_base' in request else 'revise时，proposal填写原步骤格式的完整修正回复。'),
         '本步动作目的': ('本步是导航：依据当前截图和已有路线，到达给定目标区块。目标已经可操作时返回none并说明，无需回答或新建探索问题。每次只选择一步，导航到达不等于任务完成。' if navigate else '根据当前截图、探索任务和已有记录，选择推进原问题的下一步操作，或提交已有答案。每次只选择一步；操作提案不代表已经执行。'),
         '本次结算说明': ('complete表示原问题已有充分答案，不表示业务操作必然成功。none表示本步不操作并说明原因；具体字段按本次输出要求。' if can_complete else '本轮只使用下方开放的动作分支。无需操作时返回none并说明当前情况；导航目标已经可操作也可返回none，这不是任务完成声明。'),
         '角色与范围': '', '角色与运行范围': '', '运行角色与授权范围': '',

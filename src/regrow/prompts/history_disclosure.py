@@ -141,9 +141,10 @@ def project(request):
     from regrow.prompts.prompt_material import view
     displayed = view(value, request)
     if role == 'step_correction':
-        first = ('执行状态', '本次需要修正的问题', '被拒绝回复', '当前候选解析状态')
+        first = ('本次需要修正的问题', '执行状态', '当前候选解析状态')
         displayed = {**{k: displayed[k] for k in first if k in displayed},
-                     **{k: v for k, v in displayed.items() if k not in first}}
+                     **{k: v for k, v in displayed.items() if k not in first and k != '被拒绝回复'},
+                     **({'被拒绝回复': displayed['被拒绝回复']} if '被拒绝回复' in displayed else {})}
     from regrow.prompts.compose import render as question_render
     if role == 'step_correction' and request.get('original_request') and (request['original_request'].get('stage') != 'shared_control_review'):
         nested = displayed.get('原动态上下文')

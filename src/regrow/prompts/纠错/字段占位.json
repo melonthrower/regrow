@@ -1,0 +1,149 @@
+{
+  "action": "<填写动作类型>",
+  "action_result": {
+    "description": "<填写该对象或结果的描述>",
+    "exception": "<填写异常类型>",
+    "returns_to_previous": "<填写是否返回先前界面>",
+    "recovery_handoff": "<填写异常恢复交接信息>"
+  },
+  "add": "<填写新增项列表>",
+  "add_image": "<填写是否补充外观图>",
+  "after": "<填写修订后的值>",
+  "bbox": {
+    "left": "<填写左边界坐标>",
+    "top": "<填写上边界坐标>",
+    "right": "<填写右边界坐标>",
+    "bottom": "<填写下边界坐标>"
+  },
+  "before": "<填写修订前的值>",
+  "blocked_by": "<填写阻碍类型>",
+  "candidate": "<填写选中的候选引用>",
+  "changes": "<填写修改内容>",
+  "comparisons": "<填写比较结果列表>",
+  "conditions": [
+    "<填写适用条件>"
+  ],
+  "constraints": "<填写约束信息>",
+  "context_matches": "<填写当前画面是否符合区块适用上下文>",
+  "control": "<填写控件引用>",
+  "control_identity": "<填写控件身份关系>",
+  "control_index": "<填写控件在本次列表中的位置>",
+  "controls": "<填写控件列表>",
+  "current_state": "<填写当前外观状态>",
+  "decision": "<填写判断结果>",
+  "delete": "<填写删除项列表>",
+  "description": "<填写该对象或结果的描述>",
+  "direction": "<填写方向>",
+  "duration": "<填写持续时间>",
+  "end_x": "<填写终点横坐标>",
+  "end_y": "<填写终点纵坐标>",
+  "evidence": "<填写判断依据>",
+  "exception": "<填写异常类型>",
+  "field": "<填写字段名>",
+  "findings": "<填写参数发现列表>",
+  "foreground": {
+    "description": "<填写当前前景界面及遮挡情况>"
+  },
+  "framework_tool": "<填写框架工具>",
+  "function_refs": [
+    "<填写关联功能引用>"
+  ],
+  "function_updates": "<填写功能更新列表>",
+  "handoff": "<填写后续处理所需的信息>",
+  "historical_state": "<填写历史外观状态>",
+  "id": "<填写条目编号>",
+  "identity": "<填写身份关系>",
+  "identity_evidence": "<填写身份判断依据>",
+  "image_conditions": [
+    "<填写外观图的适用条件>"
+  ],
+  "index": "<填写已有条目的引用>",
+  "inventory": "<填写任务清点结果>",
+  "jump_to": "<填写跳转关系列表>",
+  "knowledge": [
+    {
+      "description": "<填写控件用途与规则，适用条件写在同一描述中>"
+    }
+  ],
+  "left": "<填写左边界坐标>",
+  "list_group": "<填写重复列表项的分组>",
+  "local_knowledge": {
+    "add": [
+      "<填写新增区块知识；无新增时省略add>"
+    ],
+    "update": [
+      {
+        "id": "<填写已有知识编号；无修订时省略update>",
+        "text": "<填写修订后的知识>"
+      }
+    ],
+    "delete": [
+      "<填写删除的已有知识编号；无删除时省略delete>"
+    ]
+  },
+  "may_open_content": "<填写是否打开新内容>",
+  "name": "<填写名称>",
+  "needs_exploration": "<填写是否还需探索>",
+  "next_action": {
+    "region": "<填写区块引用>",
+    "control": "<填写控件引用>",
+    "action": "<填写动作类型>",
+    "reason": "<填写理由>"
+  },
+  "next_region": "<填写下一步区块>",
+  "objects": "<填写对象列表>",
+  "observed_assignments": "<填写本次观察到的控件归属>",
+  "operations": "<填写待探索任务列表>",
+  "out_of_scope_reason": "<填写超出探索范围的原因>",
+  "parent_index": "<填写父区块在本次列表中的位置>",
+  "path": "<填写给定对象的位置标识>",
+  "previous_regions": [
+    {
+      "ref": "<填写给定的先前区块引用>",
+      "state": "<填写 retained_interactive、changed_interactive、visible_background_blocked、not_visible 或 uncertain>",
+      "context_matches": "<填写当前画面是否符合区块适用上下文>"
+    }
+  ],
+  "proposal": "<填写修正后的提案>",
+  "reason": "<填写理由>",
+  "record_edit": "<填写记录修订内容>",
+  "recovery_handoff": "<填写异常恢复交接信息>",
+  "ref": "<填写已有对象引用>",
+  "region": "<填写区块引用>",
+  "region_index": "<填写所属区块在本次列表中的位置>",
+  "regions": "<填写区块列表>",
+  "relation": "<填写外观比较关系>",
+  "remaining_question": "<填写原任务尚未确认的问题>",
+  "remove": "<填写移除项列表>",
+  "replace_with": "<填写替代引用>",
+  "resolution": "<填写本次修订方式>",
+  "retry_when": "<填写可以恢复探索的条件>",
+  "returns_to_previous": "<填写是否返回先前界面>",
+  "right": "<填写右边界坐标>",
+  "shared_instances": "<填写共享控件关联>",
+  "state": "<填写当前状态>",
+  "state_description": "<填写当前画面中影响内容或操作集合的状态>",
+  "status": "<填写当前进度>",
+  "supports": "<填写功能支持对象引用>",
+  "target": "<填写操作目标>",
+  "task": "<填写任务引用>",
+  "task_review_reason": "<填写需要重新提出探索任务的问题>",
+  "task_type": "<填写探索任务类型>",
+  "task_update": [
+    {
+      "task": "<填写本次需要更新的任务引用>",
+      "decision": "<填写 answered、continue 或 defer>",
+      "remaining_question": "<continue 或 defer 时填写尚未解决的问题；answered 时省略>",
+      "retry_when": "<defer 时填写恢复条件；其他情况省略>"
+    }
+  ],
+  "text": "<填写文本内容>",
+  "top": "<填写上边界坐标>",
+  "bottom": "<填写下边界坐标>",
+  "uncertainties": [
+    "<填写尚未确认的事项>"
+  ],
+  "update": "<填写更新项列表>",
+  "x": "<填写横坐标>",
+  "y": "<填写纵坐标>"
+}

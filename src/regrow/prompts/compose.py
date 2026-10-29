@@ -18,7 +18,7 @@ def entry(root, stage):
 def configuration_paths(root=None, role=None):
     """Editable composition sources used by a call, alongside its prompt text."""
     definition = catalog(root)
-    paths = ['流程/调用组成.json']
+    paths = ['流程/调用组成.json', '纠错/字段占位.json']
     calls = definition['calls'].values() if role is None else [definition['calls'].get(role, {})]
     paths.extend('流程/' + call['flow'] for call in calls if call.get('flow'))
     paths.extend(call['template'] for call in calls if call.get('template'))

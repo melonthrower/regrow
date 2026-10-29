@@ -48,15 +48,11 @@ def abandon(run, reason):
 
 def request(root, original, rejected, report, first_call):
     from regrow.prompts.compose import load
-    from regrow.prompts.correction_feedback import describe
+    from regrow.prompts.correction_feedback import describe, organize
+    from regrow.prompts.field_placeholders import fill_missing, without_full_format
     part = load(root, ['纠错/原格式重答.prompt'])[0]
-    q = deepcopy(original)
-    if not any(p['path'] == part['path'] for p in q.get('fixed_parts', [])):
-        q['fixed_parts'] = [*q.get('fixed_parts', []), part]
-        q['system_prompt'] += '\n\n' + part['text']
-    feedback = {'本次格式问题': describe(report, rejected, q), '最新失败回复': rejected}
-    q['user_prompt'] = original['user_prompt'] + '\n\n## 修正回复格式\n' + json.dumps(feedback, ensure_ascii=False, indent=2)
-    q['dynamic_prompt'] = q['user_prompt']
+    q = without_full_format(original)
+    q = organize(root, q, part, describe(report, rejected, q), fill_missing(root, rejected, report, original['response_schema']))
     q['format_original_call'] = first_call
     for key in ('_structured_user_prompt', '_presentation_digest'):
         q.pop(key, None)

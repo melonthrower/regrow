@@ -162,3 +162,10 @@ Runner通过上下文借出既有剩余repairs额度；格式尝试在发送前�
 限定验证：14项聚焦检查通过；真实上下文的补观察暂停/续接使用模拟回复，0HTTP/0GUI，仅辅助检查。Settings真实0192原答不改重放，0193经统一入口1次新Luna后正常登记，0GUI；原schema/索引及持久读回保持，知识归Remote Desktop c0084而非搜索框，任务pending。特殊纠错自身的格式重试由离线合同检查覆盖，未逐类实机验证。证据artifacts/runs/unified_format_reply_20261029_01/。
 
 补充：pending属于另一请求时Runner保持阻塞，不采用其他业务的待重答请求。最终15项聚焦通过；这项异请求保护仅离线验证，1HTTP保存帧对应c0d56ea5。
+
+
+2026-10-30 纠错上下文组织：角色/范围与当前修正任务在前，原任务及业务定义作参考，user依次为问题、补充材料、原任务历史、唯一待修正回复。保留原schema/图片/历史，不做自动裁剪。16项聚焦测试通过；正常框架保存帧1次Luna调用、0GUI，缺失recovery_handoff补齐，其余输出值完全相同并正常登记。证据 artifacts/runs/correction_organization_20261030_01/，交付 to_astra/correction_organization_20261030_01/。未覆盖所有专门纠错的模型行为。
+
+
+2026-10-30 结构占位：缺失对象/列表通过字段占位.json提供固定结构，按实际schema适配容器形状与允许键；已有值不覆盖，不推断业务值。格式纠错和普通业务纠错复用fill_missing，历史修订及视觉路由未改。task_update原两条真实失败各2轮，现在各1HTTP通过，0GUI，task pending、控件c0084正确；18项聚焦检查通过。最终适配实现生成的system/user/schema/screenshots与实测请求完全相同。不是所有动态字段结构的穷举验收。
+验证：`PYTHONPATH=src /data/shenghonghui/miniconda3/envs/guiwalk-android/bin/python -m pytest tests/test_field_placeholders.py tests/test_correction_organization.py tests/test_direct_reply_correction.py tests/test_unified_reply_format.py -q --basetemp=artifacts/tmp_tests/structured_blanks_20261030_01/pytest-v3`；两例`python artifacts/runs/structured_blanks_20261030_01/run_saved.py task_key_chinese`及task_key_plural。首次测试因未创建basetemp父目录出现8个setup错误，已创建后重跑，不忽略失败。独立审查发现并修正task_update对象/列表差异及旧知识结构误用。证据artifacts/runs/structured_blanks_20261030_01/。

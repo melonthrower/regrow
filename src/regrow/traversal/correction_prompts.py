@@ -20,28 +20,26 @@ def needs_record_repair(job):
 def original_reply(root, job):
     """Ask the original question again, using its sent contract and evidence."""
     from regrow.prompts.compose import load
-    from regrow.prompts.correction_feedback import describe
+    from regrow.prompts.correction_feedback import describe, organize
+    from regrow.prompts.field_placeholders import fill_missing
     original = deepcopy(job['request'])
     if job['stage'] == 'update' and original.get('semantic_request'):
         from regrow.traversal.object_registration import semantic_revision
         original, _ = semantic_revision(original, job.get('candidate') or {})
     rejected = job.get('rejected_reply', job.get('candidate'))
-    feedback = {'本次需要修正的问题': describe(job.get('error'), rejected, original),
-                '最新被拒绝回复': rejected,
-                '执行状态': '原动作已经执行，本次只修正结果登记。' if job.get('attempt') else '本步骤尚未执行动作。'}
+    feedback = {'执行状态': '原动作已经执行，本次只修正结果登记。' if job.get('attempt') else '本步骤尚未执行动作。'}
     if isinstance(job.get('error'), dict) and job['error'].get('unchecked'):
         feedback['尚未完成的检查'] = job['error']['unchecked']
     if job.get('parse_failure') and rejected is None:
         feedback['回复解析问题'] = job['parse_failure']
     if job.get('supplements'):
         feedback['补充观察'] = deepcopy(job['supplements'])
+    if isinstance(job.get('error'), dict):
+        rejected = fill_missing(root, rejected, job['error'], original['response_schema'])
     part = load(root, ['纠错/原格式重答.prompt'])[0]
-    text = original['user_prompt'] + '\n\n## 本次修正\n' + json.dumps(feedback, ensure_ascii=False, indent=2)
-    result = {**original, 'role': 'step_correction', 'stage': 'step_correction',
-            'correction_format': 'original', 'original_request': original,
-            'system_prompt': original['system_prompt'] + '\n\n' + part['text'],
-            'user_prompt': text, 'dynamic_prompt': text,
-            'fixed_parts': [*deepcopy(original.get('fixed_parts', [])), part]}
+    result = organize(root, original, part, describe(job.get('error'), rejected, original), rejected, feedback)
+    result.update(role='step_correction', stage='step_correction',
+                  correction_format='original', original_request=original)
     for key in ('_structured_user_prompt', '_presentation_digest'):
         result.pop(key, None)
     return result

@@ -24,16 +24,6 @@ def extend_schema(schema, required=False):
         item['required'] = list(dict.fromkeys([key for key in item['required'] if key != 'description'] + ['name']))
     return schema
 
-def validate(controls):
-    seen = set()
-    for c in controls:
-        group = c.get('list_group', '').strip()
-        if group:
-            key = (c['region_index'], group)
-            if key in seen:
-                raise ValueError('list group requires one representative per interaction type')
-            seen.add(key)
-
 def rewrite(value, old, new):
     if isinstance(value, object_store.Records):
         rewrite(value.controls, old, new)

@@ -65,6 +65,11 @@ def _bind_action_target(request, proposal):
     if len(hits) == 1:
         c = hits[0]
         return {**base, 'region_ref': c.get('region_ref', base['region_ref']), 'status': 'matched', 'control_ref': c['id'], 'model_grounded': True, 'basis': 'explicit recorded control selection; coordinates do not verify identity or outcome'}
+    if target:
+        from regrow.recognition import action_target_review
+        located = action_target_review.unresolved(request, proposal)
+        if located:
+            return {**base, **located, 'status': 'matched', 'model_grounded': True}
     if len(hits) > 1:
         return {**base, 'status': 'unresolved', 'reason': '同名控件不唯一，请用候选中的 region/control 身份填写 target'}
     if not target:

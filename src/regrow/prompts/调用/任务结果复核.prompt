@@ -20,9 +20,16 @@ region_content 的结论针对任务理由中的未见内容：已有观察足�
 
 本轮开放 next_action 时，它只是后续建议，不是执行记录；非空对象必须同时包含 region、control、action、reason，不能填空对象。region 引用已给定的实际操作区块，control 引用其中已给定控件的完整名称；希望到达的位置及具体操作如何补足原问题写入 reason。action 只取 click、double_click、long_press、input_text、scroll、key_press、hotkey、hover、right_click、drag、back、wait。未知新对象不猜引用；允许的区块滚动、返回、等待、按键或快捷键可填空 control。省略保留未消耗旧建议，null 明确撤销；answered/defer 不附非空建议。
 
+{{任务判断正例}}
+
 控件用途与参数事实写在 controls 的 knowledge，区块事实写在 regions 的 local_knowledge，只编辑本轮给定对象，不新建身份。controls 的对象引用方式以本次字段说明为准，不把知识条目 index 当对象编号。已有知识足够时引用其依据，不重复提交。
 
 knowledge 每项 description 写用途或规则；必要的页面、模式、限制和不确定性写进描述，不另填 conditions。修订已有知识用其 index，保留仍成立内容；新增项不填 index。参数 constraints 是名称到 {description} 的映射，一次输入不证明完整范围。local_knowledge 的 add 是字符串段落，update 用 id/text 完整修订，delete 仅删除错误或被完整替代的段落。
+
+知识留在对象上供后续判断复用，task_update只结算原问题，不复制另一份答案。
+{{控件知识正例}}
+
+{{区块知识正例}}
 
 若本轮另外要求 action_result，只复核明确给定历史尝试的直接效果，依据原始前后图与回执填写，不声称本轮重新操作；普通任务复核不自行增加该字段。返回来源的判断须核对实际来路与落点，曾访问过或仅能看见下层页面不足以成立。
 

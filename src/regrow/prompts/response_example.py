@@ -247,7 +247,7 @@ def sample(schema, name='', reuse=True):
     if kind == 'string' or kind is None:
         if name in ('uncertainty', 'recovery_handoff'):
             return ''
-        return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'示例控件', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
+        return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'r0001/c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
     raise ValueError('Unsupported example field: ' + name)
 
 
@@ -256,6 +256,9 @@ def complete(schema, request=None):
     expanded = expand_schema(schema)
     known = None if request is None else request.get('discovery_context', {}).get('region_names', request.get('region_names', {}))
     value = sample(expanded, reuse=known is None or bool(known))
+    if request and isinstance(value, dict) and 'target' in value and request.get('backend_candidates'):
+        from regrow.traversal.action_binding import candidate_key
+        value['target'] = candidate_key(request, request['backend_candidates'][0])
     if request and request.get('role') == 'recovery' and isinstance(value, dict):
         choices = expanded.get('properties', {}).get('decision', {}).get('enum', [])
         if value.get('exception') == 'none' and 'resume_exploration' in choices:

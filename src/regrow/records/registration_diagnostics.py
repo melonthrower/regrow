@@ -172,7 +172,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             errors.extend(visibility_errors(p, rids, changes))
         for (index, names) in parent_cycles(records, p.get('regions', []), rids):
             add('parent_cycle', f'/regions/{index}/parent_index', p['regions'][index]['name'], names, '合并已保留关系后无父子环', '依据实际容器关系修正父级；省略会保留旧关系，无父容器时使用null。')
-        groups = {}
         seen = {}
         bound = {}
         for (i, c) in enumerate(p.get('controls', [])):
@@ -201,12 +200,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if key in seen:
                 add('duplicate_submission', path + '/name', obj, name, seen[key], '同一对象只提交一次；不同对象需可区分名称。')
             seen[key] = path
-            group = c.get('list_group', '')
-            if group:
-                key = (idx, group)
-                if key in groups:
-                    add('list_representative', path + '/list_group', obj, group, groups[key], (SOURCE_ROOT / 'regrow/prompts/发现手册/列表代表项.prompt').read_text())
-                groups[key] = path
             cid = None
             if stage == 'discovery':
                 identity = c.get('identity')

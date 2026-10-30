@@ -151,6 +151,10 @@ def project(records, state, rid):
     region = records[rid]
     reasons = detail_reasons(region, state)
     lines = []
+    for group, members in region.get('list_groups', {}).items():
+        names = [owned_controls(region)[cid]['name'] for cid in members if cid in owned_controls(region)]
+        if names:
+            lines.append('**已登记同类交互组「' + group + '」**：' + '、'.join(names) + '。成员身份分别保留；结合下方知识判断共同方式是否还需代表探索。\n')
     edges = entries(region, records)
     for cid, control in owned_controls(region).items():
         accepted = confirmed(control)

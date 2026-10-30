@@ -60,7 +60,6 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
     for (i, p) in enumerate(reply['regions']):
         if 'parent_index' in p:
             records[region_refs[i]]['parent_region'] = region_refs[p['parent_index']] if p['parent_index'] is not None else None
-    _control_records.validate(reply['controls'])
     for (i, p) in enumerate(reply['controls']):
         from regrow.records.object_knowledge import control_only, apply
         if control_only(p):

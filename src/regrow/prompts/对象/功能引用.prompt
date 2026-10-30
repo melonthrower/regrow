@@ -4,6 +4,6 @@
 
 功能条目填写简短 name、用途与操作范围 description，以及 supports 列表。supports中的控件用给定index，区块用给定引用，编号本身不证明成功。用途描述保留必要条件与限制，不绑定一次输入值，也不替代本次结果判断。
 
-可选 constraints 是参数完整键的字符串列表，参数来源对象也须列入 supports；参数规则留在来源知识中，不复制取值。必要的不确定性写入用途知识；需要进一步探索的问题归tasks。
+可选 constraints 是材料给出的参数完整引用列表，例如“控件[index=0]/搜索词”；0是本轮控件编号，后半部分是该控件的参数名。逐字使用给定引用，不把规则正文写成引用。参数来源对象也须列入 supports；参数规则留在来源知识中，不复制取值。必要的不确定性写入用途知识；需要进一步探索的问题归tasks。
 
 function_updates 每组填写 region，并只提交实际变化：add放新功能列表；update每项填写已有功能ref及changes；remove每项填写ref、reason，合并时另填replace_with。新增功能的 name、description、supports 必填；其他字段按本次要求填写，不用未知或占位结论补齐。

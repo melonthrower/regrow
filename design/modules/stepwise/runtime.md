@@ -169,3 +169,10 @@ Runner通过上下文借出既有剩余repairs额度；格式尝试在发送前�
 
 2026-10-30 结构占位：缺失对象/列表通过字段占位.json提供固定结构，按实际schema适配容器形状与允许键；已有值不覆盖，不推断业务值。格式纠错和普通业务纠错复用fill_missing，历史修订及视觉路由未改。task_update原两条真实失败各2轮，现在各1HTTP通过，0GUI，task pending、控件c0084正确；18项聚焦检查通过。最终适配实现生成的system/user/schema/screenshots与实测请求完全相同。不是所有动态字段结构的穷举验收。
 验证：`PYTHONPATH=src /data/shenghonghui/miniconda3/envs/guiwalk-android/bin/python -m pytest tests/test_field_placeholders.py tests/test_correction_organization.py tests/test_direct_reply_correction.py tests/test_unified_reply_format.py -q --basetemp=artifacts/tmp_tests/structured_blanks_20261030_01/pytest-v3`；两例`python artifacts/runs/structured_blanks_20261030_01/run_saved.py task_key_chinese`及task_key_plural。首次测试因未创建basetemp父目录出现8个setup错误，已创建后重跑，不忽略失败。独立审查发现并修正task_update对象/列表差异及旧知识结构误用。证据artifacts/runs/structured_blanks_20261030_01/。
+
+
+## 2026-10-30 输出用途、字段与正例
+动作主模板将动作字段说明、当前平台表和ID示例放在一起；complete/none及controls/regions/function_updates各自说明遍历职责、填写条件和相邻正例。call_examples.py仅生成模板明确使用的局部例，按实际schema校验；无控件候选不构造控件例，无可提具体控件时operations例为空。response_example的动作target示例使用编号，存在候选时使用给定引用，不再以“示例控件”示范已有对象。
+已逐类审阅17份调用主模板，补充目标核对的完整例、恢复/归属复查的ID写法、原步骤纠错处理方式、任务提出/结果更新/任务复核/功能总结的局部正例和参数引用说明。参数引用直接复制材料中的“来源控件引用/参数名”，与现有控件index展示和解码一致。旧失败回复仍按原发送合同纠错，不重写原请求。
+共享角色明确建图供后续操作提取、任务组合和导航采集；任务提出按新能力、对象、条件、流程和路径的信息价值决定探索，避免同类实例重复任务，不按列表外形或应用名编码规则。只是遍历提示与已有记录合同的修改，独立采集代码未变。实际验证范围见2026-10月志。
+本批最终8HTTP/0GUI，v3搜索任务提出失败保留，v4正常纠错后仅选一个搜索结果代表；Clock独立功能入口任务保留。任务材料须实际提供已有分组关系，不能只改system规则而遗漏判断所需记录。

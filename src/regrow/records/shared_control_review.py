@@ -52,7 +52,7 @@ def apply(records, state, case, item, call):
     group = current_group(records, case)
     if item['field'] != 'shared_behavior' or item['before'] != group['name'] or (not item['evidence'].strip()):
         raise ValueError('共享修订需shared_behavior、原关系名称及证据')
-    members = [m for m in group['members'] if records.get(m['region'], {}).get('name') == item['region'] and owned_controls(records[m['region']]).get(m['control'], {}).get('name') == item['control']]
+    members = [m for m in group['members'] if m['region'] == item['region'] and m['control'] == item['control']]
     if len(members) != 1:
         raise ValueError('共享修订成员不在本轮范围或名称不唯一')
     member = members[0]

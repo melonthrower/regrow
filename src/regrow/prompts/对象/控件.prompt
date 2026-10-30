@@ -33,15 +33,15 @@
 <!-- END_PROMPT_BLOCK id="control.definition" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.references" requires="control.definition,shared.registration" -->
-## 已有控件引用 → controls[].index
+## 已有控件引用 → controls[].ref
 
-controls[].index引用本轮材料给定的已有控件编号。更新用途知识时仍引用原控件；它与knowledge内部用于修订某段知识的index不同。引用不表示修改身份或重新登记对象。
+controls[].ref引用控件树中的稳定控件ID。更新用途知识时仍引用原控件；它与knowledge内部用于修订某段知识的index不同。引用不表示修改身份或重新登记对象。
 <!-- END_PROMPT_BLOCK id="control.references" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.association" requires="control.references,control.identity" -->
 ## 本次控件与区块关联 → region_index
 
-新控件不填写已有控件index，不自行编造历史编号。
+新控件省略ref，不自行编造历史编号。
 
 `controls[].region_index` 引用本次输出 `regions` 的位置，回答“本次将这个控件关联到哪个区块”。它不是区块的全局 ID，也不是材料中区块的历史序号。是否需要重报已有控件的 `region_index`，以本步要求为准。
 
@@ -50,15 +50,20 @@ controls[].index引用本轮材料给定的已有控件编号。更新用途知�
 ```json
 {
   "regions": [
-    {"ref": "r0080"}
+    {
+      "ref": "r0080"
+    }
   ],
   "controls": [
-    {"index": 3, "region_index": 0}
+    {
+      "region_index": 0,
+      "ref": "c0008"
+    }
   ]
 }
 ```
 
-这里 `ref="r0080"` 引用已有区块，`index=3` 引用已有控件，`region_index=0` 引用本次 `regions[0]`。如果该区块改放在本次列表第二项，`region_index` 就填 1。
+这里 `ref="r0080"` 引用已有区块，`ref="c0008"` 引用已有控件，`region_index=0` 引用本次 `regions[0]`。如果该区块改放在本次列表第二项，`region_index` 就填 1。
 
 本次关联应符合当前界面的实际结构，不因控件名称或功能相似而挂错区块。该字段本身不声明控件在全局只能属于一个区块，也不表示自动删除其他关联。
 
@@ -66,7 +71,7 @@ controls[].index引用本轮材料给定的已有控件编号。更新用途知�
 
 **反例：** 把侧栏里的输入框关联到中央弹窗；把 r0080 中的数字当成 `region_index`。
 
-有依据认作同一控件时，继续引用原 `index`。明确的新对象正常登记。存在具体已有候选、但尚不能确认对应关系时，不猜填 `index`，也不只因本次匹配不确定就另建副本。按本步提供的 `uncertainties` 或其他指定方式记录具体候选和疑点；其他已确认对象和任务照常处理。
+有依据认作同一控件时，继续引用原 `ref`。明确的新对象正常登记。存在具体已有候选、但尚不能确认对应关系时，不猜填 `ref`，也不只因本次匹配不确定就另建副本。按本步提供的 `uncertainties` 或其他指定方式记录具体候选和疑点；其他已确认对象和任务照常处理。
 <!-- END_PROMPT_BLOCK id="control.association" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.definition" -->
@@ -212,7 +217,7 @@ controls[].index引用本轮材料给定的已有控件编号。更新用途知�
 
 只提交新增或需要修订的知识项。`knowledge` 为可选更新字段且没有实质更新时省略；任务判断直接使用这些对象知识，不另外填写任务答案。
 
-修订材料中该控件“当前控件知识”的已有条目时，在该项添加 `index`。这个 `index` 是所属控件的知识条目编号，不是 `controls[].index`，也不是其他控件的知识编号。新增项不填写 `index`；不同内容分别保留，完全相同的内容不重复登记。材料中的知识列表为空时，不自行编造旧条目编号。
+修订材料中该控件“当前控件知识”的已有条目时，在该项添加 `index`。这个 `index` 是所属控件的知识条目编号，不是 `controls[].ref`，也不是其他控件的知识编号。新增项不填写 `index`；不同内容分别保留，完全相同的内容不重复登记。材料中的知识列表为空时，不自行编造旧条目编号。
 
 修订时保留原项仍成立的用途、条件和参数规则，修正有依据的不准确部分。仅补充条件或改写表述，不表示旧用途已重新验证；旧推测不能因本次修订自动升级为确认。
 
@@ -390,10 +395,12 @@ bbox字段值示例（外层字段和必填性由本轮输出要求确定）：
 {
   "controls": [
     {
-      "index": 3,
       "region_index": 0,
       "add_image": true,
-      "image_conditions": ["显示暂停图标"]
+      "image_conditions": [
+        "显示暂停图标"
+      ],
+      "ref": "c0008"
     }
   ]
 }
@@ -427,12 +434,12 @@ bbox字段值示例（外层字段和必填性由本轮输出要求确定）：
   ],
   "controls": [
     {
-      "index": 3,
       "knowledge": [
         {
           "description": "打开文件面板。"
         }
-      ]
+      ],
+      "ref": "c0008"
     }
   ],
   "jump_to": [
@@ -449,13 +456,13 @@ bbox字段值示例（外层字段和必填性由本轮输出要求确定）：
 {
   "controls": [
     {
-      "index": 3,
       "jump_to": [
         {
           "region_index": 0,
           "conditions": []
         }
-      ]
+      ],
+      "ref": "c0008"
     }
   ]
 }
@@ -493,7 +500,7 @@ bbox字段值示例（外层字段和必填性由本轮输出要求确定）：
 - `control_index`：目标是控件时，引用本次 `controls` 的位置，并与其目标区块关联一致；目标仅为区块时不填。
 - `conditions`：该路线适用的上下文；没有额外已知条件时填 `[]`。
 
-`control_index` 不是目标控件的历史 `index`。例如，本次 `controls[1]` 引用了材料中的控件 8，跳转目标仍填 `control_index=1`，不能填 8。
+`control_index` 不是目标控件的稳定ID。例如，本次 `controls[1]` 引用了控件 c0008，跳转目标仍填 `control_index=1`。
 
 局部示例：本次 `regions[0]` 引用原区块，`controls[0]` 复用文件入口，`controls[1]` 登记点击后展开的独立文件名输入框。以下关系记在实际来源入口上：
 

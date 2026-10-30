@@ -132,7 +132,7 @@ def complete(runner, job):
     if job['request'].get('registration_sources') and not missing(candidate):
         job.pop('registration_submission', None)
         return
-    digest = hashlib.sha256(json.dumps([candidate, job['request'].get('control_indexes')],
+    digest = hashlib.sha256(json.dumps([candidate, job['request'].get('control_refs')],
                                       sort_keys=True).encode()).hexdigest()[:16]
     enriched = deepcopy(candidate)
     labels = []
@@ -213,7 +213,7 @@ def complete(runner, job):
     # Preserve both sources when satisfying the existing publication review.
     if confirmed:
         from regrow.recognition.control_identity_review import reused_candidates
-        from regrow.recognition.control_indexes import decode
+        from regrow.recognition.control_references import decode
         from regrow.records.snapshots import load
         snapshot, records, _ = load(runner.run)
         for pair in reused_candidates(records, snapshot, runner.run / primary(q), q, decode(q, enriched)):
@@ -239,7 +239,7 @@ def complete(runner, job):
 
 def semantic_revision(reviewed, candidate):
     original = deepcopy(reviewed.get('semantic_request', reviewed))
-    original['control_indexes'] = reviewed.get('control_indexes', original.get('control_indexes', []))
+    original['control_refs'] = reviewed.get('control_refs', original.get('control_refs', []))
     original['control_identity_reviews'] = deepcopy(reviewed.get('control_identity_reviews', []))
     def strip(value):
         if isinstance(value, dict):

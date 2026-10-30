@@ -141,9 +141,9 @@ def prepare_request(root, run, request, platform='android'):
             for child in schema.values():
                 strict_fields(child)
     strict_fields(request['response_schema'])
-    from regrow.recognition import control_indexes
+    from regrow.recognition import control_references
     if request.get('role') != 'action_target_review':
-        request = control_indexes.prepare(request)
+        request = control_references.prepare(request)
     from regrow.prompts.output import effective_role
     action_references = (request.get('role') in ('action_selection', 'step_correction')
                          and effective_role(request, root) == 'action_selection')
@@ -159,8 +159,6 @@ def prepare_request(root, run, request, platform='android'):
         request['user_prompt'] += '\n\n' + output_instruction
     from regrow.prompts.history_disclosure import project
     request = project(request)
-    if not action_references and not target_review:
-        request = control_indexes.display(request)
     return request
 
 class ModelTransport:

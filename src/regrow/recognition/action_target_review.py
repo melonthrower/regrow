@@ -52,7 +52,7 @@ def at_point(request, proposal):
         seen.add(key)
         appearances = item.get('appearances') or ([{'image': item['image']}] if item.get('image') else [])
         hit = match_appearances(appearances, locate)
-        row = {'target': rid + '/' + item['id'], '名称': item['name'],
+        row = {'target': item['id'], 'region_ref': rid, '名称': item['name'],
                '所属区块': item.get('region_name', rid),
                '历史身份范围（非当前坐标）': item.get('bbox'),
                '历史外观描述': item.get('icon_description', ''), '定位': hit.get('box') if hit.get('accepted') else None,
@@ -74,7 +74,7 @@ def unresolved(request, proposal):
     rows, candidates = at_point(request, proposal)
     if len(candidates) == 1:
         selected = candidates[0]
-        rid, cid = selected['target'].split('/')
+        rid, cid = selected['region_ref'], selected['target']
         return {'region_ref': rid, 'control_ref': cid,
                 'basis': 'unique current-frame appearance at proposed coordinates',
                 'visual_binding': {'frame': frames(request)[0],
@@ -96,7 +96,7 @@ def conflict(request, proposal, binding):
     if proof and frames(request) == [proof['frame']] and proof['point'] == [proposal['x'], proposal['y']]:
         return None
     rows, candidates = at_point(request, proposal)
-    target = binding['region_ref'] + '/' + binding['control_ref']
+    target = binding['control_ref']
     original = next((row for row in rows if row['target'] == target), None)
     if any(row['target'] == target for row in candidates) and (not proof or len(candidates) == 1):
         return None
@@ -138,7 +138,7 @@ def request(root, job):
          'response_schema': deepcopy(original['response_schema']),
          'screenshots': list(original.get('screenshots', [])), 'image_refs': frames(original),
          'source': deepcopy(original['source']), 'original_request': original}
-    for key in ('control_indexes', 'backend_candidates'):
+    for key in ('control_refs', 'backend_candidates'):
         if key in original:
             q[key] = deepcopy(original[key])
     if original.get('frame_context'):

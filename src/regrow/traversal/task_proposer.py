@@ -58,26 +58,14 @@ def plan_request(root, records, state, rid, *, work=None):
     sharing = schema['properties']['shared_instances']['items']['properties']
     material = _task_inventory_context.project(records, state, rid)
     sources = [(rid, cid) for cid in owned_controls(region)] + [(row['region'], row['control']) for row in material['可引用同类实例']]
-    def region_label(rr):
-        name = records[rr]['name']
-        return name if sum(r['name'] == name for r in records.values()) == 1 else rr
-    def control_label(rr, cid):
-        name = owned_controls(records[rr])[cid]['name']
-        return name if sum(c['name'] == name for c in owned_controls(records[rr]).values()) == 1 else cid
     if sources:
-        sharing['source_region'].update(enum=sorted({region_label(rr) for rr, cid in sources}), description='填写来源区块名称；重名时使用所给引用。')
-        sharing['source_control'].update(enum=sorted({control_label(rr, cid) for rr, cid in sources}), description='填写来源控件名称；重名时使用所给引用。')
-        ambiguous = [records[rr]['name'] + ' / ' + owned_controls(records[rr])[cid]['name'] +
-                     '：source_region=' + region_label(rr) + '，source_control=' + control_label(rr, cid)
-                     for rr, cid in sources if region_label(rr) == rr or control_label(rr,cid) == cid]
-        if ambiguous:
-            material['共享重名对象引用'] = ambiguous
+        sharing['source_region'].update(enum=sorted({rr for rr, cid in sources}), description='来源区块ID。')
+        sharing['source_control'].update(enum=sorted({cid for rr, cid in sources}), description='来源控件ID。')
+        sharing['control'].update(enum=list(owned_controls(region)), description='当前区块中的控件ID。')
     else:
         schema['properties'].pop('shared_instances')
         schema['required'].remove('shared_instances')
-    # IDs are backend metadata; sharing output uses the names above unless ambiguous.
-    material['可引用同类实例'] = [{k:v for k,v in row.items() if k not in ('region','control')} for row in material['可引用同类实例']]
-    controls = [c['name'] for (cid, c) in owned_controls(region).items() if not _shared_tasks.automatic_tasks(region, cid)] + ['']
+    controls = [cid for cid in owned_controls(region) if not _shared_tasks.automatic_tasks(region, cid)] + ['']
     refs = [_task_updates.reference(rid, name) for name in update_names(region, scope_review=work.get('kind') == 'scope_review')]
     catalog = material.pop('已有任务')
     material['本轮可判断旧任务'] = []

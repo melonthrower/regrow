@@ -304,9 +304,9 @@ def attach(root, job, request):
     pair['context'] = recorded_history(pair)
     q = request
     original = q['original_request']
-    if 'control_indexes' in original and pair['control'] not in original['control_indexes']:
-        original['control_indexes'].append(pair['control'])
-        from regrow.recognition.control_indexes import prepare
+    if 'control_refs' in original and pair['control'] not in original['control_refs']:
+        original['control_refs'].append(pair['control'])
+        from regrow.recognition.control_references import prepare
         original.update(prepare(original))
     if job['stage'] == 'discovery':
         original['discovery_context'].setdefault('control_names', {})[pair['ref']] = pair['control']
@@ -350,7 +350,7 @@ def compared_candidate(request, reply):
     if not reply['reason'].strip():
         raise ValueError('身份比较需要实际依据')
     pair = request['control_identity_pair']
-    from regrow.recognition.control_indexes import decode, encode
+    from regrow.recognition.control_references import decode, encode
     proposal = decode(request['original_request'], request['identity_candidate'])
     if reply['control_identity'] == 'uncertain':
         return (None, None)

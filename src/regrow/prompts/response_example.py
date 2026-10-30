@@ -199,9 +199,7 @@ def sample(schema, name='', reuse=True):
                 required.append(key)
         value = {key: sample(props[key], key, reuse) for key in required}
         if name in ('regions_item', 'controls_item'):
-            if 'index' in props and reuse:
-                value = {'index': sample(props['index'], 'index')}
-            elif 'ref' in props and reuse:
+            if 'ref' in props and reuse:
                 value = {'ref': sample(props['ref'], 'ref', reuse)}
         for branch in schema.get('allOf', []):
             test = branch.get('if')
@@ -249,7 +247,7 @@ def sample(schema, name='', reuse=True):
             return '操作该入口并观察、记录它的直接响应及去向后结束。'
         if name in ('uncertainty', 'recovery_handoff'):
             return ''
-        return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'r0001/c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
+        return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
     raise ValueError('Unsupported example field: ' + name)
 
 

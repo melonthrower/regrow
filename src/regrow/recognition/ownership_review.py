@@ -47,26 +47,24 @@ def request(root, run, episode, frame):
     from regrow.runtime import action_commands as _action_commands
     (_, records, _) = _record_load(run)
     source = records[episode['source_region']]
-    names = [c['name'] for c in owned_controls(source).values()]
-    if len(names) != len(set(names)):
-        raise ValueError('ownership review requires distinguishable historical control names')
+    refs = list(owned_controls(source))
     assignment = {'type': 'object', 'properties': {k: {'type': 'string'} for k in ('control', 'region', 'description', 'evidence')}, 'required': ['control', 'region', 'description', 'evidence'], 'additionalProperties': False}
-    assignment['properties']['control']['enum'] = names
+    assignment['properties']['control']['enum'] = refs
     action = _action_commands.execution_schema()
     schema = {'type': 'object', 'properties': {'status': {'type': 'string', 'enum': ['continue', 'resolved', 'defer']}, 'reason': {'type': 'string'}, 'observed_assignments': {'type': 'array', 'items': assignment}, 'action': {'anyOf': [action, {'type': 'null'}]}}, 'required': ['status', 'reason', 'observed_assignments', 'action'], 'additionalProperties': False}
     path = '纠错/区块归属复查.prompt'
     text = (Path(root) / 'regrow/prompts' / path).read_text()
-    dynamic = {'原区块': {'名称': source['name'], '描述': source['description']}, '待核对历史控件': [{'名称': c['name'], '最近登记观察': {k: next((row[k] for row in reversed(observation_history(c)) if k in row and not row.get('visual_only')), '') for k in ('icon_description', 'knowledge', 'possible_operation', 'uncertainty')}} for c in owned_controls(source).values()], '待核对的划分建议': episode['proposed_regions'], '已观察归属': episode['assignments'], '归属冲突': episode['conflicts'], '本次复查动作': episode['actions'][-6:], '说明': '历史清单不是本图可见清单；只报告当前截图可确认的归属。不确定项可保留，不必强行分配。'}
+    dynamic = {'原区块': {'ref': source['id'], '名称': source['name'], '描述': source['description']}, '待核对历史控件': [{'ref': cid, '名称': c['name'], '最近登记观察': {k: next((row[k] for row in reversed(observation_history(c)) if k in row and not row.get('visual_only')), '') for k in ('icon_description', 'knowledge', 'possible_operation', 'uncertainty')}} for cid, c in owned_controls(source).items()], '待核对的划分建议': episode['proposed_regions'], '已观察归属': episode['assignments'], '归属冲突': episode['conflicts'], '本次复查动作': episode['actions'][-6:], '说明': '历史清单不是本图可见清单；只报告当前截图可确认的归属。不确定项可保留，不必强行分配。'}
     request = {'pipeline_step': 'recovery', 'stage': 'ownership_review', 'role': 'ownership_review', 'system_prompt': text, 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [str(frame)], 'fixed_parts': [{'path': path, 'text': text}], 'response_schema': schema}
     from regrow.prompts.frame_context import label
     return label(request, request['screenshots'][0], '本次区块归属复查观察图')
 
 def record_observation(episode, reply, call, frame, records):
     source = records[episode['source_region']]
-    names = {c['name']: cid for (cid, c) in owned_controls(source).items()}
     seen = set()
     for row in reply['observed_assignments']:
-        cid = names[row['control']]
+        cid = row['control']
+        if cid not in owned_controls(source): raise ValueError('归属复查须引用原控件ID')
         if cid in seen or not all((row[k].strip() for k in ('region', 'description', 'evidence'))):
             raise ValueError('duplicate or empty ownership evidence')
         seen.add(cid)
@@ -94,10 +92,10 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
         if cid in episode['conflicts']:
             continue
         name = item['region']
-        if name == source['name']:
+        if name in (source_id, source['name']):
             continue
         if name not in targets:
-            existing = [rid for (rid, r) in records.items() if r['name'] == name]
+            existing = [name] if name in records else []
             if existing and (len(existing) != 1 or (existing[0] not in source.get('partition_children', []) and (existing_targets or {}).get(name) != existing[0])):
                 raise ValueError('partition name collides with existing Region')
             rid = existing[0] if existing else records.allocate('region') if isinstance(records, object_store.Records) else 'r' + str(max([int(r[1:]) for r in records] + [0]) + 1).zfill(4)

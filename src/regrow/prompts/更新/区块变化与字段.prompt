@@ -1,6 +1,6 @@
 ## 区块变化
 previous_regions描述原区块在动作后的前景、背景或不可见状态。已有对比且核对部分未变化才报告retained；观察到内容或状态变化如实报告changed。观察到变化不单独证明因果或导航。
-regions和controls登记动作后当前前景的对象，区块复用ref、控件复用index并补充新对象；身份字段与发现步相同。
+regions和controls登记动作后当前前景的对象，区块复用ref、控件复用ref并补充新对象；身份字段与发现步相同。
 
 ## 用途与问题
 控件的初步用途和已确认用途都写入knowledge列表，框架根据来源区分；may_open_content和needs_exploration按下方“控件知识与探索判断”填写，结合本次实际观察修订。实际确认的功能和效果也通过controls[].knowledge更新同一控件记录，任务只给进展判断。影响本次执行判断的现象写入对应动作结果。

@@ -173,7 +173,7 @@ def destination_schema():
     observed = {'type': 'object', 'properties': {
         'region_index': {'type': 'integer', 'minimum': 0},
         'control_index': {'type': 'integer', 'minimum': 0,
-                          'description': '本次controls数组中的位置；不是历史控件index。区块目标省略。'},
+                          'description': '本次controls数组中的位置；不是控件ID。区块目标省略。'},
         'conditions': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}}},
         'required': ['region_index'], 'additionalProperties': False}
     existing = {'type': 'object', 'properties': {

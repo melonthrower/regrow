@@ -157,7 +157,6 @@ def action_references(request):
     """Render action targets and the separate, schema-authorized knowledge refs."""
     from regrow.prompts.object_blocks import enabled_fields
     from regrow.runtime.model_transport import expand_schema
-    from regrow.recognition.control_indexes import mapping
     from regrow.prompts.prompt_material import assign
     if request.get('role') == 'step_correction':
         original = action_references(request['original_request'])
@@ -169,15 +168,13 @@ def action_references(request):
             values[TITLE] = shared_map
         return assign(request, values)
     request = render(request)
-    indices = set()
+    refs = set()
     for path, spec in enabled_fields(expand_schema(request['response_schema'])):
-        if path[-2:] == ('controls', 'index'):
-            indices.update(spec.get('enum', []))
-    ids = mapping(request)
+        if path[-2:] == ('controls', 'ref'):
+            refs.update(spec.get('enum', []))
     names = dict(request.get('page_context', {}).get('names', {}))
     names.update({c['id']: c['name'] for c in request.get('backend_candidates', [])})
-    rows = [names.get(ids[i], ids[i]) + ' — controls[].index = ' + str(i)
-            for i in sorted(indices)]
+    rows = [names.get(ref, ref) + ' — ref=' + ref for ref in sorted(refs)]
     owner = request.get('source', {}).get('task_region')
     values = {'可补充知识（仅none/complete）':
               {'原任务所属区块': names.get(owner, owner), '本轮可更新控件引用': rows}} if rows else {}

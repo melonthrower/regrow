@@ -6,9 +6,9 @@ def test_empty_control_catalog_still_allows_region_answer_examples():
     fields = {'action': {'type': 'string', 'enum': ['complete']},
               'reason': {'type': 'string'},
               'controls': {'type': 'array', 'items': {'type': 'object',
-                  'properties': {'index': {'type': 'integer', 'enum': []},
+                  'properties': {'ref': {'type': 'string', 'enum': []},
                                  'knowledge': {'type': 'array'}},
-                  'required': ['index', 'knowledge']}},
+                  'required': ['ref', 'knowledge']}},
               'function_updates': functions(['r0043'])}
     schema = {'anyOf': [{'type': 'object', 'properties': fields,
                          'required': ['action', 'reason'], 'additionalProperties': False}]}

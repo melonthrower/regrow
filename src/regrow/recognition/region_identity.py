@@ -43,7 +43,7 @@ def extend_schema(schema, required=False):
 def prepare(run, request, reply):
     """Return derived input/candidate plus audit; never mutate the saved reply."""
     request = deepcopy(request)
-    if 'control_indexes' in request and request.get('response_schema'):
+    if 'control_refs' in request and request.get('response_schema'):
         import jsonschema
         jsonschema.validate(reply, request['response_schema'])
         request.pop('response_schema')  # Subsequent checks inspect resolved identities, not the wire reply.

@@ -37,7 +37,7 @@ region_content 用于查看当前区块尚未显示的内容。有滚动条、�
 
 {{任务结算条件说明}}
 
-operations 只列新增任务，按实际依赖和离开页面的影响排序，不预编GUI动作。每项 completion_condition 写明本任务的结算条件，提出后保持为原问题的终点；control 使用给定完整控件名；仅区块自身内容问题可填空字符串，不能用空字符串代指未知控件。task_type 只填 function、parameter 或 region_content。region_content 的 control 填空字符串，并用 reason 写一句具体理由；它绑定当前区块，不是某个按钮。function_refs 可关联本轮给定且有实际关联的功能引用，不为凑覆盖而挂无关功能；任务仍是唯一探索问题清单。已有同控件同类型任务复用原记录，不重复加入 operations；没有新任务填 []。已有答案仍适用时保留；新要求、实际缺口或相反证据才支持重新调查，不以尚未点击、未穷尽取值或猜测新边界制造任务。
+operations 只列新增任务，按实际依赖和离开页面的影响排序，不预编GUI动作。每项 completion_condition 写明本任务的结算条件，提出后保持为原问题的终点；control 使用给定控件ID；仅区块自身内容问题可填空字符串，不能用空字符串代指未知控件。task_type 只填 function、parameter 或 region_content。region_content 的 control 填空字符串，并用 reason 写一句具体理由；它绑定当前区块，不是某个按钮。function_refs 可关联本轮给定且有实际关联的功能引用，不为凑覆盖而挂无关功能；任务仍是唯一探索问题清单。已有同控件同类型任务复用原记录，不重复加入 operations；没有新任务填 []。已有答案仍适用时保留；新要求、实际缺口或相反证据才支持重新调查，不以尚未点击、未穷尽取值或猜测新边界制造任务。
 
 {{探索任务正例}}
 
@@ -53,16 +53,16 @@ shared_instances 只声明有身份记录或明确界面延续支持的同一控
 
 {{任务判断正例}}
 
-当前合同还提供对象知识与功能增量。controls 以本轮规定的 ref 或 index 引用控件，knowledge 为知识项列表；regions 用 ref 引用区块，local_knowledge 用 add 字符串段落、update 的 id/text 和 delete 段落编号更新。knowledge 的 description 写可复用用途和规则；当前取值、选中或禁用状态只作为本次判断依据，不写成用途知识。没有新的认识就不重报已有知识。必要的页面、模式、限制和不确定性写进 description，不另填 conditions。已有知识用其 index 修订并保留有效内容，新项不填 index；参数 constraints 是名称到 {description} 的映射。
+当前合同还提供对象知识与功能增量。controls 以本轮规定的 ref 引用控件，knowledge 为知识项列表；regions 用 ref 引用区块，local_knowledge 用 add 字符串段落、update 的 id/text 和 delete 段落编号更新。knowledge 的 description 写可复用用途和规则；当前取值、选中或禁用状态只作为本次判断依据，不写成用途知识。没有新的认识就不重报已有知识。必要的页面、模式、限制和不确定性写进 description，不另填 conditions。已有知识用其 index 修订并保留有效内容，新项不填 index；参数 constraints 是名称到 {description} 的映射。
 
 这些更新留下后续判断所需的对象认识：controls回答具体控件怎样使用，regions记录多个控件的配合和区域条件；已有认识足够时直接复用，不为填表重探。
 {{控件知识正例}}
 
 {{区块知识正例}}
 
-function_updates 每组 region 引用区块，add 新增功能，update 用 ref/changes 更新，remove 用 ref/reason 删除，合并可写 replace_with。功能 name 写简短业务目的，description 写用途、必要条件与限制。supports 是引用列表：整数引用本轮材料给定的控件 index，不是本次 controls 回复位置；字符串使用给定支持引用，也可以用所属区块自身的 ref 引用其 local_knowledge。只有名称而无用途依据的对象不能作为支持。已有知识不足但本次材料有依据时，可在同一回复先补 controls[].knowledge 或 regions[].local_knowledge，再由功能引用该对象；不要求先前已经登记过这条知识。
+function_updates 每组 region 引用区块，add 新增功能，update 用 ref/changes 更新，remove 用 ref/reason 删除，合并可写 replace_with。功能 name 写简短业务目的，description 写用途、必要条件与限制。supports 是引用列表：填写控件树中的控件ID或区块ID。只有名称而无用途依据的对象不能作为支持。已有知识不足但本次材料有依据时，可在同一回复先补 controls[].knowledge 或 regions[].local_knowledge，再由功能引用该对象；不要求先前已经登记过这条知识。
 
-功能 constraints 是给定参数完整键的字符串列表，逐字复制材料给出的“来源控件引用/参数名”（例如控件[index=0]/搜索词），其中0是本轮控件编号，不是知识条目编号且其来源对象须在 supports 中。没有功能变化填 []，不清空旧目录。知识保留用途、条件和不确定性；功能须有真正支持该目的的本地对象知识，外部支持须有已给关联，归实际承载业务的区块，不把目标业务登记到入口。没有开放这些字段时，不另加输出。function_refs 可引用同次新增功能的唯一名称，不改任务归属或完成条件。
+功能 constraints 是给定参数完整键的字符串列表，逐字复制材料给出的“来源控件引用/参数名”（例如c0008/搜索词），其来源控件须在 supports 中。没有功能变化填 []，不清空旧目录。知识保留用途、条件和不确定性；功能须有真正支持该目的的本地对象知识，外部支持须有已给关联，归实际承载业务的区块，不把目标业务登记到入口。没有开放这些字段时，不另加输出。function_refs 可引用同次新增功能的唯一名称，不改任务归属或完成条件。
 
 功能目录把对象认识组织为可提取操作的用户目的，不是另一套待完成任务。
 {{功能更新正例}}

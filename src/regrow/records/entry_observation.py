@@ -12,10 +12,9 @@ def resolve(value, records, labels=None):
     from regrow.records.task_settlement import entry_schema
     import jsonschema
     jsonschema.validate(value, entry_schema())
-    rid = (labels or {}).get(value['region'])
-    matches = [rid] if rid in records else [r for r in records if records[r]['name'] == value['region']]
+    matches = [value['region']] if value['region'] in records else []
     if len(matches) != 1:
-        raise ValueError('入口去向需要本轮已登记的唯一完整区块名')
+        raise ValueError('入口去向需要本轮已登记的区块ID')
     if not value['evidence'].strip():
         raise ValueError('入口关联需要明确用途及观察依据；不能仅凭同时可见推定关联')
     return matches[0]

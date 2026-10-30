@@ -72,7 +72,7 @@ def accept_with_edits(root, run, job):
                     targets = [key for (key, r) in records.items() if any((v.get('id') == rid for v in r.get('merged_records', [])))]
                     if len(targets) == 1:
                         refreshed['region_names'][label] = targets[0]
-                from regrow.recognition.control_indexes import after_record_edit
+                from regrow.recognition.control_references import after_record_edit
                 refreshed = after_record_edit(job['request'], refreshed, records)
                 job = {**job, 'request': refreshed}
                 _record_write_json(Path(run) / 'calls' / job['call'] / 'effective_request.json', refreshed)
@@ -85,7 +85,7 @@ def accept_with_edits(root, run, job):
                 (_, records, _) = _record_load(run)
                 if job['stage'] == 'discovery':
                     preserve_repair_aliases(job['request'], refreshed, records)
-                    from regrow.recognition.control_indexes import after_record_edit
+                    from regrow.recognition.control_references import after_record_edit
                     refreshed = after_record_edit(job['request'], refreshed, records)
                 job = {**job, 'request': refreshed}
                 _record_write_json(Path(run) / 'calls' / job['call'] / 'effective_request.json', job['request'])
@@ -175,7 +175,7 @@ def accept_candidate(root, run, job):
             task = owned_tasks(owner)[source['task_name']]
             evidence = answer_evidence(run, q, owner, task, state)
             from regrow.records.object_knowledge import apply as apply_knowledge
-            from regrow.recognition.control_indexes import decode
+            from regrow.recognition.control_references import decode
             apply_knowledge(preview, decode(q, proposal), {**(evidence or {'basis':'observation_only'}), 'source_call': ref})
             store_increment(owner, task, source['task_name'], proposal['task_update'], preview, state, {**(evidence or {'basis':'observation_only'}), 'source_call': ref}, observed=bool(evidence))
         if binding['status'] == 'matched':
@@ -225,10 +225,10 @@ def related(run, job):
         refs.update((r for (r, item) in records.items() if item['name'] in names))
     result = {r: {**deepcopy(dict(records[r])), 'controls': deepcopy(dict(owned_controls(records[r]))), 'tasks': deepcopy(dict(owned_tasks(records[r]))), 'actions': deepcopy(dict(owned_actions(records[r])))} for r in sorted(refs - {None}) if r in records}
     if job['stage'] == 'update' and job.get('candidate'):
-        names = {v for c in job['candidate'].get('controls', []) for k in ('name', 'ref') if (v := c.get(k))}
+        control_refs = {c['ref'] for c in job['candidate'].get('controls', []) if c.get('ref')}
         binding = _record_read(Path(run) / 'action_attempts' / job['attempt'] / 'binding.json') if job.get('attempt') else {}
         for (rid, r) in result.items():
-            r['controls'] = {cid: c for (cid, c) in owned_controls(r).items() if c['name'] in names or cid == binding.get('control_ref')}
+            r['controls'] = {cid: c for (cid, c) in owned_controls(r).items() if cid in control_refs or cid == binding.get('control_ref')}
             replace_owned_tasks(r, {name: t for (name, t) in owned_tasks(r).items() if t.get('control') in owned_controls(r)})
     if job['stage'] == 'action':
         source = q.get('source', {})
@@ -261,9 +261,9 @@ def record_capabilities(stage=None, request=None):
         return []
     historical = ['edit_record观察归属纠正：仅本轮control_observation_candidates披露的region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence；只迁移指定观察，不迁移任务或动作，不能整条合并。retained_name必须描述迁移后来源控件剩余观察的职责，不能沿用被移走对象的名称。', 'edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原动作前图、实际投递和已登记结果及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。']
     historical = [text for (text, key) in zip(historical, ('control_observation_candidates', 'action_owner_candidates')) if request.get(key)]
-    reopen = ['edit_record / reopen_task：仅发现/任务清点可重新审查本地按观察结束、尚未执行的任务；task为原任务名，before为原控件名，after为具体未知内容目标，evidence说明遗漏。保留身份、旧判断与事实；不重开已尝试或共享任务。'] if stage in ('discovery', 'task_proposal') else []
+    reopen = ['edit_record / reopen_task：仅发现/任务清点可重新审查本地按观察结束、尚未执行的任务；task为原任务名，before为原控件ID，after为具体未知内容目标，evidence说明遗漏。保留身份、旧判断与事实；不重开已尝试或共享任务。'] if stage in ('discovery', 'task_proposal') else []
     task_edits = ['edit_record / task_control或suspend_task：在发现/任务清点中用task选择任务；无历史pending可改到披露的唯一控件，有历史只暂挂保留旧事实并重新清点。'] if stage in ('discovery', 'task_proposal') else []
-    return ([] if stage == 'action' else historical) + reopen + task_edits + ['edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。', 'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。', 'edit_record / merge_into：同一物理控件的重复记录可合并；完全同名可用同名作为来源和目标，迁移历史及任务引用。', 'edit_record / merge_into（区块）：control留空，region与before写重复区块名称，after写保留区块名称，提供同一物理区块的证据；合并本轮披露的对应区块并迁移引用。', 'edit_record / remove：可删除无动作、任务或跳转引用的误登记控件；已有历史不能直接删除。', 'revise也可同时填写record_edit和完整proposal。']
+    return ([] if stage == 'action' else historical) + reopen + task_edits + ['edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。', 'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。', 'edit_record / merge_into：同一物理控件的重复记录可合并；来源和目标填写各自控件ID，迁移历史及任务引用。', 'edit_record / merge_into（区块）：control留空，region与before写重复区块ID，after写保留区块ID，提供同一物理区块的证据；合并本轮披露的对应区块并迁移引用。', 'edit_record / remove：可删除无动作、任务或跳转引用的误登记控件；已有历史不能直接删除。', 'revise也可同时填写record_edit和完整proposal。']
 
 def context(run, job):
     if job['stage'] == 'appearance_comparison':
@@ -307,13 +307,13 @@ def context(run, job):
             return {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '条件': task.get('conditions', [])}
         view = {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '覆盖任务': covered, '说明': task.get('reason') or task.get('name', ''), '类型': task.get('task_type'), '尝试事实': describe(effective, history_records)}
         return _map_prompt.task_view(job['request'], owner.get('id'), name, task, view)
-    value = {'区块': [{'名称': r['name'], '描述': r['description'], '控件': [{'名称': c['name'], '说明': c.get('description', ''), '列表分组': group_name(r, cid), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮完整提案', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
+    value = {'区块': [{'ref': r['id'], '名称': r['name'], '描述': r['description'], '控件': [{'ref': cid, '名称': c['name'], '说明': c.get('description', ''), '列表分组': group_name(r, cid), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮完整提案', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
     if job['stage'] == 'function_registration':
         for region in value['区块']:
             region['历史登记描述（非当前状态）'] = region.pop('描述')
 
     if job['stage'] == 'task_proposal':
-        value['区块'] = [{'名称': r['name'], '控件可修订原值': [{'名称': c['name'], 'description': c.get('description', ''), 'list_group': group_name(r, cid)} for cid, c in owned_controls(r).items()], '记录': '控件身份、完整任务目录和相关知识见原动态上下文；本次拒绝原因与被拒绝回复单独保留。'} for r in records.values()]
+        value['区块'] = [{'ref': r['id'], '名称': r['name'], '控件可修订原值': [{'ref': cid, '名称': c['name'], 'description': c.get('description', ''), 'list_group': group_name(r, cid)} for cid, c in owned_controls(r).items()], '记录': '控件身份、完整任务目录和相关知识见原动态上下文；本次拒绝原因与被拒绝回复单独保留。'} for r in records.values()]
     source = job['request'].get('source', {})
     owner = source.get('task_region') or source.get('region')
     name = source.get('task_name')
@@ -478,11 +478,11 @@ def edit_record(root, run, job, edit):
                 if job.get('attempt') or (Path(run) / 'execution_pending.json').exists():
                     raise ValueError('先完成待结算动作，不能借历史纠正改写当前执行')
                 for (region_key, control_key) in [('from_region', 'from_control'), ('to_region', 'to_control')]:
-                    matches = [r for r in scope.values() if r['name'] == item[region_key] and any((c['name'] == item[control_key] for c in owned_controls(r).values()))]
+                    matches = [r for r in scope.values() if r['id'] == item[region_key] and item[control_key] in owned_controls(r)]
                     if len(matches) != 1:
                         raise ValueError('动作纠正对象不在本轮披露范围')
                 candidates = job['request'].get('action_owner_candidates', [])
-                if not any((c['attempt'] == item['attempt'] and all((records[c[p + '_region']]['name'] == item[p + '_region'] and owned_controls(records[c[p + '_region']])[c[p + '_control']]['name'] == item[p + '_control'] for p in ('from', 'to'))) for c in candidates)):
+                if not any((c['attempt'] == item['attempt'] and all((c[p + '_region'] == item[p + '_region'] and c[p + '_control'] == item[p + '_control'] for p in ('from', 'to'))) for c in candidates)):
                     raise ValueError('这笔历史动作及归属候选没有随本轮披露')
                 action_dir = Path(run) / 'action_attempts' / item['attempt']
                 provided = {str((Path(run) / f).resolve()) for f in job['request'].get('screenshots', [])}
@@ -492,19 +492,19 @@ def edit_record(root, run, job, edit):
                     raise ValueError('动作归属纠正快照已变化')
                 _action_owner_correction.apply(records, state, item, job['call'], snapshot)
                 continue
-            matches = [rid for (rid, r) in scope.items() if r['name'] == item['region']]
+            matches = [item['region']] if item['region'] in scope else []
             if 'task' in item:
                 if len(matches) != 1 or item['task'] not in owned_tasks(scope[matches[0]]):
                     raise ValueError('任务不在本轮修订范围')
                 rid = matches[0]
-                if item['field'] == 'task_control' and (not any((c['name'] == item['after'] for c in owned_controls(scope[rid]).values()))):
+                if item['field'] == 'task_control' and item['after'] not in owned_controls(scope[rid]):
                     raise ValueError('目标控件未在本轮披露，先补观察')
                 if job['stage'] not in ('task_proposal', 'discovery'):
                     raise ValueError('任务归属请在补发现后的任务清点中修订，不能改变执行中的绑定')
                 _task_record_repair.apply(records[rid], state, item, job['call'])
                 continue
             if item['field'] == 'merge_into' and (not item['control']):
-                targets = [rid for (rid, r) in scope.items() if r['name'] == item['after']]
+                targets = [item['after']] if item['after'] in scope else []
                 if not matches or not targets or item['before'] != item['region']:
                     raise ValueError('区块合并来源或目标不在本轮范围')
                 if item['region'] != item['after'] and len(targets) != 1:
@@ -526,12 +526,12 @@ def edit_record(root, run, job, edit):
             rid = matches[0]
             r = records[rid]
             field = item['field']
-            names = [cid for (cid, c) in owned_controls(r).items() if c['name'] == item['control']]
+            names = [item['control']] if item['control'] in owned_controls(r) else []
             if any((cid not in owned_controls(scope[rid]) for cid in names)):
                 raise ValueError('控件不在本轮修订范围')
             if field == 'region':
-                targets = [key for (key, value) in scope.items() if value['name'] == item['after']]
-                if len(names) != 1 or len(targets) != 1 or targets[0] == rid or (item['before'] != r['name']):
+                targets = [item['after']] if item['after'] in scope else []
+                if len(names) != 1 or len(targets) != 1 or targets[0] == rid or (item['before'] != rid):
                     raise ValueError('控件归属修订需要唯一已披露来源及不同目标区块，原值必须一致')
                 if not job.get('attempt') and (Path(run) / 'execution_pending.json').exists():
                     raise ValueError('待结算动作未随本轮披露，不能迁移控件')
@@ -544,14 +544,14 @@ def edit_record(root, run, job, edit):
                 episode['assignments'][names[0]] = {'region': item['after'], 'description': records[targets[0]]['description'], 'evidence': item['evidence'], 'call': job['call']}
                 episode['targets'][item['after']] = targets[0]
             elif field == 'merge_into':
-                targets = [cid for (cid, c) in owned_controls(r).items() if c['name'] == item['after']]
+                targets = [item['after']] if item['after'] in owned_controls(r) else []
                 if any((cid not in owned_controls(scope[rid]) for cid in targets)):
                     raise ValueError('合并目标不在本轮修订范围')
                 if not names or not targets or item['before'] != item['control']:
                     raise ValueError('merge source/target mismatch')
                 if len(targets) > 1 and item['control'] != item['after']:
                     raise ValueError('merge destination ambiguous')
-                merges.append({'region': rid, 'name': item['control'], 'target': targets[0], 'sources': set(names)})
+                merges.append({'region': rid, 'name': owned_controls(r)[names[0]]['name'], 'target': targets[0], 'sources': set(names)})
             elif field == 'remove':
                 if len(names) != 1 or item['before'] != item['control']:
                     raise ValueError('remove source ambiguous')
@@ -618,10 +618,10 @@ def update_observation_request(root, run, job, frame):
         region = records.get(rid)
         if not region:
             continue
-        matches = [c for c in owned_controls(region).values() if c['name'] in controls]
-        if region['name'] not in names and (not matches):
+        matches = [c for cid, c in owned_controls(region).items() if cid in controls or c['name'] in controls]
+        if rid not in names and region['name'] not in names and not matches:
             continue
-        related.append({'区块': region['name'], '历史描述': region['description'], '相关控件': [{'名称': c['name'], '说明': c.get('description', '')} for c in owned_controls(region).values()]})
+        related.append({'ref': rid, '区块': region['name'], '历史描述': region['description'], '相关控件': [{'ref': cid, '名称': c['name'], '说明': c.get('description', '')} for cid, c in owned_controls(region).items()]})
     attempt = Path(run) / 'action_attempts' / job['attempt']
     frames = [str(Path(frame).resolve())]
     path = '纠错/更新补充观察.prompt'
@@ -791,12 +791,12 @@ def edit_proposal(run, job, edits):
     for edit in edits if isinstance(edits, list) else [edits]:
         if not edit or edit.get('field') not in ('name', 'description', 'list_group') or (not edit['evidence'].strip()):
             return False
-        matches = [(i, r) for (i, r) in enumerate(candidate['regions']) if r['name'] == edit['region']]
+        matches = [(i, r) for (i, r) in enumerate(candidate['regions']) if r.get('ref', r.get('name')) == edit['region']]
         if len(matches) != 1:
             return False
         (index, region) = matches[0]
         if edit['control']:
-            targets = [c for c in candidate.get('controls', []) if c['region_index'] == index and c.get('name', c.get('text')) == edit['control']]
+            targets = [c for c in candidate.get('controls', []) if c['region_index'] == index and c.get('ref', c.get('name', c.get('text'))) == edit['control']]
         else:
             if edit['field'] == 'list_group':
                 return False

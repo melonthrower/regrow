@@ -153,18 +153,18 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             elif r.get('_matched_id') in records:
                 rid = r['_matched_id']
             elif previous:
-                ids = [q['region_names'][previous]] if previous in q.get('region_names', {}) else [previous] if previous in records else [k for (k, v) in records.items() if v['name'] == previous]
+                ids = [q['region_names'][previous]] if previous in q.get('region_names', {}) else [previous] if previous in records else []
                 if len(ids) == 1:
                     rid = ids[0]
             if previous and rid not in records:
-                add('unknown_region', f'/regions/{i}/ref', r['name'], previous, list(ctx.get('region_names', {})) if stage == 'discovery' else list(q.get('region_names') or [v['name'] for v in records.values()]), '复用本轮可对应的区块名称。')
+                add('unknown_region', f'/regions/{i}/ref', r['name'], previous, list(ctx.get('region_names', {})) if stage == 'discovery' else list(q.get('region_names') or [v['name'] for v in records.values()]), '使用本轮提供的区块ID。')
             rids.append(rid)
             from regrow.records.object_knowledge import region_only
             if not region_only(r) and rid in records and records[rid].get('behavior_context') and (r.get('context_matches') is not True):
                 add('region_context', f'/regions/{i}/context_matches', r['name'], r.get('context_matches'), records[rid]['behavior_context'], '根据当前截图核对历史适用上下文。匹配才复用；不同则选择正确候选或登记有依据的新区块；不清楚则补观察，不因外观相似填写true。')
         changes = []
         for (i, previous) in enumerate(p.get('previous_regions', [])):
-            ids = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [previous['ref']] if previous['ref'] in records else [rid for (rid, r) in records.items() if r['name'] == previous['ref']]
+            ids = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [previous['ref']] if previous['ref'] in records else []
             changes.append({'region': ids[0] if len(ids) == 1 and ids[0] in records else None, 'state': previous.get('state')})
             if len(ids) == 1 and records[ids[0]].get('behavior_context') and (previous.get('state') in ('retained_interactive', 'changed_interactive')) and (previous.get('context_matches') is not True):
                 add('region_context', f'/previous_regions/{i}/context_matches', previous['ref'], previous.get('context_matches'), records[ids[0]]['behavior_context'], '保留旧区块在当前前景也必须核对适用上下文；不匹配不要恢复旧控件，按动作后图报告实际区块。背景或不可见状态无需此确认；前景展示区不要求有控件。')
@@ -206,15 +206,15 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                 if identity == 'uncertain' or (identity == 'same') != bool(previous):
                     add('control_identity', path + '/identity', obj, identity, 'same需有效对应；new需新对象证据', '核对身份，不把未知编辑能力当作身份不明。')
                 if identity == 'same':
-                    cid = ctx.get('control_names', {}).get(previous, previous if previous in q.get('control_indexes', []) else None)
+                    cid = ctx.get('control_names', {}).get(previous, previous if previous in q.get('control_refs', []) else None)
             elif c.get('_matched_id') in controls:
                 cid = c['_matched_id']
             elif previous:
                 from regrow.records.object_store import control_record
-                ids = [previous] if control_record(records, previous) is not None else [k for (k, v) in controls.items() if v['name'] == previous]
+                ids = [previous] if control_record(records, previous) is not None else []
                 if len(ids) == 1:
                     cid = ids[0]
-                elif previous in q.get('control_indexes', []):
+                elif previous in q.get('control_refs', []):
                     cid = previous
             from regrow.records.object_store import control_record
             if previous and control_record(records, cid) is None:
@@ -231,7 +231,7 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                         appearance = {field: last_reported(old, field).get(field) for field in ('icon_description',) if field in last_reported(old, field)}
                         add('unknown_candidate_control', path + '/region_index', obj, {'ref': previous, 'registered_region': owner, 'registered_region_name': records[owner]['name'], 'control': key, 'historical_appearance': appearance}, {'proposed_region': rid, 'proposed_region_name': p['regions'][idx]['name']}, '该历史控件位于另一所属区块。先结合旧外观与当前图判断是否同一对象；若当前是不同的可见控件，按新对象登记并说明差异。若确认同一对象，保留正确原归属；仅当旧归属确有错误且本次提供修订能力时，才用record_edit的region修订。')
                     else:
-                        add('unknown_candidate_control', path + '/ref', obj, previous, list(ctx.get('control_names', {})) if stage == 'discovery' else [v['name'] for v in controls.values()], '只用本轮绑定名称；历史存在但未披露时补充候选核对，不能为绕过错误重复新建。')
+                        add('unknown_candidate_control', path + '/ref', obj, previous, list(ctx.get('control_names', {})) if stage == 'discovery' else [v['name'] for v in controls.values()], '使用本轮提供的控件ID；历史存在但未披露时补充候选核对，不能为绕过错误重复新建。')
             if cid:
                 if (idx, cid) in bound:
                     add('duplicate_binding', path + '/ref', obj, previous, bound[(idx, cid)], '同一区块的同一旧对象只绑定一次。')
@@ -244,13 +244,13 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
         owner = records.get(binding.get('task_region', binding.get('region_ref')), {})
         task = owned_tasks(owner).get(binding.get('task_name'), {})
         for (i, previous) in enumerate(p.get('previous_regions', [])):
-            matches = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [k for (k, v) in records.items() if v['name'] == previous['ref']]
+            matches = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [previous['ref']] if previous['ref'] in records else []
             if len(matches) != 1 or matches[0] not in records:
                 add('previous_region', f'/previous_regions/{i}/ref', previous['ref'], previous['ref'], list(q.get('region_names') or [v['name'] for v in records.values()]), '按本轮候选区块编号报告可见性。')
     return {'errors': errors, 'unchecked': unchecked}
 
 def task_reference_errors(stage, q, p, records):
-    """Independent name checks remain usable when unrelated fields are invalid."""
+    """Independent ID checks remain usable when unrelated fields are invalid."""
     if stage != 'task_proposal' or not isinstance(p, dict):
         return []
     controls = owned_controls(records.get(q.get('source', {}).get('region'), {}))
@@ -264,11 +264,11 @@ def task_reference_errors(stage, q, p, records):
                 continue
             if key == 'operations' and ('task' in row or not row['control']):
                 continue
-            ids = [cid for cid, control in controls.items() if control['name'] == row['control']]
+            ids = [row['control']] if row['control'] in controls else []
             if len(ids) != 1:
                 errors.append(dict(code='task_owner', path=f'/{key}/{i}/control',
                     object=row['control'], actual=row['control'], expected={'matches': ids},
-                    repair='多条匹配先核对并修订重复记录；无匹配先发现登记，不猜控件名称。' if key == 'operations' else '共享成员必须是本区块已登记控件；源身份由登记器核对。'))
+                    repair='使用当前区块已登记控件的ID；未知对象先发现登记。' if key == 'operations' else '共享成员必须是本区块已登记控件；源身份由登记器核对。'))
     return errors
 
 

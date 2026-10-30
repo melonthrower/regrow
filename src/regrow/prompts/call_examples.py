@@ -32,7 +32,7 @@ def sections(schema):
     branch = complete or none
     for field, slot in [('controls', '控件知识格式'), ('regions', '区块知识格式'), ('function_updates', '功能更新格式')]:
         spec = (branch or {}).get('properties', {}).get(field)
-        control_spec = (branch or {}).get('properties', {}).get('controls', {}).get('items', {}).get('properties', {}).get('index')
+        control_spec = (branch or {}).get('properties', {}).get('controls', {}).get('items', {}).get('properties', {}).get('ref')
         no_controls = control_spec is not None and control_spec.get('enum') == []
         if not spec or spec.get('maxItems') == 0 or (field == 'controls' and no_controls):
             result[slot] = '本轮未开放' + field + '，不要填写。'
@@ -72,10 +72,10 @@ def local_sections(schema, request, wanted):
         item = spec.get('items', spec)
         fields = item.get('properties', {})
         if field == 'controls':
-            index = fields.get('index')
-            if not index or index.get('enum') == [] or 'knowledge' not in fields:
+            ref = fields.get('ref')
+            if not ref or ref.get('enum') == [] or 'knowledge' not in fields:
                 continue
-            value = [{'index': sample(index), 'knowledge': [{'description': '点击该入口打开筛选面板；面板内各选项的效果尚未验证。'}]}]
+            value = [{'ref': sample(ref), 'knowledge': [{'description': '点击该入口打开筛选面板；面板内各选项的效果尚未验证。'}]}]
         elif field == 'regions':
             known = request.get('discovery_context', {}).get('region_names') or request.get('region_names') or {}
             allowed = fields.get('ref', {}).get('enum') or list(known.values())

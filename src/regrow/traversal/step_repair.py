@@ -740,7 +740,7 @@ class Runner:
                             original, revised = semantic_revision(reviewed, candidate)
                             job.update(request=original, candidate=revised)
                             job.pop('registration_submission', None)
-                            job.update(status='repair', error='该旧控件复用已被否定。请修正本次对象登记及相关任务知识、jump_to和下一步：旧对象未出现则撤回引用；当前为新对象则不填index并补充资料；不要把新对象作用继续写到旧控件。依据：' + reply['reason'])
+                            job.update(status='repair', error='该旧控件复用已被否定。请修正本次对象登记及相关任务知识、jump_to和下一步：旧对象未出现则撤回引用；当前为新对象则省略ref并补充资料；不要把新对象作用继续写到旧控件。依据：' + reply['reason'])
                         self.save(job)
                         continue
                     repeated = reply.get('proposal') if isinstance(reply, dict) else None

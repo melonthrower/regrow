@@ -1,8 +1,8 @@
 ## 必要任务 → operations
-只判断本次提供的当前区块控件。新任务填写control（完整控件名）和task_type（function或parameter）；针对区块自身内容时control填空字符串。已有同控件同类型问题继续原任务，不因当前未见、未点击或参数未穷尽再造问题。
+只判断本次提供的当前区块控件。新任务填写control（控件ID）和task_type（function或parameter）；针对区块自身内容时control填空字符串。已有同控件同类型问题继续原任务，不因当前未见、未点击或参数未穷尽再造问题。
 局部任务例（假设本区块有输入规则未知的文件名搜索框，不是完整回复）：
 ```json
-{"operations":[{"control":"文件名搜索框","task_type":"parameter"}]}
+{"operations":[{"control":"c0008","task_type":"parameter"}]}
 ```
 正例：针对明确的输入规则未知提出参数任务。
 反例：已知按钮只负责展开输入框，却把新输入框的参数任务挂给按钮；为明确用途补证明任务。
@@ -14,7 +14,7 @@
 无复用填[]；确认本区块成员与给定来源是同一个控件时，引用control及来源source_region/source_control，reason说明身份依据。框架使两个区块直接引用同一控件记录，保留各区块的实际动作和任务归属，不把别处执行改成本地执行。
 局部例：两页沿用同一个顶部导航控件：
 ```json
-{"shared_instances":[{"control":"顶部添加","source_region":"公共顶部栏","source_control":"顶部添加","reason":"延续同一导航栏中的同一添加控件。"}]}
+{"shared_instances":[{"control":"c0001","source_region":"r0001","source_control":"c0001","reason":"延续同一导航栏中的同一添加控件。"}]}
 ```
 正例：跨页面延续的同一个顶部按钮复用记录，条件化用途另写knowledge和jump_to。反例：只因外观都是“＋”，就合并调小时与调分钟两个独立控件。
 

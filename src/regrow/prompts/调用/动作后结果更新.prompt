@@ -21,7 +21,7 @@ context_matches 只核对历史区块已有的行为适用上下文，不表示�
 状态变化：文件列表排序改变，沿用原区块。内容切换：邮件列表切换为联系人列表，分别匹配对应区块，公共导航区继续复用。
 区块 description 说明稳定职责，本次值和选中状态留在观察。控件是承载操作的对象，纯说明文字只辅助辨认。相同名称、位置、图标或用途不足以合并身份；标题、值、禁用、选中或模式变化也不足以新建身份。结合给定历史与界面延续确认同一对象，证据不足保留不确定。
 
-regions/controls 报告动作后前景中新出现或变化对象；未重报不表示消失。本步双图仅判断语义和身份，不输出坐标，新外观由后续单图登记。原操作对象转入背景时，只用给定控件 index 修订 knowledge，不加 region_index 冒充前景发现。已有区块用 ref；身份尚不能确认时不猜绑 ref，填写 identity="uncertain" 并说明具体候选与缺口。新区块按本轮格式填写 identity 与 identity_evidence，parent_index 仅引用本次真实物理包含的父区块位置，不代表访问来路；只有整个区块确实超出运行范围时才填 out_of_scope_reason。已有控件用本轮 index，新控件 region_index 引用本次 regions 位置；不同层级编号不可混用。
+regions/controls 报告动作后前景中新出现或变化对象；未重报不表示消失。本步双图仅判断语义和身份，不输出坐标，新外观由后续单图登记。原操作对象转入背景时，只用给定控件ID（ref） 修订 knowledge，不加 region_index 冒充前景发现。已有区块用 ref；身份尚不能确认时不猜绑 ref，填写 identity="uncertain" 并说明具体候选与缺口。新区块按本轮格式填写 identity 与 identity_evidence，parent_index 仅引用本次真实物理包含的父区块位置，不代表访问来路；只有整个区块确实超出运行范围时才填 out_of_scope_reason。已有控件用ref引用控件ID，新控件 region_index 引用本次 regions 位置；不同层级编号不可混用。
 
 控件 name 是便于辨认的稳定短名，description 按本轮对象合同描述辨认特征；用途、规则写 knowledge。may_open_content 表示是否能打开主要功能相关内容，不表示路线已验证；needs_exploration 表示自身有无具体未知，true/false/null 按证据判断，不是操作许可或目标区块完成状态。add_image 在当前有值得保留的可见外观变化、已有说明不能确认是否覆盖时可提出，不必断言历史一定没保存；已有状态已覆盖则复用，仅缺说明而无变化不追加；省略或false不清空旧图。本次只提交追加意图，image_conditions 描述相应外观条件；图片由框架补齐，不能由外观匹配推断操作成功。
 
@@ -37,7 +37,7 @@ regions/controls 报告动作后前景中新出现或变化对象；未重报不
 
 jump_to 在回复顶层，只填写本次到达的目标及必要条件；来源固定取上一步执行记录的控件，不另选来源。当前动作使区块或独立控件出现、切换、展开或可访问，且有前后证据支持时，缺少路线就登记；原任务继续或暂挂也不丢掉已确认去向。已有关系复用，不重复建边。仅改变同一控件的值、模式或状态不构成新目标；两个来源通向同一目标不因此合并身份。
 
-新路线 region_index 指本次 regions 位置，目标是控件时 control_index 指本次 controls 位置，不能填历史控件 index；conditions 仅在路线有适用条件时填写。control_index 指目标控件，不能用刚操作的来源按钮代替。修订旧路线只用该来源已有跳转列表的 index 和 conditions，不表示本次又访问旧目标。目标偶然状态不自动成为路线条件，推测或无关变化不能登记为已验证路线。
+新路线 region_index 指本次 regions 位置，目标是控件时 control_index 指本次 controls 位置，不能填控件ID；conditions 仅在路线有适用条件时填写。control_index 指目标控件，不能用刚操作的来源按钮代替。修订旧路线只用该来源已有跳转列表的 index 和 conditions，不表示本次又访问旧目标。目标偶然状态不自动成为路线条件，推测或无关变化不能登记为已验证路线。
 
 正例：点击“附件”标签后出现附件区，目标区块在 regions[1]，填写 `"jump_to":[{"region_index":1}]`。反例：把 controls[0] 中的来源标签填为这个附件区的目标控件。
 

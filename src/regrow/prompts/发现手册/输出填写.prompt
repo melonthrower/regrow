@@ -1,5 +1,5 @@
 ## 输出登记
-foreground说明当前前景和实际异常。regions、controls登记已确认的对象；已有区块用ref，新区块用identity=new；已有控件用index，新控件不填index。名称、归属、抽象用途和必要条件按对应字段填写。
+foreground说明当前前景和实际异常。regions、controls登记已确认的对象；已有区块用ref，新区块用identity=new；已有控件用ref，新控件省略ref。名称、归属、抽象用途和必要条件按对应字段填写。
 knowledge用description/conditions列表描述控件用途；识别阶段的初步判断与探索确认共用该字段，来源由框架保存。may_open_content判断是否可能打开或展开有助于了解应用功能及操作关系的内容，包括页面、菜单、区块或独立控件；例如展开搜索输入框。仅出现新页面不代表有遍历价值，明确无关的宣传等内容不计入；无法判断填null。已了解的功能入口仍可为true，是否还需探索由needs_exploration判断。needs_exploration判断是否需要进一步探索，不确定填null。含义明确的简单操作可判断无需探索；有参数或反馈未知的控件，即使不打开新内容，也可能需要探索。身份未定用identity_evidence说明，其他本步缺口用uncertainties保留。
 图片裁取按本步原图和身份图规则填写；旧对象无新图时不重复裁取。
 

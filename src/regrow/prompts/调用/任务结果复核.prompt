@@ -20,7 +20,7 @@ region_content 的结论针对任务理由中的未见内容：已有观察足�
 # 更新判断与知识
 本调用的 task_update 是单个对象，原任务由程序绑定，无需另写 task、name 或 status。decision=answered：说明原问题如何被回答，不带活动 remaining_question、retry_when 或非空 next_action。continue：用 remaining_question 写必要缺口，说明有依据的可行推进或观察能增加什么证据。defer：有实际障碍或当前没有有依据的有效调查方法，reason 写障碍，remaining_question 写缺口，retry_when 写可判断的恢复条件。原区块当前不可见、没有建议或失败次数本身不是暂挂依据。
 
-本轮开放 next_action 时，它只是后续建议，不是执行记录；非空对象必须同时包含 region、control、action、reason，不能填空对象。region 引用已给定的实际操作区块，control 引用其中已给定控件的完整名称；希望到达的位置及具体操作如何补足原问题写入 reason。action 只取 click、double_click、long_press、input_text、scroll、key_press、hotkey、hover、right_click、drag、back、wait。未知新对象不猜引用；允许的区块滚动、返回、等待、按键或快捷键可填空 control。省略保留未消耗旧建议，null 明确撤销；answered/defer 不附非空建议。
+本轮开放 next_action 时，它只是后续建议，不是执行记录；非空对象必须同时包含 region、control、action、reason，不能填空对象。region 引用已给定的实际操作区块，control 引用其中已给定控件ID；希望到达的位置及具体操作如何补足原问题写入 reason。action 只取 click、double_click、long_press、input_text、scroll、key_press、hotkey、hover、right_click、drag、back、wait。未知新对象不猜引用；允许的区块滚动、返回、等待、按键或快捷键可填空 control。省略保留未消耗旧建议，null 明确撤销；answered/defer 不附非空建议。
 
 {{任务判断正例}}
 

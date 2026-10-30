@@ -105,7 +105,7 @@ def commit(root, run, call_ref):
     if audit:
         _record_write_json(call / 'visual_identity.json', {'matches': audit, 'effective_candidate': reply})
     registration_request = {**request, 'response_schema': contract}
-    if 'control_indexes' in request:
+    if 'control_refs' in request:
         registration_request.pop('response_schema', None)  # Raw reply was validated before resolving indexes.
     (reply, missing, region_indices, control_indices) = completion.prepare_registration(reply, registration_request, known, batch, _registration_diagnostics)
     locator.validate_identity(reply)
@@ -124,7 +124,7 @@ def commit(root, run, call_ref):
         if not 0 <= c['region_index'] < len(reply['regions']):
             raise ValueError('invalid control owner index')
         if c['identity'] == 'same':
-            cid = ctx['control_names'].get(c['ref'], c['ref'] if c['ref'] in request.get('control_indexes', []) else None)
+            cid = ctx['control_names'].get(c['ref'], c['ref'] if c['ref'] in request.get('control_refs', []) else None)
             rid = reply['regions'][c['region_index']].get('_matched_id')
             from regrow.records.object_store import control_record
             if control_record(known, cid) is None:

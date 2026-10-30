@@ -38,7 +38,7 @@ def same_frame_observation(record, snapshot, rid, frame, run):
 
 def resolve(records, request, reply, snapshot=None, frame=None, run=None):
     """Return a derived proposal plus audit; the saved model answer stays intact."""
-    from regrow.recognition.control_indexes import decode
+    from regrow.recognition.control_references import decode
     result = decode(request, reply)
     ctx = request.get('discovery_context') or {'region_names': request.get('region_names', {}), 'control_names': {cid: cid for r in records.values() for cid in owned_controls(r)}}
     owners = []
@@ -65,7 +65,7 @@ def resolve(records, request, reply, snapshot=None, frame=None, run=None):
             continue
         if row.get('identity', 'same') != 'same':
             raise ValueError('未决控件不得绑定ref；候选写identity_evidence')
-        cid = ctx.get('control_names', {}).get(previous, previous if previous in request.get('control_indexes', []) else None)
+        cid = ctx.get('control_names', {}).get(previous, previous if previous in request.get('control_refs', []) else None)
         from regrow.records.object_knowledge import control_only
         if control_only(row):
             continue
@@ -75,7 +75,7 @@ def resolve(records, request, reply, snapshot=None, frame=None, run=None):
                 from regrow.records.object_store import control_record
                 old = control_record(records, cid) or {}
                 extra = sorted(set(row) - {'ref', 'identity', 'name', '_matched_id', 'knowledge'})
-                raise ValueError('控件「' + old.get('name', str(previous)) + '」提交了当前观察字段：' + '、'.join(extra) + '，但未唯一对应本轮区块。若只补已执行操作的用途知识，保留index和knowledge，撤回上述额外字段；不要求已关闭界面重新可见。若确实登记当前外观，则依据当前图填写所属区块。')
+                raise ValueError('控件「' + old.get('name', str(previous)) + '」提交了当前观察字段：' + '、'.join(extra) + '，但未唯一对应本轮区块。若只补已执行操作的用途知识，保留ref和knowledge，撤回上述额外字段；不要求已关闭界面重新可见。若确实登记当前外观，则依据当前图填写所属区块。')
             row['region_index'] = matches[0]
         owner_index = row.get('region_index')
         rid = owners[owner_index] if isinstance(owner_index, int) and 0 <= owner_index < len(owners) else None

@@ -18,13 +18,13 @@ def key(observation):
     return (evidence.get('source_call'), evidence.get('source_field'))
 
 def apply(records, state, edit, call):
-    regions = [r for r in records.values() if r['name'] == edit['region']]
+    regions = [records[edit['region']]] if edit['region'] in records else []
     if len(regions) != 1:
         raise ValueError('观察纠正区块不唯一')
     region = regions[0]
 
     def find(name):
-        ids = [cid for (cid, c) in owned_controls(region).items() if c['name'] == name]
+        ids = [name] if name in owned_controls(region) else []
         if len(ids) != 1:
             raise ValueError('观察纠正控件不唯一')
         return ids[0]
@@ -69,7 +69,7 @@ def validate_scope(run, job, edit, records, scope):
     from pathlib import Path
     import json
     candidates = job['request'].get('control_observation_candidates', [])
-    matched = [c for c in candidates if c['region'] in scope and scope[c['region']]['name'] == edit['region'] and (owned_controls(scope[c['region']]).get(c['from_control'], {}).get('name') == edit['from_control']) and (owned_controls(scope[c['region']]).get(c['to_control'], {}).get('name') == edit['to_control'])]
+    matched = [c for c in candidates if c['region'] in scope and c['region'] == edit['region'] and c['from_control'] == edit['from_control'] and c['to_control'] == edit['to_control']]
     if len(matched) != 1:
         raise ValueError('观察纠正对象没有随本轮披露')
     c = matched[0]
@@ -81,7 +81,7 @@ def validate_scope(run, job, edit, records, scope):
     allowed = {(s['source_call'], s['source_field']) for s in c['observations']}
     if not all(((s['source_call'], s['source_field']) in allowed for s in edit['observations'])):
         raise ValueError('观察来源没有随本轮披露')
-    return {**edit, 'from_control': owned_controls(records[c['region']])[c['from_control']]['name'], 'to_control': owned_controls(records[c['region']])[c['to_control']]['name']}
+    return deepcopy(edit)
 
 def begin(root, run, rid, from_control, to_control, selectors, frame):
     """Supervised diagnosis enters normal task correction with complete run context."""
@@ -126,7 +126,7 @@ def begin(root, run, rid, from_control, to_control, selectors, frame):
 
     def review_record(record):
         return {**deepcopy(dict(record)), 'observations': deepcopy(observation_history(record))}
-    details = {'来源控件': review_record(source), '目标候选控件': review_record(target), '观察证据来源': labels, '说明': '来源和目标只是待核对候选。本图只显示当前观察，历史原图未附；结合已登记职责、历史观察与原任务判断。证据不足保留缺口，不能声称重新看过旧图。若证据支持确有混写，按source_call/source_field迁移指定观察，同时必须填写retained_name：它是来源控件在移除误挂观察后，依据剩余观察和原任务职责应使用的准确名称；不能继续沿用描述被移走对象的错误名称。from_control/to_control仍引用本轮披露的原名称用于身份绑定，retained_name是本次修正后的名称。不得整条合并、迁移旧任务或改写动作。若同一物理对象只是模式变化，不应拆分。回复沿正常纠错，修订后完整清点当前区块。'}
+    details = {'来源控件': review_record(source), '目标候选控件': review_record(target), '观察证据来源': labels, '说明': '来源和目标只是待核对候选。本图只显示当前观察，历史原图未附；结合已登记职责、历史观察与原任务判断。证据不足保留缺口，不能声称重新看过旧图。若证据支持确有混写，按source_call/source_field迁移指定观察，同时必须填写retained_name：它是来源控件在移除误挂观察后，依据剩余观察和原任务职责应使用的准确名称；不能继续沿用描述被移走对象的错误名称。from_control/to_control引用本轮披露的控件ID，retained_name是本次修正后的名称。不得整条合并、迁移旧任务或改写动作。若同一物理对象只是模式变化，不应拆分。回复沿正常纠错，修订后完整清点当前区块。'}
     q['user_prompt'] += '\n历史观察归属核对：' + json.dumps(details, ensure_ascii=False, indent=2)
     q['dynamic_prompt'] = q['user_prompt']
     job = {'path': 'repair_episodes/observation-review-' + uuid.uuid4().hex + '/episode.json', 'stage': 'task_proposal', 'request': q, 'attempt': None, 'status': 'repair', 'repairs': 0, 'observations': 0, 'history': [], 'seen': [], 'supplements': [], 'candidate': None, 'blocked_by': 'binding_conflict', 'error': '历史控件的部分观察可能对应不同职责对象；按本图、历史记录及来源核对，依据不足时保留未确认，未确认前不得继承任务完成。'}

@@ -54,12 +54,11 @@ def validate(row, task, ref=None):
 def resolve_suggestion(records, value, labels=None):
     if value is None:
         return None
-    rid = (labels or {}).get(value['region'])
-    refs = [rid] if rid in records else [r for (r, v) in records.items() if v['name'] == value['region'] or r == value['region']]
+    refs = [value['region']] if value['region'] in records else []
     if len(refs) != 1:
         raise ValueError('后续建议需引用本轮唯一已登记区块')
     owner = records[refs[0]]
-    cids = [cid for (cid, c) in owned_controls(owner).items() if c['name'] == value['control'] or cid == value['control']]
+    cids = [value['control']] if value['control'] in owned_controls(owner) else []
     if not value['control'] and value['action'] in ('scroll', 'back', 'wait', 'key_press', 'hotkey'):
         cids = [None]
     if len(cids) != 1:

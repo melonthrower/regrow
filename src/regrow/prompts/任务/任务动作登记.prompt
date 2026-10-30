@@ -27,7 +27,7 @@ knowledge填写列表，每项是description（功能描述）和conditions（�
 
 ## 输出：准备结果 → dependency_updates
 
-每项填写region（给定目标区块名称）、task（给定任务名称）、ready和evidence；不用target或ref代替这两个字段。核对原目标是否在当前图中确实解锁/可用。准备任务 answered 须与该前提观察一致；仅打开入口或回执成功不足。
+每项填写region（给定目标区块ID）、task（给定任务名称）、ready和evidence；不用target或ref代替这两个字段。核对原目标是否在当前图中确实解锁/可用。准备任务 answered 须与该前提观察一致；仅打开入口或回执成功不足。
 
 准备结果的局部格式例（名称须替换为本轮给定原目标）：
 ```json

@@ -14,10 +14,10 @@ def apply(region, state, edit, call):
         raise ValueError('任务归属修订需要依据')
     old = task.get('control')
     control = owned_controls(region).get(old, {})
-    if control.get('name') != edit['before']:
+    if old != edit['before']:
         raise ValueError('任务原控件不匹配，请核对原记录')
     if edit['field'] == 'task_control':
-        targets = [cid for (cid, c) in owned_controls(region).items() if c['name'] == edit['after']]
+        targets = [edit['after']] if edit['after'] in owned_controls(region) else []
         if len(targets) != 1:
             raise ValueError('新控件尚未登记或名称不唯一，先补发现')
         dependent = any((t.get('equivalent_to') == name for (n, t) in owned_tasks(region).items() if n != name))

@@ -1,9 +1,26 @@
 ## 对象身份与归属 → regions / controls
 同一对象的位置、输入值、选中或禁用状态变化不产生新身份。已有区块用ref引用，已有控件用材料中的index引用，只补必要变化。区块身份不确定时不绑定ref，填写name、description、identity="uncertain"，在identity_evidence中点名候选及具体缺口；控件尚不能对应时写入uncertainties。
 对应字段：ref是旧区块编号；index是材料中的旧控件序号；region_index是所属区块在本次regions数组的位置，从0开始；parent_index只用于真实物理包含，不把进入来路当包含父级。
-局部字段例（假设材料中的index=3属于r0080，不是完整回复）：
+局部字段例（假设材料中的ref="c0008"属于r0080，不是完整回复）：
 ```json
-{"regions":[{"ref":"r0080"},{"name":"示例内容区","description":"示例展示内容","identity":"new"}],"controls":[{"index":3,"region_index":0}]}
+{
+  "regions": [
+    {
+      "ref": "r0080"
+    },
+    {
+      "name": "示例内容区",
+      "description": "示例展示内容",
+      "identity": "new"
+    }
+  ],
+  "controls": [
+    {
+      "region_index": 0,
+      "ref": "c0008"
+    }
+  ]
+}
 ```
 这里region_index=0表示控件属于第一个区块r0080；若属于第二个区块才填1。它不是旧区块ID，也不是旧控件index。
 正例：输入内容变化仍引用原输入框；新出现的独立输入框单独登记。

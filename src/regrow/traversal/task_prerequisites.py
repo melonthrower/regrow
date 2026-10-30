@@ -30,7 +30,7 @@ def enroll(records, rid, call):
         task['deferral'] = {'reason': dep['condition'], 'retry_when': 'observed_prerequisite_satisfied'}
         if not dep['permitted']:
             continue
-        targets = [(rr, cid) for (rr, r) in records.items() if r['name'] == dep['region'] and (not region_work(r).get('out_of_scope_reason')) for (cid, c) in owned_controls(r).items() if c['name'] == dep['control']]
+        targets = [(rr, cid) for (rr, r) in records.items() if rr == dep['region'] and (not region_work(r).get('out_of_scope_reason')) for (cid, c) in owned_controls(r).items() if cid == dep['control']]
         if len(targets) != 1:
             continue
         (rr, cid) = targets[0]
@@ -55,7 +55,7 @@ def augment(root, run, q):
     if not rows:
         return q
     q = deepcopy(q)
-    entries = [{'region': records[rid]['name'], 'task': n, 'control': owned_controls(records[rid]).get(t.get('control'), {}).get('name'), '前置条件': t['prerequisite']['condition'], '准备操作': t['prerequisite']['preparation']} for (rid, n, t) in rows]
+    entries = [{'region': rid, 'task': n, 'control': t.get('control'), '前置条件': t['prerequisite']['condition'], '准备操作': t['prerequisite']['preparation']} for (rid, n, t) in rows]
     item = {'type': 'object', 'properties': {'region': {'type': 'string'}, 'task': {'type': 'string'}, 'ready': {'type': 'boolean'}, 'evidence': {'type': 'string'}}, 'required': ['region', 'task', 'ready', 'evidence'], 'additionalProperties': False}
     q['response_schema']['properties']['dependency_updates'] = {'type': 'array', 'items': item}
     q['response_schema']['required'].append('dependency_updates')
@@ -70,7 +70,7 @@ def augment(root, run, q):
 def apply(records, reply, call, allowed):
     allowed = {(x['region'], x['task']) for x in allowed}
     for row in reply.get('dependency_updates', []):
-        ids = [rid for (rid, r) in records.items() if r['name'] == row['region'] and (rid, row['task']) in allowed]
+        ids = [rid for (rid, r) in records.items() if rid == row['region'] and (rid, row['task']) in allowed]
         if len(ids) != 1:
             raise ValueError('dependency update must identify a disclosed task uniquely')
         rid = ids[0]

@@ -12,7 +12,7 @@
 核对条件是否解释差异，并保留知识的适用范围、实际来源和任务归属。有正常结果且成员齐全，证据足以支持整组共享时才保留；缺少结果、记录矛盾或怀疑点错、绑错时不强行判定，说明需要哪个成员的哪项原动作前后证据。修订被拒后，针对给定最新拒绝原因重新判断。
 
 # 输出决定
-能够判断：blocked_by="none"，resolution="edit_record"，proposal=null。record_edit 一次只处理一个成员：region/control 逐字使用关联成员完整名称，field="shared_behavior"，before 填原共享关系名称，after="independent" 表示该成员独立，或 after="shared" 表示整组可继续共享；evidence 写具体依据。reason 说明所比较结果与结论。
+能够判断：blocked_by="none"，resolution="edit_record"，proposal=null。record_edit 一次只处理一个成员：region/control分别填写关联成员的区块ID和控件ID，field="shared_behavior"，before 填原共享关系名称，after="independent" 表示该成员独立，或 after="shared" 表示整组可继续共享；evidence 写具体依据。reason 说明所比较结果与结论。
 
 不能判断：blocked_by="shared_control_conflict"，resolution="blocked"，proposal=null，record_edit=null；reason 具体说明缺少什么或哪条记录有矛盾，不编造新观察。两种结果均不改变实际动作记录，不补做验证动作。
 

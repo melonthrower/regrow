@@ -87,18 +87,17 @@ def propose_instances(records, rid, rows, call, state=None):
     from regrow.records.object_store import control_record
     renamed = {}
     for row in rows:
-        owners = [rr for rr, r in records.items() if row['source_region'] in (rr, r['name'])]
+        owners = [row['source_region']] if row['source_region'] in records else []
         if len(owners) != 1:
             raise ValueError('复用来源区块必须唯一')
         source = owners[0]
-        ids = [cid for cid, c in owned_controls(records[source]).items()
-               if row['source_control'] in (cid, c['name'])]
-        local = [cid for cid, c in owned_controls(records[rid]).items() if c['name'] == row['control']]
+        ids = [row['source_control']] if row['source_control'] in owned_controls(records[source]) else []
+        local = [row['control']] if row['control'] in owned_controls(records[rid]) else []
         if len(ids) != 1 or len(local) != 1 or not row['reason'].strip():
             raise ValueError('复用需要明确的本区块控件和已有控件')
         target, previous = ids[0], local[0]
         owned_controls(records[rid]).setdefault(target, control_record(records, target))
         if previous != target:
             control_records.merge(records, state if state is not None else {}, rid, [previous], target)
-        renamed[row['control']] = control_record(records, target)['name']
+        renamed[row['control']] = target
     return renamed

@@ -21,7 +21,7 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
     import jsonschema
     jsonschema.validate(reply, request['response_schema'] if request else _task_proposer.proposal_schema())
     if request:
-        from regrow.recognition.control_indexes import decode
+        from regrow.recognition.control_references import decode
         reply = decode(request, reply)
     if not reply['evidence'].strip():
         raise ValueError('inventory needs evidence')
@@ -67,7 +67,7 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
             continue
         row = {**row, 'name': settlement.task_definition(row)['label'],
                'control': renamed.get(row['control'], row['control'])}
-        names = [cid for (cid, c) in owned_controls(region).items() if c['name'] == row['control']]
+        names = [row['control']] if row['control'] in owned_controls(region) else []
         if not row['control']:
             names = [None]
         if len(names) != 1:

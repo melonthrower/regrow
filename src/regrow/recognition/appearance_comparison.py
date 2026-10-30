@@ -11,13 +11,12 @@ from regrow.prompts.frame_context import primary, label
 
 def batches(run, original, candidate):
     snapshot, records, _ = load(run)
-    ids = original.get('control_indexes', [])
     groups = {}
     for position, row in enumerate(candidate.get('controls', [])):
-        index = row.get('index')
-        if not row.get('add_image') or type(index) is not int or not 0 <= index < len(ids):
+        ref = row.get('ref')
+        if not row.get('add_image') or not ref:
             continue
-        control = control_record(records, ids[index])
+        control = control_record(records, ref)
         appearances = variants(control) if control is not None else []
         if len(appearances) != 1 or appearances[0].get('image_conditions'):
             continue
@@ -26,7 +25,7 @@ def batches(run, original, candidate):
             raise ValueError(control['name'] + '的旧外观缺少原图或范围，不能比较并补状态说明')
         source = str((snapshot / old['source_image']).resolve())
         groups.setdefault(source, []).append({
-            'index': index, 'position': position, 'control': ids[index],
+            'ref': ref, 'position': position, 'control': ref,
             'name': control['name'], 'historical_box': old['bbox'],
             'image': str((snapshot / old['image']).resolve()),
             'description': old.get('description', ''),
@@ -44,11 +43,11 @@ def request(root, run, original, source, rows):
         {'动作': action['action'], **({'输入': action['text']} if action.get('text') else {})}
         for action in context.get('实际动作', [])]
     material = {'原步骤': original_context,
-                '比较对象': [{'index': row['index'], '名称': row['name'],
+                '比较对象': [{'ref': row['ref'], '名称': row['name'],
                           '历史图中范围': ', '.join(str(row['historical_box'][key]) for key in ('left', 'top', 'right', 'bottom')),
                           '历史外观': row['description'],
                           '本次提议状态': row['proposed_state']} for row in rows]}
-    fields = {'index': {'type': 'integer', 'enum': [r['index'] for r in rows]},
+    fields = {'ref': {'type': 'string', 'enum': [r['ref'] for r in rows]},
               'relation': {'type': 'string', 'enum': ['same_appearance', 'new_appearance', 'different_control', 'uncertain']},
               'historical_state': {'type': 'string'}, 'current_state': {'type': 'string'},
               'reason': {'type': 'string', 'minLength': 1}}
@@ -57,7 +56,7 @@ def request(root, run, original, source, rows):
          'user_prompt': json.dumps(material, ensure_ascii=False),
          'screenshots': [str((Path(run) / primary(original)).resolve()), source],
          'source': deepcopy(original.get('source', {})),
-         'control_indexes': deepcopy(original.get('control_indexes', [])),
+         'control_refs': deepcopy(original.get('control_refs', [])),
          'appearance_rows': deepcopy(rows),
          'response_schema': {'type': 'object', 'properties': {'comparisons': {
              'type': 'array', 'items': {'type': 'object', 'properties': fields,
@@ -71,11 +70,11 @@ def request(root, run, original, source, rows):
 
 def validate(q, reply, run=None):
     jsonschema.validate(reply, q['response_schema'])
-    expected = {row['index']: row['name'] for row in q['appearance_rows']}
-    if sorted(row['index'] for row in reply['comparisons']) != sorted(expected):
+    expected = {row['ref']: row['name'] for row in q['appearance_rows']}
+    if sorted(row['ref'] for row in reply['comparisons']) != sorted(expected):
         raise ValueError('每个给定控件都需要且只需要一项外观比较')
     for row in reply['comparisons']:
-        name = expected[row['index']]
+        name = expected[row['ref']]
         if row['relation'] in ('different_control', 'uncertain'):
             continue  # A valid negative judgment belongs to the parent proposal.
         if not row['historical_state'].strip() or not row['current_state'].strip():
@@ -89,7 +88,7 @@ def comparison_key(request):
     """One frozen visual question; wording of a proposed state is not evidence.
 
     Kept within the existing repair job. Stable control IDs decouple cached
-    answers from per-request index and output-array ordering.
+    answers from output-array ordering.
     """
     import hashlib
     rows = [{k: row.get(k) for k in ('control', 'name', 'description', 'image', 'historical_box')}
@@ -100,5 +99,5 @@ def comparison_key(request):
 
 
 def replies_by_control(saved):
-    ids = {row['index']: row['control'] for row in saved['request']['appearance_rows']}
-    return {ids[row['index']]: row for row in saved['candidate']['comparisons']}
+    ids = {row['ref']: row['control'] for row in saved['request']['appearance_rows']}
+    return {ids[row['ref']]: row for row in saved['candidate']['comparisons']}

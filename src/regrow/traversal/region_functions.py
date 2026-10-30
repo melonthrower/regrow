@@ -137,7 +137,7 @@ def commit(root, run, call):
     from regrow.traversal import discovery_step as _discovery_step
     (q, reply) = _owner_submission(run, call)
     rid = q['source']['region']
-    from regrow.recognition.control_indexes import decode
+    from regrow.recognition.control_references import decode
     reply = decode(q, reply)
 
     def mutate(records, state, snapshot, temp):

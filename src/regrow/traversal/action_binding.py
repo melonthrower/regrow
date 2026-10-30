@@ -71,12 +71,12 @@ def _bind_action_target(request, proposal):
         if located:
             return {**base, **located, 'status': 'matched', 'model_grounded': True}
     if len(hits) > 1:
-        return {**base, 'status': 'unresolved', 'reason': '同名控件不唯一，请用候选中的 region/control 身份填写 target'}
+        return {**base, 'status': 'unresolved', 'reason': '该控件的本次操作区块尚未确定，请结合当前图核对'}
     if not target:
         return {**base, 'status': 'unresolved', 'reason': 'missing target description'}
     import re
     if any((row['target'] in target for row in rows)) or re.search('\\br\\d+/c\\d+\\b', target):
-        return {**base, 'status': 'unresolved', 'reason': 'target中的身份引用不完整或相互冲突；请逐字填写本轮唯一region/control，不混入其他身份或说明'}
+        return {**base, 'status': 'unresolved', 'reason': 'target中的身份引用不完整或相互冲突；请逐字填写控件树中的控件ID，不混入其他身份或说明'}
     return {**base, 'status': 'matched', 'model_grounded': True, 'basis': 'unrecorded model target; no recorded identity inferred from coordinates', 'association': {'status': 'unconfirmed', 'target': target, 'x': x, 'y': y, 'candidates': [], 'reason': 'target not in the supplied identity candidates'}}
 
 def candidate_matches(request, target):
@@ -85,16 +85,16 @@ def candidate_matches(request, target):
         return []
     target = target.strip()
     rows = candidate_rows(request)
-    hits = [row['candidate'] for row in rows if target in (row['target'], row['region'] + '/' + row['name'])]
-    if not hits:
-        displayed = set(request.get('_action_identity_text', '').splitlines())
-        hits = [row['candidate'] for row in rows if any((line in displayed and target in (line, line.removeprefix('- ')) for line in (candidate_line(row), '- ' + row['target'] + '：' + row['name'] + '（' + row['region'] + '）')))]
-    if not hits:
-        hits = [c for c in request.get('backend_candidates', []) if target.casefold() in [str(c.get(k, '')).strip().casefold() for k in ('name', 'icon_description')] and target]
+    hits = [row['candidate'] for row in rows if target == row['target']]
+    if len(hits) > 1:
+        source = request.get('source', {})
+        for rid in (source.get('working_region'), source.get('region')):
+            local = [c for c in hits if c.get('region_ref', source.get('region')) == rid]
+            if len(local) == 1: return local
     return hits
 
 def candidate_key(request, candidate):
-    return candidate.get('region_ref', request['source']['region']) + '/' + candidate['id']
+    return candidate['id']
 
 def candidate_rows(request):
     return [{'target': candidate_key(request, c), 'name': c['name'], 'region': c.get('region_name', c.get('region_ref', request['source']['region'])), 'candidate': c} for c in request.get('backend_candidates', [])]

@@ -11,7 +11,7 @@ def schema(regions=None):
         return {'type': 'object', 'properties': props, 'required': list(required), 'additionalProperties': False}
     fields = {k: deepcopy(string) for k in ('name', 'description')}
     fields.update(supports={'type': 'array', 'minItems': 1, 'uniqueItems': True,
-                           'items': {'anyOf': [string, {'type': 'integer', 'minimum': 0}]}},
+                           'items': string},
                   constraints=deepcopy(strings))
     region = deepcopy(string)
     if regions is not None:
@@ -56,11 +56,10 @@ def support_rows(region, values):
             result.append({'kind':'region','region':region['id'],'control':None,'name':region['name']})
             continue
         controls = owned_controls(region)
-        cid = value if value in controls else next((k for k,c in controls.items()
-                      if c['name'] == value and sum(c2['name']==value for c2 in controls.values()) == 1), None)
+        cid = value if value in controls else None
         if cid is None:
             available = '、'.join(c['name'] + '（' + k + '）' for k,c in controls.items())
-            raise ValueError('区块「' + region['name'] + '」的功能支持引用无法对应本区块对象：' + str(value) + '。请使用给定控件index或本区块引用，不拼接区块与控件引用。本区块控件：' + available + '。这不是缺少用途知识的诊断。')
+            raise ValueError('区块「' + region['name'] + '」的功能支持引用无法对应本区块对象：' + str(value) + '。请使用控件树中的控件ID或本区块ID，不拼接区块与控件引用。本区块控件：' + available + '。这不是缺少用途知识的诊断。')
         if not controls[cid].get('knowledge'):
             raise ValueError('区块「' + region['name'] + '」的「' + controls[cid]['name'] + '」缺少用途知识；有观察依据时在同次回复补充knowledge，否则撤回无依据的功能支持。')
         c = controls[cid]

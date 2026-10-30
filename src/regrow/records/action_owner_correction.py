@@ -29,11 +29,10 @@ def control_history(region, task):
 
 def apply(records, state, edit, call, snapshot=None):
 
-    def find(region_name, control_name):
-        hits = [(rid, cid) for (rid, r) in records.items() if r['name'] == region_name for (cid, c) in owned_controls(r).items() if c['name'] == control_name]
-        if len(hits) != 1:
-            raise ValueError('动作归属纠正需要唯一的已披露区块与控件')
-        return hits[0]
+    def find(rid, cid):
+        if rid not in records or cid not in owned_controls(records[rid]):
+            raise ValueError('动作归属纠正需要已披露的区块ID与控件ID')
+        return rid, cid
     (old, old_control) = find(edit['from_region'], edit['from_control'])
     (new, new_control) = find(edit['to_region'], edit['to_control'])
     aid = edit['attempt']
@@ -110,7 +109,7 @@ def request(root, run, attempt, target_region, target_control, task_source, fram
     source_control = action.get('control')
     target = owned_controls(records[target_region])[target_control]
     q = _task_result_review.request(root, run, task_source, [str(frame)])
-    q['discovery_context'] = {'region_names': {records[k]['name']: k for k in (rid, target_region)}}
+    q['discovery_context'] = {'region_names': {k: k for k in (rid, target_region)}}
     q['action_owner_candidates'] = [{'attempt': attempt, 'from_region': rid, 'from_control': source_control, 'to_region': target_region, 'to_control': target_control}]
     images = [Path(run) / 'action_attempts' / attempt / (when + '.png') for when in ('before', 'after')]
     if not all((p.is_file() for p in images)):
@@ -121,7 +120,7 @@ def request(root, run, attempt, target_region, target_control, task_source, fram
     q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     dispatch = json.loads((Path(run) / 'action_attempts' / attempt / 'dispatch.json').read_text())
     before = action.get('evidence', {}).get('before_observation')
-    details = {'待核对动作': attempt, '原投递（不可改写）': dispatch, '当前有效归属': {'区块': records[rid]['name'], '控件': owned_controls(records[rid])[source_control]['name']}, '候选实际对象': {'区块': records[target_region]['name'], '控件': target['name'], '当时观察': [o for o in observation_history(target) if o.get('evidence', {}).get('observation') == before]}, '已登记直接结果': action.get('result'), '说明': '目标仅为待核对候选，不是身份结论。本图为该动作原动作前图；结合实际坐标、卡片职责和已登记结果核对，不能只凭同名或相似按钮改挂。原始任务意图、投递和截图不改写。'}
+    details = {'待核对动作': attempt, '原投递（不可改写）': dispatch, '当前有效归属': {'region': rid, 'control': source_control, '区块': records[rid]['name'], '控件': owned_controls(records[rid])[source_control]['name']}, '候选实际对象': {'region': target_region, 'control': target_control, '区块': records[target_region]['name'], '控件': target['name'], '当时观察': [o for o in observation_history(target) if o.get('evidence', {}).get('observation') == before]}, '已登记直接结果': action.get('result'), '说明': '目标仅为待核对候选，不是身份结论。本图为该动作原动作前图；结合实际坐标、卡片职责和已登记结果核对，不能只凭同名或相似按钮改挂。原始任务意图、投递和截图不改写。'}
     q['user_prompt'] += '\n\n历史归属核对材料：' + json.dumps(details, ensure_ascii=False, indent=2)
     job = {'stage': 'task_result_review', 'request': q, 'candidate': None, 'error': '历史动作实际对象与登记归属可能冲突，请按原动作前图、实际投递及已登记结果核对；修正归属与原任务结果需一并经过正常校验。', 'blocked_by': 'binding_conflict', 'history': [], 'supplements': []}
     context = _repair_stages.context(run, job)

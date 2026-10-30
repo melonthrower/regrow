@@ -1,14 +1,14 @@
 ## 任务归属修订
 
-仅在发现/任务清点纠错且本轮开放该能力时使用 record_edit。字段为 region、task、field、before、after、evidence；task 使用原任务名，before 为原控件名。
+仅在发现/任务清点纠错且本轮开放该能力时使用 record_edit。字段为 region、task、field、before、after、evidence；task 使用原任务名，before 为原控件ID。
 
-- task_control：任务须为 pending，且没有尝试、事实、结论或依赖；after 填本轮已登记、唯一的正确控件名。
+- task_control：任务须为 pending，且没有尝试、事实、结论或依赖；after 填本轮已登记、唯一的正确控件ID。
 - suspend_task：已有历史时保留原归属与历史，after 为空，暂挂并重新清点；正确控件可提出不同名的独立任务，不复制旧事实。
 - 控件所属区块本身错误：仅在本轮能力表支持时使用 field="region"，按其格式修订，不改写已投递绑定。
 
 ## 重开未执行记录 → reopen_task
 
-仅复核本地依据观察结束、尚未执行的任务。before 仍为原控件名；after 说明具体未答问题；evidence 说明旧答案遗漏与当前或历史截图依据。
+仅复核本地依据观察结束、尚未执行的任务。before 仍为原控件ID；after 说明具体未答问题；evidence 说明旧答案遗漏与当前或历史截图依据。
 后续沿用原问题和目标。已有实际尝试或共享引用的任务不适用；没有具体新未知时保留原结论。
 
 ## 正反例

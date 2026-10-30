@@ -18,7 +18,7 @@ def test_condition_is_saved_and_shared_by_goal_readers_and_settlement(tmp_path):
     owned_controls(region)['c1'] = {'name': '入口', 'knowledge': [{'description': '点击打开面板。'}]}
     condition = '操作入口并确认、记录直接响应及去向后结束。'
     reply = {'inventory': 'complete', 'evidence': '入口去向尚需确认',
-             'operations': [{'control': '入口', 'task_type': 'function', 'completion_condition': condition}],
+             'operations': [{'control': 'c1', 'task_type': 'function', 'completion_condition': condition}],
              'shared_instances': [], 'function_updates': []}
     state = {'working_region': 'r1', 'interactive_regions': ['r1'], 'observation': {'id': 'o1'}}
     apply_plan(region, reply, 'proposal', records=records, state=state)
@@ -54,7 +54,7 @@ def test_condition_is_saved_and_shared_by_goal_readers_and_settlement(tmp_path):
 def test_new_proposals_require_condition_but_legacy_tasks_and_updates_do_not_redefine_it():
     schema = proposal_schema()
     base = {'inventory': 'complete', 'evidence': '已考虑给定对象', 'shared_instances': [], 'function_updates': [],
-            'operations': [{'control': '入口', 'task_type': 'function'}]}
+            'operations': [{'control': 'c1', 'task_type': 'function'}]}
     for value in [None, '', '   ']:
         reply = deepcopy(base)
         if value is not None: reply['operations'][0]['completion_condition'] = value

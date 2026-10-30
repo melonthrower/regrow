@@ -49,7 +49,7 @@ def handoff_no_action(run, request, proposal, call, frame):
             evidence = updates.answer_evidence(run, request, owner, task, state)
             observed = bool(evidence)
             basis = {**(evidence or {'basis':'observation_only'}), 'source_call': call}
-            from regrow.recognition.control_indexes import decode
+            from regrow.recognition.control_references import decode
             from regrow.records.object_knowledge import apply
             apply(records, decode(request, proposal), basis)
             updates.store_increment(owner, task, task_ref['name'], proposal['task_update'], records, state, basis, observed=observed)

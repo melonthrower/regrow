@@ -222,7 +222,7 @@ def commit(root, run, call):
         raise ValueError('动作尚未结算，不能无动作复核')
     discovery = _discovery_step
     (q, reply) = _owner_submission(run, call)
-    from regrow.recognition.control_indexes import decode
+    from regrow.recognition.control_references import decode
     reply = decode(q, reply)
     source = q['source']
     (old, _, _) = _record_load(run)

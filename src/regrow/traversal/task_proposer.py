@@ -9,11 +9,14 @@ def proposal_schema():
     from regrow.records.task_updates import schema as update_schema
     string = {'type': 'string', 'minLength': 1}
     fields = {'control': {'type': 'string'}, 'task_type': {'type': 'string', 'enum': ['function', 'parameter', 'region_content']}}
+    fields['completion_condition'] = {
+        'type': 'string', 'minLength': 1, 'pattern': r'\S',
+        'description': '本任务得到什么直接观察或已有证据即可结束；一句具体条件，不预猜未知界面，不把目标内部其他问题并入。'}
     fields['function_refs'] = {'type':'array','items':string,'uniqueItems':True}
     definition = object_schema(fields)
     definition['properties']['reason'] = {'type': 'string', 'minLength': 1,
         'description': '提出区块内容探索的具体理由，例如下缘条目被截断；不另建evidence字段。'}
-    definition['required'] = ['control', 'task_type']
+    definition['required'] = ['control', 'task_type', 'completion_condition']
     definition['allOf'] = [{'if': {'properties': {'task_type': {'const': 'region_content'}},
                                   'required': ['task_type']},
                             'then': {'properties': {'control': {'const': ''}}, 'required': ['reason']}}]

@@ -27,13 +27,26 @@ def task_definition(task):
     from regrow.prompts.object_blocks import task_definition as definition
     return definition(registration_kind(task), SOURCE_ROOT)
 
+def completion_condition(task):
+    """Read the task's fixed endpoint; active shared projections use its source."""
+    shared = task.get('shared_task_ref')
+    if shared and task.get('shared_task_active', True) and hasattr(task, 'store'):
+        source = owned_tasks(task.store.get(shared['region'], {})).get(shared['task'])
+        if source is not None:
+            return source.get('completion_condition', '')
+    return task.get('completion_condition', '')
+
+
 def exploration_goal(task):
     if task.get('prepares'):
-        return task.get('reason') or task.get('name', '')
-    definition = task_definition(task)
-    if registration_kind(task) == 'region_content':
-        return definition['goal'] + ('\n本次理由：' + task['reason'] if task.get('reason') else '')
-    return definition['region_goal'] if region_task(task) and registration_kind(task) == 'function' else definition['goal']
+        goal = task.get('reason') or task.get('name', '')
+    else:
+        definition = task_definition(task)
+        goal = definition['region_goal'] if region_task(task) and registration_kind(task) == 'function' else definition['goal']
+        if registration_kind(task) == 'region_content' and task.get('reason'):
+            goal += '\n本次理由：' + task['reason']
+    condition = completion_condition(task)
+    return goal + ('\n本任务结算条件：' + condition if condition else '')
 
 def store_action_entry(task, entry, action, attempt, evidence):
     """Persist the original action relation and synchronize its use conditions."""

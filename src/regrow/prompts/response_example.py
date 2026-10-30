@@ -245,6 +245,8 @@ def sample(schema, name='', reuse=True):
     if kind == 'null':
         return None
     if kind == 'string' or kind is None:
+        if name == 'completion_condition':
+            return '操作该入口并观察、记录它的直接响应及去向后结束。'
         if name in ('uncertainty', 'recovery_handoff'):
             return ''
         return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'r0001/c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')

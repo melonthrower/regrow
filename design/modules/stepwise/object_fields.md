@@ -162,6 +162,7 @@ behavior_context为行为上下文，distinct_regions为确认不同的区块，
 | operations | 按建议探索次序列本轮新增任务，考虑依赖和离页影响，不是预排GUI动作。范围为给定当前区块及其控件；无新任务为[]，不借此重排已有任务。 |
 | operations[].control | 给定完整控件名；仅区块自身问题可为空字符串，不能用空值代指未知控件。 |
 | task_type | function调查用途、直接效果或去向；parameter了解可用输入、取值及必要条件。按原问题而非控件外观分类。 |
+| completion_condition | 新operations必填的固定结算条件：得到什么直接观察或已有证据即可结束本问题。随task保存；后续只判断是否满足，不以remaining_question改写。缺字段的旧task不补写。 |
 | task_update（本步规定的对象/列表） | 对允许更新的已有原任务及实际操作控件相关任务作判断。引用与层级遵循本步格式，不借此改目标、类型或条件。 |
 | task | 本轮提供的任务引用；只有程序明确绑定唯一目标时才按该步格式省略。 |
 | decision | continue仍有必要问题且无明确推进障碍；defer未回答且有实际障碍；answered原问题已有足够证据。 |

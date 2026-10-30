@@ -95,3 +95,7 @@ function_updates.py统一应用功能add/update/remove，先对象知识、再�
 
 
 2026-10-29：格式重答保持业务role/schema，request.format_original_call引用首个实际业务请求；calls.business_request统一恢复业务请求，submission继续用最终未经改写的response登记。最终reply与原schema/索引一致已在Settings保存帧登记核对，1HTTP/0GUI；见runtime模块。
+
+
+## 2026-10-30 固定任务终点
+completion_condition作为Task自身事实随原对象存储保存，不另建条件清单或答案副本。活跃共享任务通过来源引用读取同一条件；解除共享时将该时点来源条件保留为本地任务条件，有本地尝试而存活的任务不会因移除共享引用丢失终点。普通task_update只判断进度，不修改原条件。旧记录不补写推断条件。

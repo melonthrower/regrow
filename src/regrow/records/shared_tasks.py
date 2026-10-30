@@ -99,6 +99,10 @@ def synchronize_tasks(records):
                 if not valid:
                     if t.get('shared_task_active', True):
                         task_audit(t).setdefault('shared_history', []).append({'reference': deepcopy(ref), 'result': t.get('shared_result')})
+                        from regrow.records.task_settlement import completion_condition
+                        condition = completion_condition(t)
+                        if condition:
+                            t['completion_condition'] = condition
                     t['shared_task_active'] = False
                     t.pop('shared_result', None)
                     if t.get('shared_prior_state'):
@@ -110,7 +114,8 @@ def synchronize_tasks(records):
                     t.pop('shared_result', None)
 
 def automatic_tasks(region, cid):
-    return [{'任务': n, '结束条件': t.get('reason') or t.get('name', ''), '状态': t['status'], '知识来源': '历史共享成员；名称和描述中的选中/当前值不是本图状态', '适用条件': t.get('conditions', []), '说明': '框架引用共享知识，本地未执行' if t.get('shared_result') else '共享任务尚未完成，仍需探索'} for (n, t) in owned_tasks(region).items() if t.get('control') == cid and t.get('shared_task_ref') and t.get('shared_task_active', True)]
+    from regrow.records.task_settlement import exploration_goal
+    return [{'任务': n, '结束条件': exploration_goal(t), '状态': t['status'], '知识来源': '历史共享成员；名称和描述中的选中/当前值不是本图状态', '适用条件': t.get('conditions', []), '说明': '框架引用共享知识，本地未执行' if t.get('shared_result') else '共享任务尚未完成，仍需探索'} for (n, t) in owned_tasks(region).items() if t.get('control') == cid and t.get('shared_task_ref') and t.get('shared_task_active', True)]
 
 def reconcile_detached_tasks(records, state, affected, member, call):
     """After relation refresh, archive invalid inheritance; retain local evidence."""

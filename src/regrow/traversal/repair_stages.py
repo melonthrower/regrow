@@ -256,14 +256,20 @@ def related(run, job):
     return result
 
 def record_capabilities(stage=None, request=None):
+    """List available edits; field meanings live beside the output fields."""
     request = request or {}
     if not request.get('screenshots'):
         return []
-    historical = ['edit_record观察归属纠正：仅本轮control_observation_candidates披露的region/from_control/to_control/retained_name/observations(source_call,source_field)/evidence；只迁移指定观察，不迁移任务或动作，不能整条合并。retained_name必须描述迁移后来源控件剩余观察的职责，不能沿用被移走对象的名称。', 'edit_record动作归属纠正：attempt/from_region/from_control/to_region/to_control/evidence，只改一笔已执行动作的有效对象；必须提供原动作前图、实际投递和已登记结果及当时目标控件身份，不迁移整个控件，不改原投递。旧完成依据撤回，新任务仍须结果核对。']
-    historical = [text for (text, key) in zip(historical, ('control_observation_candidates', 'action_owner_candidates')) if request.get(key)]
-    reopen = ['edit_record / reopen_task：仅发现/任务清点可重新审查本地按观察结束、尚未执行的任务；task为原任务名，before为原控件ID，after为具体未知内容目标，evidence说明遗漏。保留身份、旧判断与事实；不重开已尝试或共享任务。'] if stage in ('discovery', 'task_proposal') else []
-    task_edits = ['edit_record / task_control或suspend_task：在发现/任务清点中用task选择任务；无历史pending可改到披露的唯一控件，有历史只暂挂保留旧事实并重新清点。'] if stage in ('discovery', 'task_proposal') else []
-    return ([] if stage == 'action' else historical) + reopen + task_edits + ['edit_record：修订区块description或控件name/description/list_group（可清空错误分组），提供原值、新值和证据。', 'edit_record / region：同一控件误归区块时，region及before写原区块，control写控件，after写已披露的正确区块；保留身份、历史和任务状态，不能移动待结算动作来源。', 'edit_record / merge_into：同一物理控件的重复记录可合并；来源和目标填写各自控件ID，迁移历史及任务引用。', 'edit_record / merge_into（区块）：control留空，region与before写重复区块ID，after写保留区块ID，提供同一物理区块的证据；合并本轮披露的对应区块并迁移引用。', 'edit_record / remove：可删除无动作、任务或跳转引用的误登记控件；已有历史不能直接删除。', 'revise也可同时填写record_edit和完整proposal。']
+    result = []
+    if stage != 'action':
+        if request.get('control_observation_candidates'):
+            result.append('record_edit：指定观察的对象归属修订')
+        if request.get('action_owner_candidates'):
+            result.append('record_edit：指定单笔动作的对象归属修订')
+    if stage in ('discovery', 'task_proposal'):
+        result.append('record_edit：task_control、suspend_task、reopen_task')
+    result.append('record_edit：name、description、list_group、region、merge_into、remove')
+    return result
 
 def context(run, job):
     if job['stage'] == 'appearance_comparison':
@@ -307,7 +313,7 @@ def context(run, job):
             return {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '条件': task.get('conditions', [])}
         view = {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '覆盖任务': covered, '说明': task.get('reason') or task.get('name', ''), '类型': task.get('task_type'), '尝试事实': describe(effective, history_records)}
         return _map_prompt.task_view(job['request'], owner.get('id'), name, task, view)
-    value = {'区块': [{'ref': r['id'], '名称': r['name'], '描述': r['description'], '控件': [{'ref': cid, '名称': c['name'], '说明': c.get('description', ''), '列表分组': group_name(r, cid), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮完整提案', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
+    value = {'区块': [{'ref': r['id'], '名称': r['name'], '描述': r['description'], '控件': [{'ref': cid, '名称': c['name'], '说明': c.get('description', ''), '列表分组': group_name(r, cid), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮提案，提交范围见 proposal 要求', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
     if job['stage'] == 'function_registration':
         for region in value['区块']:
             region['历史登记描述（非当前状态）'] = region.pop('描述')

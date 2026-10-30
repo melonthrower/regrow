@@ -114,11 +114,13 @@ def _scope_description(scope):
 
 def apply(root, request):
     """Put one authoritative shared prefix in system after call-specific layout."""
-    from regrow.prompts.object_blocks import purpose
+    from regrow.prompts.output import template_role
     from regrow.prompts.compose import catalog
-    config = catalog(root)['shared_context']
+    definition = catalog(root)
+    config = definition['shared_context']
     directory = Path(root) / 'regrow/prompts'
-    role = purpose(root, request)
+    role = template_role(request, root)
+    include_environment = definition['calls'].get(role, {}).get('field_sections', {}).get('environment', True)
     environment = re.split(r'(?m)(?=^### )', (directory / config['environment']).read_text())
     explanation = []
     for part in environment:
@@ -130,8 +132,9 @@ def apply(root, request):
     prefix = [
         {'path': config['role'], 'text': (directory / config['role']).read_text().strip()},
         {'path': SCOPE_PATH, 'text': '# 运行范围' + ('\n\n' + scope if scope else '')},
-        {'path': config['environment'], 'text': '\n\n'.join(x for x in explanation if x)},
     ]
+    if include_environment:
+        prefix.append({'path': config['environment'], 'text': '\n\n'.join(x for x in explanation if x)})
     result = deepcopy(request)
     result['fixed_parts'] = prefix + result.get('fixed_parts', [])
     result['system_prompt'] = '\n\n'.join(p['text'] for p in result['fixed_parts'] if p['text'])

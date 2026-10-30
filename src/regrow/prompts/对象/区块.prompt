@@ -1,324 +1,169 @@
 # 区块
 
 <!-- BEGIN_PROMPT_BLOCK id="region.common" requires="" -->
-## 通用
-
-### 对象定义
-
-区块（region）是具有稳定用途的界面区域。操作区、导航区与信息展示区均可登记为区块，不以拥有控件或独立业务功能为前提。
-
-区块身份由其职责与范围确定，不由屏幕位置确定。区块内的状态变化沿用原身份；跳转到不同职责的内容时，匹配对应的已有区块，无匹配时新建。公共导航区、操作区与跳转目标分别判断身份。
-
-状态变化：文件列表排序改变，沿用原区块。内容切换：邮件列表切换为联系人列表，分别匹配对应区块，公共导航区继续复用。用途相同本身不足以确认同一区块，发生跳转也不代表必须新建区块。
-
-区块 description 说明稳定的区域职责与范围，例如“设置类别导航区，提供各设置页面入口”。某次截图中的选中项、输入值或开关状态属于该次观察及动作结果，例如“动作后 Background 高亮”，不作为区块的长期说明。已有登记描述若包含“当前”等状态词，所指的是登记当时，不能据此覆盖后续实际动作证据。
-
-正例：将仅显示统计信息、不含按钮的区域登记为统计展示区。
-反例：仅因未发现按钮或独立业务功能，便将具有展示或导航用途的区域排除在区块之外。
-
-只有明确规定增量更新的字段采用增量语义，不将其推广到其他字段。
+区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。
+正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。
 <!-- END_PROMPT_BLOCK id="region.common" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.function" requires="region.common" -->
-## 功能的含义与归属
-
-功能是围绕独立业务目的组织的能力，可由多个操作、多个区块共同实现。
-
-功能归属于实际承载该业务的区块。跨区块完成一项业务时，根据已有业务关联确定其主要归属，其他区块提供相关支持。仅为该业务选择参数、打开辅助页面或展示结果，不足以将整项业务登记为这些辅助区块自身的功能。
-
-仅承担导航的入口区块记录到目标区块的导航关联，不将目标区块的业务登记为自身功能。不能仅凭图中相邻、存在跳转或参与一个辅助步骤，就判定整项业务归属于该区块。
-
-正例：新建闹钟主表单组织时间填写、相关配置和保存；响铃时长菜单提供参数知识。“创建闹钟”登记在主表单，关联使用时长菜单提供的支持。
-反例：仅因响铃时长菜单参与了一项配置操作，就在该菜单下再次登记整个“创建闹钟”；仅提供编辑器入口的菜单登记编辑器整套创建能力。
+功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。
 <!-- END_PROMPT_BLOCK id="region.function" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="region.list_group" requires="region.common" -->
-## 同类交互分组：list_group
-list_group表示同一区块内可以复用共同交互认识的控件组。它帮助后续按信息价值选择代表探索；不限制本次能登记几个成员，不合并成员身份，也不把代表的执行写成其他成员已执行。
+<!-- BEGIN_PROMPT_BLOCK id="region.shared_instances" requires="control.definition,control.references" -->
+# 确认同一控件：shared_instances
+只有能够确认是同一个控件时才填写。control 是当前成员，source_region/source_control 指向给定的已有来源，reason 说明身份依据；无可确认关系时填 []。
 
-根据对象在后续操作中的作用判断分组，不只看外形或列表名称。同类数据条目通常共享“查找、选择、打开”的操作方式；若某个入口带来独立功能、操作对象或不同流程，应保留这项差异。成员分别登记所属区块和身份，再使用相同list_group声明共同交互；普通控件可省略。
-
-正例：查找某关键词后出现多个匹配条目，分别保存可辨认成员，共同操作可选代表了解，不逐项重复建相同问题。下面仅展示分组相关字段，其他字段按本轮格式填写：
-```json
-{"controls":[{"region_index":0,"name":"匹配条目甲","list_group":"查找结果"},{"region_index":0,"name":"匹配条目乙","list_group":"查找结果"}]}
-```
-反例：仅因为入口排在同一列，就认为文件编辑、账户管理、媒体播放具有相同功能；或认为点过一个搜索结果就已经验证其他所有结果的目标内容。
-
-分组保存为所属区块的“组名→控件ID列表”。是否需要为某个成员提出任务，由任务提出结合已有知识和具体未知判断；分组本身不自动创建、完成或取消任务。
-
-<!-- END_PROMPT_BLOCK id="region.list_group" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.shared_instances" requires="region.common" -->
-## 共享控件身份 → shared_instances
-
-### 字段含义与填写条件
-
-`shared_instances` 声明本区块成员与给定来源中的控件具有同一身份。本步要求填写该字段，且本次没有可确认的复用关系时，填 `[]`。
-
-身份复用应依据已有身份记录或明确的界面延续关系；同名、同图标、同位置或用途相似，本身不足以确认同一控件。
-
-同一区块及其成员在页面切换后继续出现时，按已有身份复用规则处理；不因出现于两个页面，就自动声明跨区块共享。
-
-### 引用字段
-
-- `control`：本区块中待声明复用关系的控件。
-- `source_region`：本次材料明确提供的来源区块。
-- `source_control`：该来源区块中已登记的对应控件。
-- `reason`：说明能够支持同一身份的具体依据。
-
-引用采用本次材料及输出格式规定的形式，完整照抄给定标识，不自行改名、猜测编号或补造来源。
-
-### 复用后的知识与归属
-
-框架使两个区块直接引用同一控件记录，保留实际动作和任务的原有归属，不把来源区块的执行记录改成本区块执行。
-
-同一控件的条件化用途按 `knowledge`、`jump_to` 的相应规则记录。采用来源知识时保留适用条件，不因共享控件身份就认定来源用途在当前条件下全部适用。
-
-### 局部示例
-
-假设当前区块与“公共顶部栏”是两个已登记区块，二者均包含该顶部添加控件。已有界面变化记录表明，下方内容切换时该公共栏及按钮持续保留，本次声明共享：
-
-```json
-{
-  "shared_instances": [
-    {
-      "control": "c0001",
-      "source_region": "r0001",
-      "source_control": "c0001",
-      "reason": "已提供的界面变化记录显示，下方内容切换时公共顶部栏及该按钮持续保留，与来源记录中的控件一致。"
-    }
-  ]
-}
-```
-
-正例：有明确身份延续依据的同一个顶部按钮，在两个区块的成员记录中复用；不同条件下的用途另行保留条件。
-反例：只因外观都是“＋”，就合并调小时与调分钟两个独立控件；复用来源知识后宣称本区块已执行过来源动作。
+正例：切换界面时，一个工具栏及其控件持续存在，可结合已有身份和实际界面延续确认是原控件。仅有相似名称或用法不足以确认同一身份。
 <!-- END_PROMPT_BLOCK id="region.shared_instances" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="region.registration" requires="region.common" -->
-## 区块功能登记：本步目的
-
-整理本区块已经取得的用途、参数和功能知识，仅依据本次提供的已有材料总结。
-
-`local_knowledge` 保存可复用的用途、操作方式和限制；`functions` 将已有知识按独立业务目的整理成能力条目。信息展示区可以仅登记用途知识，尚无独立业务功能时 `functions` 可以为空。
-
-用途明确的功能无需为登记而补做操作。功能用途已明确，不表示本次已经执行成功；实际执行结果按已有证据表达。
+<!-- BEGIN_PROMPT_BLOCK id="region.registration" requires="region.common,region.identity,control.references" -->
+# 登记区块：regions
+description 写区块的稳定职责和范围；name 用便于辨认的名称。已有对象按本节格式引用并补充变化。
+正例：区块描述为“编辑文档内容并访问导出功能的编辑区”。
 <!-- END_PROMPT_BLOCK id="region.registration" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="region.local_knowledge" requires="region.common" -->
-## 本地用途知识 → local_knowledge
+<!-- BEGIN_PROMPT_BLOCK id="region.local_registration" requires="" -->
+本次局部识别中，regions 仅填写本轮定位区块，controls 仅填写它直属的必要控件。
+正例：本轮定位搜索区时，登记搜索区及其搜索框、提交按钮。
+<!-- END_PROMPT_BLOCK id="region.local_registration" -->
 
-### 内容范围
-
-`local_knowledge` 按用途分段概括本区块的稳定展示内容或操作方式，以及必要条件和限制；涉及多个控件时，说明必要的配合关系。
-
-保留控件用途、操作之间的联系、稳定依赖和互斥关系。本次输入值、当前选中状态和一次操作过程保留在证据中，不写成通用用途或固定条件。
-
-信息展示区直接说明稳定展示内容和适用范围，不为满足总结要求而补造控件或任务。
-
-### 增量更新
-
-- `update`：修改已有段落，填写 `id` 和完整的新 `text`。仍成立的条件、限制和未解决问题随对应知识保留。
-- `add`：新增段落正文，框架分配编号。
-- `delete`：删除已被完整替代或确认错误的段落编号。
-
-一次不同条件下的结果，不足以删除原条件下仍成立的知识。
-
-### 局部示例
-
-已有 `k0001` 为“支持按名称查找”，确认筛选方式后，local_knowledge字段的值可为（外层位置按本步输出结构）：
-
-```json
-{
-  "update": [
-    {
-      "id": "k0001",
-      "text": "输入名称后筛选列表中的匹配项。"
-    }
-  ]
-}
-```
-
-正例：在统计展示区记录“展示所选时间范围内的条目数量”，即使其中没有控件。
-反例：将“本次查找测试文件得到三条结果”写成稳定用途；更新某段操作知识时丢掉仍成立的前置条件。
+<!-- BEGIN_PROMPT_BLOCK id="region.local_knowledge" requires="" -->
+local_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。
+正例：add 填 ["先输入名称，再从匹配列表中选择目标条目"]。
 <!-- END_PROMPT_BLOCK id="region.local_knowledge" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="region.target_summary" requires="region.common" -->
-## 入口与目标摘要：输入材料的解释
-
-入口目标摘要用于说明已有材料能够确认的去向。
-
-`observed_link_only` 不等于已确认导航用途；按本次提供的状态说明读取其支持的关联事实，不据此补出未确认的触发控件或业务能力。
-
-目标用途与细节写到已有材料能够支持的程度，其余保持未知。目标尚未完成总结，不会使已有明确事实失效；导航关联本身也不支持推断目标区块的整套业务能力。
-
-正例：材料已明确某入口打开条目编辑区，记录该去向；编辑区其他能力未提供时保持未知。
-反例：只因存在到编辑区的关联，就推断编辑区支持分类、附件和同步，并将这些能力登记为入口区块自身的功能。
-<!-- END_PROMPT_BLOCK id="region.target_summary" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.parameter_definitions" requires="region.common" -->
-## 参数定义 → parameter_definitions
-
-### 引用与定义范围
-
-功能 `constraints` 引用的参数均须有对应定义。`ref` 逐字引用本次提供的参数完整键，不缩写、改名或补造来源。
-
-`description` 整理参数的稳定含义，将适用条件和对应行为一并写清，保留已有事实中仍成立的限制。稳定依赖或互斥关系写入对应知识段落。
-
-沿用真实参数来源和已有材料支持的值域，不发明新的取值、范围或条件。
-
-### 稳定参数知识与本次取值
-
-本次输入的名字、时间、样本实例和当前选中值保留在证据中。
-
-已有材料明确提供的选项、格式、边界和取值范围属于参数知识，即使这些值本身是名称或时间。保留已知范围，不将部分已观察选项推断为完整值域；一次样本不足以推出通用约束。
-
-正例：材料明确显示“5 分钟、10 分钟、15 分钟”为可选时长，将其保留为已知选项；本次选中了“5 分钟”另留在证据中。
-反例：因为选项包含具体时间，就从参数知识中删除这些已知选项；仅成功输入过一次“5”，就推断参数只能取“5”。
-<!-- END_PROMPT_BLOCK id="region.parameter_definitions" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.functions" requires="region.common" -->
-## 功能条目：用途、支持与参数引用
-
-### 内容范围与粒度
-
-功能条目登记已有材料能够明确支持其用途、范围和本区块归属的功能；尚无独立功能时可以为空。后续只增量更新受影响功能。用途description保留必要范围、条件和限制；本次必填项由输出要求声明。
-
-共同实现一个业务目的的输入、配置和提交可组成一项功能；独立目的分别登记，参数取值和中间状态不机械拆成业务。
-
-每项功能至少有一个真正支持该目的的本地对象知识（控件或区块）。外部支持只采用本次已提供的明确关联；全外部支持或仅打开目标页，不足以把目标业务登记为本区块功能。
-
-正例：名称填写、分类选择和保存共同实现“创建条目”，参数作为该功能所引用的配置知识。
-反例：将名称填写、选择一个分类、保存三个步骤机械拆成三个独立业务；将互相独立的创建和删除笼统合成一个无法明确完成标准的功能。
-
-### 功能名称 → name
-
-用简短名称表达一个明确的业务目的，不绑定本次输入值或当前状态。
-
-正例：“创建条目”。
-反例：“创建名为测试的条目”；用“执行所选操作”代替具体业务目的。
-
-### 功能描述 → description
-
-概括功能范围及实现该目的涉及的主要操作。说明业务用途，不复制整段执行历史或无关目标区块的能力。
-
-正例：“填写条目内容，选择相关配置并保存新条目。”
-反例：“本次先点击了加号，再输入测试，然后返回列表。”
-
-### 支持来源 → supports
-
-引用真正支持该功能结论的已有来源。
-
-- 按本轮supports字段声明的类型填写给定引用。引用的是对象已有用途知识，不是凭编号证明成功。
-- 引用实际提供且与该业务目的相关的来源。
-- 外部来源按已提供的明确关联引用，保留来源区块、对象归属和适用条件。
-
-本地支持必须真正涉及该业务目的；仅参与一个无关步骤，不足以支撑整项功能归属于本区块。
-
-正例：创建功能引用本地填写与保存用途，以及已明确关联的分类参数知识。
-反例：为满足本地支持要求加入无关的返回控件；将仅有外部支持的完整业务登记为本区块功能。
-
-### 功能条目的参数引用 → constraints
-
-功能条目中的 `constraints` 是字符串列表，每项填写材料给定的参数完整键。空列表表示没有参数引用；是否必填由本轮字段声明决定。参数的名称、说明和取值规则保存在支持对象的知识中，此处只引用完整键。
-
-被引用参数来自支持对象已有的参数知识，其所属对象也须列入 `supports`。直接使用材料中给定的参数完整键，不复制参数值。
-
-参数的稳定含义、适用条件及依赖关系保留在来源对象知识中，功能通过引用使用。
-
-正例：使用材料中已提供的分类参数完整键，并同时引用对应来源对象。
-反例：用“工作”这一当前分类值代替分类参数键；引用参数却漏掉其来源对象。
-
-<!-- END_PROMPT_BLOCK id="region.functions" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.evidence" requires="region.common" -->
-## 结论证据 → evidence
-
-`evidence` 说明实际来源及其支持的事实，保留理解结论所需的适用条件。`supports` 负责引用来源，`evidence` 说明材料具体支持了什么；不将来源引用本身当成执行成功的证明。
-
-新材料针对同一问题、适用条件相容且已明确解决对应疑问时，可以更新结论并移除已解决的疑问。不同条件下仍成立的限制、尚未解释的相反证据和未解部分继续保留，不因回答较晚而自动覆盖。
-
-动作归属不明时，保留已经观察到的事实及归属限制，不补造控件或任务绑定。具体历史实例留在证据中，不污染通用用途、参数定义和完成标准。
-
-正例：新材料明确解决了原条件下的保存疑问，更新对应结论；另一条件下仍未解决的失败继续保留。
-反例：仅因后续答案更晚，就覆盖此前的相反证据；将归属不明的变化直接绑定到某个控件。
-<!-- END_PROMPT_BLOCK id="region.evidence" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.exploration_status" requires="region.common" -->
-## 探索登记状态与实际效果：输入材料的解释
-
-输入材料中的 `done` 只说明相应探索信息已经登记，不表示业务已经执行成功。
-
-看到选项不表示已经改值或保存。回显所支持的结论仅限于已有材料覆盖的范围，不能据此推断任意参数、重启持久性或其他未覆盖的效果。
-
-正例：已看到时长选项，登记已知选项；实际是否改值或保存按操作证据分别说明。
-反例：因为任务标为 `done`，就宣称已修改并保存；只看到当前回显，就宣称重启后仍然保留。
-<!-- END_PROMPT_BLOCK id="region.exploration_status" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.identity" requires="region.common,shared.registration" -->
-## 区块引用与包含
-已有区块用材料给定的ref引用，新区块按本步格式填写identity。区块身份不确定时不绑定ref，填写name、description、identity="uncertain"，在identity_evidence中说明候选与缺口。
-parent_index只表示本次regions中真实物理包含的父区块位置，不表示从哪个区块进入。整个区块确实超出本轮允许范围时才填写out_of_scope_reason。
+<!-- BEGIN_PROMPT_BLOCK id="region.identity" requires="region.common" -->
+区块身份由职责、内容范围和实际延续关系确定。跨界面再次出现的同一区块沿用身份；数据、选中或排序变化可以是原区块的状态变化。
+正例：切换界面时，某区块连同其中的控件持续存在，且用途与范围延续，可复用它；另一部分内容整体替换时，结合变化和历史判断是原区块变化还是不同区块。
 <!-- END_PROMPT_BLOCK id="region.identity" -->
 
-
-<!-- BEGIN_PROMPT_BLOCK id="region.state_observation" requires="region.common" -->
-## 本次区块状态 → state_description
-
-只记录本次截图中影响内容、布局或可用操作集合的状态；写入这次观察，不覆盖区块的稳定description。未变化或没有相关信息时可省略。
-
-正例：同一闹钟列表区，先观察“列表为空，仅显示添加入口和空态提示”；新增后观察“列表中有闹钟条目，显示开关与删除入口”。保留同一Region，关联各自截图。
-反例：因为列表非空就新建一个闹钟区块；因为本轮没有报告删除按钮，就断言它不存在；把每次变化的时间数字写进稳定区块描述。
-
-历史状态只说明当时看到什么，当前是否可操作仍结合当前图。不要为补全状态清单额外制造探索任务。
-<!-- END_PROMPT_BLOCK id="region.state_observation" -->
-
-
-<!-- BEGIN_PROMPT_BLOCK id="region.function_updates" requires="region.functions" -->
-## 功能增量 → function_updates
-
-已有明确用途可形成轮廓。直接知识仍归原控件或区块，功能引用支持；尚无用途依据时先补本次图能支持的对象知识，不能只用名称支撑功能。
-
-已有用途足以支持而目录尚未记录的功能，在add中建立轮廓；已有功能发生认识变化则update。字段是否必填按本轮输出要求，没有更新时不重写未变功能。不补写未知作用对象或完成效果，不因此额外建验证任务；本次必填项由输出要求声明。
-
-正例：开始和暂停的效果已知，可先登记控制计时的轮廓；预设选项效果仍待确认时，不能将它写成已确认的设置方式，若轮廓涉及这部分则在用途知识中保留该具体不确定性。重置效果未知仍交给对应任务。反例：只提出重置任务，却把已有依据的全部计时功能留空等待总结；任务中承认预设效果未知，功能里却将预设设置写成确定能力。
-
-每组region指给定区块。supports为列表，例如支持控件c0002时填["c0002"]，支持区块自身时填["r0007"]；示例引用需换成本轮实际提供值。add只放新功能；update用ref指已有功能，changes只写实际变化；remove须说明原因，合并用replace_with指目标功能。
-
-局部格式例一：假设材料中控件c0002的已有用途是切换内容类别，可新增对应功能轮廓；示例不是本次任务答案：
-```json
-{
-  "region": "r0007",
-  "add": [
-    {
-      "name": "切换内容类别",
-      "description": "选择标签以显示对应类别内容。",
-      "supports": [
-        "c0002"
-      ]
-    }
-  ]
-}
-```
-局部格式例二：已有功能“删除条目”需补说明时，用update，不重新提交全部目录：
-```json
-{"region":"r0007","update":[{"ref":"r0007/删除条目","changes":{"description":"删除选中的条目；本次观察到提交前出现确认步骤。"}}]}
-```
-
-正例：已有“进入添加流程”的功能轮廓，本次只补充新确认的去向。反例：把新建表单的全部能力登记到来源导航按钮；因为返回区块就重写所有功能；复制每个控件的知识作为另一套任务答案。参数具体事实留在支持对象，constraints只引用已有参数键。
-
-区块有不同状态时保留同一有依据的身份及状态观察；不能用同一跳转路径强行合并不同功能区块。用途知识中的不确定性是证据边界，不是必须清零的新任务列表。
+<!-- BEGIN_PROMPT_BLOCK id="region.function_updates" requires="region.function,control.references,control.knowledge_base" -->
+# 更新可用功能：function_updates
+region 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。
+每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件 ID 或区块 ID。已有知识和本次有据补充的对象知识均可作为支持。
+正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。
 <!-- END_PROMPT_BLOCK id="region.function_updates" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="region.knowledge_edit" requires="region.local_knowledge" -->
-## 更新已有区块的知识 → regions[].local_knowledge
-
-更新已有区块知识时，在regions项中用ref引用材料中的区块，local_knowledge放在该区块项内；add的每项是段落正文字符串。本步允许function_updates且功能缺少用途知识支持时，可同次先补这里的知识，再引用该区块。
-
-局部结构例：假设r0007是给定的统计展示区，当前证据支持其用途：
-```json
-{"regions":[{"ref":"r0007","local_knowledge":{"add":["展示所选时间范围内的条目数量。"]}}]}
-```
-
-这个片段只更新已有区块知识，不包含新控件或新身份登记。
+<!-- BEGIN_PROMPT_BLOCK id="region.knowledge_edit" requires="region.common,control.references" -->
+# 更新区块用法：regions
+ref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。
 <!-- END_PROMPT_BLOCK id="region.knowledge_edit" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.function_constraints" requires="" -->
+功能的 constraints 是参数引用列表，复制材料给出的“控件ID/参数名”，参数来源控件同时列入 supports。
+正例：材料给出 c0008/搜索词 时，填写 ["c0008/搜索词"]。
+<!-- END_PROMPT_BLOCK id="region.function_constraints" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.foreground_concept" requires="" -->
+前景是当前活动的页面、菜单、对话框或信息展示区。模态界面接管交互时，被接管的底层属于背景。
+<!-- END_PROMPT_BLOCK id="region.foreground_concept" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.foreground" requires="region.foreground_concept" -->
+# 当前活动界面：foreground
+description 简述当前表面及必要遮挡。
+正例：“导出对话框位于前景，后方编辑区暂不能操作。”
+<!-- END_PROMPT_BLOCK id="region.foreground" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.exception_values" requires="" -->
+exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 是进入其他应用；unclassified 是存在阻碍但尚不能分类。
+正常业务菜单和对话框继续作为应用界面处理。
+正例：参数选择菜单正常展开时，exception 仍为 none。
+<!-- END_PROMPT_BLOCK id="region.exception_values" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.focus_presence" requires="" -->
+# 核对指定区块：focus_presence
+只判断本次指定区块：interactive 表示处于前景，可继续观察或导航；纯展示区也可以是 interactive。not_interactive 表示不在前景或被接管；uncertain 表示无法确认。
+正例：目标表单仍可见，但被模态窗口接管，填 not_interactive。
+<!-- END_PROMPT_BLOCK id="region.focus_presence" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.registration_identity" requires="" -->
+ref 复制已确认的旧区块 ID，沿用身份时 identity 为 same。没有可确认的旧身份时，按实际填写 new 或 uncertain，并提供 name、description；identity_evidence 保留判断依据、候选与具体缺口。
+正例：新出现的格式选择菜单有独立用途，未对应已有区块时登记为 new。
+<!-- END_PROMPT_BLOCK id="region.registration_identity" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.parent_index" requires="" -->
+parent_index：物理包含它的父区块在本次 regions 数组中的位置，从 0 开始；没有父区块时按本节格式留空。
+<!-- END_PROMPT_BLOCK id="region.parent_index" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.state_description" requires="" -->
+state_description 写这次可见的状态，description 保留稳定职责。
+正例：state_description 为“搜索结果为空”，区块用途仍为展示搜索结果。
+<!-- END_PROMPT_BLOCK id="region.state_description" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.context_matches" requires="" -->
+context_matches：当前画面符合该历史区块给出的行为适用上下文时填 true，不符合填 false；没有这种限定或无法判断时填 null。
+<!-- END_PROMPT_BLOCK id="region.context_matches" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.scope_reason" requires="" -->
+out_of_scope_reason：仅整个区块都超出本次探索范围时，说明具体原因。
+<!-- END_PROMPT_BLOCK id="region.scope_reason" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.task_review_reason" requires="" -->
+task_review_reason：出现已有任务未覆盖的具体问题，或旧结论被新证据推翻时，写清对象和问题；普通观察更新省略。
+正例：“原本仅提供图片格式，现在出现独立音频导出入口，其可选格式尚不明确。”
+<!-- END_PROMPT_BLOCK id="region.task_review_reason" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.knowledge_root" requires="region.common" -->
+# 更新本区块用法：local_knowledge
+<!-- END_PROMPT_BLOCK id="region.knowledge_root" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.previous_regions" requires="region.foreground_concept,control.references" -->
+# 动作前区块的去向：previous_regions
+逐项回应给定区块，ref 沿用原 ID。state 选择 retained_interactive（仍在前景、无实质变化）、changed_interactive（前景内容改变或重新进入）、visible_background_blocked（可见但被接管）、not_visible（不可见）或 uncertain。
+evidence 写本次观察依据；如提供 context_matches，按当前图核对该区块的行为上下文。
+正例：原编辑区被新对话框接管，记为 visible_background_blocked。
+<!-- END_PROMPT_BLOCK id="region.previous_regions" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.uncertainties" requires="" -->
+# 尚不能确认的事实：uncertainties
+简述具体对象、疑点与缺少的依据，供后续判断是否需要继续了解；已明确的内容照常登记。
+正例：“两个相同图标分别服务哪个列表，当前文字被遮挡，尚不能确认。”
+<!-- END_PROMPT_BLOCK id="region.uncertainties" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.function_evidence" requires="" -->
+# 整理依据：evidence
+说明哪些已给知识与实际结果支持本次整理，保留尚未确认的范围和有影响的相反观察。
+正例：“输入与选择步骤已有记录支持；最终提交后的保存效果尚未验证。”
+<!-- END_PROMPT_BLOCK id="region.function_evidence" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.ownership_status" requires="" -->
+# 归属复查进展
+status=continue：还需要具体观察，action 给出一个导航或等待动作。resolved：本次疑问已有足够依据，action=null。defer：当前缺少允许的调查方法，action=null。reason 说明判断及仍未确认的部分。
+正例：“旧导航栏仍服务整个页面，原归属正确”，可以 resolved。
+<!-- END_PROMPT_BLOCK id="region.ownership_status" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.observed_assignments" requires="region.common,region.identity,control.references,control.identity" -->
+# 当前确认的归属：observed_assignments
+只报告本图能够确认的旧控件。control 复制原控件 ID，region 填所属区块名称，description 写区块职责，evidence 写当前图中的关联依据。已有归属正确时沿用其名称。
+正例：切换界面后，一组控件仍属于同一持续显示的区块，沿用已确认的归属；未看到的旧控件保留未确认。
+<!-- END_PROMPT_BLOCK id="region.observed_assignments" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.shared_review" requires="" -->
+# 共享判断
+能作判断时：blocked_by=none，resolution=edit_record，proposal=null；用 record_edit 给出依据。缺少证据或记录相互矛盾时：blocked_by=shared_control_conflict，resolution=blocked，proposal=null，record_edit=null，reason 写具体缺口。
+比较各成员实际服务的对象、操作结果与适用条件。仅数据或状态不同可以仍是同一共同操作方式。
+正例：两个齿轮分别配置独立播放器，可依据各自结果让对应成员独立。
+<!-- END_PROMPT_BLOCK id="region.shared_review" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.shared_edit" requires="control.references" -->
+# 修订共享关系：record_edit
+一次填写一个成员：region、control 复制该成员的区块 ID 与控件 ID；field=shared_behavior；before 填原共享关系名称。after=independent 表示该成员独立；after=shared 表示整组继续共享，需要成员齐全、已有实际结果且均无异常，并有依据说明共同操作方式。evidence 写所比较的真实结果；缺少保留共享的依据时，选择 blocked 并说明缺口。
+正例：同组条目分别正常打开各自详情，成员齐全且共同操作方式一致，可以保留 shared。
+<!-- END_PROMPT_BLOCK id="region.shared_edit" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.recovery_handoff" requires="" -->
+recovery_handoff 写实际障碍和恢复所需线索。
+正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”
+<!-- END_PROMPT_BLOCK id="region.recovery_handoff" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.exception_registration" requires="" -->
+exception 非 none 时，报告实际异常，regions、controls 填 []；其余字段按本步格式填写。
+<!-- END_PROMPT_BLOCK id="region.exception_registration" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.function_new_constraints" requires="" -->
+本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件ID/参数名”加入功能的 constraints。
+<!-- END_PROMPT_BLOCK id="region.function_new_constraints" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.exception_uncertain" requires="" -->
+uncertain 表示当前证据不足以判断前景是否存在妨碍本次工作的异常。description 写清可见情况和缺少的依据。
+<!-- END_PROMPT_BLOCK id="region.exception_uncertain" -->

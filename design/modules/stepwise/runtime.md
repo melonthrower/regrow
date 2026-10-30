@@ -1,5 +1,7 @@
 # 提示、模型和执行支撑
 
+2026-10-30累计合并：17 类调用统一由 output.prepare → field_sections.render 按最终合同组合。对象块维护含义、正例；配方按完整字段路径/工作模式/发现模式选择，局部格式来自 schema。纠错保留原合同；关闭字段不加载相关教学。旧模板及旧对象 rules/sections 路径退出。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。
+
 2026-10-25接入验证中：`output.prepare`直接读取`calls.<role>.template`，在主文件明确槽位填入本次字段/平台合同/格式例；退出旧ordered_action和object_blocks.apply。固定来源保留在fixed_parts以供原步骤纠错。16类已配置，正常动作保存帧预览通过；尚未宣称Luna行为接受或实机部署。详情见接入证据目录。
 
 - [prompts/compose.py](../../../src/regrow/prompts/compose.py)：读取唯一组成配置，选择规则和呈现本步材料。

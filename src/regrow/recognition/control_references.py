@@ -57,6 +57,8 @@ def prepare(request):
             props.pop('ref')
             item['required'] = list(dict.fromkeys(full + ['name','region_index']))
             item['allOf'] = [b for b in item['allOf'] if 'ref' not in b.get('if', {}).get('required', [])]
+            if not item['allOf']:
+                item.pop('allOf')
     return q
 
 

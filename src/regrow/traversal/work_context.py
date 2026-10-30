@@ -32,7 +32,7 @@ def select(records, state, kind, region=None, *, task=None, reason=''):
         if active.get('region') == region and active.get('name') in owned_tasks(records.get(region, {})):
             task = active
     if kind == 'task_proposal':
-        reason = inventory_reason(review) or reason or ('补充当前观察中的任务与尚未覆盖的事项' if owned_tasks(records.get(region, {})) else '首次清点本区块已识别控件的功能未知')
+        reason = inventory_reason(review) or reason or '梳理本区块的用法与待解决问题'
     elif kind == 'locate':
         reason = ('核对当前区块清点报告中的具体登记缺口' if state.get('reason') == 'task_inventory_incomplete' else state.get('correction_context')) or reason or guidance('locate')
     work = {'kind': kind, 'region': region, 'task': deepcopy(task), 'reason': reason or guidance(kind) or '处理当前观察'}

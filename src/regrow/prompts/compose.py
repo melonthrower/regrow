@@ -22,6 +22,11 @@ def configuration_paths(root=None, role=None):
     calls = definition['calls'].values() if role is None else [definition['calls'].get(role, {})]
     paths.extend('流程/' + call['flow'] for call in calls if call.get('flow'))
     paths.extend(call['template'] for call in calls if call.get('template'))
+    for call in calls:
+        recipe = call.get('field_sections')
+        if recipe:
+            paths.extend(definition['object_modules']['files'])
+            paths.extend(recipe.get('purpose_by_work_kind', {}).values())
     return list(dict.fromkeys(paths))
 
 def shared_paths(root=None):

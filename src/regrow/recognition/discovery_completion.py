@@ -173,7 +173,7 @@ def supplement(root, records, state, frame):
             n += 1
             label = f"{c['name']}（候选{n}）"
         ctx['control_names'][label] = cid
-    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '只提供缺口相关及本批已登记身份；不证明当前可见，不能凭名称自动认定身份。', '用途': '沿用原截图补交待补事项，并检查原观察范围是否还有遗漏。'}
+    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '与本次缺口相关的历史对象及本批已登记对象。', '用途': '沿用原截图补齐必要对象或操作代表，并说明哪些待补事项已有代表覆盖。'}
     if ctx['mode'] != 'local':
         from regrow.recognition.region_candidate_names import control_candidates
         owners = set(ids) | {rid for (rid, r) in records.items() if set(owned_controls(r)) & set(batch['controls']) or any((g.get('owner') == r['name'] for g in batch['pending']))}

@@ -31,14 +31,11 @@ def confirmed_information(control):
     return text(confirmed(control))
 
 def purpose_text(control, *, unfinished=False):
-    confirmed = confirmed_information(control)
-    if confirmed:
-        return '已知功能：' + confirmed
     from regrow.records.control_knowledge import text
-    guess = text(control.get('knowledge'))
-    if not guess:
+    recorded = text(control.get('knowledge'))
+    if not recorded:
         return ''
-    return '推测用途：' + guess
+    return '用途记录：' + recorded
 
 
 def known_information(control, *, parameters=True, unfinished=False):

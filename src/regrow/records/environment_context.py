@@ -67,8 +67,8 @@ def forest(records, *, view='controls', focus=None):
     graph, roots, parents = structure(records)
     shown, out = set(), []
     title = '控件树' if view == 'controls' else '应用操作树'
-    out.append(title + '（历史目录，不代表当前可见、可操作或已验证成功）')
-    out.append('区块仅展开一次，其余引用；条件属于对应去向；树不表示物理包含或完整路由。')
+    out.append(title + '（已登记内容与已观察的访问关系）')
+    out.append('下级区块表示操作可到达的目标；条件标在相应去向旁。')
 
     def target(edge, depth, source):
         rid = edge['region']
@@ -147,7 +147,7 @@ def local_progress(records, focus):
     parent = parents[focus]
     peers = [rid for rid in sorted(records) if parents.get(rid) == parent] if parent else [focus]
     selected = list(dict.fromkeys(([parent] if parent else []) + peers))
-    lines = ['局部探索进度（当前区块、展示父级及兄弟；不代表业务操作成功）']
+    lines = ['局部探索进度']
     for rid in selected:
         progress = coverage(records[rid], records)
         status = ('本次范围外' if progress.get('excluded') else '探索完成' if progress['complete']
@@ -179,8 +179,8 @@ def render(records, state, focus, goal=None, kind='observation'):
                   if c.get('state') == 'visible_background_blocked' and c.get('region') in records]
     if background:
         out.append('上次更新所报背景：' + '、'.join(records[r]['name'] for r in background))
-    out.append('此处为动作前记录；动作后的前景与身份由本次前后图核对。' if kind == 'update'
-               else '目录与历史名单不能代替本次看图；树上没有展开的信息不代表数据库中不存在。')
+    if kind == 'update':
+        out.append('位置材料来自动作前；本步结果以动作后图为准。')
     return '\n'.join(out)
 
 

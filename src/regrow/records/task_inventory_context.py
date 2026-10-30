@@ -145,7 +145,7 @@ def parameter_text(control):
 def project(records, state, rid):
     """Select prose for inventory; expose machine references only for output binding."""
     from regrow.records.control_history_context import known_information
-    from regrow.records.control_knowledge import card, confirmed, text as knowledge_text
+    from regrow.records.control_knowledge import card, text as knowledge_text
     from regrow.records.function_scope import entries
     from regrow.records.region_knowledge import text as region_knowledge
     region = records[rid]
@@ -154,21 +154,15 @@ def project(records, state, rid):
     for group, members in region.get('list_groups', {}).items():
         names = [owned_controls(region)[cid]['name'] for cid in members if cid in owned_controls(region)]
         if names:
-            lines.append('**已登记同类交互组「' + group + '」**：' + '、'.join(names) + '。成员身份分别保留；结合下方知识判断共同方式是否还需代表探索。\n')
+            lines.append('**已登记同类控件「' + group + '」**：' + '、'.join(names) + '。\n')
     edges = entries(region, records)
     for cid, control in owned_controls(region).items():
-        accepted = confirmed(control)
         known = '；'.join(
-            '知识条目 ' + str(row['index']) + '（' +
-            ('已知功能' if {k: v for k, v in row.items() if k != 'index'} in accepted else '推测用途') +
-            '）：' + knowledge_text([row]) for row in card(control))
-        progress = control_progress(region, cid)
-        if not accepted and bool(control.get('knowledge')):
-            known = ('' if any(t.get('control') == cid and t.get('status') in ('done','record_only') for t in owned_tasks(region).values()) else '已尝试，功能尚未确认。' if progress.get('实际交互') else '未探索。') + known
+            '知识条目 ' + str(row['index']) + '：' + knowledge_text([row]) for row in card(control))
         sentences = [known] if known else ['描述：' + control.get('description', ''), '尚未登记用途知识']
         decision = control.get('needs_exploration')
         if decision is not None:
-            sentences.append('此前判断：' + ('需探索' if decision else '无需探索'))
+            sentences.append('此前判断：' + ('仍有使用疑问' if decision else '控件自身用法已清楚'))
         if parameter_text(control):
             sentences.append(parameter_text(control))
         from regrow.prompts.target_observation import describe

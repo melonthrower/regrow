@@ -1,5 +1,7 @@
 # 识别
 
+2026-10-30累计合并：区块定义允许多个功能及纯展示内容，身份依实际延续判断。控件登记、discovery_inventory 与同图 discovery_completion 按必要功能/操作方式选代表，已有代表覆盖的同类待补项可据实 excluded；不合并不同物理对象，也不要求穷尽同类数据。control_references 无旧控件 ID 时去掉无效空 allOf，字段和有效约束保持。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。
+
 - [locator.py](../../../src/regrow/recognition/locator.py)：构造当前图的发现/再识别请求，核对已有身份，允许补新控件与无控件展示区。
 - [matching.py](../../../src/regrow/recognition/matching.py)：外观定位、重复外观的相对位置核对及候选呈现，复用原算法。
 - region_identity、control_identity_review：处理复用/新建身份与有依据的身份复核。

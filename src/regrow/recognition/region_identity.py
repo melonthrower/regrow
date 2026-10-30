@@ -34,8 +34,8 @@ def extend_schema(schema, required=False):
     if previous:
         previous['properties']['context_matches'] = {'type': ['boolean', 'null'], 'description': '保留有行为适用上下文的旧区块在当前前景时，必须依据动作后图确认上下文符合才填true；不符合填false并报告not_visible或真实背景状态。无此限定或不再处于前景时null。前景中的展示区不要求有控件；此字段不表示操作许可。'}
         previous['required'] = [k for k in previous.get('required', []) if k not in ('context_matches', 'task_review_reason')]
-    schema['properties']['regions']['description'] = '按功能区而非整窗输出。标签栏控制职责不同的可替换内容时，分别列公共导航/操作区和当前内容区，即使本轮只识别区块。'
-    schema['properties']['regions']['items']['properties']['ref']['description'] = '仅范围和职责均对应旧区块时复用；从旧整窗拆出的公共区或内容区按本轮schema填写空值，不能冒用整窗身份。'
+    schema['properties']['regions']['description'] = '本次识别或更新的区块；划分与复用依据实际观察。'
+    schema['properties']['regions']['items']['properties']['ref']['description'] = '确认是同一区块时填写给定的区块ID；新对象按本轮格式填写。'
     item = schema['properties']['regions']['items']
     item['properties']['out_of_scope_reason'] = {'type': 'string', 'description': '只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。'}
     return schema

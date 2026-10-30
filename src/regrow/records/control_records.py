@@ -16,7 +16,7 @@ def extend_schema(schema, required=False):
         description={'type': 'string', 'description': '仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。'},
         knowledge={**knowledge_schema(), 'minItems': 0},
         may_open_content={'type':'boolean', 'description':'是否打开或展开与应用主要功能相关、具有探索价值的内容。'},
-        needs_exploration={'type':['boolean','null'], 'description':'是否需要进一步探索；不确定填null。'})
+        needs_exploration={'type':['boolean','null'], 'description':'控件自身用法是否还有影响后续使用的具体未知；不确定填null。'})
     item['required'] = list(dict.fromkeys([k for k in item['required'] if k not in ('possible_purpose', 'icon_appearance', 'icon_bbox')] + ['knowledge','may_open_content','needs_exploration']))
 
     item['properties']['ref']['description'] = '复用控件填写本轮提供的稳定编号，例如c0002；name填写控件名称。新用途或当前状态变化仍沿用原身份。新对象明确identity=new；身份未定保留缺口。'

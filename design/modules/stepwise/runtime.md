@@ -182,3 +182,6 @@ Runner通过上下文借出既有剩余repairs额度；格式尝试在发送前�
 
 ## 2026-10-30 结算条件的说明与显示
 任务提出主模板在operations及其局部JSON例之前显式引用对象/任务.prompt中的task.completion_condition定义，集中解释遍历用途、终点与证据、正反例；不恢复旧全量对象块自动拼装。实际schema字段说明和例子由task_proposer与原输出生成器产生。动作/结果/复核提示说明如何读取同一条件，纯导航仍按本轮none合同，不跨越输出权限。该字段不作为模型回复中的第二份任务答案。
+
+
+2026-10-31 保存帧测试工具：tools/prompt_review_trace.py回退历史调用时，将来源episode确已归档为未来记录的ownership活动指针一起归档；不删除原复查证据，dependency续接不走该清理。动作选择沿frame_context.primary读取原截图，支持正常next-request仅有image_refs的情况。模型题目和业务上下文不因这两处修复而缩减；保存帧提案不等于GUI执行。限定验证与边界见当月日志。

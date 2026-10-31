@@ -328,6 +328,15 @@ def worker(dest):
             archive = dest / 'inherited-future-episodes' / p.parent.name
             archive.parent.mkdir(exist_ok=True)
             shutil.move(p.parent, archive)
+    ownership = run / 'ownership_review.json'
+    if not dependency and ownership.exists():
+        review = read(run / read(ownership)['episode'])
+        source_episode = Path(review.get('source_episode', ''))
+        archived = dest / 'inherited-future-episodes' / source_episode.parent.name / source_episode.name
+        if archived.is_file():
+            archive = dest / 'inherited-pending' / ownership.name
+            archive.parent.mkdir(exist_ok=True)
+            shutil.move(ownership, archive)
     for p in (run / 'foreground_scopes').glob('*.json'):
         call_ref = str(read(p, {}).get('source_call', ''))
         if not dependency and call_ref.isdigit() and int(call_ref) >= int(spec['call']):
@@ -364,8 +373,12 @@ def worker(dest):
         stage = 'discovery'
     elif role == 'action_selection':
         task = {'region': src.get('task_region', src.get('region')), 'name': src['task_name']} if src.get('task_name') else None
+        from regrow.prompts.frame_context import primary
+        action_frame = primary(original)
+        if not action_frame:
+            raise ValueError('原动作选择缺少截图来源')
         q = action_proposer.request_from_run(source, run, region_ref=src.get('working_region'), task_ref=task,
-                frame=str(origin / original['screenshots'][0]), decision=original.get('selection'))
+                frame=str(origin / action_frame), decision=original.get('selection'))
         stage = 'action' if q.get('action_ready') else q.get('role')
     elif role == 'observation_update':
         # Commit receipt from the historical future must not suppress normal registration.

@@ -1,0 +1,137 @@
+--- a/src/regrow/prompts/发现手册/增量补全.prompt
++++ b/src/regrow/prompts/发现手册/增量补全.prompt
+@@ -1,2 +1,2 @@
+ # 本次补充识别
+-沿用给定的同一原图，补齐尚缺的必要对象或操作代表。已登记的部分按材料引用；其余同类数据已由代表覆盖时，说明覆盖即可。
++沿用给定的同一原图，按控件登记与分组规则补齐必要对象。已登记的对象按材料引用；同组已有成员不表示待补对象已经登记。确实无需登记的重复数据说明依据，未确认的具体身份保留疑点。
+--- a/src/regrow/prompts/发现手册/补登记.prompt
++++ b/src/regrow/prompts/发现手册/补登记.prompt
+@@ -1,2 +1,2 @@
+ # 本次待补内容
+-围绕给定缺口补充必要的功能入口、操作对象或同类代表。同类操作已有代表覆盖时，说明已有覆盖；仍影响使用的疑点具体保留。
++围绕给定缺口，按控件登记与分组规则补充必要对象。共享用法不能代替独立对象的身份登记；确实无需登记的重复数据说明依据，仍影响使用的疑点具体保留。
+--- a/src/regrow/prompts/对象/控件.prompt
++++ b/src/regrow/prompts/对象/控件.prompt
+@@ -2,6 +2,7 @@
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.definition" requires="" -->
+ 控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。
++不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。
+ 正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。
+ <!-- END_PROMPT_BLOCK id="control.definition" -->
+ 
+@@ -15,6 +16,7 @@
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.definition" -->
+ 结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。
++名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。
+ 正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。
+ <!-- END_PROMPT_BLOCK id="control.identity" -->
+ 
+@@ -61,8 +63,9 @@
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.registration" requires="control.definition,control.identity,control.references" -->
+ # 登记控件：controls
+-报告本步所需的新对象或变化。同类数据条目选择一个有代表性的对象，登记其操作方式所需的独立控件；共同方式已有代表时复用已有认识，只为新的操作方式、功能内容或必要差异补充对象。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。
+-正例：多个文件只登记一个代表条目及其独立菜单按钮；出现提供不同操作的条目时，再补相应代表。
++报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。
++大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。
++正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。
+ <!-- END_PROMPT_BLOCK id="control.registration" -->
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.registration_ref" requires="" -->
+@@ -71,7 +74,7 @@
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.registration_name" requires="" -->
+ name 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。
+-正例：代表项的 name 写“文件条目”，description 可写“当前选作代表的报告文档”。
++正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。
+ <!-- END_PROMPT_BLOCK id="control.registration_name" -->
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.exploration_flags" requires="" -->
+@@ -80,8 +83,9 @@
+ <!-- END_PROMPT_BLOCK id="control.exploration_flags" -->
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.list_group" requires="" -->
+-list_group：同一区块中可复用同一种操作方式的重复控件组，选出的代表填写该组名。不同操作方式分别保留代表；已经登记的具体对象仍保留各自身份。
+-正例：代表性的文件条目填“文件条目”，它的菜单按钮填“文件菜单按钮”。
++list_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。
++不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。
++正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。
+ <!-- END_PROMPT_BLOCK id="control.list_group" -->
+ 
+ <!-- BEGIN_PROMPT_BLOCK id="control.box_coordinates" requires="" -->
+--- a/src/regrow/recognition/discovery_completion.py
++++ b/src/regrow/recognition/discovery_completion.py
+@@ -1,4 +1,3 @@
+-from regrow.records.control_records import group_name
+ from regrow.records.object_store import region_work
+ 'Same-frame incremental discovery and bounded historical identity recall.'
+ from regrow.records.object_store import observation_history
+@@ -184,7 +183,7 @@
+             n += 1
+             label = f"{c['name']}（候选{n}）"
+         ctx['control_names'][label] = cid
+-    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '与本次缺口相关的历史对象及本批已登记对象。', '用途': '沿用原截图补齐必要对象或操作代表，并说明哪些待补事项已有代表覆盖。'}
++    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '与本次缺口相关的历史对象及本批已登记对象。', '用途': '沿用原截图核对待补对象，按控件登记与分组规则分别处理身份和共享用法。'}
+     if ctx['mode'] != 'local':
+         from regrow.recognition.region_candidate_names import control_candidates
+         owners = set(ids) | {rid for (rid, r) in records.items() if set(owned_controls(r)) & set(batch['controls']) or any((g.get('owner') == r['name'] for g in batch['pending']))}
+@@ -257,13 +256,6 @@
+         registered_names = {known[r]['name'] for r in batch['regions']}
+         if any((r['identity'] == 'new' and r['name'] in registered_names for r in accepted['regions'])):
+             raise ValueError('已登记区块应使用same引用；不同对象需给出可区分名称')
+-        for c in accepted['controls']:
+-            region = accepted['regions'][c['region_index']]
+-            rid = request['discovery_context']['region_names'].get(region.get('ref'))
+-            cid = request['discovery_context']['control_names'].get(c.get('ref'))
+-            group = c.get('list_group')
+-            if group and any((k in batch['controls'] and k != cid and (group_name(known.get(rid, {}), k) == group) for (k, old) in owned_controls(known.get(rid, {})).items())):
+-                raise ValueError('同一观察的同类列表已有代表控件；补交不能重复登记')
+     return (accepted, remaining, rm, cm)
+ 
+ def recall_into_request(q, records, queries):
+--- a/src/regrow/recognition/region_identity.py
++++ b/src/regrow/recognition/region_identity.py
+@@ -1,7 +1,5 @@
+-from regrow.records.control_records import group_name
+ from regrow.records.snapshots import load as _record_load
+ 'Shared discovery/update Region identity matching; screen placement is not identity.'
+-from regrow.records.object_store import owned_controls
+ from copy import deepcopy
+ from pathlib import Path
+ 
+@@ -19,7 +17,6 @@
+         (reply, delta_audit) = resolve(records, request, reply, snapshot, Path(run) / frame if frame else None, run)
+     (normalized, audit) = normalize(records, snapshot, Path(run) / frame if frame else None, reply)
+     audit.extend(delta_audit)
+-    audit.extend(reuse_list_roles(records, normalized))
+     return (normalized, audit)
+ 
+ def extend_schema(schema, required=False):
+@@ -49,25 +46,3 @@
+         request.pop('response_schema')  # Subsequent checks inspect resolved identities, not the wire reply.
+     (normalized, audit) = for_request(run, request, reply)
+     return (request, normalized, audit)
+-
+-def reuse_list_roles(records, reply):
+-    """A named representative is a list role, not the current row's data value."""
+-    audit = []
+-    for c in reply.get('controls', []):
+-        if c.get('ref') or not c.get('list_group') or 'identity' in c:
+-            continue
+-        i = c.get('region_index')
+-        if not isinstance(i, int) or not 0 <= i < len(reply.get('regions', [])):
+-            continue
+-        p = reply['regions'][i]
+-        owners = [(rid, r) for (rid, r) in records.items() if p.get('ref') == rid]
+-        if len(owners) != 1:
+-            continue
+-        (rid, r) = owners[0]
+-        matches = [(cid, old) for (cid, old) in owned_controls(r).items() if old['name'] == c.get('name') or group_name(r, cid) == c.get('list_group')]
+-        if len(matches) != 1:
+-            continue
+-        (cid, old) = matches[0]
+-        c['ref'] = cid
+-        audit.append({'proposal': i, 'status': 'list_role_reused', 'region': rid, 'control': cid, 'evidence': 'same_named_list_role_in_confirmed_region'})
+-    return audit

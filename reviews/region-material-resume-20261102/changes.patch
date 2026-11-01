@@ -1,0 +1,89 @@
+--- a/src/regrow/records/task_inventory_context.py
++++ b/src/regrow/records/task_inventory_context.py
+@@ -194,6 +194,31 @@
+                        '直属控件当前知识': controls, '已回答问题': answered})
+     return result
+ 
++def control_directory(cards, groups):
++    """Group existing material for reading; do not infer shared facts or tasks."""
++    grouped = {cid for members in groups.values() for cid in members if cid in cards}
++    lines = []
++    standalone = [cid for cid in cards if cid not in grouped]
++    if standalone:
++        lines.append('### 未分组控件')
++        for cid in standalone:
++            lines.append('**' + cid + '**：' + cards[cid])
++    if grouped:
++        lines.append('### 同类操作组')
++        for group, members in groups.items():
++            members = [cid for cid in members if cid in cards]
++            if not members:
++                continue
++            lines.append('**' + group + '**')
++            lines.append('成员：' + '、'.join(members))
++            material = {}
++            for cid in members:
++                material.setdefault(cards[cid], []).append(cid)
++            for body, sources in material.items():
++                lines.append('已有材料（' + '、'.join(sources) + '）：' + body)
++    return '\n\n'.join(lines)
++
++
+ def project(records, state, rid):
+     """Select prose for inventory; expose machine references only for output binding."""
+     from regrow.records.control_history_context import known_information
+@@ -201,11 +226,7 @@
+     from regrow.records.function_scope import entries
+     region = records[rid]
+     reasons = detail_reasons(region, state)
+-    lines = []
+-    for group, members in region.get('list_groups', {}).items():
+-        names = [owned_controls(region)[cid]['name'] for cid in members if cid in owned_controls(region)]
+-        if names:
+-            lines.append('**已登记同类控件「' + group + '」**：' + '、'.join(names) + '。\n')
++    cards = {}
+     edges = entries(region, records)
+     for cid, control in owned_controls(region).items():
+         known = '；'.join(
+@@ -236,7 +257,7 @@
+             sentences.append(detail)
+         # Current task states live in the focus tree; full open-question details
+         # are selected once by task_proposer, not repeated under each control.
+-        lines.append('**' + control['name'] + '**（' + cid + '）：' + '。'.join(x.rstrip('。') for x in sentences if x) + '。')
++        body = '。'.join(x.rstrip('。') for x in sentences if x) + '。'
+         destinations = []
+         for edge in edges:
+             if edge.get('control') != cid or edge.get('status') not in ('registered_entry', 'observed_entry'):
+@@ -249,14 +270,14 @@
+                 detail += '（' + '；'.join(edge['conditions']) + '）'
+             destinations.append(detail)
+         if destinations:
+-            lines.append('**已知直接目标**：' + '；'.join(x.rstrip('。') for x in dict.fromkeys(destinations)) + '。相关知识见「已登记直接目标知识」，当前区块内的目标见本区块控件资料。')
+-        lines.append('')
++            body += '\n**已知直接目标**：' + '；'.join(x.rstrip('。') for x in dict.fromkeys(destinations)) + '。相关知识见「已登记直接目标知识」，当前区块内的目标见本区块控件资料。'
++        cards[cid] = body
+     external = []
+     for rr, cid in external_sources(records, state, rid, reasons):
+         source = records[rr]
+         if any(t.get('control') == cid for t in owned_tasks(source).values()):
+             external.append({'region':rr, 'control':cid, '区块':source['name'], '名称':owned_controls(source)[cid]['name'], '用途与依据':known_information(owned_controls(source)[cid]), '参数说明':parameter_text(owned_controls(source)[cid]), '任务条件':['；'.join(t.get('conditions', [])) for t in owned_tasks(source).values() if t.get('control') == cid and t.get('conditions')]})
+     from regrow.records.environment_context import render
+-    return {'控件': '\n'.join(lines).strip(), '环境位置':render(records,state,rid,kind='task_proposal'),
++    return {'控件': control_directory(cards, region.get('list_groups', {})), '环境位置':render(records,state,rid,kind='task_proposal'),
+             '已登记直接目标知识': destination_knowledge(records, region, edges),
+             '本次观察的未确认事项':'；'.join((state.get('observation') or {}).get('uncertainties', [])), '已有任务': task_catalog(region, state, records), '可引用同类实例': external}
+--- a/src/regrow/prompts/compose.py
++++ b/src/regrow/prompts/compose.py
+@@ -284,10 +284,10 @@
+         head['本步问题'] = definition['messages']['discovery_local']
+     groups = groups_by_role[role]
+     if role == 'task_proposal' and '本轮可判断旧任务' in remaining:
+-        groups = ()
++        groups = (group_tuple(definition['calls']['task_proposal']['variants']['new_tasks']),)
+         if remaining['本轮可判断旧任务']:
+             groups += (group_tuple(definition['calls']['task_proposal']['variants']['old_tasks']),)
+-        groups += (group_tuple(definition['calls']['task_proposal']['variants']['new_tasks']), groups_by_role[role][1])
++        groups += (groups_by_role[role][1],)
+         if work.get('kind') == 'task_proposal' and work.get('task'):
+             head['本步问题'] = definition['messages']['task_focused']
+     if role == 'observation' and request.get('discovery_context', {}).get('completion'):

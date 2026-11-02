@@ -12,6 +12,15 @@ def structured_text(request):
     digest = hashlib.sha256(text.encode()).hexdigest()
     return request['_structured_user_prompt'] if request.get('_presentation_digest') == digest else text
 
+def replace_presentation(request, text):
+    """Preserve a valid internal source across a trusted display-only rewrite."""
+    previous = request.get('user_prompt', '')
+    valid = ('_structured_user_prompt' in request
+             and request.get('_presentation_digest') == hashlib.sha256(previous.encode()).hexdigest())
+    request['user_prompt'] = text
+    if valid:
+        request['_presentation_digest'] = hashlib.sha256(text.encode()).hexdigest()
+
 def restore(request):
     result = deepcopy(request)
     result['user_prompt'] = structured_text(request)

@@ -260,7 +260,12 @@ def render(request):
         for old,new in [('控件ID','控件名称'),('区块ID','区块名称'),('控件 ID','控件名称'),('区块 ID','区块名称'),('稳定编号','引用名称'),('ref编号','ref名称')]:value=value.replace(old,new)
         return value
     for field in ('system_prompt','user_prompt','dynamic_prompt'):
-        if field in q:q[field]=prose(q[field])
+        if field in q:
+            if field == 'user_prompt':
+                from regrow.prompts.history_disclosure import replace_presentation
+                replace_presentation(q, prose(q[field]))
+            else:
+                q[field]=prose(q[field])
     for part in q.get('fixed_parts',[]):part['text']=prose(part['text'])
     return q
 

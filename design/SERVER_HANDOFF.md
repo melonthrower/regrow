@@ -1,3 +1,13 @@
+# 2026-11-03 应用归属接线部署与benchmark续跑
+
+当前队列仍parallel_traversal_20261101_01，协调服务regrow-benchmark-app-boundary-20261103-01，冻结源码external_app_judgement_20261103_02/source-v8。14目标（12旧run+Terminal/VSCode待首次run），最多4路，总调用不限，每应用100次停审，只按明确检查记录再放行；零调用首屏核对保持。发布时Settings/Files/Calc/Chrome运行，余排队，后续以queue-state为准。20环境不可用、31非benchmark排除。
+
+Writer a0030已执行、未登记且repairs=2，单独held_registration_review，不重放、不声称等额度即可通过；GIMP165重复滚同一模板底部、VLC176逐个猜数值上限均held_loop_review。其他已执行未登记动作优先原episode续接；Calc a0017原accept0已放行续登记，不重放。原Settings352及独立旧Calc现场不动。
+
+用户授权旧图局部清理：Writer删5系统区块保留4文档区块，Calc12外部区块删除，Gedit只删r7错误parent，访问关系和对象任务保留。旧快照/原凭据/ID序列不变。Calc目标窗口曾仅24×26，启动工具失败后重复启动器点击被停审；操作员1GUI窗口最大化后Luna确认真实工作表。此为人工准备，不称自动恢复已完善。
+
+本批六例最终保存帧7HTTP/0GUI，另6HTTP失败；实机小窗36HTTP/9框架GUI命令，另1操作员GUI准备，分别记账。8当前聚焦通过，2旧协议失败在原冻结源复现；源码fceb3b74、图表76767868，限定研究快照，非全量门禁。详情external_app_judgement_20261103_02/REPORT.md和to_astra同名ZIP。
+
 # 2026-10-11 Clock 50 调用上限：候选实测停止，未验收
 
 本机外层工作区 `artifacts/runs/clock_context_50_20261011_01`；固定入口 `batch.json`，真实 run `runs/org.gnome.clocks_20261011T070746_9a849965`。沿用专用桌面 `rewalk-clock-fresh-20261005-02`，新图、保留应用数据，未清数据或重启容器，Android 未动。运行冻结源 `source` 的 hash 为 `36560fe8b8ba779b9c0b1544021eef4f9c7d2759b495a127f2788479c83c511b`，对应当前未验收候选；本次没有修改或接受框架代码/提示。

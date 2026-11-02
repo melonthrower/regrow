@@ -177,6 +177,9 @@ def request_from_run(root, run, *, work=None):
     (snapshot, records, state) = _record_load(run)
     if state.get('next_action_mode') != 'discover':
         raise ValueError('not awaiting discovery')
+    if state.get('discovery_completion', {}).get('pending'):
+        from regrow.recognition.discovery_completion import with_contract
+        state['discovery_completion'] = with_contract(run, state['discovery_completion'])
     for (rid, r) in records.items():
         for v in observation_history(r) + [v for c in owned_controls(r).values() for v in observation_history(c)]:
             if v.get('image'):

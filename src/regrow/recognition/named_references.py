@@ -216,6 +216,25 @@ def prepare(run, request):
     q['response_schema']=text(wire_schema(schema,nested),names)
     if paths:
         q['response_schema']=_replace_paths(q['response_schema'],paths)
+    feedback = q.get('_correction_context')
+    if feedback and q.get('named_nested') and nested:
+        from regrow.prompts.correction_feedback import body
+        issues = deepcopy(feedback['issues'])
+        for row in issues if isinstance(issues, list) else []:
+            if not isinstance(row, dict):
+                continue
+            location = str(row.get('所在字段', ''))
+            if 'parent_index' in location:
+                row['问题'] = ('父区块引用未能对应本次回复或修订基准中的唯一对象。'
+                             '请补充该父区块引用，或依据实际包含关系修正。')
+            for key in ('字段', '所在字段', '问题', '修正要求'):
+                if isinstance(row.get(key), str):
+                    for old, new in [('parent_index', '父区块'), ('region_index', '所属区块'),
+                                     ('control_index', '目标控件'), ('candidate_index', '对象引用')]:
+                        row[key] = row[key].replace(old, new)
+        shown = encode_objects(feedback['reply'], names, owners, current=contract['current'])
+        q['user_prompt'] = q['dynamic_prompt'] = body(feedback['context'], issues, shown, feedback['notes'])
+        q['named_issue'] = json.dumps(issues, ensure_ascii=False, indent=2)
     if q.get('proposal_base') is not None and nested:
         contract['base']=deepcopy(q['proposal_base'])
     if q.get('proposal_base') is not None and nested:
@@ -329,7 +348,12 @@ def decode(request, reply):
             for name in (r.get('name'),r.get('ref'),contract['names'].get(r.get('ref'))):
                 if name and name not in references:references[name]=i
     for i,row in enumerate(rows):
-        if 'parent' in row:regions[i]['parent_index']=resolve(row['parent'],references) if row['parent'] else None
+        if 'parent' in row:
+            parent = resolve(row['parent'], references) if row['parent'] else None
+            if parent is not None and type(parent) is not int:
+                raise ValueError('区块「' + str(_key(row)) + '」的父区块「' + str(row['parent'])
+                    + '」未能对应本次回复或修订基准中的唯一对象；请补充父区块引用，或依据实际包含关系修正。')
+            regions[i]['parent_index'] = parent
         for c in row.get('controls',[]):
             if not isinstance(c,dict):raise ValueError('区块「'+str(_key(row))+'」的控件列表中每项须为对象')
             c=deepcopy(c)

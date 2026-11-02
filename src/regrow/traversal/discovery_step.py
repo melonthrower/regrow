@@ -19,7 +19,7 @@ from copy import deepcopy
 from pathlib import Path
 import jsonschema
 
-def await_discovery(run, frame, evidence, handoff=''):
+def await_discovery(run, frame, evidence, handoff='', *, retain_target=False):
     """Recovery exit: retain work, invalidate old location; register no Regions."""
     if not (Path(run) / frame).is_file():
         raise ValueError('missing recovery frame')
@@ -41,7 +41,9 @@ def await_discovery(run, frame, evidence, handoff=''):
         if batch and batch.get('pending'):
             state.setdefault('discovery_completion_history', []).append(batch)
         state.pop('handoff_summary', None)
-        if state.get('action_target_registration', {}).get('status') == 'pending':
+        from regrow.traversal.target_registration import reobserve
+        retained = retain_target and reobserve(records, state, frame)
+        if not retained and state.get('action_target_registration', {}).get('status') == 'pending':
             state['action_target_registration']['status'] = 'superseded'
         state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=frame, discovery_trigger=evidence, reason='recovery_finished_discovery_required', recovery_handoff=handoff)
     return _record_publish(run, 'await-discovery-' + evidence, mutate)
@@ -74,6 +76,8 @@ def commit(root, run, call_ref, *, ownership_episode=None):
     if current.get('action_target_registration', {}).get('last_discovery_call') == call_ref:
         return _record_read(run / 'knowledge_current.json')
     batch = completion.scoped_batch(known, current.get('discovery_completion') or {})
+    if batch.get('pending'):
+        batch = completion.with_contract(run, batch)
     if call_ref in batch.get('calls', []):
         return _record_read(run / 'knowledge_current.json')
     if current.get('next_action_mode') != 'discover':
@@ -128,6 +132,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
                 return
             state.update(discovery_mode='relocate', reason='local_position_unconfirmed', interactive_regions=[], observation=None)
         return _record_publish(run, 'expand-discovery-' + call_ref, expand)
+    continuation_request = {**deepcopy(request), 'response_schema': deepcopy(contract)}
     (request, reply, audit) = _region_identity.prepare(run, request, reply)
     original_region_sources = schema_indices.get('regions', list(range(len(reply['regions']))))
     original_control_sources = schema_indices.get('controls', list(range(len(reply['controls']))))
@@ -251,7 +256,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         if not missing and (not batch):
             state.pop('discovery_completion', None)
         if missing or batch:
-            state['discovery_completion'] = {'frame': str((run / frame).resolve()), 'sha256': completion.fingerprint(run / frame), 'observation': obs, 'regions': refs, 'controls': all_controls, 'pending': missing, 'calls': batch.get('calls', []) + [call_ref], 'request': batch.get('request') or request}
+            state['discovery_completion'] = {'frame': str((run / frame).resolve()), 'sha256': completion.fingerprint(run / frame), 'observation': obs, 'regions': refs, 'controls': all_controls, 'pending': missing, 'calls': batch.get('calls', []) + [call_ref], 'request': batch.get('request') or continuation_request}
         if missing or batch or ownership_episode:
             _record_write_json(temp / 'discovery_receipt.json', {'source_call': call_ref, 'registered_regions': refs, 'registered_controls': all_controls, 'pending': missing, 'region_source_indices': region_indices, 'control_source_indices': control_indices})
             if ownership_episode:

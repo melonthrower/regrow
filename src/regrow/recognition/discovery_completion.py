@@ -142,6 +142,23 @@ def scoped_batch(records, batch):
     batch['pending'] = kept
     return batch
 
+def with_contract(run, batch):
+    """Recover an old continuation's contract from its actual accepted call."""
+    if batch.get('request', {}).get('response_schema'):
+        return batch
+    from regrow.records.calls import submission
+    original, _ = submission(run, batch['calls'][0])
+    saved = batch['request']
+    if any(original['discovery_context'].get(key) != saved['discovery_context'].get(key)
+           for key in ('mode', 'focus')):
+        raise ValueError('补登记原调用与保存的观察范围不一致，保留断点核对')
+    if (Path(run) / original['screenshots'][0]).resolve() != Path(batch['frame']).resolve():
+        raise ValueError('补登记原调用与保存截图不一致，保留断点核对')
+    result = deepcopy(batch)
+    result['request']['response_schema'] = deepcopy(original['response_schema'])
+    return result
+
+
 def supplement(root, records, state, frame, *, items=None):
     batch = state['discovery_completion']
     if str(Path(frame).resolve()) != batch['frame'] or fingerprint(frame) != batch['sha256']:

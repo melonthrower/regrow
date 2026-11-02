@@ -48,6 +48,21 @@ def guidance(target, records):
             '本轮只补登记身份，不探索功能效果；登记后重新选择动作。')
 
 
+def reobserve(records, state, frame):
+    """Carry identity recall, never old geometry, across an unexecuted repair."""
+    from regrow.records.object_store import owned_tasks
+    target = state.get('action_target_registration') or {}
+    ref = target.get('task') or {}
+    task = owned_tasks(records.get(ref.get('region'), {})).get(ref.get('name'), {})
+    if (target.get('status') != 'pending' or not ref or state.get('active_task') != ref
+            or task.get('status') not in ('pending', 'blocked')):
+        return False
+    target.update(frame=str(Path(frame).resolve()), supplements=0)
+    for key in ('completion_items', 'last_discovery_call', 'repeat'):
+        target.pop(key, None)
+    return True
+
+
 def registered(records, target, call, *, run=None, snapshot=None):
     """Only an accepted current observation can resolve the registration goal."""
     matches = set()
@@ -71,6 +86,11 @@ def registered(records, target, call, *, run=None, snapshot=None):
     from regrow.traversal.action_binding import bind_action_target
     from regrow.recognition.action_target_review import Conflict
     request, proposal = submission(run, target['call'])
+    original_frame = (Path(run) / request['screenshots'][0]).resolve()
+    if original_frame != Path(target['frame']).resolve():
+        # A fresh observation can confirm a known identity, but the old click
+        # point cannot identify a renamed/new object on a different frame.
+        return len(matches) == 1
     request = deepcopy(request)
     request.pop('action_target_confirmation', None)
     rows = []

@@ -24,15 +24,22 @@ def organize(root, request, instruction, issues, reply, notes=None):
     context = request['user_prompt'].removesuffix('请按上述字段与输出要求返回一个JSON对象。').rstrip()
     # Demote the saved question headings; they are background for this repair.
     context = re.sub(r'^(#+) ', r'\1# ', context, flags=re.M)
+    q['_correction_context'] = {'context': context, 'issues': deepcopy(issues),
+                                'reply': deepcopy(reply), 'notes': deepcopy(notes)}
+    q['user_prompt'] = q['dynamic_prompt'] = body(context, issues, reply, notes)
+    for key in ('_structured_user_prompt', '_presentation_digest'):
+        q.pop(key, None)
+    return q
+
+
+def body(context, issues, reply, notes=None):
+    """Keep correction layout identical before and after reference presentation."""
     sections = ['# 本次问题\n' + json.dumps(issues, ensure_ascii=False, indent=2)]
     if notes:
         sections.append('# 本次补充材料\n' + json.dumps(notes, ensure_ascii=False, indent=2))
     sections += ['# 原任务与相关材料\n' + context,
                  '# 待修正回复\n```json\n' + json.dumps(reply, ensure_ascii=False, indent=2) + '\n```']
-    q['user_prompt'] = q['dynamic_prompt'] = '\n\n'.join(sections)
-    for key in ('_structured_user_prompt', '_presentation_digest'):
-        q.pop(key, None)
-    return q
+    return '\n\n'.join(sections)
 
 LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': '引用',
           'name': '名称', 'description': '描述', 'conditions': '适用条件',

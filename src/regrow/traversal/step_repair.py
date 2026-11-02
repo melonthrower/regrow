@@ -192,7 +192,9 @@ def reopen_blocked(run, frame):
     job = reobservable_block(run)
     if job is None:
         return False
-    _discovery_step.await_discovery(run, str(Path(frame).resolve()), 'blocked-' + Path(job['path']).parent.name)
+    _discovery_step.await_discovery(run, str(Path(frame).resolve()),
+                                  'blocked-' + Path(job['path']).parent.name,
+                                  retain_target=job['stage'] in ('action', 'discovery'))
     job.update(status='superseded_by_observation', resume_frame=str(Path(frame).resolve()))
     atomic(Path(run) / job['path'], job)
     (Path(run) / 'pending_step.json').unlink()

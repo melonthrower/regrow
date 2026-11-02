@@ -65,7 +65,9 @@ def call(transport, incoming):
     pointer = transport.run / 'pending_format_reply.json'
     if pointer.exists():
         state = read(pointer)
-        if all(incoming != state[key] for key in ('input', 'original', 'next')):
+        from regrow.recognition.named_references import internal_request
+        same_internal = incoming == internal_request(state['original'])
+        if not same_internal and all(incoming != state[key] for key in ('input', 'original', 'next')):
             raise Pending(state, different_request=True)
     else:
         prepared = prepare_request(transport.root, transport.run, incoming, getattr(transport, 'platform', 'android'))

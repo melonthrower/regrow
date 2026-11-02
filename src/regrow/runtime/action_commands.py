@@ -46,10 +46,13 @@ def selection_schema(value):
                 props.update({k: deepcopy(v) for k, v in completion.items() if k in ('controls', 'regions', 'function_updates')})
                 props['retry_when'] = {'type':'string','minLength':1}
     result['anyOf'] = [branch for branch in result.get('anyOf', []) if 'task_update' not in branch.get('properties', {})]
-    return result
+    from regrow.traversal.application_judgement import extend_schema
+    return extend_schema(result, 'action_selection')
 
 def for_request(proposal, request):
     """Map a validated public reply to the existing settlement path, without editing it."""
+    from regrow.traversal.application_judgement import action_payload
+    proposal = action_payload(proposal)
     completed = proposal.get('action') == 'complete'
     partial = proposal.get('action') == 'none' and any(k in proposal for k in ('controls','regions','function_updates','retry_when'))
     if not completed and not partial:

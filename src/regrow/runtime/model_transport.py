@@ -126,6 +126,8 @@ def prepare_request(root, run, request, platform='android'):
     from regrow.traversal.task_prerequisites import augment
     request = augment(root, run, request)
     request = with_run_scope(request, run)
+    from regrow.traversal.application_judgement import prepare as application_context
+    request = application_context(root, run, request)
     from regrow.prompts.frame_context import validate
     validate(request)
     request = with_frame_context(request, run)

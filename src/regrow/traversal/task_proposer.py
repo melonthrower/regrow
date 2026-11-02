@@ -38,7 +38,7 @@ def update_names(region, *, scope_review=False):
     focus = None if scope_review else region_work(region).get('task_inventory', {}).get('review', {}).get('task')
     return [name for (name, t) in owned_tasks(region).items() if (focus is None or name == focus) and (t.get('status') in ('pending', 'blocked') or (t.get('status') == 'done' and _task_settlement.region_task(t))) and (not t.get('shared_task_ref'))]
 
-def plan_request(root, records, state, rid, *, work=None):
+def plan_request(root, records, state, rid, *, work=None, current_scene=True):
     from regrow.traversal import work_context as _work_context
     from regrow.records import task_inventory_context as _task_inventory_context
     from regrow.records import shared_tasks as _shared_tasks
@@ -113,7 +113,11 @@ def plan_request(root, records, state, rid, *, work=None):
     _context_scope.for_request(request, records, state)
     _parameter_evidence_review.augment(request, region)
     from regrow.records.function_updates import attach
-    return attach(request, records, [rid])
+    request = attach(request, records, [rid])
+    from regrow.traversal.application_judgement import extend_schema
+    if current_scene:
+        request['response_schema'] = extend_schema(request['response_schema'], 'task_proposal')
+    return request
 
 class TaskProposer:
 

@@ -171,6 +171,8 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
     q = current()
     if q['stage'] == 'task_proposal':
         TaskProposer.run(repair, q)
+        if route_recovery():
+            return
         if _record_load(run)[2].get('next_action_mode') == 'discover':
             locator.discover()
             if route_recovery():
@@ -205,6 +207,8 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
     if capacity:
         raise step_repair.Paused(capacity, '当前小步HTTP额度不足以选择动作并登记结果；未执行，保留原任务。已推进的小步可续接；无推进的尾段结束本批。')
     accepted = proposer.propose(q, resumed)
+    if route_recovery():
+        return
     result = accepted['result']
     q = result['request']
     ref = result['call']

@@ -37,7 +37,7 @@ def request(root, snapshot, records, state, current_request=None):
             continue
         saved = deepcopy(state)
         saved['observation'] = {'id': observed['evidence']['observation'], 'image': str(frame), 'control_refs': []}
-        q = _task_proposer.plan_request(root, records, saved, rid)
+        q = _task_proposer.plan_request(root, records, saved, rid, current_scene=False)
         dynamic = json.loads(q['user_prompt'])
         dynamic['材料来源'] = '补充功能依据任务：提供的是历史截图，不是当前设备。根据历史观察补充旧问题的答案；确有未答问题时提出探索任务。'
         q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
@@ -80,7 +80,7 @@ def region_request(root, snapshot, records, state, rid):
         return None
     saved = deepcopy(state)
     saved['observation'] = {'id': observed['evidence']['observation'], 'image': str(frame), 'control_refs': []}
-    q = _task_proposer.plan_request(root, records, saved, rid)
+    q = _task_proposer.plan_request(root, records, saved, rid, current_scene=False)
     dynamic = json.loads(q['user_prompt'])
     dynamic['材料来源'] = '这是该区块最后一次登记的历史截图，不是当前设备画面。结合已登记动作补充任务清单；已有结果和仅记录入口不需要回访。只有确实未完成的探索才留待后续到达区块执行；缺少依据时用partial，不假装当前可见。'
     q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)

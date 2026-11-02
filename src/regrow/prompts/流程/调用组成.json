@@ -64,6 +64,14 @@
         ],
         "outputs": [
           {
+            "block": "region.application_exception",
+            "fields": [
+              "exception",
+              "recovery_handoff"
+            ],
+            "details": []
+          },
+          {
             "block": "action.proposal",
             "fields": [],
             "format": "platform",
@@ -816,6 +824,7 @@
         {
           "question": "本区块已有材料支持哪些功能，还需要探索哪些具体问题？",
           "materials": [
+            "目标应用",
             "区块",
             "描述",
             "描述来源",
@@ -850,6 +859,7 @@
         "new_tasks": {
           "question": "当前控件还有哪些值得调查的具体未知？",
           "materials": [
+            "目标应用",
             "区块",
             "描述",
             "描述来源",
@@ -887,6 +897,14 @@
           }
         ],
         "outputs": [
+          {
+            "block": "region.application_exception",
+            "fields": [
+              "exception",
+              "recovery_handoff"
+            ],
+            "details": []
+          },
           {
             "block": "control.knowledge_revision",
             "fields": [
@@ -1180,9 +1198,7 @@
               {
                 "block": "region.exception_registration",
                 "when_paths": [
-                  "action_result.exception",
-                  "controls",
-                  "regions"
+                  "action_result.exception"
                 ]
               },
               {
@@ -1216,9 +1232,7 @@
               {
                 "block": "region.exception_registration",
                 "when_paths": [
-                  "foreground.exception",
-                  "controls",
-                  "regions"
+                  "action_result.exception"
                 ]
               },
               {
@@ -2123,6 +2137,14 @@
           }
         ],
         "outputs": [
+          {
+            "block": "region.application_exception",
+            "fields": [
+              "exception",
+              "recovery_handoff"
+            ],
+            "details": []
+          },
           {
             "block": "action.proposal",
             "fields": [],

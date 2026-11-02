@@ -152,6 +152,9 @@ def accept(request, reply, call):
     from regrow.runtime.action_commands import for_request, normalize
     original = deepcopy(request['original_request'])
     jsonschema.validate(reply, original['response_schema'])
+    if reply.get('exception', 'none') != 'none':
+        # The original action stage owns recovery; no action was confirmed.
+        return original, deepcopy(reply)
     proposal = normalize(for_request(reply, original))
     original['action_target_confirmation'] = {'action': action_key(proposal),
                                               'frames': frames(original), 'call': call}

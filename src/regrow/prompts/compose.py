@@ -125,6 +125,7 @@ def action_material(value, request, readable, definition=None):
     layout = definition['calls']['action_selection']
     slots = layout['materials']
     remaining = deepcopy(value)
+    application = remaining.pop('目标应用', '')
     work = remaining.pop(slots['work'], {})
     task = remaining.pop(slots['task'], {})
     scope = work.get('范围')
@@ -152,7 +153,7 @@ def action_material(value, request, readable, definition=None):
     blocks = {'task': '\n\n'.join(task_lines), 'history': history.strip(), 'controls': controls, 'remaining': readable(remaining) if remaining else '', 'question': layout['question']}
     if request.get('work_context', {}).get('kind') == 'navigate':
         blocks['question'] = '根据当前图选择到达目标区块的下一步；目标已经可操作时返回none并说明，无需另造探索问题。'
-    sections = []
+    sections = ['## 目标应用\n' + application] if application else []
     for section in layout['sections']:
         body = blocks[section['key']]
         if not body and section['key'] != 'task':

@@ -72,7 +72,7 @@ description 简述当前表面及必要遮挡。
 <!-- END_PROMPT_BLOCK id="region.foreground" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.exception_values" requires="" -->
-exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 是进入其他应用；unclassified 是存在阻碍但尚不能分类。
+exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。
 正常业务菜单和对话框继续作为应用界面处理。
 正例：参数选择菜单正常展开时，exception 仍为 none。
 <!-- END_PROMPT_BLOCK id="region.exception_values" -->
@@ -167,12 +167,12 @@ status=continue：还需要具体观察，action 给出一个导航或等待动�
 <!-- END_PROMPT_BLOCK id="region.shared_edit" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.recovery_handoff" requires="" -->
-recovery_handoff 写实际障碍和恢复所需线索。
+recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。
 正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”
 <!-- END_PROMPT_BLOCK id="region.recovery_handoff" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.exception_registration" requires="" -->
-exception 非 none 时，报告实际异常，regions、controls 填 []；其余字段按本步格式填写。
+exception 非 none 时，报告实际异常，regions、controls 填 []，本步允许的 function_updates 也填 []，不登记应用外的功能。原任务受异常影响的进展仍按本步字段要求填写，保留未解决的问题，不将应用外功能当作任务成果。其余字段按本步格式填写。
 <!-- END_PROMPT_BLOCK id="region.exception_registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.function_new_constraints" requires="" -->
@@ -194,3 +194,10 @@ current 为 true 表示本次确认该区块处于当前前景；只标记当前
 <!-- BEGIN_PROMPT_BLOCK id="region.parent" requires="" -->
 parent 填物理包含它的父区块名称；没有父区块时省略或填 null。这里不是访问来路。
 <!-- END_PROMPT_BLOCK id="region.parent" -->
+
+<!-- BEGIN_PROMPT_BLOCK id="region.application_exception" requires="region.exception_values,region.recovery_handoff" -->
+先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。
+
+正例：已进入另一应用，只报告 external_app 及当前界面说明。
+反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。
+<!-- END_PROMPT_BLOCK id="region.application_exception" -->

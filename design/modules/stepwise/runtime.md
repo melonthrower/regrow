@@ -185,3 +185,6 @@ Runner通过上下文借出既有剩余repairs额度；格式尝试在发送前�
 
 
 2026-10-31 保存帧测试工具：tools/prompt_review_trace.py回退历史调用时，将来源episode确已归档为未来记录的ownership活动指针一起归档；不删除原复查证据，dependency续接不走该清理。动作选择沿frame_context.primary读取原截图，支持正常next-request仅有image_refs的情况。模型题目和业务上下文不因这两处修复而缩减；保存帧提案不等于GUI执行。限定验证与边界见当月日志。
+
+## 2026-11-03 应用材料的正常发送接点
+model_transport在原运行范围之后调用application_judgement.prepare，仅对五类当前界面调用替换/补齐目标应用材料。名称来自manifest.app_name或app，保留其他材料和JSON后的帧说明。没有新增模型调用。已发送原格式纠错保持原合同；历史任务清点不读取当前应用归属。动作材料就近显示目标应用，输出定义仍来自对象词项与实际schema。

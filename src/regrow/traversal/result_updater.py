@@ -119,7 +119,7 @@ def route_update(root, reply, receipt, *, schema=None):
     exception = reply['action_result']['exception']
     abnormal = exception in ('external_app', 'blocking_popup', 'system_error', 'unexpected_exit', 'unclassified') or ('current_regions' in reply and exception != 'none')
     if abnormal and (reply['regions'] or reply['controls'] or reply.get('current_regions')):
-        raise ValueError('external-only foreground contradicts target-app interactive inventory')
+        raise ValueError('本次已报告前景异常，请清空区块、控件及当前区块列表；应用外界面的功能和任务不在本次登记。保留实际动作结果和恢复说明。')
     mode = 'explore' if exception == 'none' else 'review_result' if exception == 'uncertain' else 'recover'
     reason = exception
     from regrow.recognition import update_visibility as visibility

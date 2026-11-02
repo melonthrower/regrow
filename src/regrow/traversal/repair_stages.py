@@ -42,6 +42,10 @@ def preserve_repair_aliases(original, refreshed, records):
             new['control_names'][label] = matches[0]
 
 def accept(root, run, job):
+    from regrow.traversal.application_judgement import accept as application_exception
+    interrupted = application_exception(run, job)
+    if interrupted is not None:
+        return interrupted
     from regrow.recognition import foreground_scope as _foreground_scope
     scope = _foreground_scope.audit(run, job)
     result = accept_with_edits(root, run, job)
@@ -124,7 +128,11 @@ def accept_candidate(root, run, job):
         job = {**job, 'request': q, 'candidate': enriched}
     if job.get('record_edit') and job['stage'] == 'task_proposal':
         q = deepcopy(q)
+        current_judgement = 'exception' in q['response_schema'].get('properties', {})
         q['response_schema'] = _task_proposer.proposal_schema()
+        if current_judgement:
+            from regrow.traversal.application_judgement import extend_schema
+            q['response_schema'] = extend_schema(q['response_schema'], 'task_proposal')
     if job['stage'] == 'update' and job.get('candidate') is not None:
         (q, candidate, _) = _region_identity.prepare(run, q, job['candidate'])
         job = {**job, 'candidate': candidate}

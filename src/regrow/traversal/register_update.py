@@ -15,7 +15,7 @@ from regrow.records.object_store import region_work
 from regrow.records.object_store import owned_actions
 from regrow.records.object_store import observation_history
 from regrow.records import object_store as object_store
-from regrow.records.object_store import owned_controls
+from regrow.records.object_store import owned_controls, owned_tasks
 import argparse
 from copy import deepcopy
 import hashlib
@@ -28,6 +28,35 @@ import tempfile
 def rebase(value, old_base, new_base):
     """Only path-bearing evidence fields; never rewrite descriptive text."""
     return object_store.rebase(value, old_base, new_base)
+
+
+def gap_owner(run, records, request, reply, region_refs, gap, call_ref):
+    """Resolve a gap through the array in its own saved call, never a later one."""
+    if gap.get('kind') != 'control':
+        return None
+    index = gap.get('proposal', {}).get('region_index')
+    if type(index) is not int:
+        return None
+    origin = gap.get('source_call') or call_ref
+    if origin == call_ref:
+        indexes = request.get('registration_source_indices', {}).get('regions', list(range(len(reply.get('regions', [])))))
+        return region_refs[indexes.index(index)] if index in indexes else None
+    try:
+        original, candidate = _owner_submission(run, origin)
+    except (OSError, ValueError):
+        return None
+    rows = candidate.get('regions', [])
+    indexes = original.get('registration_source_indices', {}).get('regions', list(range(len(rows))))
+    if index not in indexes:
+        return None
+    row = rows[indexes.index(index)]
+    ref = original.get('region_names', {}).get(row.get('ref'), row.get('ref'))
+    if ref in records:
+        return ref
+    # A new Region had no stable ID before the corrected update was committed.
+    # Only one same-named Region in this accepted result can supply its owner.
+    matches = [rid for rid in region_refs if row.get('name') and records[rid]['name'] == row['name']]
+    return matches[0] if len(matches) == 1 else None
 
 def commit_update(root, run, call_ref, attempt_ref):
     from regrow.recognition import region_identity as _region_identity
@@ -82,6 +111,8 @@ def commit_update(root, run, call_ref, attempt_ref):
     current = run / 'knowledge_current.json'
     payload = {'record_format': 'flat_region_controls', 'graph': graph, 'reply': reply, 'receipt': receipt, 'call': call_ref, 'attempt': attempt_ref}
     payload['edge'] = edge
+    if request.get('registration_gaps'):
+        payload['registration_gaps'] = request['registration_gaps']
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     snapshot_ref = f'knowledge_snapshots/{attempt_ref}-{call_ref}-{digest[:12]}'
     snapshot = run / snapshot_ref
@@ -122,21 +153,36 @@ def commit_update(root, run, call_ref, attempt_ref):
         if control is not None:
             raise ValueError('invalid region-owned return')
     region_changes = []
-    for item in reply['previous_regions']:
+    for item in reply.get('previous_regions', []):
         r = records[_region_candidate_names.resolve(records, item['ref'], request.get('region_names'))]
         region_changes.append({'region': r['id'], 'state': item['state'], **({'evidence': item['evidence']} if item.get('evidence') else {})})
         if item.get('task_review_reason', '').strip() and region_work(r).get('task_inventory'):
             region_work(r)['task_inventory']['review'] = {'reason': item['task_review_reason'], 'source_call': call_ref}
     delta_refs = _owner_materialize_regions(records, reply, call_ref, edge['after_observation'], request.get('region_names'), frame=run / edge['after_image'] if edge.get('after_image') else None)
-    _registration_diagnostics.check_visibility(reply, delta_refs, region_changes)
+    _registration_diagnostics.check_visibility(reply, delta_refs, region_changes, request.get('region_names'))
     visibility = _update_visibility
     from regrow.records.object_knowledge import observed_refs
-    region_refs = visibility.regions(observed_refs(reply, delta_refs), region_changes, reply['action_result']['exception'])
+    if 'current_regions' in reply:
+        members = visibility.current_refs(reply, records, delta_refs, request.get('region_names'))
+        region_refs = list(dict.fromkeys(members))
+        from regrow.records.observations import observe_current_regions
+        observe_current_regions(records, members, call_ref, edge['after_observation'])
+    else:
+        region_refs = visibility.regions(observed_refs(reply, delta_refs), region_changes, reply['action_result']['exception'])
+    if not historical:
+        # Release old observation gaps before this reply settles tasks anew.
+        from regrow.traversal.task_deferral import resume_localized
+        target_retries = {(rid, name): task['deferral'].get('source_call')
+                          for rid, region in records.items() for name, task in owned_tasks(region).items()
+                          if task.get('status') == 'blocked'
+                          and task.get('deferral', {}).get('retry_when') == 'target_identity_or_changed_surface'}
+        resume_localized(records, region_refs, call_ref, foreground=reply['foreground'],
+                         run=run, frame=run / edge['after_image'] if edge.get('after_image') else None, snapshot=snapshot)
     for rid in region_refs:
         gap = region_work(records[rid]).get('registration_gaps', {}).get('task_proposal')
         if gap:
             gap['recheck_after'] = call_ref
-    old_control_refs = visibility.locate_retained(records, [{'region': rid, 'state': 'changed_interactive'} for rid in region_refs], call_ref, snapshot, run / edge['after_image'] if edge.get('after_image') else None, _image_match, observation=edge['after_observation']) if region_refs else []
+    old_control_refs = visibility.locate_retained(records, region_refs, call_ref, snapshot, run / edge['after_image'] if edge.get('after_image') else None, _image_match, observation=edge['after_observation']) if region_refs else []
     association = deepcopy(binding.get('association'))
     a = rebase(_region_evidence.action_record(edge), run, snapshot)
     if association:
@@ -145,12 +191,14 @@ def commit_update(root, run, call_ref, attempt_ref):
     a['evidence'].update(result_call=call_ref, before_regions=before['region_refs'])
     a['interactive_regions'] = region_refs
     a['region_changes'] = region_changes
+    if 'current_regions' in reply:
+        a['observed_destinations'] = []
     owned_actions(owner)[attempt_ref] = a
     from regrow.records.task_settlement import register_destinations
     for r in records.values():
         r['transitions'] = [e for e in r['transitions'] if e['attempt'] != attempt_ref]
     changed = {p['region'] for p in region_changes if p['state'] == 'changed_interactive'}
-    if reply['action_result']['exception'] == 'none':
+    if 'current_regions' not in reply and reply['action_result']['exception'] == 'none':
         for target in region_refs:
             if target != source and (target not in before['region_refs'] or target in changed):
                 relation = {'source_control': control, 'target_region': target, 'attempt': attempt_ref, 'relation': 'observed_interactive_candidate'}
@@ -166,6 +214,10 @@ def commit_update(root, run, call_ref, attempt_ref):
         settlement_reply = {**reply, 'task_update': []}
     _record_settle_task(records[binding.get('task_region', source)], effective_binding, settlement_reply, attempt_ref, records, receipt=receipt, labels=request.get('region_names'), candidates=request.get('task_update_candidates'))
     register_destinations(reply.get('jump_to'), records, delta_refs, reply['controls'], owner, attempt_ref, call_ref)
+    for target in a.get('observed_destinations', []):
+        if target != source:
+            owner['transitions'].append({'source_control': control, 'target_region': target,
+                'attempt': attempt_ref, 'relation': 'observed_interactive_candidate'})
     binding = effective_binding
     for region in records.values():
         for action in owned_actions(region).values():
@@ -189,7 +241,8 @@ def commit_update(root, run, call_ref, attempt_ref):
         for key in ('suspended_updates', 'suspended_update_history'):
             if key in previous_state:
                 state[key] = deepcopy(previous_state[key])
-    if reply['action_result']['exception'] == 'none' and reply['regions'] and (not region_refs) and edge.get('after_image'):
+    if (reply['action_result']['exception'] == 'none' and not region_refs and edge.get('after_image')
+            and (reply['regions'] or any(gap.get('kind') == 'region' for gap in request.get('registration_gaps', [])))):
         state.update(next_action_mode='discover', phase='awaiting_discovery', discovery_mode='relocate', pending_frame=edge['after_image'], reason='observed_region_interactivity_unconfirmed')
     state['exception'] = reply['action_result']['exception']
     state['recovery_handoff'] = reply['action_result'].get('recovery_handoff', '')
@@ -198,9 +251,26 @@ def commit_update(root, run, call_ref, attempt_ref):
     snapshot.parent.mkdir(parents=True, exist_ok=True)
     temp = Path(tempfile.mkdtemp(prefix='.pending-', dir=snapshot.parent))
     try:
-        _owner_save_region_images(records, delta_refs, reply, call_ref, run, edge.get('after_image'), snapshot, temp,
+        observed_regions = list(dict.fromkeys(delta_refs + region_refs)) if 'current_regions' in reply else delta_refs
+        _owner_save_region_images(records, observed_regions, reply, call_ref, run, edge.get('after_image'), snapshot, temp,
                                   observation=edge['after_observation'], update_images=True,
                                   text_control=control if dispatch.get('action', {}).get('action') == 'input_text' else None)
+        indexes = request.get('registration_source_indices', {})
+        from regrow.records.observations import restore_source_indices
+        restore_source_indices(records, observed_regions, indexes, call_ref, edge['after_observation'])
+        if not historical and target_retries:
+            # New control crops now exist. Only revisit old target gaps still
+            # unchanged by this reply's task settlement; never undo a new defer.
+            resume_localized(records, region_refs, call_ref, foreground=reply['foreground'],
+                             run=run, frame=run / edge['after_image'] if edge.get('after_image') else None,
+                             snapshot=temp, retry_targets=target_retries)
+        for gap in request.get('registration_gaps', []):
+            owner_ref = gap_owner(run, records, request, reply, delta_refs, gap, call_ref) or source
+            work = region_work(records[owner_ref])
+            saved = work.setdefault('registration_gaps', {}).setdefault('discovery', {'pending': []})
+            saved['pending'].append({'source_call': call_ref, 'source_observation': edge['after_observation'],
+                                     'source_frame': edge['after_image'], **deepcopy(gap)})
+            saved.update(source_call=call_ref, observation=edge['after_observation'], frame=edge['after_image'])
         from regrow.records.snapshots import commit as commit_snapshot
         source_record = {'record_format': 'flat_region_controls', 'graph': None, 'call': call_ref, 'attempt': attempt_ref, 'digest': digest, 'parent_snapshot': parent_snapshot}
         commit_snapshot(run, temp, snapshot, records, state, source_record, pointer)

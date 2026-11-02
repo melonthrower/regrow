@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-02",
+  "source_hash": "bd3ea9a16951091332ab5317b4e86a263f7f15dbce6e0b83f4b2a96dcf43c8b5",
+  "source_tree_sha": "702631b8810ebb1b81ec637b67a4f639e4d1d1b8",
+  "source_file_count": 269,
+  "implementation_review_commit": "e8b8610db4fe848a72910fd81ab9cf34fcfc255d",
+  "previous_default_head": "f18f2f404c342da5ed4ed17e269d03596cf1a90e",
+  "live": {
+    "model_requests": 15,
+    "gui_actions": 4,
+    "registered_actions": 4,
+    "applications": [
+      "Settings",
+      "Gedit"
+    ],
+    "pending_execution": 0
+  },
+  "saved_frame": {
+    "model_requests": 4,
+    "gui_actions": 0
+  },
+  "focused_checks": 9,
+  "scope": "limited research snapshot; no full-framework release certification",
+  "known_limit": "Gedit indentation-business task unfinished; redundant preparation observation recorded",
+  "preserved_repository_document": "src/README.md (unchanged; not part of runtime source hash)"
+}

@@ -18,7 +18,7 @@ def known_entries(region, control, operation):
     for (aid, action) in owned_actions(region).items():
         if action.get('control') != control or action.get('operation') not in ('tap', 'click') or action.get('delivery') != 'executed_receipt_zero' or (action.get('text_delivered') is False) or (action.get('result', {}).get('exception') != 'none') or (action.get('result', {}).get('returns_to_previous') is True):
             continue
-        targets = list(dict.fromkeys(action.get('interactive_regions', [])))
+        targets = list(dict.fromkeys(action.get('observed_destinations', action.get('interactive_regions', []))))
         if len(targets) != 1 or targets[0] == region['id']:
             continue
         hits.append({'attempt': aid, 'destination_region': targets[0], 'description': action['result'].get('description', ''), 'conditions': action.get('conditions', [])})

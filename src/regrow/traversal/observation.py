@@ -2,6 +2,7 @@ from regrow.records.snapshots import load as _record_load
 from regrow.records.snapshots import publish as _record_publish
 from regrow.records.object_store import owned_tasks
 from regrow.records.object_store import owned_controls
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -98,7 +99,52 @@ def locate_task_control(run, q, frame):
     _record_publish(run, 'task-location-' + uuid.uuid4().hex, mutate)
     return True
 
-def register_action_target(run, request, proposal, binding, call):
+def retained_action_target(run, snapshot, records, state):
+    """Read the unexecuted target and its native frame from the saved call."""
+    from regrow.records.snapshots import read
+    from regrow.records.calls import submission
+    from regrow.runtime.action_commands import normalize
+    from regrow.traversal.work_context import from_request
+    from regrow.records.task_settlement import completion_target
+    run = Path(run)
+    if (state.get('reason') != 'action_target_needs_registration'
+            or state.get('next_action_mode') != 'discover'
+            or (run / 'execution_pending.json').exists()):
+        return None
+    stage = read(Path(snapshot) / 'source.json').get('stage', '')
+    target = state.get('action_target_registration') or {}
+    if target.get('status') == 'pending':
+        ref = target['call']
+    elif stage.startswith('action-target-'):
+        ref = stage[len('action-target-'):]
+    else:
+        return None
+    request, proposal = submission(run, ref)
+    proposal = normalize(proposal)
+    frames = request.get('screenshots', [])
+    if len(frames) != 1 or proposal.get('action') not in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'input_text'):
+        return None
+    frame = (run / frames[0]).resolve()
+    if (not frame.is_file() or not state.get('pending_frame')
+            or frame != (run / state['pending_frame']).resolve()):
+        return None
+    task = from_request(request, records, state).get('task')
+    if task != state.get('active_task'):
+        return None
+    if task:
+        target = owned_tasks(records.get(task['region'], {})).get(task['name'])
+        if target is None or target.get('status') not in ('pending', 'blocked'):
+            return None
+        goal = completion_target(records[task['region']], target)
+        source = request.get('source', {})
+        if 'task_control' in source and source['task_control'] != goal.get('control'):
+            return None
+        if 'completion_region' in source and source['completion_region'] != goal['region']:
+            return None
+    return {'call': ref, 'proposal': deepcopy(proposal), 'frame': str(frame), 'task': deepcopy(task)}
+
+
+def register_action_target(run, request, proposal, binding, call, *, episode=None):
     """Register unbound click/input targets through discovery before delivery."""
     if binding.get('association', {}).get('status') != 'unconfirmed':
         return False
@@ -107,15 +153,13 @@ def register_action_target(run, request, proposal, binding, call):
     frame = str((Path(run) / request['screenshots'][0]).resolve())
     if not Path(frame).is_file():
         raise ValueError('missing action selection frame')
-    explanation = (
-        '动作选择发现了尚未关联身份的实际控件；该提案尚未执行。'
-        '请在本张动作前图中登记拟操作控件及其真实所属区块，已有对象核对后复用，没有旧身份则正常新建。'
-        '不因原任务所在区块而改变实际控件归属；不将未执行提案登记为效果或完成任务。'
-        '登记后将重新看图选择动作。拟操作提案：' + json.dumps(proposal, ensure_ascii=False))
-
+    outcome = {}
     def mutate(records, state, *_):
-        from regrow.traversal.work_context import from_request
-        state['active_task'] = from_request(request, records, state).get('task')
+        from regrow.traversal import target_registration
+        target = target_registration.context(records, state, request, proposal, call, frame, episode)
+        outcome.update(target)
+        state['active_task'] = target['task']
+        state['action_target_registration'] = target
         batch = state.pop('discovery_completion', None)
         if batch:
             state.setdefault('discovery_completion_history', []).append(batch)
@@ -123,8 +167,11 @@ def register_action_target(run, request, proposal, binding, call):
         state.pop('required_control', None)
         state.update(next_action_mode='discover', phase='awaiting_discovery',
                      pending_frame=frame, discovery_mode='relocate',
-                     reason='action_target_needs_registration', correction_context=explanation)
+                     reason='action_target_needs_registration', correction_context=target_registration.guidance(target, records))
     _record_publish(run, 'action-target-' + call, mutate)
+    if outcome.get('repeat'):
+        from regrow.traversal.target_registration import defer
+        defer(run, outcome)
     return True
 
 class Locator:
@@ -139,7 +186,8 @@ class Locator:
         discovery = _discovery_step
         state = _record_load(self.run)[2]
         batch = state.get('discovery_completion') or {}
-        if batch.get('pending') and batch.get('sha256') != _discovery_completion.fingerprint(self.frame):
+        target_pending = state.get('action_target_registration', {}).get('status') == 'pending'
+        if batch.get('pending') and not target_pending and batch.get('sha256') != _discovery_completion.fingerprint(self.frame):
             discovery.await_discovery(self.run, str(self.frame), 'fresh-discovery-' + self.frame.parent.name)
         return run_stage(self.root, self.run, self.call, repair=self.repair)
 

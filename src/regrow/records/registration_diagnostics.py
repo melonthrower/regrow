@@ -20,6 +20,7 @@ def schema_errors(error):
         compatible = [i for i, branch in enumerate(branches)
                       if 'type' not in branch or any(checker.is_type(error.instance, t)
                       for t in ([branch['type']] if isinstance(branch['type'], str) else branch['type']))]
+        type_compatible = list(compatible)
         if isinstance(error.instance, dict):
             compatible = [i for i in compatible if all(
                 ('const' not in spec or error.instance[key] == spec['const'])
@@ -30,6 +31,34 @@ def schema_errors(error):
             children = [e for e in error.context if list(e.schema_path)[0] == compatible[0]]
             if children:
                 return [row for child in children for row in schema_errors(child)]
+        path = '/' + '/'.join(map(str, error.absolute_path))
+        if not type_compatible and all('type' in branch for branch in branches):
+            types = list(dict.fromkeys(t for branch in branches for t in
+                         ([branch['type']] if isinstance(branch['type'], str) else branch['type'])))
+            return [dict(code='schema', path=path, object='reply', actual=error.instance,
+                         expected='值的类型不符，要求：' + ' 或 '.join(types),
+                         validator='type', requirement=types[0] if len(types) == 1 else types)]
+        if isinstance(error.instance, dict) and compatible:
+            selected = [branches[i] for i in compatible]
+            required = set.intersection(*(set(b.get('required', [])) for b in selected))
+            missing = sorted(required - set(error.instance))
+            if missing:
+                choices = {key: list(dict.fromkeys(v for b in selected for v in
+                    b.get('properties', {}).get(key, {}).get('enum', []))) for key in missing}
+                detail = '；'.join(key + ' 可选：' + '、'.join(map(str, values))
+                                  for key, values in choices.items() if values)
+                rows = [dict(code='schema', path=path, object='reply', actual=error.instance,
+                             expected='缺少必填字段：' + '、'.join(missing) + ('；' + detail if detail else ''),
+                             validator='required', requirement=missing, fields=missing)]
+                if all(b.get('additionalProperties') is False for b in selected):
+                    allowed = set().union(*(set(b.get('properties', {})) for b in selected))
+                    extra = sorted(set(error.instance) - allowed)
+                    if extra:
+                        rows.append(dict(code='schema', path=path, object='reply', actual=error.instance,
+                                         expected='此对象不接受字段：' + '、'.join(extra),
+                                         validator='additionalProperties', requirement=False,
+                                         fields=extra, allowed_fields=sorted(allowed)))
+                return rows
     message = error.message
     if error.validator in ('minItems', 'maxItems'):
         bound = '至少' if error.validator == 'minItems' else '最多'
@@ -53,7 +82,60 @@ def schema_errors(error):
     return [row]
 
 
-def visibility_errors(reply, region_refs, changes):
+def object_schema_error(request, reply, error):
+    """Let stage acceptance isolate a readable object row; never lose extra fields."""
+    from regrow.records.task_assessments import row_error
+    if row_error(request, reply, error):
+        return True
+    if not isinstance(reply, dict) or error.get('validator') == 'additionalProperties':
+        return False
+    if request.get('correction_format') == 'original' and 'proposal_base' not in request:
+        request = request.get('original_request', request)
+    role = request.get('role')
+    groups = {'object_registration': ('objects', 'path', request.get('registration_paths', [])),
+              'appearance_comparison': ('comparisons', 'ref',
+                  [row['ref'] for row in request.get('appearance_rows', [])])}
+    parts = error.get('path', '').strip('/').split('/')
+    if role in groups:
+        group, key, allowed = groups[role]
+        if parts == [group] and error.get('validator') in ('minItems', 'maxItems'):
+            return True
+        if len(parts) < 2 or parts[0] != group or not parts[1].isdigit():
+            return False
+        rows = reply.get(group)
+        i = int(parts[1])
+        return (isinstance(rows, list) and i < len(rows) and
+                isinstance(rows[i], dict) and rows[i].get(key) in allowed)
+    if role not in ('observation', 'observation_update') or request.get('discovery_context', {}).get('completion'):
+        return False
+    if len(parts) < 2 or parts[0] not in ('regions', 'controls') or not parts[1].isdigit():
+        return False
+    rows = reply.get(parts[0])
+    i = int(parts[1])
+    return isinstance(rows, list) and i < len(rows) and isinstance(rows[i], dict)
+
+
+def reply_errors(request, reply, *, defer_objects=False):
+    errors = []
+    for failure in jsonschema.Draft202012Validator(request.get('response_schema', {})).iter_errors(reply):
+        for error in schema_errors(failure):
+            if error not in errors and not (defer_objects and object_schema_error(request, reply, error)):
+                errors.append(error)
+    return errors
+
+
+def visibility_errors(reply, region_refs, changes, names=None):
+    if 'current_regions' in reply:
+        from regrow.recognition.update_visibility import selected_indices
+        from regrow.records.object_knowledge import control_only
+        selected = selected_indices(reply, names)
+        return [dict(code='region_visibility_conflict', path=f'/controls/{i}/region_index',
+                     object=control.get('ref') or control.get('name', ''), actual=control.get('region_index'),
+                     expected='本轮控件观察属于current_regions中的区块',
+                     repair='核对控件是否出现在动作后图中及其归属；只补旧控件用法时，仅填写ref和knowledge。')
+                for i, control in enumerate(reply.get('controls', []))
+                if not control_only(control) and type(control.get('region_index')) is int
+                and 0 <= control['region_index'] < len(region_refs) and control['region_index'] not in selected]
     current = {region_refs[c['region_index']] for c in reply.get('controls', []) if isinstance(c.get('region_index'), int) and 0 <= c['region_index'] < len(region_refs)} - {None}
     errors = []
     for (i, change) in enumerate(changes):
@@ -62,8 +144,8 @@ def visibility_errors(reply, region_refs, changes):
         errors.append(dict(code='region_visibility_conflict', path=f'/previous_regions/{i}/state', object=reply['previous_regions'][i]['ref'], actual=change['state'], expected='本轮登记当前控件的同一区块与其可交互状态一致', repair='按当前图核对复用身份、可交互状态及控件观察；不能同时登记该区块当前控件又称其不可见、被接管或状态未知。修正有误字段或撤回无依据观察，不为通过校验直接改成可交互。仅归属引用且无本轮直接控件的父区块可保留原状态。'))
     return errors
 
-def check_visibility(reply, region_refs, changes):
-    errors = visibility_errors(reply, region_refs, changes)
+def check_visibility(reply, region_refs, changes, names=None):
+    errors = visibility_errors(reply, region_refs, changes, names)
     if errors:
         raise Rejected({'errors': errors, 'unchecked': []})
 
@@ -123,10 +205,7 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
     if schema:
         if stage == 'update' and 'working_context' not in schema.get('properties', {}):
             p = {k: v for (k, v) in p.items() if k != 'working_context'}
-        for e in jsonschema.Draft202012Validator(schema).iter_errors(p):
-            for row in schema_errors(e):
-                if row not in errors:
-                    errors.append(row)
+        errors.extend(reply_errors({**q, 'response_schema': schema}, p, defer_objects=stage in ('reply', 'task_proposal')))
         if errors:
             errors.extend(task_reference_errors(stage, q, p, records))
             return {'errors': errors, 'unchecked': ['所有结构字段已检查；任务提出时还检查了可读取的控件名称引用。依赖未通过字段的身份、归属和结果校验尚未执行。']}
@@ -138,6 +217,8 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             from regrow.recognition import local_partition as local_partition
             errors.extend(local_partition.errors(q, p))
         ctx = q.get('discovery_context', {})
+        from regrow.recognition.update_visibility import selected_indices
+        selected = selected_indices(p, q.get('region_names') or ctx.get('region_names'))
         rids = []
         for (i, r) in enumerate(p.get('regions', [])):
             previous = r.get('ref')
@@ -160,8 +241,29 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                 add('unknown_region', f'/regions/{i}/ref', r['name'], previous, list(ctx.get('region_names', {})) if stage == 'discovery' else list(q.get('region_names') or [v['name'] for v in records.values()]), '使用本轮提供的区块ID。')
             rids.append(rid)
             from regrow.records.object_knowledge import region_only
-            if not region_only(r) and rid in records and records[rid].get('behavior_context') and (r.get('context_matches') is not True):
+            if i in selected and not region_only(r) and rid in records and records[rid].get('behavior_context') and (r.get('context_matches') is not True):
                 add('region_context', f'/regions/{i}/context_matches', r['name'], r.get('context_matches'), records[rid]['behavior_context'], '根据当前截图核对历史适用上下文。匹配才复用；不同则选择正确候选或登记有依据的新区块；不清楚则补观察，不因外观相似填写true。')
+        for i, member in enumerate(p.get('current_regions', [])):
+            path = f'/current_regions/{i}'
+            if 'region_index' in member:
+                index = member['region_index']
+                if type(index) is not int or not 0 <= index < len(rids):
+                    add('current_region', path + '/region_index', '', index, list(range(len(rids))),
+                        '引用本次regions中的有效位置，从0开始。')
+                    continue
+                rid = rids[index]
+            else:
+                ref = member.get('ref')
+                rid = q.get('region_names', {}).get(ref, ref)
+                if rid not in records:
+                    add('current_region', path + '/ref', ref, ref, list(q.get('region_names') or records),
+                        '已有区块使用给定ref；新区块先填入regions，再用region_index引用。')
+                    continue
+            if rid in records and records[rid].get('behavior_context'):
+                observations = [j for j, old in enumerate(rids) if old == rid and not region_only(p['regions'][j])]
+                if not observations:
+                    add('region_context', path, rid, member, records[rid]['behavior_context'],
+                        '在regions中引用该区块并核对context_matches，再将该行列入current_regions。')
         changes = []
         for (i, previous) in enumerate(p.get('previous_regions', [])):
             ids = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [previous['ref']] if previous['ref'] in records else []
@@ -169,7 +271,7 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if len(ids) == 1 and records[ids[0]].get('behavior_context') and (previous.get('state') in ('retained_interactive', 'changed_interactive')) and (previous.get('context_matches') is not True):
                 add('region_context', f'/previous_regions/{i}/context_matches', previous['ref'], previous.get('context_matches'), records[ids[0]]['behavior_context'], '保留旧区块在当前前景也必须核对适用上下文；不匹配不要恢复旧控件，按动作后图报告实际区块。背景或不可见状态无需此确认；前景展示区不要求有控件。')
         if stage == 'update':
-            errors.extend(visibility_errors(p, rids, changes))
+            errors.extend(visibility_errors(p, rids, changes, q.get('region_names')))
         for (index, names) in parent_cycles(records, p.get('regions', []), rids):
             add('parent_cycle', f'/regions/{index}/parent_index', p['regions'][index]['name'], names, '合并已保留关系后无父子环', '依据实际容器关系修正父级；省略会保留旧关系，无父容器时使用null。')
         seen = {}
@@ -179,11 +281,13 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if control_only(c):
                 continue
             path = f'/controls/{i}'
-            idx = c['region_index']
+            idx = c.get('region_index')
             name = c.get('name') or c.get('text', '')
             previous = c.get('ref')
-            if not 0 <= idx < len(rids):
-                add('owner', path + '/region_index', name, idx, list(range(len(rids))), '归属到本轮实际区块。')
+            if type(idx) is not int or not 0 <= idx < len(rids):
+                add('owner', path + '/region_index', name, idx, list(range(len(rids))),
+                    '当前外观需要明确所属区块；若只补已有控件知识，修订为只保留ref和knowledge。'
+                    + ('按对象修订时，用remove_fields列出要撤掉的当前观察字段。' if stage == 'update' else ''))
                 continue
             rid = rids[idx]
             region = records.get(rid, {})

@@ -107,9 +107,9 @@ def _scope_description(scope):
     match = re.match(r'\A探索本独立桌面([^。]+)应用的主要功能、界面结构、可用参数和依赖。', scope)
     if not match:
         return scope
-    text = '本次仅探索独立桌面 ' + match.group(1) + ' 应用。' + scope[match.end():]
-    # The same restriction is stated by the common environment paragraph below.
-    return text.replace('系统配置只读，不切换设置值、不应用配置、不修改网络、显示、输入、账户或系统运行条件。', '')
+    # The shared environment text follows each run's authorization. Keep every
+    # scope restriction, including old read-only runs, when shortening the title.
+    return '本次仅探索独立桌面 ' + match.group(1) + ' 应用。' + scope[match.end():]
 
 
 def apply(root, request):

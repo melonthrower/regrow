@@ -36,7 +36,7 @@ def organize(root, request, instruction, issues, reply, notes=None):
 
 LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': '引用',
           'name': '名称', 'description': '描述', 'conditions': '适用条件',
-          'controls': '控件', 'regions': '区块', 'proposal': '修订回复',
+          'controls': '控件', 'regions': '区块', 'current_regions': '当前前景区块', 'proposal': '修订回复',
           'task_update': '任务更新', 'action_result': '动作结果',
           'local_knowledge': '区块知识', 'function_updates': '功能更新', 'add': '新增项',
           'findings': '参数发现', 'may_open_content': '是否打开内容',
@@ -132,6 +132,12 @@ def describe(error, reply, request=None):
         return name
     rows = []
     for item in error.get('errors', []):
+        if item.get('code') == 'candidate_revision':
+            # This path can index the submitted edit, not the retained draft.
+            # Naming an object from the draft here would point to the wrong row.
+            rows.append({'对象': '本次局部修订', '所在字段': item.get('path', ''),
+                         '问题': item.get('expected', '')})
+            continue
         node = reply
         subject = '本次回复'
         field = ''
@@ -170,7 +176,19 @@ def describe(error, reply, request=None):
             if item.get('fields'):
                 row['字段名'] = item['fields']
             if item.get('validator') == 'additionalProperties':
-                row['问题'] = '这些字段不在本次格式中，请移除。'
+                from regrow.runtime.model_transport import expand_schema
+                from regrow.prompts.object_blocks import enabled_fields
+                paths = [path for path, _ in enabled_fields(expand_schema((request or {}).get('response_schema', {})))]
+                positions = {name: sorted(set('.'.join(path) for path in paths if path and path[-1] == name))
+                             for name in item.get('fields', [])}
+                misplaced = {name: locations for name, locations in positions.items() if locations}
+                unknown = [name for name, locations in positions.items() if not locations]
+                row['问题'] = ('字段放错了对象层级；保留其内容，按允许位置修正。'
+                               if misplaced else '这些字段不在本次格式中，请移除。')
+                if misplaced:
+                    row['字段允许位置'] = misplaced
+                if unknown:
+                    row['合同外字段'] = unknown
                 row['允许的字段名'] = item.get('allowed_fields', [])
         actual = item.get('actual')
         if item.get('validator') in ('type', 'enum', 'const', 'minimum', 'maximum',

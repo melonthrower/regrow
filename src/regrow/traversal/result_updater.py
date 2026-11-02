@@ -38,7 +38,7 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
     foreground_scope.extend_schema(schema)
     refs = [r['ref'] for r in dynamic.get('已知区块', []) if r.get('ref')]
     if refs:
-        field = schema['properties']['previous_regions']['items']['properties']['ref']
+        field = schema['properties']['current_regions']['items']['oneOf'][0]['properties']['ref']
         field.update(enum=list(dict.fromkeys(refs)), description='使用本轮已知区块的ref编号。')
     schema['properties'].pop('working_context', None)
     schema['required'] = [k for k in schema['required'] if k != 'working_context']
@@ -113,11 +113,12 @@ def route_update(root, reply, receipt, *, schema=None):
     except jsonschema.ValidationError as exc:
         raise ValueError('invalid update: ' + exc.message) from exc
     if reply.get('source_region_split') or reply.get('entry_identity'):
-        raise ValueError('跳转来源固定使用上一步执行控件，本步只登记目标与结果，不拆分或合并来源。')
+        raise ValueError('跳转来源固定使用上一步执行对象，本步只登记目标与结果，不拆分或合并来源。')
     if receipt.get('exit_code') != 0:
         return {'status': 'execution_unconfirmed', 'next_action_mode': 'review_execution', 'reason': 'delivery receipt does not confirm execution'}
     exception = reply['action_result']['exception']
-    if exception in ('external_app', 'blocking_popup', 'system_error', 'unexpected_exit', 'unclassified') and (reply['regions'] or reply['controls']):
+    abnormal = exception in ('external_app', 'blocking_popup', 'system_error', 'unexpected_exit', 'unclassified') or ('current_regions' in reply and exception != 'none')
+    if abnormal and (reply['regions'] or reply['controls'] or reply.get('current_regions')):
         raise ValueError('external-only foreground contradicts target-app interactive inventory')
     mode = 'explore' if exception == 'none' else 'review_result' if exception == 'uncertain' else 'recover'
     reason = exception
@@ -136,18 +137,19 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     after_window = read(folder / 'after_window.json')
     owner = records[binding['region_ref']]
     work = records[binding['working_region']]
-    dynamic = {'动作后前台应用证据': after_window, '目标应用': transport.package, '工作区块': work['name'], '实际来源区块': owner['name'], '实际入口': '系统返回' if proposal['action'] == 'back' else owner['name'] if proposal['action'] in ('scroll', 'wait') else owned_controls(owner)[binding['control_ref']]['name'] if binding.get('control_ref') in owned_controls(owner) else proposal['target'], '动作意图': proposal, '实际动作': receipt.get('executed_steps', [proposal]), '回执': receipt}
     from regrow.records import source_region_candidates as source_candidates
     recalled = source_candidates.recall(records, binding, proposal['action'], folder.name)
+    region_bound = recalled['region_action']
+    actual_object = owner if region_bound else owned_controls(owner).get(binding.get('control_ref'), {}) if recalled['confirmed'] else {}
+    dynamic = {'动作后前台应用证据': after_window, '目标应用': transport.package, '工作区块': work['name'], '实际来源区块': owner['name'], '实际入口': '系统返回' if proposal['action'] == 'back' else actual_object.get('name') or proposal['target'], '动作意图': proposal, '实际动作': receipt.get('executed_steps', [proposal]), '回执': receipt}
     if owner.get('behavior_context'):
         dynamic['来源区块历史行为比较'] = {'适用上下文': owner['behavior_context']}
     if not recalled['confirmed']:
         dynamic['旧入口说明'] = '这里按旧入口名称提供线索，不证明本次来源身份或历史所在标签。'
-    if binding.get('association'):
+    if (binding.get('association') or {}).get('status') == 'unconfirmed':
         dynamic['控件关联待核对'] = binding['association']
-        if binding['association'].get('status') == 'unconfirmed':
-            dynamic['动作请求来源上下文'] = dynamic.pop('实际来源区块')
-            dynamic['来源身份说明'] = '上列区块只是动作请求的上下文，不证明实际控件属于该区块；按投递绑定与动作记录登记真实归属，不为迎合上下文迁移控件。'
+        dynamic['动作请求来源上下文'] = dynamic.pop('实际来源区块')
+        dynamic['来源身份说明'] = '上列区块只是动作请求的上下文，不证明实际控件属于该区块；按投递绑定与动作记录登记真实归属，不为迎合上下文迁移控件。'
         dynamic['登记说明'] = '实际控件身份尚未确认；按本图核对名称、归属和点击范围。'
     if binding.get('task_name'):
         dynamic['本轮探索任务'] = binding['task_name']
@@ -173,8 +175,7 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     dynamic['当前截图视觉匹配到的既有区块'] = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'anchors': r['anchors']} for r in ranking if r['anchors']]
     dynamic['已知区块'] = identity_candidates(records, state, binding, dynamic['当前截图视觉匹配到的既有区块'], source_destinations=recalled['destinations'])
     from regrow.records.control_routes import card as route_card
-    actual_control = owned_controls(owner).get(binding['control_ref'], {}) if binding.get('control_ref') else owner
-    dynamic['实际对象已有跳转'] = route_card(actual_control, records)
+    dynamic['实际对象已有跳转'] = route_card(actual_object, records)
     from regrow.recognition.history_matching import with_history as named_candidates
     (dynamic['已知区块'], region_names) = named_candidates(records, dynamic['已知区块'])
     # State descriptions come from admitted appearance records, not task knowledge.
@@ -201,11 +202,11 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
         source.update(task_region=binding.get('task_region', binding['region_ref']), task_name=binding['task_name'])
     from regrow.records.context_scope import rule_selection
     selection = rule_selection({'role': 'observation_update', 'source': source, 'work_context': {'kind': 'update'}}, tasks=[owned_tasks(records[row['region']])[row['name']] for row in task_candidates], binding=binding)
-    control = owned_controls(records.get(binding['region_ref'], {})).get(binding.get('control_ref'), {})
-    observed = [o for o in observation_history(control) if o.get('evidence', {}).get('observation') == binding.get('observation_ref') and (not o.get('visual_only'))]
+    observed = [o for o in observation_history(actual_object) if o.get('evidence', {}).get('observation') == binding.get('observation_ref') and (not o.get('visual_only'))]
     if observed:
         prior = observed[-1]
-        dynamic['动作前对象观察'] = {'来源': prior.get('evidence', {}), '控件': control['name'], **{k: prior[k] for k in ('uncertainty',) if prior.get(k)}}
+        if not region_bound or prior.get('uncertainty'):
+            dynamic['动作前对象观察'] = {'来源': prior.get('evidence', {}), '区块' if region_bound else '控件': actual_object['name'], **{k: prior[k] for k in ('uncertainty',) if prior.get(k)}}
     u = build_update_request(root, dynamic, [str((folder / n).relative_to(run)) for n in ['before.png', 'after.png']], selection=selection)
     u['source'] = source
     u['task_update_candidates'] = task_candidates

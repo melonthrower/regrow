@@ -10,10 +10,20 @@ def mapping(request):
 
 
 def _schemas(schema):
+    def branches(item):
+        # Object-field revisions already use the retained candidate's contract.
+        # Do not turn a partial edit or explicit removal into a full new object.
+        if 'candidate_index' in item.get('properties', {}):
+            return
+        if 'properties' in item:
+            yield item
+        for key in ('anyOf', 'oneOf'):
+            for child in item.get(key, []):
+                yield from branches(child)
     if isinstance(schema, dict):
         controls = schema.get('properties', {}).get('controls')
         if isinstance(controls, dict) and 'items' in controls:
-            yield controls['items']
+            yield from branches(controls['items'])
         for value in schema.values():
             yield from _schemas(value)
     elif isinstance(schema, list):

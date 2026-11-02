@@ -23,11 +23,22 @@ def original_reply(root, job):
     from regrow.prompts.correction_feedback import describe, organize
     from regrow.prompts.field_placeholders import fill_missing
     original = deepcopy(job['request'])
-    if job['stage'] == 'update' and original.get('semantic_request'):
+    rejected = deepcopy(job.get('rejected_reply', job.get('candidate')))
+    if job['stage'] == 'update':
         from regrow.traversal.object_registration import semantic_revision
-        original, _ = semantic_revision(original, job.get('candidate') or {})
-    rejected = job.get('rejected_reply', job.get('candidate'))
+        original, rejected = semantic_revision(original, rejected)
+    correction = deepcopy(original)
+    from regrow.traversal.proposal_revision import prepare, guidance, display, examples, MODE
+    base = prepare(job, original, correction['response_schema'])
     feedback = {'执行状态': '原动作已经执行，本次只修正结果登记。' if job.get('attempt') else '本步骤尚未执行动作。'}
+    if base is not None:
+        rejected = display(base)
+        feedback['修订方式'] = guidance()
+        feedback['局部修订格式示例'] = examples(base)
+        if job.get('rejected_reply') is not None:
+            _, feedback['未接受的局部修订'] = semantic_revision(original, job['rejected_reply'])
+        from regrow.prompts.output import prepare as present
+        correction = present(correction, root)
     if isinstance(job.get('error'), dict) and job['error'].get('unchecked'):
         feedback['尚未完成的检查'] = job['error']['unchecked']
     if job.get('parse_failure') and rejected is None:
@@ -37,9 +48,12 @@ def original_reply(root, job):
     if isinstance(job.get('error'), dict):
         rejected = fill_missing(root, rejected, job['error'], original['response_schema'])
     part = load(root, ['纠错/原格式重答.prompt'])[0]
-    result = organize(root, original, part, describe(job.get('error'), rejected, original), rejected, feedback)
+    result = organize(root, correction, part, describe(job.get('error'), rejected, original), rejected, feedback)
     result.update(role='step_correction', stage='step_correction',
                   correction_format='original', original_request=original)
+    if base is not None:
+        result['proposal_base'] = base
+        result['proposal_revision'] = MODE
     for key in ('_structured_user_prompt', '_presentation_digest'):
         result.pop(key, None)
     return result
@@ -103,6 +117,6 @@ def parts(root, job, context):
     result = load(root, ['纠错/' + name + '.prompt' for name in names])
     for part in result:
         if part['path'] == '纠错/结果证据.prompt':
-            conditions = {'## 原任务判断 → task_update': {'task_update'}, '## 已执行动作与旧区块 → action_result / previous_regions': {'action_result', 'previous_regions'}, '## 修正功能和区块用法': {'function_updates', 'local_knowledge'}}
+            conditions = {'## 原任务判断 → task_update': {'task_update'}, '## 已执行动作的结果与前景': {'action_result', 'current_regions', 'previous_regions'}, '## 修正功能和区块用法': {'function_updates', 'local_knowledge'}}
             part['text'] = sections(part['text'], {heading for (heading, needed) in conditions.items() if not keys.intersection(needed)})
     return [part for part in result if part['text'].strip()]

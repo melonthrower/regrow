@@ -3,9 +3,13 @@ from regrow.records.object_store import owned_actions
 from regrow.records.object_store import owned_controls
 
 def recall(records, binding, operation, attempt):
+    from regrow.records.function_evidence import region_action
     owner = records.get(binding.get('region_ref'), {})
     control = binding.get('control_ref')
-    confirmed = control in owned_controls(owner) and binding.get('association', {}).get('status') != 'unconfirmed'
+    region_bound = bool(owner) and binding.get('status') == 'matched' and region_action({
+        'control': control, 'operation': operation, 'association': binding.get('association')})
+    confirmed = region_bound or (control in owned_controls(owner)
+                                and (binding.get('association') or {}).get('status') != 'unconfirmed')
     rows = []
     if confirmed:
         for (ref, action) in sorted(owned_actions(owner).items()):
@@ -13,7 +17,10 @@ def recall(records, binding, operation, attempt):
                 continue
             if action.get('delivery') != 'executed_receipt_zero':
                 continue
-            targets = [r for r in action.get('interactive_regions', []) if r in records and r != binding['region_ref']]
+            if region_bound and not region_action(action):
+                continue
+            targets = [r for r in action.get('observed_destinations', action.get('interactive_regions', []))
+                       if r in records and (region_bound or r != binding['region_ref'])]
             changed = {r['region'] for r in action.get('region_changes', []) if r.get('state') == 'changed_interactive'}
             if not targets:
                 continue
@@ -31,8 +38,11 @@ def recall(records, binding, operation, attempt):
                 incoming.append(rid)
     # The source surface itself remains a candidate across filtering/list changes.
     destinations = list(dict.fromkeys(destinations + incoming + ([focus] if focus in records else [])))
-    return {'confirmed': confirmed, 'actions': rows, 'destinations': destinations,
+    return {'confirmed': confirmed, 'region_action': region_bound, 'actions': rows, 'destinations': destinations,
             'incoming': [{'region': rid, 'name': records[rid]['name'], 'description': records[rid].get('description', '')} for rid in dict.fromkeys(incoming)]}
 
 def describe(recalled, labels):
-    return {'来源关联': '上一步执行记录所指控件的历史结果' if recalled['confirmed'] else '执行记录未绑定控件；不按同入口推断落点', '历史结果': [{'动作': a['attempt'], '观察结果': a['description'], '当时可交互区块': [labels[r] for r in a['destinations'] if r in labels]} for a in recalled['actions']], '进入当前界面前的区块': [row for row in recalled.get('incoming', []) if row['region'] in labels], '边界': '历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。'}
+    source = ('已执行区块操作的历史结果' if recalled.get('region_action') else
+              '上一步执行记录所指控件的历史结果' if recalled['confirmed'] else
+              '实际操作对象尚未确认；不按同入口推断落点')
+    return {'来源关联': source, '历史结果': [{'动作': a['attempt'], '观察结果': a['description'], '当时可交互区块': [labels[r] for r in a['destinations'] if r in labels]} for a in recalled['actions']], '进入当前界面前的区块': [row for row in recalled.get('incoming', []) if row['region'] in labels], '边界': '历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。'}

@@ -1,4 +1,3 @@
-from regrow.records.control_records import group_name
 from regrow.records.object_store import region_work
 'Same-frame incremental discovery and bounded historical identity recall.'
 from regrow.records.object_store import observation_history
@@ -36,38 +35,49 @@ def retrieve(records, queries, limit=5):
                 scores[rid] = max(scores.get(rid, 0), score)
     return sorted(scores, key=lambda rid: (-scores[rid], rid))[:limit]
 
-def partition(reply):
+def partition(reply, rejected_regions=(), rejected_controls=(), errors=()):
+    def name(row, fallback):
+        return next((row[k] for k in ('name', 'ref') if isinstance(row.get(k), str) and row[k]), fallback)
     accepted = deepcopy(reply)
     rs = reply['regions']
     cs = reply['controls']
-    withheld = {i for (i, r) in enumerate(rs) if r['identity'] == 'uncertain'}
+    withheld = set(rejected_regions) | {i for (i, r) in enumerate(rs) if r.get('identity') == 'uncertain'}
     for _ in rs:
-        withheld.update((i for (i, r) in enumerate(rs) if r.get('parent_index') in withheld))
+        withheld.update(i for i, r in enumerate(rs) if i not in withheld
+                        and type(r.get('parent_index')) is int and r['parent_index'] in withheld)
     keep = [i for i in range(len(rs)) if i not in withheld]
     indices = {i: j for (j, i) in enumerate(keep)}
     accepted['regions'] = [deepcopy(rs[i]) for i in keep]
     for r in accepted['regions']:
-        if r.get('parent_index') is not None:
+        if type(r.get('parent_index')) is int and r['parent_index'] in indices:
             r['parent_index'] = indices[r['parent_index']]
     accepted['controls'] = []
     ck = []
     gaps = []
     for i in sorted(withheld):
-        gaps.append({'kind': 'region', 'index': i, 'proposal': deepcopy(rs[i]), 'name': rs[i]['name']})
+        gaps.append({'kind': 'region', 'index': i, 'proposal': deepcopy(rs[i]), 'name': name(rs[i], '未命名区块')})
     for (i, c) in enumerate(cs):
         from regrow.records.object_knowledge import control_only
-        if control_only(c):
+        if control_only(c) and i not in rejected_controls:
             accepted['controls'].append(deepcopy(c))
             ck.append(i)
             continue
-        if c['region_index'] in withheld or c['identity'] == 'uncertain':
-            gaps.append({'kind': 'control', 'index': i, 'proposal': deepcopy(c), 'name': c.get('name', c.get('text', '')), 'owner': rs[c['region_index']]['name']})
+        if i in rejected_controls or (type(c.get('region_index')) is int and c['region_index'] in withheld) or c.get('identity') == 'uncertain':
+            ri = c.get('region_index')
+            owner = name(rs[ri], '未确认区块') if type(ri) is int and 0 <= ri < len(rs) else '未确认区块'
+            gaps.append({'kind': 'control', 'index': i, 'proposal': deepcopy(c), 'name': name(c, '未命名控件'), 'owner': owner})
         else:
             c = deepcopy(c)
-            c['region_index'] = indices[c['region_index']]
+            if type(c.get('region_index')) is int and c['region_index'] in indices:
+                c['region_index'] = indices[c['region_index']]
             accepted['controls'].append(c)
             ck.append(i)
     for g in gaps:
+        path = '/' + ('regions' if g['kind'] == 'region' else 'controls') + '/' + str(g['index'])
+        relevant = [error for error in errors if error.get('path', '') == path
+                    or error.get('path', '').startswith(path + '/')]
+        if relevant:
+            g['errors'] = deepcopy(relevant)
         g['item'] = ('区块：' if g['kind'] == 'region' else '控件：' + g['owner'] + ' → ') + g['name']
     seen = set()
     for g in gaps:
@@ -132,12 +142,15 @@ def scoped_batch(records, batch):
     batch['pending'] = kept
     return batch
 
-def supplement(root, records, state, frame):
+def supplement(root, records, state, frame, *, items=None):
     batch = state['discovery_completion']
     if str(Path(frame).resolve()) != batch['frame'] or fingerprint(frame) != batch['sha256']:
         raise ValueError('补全截图已变化，不能复用旧登记回执')
     q = deepcopy(batch['request'])
     ctx = q['discovery_context']
+    if items is not None:
+        batch = {**batch, 'pending': [g for g in batch['pending'] if g['item'] in items]}
+        ctx['completion_items'] = list(items)
     names = {}
     queries = [g['proposal'] for g in batch['pending']]
     ids = retrieve(records, queries)
@@ -173,7 +186,7 @@ def supplement(root, records, state, frame):
             n += 1
             label = f"{c['name']}（候选{n}）"
         ctx['control_names'][label] = cid
-    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '与本次缺口相关的历史对象及本批已登记对象。', '用途': '沿用原截图补齐必要对象或操作代表，并说明哪些待补事项已有代表覆盖。'}
+    dynamic = {'本轮定位区块': records.get(focus, {}).get('name'), '已实际登记': receipt, '待补事项': [{'item': g['item'], 'description': g['proposal'].get('description', g['proposal'].get('identity_evidence', ''))} for g in batch['pending']], '相关历史候选': rows, '本区块控件身份候选': [{'名称': label, 'ref': cid} for label, cid in ctx['control_names'].items()], '检索边界': '与本次缺口相关的历史对象及本批已登记对象。', '用途': '沿用原截图核对待补对象，按控件登记与分组规则分别处理身份和共享用法。'}
     if ctx['mode'] != 'local':
         from regrow.recognition.region_candidate_names import control_candidates
         owners = set(ids) | {rid for (rid, r) in records.items() if set(owned_controls(r)) & set(batch['controls']) or any((g.get('owner') == r['name'] for g in batch['pending']))}
@@ -202,18 +215,30 @@ def supplement(root, records, state, frame):
 
 def prepare_registration(reply, request, known, batch, diagnostics):
     report = diagnostics.collect('discovery', request, reply, known)
-    allowed = {'region_identity', 'control_identity', 'unknown_region', 'unknown_candidate_control', 'existing_control_conflict'}
+    from regrow.recognition.ownership_review import conflict
+    ownership = conflict(request, reply, known, all_rows=True)
+    if ownership:
+        report['errors'].extend(ownership['errors'])
+    rejected = {'regions': set(), 'controls': set()}
     if report['errors']:
         for e in report['errors']:
-            path = e['path'].split('/')
+            path = e.get('path', '').split('/')
             group = path[1] if len(path) > 2 else ''
             idx = int(path[2]) if len(path) > 2 and path[2].isdigit() else -1
-            if e['code'] not in allowed or group not in ('regions', 'controls') or idx < 0 or (reply[group][idx].get('identity') != 'uncertain'):
+            if group not in rejected or not 0 <= idx < len(reply[group]):
                 raise diagnostics.Rejected(report)
-    (accepted, gaps) = partition(reply)
+            rejected[group].add(idx)
+    (accepted, gaps) = partition(reply, rejected['regions'], rejected['controls'], report['errors'])
     if gaps and (not accepted['regions']) and (not batch):
+        if report['errors']:
+            raise diagnostics.Rejected(report)
         raise ValueError('本批没有可独立登记的身份；需核对相关候选')
-    remaining = resolve_gaps(batch['pending'], reply.get('completion_updates', []), reply) if batch else []
+    pending = batch.get('pending', [])
+    items = request['discovery_context'].get('completion_items')
+    selected = pending if items is None else [g for g in pending if g['item'] in items]
+    remaining = resolve_gaps(selected, reply.get('completion_updates', []), reply) if batch else []
+    if items is not None:
+        remaining += [deepcopy(g) for g in pending if g['item'] not in items]
     addressed = {(u['region_index'], u['control_index']) for u in reply.get('completion_updates', []) if u['resolution'] == 'unresolved' and (u['region_index'] is not None or u['control_index'] is not None)}
     for g in gaps:
         if (g['index'] if g['kind'] == 'region' else None, g['index'] if g['kind'] == 'control' else None) in addressed:
@@ -239,13 +264,6 @@ def prepare_registration(reply, request, known, batch, diagnostics):
         registered_names = {known[r]['name'] for r in batch['regions']}
         if any((r['identity'] == 'new' and r['name'] in registered_names for r in accepted['regions'])):
             raise ValueError('已登记区块应使用same引用；不同对象需给出可区分名称')
-        for c in accepted['controls']:
-            region = accepted['regions'][c['region_index']]
-            rid = request['discovery_context']['region_names'].get(region.get('ref'))
-            cid = request['discovery_context']['control_names'].get(c.get('ref'))
-            group = c.get('list_group')
-            if group and any((k in batch['controls'] and k != cid and (group_name(known.get(rid, {}), k) == group) for (k, old) in owned_controls(known.get(rid, {})).items())):
-                raise ValueError('同一观察的同类列表已有代表控件；补交不能重复登记')
     return (accepted, remaining, rm, cm)
 
 def recall_into_request(q, records, queries):

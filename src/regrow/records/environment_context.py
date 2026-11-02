@@ -60,7 +60,7 @@ def structure(records):
     return graph, expansion, parents
 
 
-def forest(records, *, view='controls', focus=None):
+def forest(records, *, view='controls', focus=None, task_region=None):
     """Two presentations of the same graph; names are always read from current records."""
     if view not in ('controls', 'operations'):
         raise ValueError('unknown forest view')
@@ -69,6 +69,16 @@ def forest(records, *, view='controls', focus=None):
     title = '控件树' if view == 'controls' else '应用操作树'
     out.append(title + '（已登记内容与已观察的访问关系）')
     out.append('下级区块表示操作可到达的目标；条件标在相应去向旁。')
+
+    def tasks(region, cid, depth):
+        if region['id'] != task_region:
+            return
+        from regrow.records.task_settlement import task_definition
+        labels = {'done': '已完成', 'pending': '待推进', 'blocked': '暂挂'}
+        for task in owned_tasks(region).values():
+            if task.get('control') == cid:
+                out.append('  '*depth + '任务：' + task_definition(task)['label']
+                           + '；' + labels.get(task.get('status'), task.get('status', '未知')))
 
     def target(edge, depth, source):
         rid = edge['region']
@@ -90,13 +100,15 @@ def forest(records, *, view='controls', focus=None):
     def node(rid, depth, prefix=''):
         shown.add(rid)
         region = records[rid]
-        mark = '（当前区块）' if rid == focus else ''
+        mark = '（本步关注区块）' if rid == focus else ''
         if region_work(region).get('out_of_scope_reason'):
             mark += '（本次范围外）'
         out.append('  '*depth + ('└─ ' if depth else '') + prefix + region['name'] + ' [' + rid + ']' + mark)
+        tasks(region, None, depth+1)
         if view == 'controls':
             for cid, control in owned_controls(region).items():
                 out.append('  '*(depth+1) + '├─ ' + control['name'] + ' [' + cid + ']')
+                tasks(region, cid, depth+2)
                 for edge in graph[rid]:
                     if edge.get('control') == cid:
                         target(edge, depth+2, rid)
@@ -162,9 +174,8 @@ def local_progress(records, focus):
 def render(records, state, focus, goal=None, kind='observation'):
     goal = goal or {}
     view = 'operations' if kind == 'function_registration' else 'controls'
-    out = [forest(records, view=view, focus=focus)]
-    if focus in records:
-        out.append(local_progress(records, focus))
+    out = [forest(records, view=view, focus=focus,
+                  task_region=focus if kind == 'task_proposal' else None)]
     gr, cid = goal.get('region'), goal.get('control')
     if gr in records:
         control = owned_controls(records[gr]).get(cid, {})

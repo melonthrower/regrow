@@ -35,14 +35,44 @@ def semantic_schema(schema):
 
 
 def missing(candidate):
+    from regrow.recognition.update_visibility import selected_indices
+    current = selected_indices(candidate)
     rows = []
     for kind in ('regions', 'controls'):
         for i, row in enumerate(candidate.get(kind, [])):
+            if kind == 'regions' and i not in current:
+                continue
             known = row.get('ref') or (kind == 'controls' and 'index' in row)
             if (known and not (kind == 'controls' and row.get('add_image'))) or row.get('bbox'):
                 continue
             rows.append({'path': f'/{kind}/{i}', **deepcopy(row)})
     return rows
+
+
+def required_paths(original, candidate):
+    """The executed source, observed destinations and their explicit owners."""
+    source = original.get('source', {})
+    required = set()
+    for kind, actual in (('regions', source.get('region')), ('controls', source.get('control_ref'))):
+        for i, row in enumerate(candidate.get(kind, [])):
+            if actual and row.get('ref') == actual:
+                required.add(f'/{kind}/{i}')
+    for route in candidate.get('jump_to', []):
+        for field, kind in (('region_index', 'regions'), ('control_index', 'controls')):
+            if type(route.get(field)) is int and 0 <= route[field] < len(candidate.get(kind, [])):
+                required.add(f'/{kind}/{route[field]}')
+    pending = list(required)
+    while pending:
+        path = pending.pop()
+        _, kind, i = path.split('/')
+        row = candidate[kind][int(i)]
+        parent = row.get('region_index' if kind == 'controls' else 'parent_index')
+        if type(parent) is int and 0 <= parent < len(candidate.get('regions', [])):
+            path = f'/regions/{parent}'
+            if path not in required:
+                required.add(path)
+                pending.append(path)
+    return required
 
 
 def request(root, original, candidate, rows, *, grounding=None):
@@ -65,7 +95,8 @@ def request(root, original, candidate, rows, *, grounding=None):
          'response_schema': {'type': 'object', 'properties': {'objects': {
              'type': 'array', 'items': item, 'minItems': len(rows), 'maxItems': len(rows)}},
              'required': ['objects'], 'additionalProperties': False},
-         'registration_paths': paths}
+         'registration_paths': paths,
+         'registration_required_paths': sorted(required_paths(original, candidate).intersection(paths))}
     if grounding:
         q['response_schema']['properties']['objects']['items']['required'].append('reason')
         material = json.loads(q['user_prompt'])
@@ -78,19 +109,190 @@ def request(root, original, candidate, rows, *, grounding=None):
 
 def validate(q, reply, run):
     from PIL import Image
-    jsonschema.validate(reply, q['response_schema'])
-    rows = reply['objects']
-    if sorted(v['path'] for v in rows) != sorted(q['registration_paths']):
-        raise ValueError('每个待补齐对象必须且只能返回一次')
+    from regrow.records.registration_diagnostics import reply_errors, object_schema_error, Rejected
+    errors = reply_errors(q, reply)
+    fatal = [e for e in errors if not object_schema_error(q, reply, e)]
+    if fatal:
+        raise Rejected({'errors': fatal, 'unchecked': []})
     with Image.open(Path(run) / primary(q)) as im:
         width, height = im.size
-    for row in rows:
+    result = []
+    for path in q['registration_paths']:
+        matches = [(i, row) for i, row in enumerate(reply['objects']) if row.get('path') == path]
+        reason = ''
+        if len(matches) != 1:
+            reason = '本次未返回该对象' if not matches else '同一对象返回了多项，尚不能确定采用哪一项'
+        else:
+            i, row = matches[0]
+            prefix = f'/objects/{i}'
+            details = [e['expected'] for e in errors if e['path'] == prefix or e['path'].startswith(prefix + '/')]
+            if details:
+                reason = '；'.join(details)
+        if reason:
+            result.append({'path': path, 'bbox': None, 'reason': reason})
+            continue
+        row = deepcopy(matches[0][1])
         b = row['bbox']
         if b is None:
-            raise ValueError('对象尚不能定位：' + row.get('reason', row['path']))
-        if not (0 <= b['left'] < b['right'] <= width and 0 <= b['top'] < b['bottom'] <= height):
-            raise ValueError('识别范围须位于本张图片内且具有正面积')
-    return reply
+            if not row.get('reason', '').strip():
+                row['reason'] = '本次未定位该对象，也未给出辨认依据'
+        elif not (0 <= b['left'] < b['right'] <= width and 0 <= b['top'] < b['bottom'] <= height):
+            row.update(bbox=None, reason='识别范围超出本张图片或没有正面积')
+        result.append(row)
+    blocked = [row for row in result if row['bbox'] is None and row['path'] in q.get('registration_required_paths', [])]
+    if blocked:
+        raise ValueError('本步必需对象尚未定位：' + '；'.join(row['path'] + '：' + row['reason'] for row in blocked))
+    return {'objects': result}
+
+
+def retain_located(original, candidate, failed):
+    """Keep independent observations; never drop the action object or its route."""
+    if not failed:
+        return candidate, [], {}
+    from regrow.recognition.discovery_completion import partition
+    rejected = {'regions': set(), 'controls': set()}
+    for path in failed:
+        _, kind, position = path.split('/')
+        rejected[kind].add(int(position))
+    accepted, gaps = partition(candidate, rejected['regions'], rejected['controls'])
+    omitted = {'regions': {g['index'] for g in gaps if g['kind'] == 'region'},
+               'controls': {g['index'] for g in gaps if g['kind'] == 'control'}}
+    source = original.get('source', {})
+    for gap in gaps:
+        row = gap['proposal']
+        path = '/' + ('regions' if gap['kind'] == 'region' else 'controls') + '/' + str(gap['index'])
+        gap['reason'] = failed.get(path, '所属区块尚未确认，保留该对象待后续观察。')
+        actual = source.get('control_ref') if gap['kind'] == 'control' else source.get('region')
+        if row.get('ref') and row['ref'] == actual:
+            raise ValueError('本次实际操作对象「' + gap['name'] + '」仍需核对：' + gap['reason'])
+    indexes = {kind: [i for i in range(len(candidate.get(kind, []))) if i not in omitted[kind]]
+               for kind in ('regions', 'controls')}
+    maps = {kind: {old: new for new, old in enumerate(values)} for kind, values in indexes.items()}
+    if 'current_regions' in candidate:
+        names = original.get('region_names') or original.get('discovery_context', {}).get('region_names', {})
+        def identity(row):
+            ref = row.get('_matched_id') or row.get('ref')
+            return names.get(ref, ref) if isinstance(ref, str) else None
+        withheld = {identity(candidate['regions'][i]) for i in omitted['regions']} - {None, ''}
+        accepted['current_regions'] = []
+        indexes['current_regions'] = []
+        for i, member in enumerate(candidate['current_regions']):
+            if 'region_index' in member:
+                old = member['region_index']
+                if old in omitted['regions']:
+                    continue
+                member = {**member, 'region_index': maps['regions'].get(old, old)}
+            elif identity(member) in withheld:
+                continue
+            accepted['current_regions'].append(deepcopy(member))
+            indexes['current_regions'].append(i)
+    for route in accepted.get('jump_to', []):
+        for field, kind in (('region_index', 'regions'), ('control_index', 'controls')):
+            if field not in route:
+                continue
+            old = route[field]
+            if old not in maps[kind]:
+                row = candidate[kind][old] if type(old) is int and 0 <= old < len(candidate.get(kind, [])) else {}
+                name = next((row[k] for k in ('name', 'ref') if isinstance(row.get(k), str) and row[k]), '目标对象')
+                raise ValueError('本次实际访问关系的目标「' + name + '」尚未定位或引用无效，不能撤掉访问关系来完成登记。')
+            route[field] = maps[kind][old]
+    return accepted, gaps, indexes
+
+
+def remap_gaps(gaps, previous):
+    """Keep retained diagnostics attached to their original reply row."""
+    for gap in gaps:
+        kind = 'regions' if gap['kind'] == 'region' else 'controls'
+        path = f'/{kind}/{gap["index"]}'
+        for error in gap.get('errors', []):
+            error['path'] = f'/{kind}/{previous[kind][gap["index"]]}' + error['path'][len(path):]
+        gap['index'] = previous[kind][gap['index']]
+        field = 'parent_index' if kind == 'regions' else 'region_index'
+        i = gap['proposal'].get(field)
+        if type(i) is int and 0 <= i < len(previous['regions']):
+            gap['proposal'][field] = previous['regions'][i]
+
+
+def partition_request(original, candidate, failed, errors=()):
+    """Reuse object gaps and original-index mappings across acceptance stages."""
+    accepted, gaps, indexes = retain_located(original, candidate, failed)
+    if not gaps:
+        return original, accepted
+    q = deepcopy(original)
+    previous = {kind: q.get('registration_source_indices', {}).get(kind, list(range(len(candidate.get(kind, [])))))
+                for kind in indexes}
+    for gap in gaps:
+        kind = 'regions' if gap['kind'] == 'region' else 'controls'
+        path = f'/{kind}/{gap["index"]}'
+        gap['errors'] = [deepcopy(e) for e in errors if e.get('path') == path or e.get('path', '').startswith(path + '/')]
+    remap_gaps(gaps, previous)
+    q['registration_gaps'] = deepcopy(q.get('registration_gaps', [])) + gaps
+    q['registration_source_indices'] = {kind: [previous[kind][i] for i in indexes[kind]] for kind in indexes}
+    return q, accepted
+
+
+def isolate_schema(request, candidate):
+    """Only readable independent observation rows may be withheld before decoding."""
+    from regrow.records.registration_diagnostics import reply_errors, object_schema_error, Rejected
+    errors = reply_errors(request, candidate)
+    if not errors:
+        return request, candidate
+    if any(not object_schema_error(request, candidate, e) for e in errors):
+        raise Rejected({'errors': errors, 'unchecked': []})
+    failed = {}
+    for error in errors:
+        path = '/' + '/'.join(error['path'].strip('/').split('/')[:2])
+        failed[path] = error['expected']
+    q, accepted = partition_request(request, candidate, failed, errors)
+    remaining = reply_errors(q, accepted)
+    if remaining:
+        raise Rejected({'errors': remaining, 'unchecked': []})
+    return q, accepted
+
+
+def isolate_update(run, request, candidate, binding=None):
+    """Check observation rows before supplement calls; keep the real result intact."""
+    from regrow.recognition.region_identity import prepare
+    from regrow.records.registration_diagnostics import collect, Rejected
+    from regrow.records.snapshots import load
+    _, records, _ = load(run)
+    q, accepted = isolate_schema(request, candidate)
+    while True:
+        resolved_q, resolved, _ = prepare(run, q, accepted)
+        report = collect('update', resolved_q, resolved, records, binding, frame=Path(run) / primary(q))
+        if not report['errors']:
+            return q, accepted
+        failed = {}
+        for error in report['errors']:
+            parts = error.get('path', '').strip('/').split('/')
+            if (len(parts) < 2 or parts[0] not in ('regions', 'controls') or not parts[1].isdigit()
+                    or not 0 <= int(parts[1]) < len(accepted.get(parts[0], []))):
+                raise Rejected(report)
+            failed['/' + '/'.join(parts[:2])] = error.get('repair') or error.get('expected', '对象尚未确认')
+        q, accepted = partition_request(q, accepted, failed, report['errors'])
+        # Each pass removes at least one reported row and its dependent rows.
+
+
+def save_candidate(runner, job, q, candidate):
+    for gap in q.get('registration_gaps', []):
+        gap.setdefault('source_call', job['call'])
+        gap.setdefault('source_frame', primary(q))
+    job.update(request=q, candidate=candidate)
+    runner.save(job)
+    folder = runner.run / 'calls' / job['call']
+    write_json(folder / 'registration_request.json', q)
+    write_json(folder / 'registration_candidate.json', candidate)
+
+
+def revised_request(request, source_call):
+    """A new corrected call owns its complete effective array, not old row offsets."""
+    q = deepcopy(request)
+    for gap in q.get('registration_gaps', []):
+        gap.setdefault('source_call', source_call)
+        gap.setdefault('source_frame', primary(q))
+    q.pop('registration_source_indices', None)
+    q.pop('registration_sources', None)
+    return q
 
 
 def reused_boxes(saved, current):
@@ -126,7 +328,10 @@ def complete(runner, job):
     if job['stage'] != 'update':
         return
     candidate = job.get('candidate') or {}
-    jsonschema.validate(candidate, job['request']['response_schema'])
+    binding = read(runner.run / 'action_attempts' / job['attempt'] / 'binding.json') if job.get('attempt') else None
+    q, candidate = isolate_update(runner.run, job['request'], candidate, binding)
+    if q != job['request'] or candidate != job['candidate']:
+        save_candidate(runner, job, q, candidate)
     # A derived submission is already the active request. Do not rebuild it
     # from a historical semantic request or revive an old request cache.
     if job['request'].get('registration_sources') and not missing(candidate):
@@ -138,10 +343,13 @@ def complete(runner, job):
     labels = []
     confirmed = set()
     grounding = {}
+    failed = {}
     from regrow.recognition import appearance_comparison
     from regrow.traversal.step_repair import pending
-    for number, (source, batch) in enumerate(appearance_comparison.batches(runner.run, job['request'], candidate)):
+    for number, (source, batch) in enumerate(appearance_comparison.batches(runner.run, job['request'], candidate, failed=failed)):
         comparison = appearance_comparison.request(runner.root, runner.run, job['request'], source, batch)
+        necessary = required_paths(job['request'], candidate)
+        comparison['comparison_required_refs'] = [row['ref'] for row in batch if f'/controls/{row["position"]}' in necessary]
         key = appearance_comparison.comparison_key(comparison)
         pointer = str(Path(job['path']).parent / ('appearance-' + key + '.json'))
         cache = job.setdefault('appearance_comparisons', {})
@@ -162,7 +370,8 @@ def complete(runner, job):
         for old in batch:
             reply = replies[old['control']]
             if reply['relation'] in ('different_control', 'uncertain'):
-                raise ValueError(old['name'] + '的外观比较未确认本次复用：' + reply['reason'] + '；请在原动作更新中修正该控件引用或追加提议')
+                failed['/controls/' + str(old['position'])] = old['name'] + '的外观比较未确认本次复用：' + reply['reason']
+                continue
             current = enriched['controls'][old['position']]
             current['add_image'] = reply['relation'] == 'new_appearance'
             current['image_conditions'] = [reply['current_state']] if current['add_image'] else []
@@ -174,8 +383,8 @@ def complete(runner, job):
                 grounding['/controls/' + str(old['position'])] = {
                     'control': old['control'], 'name': old['name'],
                     'state': reply['current_state'], 'comparison_call': saved['call']}
-    rows = missing(enriched)
-    if not rows and not labels:
+    rows = [row for row in missing(enriched) if row['path'] not in failed]
+    if not rows and not labels and not failed:
         return
     appearance_call = None
     if rows:
@@ -196,10 +405,19 @@ def complete(runner, job):
             job['object_registration'] = {'digest': digest, 'result': result}
             runner.save(job)
         appearance_call = result['call']
-        for row in result['candidate']['objects']:
+        # Child acceptance may isolate malformed/missing rows. The original
+        # model answer remains in candidate/response for correction and audit.
+        located = validate(current, result['candidate'], runner.run)
+        for row in located['objects']:
             _, kind, index = row['path'].split('/')
-            enriched[kind][int(index)]['bbox'] = row['bbox']
-    q = deepcopy(job['request'])
+            if row['bbox'] is None:
+                failed[row['path']] = row['reason']
+            else:
+                enriched[kind][int(index)]['bbox'] = row['bbox']
+    q, enriched = partition_request(job['request'], enriched, failed)
+    q = deepcopy(q)
+    gaps = q.get('registration_gaps', [])
+    source_indices = q.get('registration_source_indices', {})
     from regrow.runtime.model_transport import expand_schema
     q['response_schema'] = expand_schema(q['response_schema'])
     for kind in ('regions', 'controls'):
@@ -208,6 +426,9 @@ def complete(runner, job):
     q['semantic_request'] = deepcopy(job['request'])
     q['semantic_request'].pop('control_identity_reviews', None)
     q['registration_sources'] = {'semantic_call': job['call'], 'appearance_call': appearance_call}
+    if gaps:
+        q['registration_gaps'] = gaps
+        q['registration_source_indices'] = source_indices
     q['appearance_labels'] = labels
     # Identity/state and current-box grounding have separate model evidence.
     # Preserve both sources when satisfying the existing publication review.
@@ -230,21 +451,27 @@ def complete(runner, job):
                     for kind in ('regions', 'controls')
                     for index, row in enumerate(enriched.get(kind, [])) if row.get('bbox')],
         'registration_sources': deepcopy(q['registration_sources']),
+        'registration_gaps': deepcopy(gaps),
+        'registration_source_indices': deepcopy(source_indices),
         'schema_extension': {'bbox': deepcopy(BOX)}}
-    job.update(request=q, candidate=enriched)
-    runner.save(job)
-    write_json(folder / 'registration_request.json', q)
-    write_json(folder / 'registration_candidate.json', enriched)
+    save_candidate(runner, job, q, enriched)
 
 
 def semantic_revision(reviewed, candidate):
     original = deepcopy(reviewed.get('semantic_request', reviewed))
     original['control_refs'] = reviewed.get('control_refs', original.get('control_refs', []))
     original['control_identity_reviews'] = deepcopy(reviewed.get('control_identity_reviews', []))
-    def strip(value):
-        if isinstance(value, dict):
-            return {k: strip(v) for k,v in value.items() if k not in GEOMETRY}
-        if isinstance(value, list):
-            return [strip(v) for v in value]
-        return value
-    return original, strip(candidate)
+    for key in ('registration_gaps', 'registration_source_indices'):
+        if key in reviewed:
+            original[key] = deepcopy(reviewed[key])
+        else:
+            original.pop(key, None)
+    result = deepcopy(candidate)
+    # Strip geometry only from observation rows, not named knowledge/parameters.
+    if isinstance(result, dict):
+        for kind in ('regions', 'controls'):
+            for row in result.get(kind, []):
+                if isinstance(row, dict):
+                    for key in GEOMETRY:
+                        row.pop(key, None)
+    return original, result

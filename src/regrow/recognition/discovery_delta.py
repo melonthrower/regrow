@@ -50,8 +50,6 @@ def resolve(records, request, reply, snapshot=None, frame=None, run=None):
         owners.append(rid)
         if not previous:
             continue
-        if row.get('identity', 'same') != 'same':
-            raise ValueError('未决身份不得绑定ref；候选写identity_evidence')
         old = records.get(rid, {})
         stable = {'identity': 'same', 'name': old.get('name', previous)}
         inherited = {key: value for (key, value) in stable.items() if key not in row}
@@ -63,20 +61,16 @@ def resolve(records, request, reply, snapshot=None, frame=None, run=None):
         previous = row.get('ref')
         if not previous:
             continue
-        if row.get('identity', 'same') != 'same':
-            raise ValueError('未决控件不得绑定ref；候选写identity_evidence')
         cid = ctx.get('control_names', {}).get(previous, previous if previous in request.get('control_refs', []) else None)
         from regrow.records.object_knowledge import control_only
         if control_only(row):
             continue
         if 'region_index' not in row:
             matches = [i for (i, rid) in enumerate(owners) if rid in records and cid in owned_controls(records[rid])]
-            if len(matches) != 1:
-                from regrow.records.object_store import control_record
-                old = control_record(records, cid) or {}
-                extra = sorted(set(row) - {'ref', 'identity', 'name', '_matched_id', 'knowledge'})
-                raise ValueError('控件「' + old.get('name', str(previous)) + '」提交了当前观察字段：' + '、'.join(extra) + '，但未唯一对应本轮区块。若只补已执行操作的用途知识，保留ref和knowledge，撤回上述额外字段；不要求已关闭界面重新可见。若确实登记当前外观，则依据当前图填写所属区块。')
-            row['region_index'] = matches[0]
+            if len(matches) == 1:
+                row['region_index'] = matches[0]
+            # Leave an unresolved owner on this row. Acceptance can retain
+            # independent objects and report this exact control as a gap.
         owner_index = row.get('region_index')
         rid = owners[owner_index] if isinstance(owner_index, int) and 0 <= owner_index < len(owners) else None
         from regrow.records.object_store import control_record

@@ -1,4 +1,4 @@
-"""Bounded desktop preparation for the maintained batch entry."""
+"""Platform preparation for the maintained desktop/Android batch entry."""
 from pathlib import Path
 import hashlib
 import json
@@ -11,8 +11,13 @@ from regrow.runtime.desktop_capture import display_capture
 from regrow.runtime.desktop_transport import DesktopRun
 
 def adapter(manifest):
+    if manifest.get('platform') == 'android':
+        from regrow.runtime.recover_external import RecoveryRun
+        device = RecoveryRun.__new__(RecoveryRun)
+        device.device, device.package = manifest['device'], manifest['app']
+        return device
     if manifest.get('platform') != 'desktop':
-        raise ValueError('The batch entry currently supports desktop runs only')
+        raise ValueError('The batch entry supports desktop and android runs')
     desktop = DesktopRun.__new__(DesktopRun)
     desktop.configure(manifest)
     desktop.package = manifest['app']
@@ -25,6 +30,22 @@ def preflight(manifest, folder, *, minimum_free=2 * 1024 ** 3):
     if shutil.disk_usage(folder).free < minimum_free:
         raise RuntimeError('Output filesystem needs at least 2 GiB free')
     desktop = adapter(manifest)
+    if manifest.get('platform') == 'android':
+        result = desktop.adb(['get-state'])
+        result.check_returncode()
+        if result.stdout.strip() != b'device':
+            raise RuntimeError('Expected online Android device')
+        boot = desktop.adb(['shell', 'getprop', 'sys.boot_completed'])
+        boot.check_returncode()
+        if boot.stdout.strip() != b'1':
+            raise RuntimeError('Android device has not finished booting')
+        desktop.screenshot(folder / 'frame.png')
+        from regrow.runtime.app_launcher import configured_model
+        model = configured_model()
+        if not model:
+            raise RuntimeError('No model configured')
+        write_json(folder / 'result.json', {'device': manifest['device'], 'screenshot': 'frame.png', 'adb': 'ready', 'model': model})
+        return desktop
     container = manifest['desktop']['container']
     result = subprocess.run(['docker', 'inspect', '--format', '{{.Id}} {{.State.Running}}', container], capture_output=True, text=True, timeout=15)
     (folder / 'docker.log').write_text(result.stdout + result.stderr)
@@ -74,6 +95,24 @@ def clear_clock_data(desktop, folder):
 def prepare_new(config, manifest, launch):
     """Called only after locking and preflight; an existing run never enters here."""
     desktop = adapter(manifest)
+    if manifest.get('platform') == 'android':
+        if config['clear_app_data'] or config['restart_container']:
+            raise ValueError('Android preparation preserves emulator and application data')
+        component = manifest.get('component', '')
+        if not component.startswith(manifest['app'] + '/'):
+            raise ValueError('Android activation needs the resolved target component')
+        from regrow.runtime.app_launcher import Device, create_run
+        from regrow.runtime.action_executor import foreground_window, window_evidence
+        frame = Device(manifest['device']).activate(component, launch)
+        window = window_evidence(foreground_window(desktop), manifest['app'])
+        write_json(launch / 'initial-window.json', window)
+        if window['与目标应用一致'] is not True and window.get('前台应用') not in ('com.android.permissioncontroller', 'com.google.android.permissioncontroller'):
+            raise RuntimeError('Target Android application is not in the foreground')
+        run = create_run(Path(config['output']) / 'runs', manifest['app'], manifest.get('app_name', manifest['app']), manifest['device'], frame)
+        created = read(run / 'run_manifest.json')
+        created.update(platform='android', component=component, framework_source=config['source'], exploration_scope=manifest.get('exploration_scope', {}))
+        write_json(run / 'run_manifest.json', created)
+        return run
     if config['clear_app_data']:
         clear_clock_data(desktop, launch / 'app_data_backup')
     if config['restart_container']:

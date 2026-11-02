@@ -218,6 +218,10 @@ def render(root, request, config, contract, *, display_schema=None, reference_pa
             parts.append({'path': '输出格式/动作所在字段',
                           'text': '下方平台动作表描述 `' + path + '` 对象内的字段。'})
             parts.append(deepcopy(contract))
+            from regrow.prompts.response_example import complete
+            parts.append({'path': '输出格式/嵌套动作示例',
+                          'text': complete(subtree).replace('## 完整输出示例', '## 嵌套动作格式示例', 1)
+                                                   .replace('本步JSON格式', '本节JSON结构', 1)})
         else:
             parts.append({'path': '输出格式/字段组-' + rule['block'], 'text': _format(subtree)})
     if closed:

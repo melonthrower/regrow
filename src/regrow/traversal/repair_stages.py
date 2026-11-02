@@ -125,13 +125,9 @@ def accept_candidate(root, run, job):
     if job.get('record_edit') and job['stage'] == 'task_proposal':
         q = deepcopy(q)
         q['response_schema'] = _task_proposer.proposal_schema()
-    if job['stage'] in ('discovery', 'update') and job.get('candidate') is not None:
+    if job['stage'] == 'update' and job.get('candidate') is not None:
         (q, candidate, _) = _region_identity.prepare(run, q, job['candidate'])
         job = {**job, 'candidate': candidate}
-    if job['stage'] == 'discovery' and job.get('candidate') is not None:
-        report = _ownership_review.conflict(q, job['candidate'], records)
-        if report:
-            raise _registration_diagnostics.Rejected(report)
     if job.get('candidate') is not None and job['stage'] != 'discovery':
         frame = Path(run) / _frame_context.primary(q) if job['stage'] == 'update' else None
         _registration_diagnostics.check(job['stage'], q, job['candidate'], records, binding, frame=frame)
@@ -182,6 +178,7 @@ def accept_candidate(root, run, job):
             current_state = _record_load(run)[2]
             if binding.get('observation_ref') != (current_state.get('observation') or {}).get('id'):
                 raise StaleActionSource('动作来源观察已过期；请按原任务刷新当前观察上下文，旧截图来源不能继续投递')
+            _ownership_review.check_action(run, binding)
             _action_commands.commands(proposal, platform)
             from regrow.recognition import action_target_review
             doubt = action_target_review.conflict(q, proposal, binding)

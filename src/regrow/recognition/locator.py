@@ -70,11 +70,15 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     previous = batch.get('request', {}).get('discovery_context', {})
     local_focus = state.get('inspection_region')
     if batch.get('pending') and _discovery_completion.same_frame(batch, frame) and (not local_focus or (previous.get('mode') == 'local' and previous.get('focus') == local_focus)):
-        request = _discovery_completion.supplement(root, records, state, frame)
+        target = state.get('action_target_registration') or {}
+        items = target.get('completion_items') if target.get('status') == 'pending' else None
+        request = _discovery_completion.supplement(root, records, state, frame, items=items)
         _work_context.attach(request, records, state, work)
         return request
     focus = state.get('inspection_region') or state.get('working_region')
-    plan = locator.plan(records, focus, frame, force_relocate=state.get('discovery_mode') == 'relocate', required_control=state.get('required_control'), offset=state.get('control_scan', {}).get(focus, 0), foreground_resolution=state.get('foreground_resolution'), foreground=foreground)
+    target = state.get('action_target_registration') or {}
+    required_regions = target.get('regions', []) if target.get('status') == 'pending' else []
+    plan = locator.plan(records, focus, frame, force_relocate=state.get('discovery_mode') == 'relocate', required_control=state.get('required_control'), required_regions=required_regions, offset=state.get('control_scan', {}).get(focus, 0), foreground_resolution=state.get('foreground_resolution'), foreground=foreground)
     names = {}
     cnames = {}
     candidates = []
@@ -90,6 +94,8 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         names[rid] = rid
         anchors = [{'名称': owned_controls(r)[h['control']]['name'], '位置': h['box']} for h in candidate['anchors']]
         candidates.append({'ref': rid, '名称': r['name']})
+        if candidate.get('required_history'):
+            candidates[-1]['提供原因'] = '拟操作目标或原任务关联的历史身份；尚未确认当前可见。'
         historical = r.get('description')
         if historical:
             candidates[-1]['最近登记描述'] = historical

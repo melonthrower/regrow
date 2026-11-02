@@ -36,7 +36,7 @@ def check(run, records, binding, proposal, frame=None, *, correction=False):
                 corrected = corrected or owner.get('repeat_correction', False)
                 prior_points.append((old.get('x'), old.get('y')))
                 action = owned_actions(records.get(owner.get('region_ref'), {})).get(attempt, {})
-                targets = tuple(sorted(set(action.get('interactive_regions', []))))
+                targets = tuple(sorted(set(action.get('observed_destinations', action.get('interactive_regions', [])))))
                 if proposal['action'] != 'input_text' and action.get('delivery') == 'executed_receipt_zero' and (action.get('result', {}).get('exception') == 'none') and (not action.get('result', {}).get('returns_to_previous')) and (action.get('destination_behavior') != 'history_dependent') and (proposal['action'] != 'back') and targets and (owner.get('region_ref') not in targets):
                     navigation.setdefault(targets, []).append((attempt, action['result'].get('description', '')))
                 if proposal['action'] == 'input_text' or same_surface(folder / 'after.png', frame):

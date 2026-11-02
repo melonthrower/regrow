@@ -19,7 +19,11 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
     from regrow.traversal import parameter_evidence_review as _parameter_evidence_review
     from regrow.records import shared_tasks as _shared_tasks
     import jsonschema
-    jsonschema.validate(reply, request['response_schema'] if request else _task_proposer.proposal_schema())
+    from copy import deepcopy
+    from collections import Counter
+    from regrow.records import task_assessments
+    schema = request['response_schema'] if request else _task_proposer.proposal_schema()
+    task_assessments.envelope(reply, schema)
     if request:
         from regrow.recognition.control_references import decode
         reply = decode(request, reply)
@@ -44,27 +48,36 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
         raise ValueError('本次清点的控件身份已变化，需重新读取问题范围')
     updates = _task_updates
     settlement = _task_settlement
-    for row in [*reply.get('task_update', []), *reply['operations']]:
-        if 'task' in row:
-            matched = [name for name in old if updates.reference(region['id'], name) == row['task']]
-            if len(matched) != 1:
-                raise ValueError('已有任务增量须引用本区块明确task，不新建或改挂')
-            name = matched[0]
-            task = tasks[name]
+    assessment = {'accepted': [], 'rejected': []}
+    rows = reply.get('task_update', [])
+    counts = Counter(row['task'] for row in rows)
+    for index, row in enumerate(rows):
+        matched = [name for name in old if updates.reference(region['id'], name) == row['task']]
+        name = matched[0] if len(matched) == 1 else None
+        current = tasks.get(name) if name is not None else None
+        if current is None:
+            raise ValueError('已有任务增量未能关联本区块明确task，需先核对引用')
+        try:
+            jsonschema.validate(row, schema['properties']['task_update']['items'])
+            if counts[row['task']] != 1:
+                raise ValueError('同一任务不能重复提交判断')
             if name not in _task_proposer.update_names(region, scope_review=bool(scope_review)):
                 raise ValueError('本次指定复核只评估原任务；其他旧任务保持原判断与归属')
-            if name in seen:
-                raise ValueError('同一任务不能重复提交判断')
-            if task.get('status') == 'done' and settlement.region_task(task) and (row.get('decision') == 'continue'):
+            seen.add(name)
+            task = deepcopy(current)
+            if task.get('status') == 'done' and settlement.region_task(task) and row.get('decision') == 'continue':
                 settlement.refresh_movement(region, task, state)
             if task.get('status') not in ('pending', 'blocked') or task.get('shared_task_ref'):
                 raise ValueError('只能更新本次未结束的本地任务')
-            seen.add(name)
             review = region_work(region).get('task_inventory', {}).get('review', {})
             observed = updates.observed_control(region, task, state or {}) or bool(review.get('task') == name and review.get('kind') == 'parameter_facts' and review.get('snapshot') and _parameter_evidence_review.evidence_context(region))
             basis = {'basis': 'observation_only', 'source_call': call, 'observation': ((state or {}).get('observation') or {}).get('id')}
             updates.store_increment(region, task, name, row, records, state or {}, basis, observed=observed)
-            continue
+            tasks[name] = task
+            assessment['accepted'].append({'task': row['task'], 'decision': row['decision']})
+        except (ValueError, jsonschema.ValidationError) as error:
+            assessment['rejected'].append(task_assessments.rejected(current, row, call, error, index))
+    for row in reply['operations']:
         row = {**row, 'name': settlement.task_definition(row)['label'],
                'control': renamed.get(row['control'], row['control'])}
         names = [row['control']] if row['control'] in owned_controls(region) else []
@@ -93,17 +106,22 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
         tasks[name] = task
     if scope_review:
         missing_review = {n for (n, t) in old.items() if t.get('status') in ('pending', 'blocked')} - seen
-        if missing_review:
-            raise ValueError('旧任务范围复核遗漏未完成任务：' + '、'.join(sorted(missing_review)))
+        for name in sorted(missing_review):
+            if not any(r['task'] == updates.reference(region['id'], name) for r in assessment['rejected']):
+                row = {'task': updates.reference(region['id'], name)}
+                assessment['rejected'].append(task_assessments.rejected(tasks[name], row, call, ValueError('本轮要求复核的任务尚未给出判断'), None))
     for (name, t) in tasks.items():
         if t.get('equivalent_to'):
             canonical = _record_equivalent_source(tasks, t)
             if not canonical or settlement.registration_kind(canonical) != settlement.registration_kind(t) or name == t['equivalent_to']:
                 raise ValueError('等价任务须引用同类问题的直接代表；参数、入口语义与普通控件用途不能互相替代')
+    if assessment['rejected'] and not assessment['accepted'] and not reply['operations']:
+        raise ValueError('；'.join(str(r['task']) + '：' + r['reason'] for r in assessment['rejected']))
     replace_owned_tasks(region, tasks)
     _shared_controls.refresh(records)
     tasks = owned_tasks(region)
     region_work(region)['task_inventory'] = {'inventory': reply['inventory'], 'evidence': reply['evidence'], 'controls': sorted(considered), 'source_call': call}
+    return assessment
 
 def commit_plan(root, run, call):
     from regrow.traversal import register_update as _register_update
@@ -115,6 +133,7 @@ def commit_plan(root, run, call):
     if q.get('role') == 'task_correction':
         reply = reply['proposal']
 
+    assessments = {}
     def mutate(records, state, snapshot, temp):
         from regrow.traversal import historical_inventory as _historical_inventory
         from regrow.records import task_updates as _task_updates
@@ -134,7 +153,7 @@ def commit_plan(root, run, call):
             raise ValueError('task inventory belongs to an old observation')
         from regrow.traversal import task_deferral
         gap_changed = task_deferral.inventory_evidence_changed(records[rid])
-        apply_plan(records[rid], reply, call, scope_review='task_scope_review' if q.get('task_scope_review') else q.get('external_scope_review', False), records=records, state=None if q.get('historical_inventory') else state, reviewed_controls=q['source'].get('controls'), request=q)
+        assessments.update(apply_plan(records[rid], reply, call, scope_review='task_scope_review' if q.get('task_scope_review') else q.get('external_scope_review', False), records=records, state=None if q.get('historical_inventory') else state, reviewed_controls=q['source'].get('controls'), request=q))
         _task_prerequisites.enroll(records, rid, call)
         active = state.get('active_task') or {}
         if active.get('region') == rid and owned_tasks(records[rid]).get(active.get('name'), {}).get('status') == 'done':
@@ -172,4 +191,8 @@ def commit_plan(root, run, call):
             state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=q['screenshots'][0], discovery_mode='local', inspection_region=rid, reason='task_inventory_incomplete')
             state.pop('correction_context', None)
             state.pop('required_control', None)
-    return _record_publish(run, 'task-plan-' + call, mutate)
+    pointer = _record_publish(run, 'task-plan-' + call, mutate)
+    from regrow.records.snapshots import write_json
+    from pathlib import Path
+    write_json(Path(run) / 'calls' / call / 'task_assessments.json', assessments)
+    return {**pointer, 'task_assessments': assessments}

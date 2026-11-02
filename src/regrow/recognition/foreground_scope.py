@@ -44,11 +44,18 @@ def audit(run, job):
     (snapshot, records, _) = _record_load(run)
     names = q.get('region_names') or q.get('discovery_context', {}).get('region_names', {})
     excluded = set()
+    from regrow.recognition.update_visibility import selected_indices
+    selected = selected_indices(reply, names)
+    if 'current_regions' in reply:
+        active = {names.get(row['ref'], row['ref']) for row in reply['current_regions'] if row.get('ref')}
+        active.update(row.get('_matched_id') or names.get(row.get('ref'), row.get('ref'))
+                      for index, row in enumerate(reply.get('regions', [])) if index in selected)
+        excluded.update(set(records) - active)
     for previous in reply.get('previous_regions', []):
         if previous.get('state') not in ('not_visible', 'visible_background_blocked', 'uncertain'):
             continue
-        label = previous.get('name')
-        rid = names.get(label)
+        label = previous.get('ref') or previous.get('name')
+        rid = names.get(label, label if label in records else None)
         if rid is None:
             matches = [key for (key, r) in records.items() if r['name'] == label]
             if len(matches) == 1:
@@ -59,15 +66,16 @@ def audit(run, job):
     issues = []
     for (index, region) in enumerate(reply.get('regions', [])):
         rid = region.get('_matched_id') or names.get(region.get('ref'))
-        if rid in excluded or region.get('identity') == 'uncertain':
+        if index not in selected or rid in excluded or region.get('identity') == 'uncertain':
             continue
+        source_index = q.get('registration_source_indices', {}).get('regions', list(range(len(reply['regions']))))[index]
         box = region.get('bbox')
         if box:
             values = [box[k] for k in ('left', 'top', 'right', 'bottom')]
             if not (0 <= values[0] < values[2] <= width and 0 <= values[1] < values[3] <= height):
-                issues.append({'source_field': f'/regions/{index}', 'field': 'image', 'reason': '区块框为空、倒置或超出当前截图；不缓存该边界或保存模板'})
+                issues.append({'source_field': f'/regions/{source_index}', 'field': 'image', 'reason': '区块框为空、倒置或超出当前截图；不缓存该边界或保存模板'})
             else:
-                identified.append({'source_field': f'/regions/{index}', 'bbox': box})
+                identified.append({'source_field': f'/regions/{source_index}', 'bbox': box})
     ranking = history_matching.scan({rid: r for (rid, r) in records.items() if rid not in excluded}, snapshot, frame)
     value = {'identified_regions': identified, 'template_rejections': issues, 'source_call': job['call'], 'frame_sha256': fingerprint(frame), 'scope': scope, 'ranking': ranking, 'basis': 'same-call semantic foreground; image matches are identity candidates only', 'limitation': 'geometry checks do not prove the model selected the correct foreground'}
     path = Path(run) / 'calls' / job['call'] / 'foreground_matching.json'

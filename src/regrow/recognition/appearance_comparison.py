@@ -9,7 +9,7 @@ from regrow.recognition.identity_templates import variants
 from regrow.prompts.frame_context import primary, label
 
 
-def batches(run, original, candidate):
+def batches(run, original, candidate, *, failed=None):
     snapshot, records, _ = load(run)
     groups = {}
     for position, row in enumerate(candidate.get('controls', [])):
@@ -22,7 +22,11 @@ def batches(run, original, candidate):
             continue
         old = appearances[0]
         if not old.get('source_image') or not old.get('bbox'):
-            raise ValueError(control['name'] + '的旧外观缺少原图或范围，不能比较并补状态说明')
+            reason = control['name'] + '的旧外观缺少原图或范围，不能比较并补状态说明'
+            if failed is None:
+                raise ValueError(reason)
+            failed['/controls/' + str(position)] = reason
+            continue
         source = str((snapshot / old['source_image']).resolve())
         groups.setdefault(source, []).append({
             'ref': ref, 'position': position, 'control': ref,
@@ -69,19 +73,41 @@ def request(root, run, original, source, rows):
 
 
 def validate(q, reply, run=None):
-    jsonschema.validate(reply, q['response_schema'])
+    from regrow.records.registration_diagnostics import reply_errors, object_schema_error, Rejected
+    errors = reply_errors(q, reply)
+    fatal = [e for e in errors if not object_schema_error(q, reply, e)]
+    if fatal:
+        raise Rejected({'errors': fatal, 'unchecked': []})
     expected = {row['ref']: row['name'] for row in q['appearance_rows']}
-    if sorted(row['ref'] for row in reply['comparisons']) != sorted(expected):
-        raise ValueError('每个给定控件都需要且只需要一项外观比较')
-    for row in reply['comparisons']:
-        name = expected[row['ref']]
-        if row['relation'] in ('different_control', 'uncertain'):
-            continue  # A valid negative judgment belongs to the parent proposal.
-        if not row['historical_state'].strip() or not row['current_state'].strip():
-            raise ValueError(name + '需要分别说明历史图和当前图的可见状态')
-        if row['relation'] == 'new_appearance' and row['historical_state'].strip() == row['current_state'].strip():
-            raise ValueError(name + '判断外观不同时，两条状态说明须能区分具体差异')
-    return reply
+    result = []
+    invalid = set()
+    for ref, name in expected.items():
+        matches = [(i, row) for i, row in enumerate(reply['comparisons']) if row.get('ref') == ref]
+        reason = ''
+        if len(matches) != 1:
+            reason = '本次未返回该控件的比较' if not matches else '同一控件返回了多项比较，尚不能确定采用哪一项'
+        else:
+            i, row = matches[0]
+            prefix = f'/comparisons/{i}'
+            details = [e['expected'] for e in errors if e['path'] == prefix or e['path'].startswith(prefix + '/')]
+            if details:
+                reason = '；'.join(details)
+            elif row['relation'] not in ('different_control', 'uncertain'):
+                if not row['historical_state'].strip() or not row['current_state'].strip():
+                    reason = name + '缺少历史或当前可见状态说明'
+                elif row['relation'] == 'new_appearance' and row['historical_state'].strip() == row['current_state'].strip():
+                    reason = name + '的两条状态说明未解释外观差异'
+        if reason:
+            invalid.add(ref)
+            result.append({'ref': ref, 'relation': 'uncertain', 'historical_state': '',
+                           'current_state': '', 'reason': reason})
+        else:
+            result.append(deepcopy(matches[0][1]))
+    blocked = [row for row in result if row['ref'] in invalid
+               and row['ref'] in q.get('comparison_required_refs', [])]
+    if blocked:
+        raise ValueError('本步必需对象的身份或外观尚未确认：' + '；'.join(expected[row['ref']] + '：' + row['reason'] for row in blocked))
+    return {'comparisons': result}
 
 
 def comparison_key(request):
@@ -100,4 +126,5 @@ def comparison_key(request):
 
 def replies_by_control(saved):
     ids = {row['ref']: row['control'] for row in saved['request']['appearance_rows']}
-    return {ids[row['ref']]: row for row in saved['candidate']['comparisons']}
+    accepted = validate(saved['request'], saved['candidate'])
+    return {ids[row['ref']]: row for row in accepted['comparisons']}

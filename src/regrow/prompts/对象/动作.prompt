@@ -3,7 +3,7 @@
 <!-- BEGIN_PROMPT_BLOCK id="action.proposal" requires="control.definition,control.references,control.action_availability" -->
 # 提出一步操作
 根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。
-- target：本步直接操作的对象；无法对应已有对象时，写足以辨认它的短描述。
+- target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。
 - x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。
 - text、end_x、end_y：按下方当前平台动作表填写。
 
@@ -43,7 +43,7 @@ reason 说明原问题尚缺什么信息，以及本步为何没有可推进的�
 <!-- END_PROMPT_BLOCK id="action.execution" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.operation_fields" requires="" -->
-target 填本步实际操作对象的已给 ID；确实没有对应身份时，用可辨认的短描述。x、y 使用当前原图整数点位；text、end_x、end_y 按当前平台表填写。
+target 填本步实际操作对象的已给名称；确实没有对应身份时，用可辨认的短描述。x、y 使用当前原图整数点位；text、end_x、end_y 按当前平台表填写。
 正例：点击关闭提示的按钮，reason 写“解除遮挡以继续观察原表单”。
 <!-- END_PROMPT_BLOCK id="action.operation_fields" -->
 
@@ -54,10 +54,10 @@ returns_to_previous：本次实际退出当前表面，回到对应进入记录�
 
 <!-- BEGIN_PROMPT_BLOCK id="action.jump_to" requires="" -->
 # 登记实际访问关系：jump_to
-来源是给定的已执行控件。动作使新目标出现、切换、展开或可访问，且有前后证据支持时，登记尚缺的关系。目标可以是区块或独立控件。
-新目标用本次 regions 的 region_index；目标是独立控件时再给本次 controls 的 control_index。conditions 写该路线确实需要的适用条件。
+来源是给定执行记录中的实际操作对象，可以是控件或区块。动作使新目标出现、切换、展开或可访问，且有前后证据支持时，登记尚缺的关系。目标可以是区块或独立控件。
+region 填本次 regions 中目标区块的名称；目标是独立控件时再用 control 填它的名称。conditions 写该路线确实需要的适用条件。
 修订旧路线时用该来源已有 jump_to 的 index 和新的完整 conditions，保持原目标与访问证据。
-正例：点击附件标签后出现 regions[1] 的附件区，填写 {"region_index": 1}。
+正例：点击附件标签后出现附件区，填写 {"region": "附件区"}。
 <!-- END_PROMPT_BLOCK id="action.jump_to" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.recovery_decision" requires="region.foreground_concept" -->
@@ -104,7 +104,7 @@ revise 时提交完整 proposal；其他处理方式填 null。
 <!-- END_PROMPT_BLOCK id="action.correction_full" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.correction_partial" requires="" -->
-revise 时只提交要修改的顶层字段；省略字段沿用给定合并基准，数组和对象整项替换。
+revise 按本次修订说明提交改动；未提到的字段保留。regions/controls 按对象修订时，未提到的对象保留，对象内明确提交的字段整体替换。
 <!-- END_PROMPT_BLOCK id="action.correction_partial" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.record_edit" requires="" -->

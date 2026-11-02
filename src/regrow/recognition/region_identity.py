@@ -1,7 +1,5 @@
-from regrow.records.control_records import group_name
 from regrow.records.snapshots import load as _record_load
 'Shared discovery/update Region identity matching; screen placement is not identity.'
-from regrow.records.object_store import owned_controls
 from copy import deepcopy
 from pathlib import Path
 
@@ -19,7 +17,6 @@ def for_request(run, request, reply):
         (reply, delta_audit) = resolve(records, request, reply, snapshot, Path(run) / frame if frame else None, run)
     (normalized, audit) = normalize(records, snapshot, Path(run) / frame if frame else None, reply)
     audit.extend(delta_audit)
-    audit.extend(reuse_list_roles(records, normalized))
     return (normalized, audit)
 
 def extend_schema(schema, required=False):
@@ -49,25 +46,3 @@ def prepare(run, request, reply):
         request.pop('response_schema')  # Subsequent checks inspect resolved identities, not the wire reply.
     (normalized, audit) = for_request(run, request, reply)
     return (request, normalized, audit)
-
-def reuse_list_roles(records, reply):
-    """A named representative is a list role, not the current row's data value."""
-    audit = []
-    for c in reply.get('controls', []):
-        if c.get('ref') or not c.get('list_group') or 'identity' in c:
-            continue
-        i = c.get('region_index')
-        if not isinstance(i, int) or not 0 <= i < len(reply.get('regions', [])):
-            continue
-        p = reply['regions'][i]
-        owners = [(rid, r) for (rid, r) in records.items() if p.get('ref') == rid]
-        if len(owners) != 1:
-            continue
-        (rid, r) = owners[0]
-        matches = [(cid, old) for (cid, old) in owned_controls(r).items() if old['name'] == c.get('name') or group_name(r, cid) == c.get('list_group')]
-        if len(matches) != 1:
-            continue
-        (cid, old) = matches[0]
-        c['ref'] = cid
-        audit.append({'proposal': i, 'status': 'list_role_reused', 'region': rid, 'control': cid, 'evidence': 'same_named_list_role_in_confirmed_region'})
-    return audit

@@ -14,13 +14,26 @@ from pathlib import Path
 def reviewable(task, observation):
     """An unassessed evidence gap gets one explicit model assessment."""
     from regrow.records.task_updates import hard_block
-    if not observation or task.get('status') != 'blocked' or task.get('equivalent_to'):
+    from regrow.records.task_assessments import pending
+    rejected = pending(task)
+    if not observation or (task.get('status') != 'blocked' and not (rejected and task.get('status') == 'pending')) or task.get('equivalent_to'):
         return False
     if task.get('shared_task_ref') or task.get('coverage_exemption') or hard_block(task):
         return False
     if task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review':
         return False
+    deferral = task.get('deferral', {})
+    if deferral.get('stage') == 'task_result_review':
+        if (deferral.get('retry_when') == 'explicit_service_retry'
+                or deferral.get('trigger', {}).get('kind') not in ('observation', 'recovery')):
+            return False
+    if rejected:
+        return True
     latest = task_value(task, 'latest_update')
+    from regrow.records.task_updates import registration_review_sources
+    sources = registration_review_sources(task)
+    if sources and sources != (latest or {}).get('source', {}).get('registration_gap_evidence'):
+        return True
     if latest:
         trigger = task.get('deferral', {}).get('trigger', {})
         if trigger.get('kind') == 'recovery':
@@ -86,23 +99,89 @@ def repeated_entry_attempts(run, region, task):
         return []
     return pair if same_surface(folders[0] / 'after.png', folders[1] / 'after.png') else []
 
-def next_deferred(root, run, frame):
+def next_deferred(root, run, frame, *, task=None, allow_other=False):
+    """Review selected work first; unrelated reviews wait until runnable work is idle."""
     from regrow.traversal import discovery_step as _discovery_step
     from regrow.records import task_updates as _task_updates
     (_, records, state) = _record_load(run)
     if state.get('next_action_mode') != 'explore' or state.get('exception', 'none') != 'none':
         return None
+    if task is None and not allow_other:
+        return None
     observation = (state.get('observation') or {}).get('id')
+    selected = task
     for (rid, region) in records.items():
         if region_work(region).get('out_of_scope_reason'):
             continue
         for (name, task) in owned_tasks(region).items():
+            if selected is not None and (selected.get('region'), selected.get('name')) != (rid, name):
+                continue
             if not _record_in_scope(region, task, records):
                 continue
             ready = bool(task.get('prepares') and task.get('status') == 'pending' and _task_updates.preparation_product(task, {'decision': 'answered'}, records, {}))
             if reviewable(task, observation) or ready or repeated_entry_attempts(run, region, task):
                 return request(root, run, {'task_region': rid, 'task_name': name}, [str(frame)])
     return None
+
+def resume_service_request(root, run, job, frame=None):
+    """Undo this review's service deferral and rebuild against current records."""
+    from copy import deepcopy
+    from regrow.records.tasks import audit
+    from regrow.records.task_updates import hard_block
+    run = Path(run)
+    source = job['request']['source']
+    rid = source.get('task_region') or source.get('region')
+    name = source['task_name']
+    _, records, state = _record_load(run)
+    task = owned_tasks(records.get(rid, {})).get(name)
+    if task is None or task.get('control') != source.get('task_control'):
+        raise ValueError('原复核任务或归属已变化，不能沿用服务重试')
+    original = None
+    restored = deepcopy(task)
+    if job.get('status') in ('deferred', 'suspended'):
+        if task.get('status') != 'blocked' or task.get('deferral', {}).get('episode') != job['path']:
+            raise ValueError('原复核任务的暂挂来源不匹配')
+        _, before, _ = _record_load(run, snapshot=source['snapshot'])
+        original = owned_tasks(before.get(rid, {})).get(name)
+        if original is None or original.get('control') != task.get('control'):
+            raise ValueError('原复核快照缺少对应任务，不能恢复暂挂前状态')
+        restored['status'] = original['status']
+        if 'deferral' in original:
+            restored['deferral'] = deepcopy(original['deferral'])
+        else:
+            restored.pop('deferral', None)
+        blocker = task.get('blocker', {})
+        if (blocker.get('episode') == job['path'] and blocker.get('condition') == 'review_required'
+                and not blocker.get('exception')) or blocker == original.get('blocker', {}):
+            if 'blocker' in original:
+                restored['blocker'] = deepcopy(original['blocker'])
+            else:
+                restored.pop('blocker', None)
+    observation = (state.get('observation') or {}).get('id')
+    if hard_block(restored):
+        raise ValueError('任务仍有真实阻塞条件，服务重试不能解除该条件')
+    if not (restored.get('status') == 'pending' or reviewable(restored, observation)
+            or later_entry_history(records[rid], restored)):
+        raise ValueError('任务当前没有可复核证据；保留暂挂，先完成相关观察')
+    if original is not None:
+        def reopen(records, state, *_):
+            current = owned_tasks(records[rid])[name]
+            for field in ('blocker', 'deferral'):
+                if current.get(field) != restored.get(field) and current.get(field):
+                    audit(current).setdefault(field + '_history', []).append(deepcopy(current[field]))
+                if field in restored:
+                    current[field] = deepcopy(restored[field])
+                else:
+                    current.pop(field, None)
+            current['status'] = restored['status']
+            state.update(working_region=rid, active_task={'region': rid, 'name': name})
+        tag = 'review-service-retry-' + Path(job['path']).parent.name + '-' + str(len(job.get('service_resume_history', [])))
+        _record_publish(run, tag, reopen)
+    frames = [str((run / frame).resolve())] if frame is not None else []
+    if not frames:
+        image = (state.get('observation') or {}).get('image')
+        frames = [str((run / image).resolve())] if image else list(job['request'].get('screenshots', []))
+    return request(root, run, {'task_region': rid, 'task_name': name}, frames)
 
 def request(root, run, source, frames):
     from regrow.traversal import discovery_step as _discovery_step
@@ -134,6 +213,8 @@ def request(root, run, source, frames):
         if '证据' in event:
             event['原登记依据'] = event.pop('证据')
     dynamic = {'本轮探索任务': _task_settlement.exploration_goal(task), '来源区块': records[rid]['name'], '任务目标与累计证据': goal_history, '说明': '本轮没有执行新动作；本轮观察图反映当前界面，历史事实按动作/调用来源读取。'}
+    if records[rid].get('local_knowledge'):
+        dynamic['已有区块知识'] = records[rid]['local_knowledge']
     if later:
         dynamic['独立入口历史'] = [{'动作记录': aid, '直接效果': _history_context.task_goal({'task_type': task['task_type'], 'reason': task.get('reason') or task.get('name', ''), 'attempts': [aid]}, records, run)} for aid in history]
         dynamic['历史间隔'] = '这些是独立尝试的直接前后效果，不是连续操作链；未提供期间全部操作，不能推断状态持续或跨尝试因果。'

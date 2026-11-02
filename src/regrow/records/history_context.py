@@ -6,6 +6,7 @@ from regrow.records.tasks import read as task_value
 from regrow.records.object_store import owned_actions
 from regrow.records.object_store import owned_tasks
 from regrow.records.object_store import owned_controls
+from copy import deepcopy
 
 def reading_guidance(has_parameter_baseline=False):
     """Current instructions for reading task evidence, separate from saved facts."""
@@ -113,6 +114,9 @@ def identity_candidates(records, state, binding, visual_hits, source_destination
                     for cid in owned_controls(region) if cid in offered]
         row = {'region_ref': rid, 'name': region['name'], '历史描述': region['description'],
                '提供原因': reasons(rid, region), '当前状态': '未由这份历史记录确认', 'controls': controls}
+        knowledge_owners = {binding.get('region_ref'), binding.get('working_region'), binding.get('task_region')}
+        if rid in knowledge_owners and region.get('local_knowledge'):
+            row['local_knowledge'] = deepcopy(region['local_knowledge'])
         state_row = next((v for v in reversed(observation_history(region)) if v.get('state_description')), None)
         if state_row:
             row['历史状态观察'] = {'说明': state_row['state_description'], '来源': state_row.get('evidence', {}).get('observation')}
@@ -156,6 +160,7 @@ def task_goal(task, records, run=None, *, attempt_refs=()):
     from regrow.prompts.prompt_material import same
     from regrow.prompts.prompt_material import MISSING
     result = {'task_type': _task_settlement.registration_kind(task)}
+    result.update(assessment_context(task))
     if task.get('conditions'):
         result['适用条件'] = deepcopy(task['conditions'])
     result.update(_task_settlement.registration_requirement(task))
@@ -203,6 +208,7 @@ def task_goal(task, records, run=None, *, attempt_refs=()):
             index.setdefault(ref, []).append((region, action))
     selected = set(refs)
     events = []
+    objects = {}
     for ref in sorted(selected, key=order):
         row = {'记录': ref, '关联': '原尝试审计引用：实际作用于其他控件，不支持本控件完成' if ref in invalid else '任务证据' if ref in refs else '期间其他动作'}
         matches = index.get(ref, [])
@@ -213,6 +219,13 @@ def task_goal(task, records, run=None, *, attempt_refs=()):
             outcome = action.get('result', {})
             association = action.get('association', {})
             control = owned_controls(region).get(action.get('control'), {})
+            if ref not in invalid and action.get('delivery') == 'executed_receipt_zero' and control.get('knowledge'):
+                from regrow.records.control_knowledge import evidence
+                key = (region['id'], action['control'])
+                objects[key] = {'区块': region['name'], '控件': control['name'],
+                                'ref': action['control'],
+                                'knowledge': deepcopy(control['knowledge']),
+                                '来源': evidence(control)}
             row.update(区块=region['name'], 入口=control.get('name') or association.get('target') or '未绑定控件', 动作=action.get('operation', '未知'), 执行=action.get('delivery', '未确认'), 观察=outcome.get('description', '尚无观察'), 证据=outcome.get('evidence', ''))
             if action.get('task'):
                 row['原任务'] = action['task']
@@ -230,6 +243,10 @@ def task_goal(task, records, run=None, *, attempt_refs=()):
     if task_value(task, 'result_evidence'):
         result['原任务已有判断'] = {'所属动作': task_value(task, 'attempts', [])[-1] if task_value(task, 'attempts') else None, '当时判断': task_value(task, 'result_evidence'), '用途': '历史判断，可依据后续或此前有效证据纠正，不是完成状态的保证'}
     result['相关动作'] = events
+    if objects:
+        result['已操作对象的当前知识'] = {
+            '说明': '这些对象已有本任务所列的操作记录；当前知识可能来自后续其他任务，不代表由上列某一次动作获得。按知识来源和适用条件对照原问题判断。',
+            '对象': list(objects.values())}
     if facts:
         result['已有参数发现'] = facts
         result['历史阅读'] = reading_guidance(True)
@@ -245,6 +262,17 @@ def decision(task):
 def deepcopy_value(value):
     from copy import deepcopy
     return deepcopy(value)
+
+def assessment_context(task):
+    from regrow.records.task_assessments import feedback
+    from regrow.records.task_updates import registration_review_sources
+    row = feedback(task)
+    sources = registration_review_sources(task)
+    if sources:
+        row['登记缺口复核依据'] = {'已接受知识来源': sources,
+            '说明': '原动作尚未补登记，但目标对象有此后独立登记的知识。按这些知识和原完成条件判断任务；不把任务结算当作原动作已补登记。身份或必要前提仍有真实问题时保留阻碍。'}
+    return row
+
 
 def question(region, name, task, *, detailed=True):
     from regrow.records.task_updates import reference
@@ -276,6 +304,7 @@ def question(region, name, task, *, detailed=True):
             row[key] = detail
     if task.get('equivalent_to'):
         row['equivalent_to'] = task['equivalent_to']
+    row.update(assessment_context(task))
     if task.get('shared_result') or task.get('shared_task_ref'):
         row['共享知识来源'] = deepcopy_value(task.get('shared_result') or task['shared_task_ref'])
     return row

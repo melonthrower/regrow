@@ -403,7 +403,10 @@ def coverage(region, records=None):
     plan = region_work(region).get('task_inventory')
     tasks = owned_tasks(region)
     missing = set(owned_controls(region)) - set((plan or {}).get('controls', []))
-    complete = bool(plan and plan['inventory'] == 'complete' and (not inventory_review(region)) and (not missing) and (not region_work(region).get('registration_gaps', {}).get('task_proposal')) and (not region_work(region).get('registration_gaps', {}).get('discovery', {}).get('pending')))
+    # Independent object/archived-result gaps stay in their original records.
+    # Any gap that still prevents answering a question is represented by its
+    # pending/blocked task, not a second Region-wide completion requirement.
+    complete = bool(plan and plan['inventory'] == 'complete' and (not inventory_review(region)) and (not missing) and (not region_work(region).get('registration_gaps', {}).get('task_proposal')))
     pending = []
     blocked = []
     done = []
@@ -424,7 +427,7 @@ def coverage(region, records=None):
             blocked.append(name)
         else:
             pending.append(name)
-    return {'inventory_complete': complete, 'complete': complete and (not pending) and (not blocked) and not region_work(region).get('registration_gaps', {}).get('suspended_branch'), 'pending': pending, 'blocked': blocked, 'done': done, 'record_only': recorded}
+    return {'inventory_complete': complete, 'complete': complete and (not pending) and (not blocked), 'pending': pending, 'blocked': blocked, 'done': done, 'record_only': recorded}
 
 def purpose_controls(region):
     from regrow.records.object_store import owned_controls

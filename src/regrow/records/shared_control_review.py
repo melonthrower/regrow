@@ -77,13 +77,31 @@ def apply(records, state, case, item, call):
         from regrow.records.shared_tasks import reconcile_detached_tasks
         reconcile_detached_tasks(records, state, affected, member, call)
 
-def next_request(root, run):
+def relevant(group, request, records):
+    """Reference material does not make every shared group part of this call."""
+    if request is None:
+        return True
+    source = request.get('source', {})
+    rid = source.get('task_region') or source.get('region')
+    cid = source.get('task_control') or source.get('control_ref') or source.get('control')
+    task = source.get('task_name')
+    if task and rid in records:
+        from regrow.records.object_store import owned_tasks
+        from regrow.records.tasks import target_control
+        cid = target_control(owned_tasks(records[rid]).get(task, {}))
+    if request.get('role') in ('task_proposal', 'function_registration'):
+        return any(member['region'] == rid for member in group['members'])
+    return bool(cid and any(member['control'] == cid for member in group['members']))
+
+
+def next_request(root, run, *, scope=None):
     from regrow.records import shared_controls as shared_controls
     if any(((Path(run) / p).exists() for p in ('execution_pending.json', 'visual_navigation_pending.json'))):
         return None
     (snapshot, records, state) = _record_load(run)
     shared_controls.refresh(records)
-    cases = conflicts(records)
+    cases = [case for case in conflicts(records)
+             if relevant(current_group(records, case), scope, records)]
     if not cases:
         return None
     case = cases[0]
@@ -91,11 +109,11 @@ def next_request(root, run):
     (snapshot, records, state) = _record_load(run)
     return build_request(root, run, snapshot, records, state, case)
 
-def run_pending(runner):
+def run_pending(runner, scope=None):
     from regrow.traversal import step_repair as step_repair
     if step_repair.pending(runner.run, runner.pointer_name):
         return
-    q = next_request(runner.root, runner.run)
+    q = next_request(runner.root, runner.run, scope=scope)
     if q is not None:
         runner.perform('shared_control_review', q)
         raise step_repair.Paused('ready_next_round', '共享关系已核对并保存；下一轮按新记录调度，未执行GUI')

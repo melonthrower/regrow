@@ -89,9 +89,11 @@ def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=F
         cid = action.get('control')
         control = find_control(region, cid)
         association = action.get('association') or {}
-        confirmed = bool(control) and association.get('status') != 'unconfirmed'
+        control_confirmed = bool(control) and association.get('status') != 'unconfirmed'
+        region_bound = function_evidence.region_action(action)
+        confirmed = control_confirmed or region_bound
         outcome = action.get('result') or {}
-        event = {'region': rid, 'control': cid if confirmed else None, '区块': region['name'], '入口': control['name'] if confirmed else association.get('target') or '未绑定控件', '身份关联': '已登记' if confirmed else '未确认', '动作': action.get('operation', '未知'), '执行': action.get('delivery', '未确认')}
+        event = {'region': rid, 'control': cid if control_confirmed else None, '区块': region['name'], '入口': control['name'] if control_confirmed else region['name'] if region_bound else association.get('target') or '未绑定控件', '身份关联': '已登记' if confirmed else '未确认', '动作': action.get('operation', '未知'), '执行': action.get('delivery', '未确认')}
         if action.get('task'):
             event['task'] = action['task']
         if action.get('conditions'):
@@ -151,8 +153,10 @@ def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=F
             event['归属纠正'] = '原任务中的这条动作归属已撤销，仅保留实际操作记录。'
         events[aid] = event
         group = groups.setdefault(rid, {'ref': rid, 'name': region['name'], 'controls': {}, 'unbound': []})
-        if confirmed:
+        if control_confirmed:
             group['controls'].setdefault(cid, {'ref': cid, 'name': control['name'], 'attempts': []})['attempts'].append(aid)
+        elif region_bound:
+            group.setdefault('region_actions', []).append(aid)
         else:
             group['unbound'].append(aid)
     for group in groups.values():
@@ -227,7 +231,7 @@ def event_text(event, *, compact=False):
     if event.get('执行') != 'executed_receipt_zero':
         lines.append('投递：' + (event.get('执行') or '未确认'))
     if event.get('身份关联') != '已登记':
-        lines.append('控件身份：' + event.get('身份关联', '未确认'))
+        lines.append('对象身份：' + event.get('身份关联', '未确认'))
     used = set()
     for key in ('适用条件', '实际执行', '实际投递', '记录输入', '文字投递', '观察', '已有身份核对', '证据', '异常', '缺口', '执行明细缺口', '关联', '归属纠正', '参数观察', '已记录参数事实', '该次更新交接', '该次更新未确认事项'):
         value = event.get(key)

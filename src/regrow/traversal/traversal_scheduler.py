@@ -20,6 +20,14 @@ def pending_target_task(records, region, active=None):
     return {'region': region, 'name': rows[0][0]} if rows else None
 
 
+def reviews_task(region, task):
+    """A fact review blocks its own task, not unrelated work in the Region."""
+    review = region_work(region).get('task_inventory', {}).get('review', {})
+    return bool(task and task.get('region') == region['id']
+                and review.get('kind') in ('parameter_facts', 'entry_observation')
+                and review.get('task') == task.get('name'))
+
+
 def handoff_no_action(run, request, proposal, call, frame):
     """Continue the original work from registered facts, without a fake action."""
     from pathlib import Path
@@ -122,6 +130,13 @@ def select_work(records, state, working=None):
     allowed = [rid for rid in refs if rid in records and (not region_work(records[rid]).get('out_of_scope_reason'))]
     active = state.get('active_task') or {}
     owner = active.get('region')
+    if owner in records and region_work(records[owner]).get('task_inventory', {}).get('review', {}).get('kind') == 'scope_change':
+        if owner in allowed and _task_deferral.inventory_evidence_changed(records[owner]):
+            return choice('scope_review', owner, reason='review the active task under the changed run scope')
+        # A task can act on a destination surface while its owner is elsewhere.
+        # Do not let that continuation bypass its owner's pending scope review.
+        active = {}
+        owner = None
     task = owned_tasks(records.get(owner, {})).get(active.get('name'))
     if not task or task.get('status') != 'pending' or (not _record_in_scope(records[owner], task, records)):
         task = None
@@ -129,15 +144,18 @@ def select_work(records, state, working=None):
     target = _task_settlement.completion_target(records[owner], task) if task else {}
     local_continuation = in_progress and target.get('region') in allowed
     def navigation(region, reason):
+        if region_work(records[region]).get('task_inventory', {}).get('review', {}).get('kind') == 'scope_change':
+            return choice('navigate', region, reason='reach the region for its explicit scope review')
         pending = pending_target_task(records, region, active)
         if pending and allowed:
-            review = region_work(records[pending['region']]).get('task_inventory', {}).get('review', {})
-            if review.get('kind') in ('parameter_facts', 'entry_observation'):
+            if reviews_task(records[pending['region']], pending):
                 return choice('task_proposal', pending['region'], reason='register current evidence before another action')
             return choice('action', allowed[0], task=pending, source_regions=list(allowed),
                           reason='advance pending work from the current surface, using preparation if needed')
         return choice('navigate', region, reason=reason)
     scroll_target = _inventory_scroll.target(records, state)
+    if scroll_target in records and _task_deferral.scope_review_pending(records[scroll_target]) and not _task_deferral.inventory_evidence_changed(records[scroll_target]):
+        scroll_target = None
     if scroll_target and scroll_target not in refs:
         return navigation(scroll_target, 'reach the pending inventory scroll')
     if local_continuation:
@@ -149,13 +167,17 @@ def select_work(records, state, working=None):
             return navigation(working, 'reach in-scope unfinished work')
     else:
         rid = scroll_target or (working if working in allowed else next((ref for ref in allowed if _task_deferral.runnable(records[ref], records)), allowed[0] if allowed else None))
+    if rid in records and _task_deferral.scope_review_pending(records[rid]) and not _task_deferral.inventory_evidence_changed(records[rid]):
+        rid = None
     if rid is not None:
         region = records[rid]
+        if region_work(region).get('task_inventory', {}).get('review', {}).get('kind') == 'scope_change':
+            return choice('scope_review', rid, reason='reassess existing tasks under the changed run scope')
         progress = coverage(region, records)
-        if region_work(region).get('task_inventory', {}).get('review', {}).get('kind') in ('parameter_facts', 'entry_observation'):
-            return choice('task_proposal', rid, reason='register current evidence before another action')
         continuation = task is not None and (rid == owner or in_progress)
         if continuation:
+            if reviews_task(records[owner], active):
+                return choice('task_proposal', owner, reason='register evidence for the current task')
             return choice('action', rid, task=dict(active), source_regions=list(allowed), reason='continue the existing task on its current surface')
         gap = region_work(region).get('registration_gaps', {}).get('task_proposal', {})
         if not progress['inventory_complete'] and (not progress['pending']) and _task_deferral.inventory_evidence_changed(region):
@@ -164,7 +186,10 @@ def select_work(records, state, working=None):
         names = pending
         if names:
             names.sort(key=lambda name: not bool(owned_tasks(region)[name].get('prepares')))
-            return choice('action', rid, task={'region': rid, 'name': names[0]}, source_regions=[rid], reason='advance an existing task without requiring a complete inventory')
+            selected = {'region': rid, 'name': names[0]}
+            if reviews_task(region, selected):
+                return choice('task_proposal', rid, reason='register evidence for the selected task')
+            return choice('action', rid, task=selected, source_regions=[rid], reason='advance an existing task without requiring a complete inventory')
         if progress['complete']:
             parent = working if working != rid and working in records else _task_routing.parent_region(records, state, rid)
             if parent in records and _task_deferral.runnable(records[parent], records):
@@ -235,10 +260,12 @@ class Scheduler:
         (_, known, state) = _record_load(self.run)
         if state.get('reason') == 'verify_prepared_dependency' and state.get('next_action_mode') == 'discover':
             raise step_repair.Paused('ready_next_round', '准备任务已完成；下一轮观察目标是否解锁')
-        deferred = _task_result_review.next_deferred(self.root, self.run, self.frame)
+        decision = select_work(known, state)
+        deferred = _task_result_review.next_deferred(
+            self.root, self.run, self.frame, task=decision.get('task'),
+            allow_other=decision['kind'] == 'idle')
         if deferred:
             return deferred
-        decision = select_work(known, state)
         self.decisions.append({**decision, 'snapshot': _record_load(self.run)[0].name})
         write_json(self.output / 'scheduling.json', self.decisions)
         return request_from_run(self.root, self.run, decision=decision, frame=self.frame)

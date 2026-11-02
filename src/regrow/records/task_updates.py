@@ -65,15 +65,43 @@ def resolve_suggestion(records, value, labels=None):
         raise ValueError('后续建议目标未登记或不唯一；可不填建议，保留具体定位问题')
     return {**deepcopy(value), 'region': refs[0], 'control': cids[0]}
 
+def registration_review_sources(task):
+    """An old unpublished attempt does not invalidate later accepted knowledge."""
+    if task.get('blocker', {}).get('condition') != 'result_registration_pending':
+        return []
+    failed = str(task.get('deferral', {}).get('failed_call', ''))
+    if not failed.isdigit():
+        return []
+    from regrow.records.tasks import target, source_attempts
+    from regrow.records.control_knowledge import evidence
+    record = target(task)
+    if record is None or not record.get('knowledge'):
+        return []
+    rejected_attempt = task.get('deferral', {}).get('attempt')
+    def accepted(source):
+        if not isinstance(source, dict):
+            return []
+        call = str(source.get('source_call', ''))
+        result = [call] if (call.isdigit() and int(call) > int(failed)
+                           and rejected_attempt not in source_attempts(source)) else []
+        return result + [value for row in source.get('sources', []) for value in accepted(row)]
+    return sorted(set(accepted(evidence(record))))
+
+
 def hard_block(task):
     blocker = task.get('blocker', {})
-    return bool(blocker.get('exception') or blocker.get('condition') not in (None, 'review_required') or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or (task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review'))
+    condition = blocker.get('condition')
+    pending_result = condition == 'result_registration_pending' and registration_review_sources(task)
+    return bool(blocker.get('exception') or (condition not in (None, 'review_required') and not pending_result) or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or (task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review'))
 
 def decide(task, row, basis, *, product_complete, records, labels=None, consumed_suggestion=False):
     """Publish an explicit assessment; facts and real execution blockers survive."""
     validate(row, task)
     decision = row['decision']
     blocked = hard_block(task)
+    review_sources = registration_review_sources(task)
+    if review_sources:
+        basis = {**basis, 'registration_gap_evidence': review_sources}
     if decision == 'answered' and blocked:
         raise ValueError('任务 ' + row['task'] + ' 仍有已记录的真实执行、身份或前提阻塞；保留已有事实并明确继续/暂挂')
     if decision == 'answered' and (not product_complete):
@@ -106,6 +134,8 @@ def decide(task, row, basis, *, product_complete, records, labels=None, consumed
         task['deferral'] = {**({'reason': row['reason']} if row.get('reason') else {}), 'retry_when': row['retry_when'], 'remaining_question': row['remaining_question'], **deepcopy(basis)}
     if decision == 'answered':
         task_audit(task)['completion_basis'] = {'rule': 'explicit_question_answer_registered', **deepcopy(basis)}
+    from regrow.records.task_assessments import resolved
+    resolved(task, basis.get('source_call'))
     return task['status']
 
 def store_increment(owner, task, name, row, records, state, basis, *, observed=False, labels=None):

@@ -1,6 +1,6 @@
 from regrow.records.snapshots import load as _record_load
 from regrow.records.object_store import region_work
-'Detect repeated settled traversal states without additional model calls.'
+'Record task-settlement diagnostics without deciding traversal scheduling.'
 from regrow.records.tasks import read as task_value
 from regrow.records.object_store import owned_actions
 from regrow.records.object_store import owned_tasks
@@ -65,8 +65,7 @@ def detect(rows):
 
 
 def finish(run, out):
-    """Yield after three unchanged rounds, preserving all unfinished tasks."""
-    from regrow.traversal import task_deferral
+    """Report unchanged done counts; the normal scheduler owns continuation."""
     from regrow.records.snapshots import read, write_json
     from regrow.traversal.traversal_scheduler import after_round
     result = read(Path(out) / 'result.json')
@@ -75,12 +74,8 @@ def finish(run, out):
     evidence = observe(run, str(out))
     if not evidence:
         return
-    selection = task_deferral.advance_unfinished(run)
-    status = 'ready_next_round' if selection else 'exploration_stalled'
-    result.update(status=status, settlement_exit={**evidence, 'next': selection},
-                  reason='同一工作区块连续3轮已完成任务数未变化，已让出区块。' if selection
-                  else '同一工作区块连续3轮已完成任务数未变化，当前未选出可切换区块；保留未完成任务并暂停。')
+    result['settlement_diagnostic'] = {
+        **evidence,
+        'reason': '同一工作区块连续多轮已完成任务数未变化；仅记录结算情况，不据此判断无进展或改变调度。',
+    }
     write_json(Path(out) / 'result.json', result)
-    budget = read(Path(out) / 'budget.json')
-    budget['status'] = status
-    write_json(Path(out) / 'budget.json', budget)

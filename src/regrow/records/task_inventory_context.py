@@ -9,18 +9,6 @@ from regrow.records.object_store import owned_controls
 from regrow.records.object_store import find_control
 from copy import deepcopy
 
-def pending_discovery(region):
-    """Inventory needs each unresolved identity question, not old crop geometry."""
-    rows = []
-    for gap in region_work(region).get('registration_gaps', {}).get('discovery', {}).get('pending', []):
-        row = {k: deepcopy(gap[k]) for k in ('kind', 'item', 'name', 'owner') if gap.get(k)}
-        proposal = gap.get('proposal') or {}
-        details = {k: proposal[k] for k in ('description', 'identity_evidence') if proposal.get(k)}
-        if details:
-            row['待确认内容'] = details
-        rows.append(row)
-    return rows
-
 def knowledge(value):
     """Keep applicability and evidence kind, not repeated execution provenance."""
     result = deepcopy(value)
@@ -142,26 +130,110 @@ def parameter_text(control):
         prose(fact[k]) for k in ('description', 'domain', 'conditions') if fact.get(k))
         for fact in parameters(control).values())
 
+def destination_knowledge(records, region, edges):
+    """Read current facts of direct destinations once, without changing owners.
+
+    Read the authoritative Region and control facts, without synthesizing a
+    second summary or claiming the destination is currently visible.
+    """
+    from regrow.records.control_knowledge import card
+    from regrow.records.region_knowledge import text as region_knowledge
+    from regrow.records.task_knowledge import completed
+    from regrow.records.task_settlement import completion_condition, completion_target
+    targets = {}
+    for edge in edges:
+        rid = edge['region']
+        if rid == region['id'] or edge.get('status') not in ('registered_entry', 'observed_entry'):
+            continue
+        target = targets.setdefault(rid, {'controls': set(), 'whole_region': False, 'entries': []})
+        cid = edge.get('target_control')
+        if cid:
+            target['controls'].add(cid)
+        else:
+            target['whole_region'] = True
+        entry = {'control': edge['control'], '入口': owned_controls(region)[edge['control']]['name'],
+                 'conditions': deepcopy(edge.get('conditions', [])), '关联类型': edge['status']}
+        if cid:
+            entry['目标控件'] = cid
+        action = getattr(records, 'actions', owned_actions(region)).get(edge.get('attempt'), {})
+        if action.get('association', {}).get('status') == 'unconfirmed':
+            entry['关联限制'] = '原动作与入口控件的关联未确认；以下目标知识不能补证该关联。'
+        if entry not in target['entries']:
+            target['entries'].append(entry)
+    result = []
+    for rid, selection in targets.items():
+        target = records[rid]
+        selected = set(owned_controls(target)) if selection['whole_region'] else selection['controls']
+        controls = []
+        for cid, control in owned_controls(target).items():
+            if cid not in selected:
+                continue
+            # These are read-only foreign facts, not knowledge-revision slots.
+            facts = [{k: v for k, v in row.items() if k != 'index'} for row in card(control)]
+            legacy_parameters = parameter_text({'constraints': control.get('constraints', {})})
+            if facts or legacy_parameters:
+                controls.append({'control': cid, '名称': control['name'],
+                                 **({'当前知识': facts} if facts else {}),
+                                 **({'参数说明': legacy_parameters} if legacy_parameters else {})})
+        answered = []
+        for row in task_catalog(target, {}, records):
+            task = owned_tasks(target)[row['task'].split('/', 1)[1]]
+            binding = completion_target(target, task)
+            if (not completed(task) or binding['region'] != rid
+                    or (binding.get('control') not in selected
+                        and not (selection['whole_region'] and binding.get('control') is None))):
+                continue
+            item = {k: deepcopy(row[k]) for k in ('task', 'control', 'control_name', 'task_type', 'status', 'conditions') if k in row}
+            item['completion_condition'] = completion_condition(task)
+            if task.get('prerequisite'):
+                from regrow.records.tasks import describe
+                item['前置条件'] = describe(task['prerequisite'])
+            answered.append(item)
+        result.append({'region': rid, '区块': target['name'], '已有入口': selection['entries'],
+                       '区块当前知识': region_knowledge(target) or target.get('description', ''),
+                       '直属控件当前知识': controls, '已回答问题': answered})
+    return result
+
+def control_directory(cards, groups):
+    """Group existing material for reading; do not infer shared facts or tasks."""
+    grouped = {cid for members in groups.values() for cid in members if cid in cards}
+    lines = []
+    standalone = [cid for cid in cards if cid not in grouped]
+    if standalone:
+        lines.append('### 未分组控件')
+        for cid in standalone:
+            lines.append('**' + cid + '**：' + cards[cid])
+    if grouped:
+        lines.append('### 同类操作组')
+        for group, members in groups.items():
+            members = [cid for cid in members if cid in cards]
+            if not members:
+                continue
+            lines.append('**' + group + '**')
+            lines.append('成员：' + '、'.join(members))
+            material = {}
+            for cid in members:
+                material.setdefault(cards[cid], []).append(cid)
+            for body, sources in material.items():
+                lines.append('已有材料（' + '、'.join(sources) + '）：' + body)
+    return '\n\n'.join(lines)
+
+
 def project(records, state, rid):
     """Select prose for inventory; expose machine references only for output binding."""
     from regrow.records.control_history_context import known_information
     from regrow.records.control_knowledge import card, text as knowledge_text
     from regrow.records.function_scope import entries
-    from regrow.records.region_knowledge import text as region_knowledge
     region = records[rid]
     reasons = detail_reasons(region, state)
-    lines = []
-    for group, members in region.get('list_groups', {}).items():
-        names = [owned_controls(region)[cid]['name'] for cid in members if cid in owned_controls(region)]
-        if names:
-            lines.append('**已登记同类控件「' + group + '」**：' + '、'.join(names) + '。\n')
+    cards = {}
     edges = entries(region, records)
     for cid, control in owned_controls(region).items():
         known = '；'.join(
             '知识条目 ' + str(row['index']) + '：' + knowledge_text([row]) for row in card(control))
         sentences = [known] if known else ['描述：' + control.get('description', ''), '尚未登记用途知识']
         decision = control.get('needs_exploration')
-        if decision is not None:
+        if decision is not None and not any(t.get('control') == cid for t in owned_tasks(region).values()):
             sentences.append('此前判断：' + ('仍有使用疑问' if decision else '控件自身用法已清楚'))
         if parameter_text(control):
             sentences.append(parameter_text(control))
@@ -183,47 +255,29 @@ def project(records, state, rid):
             if item.get('适用条件'):
                 detail += '；适用条件：' + '；'.join(item['适用条件'])
             sentences.append(detail)
-        for item in progress.get('探索状态', []):
-            sentences.append(item['探索类型'] + item['状态'])
-            if item.get('未解问题'):
-                sentences.append('尚未解决：' + item['未解问题'])
-            if item.get('适用条件'):
-                sentences.append('适用条件：' + '；'.join(item['适用条件']))
-            if item.get('准备目标'):
-                sentences.append('准备目标：' + item['准备目标'])
-            if item.get('前置条件'):
-                prerequisite = item['前置条件']
-                sentences.append('前置条件：' + str(prerequisite.get('condition', '')))
-            if item.get('阻碍'):
-                blocker = item['阻碍']
-                sentences.append('阻碍：' + str(blocker.get('reason') or blocker.get('condition') or blocker.get('exception')))
-            if item.get('共享结论来源'):
-                source = item['共享结论来源']
-                if isinstance(source, dict):
-                    owner = records.get(source.get('region'), {})
-                    task = owned_tasks(owner).get(source.get('task'), {})
-                    target = find_control(owner, task.get('control')) or {}
-                    sentences.append('共享结论来自' + owner.get('name', '其他区块') + '的' + target.get('name', '同类控件'))
-                else:
-                    sentences.append('采用已登记的同类控件共享结论')
-        lines.append('**' + control['name'] + '**（' + cid + '）：' + '。'.join(x.rstrip('。') for x in sentences if x) + '。')
+        # Current task states live in the focus tree; full open-question details
+        # are selected once by task_proposer, not repeated under each control.
+        body = '。'.join(x.rstrip('。') for x in sentences if x) + '。'
         destinations = []
         for edge in edges:
             if edge.get('control') != cid or edge.get('status') not in ('registered_entry', 'observed_entry'):
                 continue
             target = records[edge['region']]
-            detail = (edge['target_name'] + '：' + edge.get('meaning', '')) if edge.get('target_control') else target['name'] + '：' + (region_knowledge(target) or target.get('description', ''))
+            detail = target['name'] + (' / ' + edge['target_name'] if edge.get('target_control') else '')
+            if edge.get('meaning'):
+                detail += '：' + edge['meaning']
             if edge.get('conditions'):
                 detail += '（' + '；'.join(edge['conditions']) + '）'
             destinations.append(detail)
         if destinations:
-            lines.append('**已知目标内容**：' + '；'.join(x.rstrip('。') for x in dict.fromkeys(destinations)) + '。')
-        lines.append('')
+            body += '\n**已知直接目标**：' + '；'.join(x.rstrip('。') for x in dict.fromkeys(destinations)) + '。相关知识见「已登记直接目标知识」，当前区块内的目标见本区块控件资料。'
+        cards[cid] = body
     external = []
     for rr, cid in external_sources(records, state, rid, reasons):
         source = records[rr]
         if any(t.get('control') == cid for t in owned_tasks(source).values()):
             external.append({'region':rr, 'control':cid, '区块':source['name'], '名称':owned_controls(source)[cid]['name'], '用途与依据':known_information(owned_controls(source)[cid]), '参数说明':parameter_text(owned_controls(source)[cid]), '任务条件':['；'.join(t.get('conditions', [])) for t in owned_tasks(source).values() if t.get('control') == cid and t.get('conditions')]})
     from regrow.records.environment_context import render
-    return {'控件': '\n'.join(lines).strip(), '环境位置':render(records,state,rid,kind='task_proposal'),
+    return {'控件': control_directory(cards, region.get('list_groups', {})), '环境位置':render(records,state,rid,kind='task_proposal'),
+            '已登记直接目标知识': destination_knowledge(records, region, edges),
             '本次观察的未确认事项':'；'.join((state.get('observation') or {}).get('uncertainties', [])), '已有任务': task_catalog(region, state, records), '可引用同类实例': external}

@@ -2,11 +2,12 @@
 
 <!-- BEGIN_PROMPT_BLOCK id="control.definition" requires="" -->
 控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。
+不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。
 正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。
 <!-- END_PROMPT_BLOCK id="control.definition" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.references" requires="" -->
-引用材料中的已有对象时，复制给出的 ID：控件如 c0001，区块如 r0001；名称用于辨认。
+引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。
 <!-- END_PROMPT_BLOCK id="control.references" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.association" requires="" -->
@@ -15,6 +16,7 @@ region_index：填写该控件所属区块在本次 regions 数组中的位置�
 
 <!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.definition" -->
 结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。
+名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。
 正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。
 <!-- END_PROMPT_BLOCK id="control.identity" -->
 
@@ -38,7 +40,7 @@ knowledge[].constraints：用参数名作为键，description 说明后续任务
 
 <!-- BEGIN_PROMPT_BLOCK id="control.bbox" requires="control.definition,region.common" -->
 # 补充对象外观：objects
-每个指定对象返回一次，path 直接复制待补对象的路径；reason 说明无法可靠定位时缺少的依据。
+每个指定对象返回一次，path 直接复制待补对象的名称；reason 说明无法可靠定位时缺少的依据。
 <!-- END_PROMPT_BLOCK id="control.bbox" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.add_image" requires="" -->
@@ -61,17 +63,18 @@ knowledge 的每项 description 说明这个控件能做什么、怎样使用；
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration" requires="control.definition,control.identity,control.references" -->
 # 登记控件：controls
-报告本步所需的新对象或变化。同类数据条目选择一个有代表性的对象，登记其操作方式所需的独立控件；共同方式已有代表时复用已有认识，只为新的操作方式、功能内容或必要差异补充对象。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。
-正例：多个闹钟只登记一个代表条目及其独立开关；出现提供不同操作的条目时，再补相应代表。
+报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。
+大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。
+正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。
 <!-- END_PROMPT_BLOCK id="control.registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration_ref" requires="" -->
-ref：已确认是材料中的旧控件时填写其 ID；确认是新对象时省略。
+ref：已确认是材料中的旧控件时填写其名称；确认是新对象时省略。
 <!-- END_PROMPT_BLOCK id="control.registration_ref" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration_name" requires="" -->
 name 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。
-正例：代表项的 name 写“闹钟条目”，description 可写“当前选作代表的 07:00 条目”。
+正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。
 <!-- END_PROMPT_BLOCK id="control.registration_name" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.exploration_flags" requires="" -->
@@ -80,8 +83,9 @@ may_open_content 表示这个控件能否打开或展开值得了解的应用内
 <!-- END_PROMPT_BLOCK id="control.exploration_flags" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.list_group" requires="" -->
-list_group：同一区块中可复用同一种操作方式的重复控件组，选出的代表填写该组名。不同操作方式分别保留代表；已经登记的具体对象仍保留各自身份。
-正例：代表性的闹钟条目填“闹钟条目”，它的启用开关填“闹钟启用开关”。
+list_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。
+不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。
+正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。
 <!-- END_PROMPT_BLOCK id="control.list_group" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.box_coordinates" requires="" -->

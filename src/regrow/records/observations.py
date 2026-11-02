@@ -22,6 +22,8 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
     from regrow.recognition import region_candidate_names as _region_candidate_names
     from regrow.records import control_records as _control_records
     _registration_diagnostics.check('update', {'region_names': region_names or {}}, reply, records, frame=frame)
+    from regrow.recognition.update_visibility import selected_indices
+    current = selected_indices(reply, region_names)
     next_r = max([int(k[1:]) for k in records] + [0]) + 1
     next_c = max([int(k[1:]) for r in records.values() for k in owned_controls(r)] + [0]) + 1
     region_refs = []
@@ -50,7 +52,7 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
         if p.get('task_review_reason', '').strip() and region_work(r).get('task_inventory'):
             region_work(r)['task_inventory']['review'] = {'reason': p['task_review_reason'], 'source_call': call_ref}
         from regrow.records.object_knowledge import region_only
-        if region_only(p):
+        if region_only(p) or i not in current:
             region_refs.append(ref)
             continue
         observation_history(r).append(_region_evidence.region_observation(p, {'source_call': call_ref, 'source_field': f'/regions/{i}', 'observation': observation}))
@@ -89,14 +91,23 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
                 c[key] = deepcopy(p[key])
     return region_refs
 
+def observe_current_regions(records, region_refs, call, observation):
+    """Record ref-only sightings without copying historical crops or state."""
+    for index, rid in enumerate(region_refs):
+        region = records[rid]
+        if not frame_observation(region, kind='regions', call=call, observation=observation):
+            observation_history(region).append(_region_evidence.region_observation({}, {
+                'source_call': call, 'source_field': f'/current_regions/{index}',
+                'observation': observation}))
+
 def frame_observation(record, *, kind=None, call=None, observation=None, region=None):
     """Select a model-reported object, not a knowledge/entry event sharing its time."""
     for row in reversed(observation_history(record or {})):
         evidence = row.get('evidence', {})
         field = evidence.get('source_field', '').split('/')
-        if row.get('visual_only') or len(field) < 2 or field[-2] not in ('regions', 'controls') or not field[-1].isdigit():
+        if row.get('visual_only') or len(field) < 2 or field[-2] not in ('regions', 'current_regions', 'controls') or not field[-1].isdigit():
             continue
-        if kind and field[-2] != kind:
+        if kind and ('regions' if field[-2] == 'current_regions' else field[-2]) != kind:
             continue
         if call is not None and evidence.get('source_call') != call:
             continue
@@ -106,6 +117,23 @@ def frame_observation(record, *, kind=None, call=None, observation=None, region=
             continue
         return row
     return {}
+
+def restore_source_indices(records, region_refs, indexes, call, observation):
+    """Map retained observations to raw reply rows, once per shared observation."""
+    seen = set()
+    for rid in region_refs:
+        objects = [('regions', records[rid]), *[('controls', c) for c in owned_controls(records[rid]).values()]]
+        for kind, obj in objects:
+            observed = frame_observation(obj, kind=kind, call=call, observation=observation, region=rid)
+            if not observed or id(observed) in seen:
+                continue
+            field = observed['evidence']['source_field'].split('/')[-2]
+            if field not in indexes:
+                continue
+            seen.add(id(observed))
+            position = int(observed['evidence']['source_field'].split('/')[-1])
+            observed['evidence']['source_field'] = '/' + field + '/' + str(indexes[field][position])
+
 
 def save_region_images(records, region_refs, reply, call_ref, run, image_ref, snapshot, temp, *, image_tag=None, observation=None, update_images=False, text_control=None):
 
@@ -141,14 +169,17 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
         v = frame_observation(r, kind='regions', call=call_ref, observation=observation)
         if not v:
             from regrow.records.object_knowledge import region_only
-            if any(region_only(row) and row.get('ref') == ref for row in reply.get('regions', [])):
-                continue
-            raise ValueError('区块缺少本轮对象观察来源：' + ref)
-        proposal = reply['regions'][int(v['evidence']['source_field'].split('/')[-1])]
-        v['source_image'] = os.path.relpath(run / image_ref, snapshot)
-        visual = crop(r, 'region', templates.admitted_box(proposal), identity_field='image', observed=v, region=True)
-        if visual:
-            v.update(image=visual['image'], source_image=visual['source_image'])
+            if 'current_regions' not in reply:
+                if any(region_only(row) and row.get('ref') == ref for row in reply.get('regions', [])):
+                    continue
+                raise ValueError('区块缺少本轮对象观察来源：' + ref)
+        else:
+            field, index = v['evidence']['source_field'].split('/')[-2:]
+            proposal = reply[field][int(index)]
+            v['source_image'] = os.path.relpath(run / image_ref, snapshot)
+            visual = crop(r, 'region', templates.admitted_box(proposal), identity_field='image', observed=v, region=True)
+            if visual:
+                v.update(image=visual['image'], source_image=visual['source_image'])
         for (cid, c) in owned_controls(r).items():
             v = frame_observation(c, kind='controls', call=call_ref, observation=observation, region=ref)
             if v:

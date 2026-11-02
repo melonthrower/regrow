@@ -41,10 +41,12 @@ def await_discovery(run, frame, evidence, handoff=''):
         if batch and batch.get('pending'):
             state.setdefault('discovery_completion_history', []).append(batch)
         state.pop('handoff_summary', None)
+        if state.get('action_target_registration', {}).get('status') == 'pending':
+            state['action_target_registration']['status'] = 'superseded'
         state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=frame, discovery_trigger=evidence, reason='recovery_finished_discovery_required', recovery_handoff=handoff)
     return _record_publish(run, 'await-discovery-' + evidence, mutate)
 
-def commit(root, run, call_ref):
+def commit(root, run, call_ref, *, ownership_episode=None):
     from regrow.recognition import discovery_completion as _discovery_completion
     from regrow.recognition import locator as _locator
     from regrow.traversal import traversal_scheduler as _traversal_scheduler
@@ -63,15 +65,39 @@ def commit(root, run, call_ref):
         completion.extend_schema(contract)
     if request.get('dependency_candidates'):
         contract['properties']['dependency_updates'] = request['response_schema']['properties']['dependency_updates']
-    jsonschema.validate(reply, contract)
     (prior, known, current) = _record_load(run)
     if _record_read(prior / 'source.json').get('stage') == 'discovery-' + call_ref:
+        if current.get('action_target_registration', {}).get('status') == 'pending':
+            from regrow.traversal.target_registration import advance
+            return advance(run, call_ref, request)
+        return _record_read(run / 'knowledge_current.json')
+    if current.get('action_target_registration', {}).get('last_discovery_call') == call_ref:
         return _record_read(run / 'knowledge_current.json')
     batch = completion.scoped_batch(known, current.get('discovery_completion') or {})
     if call_ref in batch.get('calls', []):
         return _record_read(run / 'knowledge_current.json')
     if current.get('next_action_mode') != 'discover':
         raise ValueError('not awaiting discovery')
+    from regrow.traversal.object_registration import isolate_schema, remap_gaps
+    request, reply = isolate_schema({**request, 'response_schema': contract}, reply)
+    schema_gaps = deepcopy(request.get('registration_gaps', []))
+    schema_indices = request.get('registration_source_indices', {})
+    if schema_gaps and not reply['regions'] and not batch:
+        raise ValueError('本批没有可独立登记的区块，保留原答继续核对')
+    recovery_target = None
+    review = None
+    if ownership_episode:
+        from regrow.traversal.observation import retained_action_target
+        pointer = _record_read(run / 'ownership_review.json')
+        review = _record_read(run / ownership_episode)
+        job = _record_read(run / review['source_episode'])
+        if (pointer.get('episode') != ownership_episode or job.get('call') != call_ref
+                or job.get('stage') != 'discovery' or job.get('attempt')
+                or review.get('status') not in ('blocked', 'pending') or review.get('actions')):
+            raise ValueError('原归属复查与未执行的发现步骤不对应')
+        recovery_target = retained_action_target(run, prior, known, current)
+        if recovery_target is None:
+            raise ValueError('未找到对应原图和未执行目标')
     frame = current['pending_frame']
     if (run / request['screenshots'][0]).resolve() != (run / frame).resolve():
         raise ValueError('discovery frame changed')
@@ -82,6 +108,9 @@ def commit(root, run, call_ref):
     if not ctx.get('completion'):
         batch = {}
     exception = reply['foreground'].get('exception', 'none')
+    if ownership_episode and (exception != 'none' or ctx.get('completion')
+            or ctx['mode'] == 'local' and reply.get('focus_presence') != 'interactive'):
+        raise ValueError('当前复查不能独立登记操作目标')
     if exception != 'none':
         if reply['regions'] or reply['controls']:
             raise ValueError('exception observation must not register Regions')
@@ -100,6 +129,21 @@ def commit(root, run, call_ref):
             state.update(discovery_mode='relocate', reason='local_position_unconfirmed', interactive_regions=[], observation=None)
         return _record_publish(run, 'expand-discovery-' + call_ref, expand)
     (request, reply, audit) = _region_identity.prepare(run, request, reply)
+    original_region_sources = schema_indices.get('regions', list(range(len(reply['regions']))))
+    original_control_sources = schema_indices.get('controls', list(range(len(reply['controls']))))
+    original_control_indices = list(range(len(reply['controls'])))
+    deferred_controls = {}
+    target_index = None
+    if ownership_episode:
+        from regrow.recognition import ownership_review
+        report = ownership_review.conflict(request, reply, known, all_rows=True)
+        split = ownership_review.independent_target(run, request, reply, recovery_target, report) if report else None
+        if split is None:
+            raise ValueError('当前目标或其所属区块仍需归属复查')
+        reply, original_control_indices, target_index = split
+        for error in report['errors']:
+            actual = error['actual']
+            deferred_controls.setdefault(actual['region_id'], []).append(actual['control_id'])
     _control_identity_review.check_request(run, request, reply)
     ctx = request['discovery_context']
     if audit:
@@ -108,6 +152,20 @@ def commit(root, run, call_ref):
     if 'control_refs' in request:
         registration_request.pop('response_schema', None)  # Raw reply was validated before resolving indexes.
     (reply, missing, region_indices, control_indices) = completion.prepare_registration(reply, registration_request, known, batch, _registration_diagnostics)
+    control_indices = [original_control_indices[i] for i in control_indices]
+    if ownership_episode and target_index not in control_indices:
+        raise ValueError('原目标未通过正常登记检查')
+    if ownership_episode or schema_indices:
+        previous = {'regions': original_region_sources,
+                    'controls': [original_control_sources[i] for i in original_control_indices]}
+        # Completion replies have their own retained gaps and never enter the
+        # schema split above. Native ownership recovery likewise uses one reply.
+        remap_gaps(missing, previous)
+        region_indices = [original_region_sources[i] for i in region_indices]
+        control_indices = [original_control_sources[i] for i in control_indices]
+        if target_index is not None:
+            target_index = original_control_sources[target_index]
+    missing = schema_gaps + missing
     locator.validate_identity(reply)
     for r in reply['regions']:
         if r['identity'] == 'same':
@@ -135,6 +193,14 @@ def commit(root, run, call_ref):
         from regrow.recognition import visual_region_locator as _visual_region_locator
         from regrow.traversal import task_deferral as _task_deferral
         from regrow.traversal import task_prerequisites as _task_prerequisites
+        for rid, controls in deferred_controls.items():
+            work = region_work(records[rid])
+            gap = {'reason': '其他控件的归属争议保留在原复查记录中', 'episode': ownership_episode,
+                   'controls': list(controls), 'source_call': call_ref}
+            old = work.setdefault('registration_gaps', {}).get('ownership_review')
+            if old and old != gap:
+                work.setdefault('registration_gap_history', []).append(deepcopy(old))
+            work['registration_gaps']['ownership_review'] = gap
         if stale_batch:
             state.setdefault('discovery_completion_history', []).append(stale_batch)
             state.pop('discovery_completion', None)
@@ -148,15 +214,11 @@ def commit(root, run, call_ref):
         if resolved:
             state['foreground_resolution'] = resolved
         _owner_save_region_images(records, refs, reply, call_ref, run, frame, snapshot, temp)
+        from regrow.records.observations import restore_source_indices
+        restore_source_indices(records, refs, {'regions': region_indices, 'controls': control_indices}, call_ref, obs)
         new_controls = []
         for rid in refs:
             r = records[rid]
-            for c in owned_controls(r).values():
-                v = frame_observation(c, kind='controls', call=call_ref, region=rid)
-                if v:
-                    i = int(v['evidence']['source_field'].split('/')[-1])
-                    v['evidence']['source_field'] = f'/controls/{control_indices[i]}'
-            frame_observation(r, kind='regions', call=call_ref)['evidence']['source_field'] = f'/regions/{region_indices[all_refs.index(rid)]}'
             if rid in retained:
                 old = retained[rid]
                 for (k, v) in old.items():
@@ -190,8 +252,14 @@ def commit(root, run, call_ref):
             state.pop('discovery_completion', None)
         if missing or batch:
             state['discovery_completion'] = {'frame': str((run / frame).resolve()), 'sha256': completion.fingerprint(run / frame), 'observation': obs, 'regions': refs, 'controls': all_controls, 'pending': missing, 'calls': batch.get('calls', []) + [call_ref], 'request': batch.get('request') or request}
+        if missing or batch or ownership_episode:
             _record_write_json(temp / 'discovery_receipt.json', {'source_call': call_ref, 'registered_regions': refs, 'registered_controls': all_controls, 'pending': missing, 'region_source_indices': region_indices, 'control_source_indices': control_indices})
-        _task_deferral.resume_localized(records, refs, call_ref, foreground=reply['foreground'])
+            if ownership_episode:
+                receipt = _record_read(temp / 'discovery_receipt.json')
+                receipt['independent_target'] = {'episode': ownership_episode,
+                    'action_call': recovery_target['call'], 'control_index': target_index}
+                _record_write_json(temp / 'discovery_receipt.json', receipt)
+        _task_deferral.resume_localized(records, refs, call_ref, foreground=reply['foreground'], run=run, frame=run / frame, snapshot=temp)
         interactive = list(refs)
         partition = ctx.get('partition_context') or {}
         if ctx['mode'] == 'local' and partition.get('sha256') and (partition['sha256'] == completion.fingerprint(run / frame)):
@@ -225,4 +293,8 @@ def commit(root, run, call_ref):
         state.pop('handoff_summary', None)
         if state['next_action_mode'] != 'discover':
             state.pop('pending_frame', None)
-    return _record_publish(run, 'discovery-' + call_ref, mutate)
+    pointer = _record_publish(run, 'discovery-' + call_ref, mutate)
+    if current.get('action_target_registration', {}).get('status') == 'pending':
+        from regrow.traversal.target_registration import advance
+        return advance(run, call_ref, request)
+    return pointer

@@ -47,7 +47,9 @@ def catalog(region):
             for cid,c in owned_controls(region).items() for key,fact in parameter_facts(c).items()}
 
 
-def support_rows(region, values):
+def support_rows(region, values, source=None):
+    from regrow.records.object_store import observation_history
+    call = (source or {}).get('source_call')
     result = []
     for value in values:
         if value == region['id']:
@@ -57,6 +59,15 @@ def support_rows(region, values):
             continue
         controls = owned_controls(region)
         cid = value if value in controls else None
+        if cid is None and call:
+            # New objects receive IDs only during this publication. Resolve
+            # their declared names against this call's accepted objects only.
+            matches = [key for key, control in controls.items()
+                       if control.get('name') == value and any(
+                           event.get('evidence', {}).get('source_call') == call
+                           for event in observation_history(control))]
+            if len(matches) == 1:
+                cid = matches[0]
         if cid is None:
             available = '、'.join(c['name'] + '（' + k + '）' for k,c in controls.items())
             raise ValueError('区块「' + region['name'] + '」的功能支持引用无法对应本区块对象：' + str(value) + '。请使用控件树中的控件ID或本区块ID，不拼接区块与控件引用。本区块控件：' + available + '。这不是缺少用途知识的诊断。')
@@ -126,6 +137,27 @@ def description(function):
     return '；'.join(part for part in parts if part)
 
 
+def parameter_references(region, values, supports, source):
+    """Bind same-call named parameters after their controls have received IDs."""
+    from regrow.records.object_store import observation_history
+    facts = catalog(region)
+    controls = {row.get('control') for row in supports}
+    call = (source or {}).get('source_call')
+    result = []
+    for value in values:
+        ref = value
+        if ref not in facts and call:
+            matches = [key for key, fact in facts.items()
+                       if fact['control'] in controls
+                       and value == owned_controls(region)[fact['control']]['name'] + '/' + key.split('/', 1)[1]
+                       and any(event.get('evidence', {}).get('source_call') == call
+                               for event in observation_history(owned_controls(region)[fact['control']]))]
+            if len(matches) == 1:
+                ref = matches[0]
+        result.append(ref)
+    return result
+
+
 def _store(region, name, fields, source, previous=None):
     row = deepcopy(previous or {})
     if previous:
@@ -138,11 +170,11 @@ def _store(region, name, fields, source, previous=None):
     if not name or not row.get('description','').strip():
         raise ValueError('功能名称和用途说明不能为空')
     if 'supports' in fields:
-        row['support_controls'] = support_rows(region,fields['supports'])
+        row['support_controls'] = support_rows(region,fields['supports'],source)
     elif not row.get('support_controls'):
         raise ValueError('首次更新旧功能时请明确它的对象知识支持')
     facts = catalog(region)
-    constraints = fields.get('constraints', row.get('constraints', {}))
+    constraints = parameter_references(region, fields.get('constraints', row.get('constraints', {})), row['support_controls'], source)
     controls = {s.get('control') for s in row['support_controls']}
     for ref in constraints:
         if ref not in facts or facts[ref]['control'] not in controls:

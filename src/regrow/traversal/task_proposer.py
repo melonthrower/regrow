@@ -11,7 +11,7 @@ def proposal_schema():
     fields = {'control': {'type': 'string'}, 'task_type': {'type': 'string', 'enum': ['function', 'parameter', 'region_content']}}
     fields['completion_condition'] = {
         'type': 'string', 'minLength': 1, 'pattern': r'\S',
-        'description': '本任务得到什么直接观察或已有证据即可结束；一句具体条件，不预猜未知界面，不把目标内部其他问题并入。'}
+        'description': '结合本对象、已有知识与后续操作或导航需要，自行写明具体未知弄清到什么程度即可结算；允许观察推翻用途推测，不把出现预期界面或业务成功预填为必须结果，不预编操作步骤。'}
     fields['function_refs'] = {'type':'array','items':string,'uniqueItems':True}
     definition = object_schema(fields)
     definition['properties']['reason'] = {'type': 'string', 'minLength': 1,
@@ -57,6 +57,11 @@ def plan_request(root, records, state, rid, *, work=None):
     schema['properties'].update(knowledge_fields(records, [rid]))
     sharing = schema['properties']['shared_instances']['items']['properties']
     material = _task_inventory_context.project(records, state, rid)
+    if material.get('本次观察的未确认事项'):
+        material['本次观察的未确认事项'] = {
+            '来源与用途': '以下是观察时留下、尚未判断是否值得调查的候选线索，不是用户要求或已有任务。由你结合当前对象、已有知识及后续使用需要决定是否提出任务；不因原文写了尚未验证，就把它纳入结算条件。',
+            '观察原文': material['本次观察的未确认事项'],
+        }
     sources = [(rid, cid) for cid in owned_controls(region)] + [(row['region'], row['control']) for row in material['可引用同类实例']]
     if sources:
         sharing['source_region'].update(enum=sorted({rr for rr, cid in sources}), description='来源区块ID。')
@@ -78,9 +83,15 @@ def plan_request(root, records, state, rid, *, work=None):
         item = {k: v for k, v in row.items() if k not in ('control', 'region', 'name')}
         task = owned_tasks(region)[row['task'].split('/', 1)[1]]
         cid = target_control(task)
-        if cid and cid not in provided:
+        if cid and cid not in provided and cid not in owned_controls(region):
             item['当前控件知识'] = card(target(task) or {})
             provided.add(cid)
+        latest = item.get('最新判断', {})
+        if latest:
+            item['此前判断（须对照原完成条件复核）'] = item.pop('最新判断')
+        deferred = item.get('deferral', {})
+        if deferred and all(latest.get(k) == v for k, v in deferred.items()):
+            item.pop('deferral')
         material['本轮可判断旧任务'].append(item)
     material['其他任务背景'] = [row for row in catalog if row['task'] not in refs and not row.get('control')]
     schema['properties']['operations']['items']['properties']['control']['enum'] = controls
@@ -93,8 +104,6 @@ def plan_request(root, records, state, rid, *, work=None):
     if region.get('local_knowledge'):
         dynamic['已有区块知识'] = region['local_knowledge']
     inventory = region_work(region).get('task_inventory', {})
-    if region_work(region).get('registration_gaps', {}).get('discovery', {}).get('pending'):
-        dynamic['发现中尚未确认的事项'] = _task_inventory_context.pending_discovery(region)
     if inventory.get('inventory') in ('partial', 'uncertain'):
         dynamic['上次清点缺口'] = {key: inventory.get(key) for key in ('inventory', 'evidence')}
     parts = _prompt_rules.parts(root, 'task_proposal')

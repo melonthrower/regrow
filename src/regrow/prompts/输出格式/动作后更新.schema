@@ -173,35 +173,39 @@
       ],
       "additionalProperties": false
     },
-    "previous_regions": {
+    "current_regions": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "state": {
-            "type": "string",
-            "enum": [
-              "retained_interactive",
-              "changed_interactive",
-              "visible_background_blocked",
-              "not_visible",
-              "uncertain"
-            ]
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "description": "已确认的既有区块编号。"
+              }
+            },
+            "required": [
+              "ref"
+            ],
+            "additionalProperties": false
           },
-          "evidence": {
-            "type": "string",
-            "description": "仅在状态判断存在歧义时说明依据。"
-          },
-          "ref": {
-            "type": "string",
-            "description": "动作前已登记区块的稳定编号。"
+          {
+            "type": "object",
+            "properties": {
+              "region_index": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "本次regions中的位置，从0开始。"
+              }
+            },
+            "required": [
+              "region_index"
+            ],
+            "additionalProperties": false
           }
-        },
-        "required": [
-          "state",
-          "ref"
-        ],
-        "additionalProperties": false
+        ]
       }
     }
   },
@@ -211,7 +215,7 @@
     "controls",
     "uncertainties",
     "action_result",
-    "previous_regions"
+    "current_regions"
   ],
   "additionalProperties": false
 }

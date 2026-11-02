@@ -96,7 +96,7 @@ def entry_schema():
     association['required'] = list(fields)
     return {'anyOf': [{'type': 'null'}, association]}
 
-def register_entry(value, records, actual, attempt, labels=None, *, knowledge):
+def register_entry(value, records, actual, attempt, labels=None, *, knowledge, reported_destination=False):
     """Resolve observed entry semantics against this action's registered surface."""
     if value is None:
         return
@@ -110,8 +110,9 @@ def register_entry(value, records, actual, attempt, labels=None, *, knowledge):
     action = owned_actions(actual)[attempt]
     changed = {row['region'] for row in action.get('region_changes', []) if row['state'] == 'changed_interactive'}
     before = set(action.get('evidence', {}).get('before_regions', []))
-    if target not in action.get('interactive_regions', []) or (target in before and target not in changed) or action.get('result', {}).get('exception') != 'none':
-        raise ValueError('入口去向必须对应本次新出现或发生变化的前景区块，可为展示区；仅同时可见不足以证明跳转')
+    reached = (reported_destination or target in action['observed_destinations']) if 'observed_destinations' in action else (target not in before or target in changed)
+    if target not in action.get('interactive_regions', []) or not reached or action.get('result', {}).get('exception') != 'none':
+        raise ValueError('入口去向需要本次动作的到达依据，且目标属于动作后前景；仅同时可见不足以证明跳转')
     from regrow.records.control_knowledge import text
     knowledge = text(knowledge)
     if not knowledge or not value['evidence'].strip():
@@ -146,28 +147,37 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
         entry = register_entry({'region': records[target]['name'], 'evidence': action.get('result', {}).get('description', ''),
                                 'conditions': value.get('conditions', [])},
                                records, actual, attempt, {records[target]['name']: target},
-                               knowledge=action.get('result', {}).get('description', ''))
+                               knowledge=action.get('result', {}).get('description', ''), reported_destination=True)
         if 'control_index' in value:
             ci = value['control_index']
-            if not 0 <= ci < len(controls) or controls[ci].get('region_index') != index:
-                target_name = records[target]['name']
-                control_name = '未找到的控件'
-                if 0 <= ci < len(controls):
-                    row = controls[ci]
+            if type(ci) is not int or not 0 <= ci < len(controls):
+                raise ValueError('访问目标控件尚未唯一解析；请核对目标名称及所属区块。')
+            row = controls[ci]
+            from regrow.records.object_knowledge import control_only
+            if control_only(row):
+                cid = row['ref']
+                if cid not in owned_controls(records[target]):
+                    raise ValueError('访问目标控件不属于目标区块“' + records[target]['name'] + '”，请核对归属。')
+                # The jump itself is the reported result. This reuses an existing
+                # identity, not a fabricated controls observation or new image.
+                entry['control'] = cid
+            else:
+                if row.get('region_index') != index:
+                    target_name = records[target]['name']
                     registered = owned_controls(records[target]).get(row.get('ref'), {})
                     control_name = row.get('name') or registered.get('name') or row.get('ref', '未命名控件')
-                if 0 <= ci < len(controls) and 'region_index' not in controls[ci]:
-                    raise ValueError(f'访问关系指向“{target_name}”中的“{control_name}”，但所引用回复项没有声明本次观察归属。请核对control_index是否指向本次controls中实际出现的目标控件；若到达的是整个区块，只填写目标区块。')
-                raise ValueError(f'访问关系指向“{target_name}”中的“{control_name}”，但该控件不属于这个区块。若到达的是整个区块，只填写目标区块，不填写目标控件。')
-            matches = [cid for cid,c in owned_controls(records[target]).items()
-                       if any(o.get('evidence', {}).get('source_call') == call and
-                              o['evidence'].get('source_field') == f'/controls/{ci}'
-                              for o in observation_history(c))]
-            if len(matches) != 1:
-                raise ValueError('目标控件尚未唯一登记')
-            entry['control'] = matches[0]
+                    raise ValueError(f'访问关系指向“{target_name}”中的“{control_name}”，但该控件的本次观察不属于这个区块。请核对目标名称及归属。')
+                matches = [cid for cid,c in owned_controls(records[target]).items()
+                           if any(o.get('evidence', {}).get('source_call') == call and
+                                  o['evidence'].get('source_field') == f'/controls/{ci}'
+                                  for o in observation_history(c))]
+                if len(matches) != 1:
+                    raise ValueError('目标控件尚未唯一登记')
+                entry['control'] = matches[0]
         entry['source'] = {**action.get('evidence', {}), 'attempt': attempt, 'basis': 'explored'}
         store_object_entry(record, entry)
+        if 'observed_destinations' in action and target not in action['observed_destinations']:
+            action['observed_destinations'].append(target)
 
 def destination_schema():
     observed = {'type': 'object', 'properties': {

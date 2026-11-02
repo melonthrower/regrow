@@ -2,6 +2,7 @@ from regrow.records.snapshots import load as _record_load
 from regrow.paths import SOURCE_ROOT
 'One bounded Region task round: inventory if needed, action, update, then pause.'
 import argparse
+import subprocess
 from pathlib import Path
 from regrow.runtime.recover_external import RecoveryRun
 from regrow.records.snapshots import read
@@ -28,6 +29,25 @@ def action_capacity_status(account):
         return None
     return 'ready_next_round' if account['http_started'] else 'budget_limit'
 
+def capture_delivery_resume(transport, frame):
+    """Observe after uncertain delivery; never substitute its old before/after image."""
+    from PIL import Image
+    try:
+        if getattr(transport, 'platform', None) == 'desktop':
+            transport.screenshot(frame, max_attempts=2)
+        else:
+            # The Android adapter already bounds its adb invocation.
+            transport.screenshot(frame)
+    except (OSError, subprocess.SubprocessError) as error:
+        raise step_repair.Paused('execution_unconfirmed',
+                                '原动作投递结果仍未确认；本轮无法取得新截图（' + type(error).__name__ + '），保留记录并暂停。') from error
+    try:
+        with Image.open(frame) as image:
+            image.verify()
+    except (OSError, ValueError, SyntaxError) as error:
+        raise step_repair.Paused('execution_unconfirmed',
+                                '原动作投递结果仍未确认；本轮截图无效，保留记录并暂停。') from error
+
 def _run_step(root, run, out, *, review_update=None, limits=None):
     from regrow.recognition import ownership_review as _ownership_review
     from regrow.traversal import suspended_updates as _suspended_updates
@@ -51,9 +71,23 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
     transport.account = {'max_http': 6, 'max_gui_commands': 6, **(limits or {}), 'http_started': 0, 'gui_started': 0, 'status': 'running'}
     transport.save()
     write_json(out / 'knowledge_before.json', read(run / 'knowledge_current.json'))
-    selection_window = foreground_window(transport)
+    state = _record_load(run)[2]
+    delivery_resume = state.get('reason') == 'delivery_deferred' and state.get('next_action_mode') == 'discover'
+    try:
+        selection_window = foreground_window(transport)
+    except (OSError, subprocess.SubprocessError) as error:
+        if not delivery_resume:
+            raise
+        raise step_repair.Paused('execution_unconfirmed',
+                                '原动作投递结果仍未确认；当前控制通道检查失败（' + type(error).__name__ + '），保留记录并暂停。') from error
     write_json(out / 'selection_window.json', {'window': selection_window})
-    transport.screenshot(out / 'current.png')
+    if delivery_resume:
+        if isinstance(selection_window, dict) and selection_window.get('control_transport_available') is False:
+            raise step_repair.Paused('execution_unconfirmed',
+                                    '原动作投递结果仍未确认；当前控制通道不可用，保留记录并暂停。显示截图可用不代表控制已恢复。')
+        capture_delivery_resume(transport, out / 'current.png')
+    else:
+        transport.screenshot(out / 'current.png')
     calls = []
 
     def call(q):
@@ -74,14 +108,20 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         return request
     if (run / 'ownership_review.json').exists():
         result = _ownership_review.run(root, transport, out, call)
-        write_json(out / 'result.json', {**result, 'gui_actions': transport.account['gui_started']})
-        transport.account['status'] = result['status']
-        transport.save()
-        return
+        if not result.get('continue_current'):
+            write_json(out / 'result.json', {**result, 'gui_actions': transport.account['gui_started']})
+            transport.account['status'] = result['status']
+            transport.save()
+            return
     resumed = None
     _suspended_updates.restore_next(run, out / 'current.png')
-    step_repair.reopen_blocked(run, out / 'current.png')
     work = pending_work(run)
+    if work and work['kind'] == 'resume':
+        from regrow.traversal.task_deferral import yield_pending
+        if yield_pending(run, work['pending']):
+            work = None
+        elif step_repair.reopen_blocked(run, out / 'current.png'):
+            work = pending_work(run)
     if work and work['kind'] == 'update':
         result = updater.resume(work)
         write_json(out / 'result.json', {**result, 'calls': calls, 'gui_actions': 0})
@@ -103,8 +143,10 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
             transport.save()
             return
     state = _record_load(run)[2]
-    if state.get('reason') in ('historical_update_registered', 'result_registration_deferred') and state.get('next_action_mode') == 'discover':
-        discovery_step.await_discovery(run, str(out / 'current.png'), 'historical-update-' + out.name)
+    if state.get('reason') in ('historical_update_registered', 'result_registration_deferred', 'delivery_deferred') and state.get('next_action_mode') == 'discover':
+        trigger = 'delivery-resume-' if state.get('reason') == 'delivery_deferred' else 'historical-update-'
+        # Empty handoff preserves the original task's unknown-delivery evidence.
+        discovery_step.await_discovery(run, str(out / 'current.png'), trigger + out.name)
     navigation = visual_backtrack.resume_pending(transport, out / 'current.png')
     if navigation:
         write_json(out / 'result.json', {**navigation, 'calls': calls})
@@ -126,7 +168,6 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         locator.discover()
         if route_recovery():
             return
-    _shared_control_review.run_pending(repair)
     q = current()
     if q['stage'] == 'task_proposal':
         TaskProposer.run(repair, q)

@@ -284,10 +284,10 @@ def render(value, request, readable):
         head['本步问题'] = definition['messages']['discovery_local']
     groups = groups_by_role[role]
     if role == 'task_proposal' and '本轮可判断旧任务' in remaining:
-        groups = ()
+        groups = (group_tuple(definition['calls']['task_proposal']['variants']['new_tasks']),)
         if remaining['本轮可判断旧任务']:
             groups += (group_tuple(definition['calls']['task_proposal']['variants']['old_tasks']),)
-        groups += (group_tuple(definition['calls']['task_proposal']['variants']['new_tasks']), groups_by_role[role][1])
+        groups += (groups_by_role[role][1],)
         if work.get('kind') == 'task_proposal' and work.get('task'):
             head['本步问题'] = definition['messages']['task_focused']
     if role == 'observation' and request.get('discovery_context', {}).get('completion'):

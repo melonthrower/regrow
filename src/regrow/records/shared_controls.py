@@ -27,14 +27,16 @@ def refresh(records):
                     result = a.get('result', {})
                     if not result.get('description'):
                         continue
-                    targets = list(a.get('interactive_regions', []))
+                    targets = list(a.get('observed_destinations', a.get('interactive_regions', [])))
                     row = {'source': {'region': rid, 'control': cid, 'attempt': aid}, 'operation': a.get('operation'), 'description': result['description'], 'evidence': result.get('evidence', ''), 'exception': result.get('exception'), 'destination_regions': targets, 'conditions': list(a.get('conditions', []))}
                     results.append(row)
                     if result.get('exception') != 'none':
                         broken = True
                     if targets and a.get('operation') in ('tap', 'click') and (not result.get('returns_to_previous')):
                         before = set(a.get('evidence', {}).get('before_regions', []))
-                        direct = set(targets) - before - {rid}
+                        direct = set(targets) - {rid}
+                        if 'observed_destinations' not in a:
+                            direct -= before
                         if direct:
                             from regrow.records.control_context import conditions
                             (destinations, members) = contexts.setdefault(conditions(row), (set(), set()))

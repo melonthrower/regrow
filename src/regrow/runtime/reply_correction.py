@@ -61,7 +61,7 @@ def request(root, original, rejected, report, first_call):
 
 def call(transport, incoming):
     from regrow.runtime.model_transport import prepare_request
-    from regrow.records.registration_diagnostics import schema_errors
+    from regrow.records.registration_diagnostics import reply_errors
     pointer = transport.run / 'pending_format_reply.json'
     if pointer.exists():
         state = read(pointer)
@@ -100,17 +100,28 @@ def call(transport, incoming):
             reply = detail.get('reply_texts', [])
             report = {'errors': [{'code': 'parse', 'expected': '回复无法解析为唯一JSON对象：' + detail['reason']}], 'unchecked': []}
         else:
-            errors = []
-            for failure in jsonschema.Draft202012Validator(q['response_schema']).iter_errors(reply):
-                for row in schema_errors(failure):
-                    if row not in errors:
-                        errors.append(row)
+            from regrow.recognition.named_references import normalize_reply
+            from regrow.runtime.model_transport import expand_schema
+            if q.get('name_contract'):
+                reply = normalize_reply(expand_schema(q['response_schema']), reply)
+            errors = reply_errors(q, reply, defer_objects=True)
             if not errors:
-                pointer.unlink(missing_ok=True)
-                return ref, reply
+                from regrow.recognition.named_references import decode, internal_request
+                try:
+                    derived = decode(q, reply)
+                except ValueError as error:
+                    errors.append({'code':'object_reference', 'expected':str(error)})
+                else:
+                    pointer.unlink(missing_ok=True)
+                    if q.get('name_contract'):
+                        write_json(transport.run / 'calls' / ref / 'interpreted_request.json', internal_request(state['original']))
+                        write_json(transport.run / 'calls' / ref / 'interpreted_response.json', derived)
+                    return ref, derived
             report = {'errors': errors, 'unchecked': ['格式尚未通过，业务语义检查尚未执行。']}
         write_json(transport.run / 'calls' / ref / 'format_errors.json', report)
         state['first_call'] = state['first_call'] or ref
         state.update(last_call=ref, error=report, charged=False)
-        state['next'] = request(transport.root, state['original'], reply, report, state['first_call'])
+        raw = transport.run / 'calls' / ref / 'unfiltered_response.json'
+        rejected = read(raw) if raw.exists() else reply
+        state['next'] = request(transport.root, state['original'], rejected, report, state['first_call'])
         write_json(pointer, state)

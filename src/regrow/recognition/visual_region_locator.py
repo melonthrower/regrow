@@ -44,7 +44,8 @@ def resolve_foreground_check(plan, frame, interactive_regions, focus_presence, c
     checks = [c for c in checks if c['region'] != check['region']] + [{'region': check['region'], 'source_call': call}]
     return {'checks': checks, 'frame_path': frame_path, 'status': 'resolved', 'conclusion': '两个区块均处于当前前景；矩形包含不构成遮挡，本次前景归属核对已解决。操作能力仍须另判。', 'focus': focus, 'region': check['region'], 'frame_sha256': hashlib.sha256(Path(frame).read_bytes()).hexdigest(), 'source_call': call}
 
-def plan(records, focus, frame, *, force_relocate=False, required_control=None, offset=0, locate=None, foreground_resolution=None, foreground=None):
+def plan(records, focus, frame, *, force_relocate=False, required_control=None, required_regions=(), offset=0, locate=None, foreground_resolution=None, foreground=None):
+    required_regions = list(dict.fromkeys(r for r in required_regions if r in records))
     locate = locate or matcher()
     cache = {}
     attempts = []
@@ -69,17 +70,20 @@ def plan(records, focus, frame, *, force_relocate=False, required_control=None, 
     confirmed = (foreground or {}).get('region_bounds', {}).get(focus)
     if local and focus in (foreground or {}).get('regions', (foreground or {}).get('region_bounds', {})):
         local = {**local, 'strong': True, 'bounds': confirmed, 'basis': 'same_frame_model_identity'}
-    if local and not foreground_check:
+    if local and not foreground_check and not any(r != focus for r in required_regions):
         ids = list(owned_controls(records[focus]))
         chosen = [required_control] if required_control in ids else ids[offset:offset + CONTROL_BATCH]
         surface = frame
         controls = [{'control': cid, 'match': match(image(owned_controls(records[focus])[cid]), surface)} for cid in chosen]
         return {'mode': 'local', 'focus': focus, 'focus_status': 'candidate', 'regions': [local], 'controls': controls, 'next_offset': offset + len(chosen), 'unchecked_controls': max(0, len(ids) - offset - len(chosen)), 'attempts': attempts, 'partition_context': local_partition.build(records, focus, frame, foreground, scoped)}
     candidates = []
+    recalled = {}
     weak = []
     focus_candidate = None
     for rid in records:
         candidate = local if local and rid == focus else region(rid)
+        if rid in required_regions:
+            recalled[rid] = {**candidate, 'required_history': True}
         if rid == focus:
             focus_candidate = candidate
         if candidate['strong'] or candidate['anchors']:
@@ -93,4 +97,14 @@ def plan(records, focus, frame, *, force_relocate=False, required_control=None, 
         candidates.insert(0, focus_candidate)
     weak = [c for c in weak if c['region'] != focus]
     candidates.extend(weak[:min(3, max(0, CANDIDATES - len(candidates)))])
-    return {'foreground_check': foreground_check, 'mode': 'relocate', 'focus': focus, 'focus_status': 'unconfirmed', 'regions': (history.rank(candidates) if foreground is not None else candidates)[:CANDIDATES], 'controls': [], 'omitted_candidates': max(0, len(candidates) - CANDIDATES), 'attempts': attempts}
+    ranked = history.rank(candidates) if foreground is not None else candidates
+    if required_regions:
+        priority = ([focus_candidate] if focus_candidate else []) + [recalled[r] for r in required_regions]
+        seen = set()
+        ordered = []
+        for candidate in priority + ranked:
+            if candidate['region'] not in seen:
+                ordered.append(candidate)
+                seen.add(candidate['region'])
+        ranked = ordered
+    return {'foreground_check': foreground_check, 'mode': 'relocate', 'focus': focus, 'focus_status': 'unconfirmed', 'regions': ranked[:CANDIDATES], 'controls': [], 'omitted_candidates': max(0, len(ranked) - CANDIDATES), 'attempts': attempts}

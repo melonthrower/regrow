@@ -97,10 +97,12 @@ class DesktopRun(RecoveryRun):
     def send_command(self, code):
         return self.command(['python', '-c', 'import pyautogui,time; ' + code])
 
-    def screenshot(self, path):
+    def screenshot(self, path, *, max_attempts=None):
         from io import BytesIO
         from PIL import Image
         from regrow.runtime import progress as progress
+        if max_attempts is not None and (type(max_attempts) is not int or max_attempts < 1):
+            raise ValueError('max_attempts must be a positive integer')
         path = Path(path)
         started = time.monotonic()
         attempt = 0
@@ -113,7 +115,7 @@ class DesktopRun(RecoveryRun):
             path.with_name(path.name + '.capture.json').write_text(json.dumps(row, indent=2))
             with path.with_name(path.name + '.capture.jsonl').open('a') as log:
                 log.write(json.dumps(row) + '\n')
-            progress.detail(('等待虚拟机截图恢复' if status == 'waiting' else '截图已恢复' if status == 'recovered' else '截图等待已暂停') + f" · 已重试 {attempt} 次 · 等待 {row['elapsed_seconds']} 秒")
+            progress.detail(('等待虚拟机截图恢复' if status == 'waiting' else '截图已恢复' if status == 'recovered' else '截图获取失败，本轮停止等待' if status == 'unavailable' else '截图等待已暂停') + f" · 已重试 {attempt} 次 · 等待 {row['elapsed_seconds']} 秒")
         while True:
             try:
                 progress.check_capture_pause()
@@ -164,6 +166,9 @@ class DesktopRun(RecoveryRun):
                     report('recovered')
                 return
             attempt += 1
+            if max_attempts is not None and attempt >= max_attempts:
+                report('unavailable', error_type)
+                raise TimeoutError('无法取得当前截图，已达到本轮 ' + str(max_attempts) + ' 次尝试上限：' + str(error_type))
             report('waiting', error_type)
             for _ in range(min(attempt, 5) * 4):
                 try:
@@ -180,9 +185,9 @@ class DesktopRun(RecoveryRun):
         except requests.exceptions.SSLError:
             raise
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.ChunkedEncodingError) as error:
-            return {'目标应用': self.package, '与目标应用一致': None, '窗口记录': '', '读取错误': type(error).__name__ + '：前景辅助信息暂不可用，以当前截图核验', '来源': 'OSWorld X11 read failed'}
+            return {'目标应用': self.package, '与目标应用一致': None, '窗口记录': '', '读取错误': type(error).__name__ + '：前景辅助信息暂不可用，以当前截图核验', '来源': 'OSWorld X11 read failed', 'control_transport_available': False}
         raw = result.stdout.decode()
-        return {'目标应用': self.package, '与目标应用一致': self.window_class.casefold() in raw.casefold() if result.returncode == 0 else None, '窗口记录': raw, '读取错误': result.stderr.decode() if result.returncode else '', '来源': 'OSWorld X11 active window WM_CLASS/title'}
+        return {'目标应用': self.package, '与目标应用一致': self.window_class.casefold() in raw.casefold() if result.returncode == 0 else None, '窗口记录': raw, '读取错误': result.stderr.decode() if result.returncode else '', '来源': 'OSWorld X11 active window WM_CLASS/title', 'control_transport_available': True}
 
     def restart_commands(self):
         launch = Path(__file__).with_name('desktop_lifecycle.py').read_text()

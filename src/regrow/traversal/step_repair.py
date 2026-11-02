@@ -121,6 +121,10 @@ def resume_service_failure(run, episode=None, frame=None):
     if frame is not None and job['stage'] == 'discovery':
         discovery.await_discovery(run, str(Path(frame).resolve()), 'service-retry-' + failure['call'])
         job['request'] = _locator.request_from_run(SOURCE_ROOT, run)
+    if job['stage'] == 'task_result_review':
+        from regrow.traversal.task_result_review import resume_service_request
+        job['request'] = resume_service_request(SOURCE_ROOT, run, job, frame)
+        job.pop('service_retry_request', None)
     job.setdefault('service_resume_history', []).append({'failure': failure, 'previous_status': job['status'], 'explicit_retry': True})
     job.pop('service_failure', None)
     for key in ('branch_switch_attempted', 'branch_review_signature', 'switch_trigger'):
@@ -224,12 +228,13 @@ def request(root, job, context):
             or job.get('pre_dispatch_review') or _correction_prompts.needs_record_repair(job)):
         return _correction_prompts.original_reply(root, job)
     original = deepcopy(job['request'])
+    rejected = deepcopy(job.get('rejected_reply', job.get('candidate')))
     identity_review = bool(job.get('control_identity_pair') or job.get('control_identity_candidates'))
-    if job['stage'] == 'update' and original.get('semantic_request') and not identity_review:
+    if job['stage'] == 'update' and not identity_review:
         # Registration uses the after-frame for geometry. Correcting the action
         # result must return to its original semantic pair and output contract.
         from regrow.traversal.object_registration import semantic_revision
-        original, _ = semantic_revision(original, job.get('candidate') or {})
+        original, rejected = semantic_revision(original, rejected)
     if not task_review_images(original):
         _frame_context.select(original, _frame_context.primary(original))
     original['response_schema'] = _model_transport.expand_schema(original['response_schema'])
@@ -261,18 +266,20 @@ def request(root, job, context):
                 obj['required'] = list(dict.fromkeys(obj.get('required', []) + [key]))
     if job['stage'] == 'task_proposal':
         fields['proposal']['anyOf'][0]['properties']['operations']['items']['properties']['control'].pop('enum', None)
-    from regrow.traversal.proposal_revision import prepare as prepare_revision
+    from regrow.traversal.proposal_revision import prepare as prepare_revision, guidance, display, examples, MODE
     proposal_base = prepare_revision(job, original, fields['proposal']['anyOf'][0])
     if fields.get('record_edit') == {'type': 'null'}:
         fields.pop('record_edit')
     schema = {'type': 'object', 'properties': fields, 'required': [name for name in fields if name != 'record_edit'], 'additionalProperties': False,
               'allOf': [{'if': {'properties': {'resolution': {'const': 'edit_record'}}, 'required':['resolution']},
                          'then': {'required':['record_edit'], 'properties':{'record_edit':{'not':{'type':'null'}}}}}]}
-    dynamic = {'失败步骤': job['stage'], '原动态上下文': original['user_prompt'], '相关记录与可用能力': context, '被拒绝回复': job.get('rejected_reply', job.get('candidate')), '上次失败或停止诊断（保留原文，非当前能力清单）': job.get('error'), '框架错误分类': job.get('blocked_by', 'none'), '执行状态': '原动作已执行；本次纠错只登记其结果，不再次投递原动作。next_action描述后续尚未执行的步骤，仍按原问题与动作后图判断；无需因本次是纠错而清空。' if job.get('attempt') else '本步骤未执行动作', '本次修复历史': job['history'], '补充观察': job.get('supplements', []), '图片说明': '前面的图片仍为原请求证据；追加图片仅用于稍后的补充观察，不能代替原动作后图。'}
+    dynamic = {'失败步骤': job['stage'], '原动态上下文': original['user_prompt'], '相关记录与可用能力': context, '被拒绝回复': rejected, '上次失败或停止诊断（保留原文，非当前能力清单）': job.get('error'), '框架错误分类': job.get('blocked_by', 'none'), '执行状态': '原动作已执行；本次纠错只登记其结果，不再次投递原动作。next_action描述后续尚未执行的步骤，仍按原问题与动作后图判断；无需因本次是纠错而清空。' if job.get('attempt') else '本步骤未执行动作', '本次修复历史': job['history'], '补充观察': job.get('supplements', []), '图片说明': '前面的图片仍为原请求证据；追加图片仅用于稍后的补充观察，不能代替原动作后图。'}
     if proposal_base is not None:
-        dynamic['本次合并基准'] = deepcopy(proposal_base)
+        dynamic['本次合并基准'] = display(proposal_base)
+        dynamic['修订方式'] = guidance()
+        dynamic['局部修订格式示例'] = examples(proposal_base)
         if dynamic['被拒绝回复'] == proposal_base:
-            dynamic['被拒绝回复'] = '同下方本次合并基准；只提交需要修改的顶层字段。'
+            dynamic['被拒绝回复'] = '同下方本次合并基准。'
     dynamic.update(_correction_prompts.parse_disclosure(job))
     (dynamic['原动态上下文'], shared_map) = _page_context.separate_map(original)
     if shared_map:
@@ -316,6 +323,7 @@ def request(root, job, context):
     correction = {**original, 'role': 'step_correction', 'stage': 'step_correction', 'original_request': deepcopy(original), 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': text, 'dynamic_prompt': text, 'screenshots': frames, 'image_refs': frames, 'response_schema': schema, 'fixed_parts': parts}
     if proposal_base is not None:
         correction['proposal_base'] = proposal_base
+        correction['proposal_revision'] = MODE
     correction['frame_context'] = {str(frame): role['用途'] for (frame, role) in zip(frames, image_roles)}
     return _control_identity_review.attach(root, job, correction)
 
@@ -442,7 +450,7 @@ class Runner:
         job = pending(self.run, self.pointer_name)
         if job is None:
             if stage in ('action', 'task_proposal', 'function_registration', 'task_result_review'):
-                _shared_control_review.run_pending(self)
+                _shared_control_review.run_pending(self, q)
             key = uuid.uuid4().hex
             job = {'path': f'repair_episodes/{key}/episode.json', 'stage': stage, 'request': deepcopy(q), 'attempt': attempt, 'status': 'initial', 'repairs': 0, 'observations': 0, 'history': [], 'seen': [], 'supplements': []}
             if stage == 'shared_control_review':
@@ -687,6 +695,7 @@ class Runner:
                     self.stop(job, '模型服务失败，仅暂挂功能整理，其他探索继续')
                 self.switch_branch(job)
             q = self.sent_request(job, q, ref, repairing)
+            previous_call = job.get('call')
             if q.get('role') not in ('control_identity_comparison', 'control_identity_selection'):
                 job.pop('registration_submission', None)
             job['call'] = ref
@@ -694,15 +703,18 @@ class Runner:
             try:
                 if repairing:
                     if q.get('correction_format') == 'original':
-                        # Validate and publish through the original stage below;
-                        # no proposal wrapper or partial-field merge is involved.
-                        candidate = deepcopy(reply)
+                        from regrow.traversal.proposal_revision import merge
+                        from regrow.traversal.object_registration import revised_request
+                        candidate = merge(q, reply)
+                        corrected_request = revised_request(q['original_request'], previous_call) if job['stage'] == 'update' else deepcopy(q['original_request'])
                         fingerprint = hashlib.sha256(json.dumps([candidate, job['request'], job.get('supplements'), job.get('record_edit')], sort_keys=True).encode()).hexdigest()
                         if fingerprint in job['seen']:
                             self.stop(job, '重复提交同一证据下已拒绝的提案')
                         job['seen'].append(fingerprint)
+                        atomic(self.run / 'calls' / ref / 'effective_request.json', corrected_request)
+                        atomic(self.run / 'calls' / ref / 'effective_candidate.json', candidate)
                         job.pop('rejected_reply', None)
-                        job.update(request=deepcopy(q['original_request']), candidate=candidate, status='accept')
+                        job.update(request=corrected_request, candidate=candidate, status='accept')
                         self.save(job)
                         continue
                     if q.get('role') == 'action_target_review':
@@ -729,6 +741,9 @@ class Runner:
                         (reviewed, candidate) = _control_identity_review.compared_candidate(q, reply)
                         if candidate is None:
                             self.stop(job, '身份比较仍未确认：' + reply['reason'])
+                        if job['stage'] == 'update':
+                            from regrow.traversal.object_registration import revised_request
+                            reviewed = revised_request(reviewed, previous_call)
                         atomic(self.run / 'calls' / ref / 'effective_request.json', reviewed)
                         atomic(self.run / 'calls' / ref / 'effective_candidate.json', candidate)
                         if not q.get('identity_rules_recheck'):
@@ -793,12 +808,18 @@ class Runner:
                     job['record_edit'] = reply.get('record_edit')
                     from regrow.traversal.proposal_revision import merge
                     candidate = merge(q, reply['proposal'])
+                    if job['stage'] == 'update':
+                        from regrow.traversal.object_registration import revised_request
+                        job['request'] = revised_request(job['request'], previous_call)
                 else:
                     candidate = reply
                 fingerprint = hashlib.sha256(json.dumps([candidate, job['request'], job.get('supplements'), job.get('record_edit')], sort_keys=True).encode()).hexdigest()
                 if fingerprint in job['seen']:
                     self.stop(job, '重复提交同一证据下已拒绝的提案')
                 job['seen'].append(fingerprint)
+                if repairing and q.get('role') == 'step_correction':
+                    atomic(self.run / 'calls' / ref / 'effective_request.json', job['request'])
+                    atomic(self.run / 'calls' / ref / 'effective_candidate.json', candidate)
                 job.pop('rejected_reply', None)
                 job.update(candidate=candidate, status='accept')
                 self.save(job)

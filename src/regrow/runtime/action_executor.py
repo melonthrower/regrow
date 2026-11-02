@@ -53,7 +53,7 @@ class ActionExecutor:
         if binding['status'] != 'matched':
             raise ValueError('executor requires a validated matched proposal')
         from regrow.traversal.observation import register_action_target
-        if register_action_target(run, q, proposal, binding, ref):
+        if register_action_target(run, q, proposal, binding, ref, episode=accepted.get('path')):
             raise step_repair.Paused('ready_next_round', '拟操作控件尚未关联身份，已转正常识别登记；提案未执行，原任务保留。')
         from regrow.records.action_evidence import action_source_observation
         action_source_observation(run, ref, binding['observation_ref'], binding['region_ref'], binding['control_ref'])

@@ -146,6 +146,78 @@
                 "when_any_paths": [
                   "regions.local_knowledge"
                 ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
               }
             ],
             "when_paths": [
@@ -562,6 +634,78 @@
                 "when_any_paths": [
                   "regions.bbox"
                 ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
               }
             ]
           },
@@ -783,6 +927,78 @@
                 "when_any_paths": [
                   "regions.local_knowledge"
                 ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
               }
             ],
             "when_paths": [
@@ -860,6 +1076,9 @@
                 "work_kinds": [
                   "scope_review"
                 ]
+              },
+              {
+                "block": "task.batch_update_example"
               }
             ]
           },
@@ -903,6 +1122,7 @@
           "question": "出现的对象如何对应已有区块和控件？",
           "materials": [
             "已知区块",
+            "历史身份参考",
             "当前截图视觉匹配到的既有区块",
             "本次入口历史落点",
             "区块名称使用",
@@ -1012,6 +1232,13 @@
             ]
           },
           {
+            "block": "region.current_regions",
+            "fields": [
+              "current_regions"
+            ],
+            "details": []
+          },
+          {
             "block": "region.previous_regions",
             "fields": [
               "previous_regions"
@@ -1024,6 +1251,12 @@
               "regions"
             ],
             "details": [
+              {
+                "block": "region.update_registration",
+                "when_paths": [
+                  "current_regions"
+                ]
+              },
               {
                 "block": "region.registration_identity",
                 "when_any_paths": [
@@ -1070,6 +1303,78 @@
                 "block": "control.box_coordinates",
                 "when_any_paths": [
                   "regions.bbox"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
                 ]
               }
             ]
@@ -1484,6 +1789,78 @@
                 "when_any_paths": [
                   "regions.local_knowledge"
                 ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
               }
             ],
             "when_paths": [
@@ -1828,6 +2205,78 @@
                 "block": "region.local_knowledge",
                 "when_any_paths": [
                   "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
                 ]
               }
             ],

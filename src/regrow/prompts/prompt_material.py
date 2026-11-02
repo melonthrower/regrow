@@ -46,7 +46,7 @@ def task_present(request, region, name):
     card = body(request)[0].get('当前任务', {})
     from regrow.records.task_updates import reference
     return isinstance(card, dict) and card.get('task') == reference(region, name)
-DIAGNOSTICS = {'有合格模板的控件数', '历史控件总数', '前景独立控件命中数', '共享控件不参与区分', '提供原因', '展开原因', '披露范围', '省略的候选数量', '已登记区块总数', '账本动作数', '未展开的中间观察数'}
+DIAGNOSTICS = {'有合格模板的控件数', '历史控件总数', '前景独立控件命中数', '共享控件不参与区分', '展开原因', '披露范围', '省略的候选数量', '已登记区块总数', '账本动作数', '未展开的中间观察数'}
 EMPTY_OPTIONAL = {'stdout', 'stderr', 'end_x', 'end_y', '前置条件', 'prerequisite', 'blocker', '参考图', '历史外观', '历史外观参考', '功能疑问', 'uncertainty', '补充观察', '上步观察交接', '补充清点原因', '可引用同类实例', '共享控件知识', '按本地参数任务披露的支持', '本轮局部控件', '未提供结果', '未解析入边', '行为适用上下文', '读取错误', '框架反馈', '异常交接', '覆盖任务'}
 INTERNAL_STATE = {'未定位；仅供身份核对', '未由这份历史记录确认', '候选位置尚未经前景核对，不是有效票数', '已按同帧前景限定'}
 OPAQUE = {'被拒绝回复', '上次失败或停止诊断（保留原文，非当前能力清单）', '具体校验错误', '当前模型回复解析错误', 'findings', '已有参数发现', '可引用参数事实'}
@@ -805,6 +805,8 @@ def view(value, request):
         matching(result)
     if role == 'function_registration':
         summary(result, request)
+    if role == 'observation_update' and '已知区块' in result:
+        result['历史身份参考'] = result.pop('已知区块')
     return result
 
 def map_knowledge(value):

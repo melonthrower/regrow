@@ -1,4 +1,4 @@
-"""Discard only explicitly forbidden extra reply fields; preserve raw evidence."""
+"""Ignore unrelated extras; keep misplaced contract fields for explicit repair."""
 from copy import deepcopy
 
 import jsonschema
@@ -9,6 +9,20 @@ from regrow.records.registration_diagnostics import schema_errors
 def filter_extra_fields(reply, schema):
     """Reuse diagnostics' unambiguous branch selection, never repair other errors."""
     from regrow.runtime.model_transport import expand_schema
+    expanded = expand_schema(schema)
+    contract_fields = set()
+    nullable_fields = set()
+    def names(node):
+        if isinstance(node, dict):
+            contract_fields.update(node.get('properties', {}))
+            nullable_fields.update(key for key, spec in node.get('properties', {}).items()
+                                   if jsonschema.Draft202012Validator(spec).is_valid(None))
+            for child in node.values():
+                names(child)
+        elif isinstance(node, list):
+            for child in node:
+                names(child)
+    names(expanded)
     result = deepcopy(reply)
     removed = []
     locations = {}
@@ -21,7 +35,7 @@ def filter_extra_fields(reply, schema):
             for index, child in enumerate(value):
                 locate(child, (*path, index))
     locate(reply)
-    for error in jsonschema.Draft202012Validator(expand_schema(schema)).iter_errors(reply):
+    for error in jsonschema.Draft202012Validator(expanded).iter_errors(reply):
         for row in schema_errors(error):
             if row.get('validator') != 'additionalProperties':
                 continue
@@ -36,5 +50,10 @@ def filter_extra_fields(reply, schema):
                 continue
             for key in row.get('fields', []):
                 if key in node:
+                    # An empty collection can explicitly clear a previous value.
+                    # False and zero also carry meaning. Never move these fields
+                    # automatically: the corrected reply must pass the contract.
+                    if key in contract_fields and (node[key] is not None or key in nullable_fields):
+                        continue
                     removed.append({'object_path': path, 'field': key, 'value': node.pop(key)})
     return result, removed

@@ -1,5 +1,5 @@
 from regrow.paths import SOURCE_ROOT
-'One CLI for new desktop batches, persistent resume and truthful status.'
+'One CLI for desktop/Android batches, persistent resume and truthful status.'
 from pathlib import Path
 import argparse
 import datetime
@@ -45,15 +45,19 @@ def config_for(args, source):
         for key in ('source', 'source_hash', 'total_call_limit'):
             if key not in config:
                 raise ValueError('Missing run configuration field: ' + key)
-        if not Path(config['source']).is_absolute() or type(config['total_call_limit']) is not int or config['total_call_limit'] <= 0:
+        from regrow.runtime.batch_runtime import call_allowance
+        call_allowance(config,0)
+        if not Path(config['source']).is_absolute():
             raise ValueError('Invalid pinned source or total budget')
         if config.get('kind') != 'new' and ('run' not in config or not Path(config['run']).is_absolute()):
             raise ValueError('Resume needs the original run.json (or new batch.json)')
         return path
     template = args.template_run.expanduser().resolve()
     manifest = read(template / 'run_manifest.json')
-    if manifest.get('platform') != 'desktop':
-        raise ValueError('The batch entry currently supports desktop runs only')
+    if manifest.get('platform') not in ('desktop', 'android'):
+        raise ValueError('The batch entry supports desktop and android runs')
+    if manifest.get('platform') == 'android' and (args.clear_app_data or args.restart_container):
+        raise ValueError('Android preparation preserves emulator and application data')
     if args.clear_app_data and manifest['app'] != 'org.gnome.clocks':
         raise ValueError('Data reset is currently supported only for org.gnome.clocks')
     output = args.new.expanduser().resolve()
@@ -124,7 +128,7 @@ def status(config_path):
             phase = 'running' if (last / 'response.json').exists() else 'waiting_model'
         else:
             phase = 'preparing' if not session else 'starting'
-    return {'status': phase, 'service_active': active, 'native_pid': native_pid, 'calls': calls, 'total_call_limit': config['total_call_limit'], 'remaining_calls': max(0, config['total_call_limit'] - calls), 'run': str(run) if run else None, 'session': state.get('session'), 'reason': state.get('reason'), 'error_type': state.get('error_type'), 'launch': str(launch) if launch else None}
+    return {'status': phase, 'service_active': active, 'native_pid': native_pid, 'calls': calls, 'total_call_limit': config['total_call_limit'], 'remaining_calls': max(0, config['total_call_limit'] - calls) if config['total_call_limit'] is not None else None, 'run': str(run) if run else None, 'session': state.get('session'), 'reason': state.get('reason'), 'error_type': state.get('error_type'), 'launch': str(launch) if launch else None}
 
 def service_command(unit, worker, config_path, launch):
     group = grp.getgrgid(Path('/var/run/docker.sock').stat().st_gid).gr_name
@@ -140,7 +144,7 @@ def launch(config_path, source):
         if current['service_active'] or current.get('native_pid'):
             return current
         config = read(config_path)
-        if current['remaining_calls'] <= 0:
+        if current['remaining_calls'] is not None and current['remaining_calls'] <= 0:
             return {**current, 'status': 'budget_limit'}
         folder = base / 'launches' / uuid.uuid4().hex
         folder.mkdir(parents=True, exist_ok=False)

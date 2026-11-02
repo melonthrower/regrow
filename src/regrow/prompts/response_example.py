@@ -228,7 +228,7 @@ def sample(schema, name='', reuse=True):
         return value
     if kind == 'array':
         count = schema.get('minItems', 0)
-        if name in ('regions', 'controls', 'previous_regions') and schema.get('maxItems') != 0:
+        if name in ('regions', 'controls', 'current_regions', 'previous_regions') and schema.get('maxItems') != 0:
             count = max(1, count)
         values = [sample(schema['items'], name + '_item', reuse) for _ in range(count)]
         if name == 'objects':
@@ -244,7 +244,7 @@ def sample(schema, name='', reuse=True):
         return None
     if kind == 'string' or kind is None:
         if name == 'completion_condition':
-            return '操作该入口并观察、记录它的直接响应及去向后结束。'
+            return '弄清该入口的直接作用及实际去向，足以判断后续何时使用它；目标内部独立功能另行探索。'
         if name in ('uncertainty', 'recovery_handoff'):
             return ''
         return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
@@ -269,6 +269,8 @@ def complete(schema, request=None):
         for row in value['regions']:
             if row.get('ref'):
                 row['ref'] = ref
+    if isinstance(value, dict) and 'current_regions' in value and value.get('regions'):
+        value['current_regions'] = [{'region_index': 0}]
     jsonschema.validate(value, expanded)
     return ('## 完整输出示例\n以下仅演示本步JSON格式，不是当前截图的事实或操作建议；'
             '示例编号与坐标仅为格式占位，实际引用、坐标和结论须来自本次材料。\n```json\n'

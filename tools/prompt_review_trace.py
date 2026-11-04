@@ -272,6 +272,10 @@ def worker(dest):
     from unittest.mock import patch
     dest = Path(dest).resolve()
     spec = read(dest / 'job.json'); original = spec['original_request']
+    role = original.get('role')
+    if role not in ('observation', 'action_selection', 'observation_update',
+                    'task_proposal', 'task_result_review', 'function_registration'):
+        raise ValueError(f'此历史调用为 {role or "未注明阶段"}，请选择对应的原业务调用进行保存帧重建。')
     source = dest / 'source'
     shutil.copytree(spec['source'], source, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
     baseline = {}
@@ -366,7 +370,7 @@ def worker(dest):
         write(new_base / 'source.json', {'parent_snapshot': spec['snapshot'], 'stage': 'manual_case_context', 'revision': spec.get('revision')})
         write(run / 'knowledge_current.json', {'snapshot': str(new_base.relative_to(run))})
     snapshot, records, state = snapshots.load(run)
-    role = original['role'];src = recorded_source(origin, original);attempt = src.get('attempt')
+    src = recorded_source(origin, original);attempt = src.get('attempt')
     if role == 'observation':
         # Same historical screenshot and stored discovery state, normal builder.
         q = locator.request_from_run(source, run)

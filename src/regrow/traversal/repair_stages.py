@@ -111,7 +111,6 @@ def accept_candidate(root, run, job):
     from regrow.runtime import action_commands as _action_commands
     from regrow.traversal import action_context as _stepwise_flow
     from regrow.traversal import operation_blocking as _operation_blocking
-    from regrow.traversal import attempt_guard as _attempt_guard
     (_, records, _) = _record_load(run)
     binding = None
     if job.get('attempt'):
@@ -195,7 +194,6 @@ def accept_candidate(root, run, job):
             if action_target_review.confirmed(q, proposal):
                 binding['target_confirmation'] = deepcopy(q['action_target_confirmation'])
             _operation_blocking.check_action(records, binding, proposal)
-            _attempt_guard.check(run, _record_load(run)[1], binding, proposal, (q.get('screenshots') or q.get('image_refs') or [None])[0], correction=job.get('repairs', 0) > 0)
         return {'binding': binding, 'proposal': proposal, 'request': q, 'call': ref}
     raise RuntimeError('Unknown acceptance stage: ' + stage)
 

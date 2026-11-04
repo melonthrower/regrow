@@ -279,3 +279,5 @@ records.tasks.coverage不再用registration_gaps.discovery.pending或suspended_b
 2026-11-03接线修复：补登记合同保留/旧批次原合同恢复、纠错后未投递目标召回、具名纠错表示与格式重答的内部视图续接已有限验证。聚焦检查通过；完整真实记录5HTTP/0GUI，未改Prompt源或旧业务知识。Gedit旧父关系与Characters前景语义未接受；不将接线通过表述为整例语义通过。benchmark限定续跑与实机结果见traversal_wiring_fix_20261103_01及SERVER_HANDOFF后续条目。
 
 2026-11-03实跑补记：GIMP8HTTP/3GUI、Settings8HTTP/1GUI；旧a0014正常续登记，无旧点击重放。现仅benchmark的16可达原批次四路续跑，每应用+100模型调用停审，总量不限；20环境不可用、Gedit历史关系待答、31不启动。源source-v2/48120178，实时停点见SERVER_HANDOFF。
+
+2026-11-05：计划第4步已退出按历史次数拒绝重复动作/导航的默认检查及专用纠错规则；真实限制、目标核对、未知投递防重放和task_result_review保留。VLC原0253完整保存帧新回复正常接受，1HTTP/0GUI；未恢复现场，其余14步未整体完成。限定结果见11月日志及traversal模块。

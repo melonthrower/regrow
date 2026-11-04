@@ -104,8 +104,6 @@ def select(job, context):
         modules.append('区块归属')
     if stage != 'action' and q.get('action_owner_candidates'):
         modules.append('动作归属')
-    if context.get('最近尝试原始证据'):
-        modules.append('重复无进展')
     return list(dict.fromkeys(modules))
 
 def parts(root, job, context):

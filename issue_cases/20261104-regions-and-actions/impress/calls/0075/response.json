@@ -1,0 +1,343 @@
+{
+  "foreground": {
+    "description": "LibreOffice Impress 演示文稿编辑窗口位于前景，显示幻灯片列表、编辑画布、Slide 属性与布局侧栏及工具栏；未见模态对话框遮挡。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "interactive",
+  "regions": [
+    {
+      "ref": "LibreOffice Impress 窗口",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 27,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "当前活动的 quarterly_review.pptx 编辑窗口，第一张幻灯片处于选中状态；标准工具栏、绘图工具栏及 Properties 侧栏右缘的竖向图标条均可见。",
+      "context_matches": null,
+      "controls": [
+        {
+          "name": "剪切按钮",
+          "bbox": {
+            "left": 295,
+            "top": 91,
+            "right": 326,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "剪切所选内容；通常先选中幻灯片对象或文本，再点击此按钮。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "复制按钮",
+          "bbox": {
+            "left": 328,
+            "top": 91,
+            "right": 359,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "复制所选内容；通常先选中对象或文本，再点击此按钮。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "粘贴按钮",
+          "bbox": {
+            "left": 360,
+            "top": 91,
+            "right": 398,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "将剪贴板内容粘贴到当前文稿；按钮旁有下拉箭头，可进一步选择粘贴方式。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "格式刷图标按钮（标准工具栏）",
+          "description": "位于撤销、重做图标左侧的画刷图标。",
+          "bbox": {
+            "left": 408,
+            "top": 91,
+            "right": 432,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "画刷图标通常用于复制并应用格式；当前未实际操作确认其具体行为及可用条件。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "网格图标按钮",
+          "description": "标准工具栏上靠近拼写检查按钮的点阵图标。",
+          "bbox": {
+            "left": 619,
+            "top": 91,
+            "right": 650,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "可见点阵图标；其是否用于切换画布网格，或对应已有的插入表格登记，当前无法确认。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": null
+        },
+        {
+          "name": "幻灯片布局下拉按钮",
+          "description": "标准工具栏中的矩形版式图标及其下拉箭头。",
+          "bbox": {
+            "left": 655,
+            "top": 91,
+            "right": 701,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "图标旁有下拉箭头，可能提供版式相关选择；具体用途及候选项尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "蓝色画板铅笔图标按钮",
+          "bbox": {
+            "left": 706,
+            "top": 91,
+            "right": 738,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "工具栏中可见蓝色画板与铅笔图标；用途及操作结果尚未确认。"
+            }
+          ],
+          "may_open_content": null,
+          "needs_exploration": true
+        },
+        {
+          "name": "从第一张幻灯片开始放映按钮",
+          "bbox": {
+            "left": 747,
+            "top": 91,
+            "right": 775,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "点击该放映图标可启动幻灯片放映；从图标位置和外观推断为从第一张幻灯片开始，尚未实际启动验证。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "从当前幻灯片开始放映按钮",
+          "bbox": {
+            "left": 780,
+            "top": 91,
+            "right": 808,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "点击该放映图标可启动幻灯片放映；从图标位置和外观推断为从当前幻灯片开始，尚未实际启动验证。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "新建幻灯片按钮",
+          "bbox": {
+            "left": 1155,
+            "top": 91,
+            "right": 1194,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "页面加号图标用于新增幻灯片；旁有下拉箭头，可能可选择新幻灯片版式。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "复制幻灯片按钮",
+          "bbox": {
+            "left": 1201,
+            "top": 91,
+            "right": 1228,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "重叠页面图标看起来用于复制幻灯片；当前未实际操作确认其作用对象及条件。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "删除幻灯片按钮",
+          "bbox": {
+            "left": 1233,
+            "top": 91,
+            "right": 1260,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "带红色叉号的页面图标看起来用于删除幻灯片；需先确定其作用对象，当前未实际操作确认。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏样式图标按钮",
+          "description": "Properties 侧栏右缘，A 字母与画刷图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 261,
+            "right": 1265,
+            "bottom": 294
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏图库图标按钮",
+          "description": "Properties 侧栏右缘的紫色图片图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 304,
+            "right": 1265,
+            "bottom": 334
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏导航器图标按钮",
+          "description": "Properties 侧栏右缘的蓝色圆形罗盘图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 346,
+            "right": 1265,
+            "bottom": 376
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏菱形图标按钮",
+          "description": "Properties 侧栏右缘的空心菱形图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 389,
+            "right": 1265,
+            "bottom": 419
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏幻灯片动画图标按钮",
+          "description": "Properties 侧栏右缘的幻灯片与播放标记图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 431,
+            "right": 1265,
+            "bottom": 462
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来与幻灯片动画相关，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏媒体图标按钮",
+          "description": "Properties 侧栏右缘的胶片图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 473,
+            "right": 1265,
+            "bottom": 505
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来与媒体相关，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏母版图标按钮",
+          "description": "Properties 侧栏右缘靠下的蓝色画板与画笔图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 514,
+            "right": 1265,
+            "bottom": 544
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；可能打开母版相关内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        }
+      ]
+    }
+  ],
+  "uncertainties": [
+    "Properties 侧栏右缘的竖向图标条与侧栏内容相邻，外观上像侧栏面板切换器；其精确归属及各图标打开的面板尚未通过操作确认。",
+    "标准工具栏 x619–650 的点阵图标与已登记的“插入表格按钮”候选位置重合；当前工具栏 x832 附近另有带下拉箭头的表格图标，无法仅凭截图确认两者各自用途及已有身份对应关系。",
+    "幻灯片放映、复制与删除等工具栏图标的用途依据图标外观辨认，尚未实际操作验证。"
+  ]
+}

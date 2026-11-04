@@ -1,0 +1,207 @@
+{
+  "action_result": {
+    "exception": "none",
+    "description": "点击文件命令菜单中的 New 后，New 行保持可见并展开右侧子菜单。子菜单显示 Text Document、Spreadsheet（Ctrl+N）、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates…（Shift+Ctrl+N）。本步仅确认这些可选新建目标出现，未选择任何一项，也未验证选择后的结果。",
+    "recovery_handoff": "",
+    "returns_to_previous": false
+  },
+  "foreground": {
+    "description": "LibreOffice Calc 的文件命令菜单仍展开，New 右侧的新建目标子菜单也处于打开状态；工作表窗口在菜单后方。"
+  },
+  "regions": [
+    {
+      "ref": "文件命令菜单",
+      "identity": "same",
+      "state_description": "文件命令列表展开，New 行处于展开状态，右侧显示新建目标子菜单。",
+      "current": true,
+      "controls": [
+        {
+          "ref": "New",
+          "knowledge": [
+            {
+              "index": 0,
+              "description": "在文件命令菜单中点击 New 可展开新建目标子菜单；本次可见 Text Document、Spreadsheet、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates… 等选项。各选项选择后的具体结果尚未验证。"
+            }
+          ],
+          "add_image": true,
+          "image_conditions": [
+            "New 行处于展开状态，右侧新建目标子菜单可见"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "New 子菜单",
+      "description": "由文件命令菜单中的 New 展开的新建目标选项列表。",
+      "identity": "new",
+      "identity_evidence": "动作后图显示 New 右侧出现独立的选项列表；这些目标未出现在动作前图中，且与文件命令列表分区显示。",
+      "state_description": "子菜单打开，列出十一个新建目标；尚未选择任何目标。",
+      "current": true,
+      "parent": "文件命令菜单",
+      "controls": [
+        {
+          "name": "Text Document",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Spreadsheet",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。",
+              "constraints": {
+                "快捷键": {
+                  "description": "菜单显示 Ctrl+N。"
+                }
+              }
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Presentation",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Drawing",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Formula",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "HTML Document",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "XML Form Document",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Labels",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Business Cards",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Master Document",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "Templates…",
+          "knowledge": [
+            {
+              "description": "作为 New 子菜单中可见的新建目标选项；可点击选择，本步未验证选择后的结果。",
+              "constraints": {
+                "快捷键": {
+                  "description": "菜单显示 Shift+Ctrl+N。"
+                }
+              }
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        }
+      ]
+    }
+  ],
+  "jump_to": [
+    {
+      "region": "New 子菜单"
+    }
+  ],
+  "function_updates": [
+    {
+      "region": "文件命令菜单",
+      "update": [
+        {
+          "ref": "文件命令菜单/创建文档",
+          "changes": {
+            "description": "从文件命令菜单点击 New 打开新建目标子菜单。已确认其中可选 Text Document、Spreadsheet、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates…；选择目标后的具体结果尚未验证。",
+            "supports": [
+              "New",
+              "Text Document",
+              "Spreadsheet",
+              "Presentation",
+              "Drawing",
+              "Formula",
+              "HTML Document",
+              "XML Form Document",
+              "Labels",
+              "Business Cards",
+              "Master Document",
+              "Templates…"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "task_update": [
+    {
+      "task": "文件命令菜单/功能探索",
+      "decision": "answered",
+      "reason": "原任务要求展开 New 并确认其中显示的可选新建目标；动作后图已显示该子菜单及其十一项选项。"
+    }
+  ],
+  "uncertainties": [
+    "New 子菜单各目标的选择后行为尚未验证；本次任务只要求确认可选目标，因此不影响本任务结算。"
+  ]
+}

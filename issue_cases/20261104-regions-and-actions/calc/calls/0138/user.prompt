@@ -1,0 +1,306 @@
+## 目标应用
+本次要探索的应用：LibreOffice calc
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+## 当前任务
+
+区块：文件命令菜单
+
+任务：了解「New」的功能及直接操作效果
+探索内容：了解控件尚不明确的功能、直接效果或打开的内容。
+本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。
+
+## 页面与相关历史
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+Calc 菜单栏 [Calc 菜单栏]
+  ├─ 文件菜单 [文件菜单]
+    └─ 文件命令菜单 [文件命令菜单]（本步关注区块）
+      ├─ New [New]
+      ├─ Open… [Open…]
+      ├─ Open Remote… [Open Remote…]
+      ├─ Recent Documents [Recent Documents]
+      ├─ Close [Close]
+      ├─ Wizards [Wizards]
+      ├─ Templates [Templates]
+      ├─ Reload [Reload]
+      ├─ Versions… [Versions…]
+      ├─ Save [Save]
+      ├─ Save As… [Save As…]
+      ├─ Save Remote… [Save Remote…]
+      ├─ Save a Copy… [Save a Copy…]
+      ├─ Save All [Save All]
+      ├─ Export… [Export…]
+      ├─ Export as PDF… [Export as PDF…]
+      ├─ Send [Send]
+      ├─ Preview in Web Browser [Preview in Web Browser]
+      ├─ Print Preview [Print Preview]
+      ├─ Print… [Print…]
+      ├─ Printer Settings… [Printer Settings…]
+      ├─ Properties… [Properties…]
+      ├─ Digital Signatures [Digital Signatures]
+      ├─ Exit LibreOffice [Exit LibreOffice]
+  ├─ 编辑菜单 [编辑菜单]
+  ├─ 视图菜单 [视图菜单]
+  ├─ 插入菜单 [插入菜单]
+  ├─ 格式菜单 [格式菜单]
+  ├─ 样式菜单 [样式菜单]
+  ├─ 工作表菜单 [工作表菜单]
+  ├─ 数据菜单 [数据菜单]
+  ├─ 工具菜单 [工具菜单]
+  ├─ 窗口菜单 [窗口菜单]
+  ├─ 帮助菜单 [帮助菜单]
+Calc 工具栏 [Calc 工具栏]
+  ├─ 新建文档 [新建文档]
+  ├─ 打开文件 [打开文件]
+  ├─ 保存 [保存]
+  ├─ 导出为 PDF [导出为 PDF]
+  ├─ 打印 [打印]
+  ├─ 剪切 [剪切]
+  ├─ 复制 [复制]
+  ├─ 撤消 [撤消]
+  ├─ 重做 [重做]
+  ├─ 字体名称 [字体名称]
+  ├─ 字号 [字号]
+公式栏 [公式栏]
+  ├─ 名称框 [名称框]
+  ├─ 函数向导 [函数向导]
+  ├─ 公式输入区域 [公式输入区域]
+信息提示横幅 [信息提示横幅]
+  ├─ Get involved [Get involved]
+  ├─ 关闭参与提示 [关闭参与提示]
+  ├─ Donate [Donate]
+  ├─ 关闭捐赠提示 [关闭捐赠提示]
+工作表网格 [工作表网格]
+  ├─ 单元格 A1 [单元格 A1]
+  ├─ 工作表数据区域 A1:C5 [工作表数据区域 A1:C5]
+工作表标签与导航 [工作表标签与导航]
+  ├─ 工作表 budget [工作表 budget]
+  ├─ 工作表导航按钮 [工作表导航按钮]
+  ├─ 新增工作表 [新增工作表]
+状态栏 [状态栏]
+  ├─ 缩放滑块 [缩放滑块]
+侧边栏入口 [侧边栏入口]
+  ├─ 属性面板入口 [属性面板入口]
+  ├─ 侧边栏画笔图标入口 [侧边栏画笔图标入口]
+  ├─ 图库入口 [图库入口]
+  ├─ 导航器入口 [导航器入口]
+  ├─ 函数入口 [函数入口]
+原探索目标：文件命令菜单 / New
+上次已登记前景：Calc 菜单栏、文件命令菜单
+a0017：click「文件菜单」；观察：点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。；该次更新未确认事项：New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。；除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。
+
+## 相关控件
+- Calc 菜单栏 Calc 菜单栏
+  - 文件菜单；target="文件菜单"
+    用途记录：点击可打开文件相关命令菜单。；展开后可见 New、打开、保存、导出、打印预览、打印、属性等命令；部分命令带子菜单箭头，Versions… 和 Save All 当前显示为灰色。菜单中还显示各命令可见的快捷键提示。
+  - 编辑菜单；target="编辑菜单"
+    用途记录：点击可打开编辑相关命令菜单。
+  - 视图菜单；target="视图菜单"
+    用途记录：点击可打开视图相关命令菜单。
+  - 插入菜单；target="插入菜单"
+    用途记录：点击可打开插入相关命令菜单。
+  - 格式菜单；target="格式菜单"
+    用途记录：点击可打开格式相关命令菜单。
+  - 样式菜单；target="样式菜单"
+    用途记录：点击可打开样式相关命令菜单。
+  - 工作表菜单；target="工作表菜单"
+    用途记录：点击可打开工作表相关命令菜单。
+  - 数据菜单；target="数据菜单"
+    用途记录：点击可打开数据相关命令菜单。
+  - 工具菜单；target="工具菜单"
+    用途记录：点击可打开工具相关命令菜单。
+  - 窗口菜单；target="窗口菜单"
+    用途记录：点击可打开窗口相关命令菜单。
+  - 帮助菜单；target="帮助菜单"
+    用途记录：点击可打开帮助相关命令菜单。
+- 文件命令菜单 文件命令菜单
+  k0014：列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。
+  - New；target="New"
+    用途记录：文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。
+  - Open…；target="Open…"
+    用途记录：文件命令菜单中的打开命令；菜单显示快捷键 Ctrl+O，本次未执行。
+  - Open Remote…；target="Open Remote…"
+    用途记录：文件命令菜单中的远程打开命令；本次未执行。
+  - Recent Documents；target="Recent Documents"
+    用途记录：文件命令菜单中的最近文档入口；带子菜单箭头，本次未展开。
+  - Close；target="Close"
+    用途记录：文件命令菜单中的关闭命令；本次未执行。
+  - Wizards；target="Wizards"
+    用途记录：文件命令菜单中的向导入口；带子菜单箭头，本次未展开。
+  - Templates；target="Templates"
+    用途记录：文件命令菜单中的模板入口；带子菜单箭头，本次未展开。
+  - Reload；target="Reload"
+    用途记录：文件命令菜单中的重新载入命令；本次未执行。
+  - Versions…；target="Versions…"
+    用途记录：文件命令菜单中的版本命令；当前显示为灰色，本次未执行。
+  - Save；target="Save"
+    用途记录：文件命令菜单中的保存命令；菜单显示快捷键 Ctrl+S，本次未执行。
+  - Save As…；target="Save As…"
+    用途记录：文件命令菜单中的另存为命令；菜单显示快捷键 Shift+Ctrl+S，本次未执行。
+  - Save Remote…；target="Save Remote…"
+    用途记录：文件命令菜单中的远程保存命令；本次未执行。
+  - Save a Copy…；target="Save a Copy…"
+    用途记录：文件命令菜单中的保存副本命令；本次未执行。
+  - Save All；target="Save All"
+    用途记录：文件命令菜单中的全部保存命令；当前显示为灰色，本次未执行。
+  - Export…；target="Export…"
+    用途记录：文件命令菜单中的导出命令；本次未执行。
+  - Export as PDF…；target="Export as PDF…"
+    用途记录：文件命令菜单中的导出为 PDF 命令；本次未执行。
+  - Send；target="Send"
+    用途记录：文件命令菜单中的发送入口；带子菜单箭头，本次未展开或执行。
+  - Preview in Web Browser；target="Preview in Web Browser"
+    用途记录：文件命令菜单中的在浏览器中预览命令；本次未执行。
+  - Print Preview；target="Print Preview"
+    用途记录：文件命令菜单中的打印预览命令；菜单显示快捷键 Shift+Ctrl+O，本次未执行。
+  - Print…；target="Print…"
+    用途记录：文件命令菜单中的打印命令；菜单显示快捷键 Ctrl+P，本次未执行。
+  - Printer Settings…；target="Printer Settings…"
+    用途记录：文件命令菜单中的打印机设置命令；本次未执行。
+  - Properties…；target="Properties…"
+    用途记录：文件命令菜单中的属性命令；本次未执行。
+  - Digital Signatures；target="Digital Signatures"
+    用途记录：文件命令菜单中的数字签名入口；带子菜单箭头，本次未展开。
+  - Exit LibreOffice；target="Exit LibreOffice"
+    用途记录：文件命令菜单中的退出 LibreOffice 命令；菜单显示快捷键 Ctrl+Q，本次未执行。
+
+## 当前任务相关功能
+1：
+  功能：创建文档
+  引用：文件命令菜单/创建文档
+  用途：通过 New 进入新建目标选择；目前仅确认该菜单入口存在，具体目标待探索。
+  支持对象：
+    New
+2：
+  功能：打开本地文档
+  引用：文件命令菜单/打开本地文档
+  用途：通过 Open… 进入打开文件流程；本地文件选择界面的具体参数待探索。
+  支持对象：
+    Open…
+3：
+  功能：访问最近文档
+  引用：文件命令菜单/访问最近文档
+  用途：通过 Recent Documents 查看最近文档入口；具体列表内容待探索。
+  支持对象：
+    Recent Documents
+4：
+  功能：关闭文档
+  引用：文件命令菜单/关闭文档
+  用途：Close 是关闭当前文档的命令；实际关闭结果待在实验文档上确认。
+  支持对象：
+    Close
+5：
+  功能：访问向导
+  引用：文件命令菜单/访问向导
+  用途：通过 Wizards 进入向导相关入口；具体可用向导待探索。
+  支持对象：
+    Wizards
+6：
+  功能：访问模板
+  引用：文件命令菜单/访问模板
+  用途：通过 Templates 进入模板相关入口；具体内容待探索。
+  支持对象：
+    Templates
+7：
+  功能：重新载入文档
+  引用：文件命令菜单/重新载入文档
+  用途：Reload 是重新载入当前文档的命令；实际结果待在可丢弃的实验文档上确认。
+  支持对象：
+    Reload
+8：
+  功能：管理文档版本
+  引用：文件命令菜单/管理文档版本
+  用途：菜单提供 Versions… 版本相关命令，但当前显示为灰色；可用条件和目标内容待确认。
+  支持对象：
+    Versions…
+9：
+  功能：保存文档
+  引用：文件命令菜单/保存文档
+  用途：Save 是保存当前文档的命令；菜单显示快捷键 Ctrl+S，保存结果待在实验文档上确认。
+  支持对象：
+    Save
+10：
+  功能：另存为文档
+  引用：文件命令菜单/另存为文档
+  用途：Save As… 用于另存文档；保存位置、文件名和格式等选项待查看。
+  支持对象：
+    Save As…
+11：
+  功能：保存文档副本
+  引用：文件命令菜单/保存文档副本
+  用途：Save a Copy… 用于保存文档副本；具体保存选项待查看。
+  支持对象：
+    Save a Copy…
+12：
+  功能：保存所有打开的文档
+  引用：文件命令菜单/保存所有打开的文档
+  用途：Save All 是保存全部文档的命令；当前显示为灰色，启用条件待确认。
+  支持对象：
+    Save All
+13：
+  功能：导出文档
+  引用：文件命令菜单/导出文档
+  用途：Export… 提供文档导出入口；可选格式和参数待查看。
+  支持对象：
+    Export…
+14：
+  功能：导出为 PDF
+  引用：文件命令菜单/导出为 PDF
+  用途：Export as PDF… 提供 PDF 导出入口；具体设置待查看。
+  支持对象：
+    Export as PDF…
+15：
+  功能：查看发送选项
+  引用：文件命令菜单/查看发送选项
+  用途：通过 Send 查看发送相关选项；本轮仅限离线观察，不执行外发。
+  支持对象：
+    Send
+16：
+  功能：打印预览
+  引用：文件命令菜单/打印预览
+  用途：Print Preview 用于进入打印预览；预览界面待确认。
+  支持对象：
+    Print Preview
+17：
+  功能：打印文档
+  引用：文件命令菜单/打印文档
+  用途：Print… 提供打印入口；本轮只查看界面，不提交打印任务。
+  支持对象：
+    Print…
+18：
+  功能：设置打印机
+  引用：文件命令菜单/设置打印机
+  用途：Printer Settings… 提供打印机设置入口；目标界面待确认。
+  支持对象：
+    Printer Settings…
+19：
+  功能：查看文档属性
+  引用：文件命令菜单/查看文档属性
+  用途：Properties… 提供文档属性入口；具体展示内容待确认。
+  支持对象：
+    Properties…
+20：
+  功能：查看数字签名选项
+  引用：文件命令菜单/查看数字签名选项
+  用途：通过 Digital Signatures 查看数字签名相关入口；本轮不执行签名或证书操作。
+  支持对象：
+    Digital Signatures
+
+## 可补充知识（仅none/complete）
+原任务所属区块：文件命令菜单
+本轮可更新控件引用：
+  New — ref=New；Open… — ref=Open…；Open Remote… — ref=Open Remote…；Recent Documents — ref=Recent Documents；Close — ref=Close；Wizards — ref=Wizards；Templates — ref=Templates；Reload — ref=Reload；Versions… — ref=Versions…；Save — ref=Save；Save As… — ref=Save As…；Save Remote… — ref=Save Remote…；Save a Copy… — ref=Save a Copy…；Save All — ref=Save All；Export… — ref=Export…；Export as PDF… — ref=Export as PDF…；Send — ref=Send；Preview in Web Browser — ref=Preview in Web Browser；Print Preview — ref=Print Preview；Print… — ref=Print…；Printer Settings… — ref=Printer Settings…；Properties… — ref=Properties…；Digital Signatures — ref=Digital Signatures；Exit LibreOffice — ref=Exit LibreOffice
+
+## 下一步
+根据当前截图和上述记录，下一步怎样推进这个探索任务？需要操作时给出动作及必要参数，已有答案时提交结论。
+
+本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

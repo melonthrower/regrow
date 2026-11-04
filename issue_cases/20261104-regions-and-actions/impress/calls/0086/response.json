@@ -1,0 +1,720 @@
+{
+  "foreground": {
+    "description": "LibreOffice Impress 正在前景，打开 quarterly_review.pptx 的编辑窗口。第 1 张幻灯片处于选中状态；画布上方可见两条提示横幅，右侧显示 Slide 属性与布局侧栏。粘贴按钮旁显示“Paste (Ctrl+V)”悬停提示，没有展开粘贴方式菜单。操作系统顶栏和左侧启动栏不属于 Impress 内容。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "interactive",
+  "regions": [
+    {
+      "ref": "LibreOffice Impress 窗口",
+      "identity": "same",
+      "bbox": {
+        "left": 71,
+        "top": 28,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "编辑窗口处于前景；粘贴按钮旁的悬停提示可见，粘贴方式菜单未显示。",
+      "controls": [
+        {
+          "ref": "剪切按钮",
+          "bbox": {
+            "left": 295,
+            "top": 96,
+            "right": 324,
+            "bottom": 124
+          }
+        },
+        {
+          "ref": "复制按钮",
+          "bbox": {
+            "left": 327,
+            "top": 96,
+            "right": 356,
+            "bottom": 124
+          }
+        },
+        {
+          "ref": "粘贴按钮",
+          "bbox": {
+            "left": 359,
+            "top": 96,
+            "right": 399,
+            "bottom": 124
+          }
+        },
+        {
+          "ref": "格式刷图标按钮（标准工具栏）",
+          "bbox": {
+            "left": 405,
+            "top": 96,
+            "right": 434,
+            "bottom": 124
+          }
+        },
+        {
+          "ref": "幻灯片布局下拉按钮",
+          "bbox": {
+            "left": 654,
+            "top": 128,
+            "right": 704,
+            "bottom": 164
+          }
+        },
+        {
+          "ref": "蓝色画板铅笔图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 512,
+            "right": 1268,
+            "bottom": 543
+          }
+        },
+        {
+          "ref": "侧栏样式图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 213,
+            "right": 1268,
+            "bottom": 249
+          }
+        },
+        {
+          "ref": "侧栏图库图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 301,
+            "right": 1268,
+            "bottom": 337
+          }
+        },
+        {
+          "ref": "侧栏导航器图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 344,
+            "right": 1268,
+            "bottom": 380
+          }
+        },
+        {
+          "ref": "侧栏菱形图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 388,
+            "right": 1268,
+            "bottom": 424
+          }
+        },
+        {
+          "ref": "侧栏幻灯片动画图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 431,
+            "right": 1268,
+            "bottom": 468
+          }
+        },
+        {
+          "ref": "侧栏媒体图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 472,
+            "right": 1268,
+            "bottom": 508
+          }
+        },
+        {
+          "ref": "侧栏母版图标按钮",
+          "bbox": {
+            "left": 1237,
+            "top": 513,
+            "right": 1268,
+            "bottom": 549
+          }
+        }
+      ]
+    },
+    {
+      "ref": "Impress 菜单栏",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 61,
+        "right": 622,
+        "bottom": 89
+      },
+      "state_description": "菜单栏可见，未展开菜单。",
+      "controls": [
+        {
+          "ref": "File 菜单",
+          "bbox": {
+            "left": 72,
+            "top": 61,
+            "right": 109,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Edit 菜单",
+          "bbox": {
+            "left": 111,
+            "top": 61,
+            "right": 150,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "View 菜单",
+          "bbox": {
+            "left": 152,
+            "top": 61,
+            "right": 195,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Insert 菜单",
+          "bbox": {
+            "left": 197,
+            "top": 61,
+            "right": 252,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Format 菜单",
+          "bbox": {
+            "left": 254,
+            "top": 61,
+            "right": 322,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Slide 菜单",
+          "bbox": {
+            "left": 324,
+            "top": 61,
+            "right": 369,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Slide Show 菜单",
+          "bbox": {
+            "left": 371,
+            "top": 61,
+            "right": 460,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Tools 菜单",
+          "bbox": {
+            "left": 462,
+            "top": 61,
+            "right": 508,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Window 菜单",
+          "bbox": {
+            "left": 510,
+            "top": 61,
+            "right": 580,
+            "bottom": 89
+          }
+        },
+        {
+          "ref": "Help 菜单",
+          "bbox": {
+            "left": 582,
+            "top": 61,
+            "right": 623,
+            "bottom": 89
+          }
+        }
+      ]
+    },
+    {
+      "ref": "标准工具栏",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 89,
+        "right": 1280,
+        "bottom": 128
+      },
+      "state_description": "菜单栏下方的工具栏可见；部分工具图标呈灰色外观。",
+      "controls": [
+        {
+          "ref": "打开文件按钮",
+          "bbox": {
+            "left": 119,
+            "top": 94,
+            "right": 153,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "保存按钮",
+          "bbox": {
+            "left": 164,
+            "top": 94,
+            "right": 193,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "导出为 PDF 按钮",
+          "bbox": {
+            "left": 218,
+            "top": 94,
+            "right": 246,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "打印按钮",
+          "bbox": {
+            "left": 251,
+            "top": 94,
+            "right": 279,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "撤销按钮",
+          "bbox": {
+            "left": 449,
+            "top": 94,
+            "right": 486,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "重做按钮",
+          "bbox": {
+            "left": 490,
+            "top": 94,
+            "right": 526,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "查找按钮",
+          "bbox": {
+            "left": 548,
+            "top": 94,
+            "right": 579,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "拼写检查按钮",
+          "bbox": {
+            "left": 583,
+            "top": 94,
+            "right": 612,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "插入表格按钮",
+          "bbox": {
+            "left": 619,
+            "top": 94,
+            "right": 647,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "插入图像按钮",
+          "bbox": {
+            "left": 866,
+            "top": 94,
+            "right": 895,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "插入视频按钮",
+          "bbox": {
+            "left": 899,
+            "top": 94,
+            "right": 927,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "插入图表按钮",
+          "bbox": {
+            "left": 932,
+            "top": 94,
+            "right": 960,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "插入文本框按钮",
+          "bbox": {
+            "left": 970,
+            "top": 94,
+            "right": 999,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "特殊字符按钮",
+          "bbox": {
+            "left": 1001,
+            "top": 94,
+            "right": 1030,
+            "bottom": 122
+          }
+        },
+        {
+          "ref": "超链接按钮",
+          "bbox": {
+            "left": 1080,
+            "top": 94,
+            "right": 1108,
+            "bottom": 122
+          }
+        }
+      ]
+    },
+    {
+      "ref": "绘图工具栏",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 128,
+        "right": 1280,
+        "bottom": 168
+      },
+      "state_description": "画布上方的绘图工具栏可见。",
+      "controls": [
+        {
+          "ref": "选择工具",
+          "bbox": {
+            "left": 73,
+            "top": 129,
+            "right": 107,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "缩放工具",
+          "bbox": {
+            "left": 109,
+            "top": 129,
+            "right": 145,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "线条工具",
+          "bbox": {
+            "left": 244,
+            "top": 129,
+            "right": 281,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "矩形工具",
+          "bbox": {
+            "left": 282,
+            "top": 129,
+            "right": 315,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "椭圆工具",
+          "bbox": {
+            "left": 316,
+            "top": 129,
+            "right": 348,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "箭头工具",
+          "bbox": {
+            "left": 577,
+            "top": 129,
+            "right": 616,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "自由线条工具",
+          "bbox": {
+            "left": 1098,
+            "top": 129,
+            "right": 1132,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "连接符工具",
+          "bbox": {
+            "left": 576,
+            "top": 129,
+            "right": 614,
+            "bottom": 165
+          }
+        },
+        {
+          "ref": "形状工具组",
+          "bbox": {
+            "left": 494,
+            "top": 129,
+            "right": 809,
+            "bottom": 165
+          }
+        }
+      ]
+    },
+    {
+      "ref": "幻灯片列表",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 169,
+        "right": 265,
+        "bottom": 777
+      },
+      "state_description": "左侧 Slides 区域列出 3 张幻灯片，第 1 张缩略图处于选中状态。",
+      "controls": [
+        {
+          "ref": "第 1 张幻灯片缩略图",
+          "bbox": {
+            "left": 80,
+            "top": 211,
+            "right": 251,
+            "bottom": 302
+          }
+        },
+        {
+          "ref": "第 2 张幻灯片缩略图",
+          "bbox": {
+            "left": 104,
+            "top": 314,
+            "right": 248,
+            "bottom": 397
+          }
+        },
+        {
+          "ref": "第 3 张幻灯片缩略图",
+          "bbox": {
+            "left": 104,
+            "top": 413,
+            "right": 248,
+            "bottom": 497
+          }
+        }
+      ]
+    },
+    {
+      "ref": "幻灯片编辑画布",
+      "identity": "same",
+      "bbox": {
+        "left": 265,
+        "top": 168,
+        "right": 872,
+        "bottom": 777
+      },
+      "state_description": "画布显示第 1 张幻灯片；页面中央偏上有蓝色矩形区域，文字为“Quarterly Review 2026”。页面上方可见参与提示和捐赠提示横幅。",
+      "controls": [
+        {
+          "ref": "幻灯片页面",
+          "bbox": {
+            "left": 279,
+            "top": 344,
+            "right": 845,
+            "bottom": 665
+          }
+        },
+        {
+          "ref": "参与提示横幅关闭按钮",
+          "bbox": {
+            "left": 844,
+            "top": 170,
+            "right": 871,
+            "bottom": 202
+          }
+        },
+        {
+          "ref": "捐赠提示横幅关闭按钮",
+          "bbox": {
+            "left": 844,
+            "top": 210,
+            "right": 871,
+            "bottom": 246
+          }
+        },
+        {
+          "name": "第 1 张幻灯片上的蓝色标题文本框",
+          "description": "幻灯片页面上偏上位置的蓝色矩形内容区域，内部可见文字“Quarterly Review 2026”；与本轮待核对的目标外观相符。",
+          "bbox": {
+            "left": 321,
+            "top": 406,
+            "right": 723,
+            "bottom": 468
+          },
+          "knowledge": [
+            {
+              "description": "位于第 1 张幻灯片页面内，显示标题文字“Quarterly Review 2026”。本轮仅根据可见外观确认其位置和所属画布，未操作或验证其编辑方式。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        }
+      ]
+    },
+    {
+      "ref": "Slide 属性与布局侧栏",
+      "identity": "same",
+      "bbox": {
+        "left": 872,
+        "top": 168,
+        "right": 1230,
+        "bottom": 777
+      },
+      "state_description": "右侧侧栏显示 Slide 属性和多种布局缩略图；Format 显示 Screen 16:9，Orientation 显示 Landscape，Background 显示 None，Master Slide 显示 Title Slide。",
+      "controls": [
+        {
+          "ref": "Format 下拉框",
+          "bbox": {
+            "left": 1019,
+            "top": 216,
+            "right": 1178,
+            "bottom": 251
+          }
+        },
+        {
+          "ref": "Orientation 下拉框",
+          "bbox": {
+            "left": 1019,
+            "top": 253,
+            "right": 1178,
+            "bottom": 289
+          }
+        },
+        {
+          "ref": "Background 下拉框",
+          "bbox": {
+            "left": 1019,
+            "top": 290,
+            "right": 1178,
+            "bottom": 325
+          }
+        },
+        {
+          "ref": "Insert Image 按钮",
+          "bbox": {
+            "left": 1019,
+            "top": 327,
+            "right": 1178,
+            "bottom": 361
+          }
+        },
+        {
+          "ref": "Master Slide 下拉框",
+          "bbox": {
+            "left": 1019,
+            "top": 365,
+            "right": 1178,
+            "bottom": 399
+          }
+        },
+        {
+          "ref": "Master Background 复选框",
+          "bbox": {
+            "left": 1023,
+            "top": 401,
+            "right": 1175,
+            "bottom": 424
+          }
+        },
+        {
+          "ref": "Master Objects 复选框",
+          "bbox": {
+            "left": 1023,
+            "top": 426,
+            "right": 1175,
+            "bottom": 449
+          }
+        },
+        {
+          "ref": "Master View 按钮",
+          "bbox": {
+            "left": 1019,
+            "top": 451,
+            "right": 1178,
+            "bottom": 487
+          }
+        },
+        {
+          "ref": "幻灯片布局缩略图组",
+          "bbox": {
+            "left": 891,
+            "top": 517,
+            "right": 1219,
+            "bottom": 704
+          }
+        }
+      ]
+    },
+    {
+      "ref": "状态栏",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 777,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "窗口底部状态栏可见；右侧缩放显示为 53%。",
+      "controls": [
+        {
+          "ref": "缩小按钮",
+          "bbox": {
+            "left": 1099,
+            "top": 779,
+            "right": 1120,
+            "bottom": 799
+          }
+        },
+        {
+          "ref": "缩放滑块",
+          "bbox": {
+            "left": 1120,
+            "top": 779,
+            "right": 1209,
+            "bottom": 799
+          }
+        },
+        {
+          "ref": "放大按钮",
+          "bbox": {
+            "left": 1210,
+            "top": 779,
+            "right": 1231,
+            "bottom": 799
+          }
+        }
+      ]
+    }
+  ],
+  "uncertainties": [
+    "蓝色矩形标题内容与待核对的“第 1 张幻灯片上的蓝色标题文本框”外观和位置相符，且归属幻灯片编辑画布；仅凭截图不能确定它在 Impress 内部属于文本框、占位符还是带文字的其他对象，未通过选中或编辑验证。",
+    "粘贴按钮的下拉菜单本次仍未展开，因此可选粘贴方式及未展开的具体原因仍未知。"
+  ]
+}

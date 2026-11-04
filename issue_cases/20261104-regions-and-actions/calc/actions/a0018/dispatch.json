@@ -1,0 +1,17 @@
+{
+  "source_call": "0138",
+  "source_region": "r0021",
+  "source_control": "c0079",
+  "working_region": "r0021",
+  "action": {
+    "action": "click",
+    "target": "c0079",
+    "reason": "展开 New 子菜单，确认其中显示的可选新建目标。",
+    "x": 115,
+    "y": 101,
+    "text": null,
+    "end_x": null,
+    "end_y": null
+  },
+  "status": "dispatching"
+}

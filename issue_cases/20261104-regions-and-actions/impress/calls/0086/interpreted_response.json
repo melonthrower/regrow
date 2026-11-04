@@ -1,0 +1,772 @@
+{
+  "foreground": {
+    "description": "LibreOffice Impress 正在前景，打开 quarterly_review.pptx 的编辑窗口。第 1 张幻灯片处于选中状态；画布上方可见两条提示横幅，右侧显示 Slide 属性与布局侧栏。粘贴按钮旁显示“Paste (Ctrl+V)”悬停提示，没有展开粘贴方式菜单。操作系统顶栏和左侧启动栏不属于 Impress 内容。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "interactive",
+  "regions": [
+    {
+      "ref": "r0006",
+      "identity": "same",
+      "bbox": {
+        "left": 71,
+        "top": 28,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "编辑窗口处于前景；粘贴按钮旁的悬停提示可见，粘贴方式菜单未显示。"
+    },
+    {
+      "ref": "r0007",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 61,
+        "right": 622,
+        "bottom": 89
+      },
+      "state_description": "菜单栏可见，未展开菜单。"
+    },
+    {
+      "ref": "r0011",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 89,
+        "right": 1280,
+        "bottom": 128
+      },
+      "state_description": "菜单栏下方的工具栏可见；部分工具图标呈灰色外观。"
+    },
+    {
+      "ref": "r0012",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 128,
+        "right": 1280,
+        "bottom": 168
+      },
+      "state_description": "画布上方的绘图工具栏可见。"
+    },
+    {
+      "ref": "r0008",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 169,
+        "right": 265,
+        "bottom": 777
+      },
+      "state_description": "左侧 Slides 区域列出 3 张幻灯片，第 1 张缩略图处于选中状态。"
+    },
+    {
+      "ref": "r0009",
+      "identity": "same",
+      "bbox": {
+        "left": 265,
+        "top": 168,
+        "right": 872,
+        "bottom": 777
+      },
+      "state_description": "画布显示第 1 张幻灯片；页面中央偏上有蓝色矩形区域，文字为“Quarterly Review 2026”。页面上方可见参与提示和捐赠提示横幅。"
+    },
+    {
+      "ref": "r0010",
+      "identity": "same",
+      "bbox": {
+        "left": 872,
+        "top": 168,
+        "right": 1230,
+        "bottom": 777
+      },
+      "state_description": "右侧侧栏显示 Slide 属性和多种布局缩略图；Format 显示 Screen 16:9，Orientation 显示 Landscape，Background 显示 None，Master Slide 显示 Title Slide。"
+    },
+    {
+      "ref": "r0013",
+      "identity": "same",
+      "bbox": {
+        "left": 72,
+        "top": 777,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "窗口底部状态栏可见；右侧缩放显示为 53%。"
+    }
+  ],
+  "uncertainties": [
+    "蓝色矩形标题内容与待核对的“第 1 张幻灯片上的蓝色标题文本框”外观和位置相符，且归属幻灯片编辑画布；仅凭截图不能确定它在 Impress 内部属于文本框、占位符还是带文字的其他对象，未通过选中或编辑验证。",
+    "粘贴按钮的下拉菜单本次仍未展开，因此可选粘贴方式及未展开的具体原因仍未知。"
+  ],
+  "controls": [
+    {
+      "ref": "c0059",
+      "bbox": {
+        "left": 295,
+        "top": 96,
+        "right": 324,
+        "bottom": 124
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0060",
+      "bbox": {
+        "left": 327,
+        "top": 96,
+        "right": 356,
+        "bottom": 124
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0061",
+      "bbox": {
+        "left": 359,
+        "top": 96,
+        "right": 399,
+        "bottom": 124
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0062",
+      "bbox": {
+        "left": 405,
+        "top": 96,
+        "right": 434,
+        "bottom": 124
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0063",
+      "bbox": {
+        "left": 654,
+        "top": 128,
+        "right": 704,
+        "bottom": 164
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0064",
+      "bbox": {
+        "left": 1237,
+        "top": 512,
+        "right": 1268,
+        "bottom": 543
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0070",
+      "bbox": {
+        "left": 1237,
+        "top": 213,
+        "right": 1268,
+        "bottom": 249
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0071",
+      "bbox": {
+        "left": 1237,
+        "top": 301,
+        "right": 1268,
+        "bottom": 337
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0072",
+      "bbox": {
+        "left": 1237,
+        "top": 344,
+        "right": 1268,
+        "bottom": 380
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0073",
+      "bbox": {
+        "left": 1237,
+        "top": 388,
+        "right": 1268,
+        "bottom": 424
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0074",
+      "bbox": {
+        "left": 1237,
+        "top": 431,
+        "right": 1268,
+        "bottom": 468
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0075",
+      "bbox": {
+        "left": 1237,
+        "top": 472,
+        "right": 1268,
+        "bottom": 508
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0076",
+      "bbox": {
+        "left": 1237,
+        "top": 513,
+        "right": 1268,
+        "bottom": 549
+      },
+      "region_index": 0
+    },
+    {
+      "ref": "c0006",
+      "bbox": {
+        "left": 72,
+        "top": 61,
+        "right": 109,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0007",
+      "bbox": {
+        "left": 111,
+        "top": 61,
+        "right": 150,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0008",
+      "bbox": {
+        "left": 152,
+        "top": 61,
+        "right": 195,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0009",
+      "bbox": {
+        "left": 197,
+        "top": 61,
+        "right": 252,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0010",
+      "bbox": {
+        "left": 254,
+        "top": 61,
+        "right": 322,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0011",
+      "bbox": {
+        "left": 324,
+        "top": 61,
+        "right": 369,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0027",
+      "bbox": {
+        "left": 371,
+        "top": 61,
+        "right": 460,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0028",
+      "bbox": {
+        "left": 462,
+        "top": 61,
+        "right": 508,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0029",
+      "bbox": {
+        "left": 510,
+        "top": 61,
+        "right": 580,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0030",
+      "bbox": {
+        "left": 582,
+        "top": 61,
+        "right": 623,
+        "bottom": 89
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0031",
+      "bbox": {
+        "left": 119,
+        "top": 94,
+        "right": 153,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0032",
+      "bbox": {
+        "left": 164,
+        "top": 94,
+        "right": 193,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0033",
+      "bbox": {
+        "left": 218,
+        "top": 94,
+        "right": 246,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0034",
+      "bbox": {
+        "left": 251,
+        "top": 94,
+        "right": 279,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0035",
+      "bbox": {
+        "left": 449,
+        "top": 94,
+        "right": 486,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0036",
+      "bbox": {
+        "left": 490,
+        "top": 94,
+        "right": 526,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0037",
+      "bbox": {
+        "left": 548,
+        "top": 94,
+        "right": 579,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0038",
+      "bbox": {
+        "left": 583,
+        "top": 94,
+        "right": 612,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0039",
+      "bbox": {
+        "left": 619,
+        "top": 94,
+        "right": 647,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0040",
+      "bbox": {
+        "left": 866,
+        "top": 94,
+        "right": 895,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0041",
+      "bbox": {
+        "left": 899,
+        "top": 94,
+        "right": 927,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0042",
+      "bbox": {
+        "left": 932,
+        "top": 94,
+        "right": 960,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0043",
+      "bbox": {
+        "left": 970,
+        "top": 94,
+        "right": 999,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0044",
+      "bbox": {
+        "left": 1001,
+        "top": 94,
+        "right": 1030,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0045",
+      "bbox": {
+        "left": 1080,
+        "top": 94,
+        "right": 1108,
+        "bottom": 122
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0046",
+      "bbox": {
+        "left": 73,
+        "top": 129,
+        "right": 107,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0047",
+      "bbox": {
+        "left": 109,
+        "top": 129,
+        "right": 145,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0048",
+      "bbox": {
+        "left": 244,
+        "top": 129,
+        "right": 281,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0049",
+      "bbox": {
+        "left": 282,
+        "top": 129,
+        "right": 315,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0050",
+      "bbox": {
+        "left": 316,
+        "top": 129,
+        "right": 348,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0051",
+      "bbox": {
+        "left": 577,
+        "top": 129,
+        "right": 616,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0052",
+      "bbox": {
+        "left": 1098,
+        "top": 129,
+        "right": 1132,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0053",
+      "bbox": {
+        "left": 576,
+        "top": 129,
+        "right": 614,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0054",
+      "bbox": {
+        "left": 494,
+        "top": 129,
+        "right": 809,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0012",
+      "bbox": {
+        "left": 80,
+        "top": 211,
+        "right": 251,
+        "bottom": 302
+      },
+      "region_index": 4
+    },
+    {
+      "ref": "c0013",
+      "bbox": {
+        "left": 104,
+        "top": 314,
+        "right": 248,
+        "bottom": 397
+      },
+      "region_index": 4
+    },
+    {
+      "ref": "c0014",
+      "bbox": {
+        "left": 104,
+        "top": 413,
+        "right": 248,
+        "bottom": 497
+      },
+      "region_index": 4
+    },
+    {
+      "ref": "c0015",
+      "bbox": {
+        "left": 279,
+        "top": 344,
+        "right": 845,
+        "bottom": 665
+      },
+      "region_index": 5
+    },
+    {
+      "ref": "c0016",
+      "bbox": {
+        "left": 844,
+        "top": 170,
+        "right": 871,
+        "bottom": 202
+      },
+      "region_index": 5
+    },
+    {
+      "ref": "c0017",
+      "bbox": {
+        "left": 844,
+        "top": 210,
+        "right": 871,
+        "bottom": 246
+      },
+      "region_index": 5
+    },
+    {
+      "name": "第 1 张幻灯片上的蓝色标题文本框",
+      "description": "幻灯片页面上偏上位置的蓝色矩形内容区域，内部可见文字“Quarterly Review 2026”；与本轮待核对的目标外观相符。",
+      "bbox": {
+        "left": 321,
+        "top": 406,
+        "right": 723,
+        "bottom": 468
+      },
+      "knowledge": [
+        {
+          "description": "位于第 1 张幻灯片页面内，显示标题文字“Quarterly Review 2026”。本轮仅根据可见外观确认其位置和所属画布，未操作或验证其编辑方式。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 5
+    },
+    {
+      "ref": "c0018",
+      "bbox": {
+        "left": 1019,
+        "top": 216,
+        "right": 1178,
+        "bottom": 251
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0019",
+      "bbox": {
+        "left": 1019,
+        "top": 253,
+        "right": 1178,
+        "bottom": 289
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0020",
+      "bbox": {
+        "left": 1019,
+        "top": 290,
+        "right": 1178,
+        "bottom": 325
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0021",
+      "bbox": {
+        "left": 1019,
+        "top": 327,
+        "right": 1178,
+        "bottom": 361
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0022",
+      "bbox": {
+        "left": 1019,
+        "top": 365,
+        "right": 1178,
+        "bottom": 399
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0023",
+      "bbox": {
+        "left": 1023,
+        "top": 401,
+        "right": 1175,
+        "bottom": 424
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0024",
+      "bbox": {
+        "left": 1023,
+        "top": 426,
+        "right": 1175,
+        "bottom": 449
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0025",
+      "bbox": {
+        "left": 1019,
+        "top": 451,
+        "right": 1178,
+        "bottom": 487
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0026",
+      "bbox": {
+        "left": 891,
+        "top": 517,
+        "right": 1219,
+        "bottom": 704
+      },
+      "region_index": 6
+    },
+    {
+      "ref": "c0056",
+      "bbox": {
+        "left": 1099,
+        "top": 779,
+        "right": 1120,
+        "bottom": 799
+      },
+      "region_index": 7
+    },
+    {
+      "ref": "c0057",
+      "bbox": {
+        "left": 1120,
+        "top": 779,
+        "right": 1209,
+        "bottom": 799
+      },
+      "region_index": 7
+    },
+    {
+      "ref": "c0058",
+      "bbox": {
+        "left": 1210,
+        "top": 779,
+        "right": 1231,
+        "bottom": 799
+      },
+      "region_index": 7
+    }
+  ]
+}

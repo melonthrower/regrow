@@ -1,0 +1,17 @@
+{
+  "source_call": "0087",
+  "source_region": "r0009",
+  "source_control": "c0077",
+  "working_region": "r0006",
+  "action": {
+    "action": "click",
+    "target": "c0077",
+    "reason": "先选中一个格式明确的源对象，为之后使用格式刷并观察其应用效果建立条件。",
+    "x": 500,
+    "y": 430,
+    "text": null,
+    "end_x": null,
+    "end_y": null
+  },
+  "status": "dispatching"
+}

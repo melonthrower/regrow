@@ -1,0 +1,350 @@
+{
+  "待补齐对象": [
+    {
+      "path": "文件命令菜单",
+      "name": "文件命令菜单",
+      "description": "由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。",
+      "identity": "new",
+      "state_description": "命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。",
+      "local_knowledge": {
+        "add": [
+          "列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。"
+        ]
+      },
+      "parent_index": 0
+    },
+    {
+      "path": "文件菜单",
+      "ref": "文件菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开文件相关命令菜单。"
+        },
+        {
+          "description": "展开后可见 New、打开、保存、导出、打印预览、打印、属性等命令；部分命令带子菜单箭头，Versions… 和 Save All 当前显示为灰色。菜单中还显示各命令可见的快捷键提示。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "add_image": true,
+      "image_conditions": [
+        "文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。"
+      ],
+      "region_index": 0,
+      "名称": "文件菜单",
+      "当前外观": "文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。"
+    },
+    {
+      "path": "New",
+      "name": "New",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Open…",
+      "name": "Open…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打开命令；菜单显示快捷键 Ctrl+O，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Open Remote…",
+      "name": "Open Remote…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的远程打开命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Recent Documents",
+      "name": "Recent Documents",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的最近文档入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Close",
+      "name": "Close",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的关闭命令；本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Wizards",
+      "name": "Wizards",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的向导入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Templates",
+      "name": "Templates",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的模板入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Reload",
+      "name": "Reload",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的重新载入命令；本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Versions…",
+      "name": "Versions…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的版本命令；当前显示为灰色，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Save",
+      "name": "Save",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的保存命令；菜单显示快捷键 Ctrl+S，本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Save As…",
+      "name": "Save As…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的另存为命令；菜单显示快捷键 Shift+Ctrl+S，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Save Remote…",
+      "name": "Save Remote…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的远程保存命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Save a Copy…",
+      "name": "Save a Copy…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的保存副本命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Save All",
+      "name": "Save All",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的全部保存命令；当前显示为灰色，本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Export…",
+      "name": "Export…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的导出命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Export as PDF…",
+      "name": "Export as PDF…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的导出为 PDF 命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Send",
+      "name": "Send",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的发送入口；带子菜单箭头，本次未展开或执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Preview in Web Browser",
+      "name": "Preview in Web Browser",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的在浏览器中预览命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Print Preview",
+      "name": "Print Preview",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打印预览命令；菜单显示快捷键 Shift+Ctrl+O，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Print…",
+      "name": "Print…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打印命令；菜单显示快捷键 Ctrl+P，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Printer Settings…",
+      "name": "Printer Settings…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打印机设置命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Properties…",
+      "name": "Properties…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的属性命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Digital Signatures",
+      "name": "Digital Signatures",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的数字签名入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1
+    },
+    {
+      "path": "Exit LibreOffice",
+      "name": "Exit LibreOffice",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的退出 LibreOffice 命令；菜单显示快捷键 Ctrl+Q，本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1
+    }
+  ],
+  "所属区块": [
+    {
+      "ref": "Calc 菜单栏",
+      "identity": "same"
+    },
+    {
+      "name": "文件命令菜单",
+      "description": "由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。",
+      "identity": "new",
+      "state_description": "命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。",
+      "local_knowledge": {
+        "add": [
+          "列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。"
+        ]
+      },
+      "parent_index": 0
+    }
+  ],
+  "定位要求": "给定旧控件已完成历史身份与状态比较。现在逐一确认当前图中的具体对象，并框出符合其名称和当前外观的控件；reason简述框内对象的辨认依据，不把旁边相似对象作为它。无法确认时bbox填null。",
+  "平台": "OSWorld Linux桌面"
+}
+
+本图：原动作后图；仅补齐本批对象外观，不判断动作效果；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

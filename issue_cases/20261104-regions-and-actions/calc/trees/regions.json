@@ -1,0 +1,529 @@
+[
+  {
+    "ref": "r0013",
+    "name": "Calc 菜单栏",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0039",
+        "name": "文件菜单"
+      },
+      {
+        "ref": "c0040",
+        "name": "编辑菜单"
+      },
+      {
+        "ref": "c0041",
+        "name": "视图菜单"
+      },
+      {
+        "ref": "c0042",
+        "name": "插入菜单"
+      },
+      {
+        "ref": "c0043",
+        "name": "格式菜单"
+      },
+      {
+        "ref": "c0044",
+        "name": "样式菜单"
+      },
+      {
+        "ref": "c0045",
+        "name": "工作表菜单"
+      },
+      {
+        "ref": "c0046",
+        "name": "数据菜单"
+      },
+      {
+        "ref": "c0047",
+        "name": "工具菜单"
+      },
+      {
+        "ref": "c0048",
+        "name": "窗口菜单"
+      },
+      {
+        "ref": "c0049",
+        "name": "帮助菜单"
+      }
+    ],
+    "functions": [],
+    "access_relations": [
+      {
+        "region": "r0021",
+        "evidence": "点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。",
+        "conditions": [],
+        "attempt": "a0017",
+        "meaning": "点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。",
+        "source": {
+          "before_observation": "discovery:0131",
+          "after_observation": "update:0134",
+          "before_image": "../../action_attempts/a0017/before.png",
+          "after_image": "../../action_attempts/a0017/after.png",
+          "selection_call": "0133",
+          "result_call": "0134",
+          "execution_dir": "../../action_attempts/a0017",
+          "before_regions": [
+            "r0013",
+            "r0014",
+            "r0015",
+            "r0016",
+            "r0017",
+            "r0018",
+            "r0019",
+            "r0020"
+          ],
+          "attempt": "a0017",
+          "basis": "explored"
+        },
+        "control": "c0039",
+        "target_control": null
+      }
+    ]
+  },
+  {
+    "ref": "r0014",
+    "name": "Calc 工具栏",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0050",
+        "name": "新建文档"
+      },
+      {
+        "ref": "c0051",
+        "name": "打开文件"
+      },
+      {
+        "ref": "c0052",
+        "name": "保存"
+      },
+      {
+        "ref": "c0053",
+        "name": "导出为 PDF"
+      },
+      {
+        "ref": "c0054",
+        "name": "打印"
+      },
+      {
+        "ref": "c0055",
+        "name": "剪切"
+      },
+      {
+        "ref": "c0056",
+        "name": "复制"
+      },
+      {
+        "ref": "c0057",
+        "name": "撤消"
+      },
+      {
+        "ref": "c0058",
+        "name": "重做"
+      },
+      {
+        "ref": "c0059",
+        "name": "字体名称"
+      },
+      {
+        "ref": "c0060",
+        "name": "字号"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0015",
+    "name": "公式栏",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0061",
+        "name": "名称框"
+      },
+      {
+        "ref": "c0062",
+        "name": "函数向导"
+      },
+      {
+        "ref": "c0063",
+        "name": "公式输入区域"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0016",
+    "name": "信息提示横幅",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0064",
+        "name": "Get involved"
+      },
+      {
+        "ref": "c0065",
+        "name": "关闭参与提示"
+      },
+      {
+        "ref": "c0066",
+        "name": "Donate"
+      },
+      {
+        "ref": "c0067",
+        "name": "关闭捐赠提示"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0017",
+    "name": "工作表网格",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0068",
+        "name": "单元格 A1"
+      },
+      {
+        "ref": "c0069",
+        "name": "工作表数据区域 A1:C5"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0018",
+    "name": "工作表标签与导航",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0070",
+        "name": "工作表 budget"
+      },
+      {
+        "ref": "c0071",
+        "name": "工作表导航按钮"
+      },
+      {
+        "ref": "c0072",
+        "name": "新增工作表"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0019",
+    "name": "状态栏",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0073",
+        "name": "缩放滑块"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0020",
+    "name": "侧边栏入口",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0074",
+        "name": "属性面板入口"
+      },
+      {
+        "ref": "c0075",
+        "name": "侧边栏画笔图标入口"
+      },
+      {
+        "ref": "c0076",
+        "name": "图库入口"
+      },
+      {
+        "ref": "c0077",
+        "name": "导航器入口"
+      },
+      {
+        "ref": "c0078",
+        "name": "函数入口"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0021",
+    "name": "文件命令菜单",
+    "parent_region": "r0013",
+    "controls": [
+      {
+        "ref": "c0079",
+        "name": "New"
+      },
+      {
+        "ref": "c0080",
+        "name": "Open…"
+      },
+      {
+        "ref": "c0081",
+        "name": "Open Remote…"
+      },
+      {
+        "ref": "c0082",
+        "name": "Recent Documents"
+      },
+      {
+        "ref": "c0083",
+        "name": "Close"
+      },
+      {
+        "ref": "c0084",
+        "name": "Wizards"
+      },
+      {
+        "ref": "c0085",
+        "name": "Templates"
+      },
+      {
+        "ref": "c0086",
+        "name": "Reload"
+      },
+      {
+        "ref": "c0087",
+        "name": "Versions…"
+      },
+      {
+        "ref": "c0088",
+        "name": "Save"
+      },
+      {
+        "ref": "c0089",
+        "name": "Save As…"
+      },
+      {
+        "ref": "c0090",
+        "name": "Save Remote…"
+      },
+      {
+        "ref": "c0091",
+        "name": "Save a Copy…"
+      },
+      {
+        "ref": "c0092",
+        "name": "Save All"
+      },
+      {
+        "ref": "c0093",
+        "name": "Export…"
+      },
+      {
+        "ref": "c0094",
+        "name": "Export as PDF…"
+      },
+      {
+        "ref": "c0095",
+        "name": "Send"
+      },
+      {
+        "ref": "c0096",
+        "name": "Preview in Web Browser"
+      },
+      {
+        "ref": "c0097",
+        "name": "Print Preview"
+      },
+      {
+        "ref": "c0098",
+        "name": "Print…"
+      },
+      {
+        "ref": "c0099",
+        "name": "Printer Settings…"
+      },
+      {
+        "ref": "c0100",
+        "name": "Properties…"
+      },
+      {
+        "ref": "c0101",
+        "name": "Digital Signatures"
+      },
+      {
+        "ref": "c0102",
+        "name": "Exit LibreOffice"
+      }
+    ],
+    "functions": [
+      {
+        "name": "创建文档",
+        "description": "从文件命令菜单点击 New 可打开新建目标子菜单；其中可见 Text Document、Spreadsheet、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates…，各目标选择后的具体结果尚未验证。"
+      },
+      {
+        "name": "打开本地文档",
+        "description": "通过 Open… 进入打开文件流程；本地文件选择界面的具体参数待探索。"
+      },
+      {
+        "name": "访问最近文档",
+        "description": "通过 Recent Documents 查看最近文档入口；具体列表内容待探索。"
+      },
+      {
+        "name": "关闭文档",
+        "description": "Close 是关闭当前文档的命令；实际关闭结果待在实验文档上确认。"
+      },
+      {
+        "name": "访问向导",
+        "description": "通过 Wizards 进入向导相关入口；具体可用向导待探索。"
+      },
+      {
+        "name": "访问模板",
+        "description": "通过 Templates 进入模板相关入口；具体内容待探索。"
+      },
+      {
+        "name": "重新载入文档",
+        "description": "Reload 是重新载入当前文档的命令；实际结果待在可丢弃的实验文档上确认。"
+      },
+      {
+        "name": "管理文档版本",
+        "description": "菜单提供 Versions… 版本相关命令，但当前显示为灰色；可用条件和目标内容待确认。"
+      },
+      {
+        "name": "保存文档",
+        "description": "Save 是保存当前文档的命令；菜单显示快捷键 Ctrl+S，保存结果待在实验文档上确认。"
+      },
+      {
+        "name": "另存为文档",
+        "description": "Save As… 用于另存文档；保存位置、文件名和格式等选项待查看。"
+      },
+      {
+        "name": "保存文档副本",
+        "description": "Save a Copy… 用于保存文档副本；具体保存选项待查看。"
+      },
+      {
+        "name": "保存所有打开的文档",
+        "description": "Save All 是保存全部文档的命令；当前显示为灰色，启用条件待确认。"
+      },
+      {
+        "name": "导出文档",
+        "description": "Export… 提供文档导出入口；可选格式和参数待查看。"
+      },
+      {
+        "name": "导出为 PDF",
+        "description": "Export as PDF… 提供 PDF 导出入口；具体设置待查看。"
+      },
+      {
+        "name": "查看发送选项",
+        "description": "通过 Send 查看发送相关选项；本轮仅限离线观察，不执行外发。"
+      },
+      {
+        "name": "打印预览",
+        "description": "Print Preview 用于进入打印预览；预览界面待确认。"
+      },
+      {
+        "name": "打印文档",
+        "description": "Print… 提供打印入口；本轮只查看界面，不提交打印任务。"
+      },
+      {
+        "name": "设置打印机",
+        "description": "Printer Settings… 提供打印机设置入口；目标界面待确认。"
+      },
+      {
+        "name": "查看文档属性",
+        "description": "Properties… 提供文档属性入口；具体展示内容待确认。"
+      },
+      {
+        "name": "查看数字签名选项",
+        "description": "通过 Digital Signatures 查看数字签名相关入口；本轮不执行签名或证书操作。"
+      }
+    ],
+    "access_relations": [
+      {
+        "region": "r0022",
+        "evidence": "点击文件命令菜单中的 New 后，New 行保持可见并展开右侧子菜单。子菜单显示 Text Document、Spreadsheet（Ctrl+N）、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates…（Shift+Ctrl+N）。本步仅确认这些可选新建目标出现，未选择任何一项，也未验证选择后的结果。",
+        "conditions": [],
+        "attempt": "a0018",
+        "meaning": "点击文件命令菜单中的 New 后，New 行保持可见并展开右侧子菜单。子菜单显示 Text Document、Spreadsheet（Ctrl+N）、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates…（Shift+Ctrl+N）。本步仅确认这些可选新建目标出现，未选择任何一项，也未验证选择后的结果。",
+        "source": {
+          "before_observation": "update:0134",
+          "after_observation": "update:0142",
+          "before_image": "../../action_attempts/a0018/before.png",
+          "after_image": "../../action_attempts/a0018/after.png",
+          "selection_call": "0138",
+          "result_call": "0142",
+          "execution_dir": "../../action_attempts/a0018",
+          "before_regions": [
+            "r0013",
+            "r0021"
+          ],
+          "attempt": "a0018",
+          "basis": "explored"
+        },
+        "control": "c0079",
+        "target_control": null
+      }
+    ]
+  },
+  {
+    "ref": "r0022",
+    "name": "New 子菜单",
+    "parent_region": "r0021",
+    "controls": [
+      {
+        "ref": "c0103",
+        "name": "Text Document"
+      },
+      {
+        "ref": "c0104",
+        "name": "Spreadsheet"
+      },
+      {
+        "ref": "c0105",
+        "name": "Presentation"
+      },
+      {
+        "ref": "c0106",
+        "name": "Drawing"
+      },
+      {
+        "ref": "c0107",
+        "name": "Formula"
+      },
+      {
+        "ref": "c0108",
+        "name": "HTML Document"
+      },
+      {
+        "ref": "c0109",
+        "name": "XML Form Document"
+      },
+      {
+        "ref": "c0110",
+        "name": "Labels"
+      },
+      {
+        "ref": "c0111",
+        "name": "Business Cards"
+      },
+      {
+        "ref": "c0112",
+        "name": "Master Document"
+      },
+      {
+        "ref": "c0113",
+        "name": "Templates…"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  }
+]

@@ -265,7 +265,11 @@ snapshots must explicitly distinguish unapproved drafts and unverified behavior
 from accepted changes; synchronization does not approve Prompt modifications.
 User update (2026-11-04): publish source, required runtime resources, and concise
 usage/known-issue notes. Keep tests, validation logs, review reports, daily work
-notes, and old delivery bundles local; do not upload them during source sync. This is separate from the
+notes, and old delivery bundles local; do not upload them during source sync.
+User exception (2026-11-04): when explicitly requested, publish selected issue
+screenshots, application-tree snapshots, and related call requests/replies with
+the issue description after removing credentials and private endpoints. Keep
+whole-run dumps and unrelated verification material local. This is separate from the
 workspace's existing origin. Preserve remote history; do not force-push. Do not
 upload runtime records, screenshots, credentials, private endpoints, dependency
 links, or unverified edits as accepted changes. A research snapshot must clearly

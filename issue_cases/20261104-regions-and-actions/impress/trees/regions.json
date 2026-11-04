@@ -1,0 +1,554 @@
+[
+  {
+    "ref": "r0006",
+    "name": "LibreOffice Impress 窗口",
+    "parent_region": null,
+    "controls": [
+      {
+        "ref": "c0059",
+        "name": "剪切按钮"
+      },
+      {
+        "ref": "c0060",
+        "name": "复制按钮"
+      },
+      {
+        "ref": "c0061",
+        "name": "粘贴按钮"
+      },
+      {
+        "ref": "c0062",
+        "name": "格式刷图标按钮（标准工具栏）"
+      },
+      {
+        "ref": "c0063",
+        "name": "幻灯片布局下拉按钮"
+      },
+      {
+        "ref": "c0064",
+        "name": "蓝色画板铅笔图标按钮"
+      },
+      {
+        "ref": "c0065",
+        "name": "从第一张幻灯片开始放映按钮"
+      },
+      {
+        "ref": "c0066",
+        "name": "从当前幻灯片开始放映按钮"
+      },
+      {
+        "ref": "c0067",
+        "name": "新建幻灯片按钮"
+      },
+      {
+        "ref": "c0068",
+        "name": "复制幻灯片按钮"
+      },
+      {
+        "ref": "c0069",
+        "name": "删除幻灯片按钮"
+      },
+      {
+        "ref": "c0070",
+        "name": "侧栏样式图标按钮"
+      },
+      {
+        "ref": "c0071",
+        "name": "侧栏图库图标按钮"
+      },
+      {
+        "ref": "c0072",
+        "name": "侧栏导航器图标按钮"
+      },
+      {
+        "ref": "c0073",
+        "name": "侧栏菱形图标按钮"
+      },
+      {
+        "ref": "c0074",
+        "name": "侧栏幻灯片动画图标按钮"
+      },
+      {
+        "ref": "c0075",
+        "name": "侧栏媒体图标按钮"
+      },
+      {
+        "ref": "c0076",
+        "name": "侧栏母版图标按钮"
+      }
+    ],
+    "functions": [],
+    "access_relations": [
+      {
+        "region": "r0012",
+        "evidence": "点击「格式刷图标按钮（标准工具栏）」后，第 1 张幻灯片上的蓝色标题文本框仍处于选中状态，未见其内容或格式发生可确认的变化，也未操作目标对象。动作后图中出现了动作前图中未见的绘图工具栏；没有证据确认格式刷是否已进入待应用状态，或格式是否已应用。",
+        "conditions": [
+          "在第 1 张幻灯片蓝色标题文本框选中时点击「格式刷图标按钮（标准工具栏）」；动作后图中绘图工具栏可见，动作前图中未见。"
+        ],
+        "attempt": "a0009",
+        "meaning": "点击「格式刷图标按钮（标准工具栏）」后，第 1 张幻灯片上的蓝色标题文本框仍处于选中状态，未见其内容或格式发生可确认的变化，也未操作目标对象。动作后图中出现了动作前图中未见的绘图工具栏；没有证据确认格式刷是否已进入待应用状态，或格式是否已应用。",
+        "source": {
+          "before_observation": "update:0092",
+          "after_observation": "update:0094",
+          "before_image": "../../action_attempts/a0009/before.png",
+          "after_image": "../../action_attempts/a0009/after.png",
+          "selection_call": "0093",
+          "result_call": "0094",
+          "execution_dir": "../../action_attempts/a0009",
+          "before_regions": [
+            "r0006",
+            "r0011",
+            "r0009",
+            "r0010"
+          ],
+          "attempt": "a0009",
+          "basis": "explored"
+        },
+        "control": "c0062",
+        "target_control": null
+      }
+    ]
+  },
+  {
+    "ref": "r0007",
+    "name": "Impress 菜单栏",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0006",
+        "name": "File 菜单"
+      },
+      {
+        "ref": "c0007",
+        "name": "Edit 菜单"
+      },
+      {
+        "ref": "c0008",
+        "name": "View 菜单"
+      },
+      {
+        "ref": "c0009",
+        "name": "Insert 菜单"
+      },
+      {
+        "ref": "c0010",
+        "name": "Format 菜单"
+      },
+      {
+        "ref": "c0011",
+        "name": "Slide 菜单"
+      },
+      {
+        "ref": "c0027",
+        "name": "Slide Show 菜单"
+      },
+      {
+        "ref": "c0028",
+        "name": "Tools 菜单"
+      },
+      {
+        "ref": "c0029",
+        "name": "Window 菜单"
+      },
+      {
+        "ref": "c0030",
+        "name": "Help 菜单"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0008",
+    "name": "幻灯片列表",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0012",
+        "name": "第 1 张幻灯片缩略图"
+      },
+      {
+        "ref": "c0013",
+        "name": "第 2 张幻灯片缩略图"
+      },
+      {
+        "ref": "c0014",
+        "name": "第 3 张幻灯片缩略图"
+      }
+    ],
+    "functions": [],
+    "access_relations": [
+      {
+        "region": "r0009",
+        "evidence": "点击“第 1 张幻灯片缩略图”后，它变为选中状态；编辑画布切换到第 1 张幻灯片，显示蓝色矩形文本对象“Quarterly Review 2026”。右侧属性侧栏显示幻灯片级属性，Master Slide 可见值为“Title Slide”；状态栏显示“Slide 1 of 3”。没有操作格式刷，也没有对画布对象执行格式应用，因此这一步未确认格式刷是否进入待应用状态或怎样应用格式。",
+        "conditions": [
+          "在幻灯片列表中点击第 1 张幻灯片缩略图。"
+        ],
+        "attempt": "a0011",
+        "meaning": "点击“第 1 张幻灯片缩略图”后，它变为选中状态；编辑画布切换到第 1 张幻灯片，显示蓝色矩形文本对象“Quarterly Review 2026”。右侧属性侧栏显示幻灯片级属性，Master Slide 可见值为“Title Slide”；状态栏显示“Slide 1 of 3”。没有操作格式刷，也没有对画布对象执行格式应用，因此这一步未确认格式刷是否进入待应用状态或怎样应用格式。",
+        "source": {
+          "before_observation": "update:0100",
+          "after_observation": "update:0103",
+          "before_image": "../../action_attempts/a0011/before.png",
+          "after_image": "../../action_attempts/a0011/after.png",
+          "selection_call": "0101",
+          "result_call": "0103",
+          "execution_dir": "../../action_attempts/a0011",
+          "before_regions": [
+            "r0006",
+            "r0007",
+            "r0008",
+            "r0009",
+            "r0010",
+            "r0011",
+            "r0012",
+            "r0013"
+          ],
+          "attempt": "a0011",
+          "basis": "explored"
+        },
+        "control": "c0012",
+        "target_control": null
+      },
+      {
+        "region": "r0010",
+        "evidence": "点击“第 1 张幻灯片缩略图”后，它变为选中状态；编辑画布切换到第 1 张幻灯片，显示蓝色矩形文本对象“Quarterly Review 2026”。右侧属性侧栏显示幻灯片级属性，Master Slide 可见值为“Title Slide”；状态栏显示“Slide 1 of 3”。没有操作格式刷，也没有对画布对象执行格式应用，因此这一步未确认格式刷是否进入待应用状态或怎样应用格式。",
+        "conditions": [
+          "在幻灯片列表中点击第 1 张幻灯片缩略图。"
+        ],
+        "attempt": "a0011",
+        "meaning": "点击“第 1 张幻灯片缩略图”后，它变为选中状态；编辑画布切换到第 1 张幻灯片，显示蓝色矩形文本对象“Quarterly Review 2026”。右侧属性侧栏显示幻灯片级属性，Master Slide 可见值为“Title Slide”；状态栏显示“Slide 1 of 3”。没有操作格式刷，也没有对画布对象执行格式应用，因此这一步未确认格式刷是否进入待应用状态或怎样应用格式。",
+        "source": {
+          "before_observation": "update:0100",
+          "after_observation": "update:0103",
+          "before_image": "../../action_attempts/a0011/before.png",
+          "after_image": "../../action_attempts/a0011/after.png",
+          "selection_call": "0101",
+          "result_call": "0103",
+          "execution_dir": "../../action_attempts/a0011",
+          "before_regions": [
+            "r0006",
+            "r0007",
+            "r0008",
+            "r0009",
+            "r0010",
+            "r0011",
+            "r0012",
+            "r0013"
+          ],
+          "attempt": "a0011",
+          "basis": "explored"
+        },
+        "control": "c0012",
+        "target_control": null
+      },
+      {
+        "region": "r0009",
+        "evidence": "点击“第 2 张幻灯片缩略图”后，该缩略图变为选中状态，画布切换为第 2 张幻灯片，显示蓝色矩形文本对象“Agenda”，内容包括“1. Revenue”“2. Costs”“3. Hiring plan”。右侧属性侧栏显示幻灯片级的 Slide 与 Layouts 内容；状态栏显示“Slide 2 of 3”。没有对格式刷或画布对象执行操作，因此不能据此确认格式刷的待应用状态或格式应用结果。",
+        "conditions": [
+          "在“幻灯片列表”中点击“第 2 张幻灯片缩略图”。"
+        ],
+        "attempt": "a0010",
+        "meaning": "点击“第 2 张幻灯片缩略图”后，该缩略图变为选中状态，画布切换为第 2 张幻灯片，显示蓝色矩形文本对象“Agenda”，内容包括“1. Revenue”“2. Costs”“3. Hiring plan”。右侧属性侧栏显示幻灯片级的 Slide 与 Layouts 内容；状态栏显示“Slide 2 of 3”。没有对格式刷或画布对象执行操作，因此不能据此确认格式刷的待应用状态或格式应用结果。",
+        "source": {
+          "before_observation": "discovery:0098",
+          "after_observation": "update:0100",
+          "before_image": "../../action_attempts/a0010/before.png",
+          "after_image": "../../action_attempts/a0010/after.png",
+          "selection_call": "0099",
+          "result_call": "0100",
+          "execution_dir": "../../action_attempts/a0010",
+          "before_regions": [
+            "r0006",
+            "r0007",
+            "r0011",
+            "r0012",
+            "r0008",
+            "r0009",
+            "r0010",
+            "r0013"
+          ],
+          "attempt": "a0010",
+          "basis": "explored"
+        },
+        "control": "c0013",
+        "target_control": null
+      },
+      {
+        "region": "r0010",
+        "evidence": "点击“第 2 张幻灯片缩略图”后，该缩略图变为选中状态，画布切换为第 2 张幻灯片，显示蓝色矩形文本对象“Agenda”，内容包括“1. Revenue”“2. Costs”“3. Hiring plan”。右侧属性侧栏显示幻灯片级的 Slide 与 Layouts 内容；状态栏显示“Slide 2 of 3”。没有对格式刷或画布对象执行操作，因此不能据此确认格式刷的待应用状态或格式应用结果。",
+        "conditions": [
+          "在“幻灯片列表”中点击“第 2 张幻灯片缩略图”后，侧栏显示幻灯片级属性与布局内容。"
+        ],
+        "attempt": "a0010",
+        "meaning": "点击“第 2 张幻灯片缩略图”后，该缩略图变为选中状态，画布切换为第 2 张幻灯片，显示蓝色矩形文本对象“Agenda”，内容包括“1. Revenue”“2. Costs”“3. Hiring plan”。右侧属性侧栏显示幻灯片级的 Slide 与 Layouts 内容；状态栏显示“Slide 2 of 3”。没有对格式刷或画布对象执行操作，因此不能据此确认格式刷的待应用状态或格式应用结果。",
+        "source": {
+          "before_observation": "discovery:0098",
+          "after_observation": "update:0100",
+          "before_image": "../../action_attempts/a0010/before.png",
+          "after_image": "../../action_attempts/a0010/after.png",
+          "selection_call": "0099",
+          "result_call": "0100",
+          "execution_dir": "../../action_attempts/a0010",
+          "before_regions": [
+            "r0006",
+            "r0007",
+            "r0011",
+            "r0012",
+            "r0008",
+            "r0009",
+            "r0010",
+            "r0013"
+          ],
+          "attempt": "a0010",
+          "basis": "explored"
+        },
+        "control": "c0013",
+        "target_control": null
+      }
+    ]
+  },
+  {
+    "ref": "r0009",
+    "name": "幻灯片编辑画布",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0015",
+        "name": "幻灯片页面"
+      },
+      {
+        "ref": "c0016",
+        "name": "参与提示横幅关闭按钮"
+      },
+      {
+        "ref": "c0017",
+        "name": "捐赠提示横幅关闭按钮"
+      },
+      {
+        "ref": "c0077",
+        "name": "第 1 张幻灯片上的蓝色标题文本框"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0010",
+    "name": "Slide 属性与布局侧栏",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0018",
+        "name": "Format 下拉框"
+      },
+      {
+        "ref": "c0019",
+        "name": "Orientation 下拉框"
+      },
+      {
+        "ref": "c0020",
+        "name": "Background 下拉框"
+      },
+      {
+        "ref": "c0021",
+        "name": "Insert Image 按钮"
+      },
+      {
+        "ref": "c0022",
+        "name": "Master Slide 下拉框"
+      },
+      {
+        "ref": "c0023",
+        "name": "Master Background 复选框"
+      },
+      {
+        "ref": "c0024",
+        "name": "Master Objects 复选框"
+      },
+      {
+        "ref": "c0025",
+        "name": "Master View 按钮"
+      },
+      {
+        "ref": "c0026",
+        "name": "幻灯片布局缩略图组"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0011",
+    "name": "标准工具栏",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0031",
+        "name": "打开文件按钮"
+      },
+      {
+        "ref": "c0032",
+        "name": "保存按钮"
+      },
+      {
+        "ref": "c0033",
+        "name": "导出为 PDF 按钮"
+      },
+      {
+        "ref": "c0034",
+        "name": "打印按钮"
+      },
+      {
+        "ref": "c0035",
+        "name": "撤销按钮"
+      },
+      {
+        "ref": "c0036",
+        "name": "重做按钮"
+      },
+      {
+        "ref": "c0037",
+        "name": "查找按钮"
+      },
+      {
+        "ref": "c0038",
+        "name": "拼写检查按钮"
+      },
+      {
+        "ref": "c0039",
+        "name": "插入表格按钮"
+      },
+      {
+        "ref": "c0040",
+        "name": "插入图像按钮"
+      },
+      {
+        "ref": "c0041",
+        "name": "插入视频按钮"
+      },
+      {
+        "ref": "c0042",
+        "name": "插入图表按钮"
+      },
+      {
+        "ref": "c0043",
+        "name": "插入文本框按钮"
+      },
+      {
+        "ref": "c0044",
+        "name": "特殊字符按钮"
+      },
+      {
+        "ref": "c0045",
+        "name": "超链接按钮"
+      },
+      {
+        "ref": "c0055",
+        "name": "新建演示文稿按钮"
+      },
+      {
+        "ref": "c0062",
+        "name": "格式刷图标按钮（标准工具栏）"
+      }
+    ],
+    "functions": [],
+    "access_relations": [
+      {
+        "region": "r0012",
+        "evidence": "点击「格式刷图标按钮（标准工具栏）」后，第 1 张幻灯片上的蓝色标题文本框仍处于选中状态，未见其内容或格式发生可确认的变化，也未操作目标对象。动作后图中出现了动作前图中未见的绘图工具栏；没有证据确认格式刷是否已进入待应用状态，或格式是否已应用。",
+        "conditions": [
+          "在第 1 张幻灯片蓝色标题文本框选中时点击「格式刷图标按钮（标准工具栏）」；动作后图中绘图工具栏可见，动作前图中未见。"
+        ],
+        "attempt": "a0009",
+        "meaning": "点击「格式刷图标按钮（标准工具栏）」后，第 1 张幻灯片上的蓝色标题文本框仍处于选中状态，未见其内容或格式发生可确认的变化，也未操作目标对象。动作后图中出现了动作前图中未见的绘图工具栏；没有证据确认格式刷是否已进入待应用状态，或格式是否已应用。",
+        "source": {
+          "before_observation": "update:0092",
+          "after_observation": "update:0094",
+          "before_image": "../../action_attempts/a0009/before.png",
+          "after_image": "../../action_attempts/a0009/after.png",
+          "selection_call": "0093",
+          "result_call": "0094",
+          "execution_dir": "../../action_attempts/a0009",
+          "before_regions": [
+            "r0006",
+            "r0011",
+            "r0009",
+            "r0010"
+          ],
+          "attempt": "a0009",
+          "basis": "explored"
+        },
+        "control": "c0062",
+        "target_control": null,
+        "observed_source": "r0006"
+      }
+    ]
+  },
+  {
+    "ref": "r0012",
+    "name": "绘图工具栏",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0046",
+        "name": "选择工具"
+      },
+      {
+        "ref": "c0047",
+        "name": "缩放工具"
+      },
+      {
+        "ref": "c0048",
+        "name": "线条工具"
+      },
+      {
+        "ref": "c0049",
+        "name": "矩形工具"
+      },
+      {
+        "ref": "c0050",
+        "name": "椭圆工具"
+      },
+      {
+        "ref": "c0051",
+        "name": "箭头工具"
+      },
+      {
+        "ref": "c0052",
+        "name": "自由线条工具"
+      },
+      {
+        "ref": "c0053",
+        "name": "连接符工具"
+      },
+      {
+        "ref": "c0054",
+        "name": "形状工具组"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  },
+  {
+    "ref": "r0013",
+    "name": "状态栏",
+    "parent_region": "r0006",
+    "controls": [
+      {
+        "ref": "c0056",
+        "name": "缩小按钮"
+      },
+      {
+        "ref": "c0057",
+        "name": "缩放滑块"
+      },
+      {
+        "ref": "c0058",
+        "name": "放大按钮"
+      }
+    ],
+    "functions": [],
+    "access_relations": []
+  }
+]

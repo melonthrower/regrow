@@ -1,0 +1,268 @@
+{
+  "exception": "none",
+  "recovery_handoff": "",
+  "inventory": "complete",
+  "evidence": "当前材料确认了文件命令菜单中的命令名称、部分快捷键、子菜单箭头及灰色状态，但没有确认多数命令的目标内容或操作结果。下列任务覆盖了本轮范围内仍影响使用的独立入口、参数和条件；远程打开/保存涉及本轮未允许的外部服务，退出 LibreOffice 违反保留当前桌面会话的限制，因此不安排探索。其余同类命令已分别按不同用途处理，无需逐项重复同一种操作方式。",
+  "operations": [
+    {
+      "control": "c0079",
+      "task_type": "function",
+      "completion_condition": "展开 New 子菜单并确认其中显示的可选新建目标。"
+    },
+    {
+      "control": "c0080",
+      "task_type": "function",
+      "completion_condition": "打开 Open… 的文件选择界面，确认其用于选择本地文件；停在选择界面，不打开非实验样本。"
+    },
+    {
+      "control": "c0082",
+      "task_type": "function",
+      "completion_condition": "展开 Recent Documents 子菜单并确认其显示的最近文档内容或空列表状态。"
+    },
+    {
+      "control": "c0083",
+      "task_type": "function",
+      "completion_condition": "对可丢弃的实验文档使用 Close，确认文档关闭后的界面；不退出 LibreOffice。"
+    },
+    {
+      "control": "c0084",
+      "task_type": "function",
+      "completion_condition": "展开 Wizards 子菜单并确认其中可访问的向导入口。"
+    },
+    {
+      "control": "c0085",
+      "task_type": "function",
+      "completion_condition": "展开 Templates 子菜单并确认其中显示的模板相关入口或内容。"
+    },
+    {
+      "control": "c0086",
+      "task_type": "function",
+      "completion_condition": "对可丢弃的实验文档执行 Reload，确认其重新载入后的界面或提示；不对有未保存重要内容的文档操作。"
+    },
+    {
+      "control": "c0087",
+      "task_type": "function",
+      "completion_condition": "在合适的实验文档条件下确认 Versions… 是否可用；若可用，打开其目标界面并确认呈现的版本内容。"
+    },
+    {
+      "control": "c0088",
+      "task_type": "function",
+      "completion_condition": "对新建的实验文档作出可见修改并保存，确认文档保存后的可见状态。"
+    },
+    {
+      "control": "c0089",
+      "task_type": "parameter",
+      "function_refs": [
+        "另存为文档"
+      ],
+      "completion_condition": "查看另存为界面，确认可指定的文件名、保存位置和格式等选项；不覆盖已有样本。"
+    },
+    {
+      "control": "c0091",
+      "task_type": "parameter",
+      "function_refs": [
+        "保存文档副本"
+      ],
+      "completion_condition": "查看保存副本界面，确认可指定的文件名、保存位置和格式等选项；不覆盖已有样本。"
+    },
+    {
+      "control": "c0092",
+      "task_type": "parameter",
+      "completion_condition": "在多个可丢弃的实验文档同时打开时，确认 Save All 是否启用及其保存这些文档的条件；不操作已有重要文档。"
+    },
+    {
+      "control": "c0093",
+      "task_type": "parameter",
+      "function_refs": [
+        "导出文档"
+      ],
+      "completion_condition": "查看 Export… 的导出界面，确认可选导出格式或必要参数；不向外部服务上传文件。"
+    },
+    {
+      "control": "c0094",
+      "task_type": "parameter",
+      "function_refs": [
+        "导出为 PDF"
+      ],
+      "completion_condition": "查看导出为 PDF 的界面，确认可用的必要设置；不向外部服务上传文件。"
+    },
+    {
+      "control": "c0095",
+      "task_type": "function",
+      "completion_condition": "展开 Send 子菜单并确认其中可访问的发送选项；只观察菜单内容，不发送消息或文件。"
+    },
+    {
+      "control": "c0097",
+      "task_type": "function",
+      "completion_condition": "打开 Print Preview 并确认文档进入打印预览界面。"
+    },
+    {
+      "control": "c0098",
+      "task_type": "function",
+      "completion_condition": "打开 Print… 的打印界面并确认可见内容；不提交打印任务。"
+    },
+    {
+      "control": "c0099",
+      "task_type": "function",
+      "completion_condition": "打开 Printer Settings… 并确认其目标设置界面；不更改控制通道或环境所需的打印配置。"
+    },
+    {
+      "control": "c0100",
+      "task_type": "function",
+      "completion_condition": "打开 Properties… 并确认其展示的文档属性内容。"
+    },
+    {
+      "control": "c0101",
+      "task_type": "function",
+      "completion_condition": "展开 Digital Signatures 子菜单并确认其中显示的签名相关入口；不执行签名或证书操作。"
+    }
+  ],
+  "shared_instances": [],
+  "function_updates": [
+    {
+      "region": "r0021",
+      "add": [
+        {
+          "name": "创建文档",
+          "description": "通过 New 进入新建目标选择；目前仅确认该菜单入口存在，具体目标待探索。",
+          "supports": [
+            "c0079"
+          ]
+        },
+        {
+          "name": "打开本地文档",
+          "description": "通过 Open… 进入打开文件流程；本地文件选择界面的具体参数待探索。",
+          "supports": [
+            "c0080"
+          ]
+        },
+        {
+          "name": "访问最近文档",
+          "description": "通过 Recent Documents 查看最近文档入口；具体列表内容待探索。",
+          "supports": [
+            "c0082"
+          ]
+        },
+        {
+          "name": "关闭文档",
+          "description": "Close 是关闭当前文档的命令；实际关闭结果待在实验文档上确认。",
+          "supports": [
+            "c0083"
+          ]
+        },
+        {
+          "name": "访问向导",
+          "description": "通过 Wizards 进入向导相关入口；具体可用向导待探索。",
+          "supports": [
+            "c0084"
+          ]
+        },
+        {
+          "name": "访问模板",
+          "description": "通过 Templates 进入模板相关入口；具体内容待探索。",
+          "supports": [
+            "c0085"
+          ]
+        },
+        {
+          "name": "重新载入文档",
+          "description": "Reload 是重新载入当前文档的命令；实际结果待在可丢弃的实验文档上确认。",
+          "supports": [
+            "c0086"
+          ]
+        },
+        {
+          "name": "管理文档版本",
+          "description": "菜单提供 Versions… 版本相关命令，但当前显示为灰色；可用条件和目标内容待确认。",
+          "supports": [
+            "c0087"
+          ]
+        },
+        {
+          "name": "保存文档",
+          "description": "Save 是保存当前文档的命令；菜单显示快捷键 Ctrl+S，保存结果待在实验文档上确认。",
+          "supports": [
+            "c0088"
+          ]
+        },
+        {
+          "name": "另存为文档",
+          "description": "Save As… 用于另存文档；保存位置、文件名和格式等选项待查看。",
+          "supports": [
+            "c0089"
+          ]
+        },
+        {
+          "name": "保存文档副本",
+          "description": "Save a Copy… 用于保存文档副本；具体保存选项待查看。",
+          "supports": [
+            "c0091"
+          ]
+        },
+        {
+          "name": "保存所有打开的文档",
+          "description": "Save All 是保存全部文档的命令；当前显示为灰色，启用条件待确认。",
+          "supports": [
+            "c0092"
+          ]
+        },
+        {
+          "name": "导出文档",
+          "description": "Export… 提供文档导出入口；可选格式和参数待查看。",
+          "supports": [
+            "c0093"
+          ]
+        },
+        {
+          "name": "导出为 PDF",
+          "description": "Export as PDF… 提供 PDF 导出入口；具体设置待查看。",
+          "supports": [
+            "c0094"
+          ]
+        },
+        {
+          "name": "查看发送选项",
+          "description": "通过 Send 查看发送相关选项；本轮仅限离线观察，不执行外发。",
+          "supports": [
+            "c0095"
+          ]
+        },
+        {
+          "name": "打印预览",
+          "description": "Print Preview 用于进入打印预览；预览界面待确认。",
+          "supports": [
+            "c0097"
+          ]
+        },
+        {
+          "name": "打印文档",
+          "description": "Print… 提供打印入口；本轮只查看界面，不提交打印任务。",
+          "supports": [
+            "c0098"
+          ]
+        },
+        {
+          "name": "设置打印机",
+          "description": "Printer Settings… 提供打印机设置入口；目标界面待确认。",
+          "supports": [
+            "c0099"
+          ]
+        },
+        {
+          "name": "查看文档属性",
+          "description": "Properties… 提供文档属性入口；具体展示内容待确认。",
+          "supports": [
+            "c0100"
+          ]
+        },
+        {
+          "name": "查看数字签名选项",
+          "description": "通过 Digital Signatures 查看数字签名相关入口；本轮不执行签名或证书操作。",
+          "supports": [
+            "c0101"
+          ]
+        }
+      ]
+    }
+  ]
+}

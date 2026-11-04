@@ -1,0 +1,13 @@
+{
+  "region_ref": "r0013",
+  "observation_ref": "discovery:0131",
+  "control_ref": "c0039",
+  "working_region": "r0013",
+  "task_name": "功能探索",
+  "task_region": "r0013",
+  "task_type": "function",
+  "status": "matched",
+  "model_grounded": true,
+  "basis": "explicit recorded control selection; coordinates do not verify identity or outcome",
+  "preparatory_action": false
+}

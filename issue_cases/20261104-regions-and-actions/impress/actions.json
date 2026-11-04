@@ -1,0 +1,202 @@
+[
+  {
+    "attempt": "a0004",
+    "selection_call": "0078",
+    "update_call": "0079",
+    "source_region": "r0006",
+    "source_control": "c0061",
+    "action": {
+      "target": "c0061",
+      "reason": "展开粘贴按钮旁的下拉菜单，查看可供选择的粘贴方式。",
+      "x": 391,
+      "y": 108,
+      "action": "click",
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0005",
+    "selection_call": "0080",
+    "update_call": "0081",
+    "source_region": "r0006",
+    "source_control": "c0061",
+    "action": {
+      "action": "click",
+      "target": "c0061",
+      "reason": "原任务要求查看粘贴按钮旁的菜单。上次点击后未观察到菜单，当前仍在 Impress 编辑窗口；这次直接点击粘贴图标右侧的小下拉箭头（约 x=390、y=108），确认是否展开及列出的粘贴方式。",
+      "x": 390,
+      "y": 108,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0006",
+    "selection_call": "0082",
+    "update_call": "0083",
+    "source_region": "r0006",
+    "source_control": "c0061",
+    "action": {
+      "action": "hover",
+      "target": "c0061",
+      "reason": "先悬停在粘贴按钮旁的下拉入口附近，辨认其可见提示和准确位置，再继续确认菜单中的粘贴方式。",
+      "x": 391,
+      "y": 108,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0007",
+    "selection_call": "0087",
+    "update_call": "0089",
+    "source_region": "r0009",
+    "source_control": "c0077",
+    "action": {
+      "action": "click",
+      "target": "c0077",
+      "reason": "先选中一个格式明确的源对象，为之后使用格式刷并观察其应用效果建立条件。",
+      "x": 500,
+      "y": 430,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0008",
+    "selection_call": "0090",
+    "update_call": "0092",
+    "source_region": "r0006",
+    "source_control": "c0062",
+    "action": {
+      "target": "c0062",
+      "x": 1126,
+      "y": 108,
+      "reason": "第 1 张幻灯片上的蓝色标题文本框已被选中，可作为格式源；点击格式刷后观察其直接反馈，再确定如何把格式应用到目标对象。",
+      "action": "click",
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0009",
+    "selection_call": "0093",
+    "update_call": "0094",
+    "source_region": "r0006",
+    "source_control": "c0062",
+    "action": {
+      "action": "click",
+      "target": "c0062",
+      "reason": "当前第 1 张幻灯片上的蓝色标题文本框处于选中状态；点击格式刷后观察是否进入待应用状态，以确认源对象选中后的操作效果。",
+      "x": 1127,
+      "y": 108,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0010",
+    "selection_call": "0099",
+    "update_call": "0100",
+    "source_region": "r0008",
+    "source_control": "c0013",
+    "action": {
+      "target": "c0013",
+      "action": "click",
+      "x": 176,
+      "y": 355,
+      "reason": "切换到另一张幻灯片，观察可作为格式刷目标的对象；这样可以继续验证如何指定目标并应用源对象格式，以及所需的操作条件。",
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0011",
+    "selection_call": "0101",
+    "update_call": "0103",
+    "source_region": "r0008",
+    "source_control": "c0012",
+    "action": {
+      "action": "click",
+      "target": "c0012",
+      "reason": "格式刷是否进入待应用状态、如何指定目标对象并应用源格式，以及所需的选择条件尚未确认；先返回含已知蓝色标题源对象的第 1 张幻灯片，为后续验证应用步骤准备条件。",
+      "x": 169,
+      "y": 256,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0012",
+    "selection_call": "0104",
+    "update_call": "0105",
+    "source_region": "r0009",
+    "source_control": "c0077",
+    "action": {
+      "action": "click",
+      "target": "c0077",
+      "reason": "先选中第 1 张幻灯片上的标题对象作为格式来源，为随后验证格式刷的待应用状态及如何将格式应用到目标对象准备条件。",
+      "x": 514,
+      "y": 434,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0013",
+    "selection_call": "0106",
+    "update_call": null,
+    "source_region": "r0006",
+    "source_control": "c0062",
+    "action": {
+      "action": "click",
+      "target": "c0062",
+      "reason": "第 1 张幻灯片的蓝色标题文本框当前已选中，可将其作为源对象点击格式刷，观察格式刷是否进入待应用状态；目标对象尚未操作。",
+      "x": 1127,
+      "y": 108,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": false
+  }
+]

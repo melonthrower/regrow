@@ -1,0 +1,33 @@
+{
+  "historical_calls_included": 46,
+  "new_model_calls": 0,
+  "new_GUI_actions": 0,
+  "historical_hover_diagnostic_commands": 2,
+  "runtime_source_commit": "fceb3b74da9a86c3202de71f86d12c0ab80a09d6",
+  "repository_source_before_publication": "d97b7863aa72118ca4545bbf32a70565c9d55754",
+  "scope": "Selected real historical issue evidence; original text redacted only; screenshots unedited; not runnable environments or new behavior acceptance",
+  "cases": [
+    {
+      "app": "impress",
+      "name": "LibreOffice Impress",
+      "calls": 34,
+      "first": "0074",
+      "last": "0107",
+      "snapshot": "a0012-0105-906c7d3d08da",
+      "regions": 8,
+      "functions": 0,
+      "actions": 10
+    },
+    {
+      "app": "calc",
+      "name": "LibreOffice Calc",
+      "calls": 12,
+      "first": "0131",
+      "last": "0142",
+      "snapshot": "a0018-0142-95187eb91e6a",
+      "regions": 10,
+      "functions": 20,
+      "actions": 2
+    }
+  ]
+}

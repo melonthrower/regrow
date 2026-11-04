@@ -1,0 +1,28 @@
+{
+  "purpose": "auxiliary diagnosis of existing frozen pre-dispatch branch, not behavior acceptance",
+  "case": "a0013/0106 unchanged request/proposal/binding and actual pre_dispatch image",
+  "new_HTTP": 0,
+  "new_GUI": 0,
+  "original_target_location": {
+    "target": "c0062",
+    "region_ref": "r0006",
+    "名称": "格式刷图标按钮（标准工具栏）",
+    "所属区块": "LibreOffice Impress 窗口",
+    "历史身份范围（非当前坐标）": {
+      "left": 408,
+      "top": 91,
+      "right": 432,
+      "bottom": 125
+    },
+    "历史外观描述": "位于撤销、重做图标左侧的画刷图标。",
+    "定位": [
+      408,
+      91,
+      432,
+      125
+    ],
+    "定位可靠": true
+  },
+  "candidates_at_actual_point": [],
+  "conflict_returned": null
+}

@@ -1,0 +1,94 @@
+{
+  "type": "object",
+  "properties": {
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "enum": [
+              "文件命令菜单",
+              "文件菜单",
+              "New",
+              "Open…",
+              "Open Remote…",
+              "Recent Documents",
+              "Close",
+              "Wizards",
+              "Templates",
+              "Reload",
+              "Versions…",
+              "Save",
+              "Save As…",
+              "Save Remote…",
+              "Save a Copy…",
+              "Save All",
+              "Export…",
+              "Export as PDF…",
+              "Send",
+              "Preview in Web Browser",
+              "Print Preview",
+              "Print…",
+              "Printer Settings…",
+              "Properties…",
+              "Digital Signatures",
+              "Exit LibreOffice"
+            ]
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "top": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "right": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bottom": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "bbox",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 26,
+      "maxItems": 26
+    }
+  },
+  "required": [
+    "objects"
+  ],
+  "additionalProperties": false
+}

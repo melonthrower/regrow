@@ -1,0 +1,59 @@
+[
+  {
+    "call": "0076",
+    "stage": "discovery",
+    "status": "complete",
+    "repairs": 2,
+    "error": {
+      "errors": [
+        {
+          "code": "schema",
+          "path": "/controls/6/may_open_content",
+          "object": "reply",
+          "actual": null,
+          "expected": "值的类型不符，要求：boolean",
+          "validator": "type",
+          "requirement": "boolean"
+        }
+      ],
+      "unchecked": [
+        "结构尚未通过，后续语义检查未执行。"
+      ]
+    }
+  },
+  {
+    "call": "0085",
+    "stage": "action",
+    "status": "complete",
+    "repairs": 1,
+    "error": "本次操作对象需核对：点击位置没有唯一可靠的已有控件定位。"
+  },
+  {
+    "call": "0089",
+    "stage": "update",
+    "status": "complete",
+    "repairs": 1,
+    "error": "后续建议目标未登记或不唯一；可不填建议，保留具体定位问题"
+  },
+  {
+    "call": "0092",
+    "stage": "update",
+    "status": "complete",
+    "repairs": 1,
+    "error": "后续建议目标未登记或不唯一；可不填建议，保留具体定位问题"
+  },
+  {
+    "call": "0097",
+    "stage": "action",
+    "status": "complete",
+    "repairs": 2,
+    "error": "本次操作对象需核对：点击位置没有唯一可靠的已有控件定位。"
+  },
+  {
+    "call": "0107",
+    "stage": "update",
+    "status": "repair",
+    "repairs": 1,
+    "error": "后续建议目标未登记或不唯一；可不填建议，保留具体定位问题"
+  }
+]

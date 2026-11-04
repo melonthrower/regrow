@@ -1,0 +1,797 @@
+{
+  "foreground": {
+    "description": "LibreOffice Calc 前景窗口，打开 budget.xlsx；工作表 budget 可见，A1 处于选中状态。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "regions": [
+    {
+      "name": "Calc 菜单栏",
+      "description": "Calc 窗口顶部的应用菜单入口。",
+      "identity": "new",
+      "bbox": {
+        "left": 70,
+        "top": 62,
+        "right": 1280,
+        "bottom": 89
+      },
+      "state_description": "文件、编辑、视图、插入、格式、样式、工作表、数据、工具、窗口和帮助菜单均可见。",
+      "controls": [
+        {
+          "name": "文件菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开文件相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 74,
+            "top": 63,
+            "right": 111,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "编辑菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开编辑相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 111,
+            "top": 63,
+            "right": 152,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "视图菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开视图相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 152,
+            "top": 63,
+            "right": 198,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "插入菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开插入相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 198,
+            "top": 63,
+            "right": 250,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "格式菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开格式相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 250,
+            "top": 63,
+            "right": 321,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "样式菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开样式相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 321,
+            "top": 63,
+            "right": 376,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "工作表菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开工作表相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 376,
+            "top": 63,
+            "right": 432,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "数据菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开数据相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 432,
+            "top": 63,
+            "right": 489,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "工具菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开工具相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 489,
+            "top": 63,
+            "right": 535,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "窗口菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开窗口相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 535,
+            "top": 63,
+            "right": 600,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "帮助菜单",
+          "knowledge": [
+            {
+              "description": "点击可打开帮助相关命令菜单。"
+            }
+          ],
+          "bbox": {
+            "left": 600,
+            "top": 63,
+            "right": 651,
+            "bottom": 88
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        }
+      ]
+    },
+    {
+      "name": "Calc 工具栏",
+      "description": "菜单栏下方的标准命令和格式工具按钮区域。",
+      "identity": "new",
+      "bbox": {
+        "left": 70,
+        "top": 89,
+        "right": 1280,
+        "bottom": 169
+      },
+      "state_description": "显示两排图标和格式选项；字体为 Arial、字号为 10 pt，部分按钮及下拉箭头可见。",
+      "controls": [
+        {
+          "name": "新建文档",
+          "description": "工具栏左侧带下拉箭头的文档图标。",
+          "knowledge": [
+            {
+              "description": "点击文档图标可发起新建文档操作；旁边的下拉箭头提供相关选项。"
+            }
+          ],
+          "bbox": {
+            "left": 78,
+            "top": 94,
+            "right": 120,
+            "bottom": 120
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        },
+        {
+          "name": "打开文件",
+          "description": "文件夹图标及相邻下拉箭头。",
+          "knowledge": [
+            {
+              "description": "点击文件夹图标可发起打开文件操作；相邻箭头为可见的选项入口。"
+            }
+          ],
+          "bbox": {
+            "left": 121,
+            "top": 94,
+            "right": 163,
+            "bottom": 120
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        },
+        {
+          "name": "保存",
+          "description": "向下箭头落入托盘形状的图标。",
+          "knowledge": [
+            {
+              "description": "点击可保存当前文档。"
+            }
+          ],
+          "bbox": {
+            "left": 164,
+            "top": 94,
+            "right": 202,
+            "bottom": 120
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "导出为 PDF",
+          "description": "纸张上带红色 PDF 标记的图标。",
+          "knowledge": [
+            {
+              "description": "点击可进入将当前文档导出为 PDF 的操作。"
+            }
+          ],
+          "bbox": {
+            "left": 218,
+            "top": 94,
+            "right": 245,
+            "bottom": 120
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        },
+        {
+          "name": "打印",
+          "description": "打印机图标。",
+          "knowledge": [
+            {
+              "description": "点击可发起当前文档的打印操作。"
+            }
+          ],
+          "bbox": {
+            "left": 251,
+            "top": 94,
+            "right": 279,
+            "bottom": 120
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        },
+        {
+          "name": "剪切",
+          "description": "剪刀图标。",
+          "knowledge": [
+            {
+              "description": "点击可剪切当前选择的内容；具体效果取决于是否有可剪切的选择。"
+            }
+          ],
+          "bbox": {
+            "left": 327,
+            "top": 94,
+            "right": 354,
+            "bottom": 120
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "复制",
+          "description": "重叠纸张图标。",
+          "knowledge": [
+            {
+              "description": "点击可复制当前选择的内容；具体效果取决于是否有可复制的选择。"
+            }
+          ],
+          "bbox": {
+            "left": 359,
+            "top": 94,
+            "right": 386,
+            "bottom": 120
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "撤消",
+          "description": "弯曲向左箭头。",
+          "knowledge": [
+            {
+              "description": "点击可撤消最近可撤消的操作。"
+            }
+          ],
+          "bbox": {
+            "left": 515,
+            "top": 94,
+            "right": 545,
+            "bottom": 120
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "重做",
+          "description": "弯曲向右箭头。",
+          "knowledge": [
+            {
+              "description": "点击可重做最近可重做的操作。"
+            }
+          ],
+          "bbox": {
+            "left": 559,
+            "top": 94,
+            "right": 589,
+            "bottom": 120
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "字体名称",
+          "description": "当前显示 Arial 的下拉框。",
+          "knowledge": [
+            {
+              "description": "可选择或输入字体名称，为所选单元格内容设置字体。"
+            }
+          ],
+          "bbox": {
+            "left": 74,
+            "top": 130,
+            "right": 294,
+            "bottom": 165
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        },
+        {
+          "name": "字号",
+          "description": "当前显示 10 pt 的下拉框。",
+          "knowledge": [
+            {
+              "description": "可选择或输入字号，为所选单元格内容设置字号。"
+            }
+          ],
+          "bbox": {
+            "left": 302,
+            "top": 130,
+            "right": 403,
+            "bottom": 165
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        }
+      ]
+    },
+    {
+      "name": "公式栏",
+      "description": "显示当前单元格地址及其内容，并提供公式输入和相关命令入口。",
+      "identity": "new",
+      "bbox": {
+        "left": 70,
+        "top": 169,
+        "right": 1223,
+        "bottom": 207
+      },
+      "state_description": "名称框显示 A1，公式输入区域显示 Item。",
+      "controls": [
+        {
+          "name": "名称框",
+          "description": "公式栏左侧显示 A1 的地址框。",
+          "knowledge": [
+            {
+              "description": "显示当前单元格地址；可用于定位或选择单元格。"
+            }
+          ],
+          "bbox": {
+            "left": 74,
+            "top": 169,
+            "right": 247,
+            "bottom": 203
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "函数向导",
+          "description": "公式栏中标记 fx 的入口。",
+          "knowledge": [
+            {
+              "description": "点击可打开函数相关的输入或选择界面。"
+            }
+          ],
+          "bbox": {
+            "left": 258,
+            "top": 174,
+            "right": 281,
+            "bottom": 199
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "公式输入区域",
+          "description": "显示当前单元格内容 Item 的长输入框。",
+          "knowledge": [
+            {
+              "description": "用于查看或编辑当前选中单元格的内容或公式。"
+            }
+          ],
+          "bbox": {
+            "left": 339,
+            "top": 174,
+            "right": 1200,
+            "bottom": 199
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        }
+      ]
+    },
+    {
+      "name": "信息提示横幅",
+      "description": "工作表上方的 LibreOffice 社区参与及捐赠提示区域。",
+      "identity": "new",
+      "bbox": {
+        "left": 74,
+        "top": 207,
+        "right": 1222,
+        "bottom": 286
+      },
+      "state_description": "两条蓝色提示横幅均显示，各自有操作按钮和关闭按钮。",
+      "controls": [
+        {
+          "name": "Get involved",
+          "knowledge": [
+            {
+              "description": "点击可打开提示所关联的参与社区内容。"
+            }
+          ],
+          "bbox": {
+            "left": 1075,
+            "top": 209,
+            "right": 1192,
+            "bottom": 244
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "关闭参与提示",
+          "description": "第一条横幅右侧的 X 按钮。",
+          "knowledge": [
+            {
+              "description": "点击可关闭第一条参与社区提示横幅。"
+            }
+          ],
+          "bbox": {
+            "left": 1198,
+            "top": 209,
+            "right": 1220,
+            "bottom": 244
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "Donate",
+          "knowledge": [
+            {
+              "description": "点击可打开捐赠提示所关联的内容。"
+            }
+          ],
+          "bbox": {
+            "left": 1109,
+            "top": 249,
+            "right": 1192,
+            "bottom": 283
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "关闭捐赠提示",
+          "description": "第二条横幅右侧的 X 按钮。",
+          "knowledge": [
+            {
+              "description": "点击可关闭第二条捐赠提示横幅。"
+            }
+          ],
+          "bbox": {
+            "left": 1198,
+            "top": 249,
+            "right": 1220,
+            "bottom": 283
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        }
+      ]
+    },
+    {
+      "name": "工作表网格",
+      "description": "显示并编辑当前工作表单元格内容的网格区域。",
+      "identity": "new",
+      "bbox": {
+        "left": 74,
+        "top": 285,
+        "right": 1210,
+        "bottom": 744
+      },
+      "state_description": "工作表 budget 可见；A1:C5 包含 Item、Qty、Price 表头及 Apples、Bread、Milk、Coffee 样例数据，当前选中 A1。",
+      "local_knowledge": {
+        "add": [
+          "网格按列字母和行号定位单元格；可在单元格中查看或编辑工作表数据。"
+        ]
+      },
+      "controls": [
+        {
+          "name": "单元格 A1",
+          "description": "当前选中的单元格，内容为 Item。",
+          "knowledge": [
+            {
+              "description": "点击单元格可将其选为当前单元格；选中后可在单元格或公式栏查看、编辑内容。"
+            }
+          ],
+          "bbox": {
+            "left": 110,
+            "top": 305,
+            "right": 163,
+            "bottom": 323
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "工作表数据区域 A1:C5",
+          "description": "包含表头及四条样例记录的可见单元格区域。",
+          "knowledge": [
+            {
+              "description": "可选择其中的单元格进行查看或编辑；本次观察未修改数据。"
+            }
+          ],
+          "bbox": {
+            "left": 110,
+            "top": 305,
+            "right": 235,
+            "bottom": 391
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        }
+      ]
+    },
+    {
+      "name": "工作表标签与导航",
+      "description": "工作表标签及其切换、导航和新增入口。",
+      "identity": "new",
+      "bbox": {
+        "left": 74,
+        "top": 742,
+        "right": 369,
+        "bottom": 781
+      },
+      "state_description": "显示 budget 工作表标签及工作表导航和新增工作表图标；状态显示 Sheet 1 of 1。",
+      "controls": [
+        {
+          "name": "工作表 budget",
+          "description": "当前可见且已选中的工作表标签。",
+          "knowledge": [
+            {
+              "description": "点击标签可切换到该工作表。"
+            }
+          ],
+          "bbox": {
+            "left": 211,
+            "top": 750,
+            "right": 279,
+            "bottom": 779
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "工作表导航按钮",
+          "description": "工作表标签左侧的一组首个、前一个、后一个及末个导航图标。",
+          "knowledge": [
+            {
+              "description": "用于在工作表标签之间导航；当前仅有一个工作表。"
+            }
+          ],
+          "bbox": {
+            "left": 78,
+            "top": 754,
+            "right": 173,
+            "bottom": 777
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "新增工作表",
+          "description": "工作表标签左侧带绿色加号的图标。",
+          "knowledge": [
+            {
+              "description": "点击可新增工作表。"
+            }
+          ],
+          "bbox": {
+            "left": 184,
+            "top": 752,
+            "right": 205,
+            "bottom": 779
+          },
+          "may_open_content": true,
+          "needs_exploration": false
+        }
+      ]
+    },
+    {
+      "name": "状态栏",
+      "description": "窗口底部显示工作表状态、语言、计算摘要及缩放信息。",
+      "identity": "new",
+      "bbox": {
+        "left": 74,
+        "top": 781,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "可见 PageStyle_budget、English (Hong Kong)、Average: ; Sum: 0 及 100% 缩放信息。",
+      "controls": [
+        {
+          "name": "缩放滑块",
+          "description": "状态栏右侧的缩小、滑块、放大和百分比显示区域。",
+          "knowledge": [
+            {
+              "description": "可调整工作表视图缩放；当前显示 100%。"
+            }
+          ],
+          "bbox": {
+            "left": 1094,
+            "top": 783,
+            "right": 1280,
+            "bottom": 800
+          },
+          "may_open_content": false,
+          "needs_exploration": false
+        }
+      ]
+    },
+    {
+      "name": "侧边栏入口",
+      "description": "Calc 窗口右侧垂直排列的侧边栏面板入口。",
+      "identity": "new",
+      "bbox": {
+        "left": 1223,
+        "top": 207,
+        "right": 1280,
+        "bottom": 779
+      },
+      "state_description": "多个图标入口可见，侧边栏内容面板当前未展开。",
+      "controls": [
+        {
+          "name": "属性面板入口",
+          "description": "顶部橙色滑块样式图标。",
+          "knowledge": [
+            {
+              "description": "点击可打开一个侧边栏面板；该图标对应的具体面板内容尚未核实。"
+            }
+          ],
+          "bbox": {
+            "left": 1234,
+            "top": 214,
+            "right": 1271,
+            "bottom": 250
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧边栏画笔图标入口",
+          "description": "属性图标下方的画笔样式图标。",
+          "knowledge": [
+            {
+              "description": "点击可打开一个侧边栏面板；具体用途尚未核实。"
+            }
+          ],
+          "bbox": {
+            "left": 1234,
+            "top": 255,
+            "right": 1271,
+            "bottom": 291
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "图库入口",
+          "description": "紫色图片样式图标。",
+          "knowledge": [
+            {
+              "description": "点击可打开一个侧边栏面板；图标表示图片或图库相关入口，具体内容尚未核实。"
+            }
+          ],
+          "bbox": {
+            "left": 1234,
+            "top": 298,
+            "right": 1271,
+            "bottom": 333
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "导航器入口",
+          "description": "蓝色圆形罗盘样式图标。",
+          "knowledge": [
+            {
+              "description": "点击可打开一个侧边栏面板；具体功能尚未核实。"
+            }
+          ],
+          "bbox": {
+            "left": 1234,
+            "top": 340,
+            "right": 1271,
+            "bottom": 376
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "函数入口",
+          "description": "标记为 fx 的侧边栏图标。",
+          "knowledge": [
+            {
+              "description": "点击可打开函数相关侧边栏内容。"
+            }
+          ],
+          "bbox": {
+            "left": 1234,
+            "top": 382,
+            "right": 1271,
+            "bottom": 418
+          },
+          "may_open_content": true,
+          "needs_exploration": true
+        }
+      ]
+    }
+  ],
+  "uncertainties": [
+    "侧边栏画笔样式图标对应的面板名称及用途尚未通过展开确认。",
+    "工具栏中未逐一登记的图标命令及各菜单内部可用命令尚未探索。"
+  ]
+}

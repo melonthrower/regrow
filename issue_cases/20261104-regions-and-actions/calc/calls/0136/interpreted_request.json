@@ -1,0 +1,216 @@
+{
+  "role": "object_registration",
+  "stage": "object_registration",
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n# 本步任务\n在给定的单张原图中，为待补列表中的对象标出可辨认的外观范围。名称、所属区块和身份关联已经提供，本次只补这些对象的位置资料。\n\n# 本步用到的概念\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\n区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。\n\n# 补充对象外观：objects\n每个指定对象返回一次，path 直接复制待补对象的名称；reason 说明无法可靠定位时缺少的依据。\n\nbbox 用原图整数 left、top、right、bottom 框住可供辨认的完整外观和必要标签。右、下边界不含在范围内，框须位于图内且有正面积。无法可靠辨认时填 null，并说明缺少的依据。\n正例：搜索框的范围包括输入区域和帮助辨认的标签。\n\n本次每个对象都填写 reason，说明原图中哪些文字、图标、所属界面或相邻对象支持这个定位；不确定时写明具体缺口。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `objects` | 必填 | 列表；至少 26 项；至多 26 项 |\n\n### objects（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `path` | 必填 | 可用值：\"文件命令菜单\"、\"文件菜单\"、\"New\"、\"Open…\"、\"Open Remote…\"、\"Recent Documents\"、\"Close\"、\"Wizards\"、\"Templates\"、\"Reload\"、\"Versions…\"、\"Save\"、\"Save As…\"、\"Save Remote…\"、\"Save a Copy…\"、\"Save All\"、\"Export…\"、\"Export as PDF…\"、\"Send\"、\"Preview in Web Browser\"、\"Print Preview\"、\"Print…\"、\"Printer Settings…\"、\"Properties…\"、\"Digital Signatures\"、\"Exit LibreOffice\" |\n| `bbox` | 必填 | 对象 或 null |\n| `reason` | 必填 | 文字 |\n\n### objects → bbox\n\n至少符合以下一种格式。\n\n### objects → bbox — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `left` | 必填 | 整数；不小于 0 |\n| `top` | 必填 | 整数；不小于 0 |\n| `right` | 必填 | 整数；不小于 0 |\n| `bottom` | 必填 | 整数；不小于 0 |\n\n### objects → bbox — 格式 2\n\nnull\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。",
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "调用/对象外观补登记.prompt",
+      "text": "# 本步任务\n在给定的单张原图中，为待补列表中的对象标出可辨认的外观范围。名称、所属区块和身份关联已经提供，本次只补这些对象的位置资料。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.common",
+      "text": "区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.bbox",
+      "text": "# 补充对象外观：objects\n每个指定对象返回一次，path 直接复制待补对象的名称；reason 说明无法可靠定位时缺少的依据。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.box_coordinates",
+      "text": "bbox 用原图整数 left、top、right、bottom 框住可供辨认的完整外观和必要标签。右、下边界不含在范围内，框须位于图内且有正面积。无法可靠辨认时填 null，并说明缺少的依据。\n正例：搜索框的范围包括输入区域和帮助辨认的标签。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.bbox_grounding",
+      "text": "本次每个对象都填写 reason，说明原图中哪些文字、图标、所属界面或相邻对象支持这个定位；不确定时写明具体缺口。"
+    },
+    {
+      "path": "输出格式/字段组-control.bbox",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `objects` | 必填 | 列表；至少 26 项；至多 26 项 |\n\n### objects（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `path` | 必填 | 可用值：\"文件命令菜单\"、\"文件菜单\"、\"New\"、\"Open…\"、\"Open Remote…\"、\"Recent Documents\"、\"Close\"、\"Wizards\"、\"Templates\"、\"Reload\"、\"Versions…\"、\"Save\"、\"Save As…\"、\"Save Remote…\"、\"Save a Copy…\"、\"Save All\"、\"Export…\"、\"Export as PDF…\"、\"Send\"、\"Preview in Web Browser\"、\"Print Preview\"、\"Print…\"、\"Printer Settings…\"、\"Properties…\"、\"Digital Signatures\"、\"Exit LibreOffice\" |\n| `bbox` | 必填 | 对象 或 null |\n| `reason` | 必填 | 文字 |\n\n### objects → bbox\n\n至少符合以下一种格式。\n\n### objects → bbox — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `left` | 必填 | 整数；不小于 0 |\n| `top` | 必填 | 整数；不小于 0 |\n| `right` | 必填 | 整数；不小于 0 |\n| `bottom` | 必填 | 整数；不小于 0 |\n\n### objects → bbox — 格式 2\n\nnull"
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。"
+    }
+  ],
+  "user_prompt": "{\n  \"待补齐对象\": [\n    {\n      \"path\": \"文件命令菜单\",\n      \"name\": \"文件命令菜单\",\n      \"description\": \"由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\",\n      \"identity\": \"new\",\n      \"state_description\": \"命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\",\n      \"local_knowledge\": {\n        \"add\": [\n          \"列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\"\n        ]\n      },\n      \"parent_index\": 0\n    },\n    {\n      \"path\": \"文件菜单\",\n      \"ref\": \"文件菜单\",\n      \"knowledge\": [\n        {\n          \"description\": \"点击可打开文件相关命令菜单。\"\n        },\n        {\n          \"description\": \"展开后可见 New、打开、保存、导出、打印预览、打印、属性等命令；部分命令带子菜单箭头，Versions… 和 Save All 当前显示为灰色。菜单中还显示各命令可见的快捷键提示。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": false,\n      \"add_image\": true,\n      \"image_conditions\": [\n        \"文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。\"\n      ],\n      \"region_index\": 0,\n      \"名称\": \"文件菜单\",\n      \"当前外观\": \"文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。\"\n    },\n    {\n      \"path\": \"New\",\n      \"name\": \"New\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Open…\",\n      \"name\": \"Open…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打开命令；菜单显示快捷键 Ctrl+O，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Open Remote…\",\n      \"name\": \"Open Remote…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的远程打开命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Recent Documents\",\n      \"name\": \"Recent Documents\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的最近文档入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Close\",\n      \"name\": \"Close\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的关闭命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Wizards\",\n      \"name\": \"Wizards\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的向导入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Templates\",\n      \"name\": \"Templates\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的模板入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Reload\",\n      \"name\": \"Reload\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的重新载入命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Versions…\",\n      \"name\": \"Versions…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的版本命令；当前显示为灰色，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save\",\n      \"name\": \"Save\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的保存命令；菜单显示快捷键 Ctrl+S，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save As…\",\n      \"name\": \"Save As…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的另存为命令；菜单显示快捷键 Shift+Ctrl+S，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save Remote…\",\n      \"name\": \"Save Remote…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的远程保存命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save a Copy…\",\n      \"name\": \"Save a Copy…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的保存副本命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save All\",\n      \"name\": \"Save All\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的全部保存命令；当前显示为灰色，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Export…\",\n      \"name\": \"Export…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的导出命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Export as PDF…\",\n      \"name\": \"Export as PDF…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的导出为 PDF 命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Send\",\n      \"name\": \"Send\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的发送入口；带子菜单箭头，本次未展开或执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Preview in Web Browser\",\n      \"name\": \"Preview in Web Browser\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的在浏览器中预览命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Print Preview\",\n      \"name\": \"Print Preview\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打印预览命令；菜单显示快捷键 Shift+Ctrl+O，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Print…\",\n      \"name\": \"Print…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打印命令；菜单显示快捷键 Ctrl+P，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Printer Settings…\",\n      \"name\": \"Printer Settings…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打印机设置命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Properties…\",\n      \"name\": \"Properties…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的属性命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Digital Signatures\",\n      \"name\": \"Digital Signatures\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的数字签名入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Exit LibreOffice\",\n      \"name\": \"Exit LibreOffice\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的退出 LibreOffice 命令；菜单显示快捷键 Ctrl+Q，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    }\n  ],\n  \"所属区块\": [\n    {\n      \"ref\": \"Calc 菜单栏\",\n      \"identity\": \"same\"\n    },\n    {\n      \"name\": \"文件命令菜单\",\n      \"description\": \"由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\",\n      \"identity\": \"new\",\n      \"state_description\": \"命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\",\n      \"local_knowledge\": {\n        \"add\": [\n          \"列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\"\n        ]\n      },\n      \"parent_index\": 0\n    }\n  ],\n  \"定位要求\": \"给定旧控件已完成历史身份与状态比较。现在逐一确认当前图中的具体对象，并框出符合其名称和当前外观的控件；reason简述框内对象的辨认依据，不把旁边相似对象作为它。无法确认时bbox填null。\",\n  \"平台\": \"OSWorld Linux桌面\"\n}\n\n本图：原动作后图；仅补齐本批对象外观，不判断动作效果；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "screenshots": [
+    "action_attempts/a0017/after.png"
+  ],
+  "source": {
+    "region": "r0013",
+    "working_region": "r0013",
+    "observation": "discovery:0131",
+    "attempt": "a0017",
+    "control_ref": "c0039",
+    "task_region": "r0013",
+    "task_name": "功能探索"
+  },
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "objects": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "enum": [
+                "/regions/1",
+                "/controls/0",
+                "/controls/1",
+                "/controls/2",
+                "/controls/3",
+                "/controls/4",
+                "/controls/5",
+                "/controls/6",
+                "/controls/7",
+                "/controls/8",
+                "/controls/9",
+                "/controls/10",
+                "/controls/11",
+                "/controls/12",
+                "/controls/13",
+                "/controls/14",
+                "/controls/15",
+                "/controls/16",
+                "/controls/17",
+                "/controls/18",
+                "/controls/19",
+                "/controls/20",
+                "/controls/21",
+                "/controls/22",
+                "/controls/23",
+                "/controls/24"
+              ]
+            },
+            "bbox": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "left": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "top": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "right": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "bottom": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "left",
+                    "top",
+                    "right",
+                    "bottom"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "bbox",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 26,
+        "maxItems": 26
+      }
+    },
+    "required": [
+      "objects"
+    ],
+    "additionalProperties": false
+  },
+  "registration_paths": [
+    "/regions/1",
+    "/controls/0",
+    "/controls/1",
+    "/controls/2",
+    "/controls/3",
+    "/controls/4",
+    "/controls/5",
+    "/controls/6",
+    "/controls/7",
+    "/controls/8",
+    "/controls/9",
+    "/controls/10",
+    "/controls/11",
+    "/controls/12",
+    "/controls/13",
+    "/controls/14",
+    "/controls/15",
+    "/controls/16",
+    "/controls/17",
+    "/controls/18",
+    "/controls/19",
+    "/controls/20",
+    "/controls/21",
+    "/controls/22",
+    "/controls/23",
+    "/controls/24"
+  ],
+  "registration_required_paths": [
+    "/controls/0",
+    "/regions/1"
+  ],
+  "appearance_grounding": {
+    "/controls/0": {
+      "control": "c0039",
+      "name": "文件菜单",
+      "state": "文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。",
+      "comparison_call": "0135"
+    }
+  },
+  "frame_context": {
+    "action_attempts/a0017/after.png": "原动作后图；仅补齐本批对象外观，不判断动作效果"
+  },
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "control_refs": [
+    "c0039"
+  ],
+  "dynamic_prompt": "{\n  \"待补齐对象\": [\n    {\n      \"path\": \"文件命令菜单\",\n      \"name\": \"文件命令菜单\",\n      \"description\": \"由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\",\n      \"identity\": \"new\",\n      \"state_description\": \"命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\",\n      \"local_knowledge\": {\n        \"add\": [\n          \"列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\"\n        ]\n      },\n      \"parent_index\": 0\n    },\n    {\n      \"path\": \"文件菜单\",\n      \"ref\": \"文件菜单\",\n      \"knowledge\": [\n        {\n          \"description\": \"点击可打开文件相关命令菜单。\"\n        },\n        {\n          \"description\": \"展开后可见 New、打开、保存、导出、打印预览、打印、属性等命令；部分命令带子菜单箭头，Versions… 和 Save All 当前显示为灰色。菜单中还显示各命令可见的快捷键提示。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": false,\n      \"add_image\": true,\n      \"image_conditions\": [\n        \"文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。\"\n      ],\n      \"region_index\": 0,\n      \"名称\": \"文件菜单\",\n      \"当前外观\": \"文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。\"\n    },\n    {\n      \"path\": \"New\",\n      \"name\": \"New\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Open…\",\n      \"name\": \"Open…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打开命令；菜单显示快捷键 Ctrl+O，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Open Remote…\",\n      \"name\": \"Open Remote…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的远程打开命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Recent Documents\",\n      \"name\": \"Recent Documents\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的最近文档入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Close\",\n      \"name\": \"Close\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的关闭命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Wizards\",\n      \"name\": \"Wizards\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的向导入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Templates\",\n      \"name\": \"Templates\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的模板入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Reload\",\n      \"name\": \"Reload\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的重新载入命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Versions…\",\n      \"name\": \"Versions…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的版本命令；当前显示为灰色，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save\",\n      \"name\": \"Save\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的保存命令；菜单显示快捷键 Ctrl+S，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save As…\",\n      \"name\": \"Save As…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的另存为命令；菜单显示快捷键 Shift+Ctrl+S，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save Remote…\",\n      \"name\": \"Save Remote…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的远程保存命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save a Copy…\",\n      \"name\": \"Save a Copy…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的保存副本命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Save All\",\n      \"name\": \"Save All\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的全部保存命令；当前显示为灰色，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Export…\",\n      \"name\": \"Export…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的导出命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Export as PDF…\",\n      \"name\": \"Export as PDF…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的导出为 PDF 命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Send\",\n      \"name\": \"Send\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的发送入口；带子菜单箭头，本次未展开或执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Preview in Web Browser\",\n      \"name\": \"Preview in Web Browser\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的在浏览器中预览命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Print Preview\",\n      \"name\": \"Print Preview\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打印预览命令；菜单显示快捷键 Shift+Ctrl+O，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Print…\",\n      \"name\": \"Print…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打印命令；菜单显示快捷键 Ctrl+P，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Printer Settings…\",\n      \"name\": \"Printer Settings…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的打印机设置命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Properties…\",\n      \"name\": \"Properties…\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的属性命令；本次未执行。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Digital Signatures\",\n      \"name\": \"Digital Signatures\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的数字签名入口；带子菜单箭头，本次未展开。\"\n        }\n      ],\n      \"may_open_content\": true,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    },\n    {\n      \"path\": \"Exit LibreOffice\",\n      \"name\": \"Exit LibreOffice\",\n      \"knowledge\": [\n        {\n          \"description\": \"文件命令菜单中的退出 LibreOffice 命令；菜单显示快捷键 Ctrl+Q，本次未执行。\"\n        }\n      ],\n      \"may_open_content\": false,\n      \"needs_exploration\": true,\n      \"region_index\": 1\n    }\n  ],\n  \"所属区块\": [\n    {\n      \"ref\": \"Calc 菜单栏\",\n      \"identity\": \"same\"\n    },\n    {\n      \"name\": \"文件命令菜单\",\n      \"description\": \"由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\",\n      \"identity\": \"new\",\n      \"state_description\": \"命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\",\n      \"local_knowledge\": {\n        \"add\": [\n          \"列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\"\n        ]\n      },\n      \"parent_index\": 0\n    }\n  ],\n  \"定位要求\": \"给定旧控件已完成历史身份与状态比较。现在逐一确认当前图中的具体对象，并框出符合其名称和当前外观的控件；reason简述框内对象的辨认依据，不把旁边相似对象作为它。无法确认时bbox填null。\",\n  \"平台\": \"OSWorld Linux桌面\"\n}\n\n本图：原动作后图；仅补齐本批对象外观，不判断动作效果；原图 1280×800 像素。",
+  "prompt_sections": [
+    "control.definition",
+    "region.common",
+    "control.bbox",
+    "control.box_coordinates",
+    "control.bbox_grounding"
+  ],
+  "prompt_composition": "field_sections",
+  "named_nested": false
+}

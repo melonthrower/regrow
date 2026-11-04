@@ -13,3 +13,5 @@
 公开仓库保留源码、运行资源和使用/问题说明。测试、验证日志、审阅报告、日常工作记录及旧导出包保留在本地开发目录，不随源码同步上传；过去提交仍可从 Git 历史查看。
 
 [开发入口](DEVELOPMENT.md) · [本地部署](DEPLOY_LOCAL.md) · [当前问题](KNOWN_ISSUES.md) · [源码状态](SOURCE_VERSION.json)
+
+[区块与动作问题案例：截图、应用树、逐次调用](issue_cases/20261104-regions-and-actions/README.md)。仅公开用户指定的相关证据，验证原件仍在本地维护。

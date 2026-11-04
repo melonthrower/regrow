@@ -1,0 +1,449 @@
+{
+  "foreground": {
+    "description": "LibreOffice Impress 编辑窗口处于前景，显示演示文稿 quarterly_review.pptx。幻灯片列表、编辑画布、属性侧栏、菜单栏、两排工具栏和状态栏均可见；没有模态对话框遮挡。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "interactive",
+  "regions": [
+    {
+      "ref": "r0006",
+      "identity": "same",
+      "description": "当前活动的 Impress 演示文稿编辑窗口，包含幻灯片列表、编辑画布、属性侧栏及工具栏。",
+      "bbox": {
+        "left": 70,
+        "top": 29,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "第 1 张幻灯片处于选中状态，画布上的蓝色标题文本框也处于选中状态；第 2 张幻灯片缩略图可见但未选中。",
+      "context_matches": true,
+      "parent_index": null
+    },
+    {
+      "ref": "r0007",
+      "identity": "same",
+      "description": "编辑窗口顶部提供文件、编辑、视图、插入、格式、幻灯片、放映、工具、窗口和帮助菜单入口。",
+      "bbox": {
+        "left": 70,
+        "top": 62,
+        "right": 1280,
+        "bottom": 89
+      },
+      "state_description": "菜单栏可见，未展开菜单。",
+      "context_matches": true,
+      "parent_index": 0
+    },
+    {
+      "ref": "r0011",
+      "identity": "same",
+      "description": "菜单栏下方第一排，包含常见文档操作、插入内容及格式相关图标。",
+      "bbox": {
+        "left": 70,
+        "top": 89,
+        "right": 1280,
+        "bottom": 130
+      },
+      "state_description": "标准工具栏可见，其中格式刷图标按钮位于工具栏靠右位置。",
+      "context_matches": true,
+      "parent_index": 0
+    },
+    {
+      "ref": "r0012",
+      "identity": "same",
+      "description": "标准工具栏下方一排，提供选择、缩放、绘制线条和形状等画布操作入口。",
+      "bbox": {
+        "left": 70,
+        "top": 130,
+        "right": 1280,
+        "bottom": 169
+      },
+      "state_description": "绘图工具栏当前可见；仅能确认其在本图中的显示，不能据此确定它由此前点击格式刷造成。",
+      "context_matches": true,
+      "parent_index": 0
+    },
+    {
+      "ref": "r0008",
+      "identity": "same",
+      "description": "编辑窗口左侧的 Slides 区域，按缩略图列出演示文稿中的幻灯片。",
+      "bbox": {
+        "left": 70,
+        "top": 169,
+        "right": 265,
+        "bottom": 775
+      },
+      "state_description": "列表显示第 1、2、3 张幻灯片缩略图；第 1 张处于选中状态，第 2 张可见且未选中。",
+      "context_matches": true,
+      "parent_index": 0
+    },
+    {
+      "ref": "r0009",
+      "identity": "same",
+      "description": "窗口中央展示当前幻灯片并用于编辑其内容的区域。",
+      "bbox": {
+        "left": 265,
+        "top": 169,
+        "right": 871,
+        "bottom": 775
+      },
+      "state_description": "画布显示第 1 张幻灯片；页面上的蓝色标题文本框“Quarterly Review 2026”处于对象选中状态。",
+      "context_matches": true,
+      "parent_index": 0
+    },
+    {
+      "ref": "r0010",
+      "identity": "same",
+      "description": "编辑窗口右侧的 Properties 面板；面板内容随当前选中对象或幻灯片上下文显示属性。",
+      "bbox": {
+        "left": 871,
+        "top": 169,
+        "right": 1231,
+        "bottom": 775
+      },
+      "state_description": "当前选中的是画布上的形状对象，Properties 面板显示 Character、Paragraph、Area、Line、Effect、Shadow、Position and Size 等属性区，而非幻灯片布局设置内容。",
+      "task_review_reason": "已有描述着重记录幻灯片页面设置、母版和布局；本图显示同一右侧 Properties 面板呈现所选形状对象的属性，表明其内容会随编辑上下文变化。",
+      "context_matches": true,
+      "parent_index": 0
+    },
+    {
+      "ref": "r0013",
+      "identity": "same",
+      "description": "窗口底部显示当前幻灯片、布局、语言和缩放状态，并提供缩放操作。",
+      "bbox": {
+        "left": 70,
+        "top": 775,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "状态栏显示 Slide 1 of 3、Shape selected 和 53% 缩放。",
+      "context_matches": true,
+      "parent_index": 0
+    }
+  ],
+  "uncertainties": [
+    "格式刷图标按钮如何将格式应用到目标对象，以及使用时需要怎样选择源对象、目标对象或执行后续操作，仍未确认。",
+    "绘图工具栏在本图中可见，但没有证据确认它是否由此前点击格式刷造成。"
+  ],
+  "controls": [
+    {
+      "ref": "c0006",
+      "bbox": {
+        "left": 75,
+        "top": 63,
+        "right": 109,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0007",
+      "bbox": {
+        "left": 115,
+        "top": 63,
+        "right": 149,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0008",
+      "bbox": {
+        "left": 155,
+        "top": 63,
+        "right": 198,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0009",
+      "bbox": {
+        "left": 204,
+        "top": 63,
+        "right": 249,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0010",
+      "bbox": {
+        "left": 260,
+        "top": 63,
+        "right": 316,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0011",
+      "bbox": {
+        "left": 328,
+        "top": 63,
+        "right": 371,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0027",
+      "bbox": {
+        "left": 376,
+        "top": 63,
+        "right": 459,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0028",
+      "bbox": {
+        "left": 464,
+        "top": 63,
+        "right": 509,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0029",
+      "bbox": {
+        "left": 515,
+        "top": 63,
+        "right": 580,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0030",
+      "bbox": {
+        "left": 585,
+        "top": 63,
+        "right": 627,
+        "bottom": 88
+      },
+      "region_index": 1
+    },
+    {
+      "ref": "c0031",
+      "bbox": {
+        "left": 119,
+        "top": 94,
+        "right": 146,
+        "bottom": 123
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0032",
+      "bbox": {
+        "left": 164,
+        "top": 94,
+        "right": 192,
+        "bottom": 123
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0035",
+      "bbox": {
+        "left": 446,
+        "top": 94,
+        "right": 489,
+        "bottom": 123
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0036",
+      "bbox": {
+        "left": 491,
+        "top": 94,
+        "right": 532,
+        "bottom": 123
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0062",
+      "bbox": {
+        "left": 1110,
+        "top": 90,
+        "right": 1145,
+        "bottom": 128
+      },
+      "region_index": 2
+    },
+    {
+      "ref": "c0046",
+      "bbox": {
+        "left": 74,
+        "top": 130,
+        "right": 108,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0047",
+      "bbox": {
+        "left": 109,
+        "top": 130,
+        "right": 145,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0048",
+      "bbox": {
+        "left": 244,
+        "top": 130,
+        "right": 282,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0049",
+      "bbox": {
+        "left": 282,
+        "top": 130,
+        "right": 319,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0050",
+      "bbox": {
+        "left": 319,
+        "top": 130,
+        "right": 357,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0051",
+      "bbox": {
+        "left": 357,
+        "top": 130,
+        "right": 397,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0052",
+      "bbox": {
+        "left": 397,
+        "top": 130,
+        "right": 439,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0053",
+      "bbox": {
+        "left": 439,
+        "top": 130,
+        "right": 480,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0054",
+      "bbox": {
+        "left": 490,
+        "top": 130,
+        "right": 874,
+        "bottom": 165
+      },
+      "region_index": 3
+    },
+    {
+      "ref": "c0012",
+      "bbox": {
+        "left": 80,
+        "top": 212,
+        "right": 251,
+        "bottom": 301
+      },
+      "region_index": 4
+    },
+    {
+      "ref": "c0013",
+      "bbox": {
+        "left": 105,
+        "top": 315,
+        "right": 248,
+        "bottom": 397
+      },
+      "region_index": 4
+    },
+    {
+      "ref": "c0014",
+      "bbox": {
+        "left": 105,
+        "top": 414,
+        "right": 248,
+        "bottom": 496
+      },
+      "region_index": 4
+    },
+    {
+      "ref": "c0015",
+      "bbox": {
+        "left": 279,
+        "top": 344,
+        "right": 845,
+        "bottom": 665
+      },
+      "region_index": 5
+    },
+    {
+      "ref": "c0077",
+      "bbox": {
+        "left": 318,
+        "top": 403,
+        "right": 726,
+        "bottom": 470
+      },
+      "region_index": 5
+    },
+    {
+      "ref": "c0056",
+      "bbox": {
+        "left": 1078,
+        "top": 777,
+        "right": 1104,
+        "bottom": 798
+      },
+      "region_index": 7
+    },
+    {
+      "ref": "c0057",
+      "bbox": {
+        "left": 1105,
+        "top": 777,
+        "right": 1224,
+        "bottom": 798
+      },
+      "region_index": 7
+    },
+    {
+      "ref": "c0058",
+      "bbox": {
+        "left": 1224,
+        "top": 777,
+        "right": 1243,
+        "bottom": 798
+      },
+      "region_index": 7
+    }
+  ]
+}

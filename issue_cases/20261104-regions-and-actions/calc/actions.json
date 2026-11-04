@@ -1,0 +1,42 @@
+[
+  {
+    "attempt": "a0017",
+    "selection_call": "0133",
+    "update_call": "0134",
+    "source_region": "r0013",
+    "source_control": "c0039",
+    "action": {
+      "target": "c0039",
+      "reason": "打开文件菜单并观察其显示的命令内容，以完成本任务的结算条件。",
+      "x": 90,
+      "y": 76,
+      "action": "click",
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  },
+  {
+    "attempt": "a0018",
+    "selection_call": "0138",
+    "update_call": "0142",
+    "source_region": "r0021",
+    "source_control": "c0079",
+    "action": {
+      "action": "click",
+      "target": "c0079",
+      "reason": "展开 New 子菜单，确认其中显示的可选新建目标。",
+      "x": 115,
+      "y": 101,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "receipt_exit_code": 0,
+    "semantic_result": "unverified",
+    "registered": true
+  }
+]

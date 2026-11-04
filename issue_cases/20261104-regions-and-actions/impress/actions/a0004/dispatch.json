@@ -1,0 +1,17 @@
+{
+  "source_call": "0078",
+  "source_region": "r0006",
+  "source_control": "c0061",
+  "working_region": "r0006",
+  "action": {
+    "target": "c0061",
+    "reason": "展开粘贴按钮旁的下拉菜单，查看可供选择的粘贴方式。",
+    "x": 391,
+    "y": 108,
+    "action": "click",
+    "text": null,
+    "end_x": null,
+    "end_y": null
+  },
+  "status": "dispatching"
+}

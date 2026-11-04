@@ -1,0 +1,997 @@
+{
+  "anyOf": [
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "click"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "double_click"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "long_press"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "input_text"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "text": {
+          "type": "string"
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "text",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "scroll"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "end_x",
+        "end_y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "back"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "wait"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "key_press"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "text",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "hotkey"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "text",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "hover"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "right_click"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "drag"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action",
+        "reason",
+        "x",
+        "y",
+        "end_x",
+        "end_y",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retry_when": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        },
+        "controls": {
+          "$ref": "#/$defs/shared_1"
+        },
+        "regions": {
+          "$ref": "#/$defs/shared_8"
+        },
+        "function_updates": {
+          "$ref": "#/$defs/shared_13"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "complete"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "按需补充判断理由；不重复动作结果或已有知识。"
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        },
+        "controls": {
+          "$ref": "#/$defs/shared_1"
+        },
+        "regions": {
+          "$ref": "#/$defs/shared_8"
+        },
+        "function_updates": {
+          "$ref": "#/$defs/shared_13"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "exception": {
+          "type": "string",
+          "enum": [
+            "blocking_popup",
+            "system_error",
+            "unexpected_exit",
+            "external_app",
+            "unclassified"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "type": "object",
+  "$defs": {
+    "shared_3": {
+      "type": "string",
+      "enum": [
+        "剪切按钮",
+        "复制按钮",
+        "粘贴按钮",
+        "格式刷图标按钮（标准工具栏）",
+        "幻灯片布局下拉按钮",
+        "蓝色画板铅笔图标按钮",
+        "从第一张幻灯片开始放映按钮",
+        "从当前幻灯片开始放映按钮",
+        "新建幻灯片按钮",
+        "复制幻灯片按钮",
+        "删除幻灯片按钮",
+        "侧栏样式图标按钮",
+        "侧栏图库图标按钮",
+        "侧栏导航器图标按钮",
+        "侧栏菱形图标按钮",
+        "侧栏幻灯片动画图标按钮",
+        "侧栏媒体图标按钮",
+        "侧栏母版图标按钮"
+      ],
+      "description": "控件树中的控件ID，例如View 菜单。"
+    },
+    "shared_7": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "shared_6": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/shared_7"
+      }
+    },
+    "shared_5": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "修订给定已有知识时引用其序号；新增省略。"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+        },
+        "constraints": {
+          "$ref": "#/$defs/shared_6"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "shared_4": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/shared_5"
+      }
+    },
+    "shared_2": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/shared_3"
+        },
+        "knowledge": {
+          "$ref": "#/$defs/shared_4"
+        }
+      },
+      "required": [
+        "ref",
+        "knowledge"
+      ],
+      "additionalProperties": false
+    },
+    "shared_1": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_2"
+      }
+    },
+    "shared_12": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "shared_11": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_12"
+      }
+    },
+    "shared_10": {
+      "type": "object",
+      "properties": {
+        "add": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "update": {
+          "$ref": "#/$defs/shared_11"
+        },
+        "delete": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "shared_9": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "enum": [
+            "LibreOffice Impress 窗口"
+          ]
+        },
+        "local_knowledge": {
+          "$ref": "#/$defs/shared_10"
+        }
+      },
+      "required": [
+        "ref",
+        "local_knowledge"
+      ],
+      "additionalProperties": false
+    },
+    "shared_8": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_9"
+      }
+    },
+    "shared_16": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supports": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "supports"
+      ],
+      "additionalProperties": false
+    },
+    "shared_15": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_16"
+      }
+    },
+    "shared_19": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supports": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "shared_18": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changes": {
+          "$ref": "#/$defs/shared_19"
+        }
+      },
+      "required": [
+        "ref",
+        "changes"
+      ],
+      "additionalProperties": false
+    },
+    "shared_17": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_18"
+      }
+    },
+    "shared_21": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replace_with": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "ref",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "shared_20": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_21"
+      }
+    },
+    "shared_14": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string",
+          "minLength": 1,
+          "enum": [
+            "LibreOffice Impress 窗口"
+          ]
+        },
+        "add": {
+          "$ref": "#/$defs/shared_15"
+        },
+        "update": {
+          "$ref": "#/$defs/shared_17"
+        },
+        "remove": {
+          "$ref": "#/$defs/shared_20"
+        }
+      },
+      "required": [
+        "region"
+      ],
+      "additionalProperties": false
+    },
+    "shared_13": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared_14"
+      }
+    }
+  }
+}

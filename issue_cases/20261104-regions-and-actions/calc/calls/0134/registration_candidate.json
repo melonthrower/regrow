@@ -1,0 +1,493 @@
+{
+  "action_result": {
+    "exception": "none",
+    "description": "点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。",
+    "recovery_handoff": "",
+    "returns_to_previous": false
+  },
+  "foreground": {
+    "description": "LibreOffice Calc 前景中展开着“文件菜单”的命令菜单；其下方的工作表窗口仍可见，但菜单覆盖了部分内容。"
+  },
+  "regions": [
+    {
+      "ref": "r0013",
+      "identity": "same"
+    },
+    {
+      "name": "文件命令菜单",
+      "description": "由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。",
+      "identity": "new",
+      "state_description": "命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。",
+      "local_knowledge": {
+        "add": [
+          "列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。"
+        ]
+      },
+      "parent_index": 0,
+      "bbox": {
+        "left": 70,
+        "top": 88,
+        "right": 375,
+        "bottom": 697
+      }
+    }
+  ],
+  "jump_to": [
+    {
+      "region_index": 1
+    }
+  ],
+  "task_update": [
+    {
+      "task": "r0013/功能探索",
+      "decision": "answered",
+      "reason": "已点击文件菜单并观察其显示的命令列表，满足本任务的结算条件；命令本身及子菜单的操作结果不属于本次入口观察的完成条件。"
+    }
+  ],
+  "uncertainties": [
+    "New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。",
+    "除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。"
+  ],
+  "controls": [
+    {
+      "ref": "c0039",
+      "knowledge": [
+        {
+          "description": "点击可打开文件相关命令菜单。"
+        },
+        {
+          "description": "展开后可见 New、打开、保存、导出、打印预览、打印、属性等命令；部分命令带子菜单箭头，Versions… 和 Save All 当前显示为灰色。菜单中还显示各命令可见的快捷键提示。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "add_image": true,
+      "image_conditions": [
+        "文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。"
+      ],
+      "region_index": 0,
+      "bbox": {
+        "left": 70,
+        "top": 63,
+        "right": 111,
+        "bottom": 89
+      }
+    },
+    {
+      "name": "New",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 89,
+        "right": 373,
+        "bottom": 115
+      }
+    },
+    {
+      "name": "Open…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打开命令；菜单显示快捷键 Ctrl+O，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 115,
+        "right": 373,
+        "bottom": 139
+      }
+    },
+    {
+      "name": "Open Remote…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的远程打开命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 139,
+        "right": 373,
+        "bottom": 163
+      }
+    },
+    {
+      "name": "Recent Documents",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的最近文档入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 163,
+        "right": 373,
+        "bottom": 187
+      }
+    },
+    {
+      "name": "Close",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的关闭命令；本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 187,
+        "right": 373,
+        "bottom": 213
+      }
+    },
+    {
+      "name": "Wizards",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的向导入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 213,
+        "right": 373,
+        "bottom": 239
+      }
+    },
+    {
+      "name": "Templates",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的模板入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 239,
+        "right": 373,
+        "bottom": 264
+      }
+    },
+    {
+      "name": "Reload",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的重新载入命令；本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 264,
+        "right": 373,
+        "bottom": 290
+      }
+    },
+    {
+      "name": "Versions…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的版本命令；当前显示为灰色，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 290,
+        "right": 373,
+        "bottom": 316
+      }
+    },
+    {
+      "name": "Save",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的保存命令；菜单显示快捷键 Ctrl+S，本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 316,
+        "right": 373,
+        "bottom": 342
+      }
+    },
+    {
+      "name": "Save As…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的另存为命令；菜单显示快捷键 Shift+Ctrl+S，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 342,
+        "right": 373,
+        "bottom": 367
+      }
+    },
+    {
+      "name": "Save Remote…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的远程保存命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 367,
+        "right": 373,
+        "bottom": 391
+      }
+    },
+    {
+      "name": "Save a Copy…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的保存副本命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 391,
+        "right": 373,
+        "bottom": 417
+      }
+    },
+    {
+      "name": "Save All",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的全部保存命令；当前显示为灰色，本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 417,
+        "right": 373,
+        "bottom": 442
+      }
+    },
+    {
+      "name": "Export…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的导出命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 442,
+        "right": 373,
+        "bottom": 467
+      }
+    },
+    {
+      "name": "Export as PDF…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的导出为 PDF 命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 467,
+        "right": 373,
+        "bottom": 491
+      }
+    },
+    {
+      "name": "Send",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的发送入口；带子菜单箭头，本次未展开或执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 491,
+        "right": 373,
+        "bottom": 516
+      }
+    },
+    {
+      "name": "Preview in Web Browser",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的在浏览器中预览命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 516,
+        "right": 373,
+        "bottom": 542
+      }
+    },
+    {
+      "name": "Print Preview",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打印预览命令；菜单显示快捷键 Shift+Ctrl+O，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 542,
+        "right": 373,
+        "bottom": 567
+      }
+    },
+    {
+      "name": "Print…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打印命令；菜单显示快捷键 Ctrl+P，本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 567,
+        "right": 373,
+        "bottom": 592
+      }
+    },
+    {
+      "name": "Printer Settings…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的打印机设置命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 592,
+        "right": 373,
+        "bottom": 619
+      }
+    },
+    {
+      "name": "Properties…",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的属性命令；本次未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 619,
+        "right": 373,
+        "bottom": 644
+      }
+    },
+    {
+      "name": "Digital Signatures",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的数字签名入口；带子菜单箭头，本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 644,
+        "right": 373,
+        "bottom": 670
+      }
+    },
+    {
+      "name": "Exit LibreOffice",
+      "knowledge": [
+        {
+          "description": "文件命令菜单中的退出 LibreOffice 命令；菜单显示快捷键 Ctrl+Q，本次未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1,
+      "bbox": {
+        "left": 72,
+        "top": 670,
+        "right": 373,
+        "bottom": 697
+      }
+    }
+  ],
+  "current_regions": [
+    {
+      "region_index": 0
+    },
+    {
+      "region_index": 1
+    }
+  ]
+}

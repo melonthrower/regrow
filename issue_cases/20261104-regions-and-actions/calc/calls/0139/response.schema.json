@@ -1,0 +1,699 @@
+{
+  "type": "object",
+  "properties": {
+    "foreground": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。"
+          },
+          "local_knowledge": {
+            "type": "object",
+            "properties": {
+              "add": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "update": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "delete": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "state_description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。"
+          },
+          "task_review_reason": {
+            "type": "string",
+            "description": "仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。"
+          },
+          "context_matches": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。"
+          },
+          "out_of_scope_reason": {
+            "type": "string",
+            "description": "只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。"
+          },
+          "identity": {
+            "type": "string",
+            "enum": [
+              "same",
+              "new",
+              "uncertain"
+            ]
+          },
+          "identity_evidence": {
+            "type": "string",
+            "description": "身份未定或存在歧义时说明具体依据和缺口。"
+          },
+          "controls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "文件菜单",
+                    "编辑菜单",
+                    "视图菜单",
+                    "插入菜单",
+                    "格式菜单",
+                    "样式菜单",
+                    "工作表菜单",
+                    "数据菜单",
+                    "工具菜单",
+                    "窗口菜单",
+                    "帮助菜单",
+                    "新建文档",
+                    "打开文件",
+                    "保存",
+                    "导出为 PDF",
+                    "打印",
+                    "剪切",
+                    "复制",
+                    "撤消",
+                    "重做",
+                    "字体名称",
+                    "字号",
+                    "名称框",
+                    "函数向导",
+                    "公式输入区域",
+                    "Get involved",
+                    "关闭参与提示",
+                    "Donate",
+                    "关闭捐赠提示",
+                    "单元格 A1",
+                    "工作表数据区域 A1:C5",
+                    "工作表 budget",
+                    "工作表导航按钮",
+                    "新增工作表",
+                    "缩放滑块",
+                    "属性面板入口",
+                    "侧边栏画笔图标入口",
+                    "图库入口",
+                    "导航器入口",
+                    "函数入口",
+                    "New",
+                    "Open…",
+                    "Open Remote…",
+                    "Recent Documents",
+                    "Close",
+                    "Wizards",
+                    "Templates",
+                    "Reload",
+                    "Versions…",
+                    "Save",
+                    "Save As…",
+                    "Save Remote…",
+                    "Save a Copy…",
+                    "Save All",
+                    "Export…",
+                    "Export as PDF…",
+                    "Send",
+                    "Preview in Web Browser",
+                    "Print Preview",
+                    "Print…",
+                    "Printer Settings…",
+                    "Properties…",
+                    "Digital Signatures",
+                    "Exit LibreOffice"
+                  ],
+                  "description": "已有控件填写控件树中的ID；新控件省略。"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "list_group": {
+                  "type": "string"
+                },
+                "knowledge": {
+                  "type": "array",
+                  "minItems": 0,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "修订给定已有知识时引用其序号；新增省略。"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                      },
+                      "constraints": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "description"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "may_open_content": {
+                  "type": "boolean",
+                  "description": "是否打开或展开与应用主要功能相关、具有探索价值的内容。"
+                },
+                "needs_exploration": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "控件自身用法是否还有影响后续使用的具体未知；不确定填null。"
+                },
+                "image_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "仅add_image=true时描述本张按钮状态图的适用条件；通用图填[]。"
+                },
+                "add_image": {
+                  "type": "boolean",
+                  "description": "仅真实按钮外观/语义状态变化时补状态图；默认false。文本框内容、位置、区块划分和窗口大小变化不算。"
+                }
+              },
+              "required": [],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "ref"
+                    ]
+                  },
+                  "then": {},
+                  "else": {
+                    "required": [
+                      "knowledge",
+                      "may_open_content",
+                      "needs_exploration",
+                      "name"
+                    ]
+                  }
+                }
+              ],
+              "description": "已有控件用ref及变化信息；新控件省略ref并填写新对象资料。"
+            }
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "ref"
+              ]
+            },
+            "then": {
+              "properties": {
+                "identity": {
+                  "const": "same"
+                },
+                "ref": {}
+              }
+            },
+            "else": {
+              "required": [
+                "name",
+                "description",
+                "identity"
+              ],
+              "properties": {
+                "identity": {
+                  "enum": [
+                    "new",
+                    "uncertain"
+                  ]
+                },
+                "ref": {
+                  "enum": [
+                    null,
+                    ""
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "description": "旧对象引用ref并只报新信息。新对象明确identity=new；身份未定用uncertain和具体缺口。"
+      },
+      "description": "本次识别或更新的区块；划分与复用依据实际观察。"
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_result": {
+      "type": "object",
+      "properties": {
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none",
+            "blocking_popup",
+            "system_error",
+            "unexpected_exit",
+            "external_app",
+            "unclassified"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "实际观察到的结果和未确认事项，不把预期当事实。"
+        },
+        "recovery_handoff": {
+          "type": "string"
+        },
+        "returns_to_previous": {
+          "type": "boolean",
+          "description": "刚执行的动作是否已返回进入前的位置，或已关闭浮层恢复下方界面。打开菜单/对话框为false，不因之后可关闭而填true；固定目标导航或语义未确认也为false"
+        }
+      },
+      "required": [
+        "exception",
+        "description",
+        "recovery_handoff",
+        "returns_to_previous"
+      ],
+      "additionalProperties": false
+    },
+    "jump_to": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "region": {
+                "type": "string",
+                "minLength": 1
+              },
+              "control": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "region"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "index",
+              "conditions"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "task_update": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "string",
+            "enum": [
+              "文件命令菜单/功能探索"
+            ]
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "continue",
+              "answered",
+              "defer"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "按需补充判断理由；不重复动作结果或已有知识。"
+          },
+          "remaining_question": {
+            "type": "string",
+            "minLength": 1,
+            "description": "decision为continue或defer时必填：原问题尚未回答的具体部分；answered时不填写。"
+          },
+          "retry_when": {
+            "type": "string",
+            "minLength": 1,
+            "description": "decision为defer时必填：何种条件满足后可重新推进；其他decision不填写。"
+          },
+          "next_action": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "region": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "control": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "click",
+                      "double_click",
+                      "long_press",
+                      "input_text",
+                      "scroll",
+                      "key_press",
+                      "hotkey",
+                      "hover",
+                      "right_click",
+                      "drag",
+                      "back",
+                      "wait"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "region",
+                  "control",
+                  "action",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "task",
+          "decision"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "decision": {
+                  "enum": [
+                    "continue",
+                    "defer"
+                  ]
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "then": {
+              "required": [
+                "remaining_question"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "decision": {
+                  "const": "defer"
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "then": {
+              "required": [
+                "retry_when"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "function_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "文件命令菜单"
+            ]
+          },
+          "add": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "supports": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "supports"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "update": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "changes": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "supports": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "constraints": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "ref",
+                "changes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "remove": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "replace_with": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "ref",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "region"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "foreground",
+    "regions",
+    "uncertainties",
+    "action_result",
+    "task_update"
+  ],
+  "additionalProperties": false
+}

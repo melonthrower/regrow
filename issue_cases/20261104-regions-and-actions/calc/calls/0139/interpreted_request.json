@@ -1,0 +1,3953 @@
+{
+  "pipeline_step": "update",
+  "role": "observation_update",
+  "stage": "observation_update",
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n按真实动作、回执和可见结果登记变化及限制。选项已见不写成配置已修改或生效；投递未确认保留为未知，不写成成功或未执行。发生预期外修改时也按事实记录。\n\n# 本步任务\n根据已执行动作、回执和前后图，报告动作后的当前前景与实际结果，登记新增认识、实际访问关系，并判断允许更新的任务。操作来源沿用给定执行记录；相关历史用于核对对象身份和已有用法。\n\n# 本步用到的概念\n\n前景是当前活动的页面、菜单、对话框或信息展示区。模态界面接管交互时，被接管的底层属于背景。\n\n区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。\n\n区块身份由职责、内容范围和实际延续关系确定。跨界面再次出现的同一区块沿用身份；数据、选中或排序变化可以是原区块的状态变化。\n正例：切换界面时，某区块连同其中的控件持续存在，且用途与范围延续，可复用它；另一部分内容整体替换时，结合变化和历史判断是原区块变化还是不同区块。\n\n引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\n结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。\n名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。\n正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。\n\n知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。\n\n功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。\n\n遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。\n\n# 已执行动作的结果：action_result\ndescription 写有依据的直接变化及对应观察，也可以说明无相关变化或无法判断。按实际提供的动作记录和图片判断，投递回执、像素变化本身不证明功能成功。缺少动作后图时保留未核对结果。\n正例：“点击后出现格式列表，可见 PDF、图片两项；尚未选择格式或执行导出。”\n\nexception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。\n\nreturns_to_previous：本次实际退出当前表面，回到对应进入记录的来源时填 true。结合来路与目标身份判断，业务值或滚动位置变化不改变来源身份。\n正例：关闭刚打开的对话框，返回打开它的编辑区，可以为 true。\n\nrecovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”\n\nexception 非 none 时，报告实际异常，regions、controls 填 []，本步允许的 function_updates 也填 []，不登记应用外的功能。原任务受异常影响的进展仍按本步字段要求填写，保留未解决的问题，不将应用外功能当作任务成果。其余字段按本步格式填写。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action_result` | 必填 | 对象 |\n\n### action_result\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\"、\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `description` | 必填 | 文字 |\n| `recovery_handoff` | 必填 | 文字 |\n| `returns_to_previous` | 必填 | true 或 false |\n\n# 当前活动界面：foreground\ndescription 简述当前表面及必要遮挡。\n正例：“导出对话框位于前景，后方编辑区暂不能操作。”\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `foreground` | 必填 | 对象 |\n\n### foreground\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字 |\n\n# 登记区块：regions\ndescription 写区块的稳定职责和范围；name 用便于辨认的名称。已有对象按本节格式引用并补充变化。\n正例：区块描述为“编辑文档内容并访问导出功能的编辑区”。\n\nref 复制已确认的旧区块名称，沿用身份时 identity 为 same。没有可确认的旧身份时，按实际填写 new 或 uncertain，并提供 name、description；identity_evidence 保留判断依据、候选与具体缺口。\n正例：新出现的格式选择菜单有独立用途，未对应已有区块时登记为 new。\n\nstate_description 写这次可见的状态，description 保留稳定职责。\n正例：state_description 为“搜索结果为空”，区块用途仍为展示搜索结果。\n\ncontext_matches：当前画面符合该历史区块给出的行为适用上下文时填 true，不符合填 false；没有这种限定或无法判断时填 null。\n\nout_of_scope_reason：仅整个区块都超出本次探索范围时，说明具体原因。\n\ntask_review_reason：出现已有任务未覆盖的具体问题，或旧结论被新证据推翻时，写清对象和问题；普通观察更新省略。\n正例：“原本仅提供图片格式，现在出现独立音频导出入口，其可选格式尚不明确。”\n\nlocal_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。\n\n控件直接放在所属区块的 controls 列表中，不填写所属区块编号。新对象写 name；复用已有对象写材料中给出的 ref 名称。只补旧控件知识时，在原区块中用 ref 和 knowledge 更新，不把旧界面当成当前可见。\n\ncurrent 为 true 表示本次确认该区块处于当前前景；只标记当前实际看见的区块。省略或 false 表示本次没有作前景确认，不新增“已消失”的历史事实。补历史区块知识不需要 current:true。没有可确认的当前区块时，不标记任何区块为 true。\n\nparent 填物理包含它的父区块名称；没有父区块时省略或填 null。这里不是访问来路。\n\n# 登记控件：controls\n报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。\n大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。\n正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。\n\nref：已确认是材料中的旧控件时填写其名称；确认是新对象时省略。\n\nname 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。\n正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。\n\nknowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”\n\nknowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}\n\nknowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。\n\nlist_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。\n不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。\n正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。\n\nmay_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身用法是否还有影响后续使用的具体未知：true 有，false 没有，null 尚不能判断。\n正例：入口已知会打开设置面板，但面板内部尚未探索，可以是 may_open_content=true、needs_exploration=false。\n\nadd_image：已有控件出现值得保存的新外观或状态时填 true；image_conditions 描述这份外观适用的可见状态。只是位置、窗口大小或输入值变化时复用已有外观。\n正例：原来的“展开”按钮变为“收起”，说明“面板已展开时的收起状态”。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 必填 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字 |\n| `description` | 按需 | 文字 |\n| `ref` | 按需 | 文字 或 null |\n| `local_knowledge` | 按需 | 对象 |\n| `state_description` | 按需 | 文字；不能为空 |\n| `task_review_reason` | 按需 | 文字 |\n| `context_matches` | 按需 | true 或 false 或 null |\n| `out_of_scope_reason` | 按需 | 文字 |\n| `identity` | 按需 | 可用值：\"same\"、\"new\"、\"uncertain\" |\n| `identity_evidence` | 按需 | 文字 |\n| `controls` | 按需 | 列表 |\n| `current` | 按需 | true 或 false |\n| `parent` | 按需 | 文字 或 null |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n满足上述条件时：\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 沿用上文 | 固定为 \"same\" |\n| `ref` | 沿用上文 |  |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n不满足上述条件时：\n- 必须填写：`name`、`description`、`identity`。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 必填 | 可用值：\"new\"、\"uncertain\" |\n| `ref` | 沿用上文 | 可用值：null、\"\" |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n### regions → controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 按需 | 可用值：\"文件菜单\"、\"编辑菜单\"、\"视图菜单\"、\"插入菜单\"、\"格式菜单\"、\"样式菜单\"、\"工作表菜单\"、\"数据菜单\"、\"工具菜单\"、\"窗口菜单\"、\"帮助菜单\"、\"新建文档\"、\"打开文件\"、\"保存\"、\"导出为 PDF\"、\"打印\"、\"剪切\"、\"复制\"、\"撤消\"、\"重做\"、\"字体名称\"、\"字号\"、\"名称框\"、\"函数向导\"、\"公式输入区域\"、\"Get involved\"、\"关闭参与提示\"、\"Donate\"、\"关闭捐赠提示\"、\"单元格 A1\"、\"工作表数据区域 A1:C5\"、\"工作表 budget\"、\"工作表导航按钮\"、\"新增工作表\"、\"缩放滑块\"、\"属性面板入口\"、\"侧边栏画笔图标入口\"、\"图库入口\"、\"导航器入口\"、\"函数入口\"、\"New\"、\"Open…\"、\"Open Remote…\"、\"Recent Documents\"、\"Close\"、\"Wizards\"、\"Templates\"、\"Reload\"、\"Versions…\"、\"Save\"、\"Save As…\"、\"Save Remote…\"、\"Save a Copy…\"、\"Save All\"、\"Export…\"、\"Export as PDF…\"、\"Send\"、\"Preview in Web Browser\"、\"Print Preview\"、\"Print…\"、\"Printer Settings…\"、\"Properties…\"、\"Digital Signatures\"、\"Exit LibreOffice\" |\n| `description` | 按需 | 文字 |\n| `name` | 按需 | 文字 |\n| `list_group` | 按需 | 文字 |\n| `knowledge` | 按需 | 列表 |\n| `may_open_content` | 按需 | true 或 false |\n| `needs_exploration` | 按需 | true 或 false 或 null |\n| `image_conditions` | 按需 | 列表（元素要求：文字） |\n| `add_image` | 按需 | true 或 false |\n\n**条件规则：regions → controls**\n未填写 `ref` 时：\n- 必须填写：`knowledge`、`may_open_content`、`needs_exploration`、`name`。\n\n### regions → controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### regions → controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |\n\n# 登记实际访问关系：jump_to\n来源是给定执行记录中的实际操作对象，可以是控件或区块。动作使新目标出现、切换、展开或可访问，且有前后证据支持时，登记尚缺的关系。目标可以是区块或独立控件。\nregion 填本次 regions 中目标区块的名称；目标是独立控件时再用 control 填它的名称。conditions 写该路线确实需要的适用条件。\n修订旧路线时用该来源已有 jump_to 的 index 和新的完整 conditions，保持原目标与访问证据。\n正例：点击附件标签后出现附件区，填写 {\"region\": \"附件区\"}。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `jump_to` | 按需 | 列表 |\n\n### jump_to（列表中的一项）\n\n至少符合以下一种格式。\n\n### jump_to — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `conditions` | 按需 | 列表（元素要求：文字；不能为空） |\n| `region` | 必填 | 文字；不能为空 |\n| `control` | 按需 | 文字；不能为空 |\n\n### jump_to — 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 必填 | 整数；不小于 0 |\n| `conditions` | 必填 | 列表（元素要求：文字；不能为空） |\n\n# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。\n\n功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 c0008/搜索词 时，填写 [\"c0008/搜索词\"]。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"文件命令菜单\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |\n\n# 判断已有任务：task_update\ndecision=answered：已有证据回答原问题；continue：仍有必要未知，用 remaining_question 写清缺口；defer：存在实际障碍，另用 retry_when 写可判断的恢复条件。reason 按需说明依据。\n按原问题和保存的 completion_condition 判断，已有答案直接使用。已观察到入口打开目标内容，即可结算入口任务；把看到的内容、用途和有证据的跳转关系填到本次相应的登记字段。内部控件还有未知，不妨碍入口任务结束，也不要求继续操作它们。\n没有打开新内容的控件，记录实际响应，不强行填写跳转关系。结果被遮挡或不明确时，remaining_question 只写原问题还没看清的部分；历史判断里后来加上的其他问题，不自动变成本任务的完成要求。新认识写到对应对象知识，独立新问题由后续任务提出处理。\n原问题要求验证业务结果时，仍须有相应证据，不能只看到设置页面就判 answered。answered 不保留活动缺口或重试条件；只判断本轮允许更新的任务，已经回答的可以分别结束，不必等其他任务。\n\ntask 复制本轮给定的任务引用，分别判断允许处理的任务。\n\nnext_action：continue 时可给出后续建议，完整填写 region、control、action、reason，引用本轮给定的实际操作对象。省略会保留尚未使用的旧建议；明确填 null 撤销旧建议。answered、defer 不附非空建议。\n正例：原建议已不再适用且暂无新办法，填写 \"next_action\": null。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `task_update` | 必填 | 列表 |\n\n### task_update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `task` | 必填 | 可用值：\"文件命令菜单/功能探索\" |\n| `decision` | 必填 | 可用值：\"continue\"、\"answered\"、\"defer\" |\n| `reason` | 按需 | 文字；不能为空 |\n| `remaining_question` | 按需 | 文字；不能为空 |\n| `retry_when` | 按需 | 文字；不能为空 |\n| `next_action` | 按需 | null 或 对象 |\n\n**条件规则：task_update**\n条件：填写 `decision`，且`decision`符合：可用值：\"continue\"、\"defer\"。\n满足上述条件时：\n- 必须填写：`remaining_question`。\n\n**条件规则：task_update**\n条件：填写 `decision`，且`decision`符合：固定为 \"defer\"。\n满足上述条件时：\n- 必须填写：`retry_when`。\n\n### task_update → next_action\n\n至少符合以下一种格式。\n\n### task_update → next_action — 格式 1\n\nnull\n\n### task_update → next_action — 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 文字；不能为空 |\n| `control` | 必填 | 文字 |\n| `action` | 必填 | 可用值：\"click\"、\"double_click\"、\"long_press\"、\"input_text\"、\"scroll\"、\"key_press\"、\"hotkey\"、\"hover\"、\"right_click\"、\"drag\"、\"back\"、\"wait\" |\n| `reason` | 必填 | 文字；不能为空 |\n\n# 尚不能确认的事实：uncertainties\n简述具体对象、疑点与缺少的依据，供后续判断是否需要继续了解；已明确的内容照常登记。\n正例：“两个相同图标分别服务哪个列表，当前文字被遮挡，尚不能确认。”\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `uncertainties` | 必填 | 列表（元素要求：文字） |\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。必填的 regions、task_update、uncertainties 没有内容时填 []。正例说明写法，具体内容依据本次材料。",
+  "user_prompt": "## 背景\n范围：文件命令菜单\n任务引用：文件命令菜单/功能探索\n探索内容：了解控件尚不明确的功能、直接效果或打开的内容。\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\n\n## 本步问题\n刚才的实际操作改变了什么？这些观察回答了原探索问题的哪一部分？\n\n## 问题 1：刚才实际做了什么，页面发生了什么变化？\n\n### 实际来源区块\n文件命令菜单\n\n### 实际入口\nNew\n\n### 实际动作\n1：\n  操作：click\n  target：New\n  理由：展开 New 子菜单，确认其中显示的可选新建目标。\n  x：115\n  y：101\n\n### 回执\nexit_code：0\nsemantic_result：unverified\n\n### 动作后前台应用证据\n目标应用：desktop.libreoffice_calc\n与目标应用一致：true\ncontrol_transport_available：true\n\n### 目标应用\n本次要探索的应用：LibreOffice calc\n\n判断当前前景中正在探索的内容，是否属于这个应用。\n如果不属于，exception 填 external_app，\n简要说明现在到了什么界面，不再探索其中的功能。\n\n正例：前景已经是另一应用的页面，应报告 external_app。\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\n\n### 登记页面组成与访问来路\n控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nCalc 菜单栏 [Calc 菜单栏]\n  ├─ 文件菜单 [文件菜单]\n    └─ 文件命令菜单 [文件命令菜单]（本步关注区块）\n      ├─ New [New]\n      ├─ Open… [Open…]\n      ├─ Open Remote… [Open Remote…]\n      ├─ Recent Documents [Recent Documents]\n      ├─ Close [Close]\n      ├─ Wizards [Wizards]\n      ├─ Templates [Templates]\n      ├─ Reload [Reload]\n      ├─ Versions… [Versions…]\n      ├─ Save [Save]\n      ├─ Save As… [Save As…]\n      ├─ Save Remote… [Save Remote…]\n      ├─ Save a Copy… [Save a Copy…]\n      ├─ Save All [Save All]\n      ├─ Export… [Export…]\n      ├─ Export as PDF… [Export as PDF…]\n      ├─ Send [Send]\n      ├─ Preview in Web Browser [Preview in Web Browser]\n      ├─ Print Preview [Print Preview]\n      ├─ Print… [Print…]\n      ├─ Printer Settings… [Printer Settings…]\n      ├─ Properties… [Properties…]\n      ├─ Digital Signatures [Digital Signatures]\n      ├─ Exit LibreOffice [Exit LibreOffice]\n  ├─ 编辑菜单 [编辑菜单]\n  ├─ 视图菜单 [视图菜单]\n  ├─ 插入菜单 [插入菜单]\n  ├─ 格式菜单 [格式菜单]\n  ├─ 样式菜单 [样式菜单]\n  ├─ 工作表菜单 [工作表菜单]\n  ├─ 数据菜单 [数据菜单]\n  ├─ 工具菜单 [工具菜单]\n  ├─ 窗口菜单 [窗口菜单]\n  ├─ 帮助菜单 [帮助菜单]\nCalc 工具栏 [Calc 工具栏]\n  ├─ 新建文档 [新建文档]\n  ├─ 打开文件 [打开文件]\n  ├─ 保存 [保存]\n  ├─ 导出为 PDF [导出为 PDF]\n  ├─ 打印 [打印]\n  ├─ 剪切 [剪切]\n  ├─ 复制 [复制]\n  ├─ 撤消 [撤消]\n  ├─ 重做 [重做]\n  ├─ 字体名称 [字体名称]\n  ├─ 字号 [字号]\n公式栏 [公式栏]\n  ├─ 名称框 [名称框]\n  ├─ 函数向导 [函数向导]\n  ├─ 公式输入区域 [公式输入区域]\n信息提示横幅 [信息提示横幅]\n  ├─ Get involved [Get involved]\n  ├─ 关闭参与提示 [关闭参与提示]\n  ├─ Donate [Donate]\n  ├─ 关闭捐赠提示 [关闭捐赠提示]\n工作表网格 [工作表网格]\n  ├─ 单元格 A1 [单元格 A1]\n  ├─ 工作表数据区域 A1:C5 [工作表数据区域 A1:C5]\n工作表标签与导航 [工作表标签与导航]\n  ├─ 工作表 budget [工作表 budget]\n  ├─ 工作表导航按钮 [工作表导航按钮]\n  ├─ 新增工作表 [新增工作表]\n状态栏 [状态栏]\n  ├─ 缩放滑块 [缩放滑块]\n侧边栏入口 [侧边栏入口]\n  ├─ 属性面板入口 [属性面板入口]\n  ├─ 侧边栏画笔图标入口 [侧边栏画笔图标入口]\n  ├─ 图库入口 [图库入口]\n  ├─ 导航器入口 [导航器入口]\n  ├─ 函数入口 [函数入口]\n原探索目标：文件命令菜单 / New\n上次已登记前景：Calc 菜单栏、文件命令菜单\n位置材料来自动作前；本步结果以动作后图为准。\n上一步记录：动作 a0017\n任务引用：文件命令菜单 / 功能探索（pending）\n相关任务过程：\na0017：click「文件菜单」；观察：点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。；该次更新未确认事项：New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。；除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。\n\n### 实际对象已有跳转\n无\n\n## 问题 2：出现的对象如何对应已有区块和控件？\n\n### 历史身份参考\n1：\n  名称：Calc 菜单栏\n  提供原因：\n    动作前观察中的区块；截图外观匹配候选（不等于前景）\n  历史状态观察：\n    说明：文件、编辑、视图、插入、格式、样式、工作表、数据、工具、窗口和帮助菜单均可见。\n    来源：discovery:0131\n  ref：Calc 菜单栏\n  历史描述：Calc 窗口顶部的应用菜单入口。\n  controls：\n    1：\n      名称：文件菜单\n      ref：文件菜单\n      已保存外观：文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。；文件菜单未展开，菜单栏中仅显示“文件”菜单项。\n    2：\n      名称：编辑菜单\n      ref：编辑菜单\n      已保存外观：状态未注明\n    3：\n      名称：视图菜单\n      ref：视图菜单\n      已保存外观：状态未注明\n    4：\n      名称：插入菜单\n      ref：插入菜单\n      已保存外观：状态未注明\n    5：\n      名称：格式菜单\n      ref：格式菜单\n      已保存外观：状态未注明\n    6：\n      名称：样式菜单\n      ref：样式菜单\n      已保存外观：状态未注明\n    7：\n      名称：工作表菜单\n      ref：工作表菜单\n      已保存外观：状态未注明\n    8：\n      名称：数据菜单\n      ref：数据菜单\n      已保存外观：状态未注明\n    9：\n      名称：工具菜单\n      ref：工具菜单\n      已保存外观：状态未注明\n    10：\n      名称：窗口菜单\n      ref：窗口菜单\n      已保存外观：状态未注明\n    11：\n      名称：帮助菜单\n      ref：帮助菜单\n      已保存外观：状态未注明\n  本图外观线索：\n    文件菜单；样式菜单；窗口菜单；编辑菜单；工具菜单；工作表菜单；插入菜单；视图菜单；帮助菜单；格式菜单；数据菜单\n2：\n  名称：信息提示横幅\n  提供原因：\n    截图外观匹配候选（不等于前景）\n  历史状态观察：\n    说明：两条蓝色提示横幅均显示，各自有操作按钮和关闭按钮。\n    来源：discovery:0131\n  ref：信息提示横幅\n  历史描述：工作表上方的 LibreOffice 社区参与及捐赠提示区域。\n  controls：\n    1：\n      名称：Get involved\n      ref：Get involved\n      已保存外观：状态未注明\n    2：\n      名称：Donate\n      ref：Donate\n      已保存外观：状态未注明\n  本图外观线索：\n    Get involved；Donate\n3：\n  名称：工作表标签与导航\n  提供原因：\n    截图外观匹配候选（不等于前景）\n  历史状态观察：\n    说明：显示 budget 工作表标签及工作表导航和新增工作表图标；状态显示 Sheet 1 of 1。\n    来源：discovery:0131\n  ref：工作表标签与导航\n  历史描述：工作表标签及其切换、导航和新增入口。\n  controls：\n    1：\n      名称：工作表 budget\n      ref：工作表 budget\n      已保存外观：当前可见且已选中的工作表标签，状态未注明\n    2：\n      名称：工作表导航按钮\n      ref：工作表导航按钮\n      已保存外观：工作表标签左侧的一组首个、前一个、后一个及末个导航图标，状态未注明\n    3：\n      名称：新增工作表\n      ref：新增工作表\n      已保存外观：工作表标签左侧带绿色加号的图标，状态未注明\n  本图外观线索：\n    工作表 budget；新增工作表；工作表导航按钮\n4：\n  名称：状态栏\n  提供原因：\n    截图外观匹配候选（不等于前景）\n  历史状态观察：\n    说明：可见 PageStyle_budget、English (Hong Kong)、Average: ; Sum: 0 及 100% 缩放信息。\n    来源：discovery:0131\n  ref：状态栏\n  历史描述：窗口底部显示工作表状态、语言、计算摘要及缩放信息。\n  controls：\n    1：\n      名称：缩放滑块\n      ref：缩放滑块\n      已保存外观：状态栏右侧的缩小、滑块、放大和百分比显示区域，状态未注明\n  本图外观线索：\n    缩放滑块\n5：\n  名称：侧边栏入口\n  提供原因：\n    截图外观匹配候选（不等于前景）\n  历史状态观察：\n    说明：多个图标入口可见，侧边栏内容面板当前未展开。\n    来源：discovery:0131\n  ref：侧边栏入口\n  历史描述：Calc 窗口右侧垂直排列的侧边栏面板入口。\n  controls：\n    1：\n      名称：属性面板入口\n      ref：属性面板入口\n      已保存外观：顶部橙色滑块样式图标，状态未注明\n    2：\n      名称：侧边栏画笔图标入口\n      ref：侧边栏画笔图标入口\n      已保存外观：属性图标下方的画笔样式图标，状态未注明\n    3：\n      名称：图库入口\n      ref：图库入口\n      已保存外观：紫色图片样式图标，状态未注明\n    4：\n      名称：导航器入口\n      ref：导航器入口\n      已保存外观：蓝色圆形罗盘样式图标，状态未注明\n    5：\n      名称：函数入口\n      ref：函数入口\n      已保存外观：标记为 fx 的侧边栏图标，状态未注明\n  本图外观线索：\n    属性面板入口；图库入口；侧边栏画笔图标入口；函数入口；导航器入口\n6：\n  名称：文件命令菜单\n  提供原因：\n    动作前来源；未完成工作所属区块；动作前观察中的区块；截图外观匹配候选（不等于前景）\n  k0014：列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\n  历史状态观察：\n    说明：命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\n    来源：update:0134\n  ref：文件命令菜单\n  历史描述：由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\n  controls：\n    1：\n      名称：New\n      用途记录：文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\n      ref：New\n      已保存外观：状态未注明\n    2：\n      名称：Open…\n      ref：Open…\n      已保存外观：状态未注明\n    3：\n      名称：Open Remote…\n      ref：Open Remote…\n      已保存外观：状态未注明\n    4：\n      名称：Recent Documents\n      ref：Recent Documents\n      已保存外观：状态未注明\n    5：\n      名称：Close\n      ref：Close\n      已保存外观：状态未注明\n    6：\n      名称：Wizards\n      ref：Wizards\n      已保存外观：状态未注明\n    7：\n      名称：Templates\n      ref：Templates\n      已保存外观：状态未注明\n    8：\n      名称：Reload\n      ref：Reload\n      已保存外观：状态未注明\n    9：\n      名称：Versions…\n      ref：Versions…\n      已保存外观：状态未注明\n    10：\n      名称：Save\n      ref：Save\n      已保存外观：状态未注明\n    11：\n      名称：Save As…\n      ref：Save As…\n      已保存外观：状态未注明\n    12：\n      名称：Save Remote…\n      ref：Save Remote…\n      已保存外观：状态未注明\n    13：\n      名称：Save a Copy…\n      ref：Save a Copy…\n      已保存外观：状态未注明\n    14：\n      名称：Save All\n      ref：Save All\n      已保存外观：状态未注明\n    15：\n      名称：Export…\n      ref：Export…\n      已保存外观：状态未注明\n    16：\n      名称：Export as PDF…\n      ref：Export as PDF…\n      已保存外观：状态未注明\n    17：\n      名称：Send\n      ref：Send\n      已保存外观：状态未注明\n    18：\n      名称：Preview in Web Browser\n      ref：Preview in Web Browser\n      已保存外观：状态未注明\n    19：\n      名称：Print Preview\n      ref：Print Preview\n      已保存外观：状态未注明\n    20：\n      名称：Print…\n      ref：Print…\n      已保存外观：状态未注明\n    21：\n      名称：Printer Settings…\n      ref：Printer Settings…\n      已保存外观：状态未注明\n    22：\n      名称：Properties…\n      ref：Properties…\n      已保存外观：状态未注明\n    23：\n      名称：Digital Signatures\n      ref：Digital Signatures\n      已保存外观：状态未注明\n    24：\n      名称：Exit LibreOffice\n      ref：Exit LibreOffice\n      已保存外观：状态未注明\n  本图外观线索：\n    Save All；Export…；Export as PDF…；Print Preview；Printer Settings…；Properties…；Exit LibreOffice；Digital Signatures；Preview in Web Browser；Save a Copy…；Print…；Send；Save Remote…；Recent Documents；Open Remote…；Save As…；Templates；Wizards；Open…；Reload；Save；Close；New；Versions…\n\n### 本次入口历史落点\n来源关联：上一步执行记录所指控件的历史结果\n历史结果：无\n进入当前界面前的区块：\n  1：\n    区块：Calc 菜单栏\n    名称：Calc 菜单栏\n    说明：Calc 窗口顶部的应用菜单入口。\n边界：历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。\n\n## 问题 3：这些观察是否回答了原探索问题？\n\n### 当前任务\n任务：文件命令菜单/功能探索\n区块：文件命令菜单\n控件：New\n进度：待探索\n任务类型：功能探索\n当前控件知识：\n  1：\n    index：0\n    说明：文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\n\n## 本步的补充依据与限制\n### 身份引用\nref使用已提供的区块或控件编号；name只表示名称。\n\n### 可更新功能的区块\n1：\n  名称：文件命令菜单\n  ref：文件命令菜单\n\n### 已有功能轮廓\n1：\n  功能：创建文档\n  引用：文件命令菜单/创建文档\n  用途：通过 New 进入新建目标选择；目前仅确认该菜单入口存在，具体目标待探索。\n  支持对象：\n    New\n\n### 其他已有功能（仅目录）\n1：\n  功能：打开本地文档\n  引用：文件命令菜单/打开本地文档\n2：\n  功能：访问最近文档\n  引用：文件命令菜单/访问最近文档\n3：\n  功能：关闭文档\n  引用：文件命令菜单/关闭文档\n4：\n  功能：访问向导\n  引用：文件命令菜单/访问向导\n5：\n  功能：访问模板\n  引用：文件命令菜单/访问模板\n6：\n  功能：重新载入文档\n  引用：文件命令菜单/重新载入文档\n7：\n  功能：管理文档版本\n  引用：文件命令菜单/管理文档版本\n8：\n  功能：保存文档\n  引用：文件命令菜单/保存文档\n9：\n  功能：另存为文档\n  引用：文件命令菜单/另存为文档\n10：\n  功能：保存文档副本\n  引用：文件命令菜单/保存文档副本\n11：\n  功能：保存所有打开的文档\n  引用：文件命令菜单/保存所有打开的文档\n12：\n  功能：导出文档\n  引用：文件命令菜单/导出文档\n13：\n  功能：导出为 PDF\n  引用：文件命令菜单/导出为 PDF\n14：\n  功能：查看发送选项\n  引用：文件命令菜单/查看发送选项\n15：\n  功能：打印预览\n  引用：文件命令菜单/打印预览\n16：\n  功能：打印文档\n  引用：文件命令菜单/打印文档\n17：\n  功能：设置打印机\n  引用：文件命令菜单/设置打印机\n18：\n  功能：查看文档属性\n  引用：文件命令菜单/查看文档属性\n19：\n  功能：查看数字签名选项\n  引用：文件命令菜单/查看数字签名选项\n\n图1：实际动作前图；核对原操作对象；原图 1280×800 像素。\n图2：原动作后图；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "screenshots": [
+    "action_attempts/a0018/before.png",
+    "action_attempts/a0018/after.png"
+  ],
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "foreground": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "regions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "parent_index": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "本轮regions数组0起始父行号；无父级为null。不是跨图身份ID。"
+            },
+            "description": {
+              "type": "string"
+            },
+            "ref": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。"
+            },
+            "local_knowledge": {
+              "type": "object",
+              "properties": {
+                "add": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "update": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "text"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "delete": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "state_description": {
+              "type": "string",
+              "minLength": 1,
+              "description": "本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。"
+            },
+            "task_review_reason": {
+              "type": "string",
+              "description": "仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。"
+            },
+            "context_matches": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。"
+            },
+            "out_of_scope_reason": {
+              "type": "string",
+              "description": "只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。"
+            },
+            "identity": {
+              "type": "string",
+              "enum": [
+                "same",
+                "new",
+                "uncertain"
+              ]
+            },
+            "identity_evidence": {
+              "type": "string",
+              "description": "身份未定或存在歧义时说明具体依据和缺口。"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "ref"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "identity": {
+                    "const": "same"
+                  },
+                  "ref": {
+                    "pattern": "^r[0-9]+$"
+                  }
+                }
+              },
+              "else": {
+                "required": [
+                  "name",
+                  "description",
+                  "identity"
+                ],
+                "properties": {
+                  "identity": {
+                    "enum": [
+                      "new",
+                      "uncertain"
+                    ]
+                  },
+                  "ref": {
+                    "enum": [
+                      null,
+                      ""
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "description": "旧对象引用ref并只报新信息。新对象明确identity=new；身份未定用uncertain和具体缺口。"
+        },
+        "description": "本次识别或更新的区块；划分与复用依据实际观察。"
+      },
+      "controls": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "region_index": {
+              "type": "integer",
+              "description": "唯一直接所属Region的0起始行号"
+            },
+            "ref": {
+              "type": "string",
+              "enum": [
+                "c0039",
+                "c0040",
+                "c0041",
+                "c0042",
+                "c0043",
+                "c0044",
+                "c0045",
+                "c0046",
+                "c0047",
+                "c0048",
+                "c0049",
+                "c0050",
+                "c0051",
+                "c0052",
+                "c0053",
+                "c0054",
+                "c0055",
+                "c0056",
+                "c0057",
+                "c0058",
+                "c0059",
+                "c0060",
+                "c0061",
+                "c0062",
+                "c0063",
+                "c0064",
+                "c0065",
+                "c0066",
+                "c0067",
+                "c0068",
+                "c0069",
+                "c0070",
+                "c0071",
+                "c0072",
+                "c0073",
+                "c0074",
+                "c0075",
+                "c0076",
+                "c0077",
+                "c0078",
+                "c0079",
+                "c0080",
+                "c0081",
+                "c0082",
+                "c0083",
+                "c0084",
+                "c0085",
+                "c0086",
+                "c0087",
+                "c0088",
+                "c0089",
+                "c0090",
+                "c0091",
+                "c0092",
+                "c0093",
+                "c0094",
+                "c0095",
+                "c0096",
+                "c0097",
+                "c0098",
+                "c0099",
+                "c0100",
+                "c0101",
+                "c0102"
+              ],
+              "description": "已有控件填写控件树中的ID；新控件省略。"
+            },
+            "description": {
+              "type": "string",
+              "description": "仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。"
+            },
+            "name": {
+              "type": "string"
+            },
+            "list_group": {
+              "type": "string"
+            },
+            "knowledge": {
+              "type": "array",
+              "minItems": 0,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "修订给定已有知识时引用其序号；新增省略。"
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                  },
+                  "constraints": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "description"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "description"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "may_open_content": {
+              "type": "boolean",
+              "description": "是否打开或展开与应用主要功能相关、具有探索价值的内容。"
+            },
+            "needs_exploration": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "控件自身用法是否还有影响后续使用的具体未知；不确定填null。"
+            },
+            "image_conditions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "仅add_image=true时描述本张按钮状态图的适用条件；通用图填[]。"
+            },
+            "add_image": {
+              "type": "boolean",
+              "description": "仅真实按钮外观/语义状态变化时补状态图；默认false。文本框内容、位置、区块划分和窗口大小变化不算。"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "ref"
+                ]
+              },
+              "then": {},
+              "else": {
+                "required": [
+                  "region_index",
+                  "knowledge",
+                  "may_open_content",
+                  "needs_exploration",
+                  "name"
+                ]
+              }
+            }
+          ],
+          "description": "已有控件用ref及变化信息；新控件省略ref并填写新对象资料。"
+        }
+      },
+      "uncertainties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "action_result": {
+        "type": "object",
+        "properties": {
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none",
+              "blocking_popup",
+              "system_error",
+              "unexpected_exit",
+              "external_app",
+              "unclassified"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "实际观察到的结果和未确认事项，不把预期当事实。"
+          },
+          "recovery_handoff": {
+            "type": "string"
+          },
+          "returns_to_previous": {
+            "type": "boolean",
+            "description": "刚执行的动作是否已返回进入前的位置，或已关闭浮层恢复下方界面。打开菜单/对话框为false，不因之后可关闭而填true；固定目标导航或语义未确认也为false"
+          }
+        },
+        "required": [
+          "exception",
+          "description",
+          "recovery_handoff",
+          "returns_to_previous"
+        ],
+        "additionalProperties": false
+      },
+      "current_regions": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "使用本轮已知区块的ref编号。",
+                  "enum": [
+                    "r0013",
+                    "r0016",
+                    "r0018",
+                    "r0019",
+                    "r0020",
+                    "r0021"
+                  ]
+                }
+              },
+              "required": [
+                "ref"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "region_index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "本次regions中的位置，从0开始。"
+                }
+              },
+              "required": [
+                "region_index"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "jump_to": {
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "region_index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "control_index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "本次controls数组中的位置；不是控件ID。区块目标省略。"
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "required": [
+                "region_index"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "required": [
+                "index",
+                "conditions"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "task_update": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "task": {
+              "type": "string",
+              "enum": [
+                "r0021/功能探索"
+              ]
+            },
+            "decision": {
+              "type": "string",
+              "enum": [
+                "continue",
+                "answered",
+                "defer"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "description": "按需补充判断理由；不重复动作结果或已有知识。"
+            },
+            "remaining_question": {
+              "type": "string",
+              "minLength": 1,
+              "description": "decision为continue或defer时必填：原问题尚未回答的具体部分；answered时不填写。"
+            },
+            "retry_when": {
+              "type": "string",
+              "minLength": 1,
+              "description": "decision为defer时必填：何种条件满足后可重新推进；其他decision不填写。"
+            },
+            "next_action": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "region": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "control": {
+                      "type": "string"
+                    },
+                    "action": {
+                      "type": "string",
+                      "enum": [
+                        "click",
+                        "double_click",
+                        "long_press",
+                        "input_text",
+                        "scroll",
+                        "key_press",
+                        "hotkey",
+                        "hover",
+                        "right_click",
+                        "drag",
+                        "back",
+                        "wait"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "region",
+                    "control",
+                    "action",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "task",
+            "decision"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "continue",
+                      "defer"
+                    ]
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              },
+              "then": {
+                "required": [
+                  "remaining_question"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "decision": {
+                    "const": "defer"
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              },
+              "then": {
+                "required": [
+                  "retry_when"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "function_updates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "enum": [
+                "r0021"
+              ]
+            },
+            "add": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "supports": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "constraints": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "description",
+                  "supports"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "update": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "changes": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "supports": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "constraints": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "uniqueItems": true
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "ref",
+                  "changes"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "remove": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "replace_with": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "ref",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "region"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "foreground",
+      "regions",
+      "controls",
+      "uncertainties",
+      "action_result",
+      "current_regions",
+      "task_update"
+    ],
+    "additionalProperties": false
+  },
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "平台/遍历环境只读.prompt",
+      "text": "操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n按真实动作、回执和可见结果登记变化及限制。选项已见不写成配置已修改或生效；投递未确认保留为未知，不写成成功或未执行。发生预期外修改时也按事实记录。"
+    },
+    {
+      "path": "调用/动作后结果更新.prompt",
+      "text": "# 本步任务\n根据已执行动作、回执和前后图，报告动作后的当前前景与实际结果，登记新增认识、实际访问关系，并判断允许更新的任务。操作来源沿用给定执行记录；相关历史用于核对对象身份和已有用法。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.foreground_concept",
+      "text": "前景是当前活动的页面、菜单、对话框或信息展示区。模态界面接管交互时，被接管的底层属于背景。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.common",
+      "text": "区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.identity",
+      "text": "区块身份由职责、内容范围和实际延续关系确定。跨界面再次出现的同一区块沿用身份；数据、选中或排序变化可以是原区块的状态变化。\n正例：切换界面时，某区块连同其中的控件持续存在，且用途与范围延续，可复用它；另一部分内容整体替换时，结合变化和历史判断是原区块变化还是不同区块。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.references",
+      "text": "引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.identity",
+      "text": "结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。\n名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。\n正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_base",
+      "text": "知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function",
+      "text": "功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.definition",
+      "text": "遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.result",
+      "text": "# 已执行动作的结果：action_result\ndescription 写有依据的直接变化及对应观察，也可以说明无相关变化或无法判断。按实际提供的动作记录和图片判断，投递回执、像素变化本身不证明功能成功。缺少动作后图时保留未核对结果。\n正例：“点击后出现格式列表，可见 PDF、图片两项；尚未选择格式或执行导出。”"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.exception_values",
+      "text": "exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.returns_to_previous",
+      "text": "returns_to_previous：本次实际退出当前表面，回到对应进入记录的来源时填 true。结合来路与目标身份判断，业务值或滚动位置变化不改变来源身份。\n正例：关闭刚打开的对话框，返回打开它的编辑区，可以为 true。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.recovery_handoff",
+      "text": "recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.exception_registration",
+      "text": "exception 非 none 时，报告实际异常，regions、controls 填 []，本步允许的 function_updates 也填 []，不登记应用外的功能。原任务受异常影响的进展仍按本步字段要求填写，保留未解决的问题，不将应用外功能当作任务成果。其余字段按本步格式填写。"
+    },
+    {
+      "path": "输出格式/字段组-action.result",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action_result` | 必填 | 对象 |\n\n### action_result\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\"、\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `description` | 必填 | 文字 |\n| `recovery_handoff` | 必填 | 文字 |\n| `returns_to_previous` | 必填 | true 或 false |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.foreground",
+      "text": "# 当前活动界面：foreground\ndescription 简述当前表面及必要遮挡。\n正例：“导出对话框位于前景，后方编辑区暂不能操作。”"
+    },
+    {
+      "path": "输出格式/字段组-region.foreground",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `foreground` | 必填 | 对象 |\n\n### foreground\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.registration",
+      "text": "# 登记区块：regions\ndescription 写区块的稳定职责和范围；name 用便于辨认的名称。已有对象按本节格式引用并补充变化。\n正例：区块描述为“编辑文档内容并访问导出功能的编辑区”。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.registration_identity",
+      "text": "ref 复制已确认的旧区块名称，沿用身份时 identity 为 same。没有可确认的旧身份时，按实际填写 new 或 uncertain，并提供 name、description；identity_evidence 保留判断依据、候选与具体缺口。\n正例：新出现的格式选择菜单有独立用途，未对应已有区块时登记为 new。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.state_description",
+      "text": "state_description 写这次可见的状态，description 保留稳定职责。\n正例：state_description 为“搜索结果为空”，区块用途仍为展示搜索结果。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.context_matches",
+      "text": "context_matches：当前画面符合该历史区块给出的行为适用上下文时填 true，不符合填 false；没有这种限定或无法判断时填 null。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.scope_reason",
+      "text": "out_of_scope_reason：仅整个区块都超出本次探索范围时，说明具体原因。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.task_review_reason",
+      "text": "task_review_reason：出现已有任务未覆盖的具体问题，或旧结论被新证据推翻时，写清对象和问题；普通观察更新省略。\n正例：“原本仅提供图片格式，现在出现独立音频导出入口，其可选格式尚不明确。”"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.local_knowledge",
+      "text": "local_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.nested",
+      "text": "控件直接放在所属区块的 controls 列表中，不填写所属区块编号。新对象写 name；复用已有对象写材料中给出的 ref 名称。只补旧控件知识时，在原区块中用 ref 和 knowledge 更新，不把旧界面当成当前可见。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.current",
+      "text": "current 为 true 表示本次确认该区块处于当前前景；只标记当前实际看见的区块。省略或 false 表示本次没有作前景确认，不新增“已消失”的历史事实。补历史区块知识不需要 current:true。没有可确认的当前区块时，不标记任何区块为 true。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.parent",
+      "text": "parent 填物理包含它的父区块名称；没有父区块时省略或填 null。这里不是访问来路。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.registration",
+      "text": "# 登记控件：controls\n报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。\n大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。\n正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.registration_ref",
+      "text": "ref：已确认是材料中的旧控件时填写其名称；确认是新对象时省略。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.registration_name",
+      "text": "name 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。\n正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_description",
+      "text": "knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_constraints",
+      "text": "knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_index",
+      "text": "knowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.list_group",
+      "text": "list_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。\n不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。\n正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.exploration_flags",
+      "text": "may_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身用法是否还有影响后续使用的具体未知：true 有，false 没有，null 尚不能判断。\n正例：入口已知会打开设置面板，但面板内部尚未探索，可以是 may_open_content=true、needs_exploration=false。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.add_image",
+      "text": "add_image：已有控件出现值得保存的新外观或状态时填 true；image_conditions 描述这份外观适用的可见状态。只是位置、窗口大小或输入值变化时复用已有外观。\n正例：原来的“展开”按钮变为“收起”，说明“面板已展开时的收起状态”。"
+    },
+    {
+      "path": "输出格式/字段组-region.registration",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 必填 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字 |\n| `description` | 按需 | 文字 |\n| `ref` | 按需 | 文字 或 null |\n| `local_knowledge` | 按需 | 对象 |\n| `state_description` | 按需 | 文字；不能为空 |\n| `task_review_reason` | 按需 | 文字 |\n| `context_matches` | 按需 | true 或 false 或 null |\n| `out_of_scope_reason` | 按需 | 文字 |\n| `identity` | 按需 | 可用值：\"same\"、\"new\"、\"uncertain\" |\n| `identity_evidence` | 按需 | 文字 |\n| `controls` | 按需 | 列表 |\n| `current` | 按需 | true 或 false |\n| `parent` | 按需 | 文字 或 null |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n满足上述条件时：\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 沿用上文 | 固定为 \"same\" |\n| `ref` | 沿用上文 |  |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n不满足上述条件时：\n- 必须填写：`name`、`description`、`identity`。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 必填 | 可用值：\"new\"、\"uncertain\" |\n| `ref` | 沿用上文 | 可用值：null、\"\" |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n### regions → controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 按需 | 可用值：\"文件菜单\"、\"编辑菜单\"、\"视图菜单\"、\"插入菜单\"、\"格式菜单\"、\"样式菜单\"、\"工作表菜单\"、\"数据菜单\"、\"工具菜单\"、\"窗口菜单\"、\"帮助菜单\"、\"新建文档\"、\"打开文件\"、\"保存\"、\"导出为 PDF\"、\"打印\"、\"剪切\"、\"复制\"、\"撤消\"、\"重做\"、\"字体名称\"、\"字号\"、\"名称框\"、\"函数向导\"、\"公式输入区域\"、\"Get involved\"、\"关闭参与提示\"、\"Donate\"、\"关闭捐赠提示\"、\"单元格 A1\"、\"工作表数据区域 A1:C5\"、\"工作表 budget\"、\"工作表导航按钮\"、\"新增工作表\"、\"缩放滑块\"、\"属性面板入口\"、\"侧边栏画笔图标入口\"、\"图库入口\"、\"导航器入口\"、\"函数入口\"、\"New\"、\"Open…\"、\"Open Remote…\"、\"Recent Documents\"、\"Close\"、\"Wizards\"、\"Templates\"、\"Reload\"、\"Versions…\"、\"Save\"、\"Save As…\"、\"Save Remote…\"、\"Save a Copy…\"、\"Save All\"、\"Export…\"、\"Export as PDF…\"、\"Send\"、\"Preview in Web Browser\"、\"Print Preview\"、\"Print…\"、\"Printer Settings…\"、\"Properties…\"、\"Digital Signatures\"、\"Exit LibreOffice\" |\n| `description` | 按需 | 文字 |\n| `name` | 按需 | 文字 |\n| `list_group` | 按需 | 文字 |\n| `knowledge` | 按需 | 列表 |\n| `may_open_content` | 按需 | true 或 false |\n| `needs_exploration` | 按需 | true 或 false 或 null |\n| `image_conditions` | 按需 | 列表（元素要求：文字） |\n| `add_image` | 按需 | true 或 false |\n\n**条件规则：regions → controls**\n未填写 `ref` 时：\n- 必须填写：`knowledge`、`may_open_content`、`needs_exploration`、`name`。\n\n### regions → controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### regions → controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.jump_to",
+      "text": "# 登记实际访问关系：jump_to\n来源是给定执行记录中的实际操作对象，可以是控件或区块。动作使新目标出现、切换、展开或可访问，且有前后证据支持时，登记尚缺的关系。目标可以是区块或独立控件。\nregion 填本次 regions 中目标区块的名称；目标是独立控件时再用 control 填它的名称。conditions 写该路线确实需要的适用条件。\n修订旧路线时用该来源已有 jump_to 的 index 和新的完整 conditions，保持原目标与访问证据。\n正例：点击附件标签后出现附件区，填写 {\"region\": \"附件区\"}。"
+    },
+    {
+      "path": "输出格式/字段组-action.jump_to",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `jump_to` | 按需 | 列表 |\n\n### jump_to（列表中的一项）\n\n至少符合以下一种格式。\n\n### jump_to — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `conditions` | 按需 | 列表（元素要求：文字；不能为空） |\n| `region` | 必填 | 文字；不能为空 |\n| `control` | 按需 | 文字；不能为空 |\n\n### jump_to — 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 必填 | 整数；不小于 0 |\n| `conditions` | 必填 | 列表（元素要求：文字；不能为空） |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_updates",
+      "text": "# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_constraints",
+      "text": "功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 c0008/搜索词 时，填写 [\"c0008/搜索词\"]。"
+    },
+    {
+      "path": "输出格式/字段组-region.function_updates",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"文件命令菜单\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.update",
+      "text": "# 判断已有任务：task_update\ndecision=answered：已有证据回答原问题；continue：仍有必要未知，用 remaining_question 写清缺口；defer：存在实际障碍，另用 retry_when 写可判断的恢复条件。reason 按需说明依据。\n按原问题和保存的 completion_condition 判断，已有答案直接使用。已观察到入口打开目标内容，即可结算入口任务；把看到的内容、用途和有证据的跳转关系填到本次相应的登记字段。内部控件还有未知，不妨碍入口任务结束，也不要求继续操作它们。\n没有打开新内容的控件，记录实际响应，不强行填写跳转关系。结果被遮挡或不明确时，remaining_question 只写原问题还没看清的部分；历史判断里后来加上的其他问题，不自动变成本任务的完成要求。新认识写到对应对象知识，独立新问题由后续任务提出处理。\n原问题要求验证业务结果时，仍须有相应证据，不能只看到设置页面就判 answered。answered 不保留活动缺口或重试条件；只判断本轮允许更新的任务，已经回答的可以分别结束，不必等其他任务。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.update_ref",
+      "text": "task 复制本轮给定的任务引用，分别判断允许处理的任务。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.next_action",
+      "text": "next_action：continue 时可给出后续建议，完整填写 region、control、action、reason，引用本轮给定的实际操作对象。省略会保留尚未使用的旧建议；明确填 null 撤销旧建议。answered、defer 不附非空建议。\n正例：原建议已不再适用且暂无新办法，填写 \"next_action\": null。"
+    },
+    {
+      "path": "输出格式/字段组-task.update",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `task_update` | 必填 | 列表 |\n\n### task_update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `task` | 必填 | 可用值：\"文件命令菜单/功能探索\" |\n| `decision` | 必填 | 可用值：\"continue\"、\"answered\"、\"defer\" |\n| `reason` | 按需 | 文字；不能为空 |\n| `remaining_question` | 按需 | 文字；不能为空 |\n| `retry_when` | 按需 | 文字；不能为空 |\n| `next_action` | 按需 | null 或 对象 |\n\n**条件规则：task_update**\n条件：填写 `decision`，且`decision`符合：可用值：\"continue\"、\"defer\"。\n满足上述条件时：\n- 必须填写：`remaining_question`。\n\n**条件规则：task_update**\n条件：填写 `decision`，且`decision`符合：固定为 \"defer\"。\n满足上述条件时：\n- 必须填写：`retry_when`。\n\n### task_update → next_action\n\n至少符合以下一种格式。\n\n### task_update → next_action — 格式 1\n\nnull\n\n### task_update → next_action — 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 文字；不能为空 |\n| `control` | 必填 | 文字 |\n| `action` | 必填 | 可用值：\"click\"、\"double_click\"、\"long_press\"、\"input_text\"、\"scroll\"、\"key_press\"、\"hotkey\"、\"hover\"、\"right_click\"、\"drag\"、\"back\"、\"wait\" |\n| `reason` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.uncertainties",
+      "text": "# 尚不能确认的事实：uncertainties\n简述具体对象、疑点与缺少的依据，供后续判断是否需要继续了解；已明确的内容照常登记。\n正例：“两个相同图标分别服务哪个列表，当前文字被遮挡，尚不能确认。”"
+    },
+    {
+      "path": "输出格式/字段组-region.uncertainties",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `uncertainties` | 必填 | 列表（元素要求：文字） |"
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。必填的 regions、task_update、uncertainties 没有内容时填 []。正例说明写法，具体内容依据本次材料。"
+    }
+  ],
+  "context_scope": {
+    "region": "r0021",
+    "kind": "update",
+    "tasks": [
+      {
+        "region": "r0021",
+        "name": "功能探索"
+      }
+    ],
+    "regions": [
+      "r0021"
+    ],
+    "controls": {
+      "r0013": [],
+      "r0021": [
+        "c0079"
+      ]
+    },
+    "selection": {
+      "role": "observation_update",
+      "mode": null,
+      "work_kind": "update",
+      "source": {
+        "region": "r0021",
+        "working_region": "r0021",
+        "observation": "update:0134",
+        "attempt": "a0018",
+        "control_ref": "c0079",
+        "task_region": "r0021",
+        "task_name": "功能探索"
+      },
+      "task_types": [
+        "function"
+      ],
+      "preparatory_action": false
+    }
+  },
+  "frame_context": {
+    "action_attempts/a0018/before.png": "实际动作前图；核对原操作对象",
+    "action_attempts/a0018/after.png": "原动作后图"
+  },
+  "source": {
+    "region": "r0021",
+    "working_region": "r0021",
+    "observation": "update:0134",
+    "attempt": "a0018",
+    "control_ref": "c0079",
+    "task_region": "r0021",
+    "task_name": "功能探索"
+  },
+  "task_update_candidates": [
+    {
+      "task": "r0021/功能探索",
+      "region": "r0021",
+      "name": "功能探索",
+      "control": "c0079",
+      "control_name": "New",
+      "status": "pending",
+      "task_type": "function",
+      "conditions": [],
+      "当前控件知识": [
+        {
+          "index": 0,
+          "description": "文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。"
+        }
+      ],
+      "reason": "了解控件尚不明确的功能、直接效果或打开的内容。\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。",
+      "blocker": {},
+      "prerequisite": null
+    }
+  ],
+  "matching_audit": [
+    {
+      "region": "r0021",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0092",
+          "score": 1.0,
+          "box": [
+            72,
+            417,
+            373,
+            442
+          ],
+          "scale": 1,
+          "gap": 0.2828953266143799,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                417,
+                373,
+                442
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 417,
+              "right": 373,
+              "bottom": 442
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0092.png",
+            "evidence": {
+              "source_field": "/controls/14",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0093",
+          "score": 1.0,
+          "box": [
+            72,
+            442,
+            373,
+            467
+          ],
+          "scale": 1,
+          "gap": 0.3295254111289978,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                442,
+                373,
+                467
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 442,
+              "right": 373,
+              "bottom": 467
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0093.png",
+            "evidence": {
+              "source_field": "/controls/15",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0094",
+          "score": 1.0,
+          "box": [
+            72,
+            467,
+            373,
+            491
+          ],
+          "scale": 1,
+          "gap": 0.33021801710128784,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                467,
+                373,
+                491
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 467,
+              "right": 373,
+              "bottom": 491
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0094.png",
+            "evidence": {
+              "source_field": "/controls/16",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0097",
+          "score": 1.0,
+          "box": [
+            72,
+            542,
+            373,
+            567
+          ],
+          "scale": 1,
+          "gap": 0.5110003352165222,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                542,
+                373,
+                567
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 542,
+              "right": 373,
+              "bottom": 567
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0097.png",
+            "evidence": {
+              "source_field": "/controls/19",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0099",
+          "score": 1.0,
+          "box": [
+            72,
+            592,
+            373,
+            619
+          ],
+          "scale": 1,
+          "gap": 0.4449092149734497,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                592,
+                373,
+                619
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 592,
+              "right": 373,
+              "bottom": 619
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0099.png",
+            "evidence": {
+              "source_field": "/controls/21",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0100",
+          "score": 1.0,
+          "box": [
+            72,
+            619,
+            373,
+            644
+          ],
+          "scale": 1,
+          "gap": 0.447051465511322,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                619,
+                373,
+                644
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 619,
+              "right": 373,
+              "bottom": 644
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0100.png",
+            "evidence": {
+              "source_field": "/controls/22",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0102",
+          "score": 0.9999982714653015,
+          "box": [
+            72,
+            670,
+            373,
+            697
+          ],
+          "scale": 1,
+          "gap": 0.40358084440231323,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                670,
+                373,
+                697
+              ],
+              "score": 0.9999982714653015,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 670,
+              "right": 373,
+              "bottom": 697
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0102.png",
+            "evidence": {
+              "source_field": "/controls/24",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0101",
+          "score": 0.9999954104423523,
+          "box": [
+            72,
+            644,
+            373,
+            670
+          ],
+          "scale": 1,
+          "gap": 0.45578229427337646,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                644,
+                373,
+                670
+              ],
+              "score": 0.9999954104423523,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 644,
+              "right": 373,
+              "bottom": 670
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0101.png",
+            "evidence": {
+              "source_field": "/controls/23",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0096",
+          "score": 0.9999926090240479,
+          "box": [
+            72,
+            516,
+            373,
+            542
+          ],
+          "scale": 1,
+          "gap": 0.49829429388046265,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                516,
+                373,
+                542
+              ],
+              "score": 0.9999926090240479,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 516,
+              "right": 373,
+              "bottom": 542
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0096.png",
+            "evidence": {
+              "source_field": "/controls/18",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0091",
+          "score": 0.999989926815033,
+          "box": [
+            72,
+            391,
+            373,
+            417
+          ],
+          "scale": 1,
+          "gap": 0.369009792804718,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                391,
+                373,
+                417
+              ],
+              "score": 0.999989926815033,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 391,
+              "right": 373,
+              "bottom": 417
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0091.png",
+            "evidence": {
+              "source_field": "/controls/13",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0098",
+          "score": 0.9999892115592957,
+          "box": [
+            72,
+            567,
+            373,
+            592
+          ],
+          "scale": 1,
+          "gap": 0.5109836161136627,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                567,
+                373,
+                592
+              ],
+              "score": 0.9999892115592957,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 567,
+              "right": 373,
+              "bottom": 592
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0098.png",
+            "evidence": {
+              "source_field": "/controls/20",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0095",
+          "score": 0.9999844431877136,
+          "box": [
+            72,
+            491,
+            373,
+            516
+          ],
+          "scale": 1,
+          "gap": 0.4229588508605957,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                491,
+                373,
+                516
+              ],
+              "score": 0.9999844431877136,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 491,
+              "right": 373,
+              "bottom": 516
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0095.png",
+            "evidence": {
+              "source_field": "/controls/17",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0090",
+          "score": 0.9999598860740662,
+          "box": [
+            72,
+            367,
+            373,
+            391
+          ],
+          "scale": 1,
+          "gap": 0.2184574007987976,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                367,
+                373,
+                391
+              ],
+              "score": 0.9999598860740662,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 367,
+              "right": 373,
+              "bottom": 391
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0090.png",
+            "evidence": {
+              "source_field": "/controls/12",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0082",
+          "score": 0.9882295727729797,
+          "box": [
+            72,
+            163,
+            373,
+            187
+          ],
+          "scale": 1,
+          "gap": 0.24654370546340942,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                163,
+                373,
+                187
+              ],
+              "score": 0.9882295727729797,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 163,
+              "right": 373,
+              "bottom": 187
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0082.png",
+            "evidence": {
+              "source_field": "/controls/4",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0081",
+          "score": 0.984978199005127,
+          "box": [
+            72,
+            139,
+            373,
+            163
+          ],
+          "scale": 1,
+          "gap": 0.3914731740951538,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                139,
+                373,
+                163
+              ],
+              "score": 0.984978199005127,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 139,
+              "right": 373,
+              "bottom": 163
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0081.png",
+            "evidence": {
+              "source_field": "/controls/3",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0089",
+          "score": 0.9811165928840637,
+          "box": [
+            72,
+            342,
+            373,
+            367
+          ],
+          "scale": 1,
+          "gap": 0.2505723834037781,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                342,
+                373,
+                367
+              ],
+              "score": 0.9811165928840637,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 342,
+              "right": 373,
+              "bottom": 367
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0089.png",
+            "evidence": {
+              "source_field": "/controls/11",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0085",
+          "score": 0.9805567264556885,
+          "box": [
+            72,
+            239,
+            373,
+            264
+          ],
+          "scale": 1,
+          "gap": 0.16064774990081787,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                239,
+                373,
+                264
+              ],
+              "score": 0.9805567264556885,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 239,
+              "right": 373,
+              "bottom": 264
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0085.png",
+            "evidence": {
+              "source_field": "/controls/7",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0084",
+          "score": 0.9749771356582642,
+          "box": [
+            72,
+            213,
+            373,
+            239
+          ],
+          "scale": 1,
+          "gap": 0.4325031042098999,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                213,
+                373,
+                239
+              ],
+              "score": 0.9749771356582642,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 213,
+              "right": 373,
+              "bottom": 239
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0084.png",
+            "evidence": {
+              "source_field": "/controls/6",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0080",
+          "score": 0.9734725952148438,
+          "box": [
+            72,
+            115,
+            373,
+            139
+          ],
+          "scale": 1,
+          "gap": 0.4263782501220703,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                115,
+                373,
+                139
+              ],
+              "score": 0.9734725952148438,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 115,
+              "right": 373,
+              "bottom": 139
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0080.png",
+            "evidence": {
+              "source_field": "/controls/2",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0086",
+          "score": 0.9722758531570435,
+          "box": [
+            72,
+            264,
+            373,
+            290
+          ],
+          "scale": 1,
+          "gap": 0.39492660760879517,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                264,
+                373,
+                290
+              ],
+              "score": 0.9722758531570435,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 264,
+              "right": 373,
+              "bottom": 290
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0086.png",
+            "evidence": {
+              "source_field": "/controls/8",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0088",
+          "score": 0.9667870998382568,
+          "box": [
+            72,
+            316,
+            373,
+            342
+          ],
+          "scale": 1,
+          "gap": 0.25323253870010376,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                316,
+                373,
+                342
+              ],
+              "score": 0.9667870998382568,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 316,
+              "right": 373,
+              "bottom": 342
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0088.png",
+            "evidence": {
+              "source_field": "/controls/10",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0083",
+          "score": 0.9596951007843018,
+          "box": [
+            72,
+            187,
+            373,
+            213
+          ],
+          "scale": 1,
+          "gap": 0.3856801390647888,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                187,
+                373,
+                213
+              ],
+              "score": 0.9596951007843018,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 187,
+              "right": 373,
+              "bottom": 213
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0083.png",
+            "evidence": {
+              "source_field": "/controls/5",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0079",
+          "score": 0.914740264415741,
+          "box": [
+            72,
+            89,
+            373,
+            115
+          ],
+          "scale": 1,
+          "gap": 0.3794700503349304,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                89,
+                373,
+                115
+              ],
+              "score": 0.914740264415741,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 89,
+              "right": 373,
+              "bottom": 115
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0079.png",
+            "evidence": {
+              "source_field": "/controls/1",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0087",
+          "score": 0.9028180837631226,
+          "box": [
+            72,
+            290,
+            373,
+            316
+          ],
+          "scale": 1,
+          "gap": 0.3215716481208801,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                72,
+                290,
+                373,
+                316
+              ],
+              "score": 0.9028180837631226,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 72,
+              "top": 290,
+              "right": 373,
+              "bottom": 316
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0087.png",
+            "evidence": {
+              "source_field": "/controls/9",
+              "region": "r0021",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 24,
+      "eligible_controls": 24,
+      "total_controls": 24,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0013",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0039",
+          "score": 0.9999995827674866,
+          "box": [
+            70,
+            63,
+            111,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.37617242336273193,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                70,
+                63,
+                111,
+                89
+              ],
+              "score": 0.9999995827674866,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 70,
+              "top": 63,
+              "right": 111,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0013/images/0134/c0039.png",
+            "evidence": {
+              "source_field": "/controls/0",
+              "region": "r0013",
+              "source_call": "0134",
+              "observation": "update:0134"
+            },
+            "image_conditions": [
+              "文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。"
+            ],
+            "source_image": "../../action_attempts/a0017/after.png"
+          }
+        },
+        {
+          "control": "c0044",
+          "score": 0.9990178346633911,
+          "box": [
+            321,
+            63,
+            376,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.31705546379089355,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                321,
+                63,
+                376,
+                88
+              ],
+              "score": 0.9990178346633911,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 321,
+              "top": 63,
+              "right": 376,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0044.png",
+            "evidence": {
+              "source_field": "/controls/5",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0048",
+          "score": 0.9989688992500305,
+          "box": [
+            535,
+            63,
+            600,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.4275159239768982,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                535,
+                63,
+                600,
+                88
+              ],
+              "score": 0.9989688992500305,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 535,
+              "top": 63,
+              "right": 600,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0048.png",
+            "evidence": {
+              "source_field": "/controls/9",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0040",
+          "score": 0.998895525932312,
+          "box": [
+            111,
+            63,
+            152,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.3395896553993225,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                111,
+                63,
+                152,
+                88
+              ],
+              "score": 0.998895525932312,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 111,
+              "top": 63,
+              "right": 152,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0040.png",
+            "evidence": {
+              "source_field": "/controls/1",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0047",
+          "score": 0.9988858103752136,
+          "box": [
+            489,
+            63,
+            535,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.3469598889350891,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                489,
+                63,
+                535,
+                88
+              ],
+              "score": 0.9988858103752136,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 489,
+              "top": 63,
+              "right": 535,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0047.png",
+            "evidence": {
+              "source_field": "/controls/8",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0045",
+          "score": 0.9988810420036316,
+          "box": [
+            376,
+            63,
+            432,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.269744873046875,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                376,
+                63,
+                432,
+                88
+              ],
+              "score": 0.9988810420036316,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 376,
+              "top": 63,
+              "right": 432,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0045.png",
+            "evidence": {
+              "source_field": "/controls/6",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0042",
+          "score": 0.9988323450088501,
+          "box": [
+            198,
+            63,
+            250,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.38112449645996094,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                198,
+                63,
+                250,
+                88
+              ],
+              "score": 0.9988323450088501,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 198,
+              "top": 63,
+              "right": 250,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0042.png",
+            "evidence": {
+              "source_field": "/controls/3",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0041",
+          "score": 0.9988129734992981,
+          "box": [
+            152,
+            63,
+            198,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.23387682437896729,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                152,
+                63,
+                198,
+                88
+              ],
+              "score": 0.9988129734992981,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 152,
+              "top": 63,
+              "right": 198,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0041.png",
+            "evidence": {
+              "source_field": "/controls/2",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0049",
+          "score": 0.9987865686416626,
+          "box": [
+            600,
+            63,
+            651,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.3047131896018982,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                600,
+                63,
+                651,
+                88
+              ],
+              "score": 0.9987865686416626,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 600,
+              "top": 63,
+              "right": 651,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0049.png",
+            "evidence": {
+              "source_field": "/controls/10",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0043",
+          "score": 0.998763382434845,
+          "box": [
+            250,
+            63,
+            321,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.20442116260528564,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                250,
+                63,
+                321,
+                88
+              ],
+              "score": 0.998763382434845,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 250,
+              "top": 63,
+              "right": 321,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0043.png",
+            "evidence": {
+              "source_field": "/controls/4",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0046",
+          "score": 0.9986922144889832,
+          "box": [
+            432,
+            63,
+            489,
+            88
+          ],
+          "scale": 1,
+          "gap": 0.3308347463607788,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                432,
+                63,
+                489,
+                88
+              ],
+              "score": 0.9986922144889832,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 432,
+              "top": 63,
+              "right": 489,
+              "bottom": 88
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0013/images/0131/c0046.png",
+            "evidence": {
+              "source_field": "/controls/7",
+              "region": "r0013",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 11,
+      "eligible_controls": 11,
+      "total_controls": 11,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0020",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0074",
+          "score": 1.0,
+          "box": [
+            1234,
+            214,
+            1271,
+            250
+          ],
+          "scale": 1,
+          "gap": 0.46724098920822144,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1234,
+                214,
+                1271,
+                250
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "顶部橙色滑块样式图标。",
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1234,
+              "top": 214,
+              "right": 1271,
+              "bottom": 250
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0020/images/0131/c0074.png",
+            "evidence": {
+              "source_field": "/controls/35",
+              "region": "r0020",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0076",
+          "score": 1.0,
+          "box": [
+            1234,
+            298,
+            1271,
+            333
+          ],
+          "scale": 1,
+          "gap": 0.1571500301361084,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1234,
+                298,
+                1271,
+                333
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "紫色图片样式图标。",
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1234,
+              "top": 298,
+              "right": 1271,
+              "bottom": 333
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0020/images/0131/c0076.png",
+            "evidence": {
+              "source_field": "/controls/37",
+              "region": "r0020",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0075",
+          "score": 0.9999984502792358,
+          "box": [
+            1234,
+            255,
+            1271,
+            291
+          ],
+          "scale": 1,
+          "gap": 0.31005966663360596,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1234,
+                255,
+                1271,
+                291
+              ],
+              "score": 0.9999984502792358,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "属性图标下方的画笔样式图标。",
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1234,
+              "top": 255,
+              "right": 1271,
+              "bottom": 291
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0020/images/0131/c0075.png",
+            "evidence": {
+              "source_field": "/controls/36",
+              "region": "r0020",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0078",
+          "score": 0.9999977350234985,
+          "box": [
+            1234,
+            382,
+            1271,
+            418
+          ],
+          "scale": 1,
+          "gap": 0.5249978601932526,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1234,
+                382,
+                1271,
+                418
+              ],
+              "score": 0.9999977350234985,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "标记为 fx 的侧边栏图标。",
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1234,
+              "top": 382,
+              "right": 1271,
+              "bottom": 418
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0020/images/0131/c0078.png",
+            "evidence": {
+              "source_field": "/controls/39",
+              "region": "r0020",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0077",
+          "score": 0.9999955892562866,
+          "box": [
+            1234,
+            340,
+            1271,
+            376
+          ],
+          "scale": 1,
+          "gap": 0.21431571245193481,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1234,
+                340,
+                1271,
+                376
+              ],
+              "score": 0.9999955892562866,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "蓝色圆形罗盘样式图标。",
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1234,
+              "top": 340,
+              "right": 1271,
+              "bottom": 376
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0020/images/0131/c0077.png",
+            "evidence": {
+              "source_field": "/controls/38",
+              "region": "r0020",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 5,
+      "eligible_controls": 5,
+      "total_controls": 5,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0018",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0070",
+          "score": 0.9999993443489075,
+          "box": [
+            211,
+            750,
+            279,
+            779
+          ],
+          "scale": 1,
+          "gap": 0.49525290727615356,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                211,
+                750,
+                279,
+                779
+              ],
+              "score": 0.9999993443489075,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "当前可见且已选中的工作表标签。",
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 211,
+              "top": 750,
+              "right": 279,
+              "bottom": 779
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0018/images/0131/c0070.png",
+            "evidence": {
+              "source_field": "/controls/31",
+              "region": "r0018",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0072",
+          "score": 0.9999986886978149,
+          "box": [
+            184,
+            752,
+            205,
+            779
+          ],
+          "scale": 1,
+          "gap": 0.5113729536533356,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                184,
+                752,
+                205,
+                779
+              ],
+              "score": 0.9999986886978149,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "工作表标签左侧带绿色加号的图标。",
+            "may_open_content": true,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 184,
+              "top": 752,
+              "right": 205,
+              "bottom": 779
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0018/images/0131/c0072.png",
+            "evidence": {
+              "source_field": "/controls/33",
+              "region": "r0018",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0071",
+          "score": 0.9999917149543762,
+          "box": [
+            78,
+            754,
+            173,
+            777
+          ],
+          "scale": 1,
+          "gap": 0.47106337547302246,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                78,
+                754,
+                173,
+                777
+              ],
+              "score": 0.9999917149543762,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "工作表标签左侧的一组首个、前一个、后一个及末个导航图标。",
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 78,
+              "top": 754,
+              "right": 173,
+              "bottom": 777
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0018/images/0131/c0071.png",
+            "evidence": {
+              "source_field": "/controls/32",
+              "region": "r0018",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 3,
+      "eligible_controls": 3,
+      "total_controls": 3,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0016",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0064",
+          "score": 0.9999979138374329,
+          "box": [
+            1075,
+            209,
+            1192,
+            244
+          ],
+          "scale": 1,
+          "gap": 0.520012378692627,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1075,
+                209,
+                1192,
+                244
+              ],
+              "score": 0.9999979138374329,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1075,
+              "top": 209,
+              "right": 1192,
+              "bottom": 244
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0016/images/0131/c0064.png",
+            "evidence": {
+              "source_field": "/controls/25",
+              "region": "r0016",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        },
+        {
+          "control": "c0066",
+          "score": 0.9999906420707703,
+          "box": [
+            1109,
+            249,
+            1192,
+            283
+          ],
+          "scale": 1,
+          "gap": 0.3906952142715454,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1109,
+                249,
+                1192,
+                283
+              ],
+              "score": 0.9999906420707703,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1109,
+              "top": 249,
+              "right": 1192,
+              "bottom": 283
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0016/images/0131/c0066.png",
+            "evidence": {
+              "source_field": "/controls/27",
+              "region": "r0016",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 2,
+      "eligible_controls": 4,
+      "total_controls": 4,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0019",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0073",
+          "score": 0.9999989867210388,
+          "box": [
+            1094,
+            783,
+            1280,
+            800
+          ],
+          "scale": 1,
+          "gap": 0.5056946277618408,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1094,
+                783,
+                1280,
+                800
+              ],
+              "score": 0.9999989867210388,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "状态栏右侧的缩小、滑块、放大和百分比显示区域。",
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 1094,
+              "top": 783,
+              "right": 1280,
+              "bottom": 800
+            },
+            "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/discovery-0131-53d963bb7faf/regions/r0019/images/0131/c0073.png",
+            "evidence": {
+              "source_field": "/controls/34",
+              "region": "r0019",
+              "source_call": "0131",
+              "observation": "discovery:0131"
+            },
+            "image_conditions": [],
+            "source_image": "../../recovery_episodes/45b480d256bf/observation-0005/current.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 1,
+      "eligible_controls": 1,
+      "total_controls": 1,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0014",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 11,
+      "total_controls": 11,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0015",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 3,
+      "total_controls": 3,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0017",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 2,
+      "total_controls": 2,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "region_names": {
+    "r0013": "r0013",
+    "r0016": "r0016",
+    "r0018": "r0018",
+    "r0019": "r0019",
+    "r0020": "r0020",
+    "r0021": "r0021"
+  },
+  "work_context": {
+    "kind": "update",
+    "region": "r0021",
+    "task": {
+      "region": "r0021",
+      "name": "功能探索"
+    },
+    "reason": "登记本次真实动作及观察，判断它回答了原问题的哪一部分；不以准备代替目标执行。",
+    "attempt": "a0018"
+  },
+  "dynamic_prompt": "{\n  \"动作后前台应用证据\": {\n    \"目标应用\": \"desktop.libreoffice_calc\",\n    \"与目标应用一致\": true,\n    \"窗口记录\": \"WM_CLASS(STRING) = \\\"libreoffice\\\", \\\"libreoffice-calc\\\"\\n_NET_WM_NAME(UTF8_STRING) = \\\"budget.xlsx - LibreOffice Calc\\\"\\n\\n\",\n    \"读取错误\": \"\",\n    \"来源\": \"OSWorld X11 active window WM_CLASS/title\",\n    \"control_transport_available\": true\n  },\n  \"目标应用\": \"本次要探索的应用：LibreOffice calc\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"工作区块\": \"文件命令菜单\",\n  \"实际来源区块\": \"文件命令菜单\",\n  \"实际入口\": \"New\",\n  \"动作意图\": {\n    \"action\": \"click\",\n    \"target\": \"New\",\n    \"reason\": \"展开 New 子菜单，确认其中显示的可选新建目标。\",\n    \"x\": 115,\n    \"y\": 101,\n    \"text\": null,\n    \"end_x\": null,\n    \"end_y\": null\n  },\n  \"实际动作\": [\n    {\n      \"action\": \"click\",\n      \"target\": \"New\",\n      \"reason\": \"展开 New 子菜单，确认其中显示的可选新建目标。\",\n      \"x\": 115,\n      \"y\": 101,\n      \"text\": null,\n      \"end_x\": null,\n      \"end_y\": null\n    }\n  ],\n  \"回执\": {\n    \"exit_code\": 0,\n    \"stdout\": \"\",\n    \"stderr\": \"\",\n    \"semantic_result\": \"unverified\",\n    \"executed_steps\": [\n      {\n        \"action\": \"click\",\n        \"target\": \"New\",\n        \"reason\": \"展开 New 子菜单，确认其中显示的可选新建目标。\",\n        \"x\": 115,\n        \"y\": 101,\n        \"text\": null,\n        \"end_x\": null,\n        \"end_y\": null\n      }\n    ]\n  },\n  \"本轮探索任务\": \"功能探索\",\n  \"任务目标\": {\n    \"说明\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n    \"task_type\": \"function\",\n    \"原控件\": \"New\"\n  },\n  \"任务与实际对象核对\": {\n    \"任务区块\": \"文件命令菜单\",\n    \"待执行区块\": \"文件命令菜单\",\n    \"待执行控件\": \"New\",\n    \"所需登记\": \"function\",\n    \"适用条件\": [],\n    \"说明\": \"明确提交continue/answered/defer和本轮依据；框架核验实际绑定、执行或观察来源及所需产物，再登记判断。answered回答探索问题，不等于业务操作成功。\"\n  },\n  \"来源区块已有任务\": [\n    {\n      \"task\": \"文件命令菜单/功能探索\",\n      \"region\": \"文件命令菜单\",\n      \"name\": \"功能探索\",\n      \"control_name\": \"New\",\n      \"status\": \"pending\",\n      \"task_type\": \"function\",\n      \"conditions\": [],\n      \"当前控件知识\": [\n        {\n          \"index\": 0,\n          \"description\": \"文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\"\n        }\n      ],\n      \"reason\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n      \"blocker\": {},\n      \"prerequisite\": null\n    }\n  ],\n  \"当前任务引用\": \"文件命令菜单/功能探索\",\n  \"已知区块\": [\n    {\n      \"name\": \"Calc 菜单栏\",\n      \"提供原因\": [\n        \"动作前观察中的区块\",\n        \"截图外观匹配候选（不等于前景）\"\n      ],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\n        \"说明\": \"文件、编辑、视图、插入、格式、样式、工作表、数据、工具、窗口和帮助菜单均可见。\",\n        \"来源\": \"discovery:0131\"\n      },\n      \"ref\": \"Calc 菜单栏\",\n      \"历史描述\": \"Calc 窗口顶部的应用菜单入口。\",\n      \"controls\": [\n        {\n          \"name\": \"文件菜单\",\n          \"ref\": \"文件菜单\",\n          \"已保存外观\": \"文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。；文件菜单未展开，菜单栏中仅显示“文件”菜单项。\"\n        },\n        {\n          \"name\": \"编辑菜单\",\n          \"ref\": \"编辑菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"视图菜单\",\n          \"ref\": \"视图菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"插入菜单\",\n          \"ref\": \"插入菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"格式菜单\",\n          \"ref\": \"格式菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"样式菜单\",\n          \"ref\": \"样式菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"工作表菜单\",\n          \"ref\": \"工作表菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"数据菜单\",\n          \"ref\": \"数据菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"工具菜单\",\n          \"ref\": \"工具菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"窗口菜单\",\n          \"ref\": \"窗口菜单\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"帮助菜单\",\n          \"ref\": \"帮助菜单\",\n          \"已保存外观\": \"状态未注明\"\n        }\n      ],\n      \"本图外观线索\": [\n        \"文件菜单\",\n        \"样式菜单\",\n        \"窗口菜单\",\n        \"编辑菜单\",\n        \"工具菜单\",\n        \"工作表菜单\",\n        \"插入菜单\",\n        \"视图菜单\",\n        \"帮助菜单\",\n        \"格式菜单\",\n        \"数据菜单\"\n      ]\n    },\n    {\n      \"name\": \"信息提示横幅\",\n      \"提供原因\": [\n        \"截图外观匹配候选（不等于前景）\"\n      ],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\n        \"说明\": \"两条蓝色提示横幅均显示，各自有操作按钮和关闭按钮。\",\n        \"来源\": \"discovery:0131\"\n      },\n      \"ref\": \"信息提示横幅\",\n      \"历史描述\": \"工作表上方的 LibreOffice 社区参与及捐赠提示区域。\",\n      \"controls\": [\n        {\n          \"name\": \"Get involved\",\n          \"ref\": \"Get involved\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Donate\",\n          \"ref\": \"Donate\",\n          \"已保存外观\": \"状态未注明\"\n        }\n      ],\n      \"本图外观线索\": [\n        \"Get involved\",\n        \"Donate\"\n      ]\n    },\n    {\n      \"name\": \"工作表标签与导航\",\n      \"提供原因\": [\n        \"截图外观匹配候选（不等于前景）\"\n      ],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\n        \"说明\": \"显示 budget 工作表标签及工作表导航和新增工作表图标；状态显示 Sheet 1 of 1。\",\n        \"来源\": \"discovery:0131\"\n      },\n      \"ref\": \"工作表标签与导航\",\n      \"历史描述\": \"工作表标签及其切换、导航和新增入口。\",\n      \"controls\": [\n        {\n          \"name\": \"工作表 budget\",\n          \"ref\": \"工作表 budget\",\n          \"已保存外观\": \"当前可见且已选中的工作表标签，状态未注明\"\n        },\n        {\n          \"name\": \"工作表导航按钮\",\n          \"ref\": \"工作表导航按钮\",\n          \"已保存外观\": \"工作表标签左侧的一组首个、前一个、后一个及末个导航图标，状态未注明\"\n        },\n        {\n          \"name\": \"新增工作表\",\n          \"ref\": \"新增工作表\",\n          \"已保存外观\": \"工作表标签左侧带绿色加号的图标，状态未注明\"\n        }\n      ],\n      \"本图外观线索\": [\n        \"工作表 budget\",\n        \"新增工作表\",\n        \"工作表导航按钮\"\n      ]\n    },\n    {\n      \"name\": \"状态栏\",\n      \"提供原因\": [\n        \"截图外观匹配候选（不等于前景）\"\n      ],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\n        \"说明\": \"可见 PageStyle_budget、English (Hong Kong)、Average: ; Sum: 0 及 100% 缩放信息。\",\n        \"来源\": \"discovery:0131\"\n      },\n      \"ref\": \"状态栏\",\n      \"历史描述\": \"窗口底部显示工作表状态、语言、计算摘要及缩放信息。\",\n      \"controls\": [\n        {\n          \"name\": \"缩放滑块\",\n          \"ref\": \"缩放滑块\",\n          \"已保存外观\": \"状态栏右侧的缩小、滑块、放大和百分比显示区域，状态未注明\"\n        }\n      ],\n      \"本图外观线索\": [\n        \"缩放滑块\"\n      ]\n    },\n    {\n      \"name\": \"侧边栏入口\",\n      \"提供原因\": [\n        \"截图外观匹配候选（不等于前景）\"\n      ],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\n        \"说明\": \"多个图标入口可见，侧边栏内容面板当前未展开。\",\n        \"来源\": \"discovery:0131\"\n      },\n      \"ref\": \"侧边栏入口\",\n      \"历史描述\": \"Calc 窗口右侧垂直排列的侧边栏面板入口。\",\n      \"controls\": [\n        {\n          \"name\": \"属性面板入口\",\n          \"ref\": \"属性面板入口\",\n          \"已保存外观\": \"顶部橙色滑块样式图标，状态未注明\"\n        },\n        {\n          \"name\": \"侧边栏画笔图标入口\",\n          \"ref\": \"侧边栏画笔图标入口\",\n          \"已保存外观\": \"属性图标下方的画笔样式图标，状态未注明\"\n        },\n        {\n          \"name\": \"图库入口\",\n          \"ref\": \"图库入口\",\n          \"已保存外观\": \"紫色图片样式图标，状态未注明\"\n        },\n        {\n          \"name\": \"导航器入口\",\n          \"ref\": \"导航器入口\",\n          \"已保存外观\": \"蓝色圆形罗盘样式图标，状态未注明\"\n        },\n        {\n          \"name\": \"函数入口\",\n          \"ref\": \"函数入口\",\n          \"已保存外观\": \"标记为 fx 的侧边栏图标，状态未注明\"\n        }\n      ],\n      \"本图外观线索\": [\n        \"属性面板入口\",\n        \"图库入口\",\n        \"侧边栏画笔图标入口\",\n        \"函数入口\",\n        \"导航器入口\"\n      ]\n    },\n    {\n      \"name\": \"文件命令菜单\",\n      \"提供原因\": [\n        \"动作前来源\",\n        \"未完成工作所属区块\",\n        \"动作前观察中的区块\",\n        \"截图外观匹配候选（不等于前景）\"\n      ],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"local_knowledge\": {\n        \"k0014\": \"列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\"\n      },\n      \"历史状态观察\": {\n        \"说明\": \"命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\",\n        \"来源\": \"update:0134\"\n      },\n      \"ref\": \"文件命令菜单\",\n      \"历史描述\": \"由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\",\n      \"controls\": [\n        {\n          \"name\": \"New\",\n          \"knowledge\": \"用途记录：文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\",\n          \"ref\": \"New\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Open…\",\n          \"ref\": \"Open…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Open Remote…\",\n          \"ref\": \"Open Remote…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Recent Documents\",\n          \"ref\": \"Recent Documents\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Close\",\n          \"ref\": \"Close\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Wizards\",\n          \"ref\": \"Wizards\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Templates\",\n          \"ref\": \"Templates\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Reload\",\n          \"ref\": \"Reload\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Versions…\",\n          \"ref\": \"Versions…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Save\",\n          \"ref\": \"Save\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Save As…\",\n          \"ref\": \"Save As…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Save Remote…\",\n          \"ref\": \"Save Remote…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Save a Copy…\",\n          \"ref\": \"Save a Copy…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Save All\",\n          \"ref\": \"Save All\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Export…\",\n          \"ref\": \"Export…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Export as PDF…\",\n          \"ref\": \"Export as PDF…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Send\",\n          \"ref\": \"Send\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Preview in Web Browser\",\n          \"ref\": \"Preview in Web Browser\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Print Preview\",\n          \"ref\": \"Print Preview\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Print…\",\n          \"ref\": \"Print…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Printer Settings…\",\n          \"ref\": \"Printer Settings…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Properties…\",\n          \"ref\": \"Properties…\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Digital Signatures\",\n          \"ref\": \"Digital Signatures\",\n          \"已保存外观\": \"状态未注明\"\n        },\n        {\n          \"name\": \"Exit LibreOffice\",\n          \"ref\": \"Exit LibreOffice\",\n          \"已保存外观\": \"状态未注明\"\n        }\n      ],\n      \"本图外观线索\": [\n        \"Save All\",\n        \"Export…\",\n        \"Export as PDF…\",\n        \"Print Preview\",\n        \"Printer Settings…\",\n        \"Properties…\",\n        \"Exit LibreOffice\",\n        \"Digital Signatures\",\n        \"Preview in Web Browser\",\n        \"Save a Copy…\",\n        \"Print…\",\n        \"Send\",\n        \"Save Remote…\",\n        \"Recent Documents\",\n        \"Open Remote…\",\n        \"Save As…\",\n        \"Templates\",\n        \"Wizards\",\n        \"Open…\",\n        \"Reload\",\n        \"Save\",\n        \"Close\",\n        \"New\",\n        \"Versions…\"\n      ]\n    }\n  ],\n  \"实际对象已有跳转\": [],\n  \"本次入口历史落点\": {\n    \"来源关联\": \"上一步执行记录所指控件的历史结果\",\n    \"历史结果\": [],\n    \"进入当前界面前的区块\": [\n      {\n        \"region\": \"Calc 菜单栏\",\n        \"name\": \"Calc 菜单栏\",\n        \"description\": \"Calc 窗口顶部的应用菜单入口。\"\n      }\n    ],\n    \"边界\": \"历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。\"\n  },\n  \"身份引用\": \"ref使用已提供的区块或控件编号；name只表示名称。\",\n  \"动作前对象观察\": {\n    \"来源\": {\n      \"region\": \"文件命令菜单\",\n      \"basis\": \"discovery\",\n      \"source_call\": \"0134\",\n      \"observation\": \"update:0134\"\n    },\n    \"控件\": \"New\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"登记实际动作结果\",\n    \"范围\": \"文件命令菜单\",\n    \"关联任务\": {\n      \"区块\": \"文件命令菜单\",\n      \"类型\": \"功能探索\",\n      \"控件\": \"New\"\n    },\n    \"所需信息\": \"控件可重复使用的功能及必要条件\",\n    \"原问题\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n    \"本步边界\": \"登记本次真实动作及观察，判断它回答了原问题的哪一部分；不以准备代替目标执行。\"\n  },\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\nCalc 菜单栏 [Calc 菜单栏]\\n  ├─ 文件菜单 [文件菜单]\\n    └─ 文件命令菜单 [文件命令菜单]（本步关注区块）\\n      ├─ New [New]\\n      ├─ Open… [Open…]\\n      ├─ Open Remote… [Open Remote…]\\n      ├─ Recent Documents [Recent Documents]\\n      ├─ Close [Close]\\n      ├─ Wizards [Wizards]\\n      ├─ Templates [Templates]\\n      ├─ Reload [Reload]\\n      ├─ Versions… [Versions…]\\n      ├─ Save [Save]\\n      ├─ Save As… [Save As…]\\n      ├─ Save Remote… [Save Remote…]\\n      ├─ Save a Copy… [Save a Copy…]\\n      ├─ Save All [Save All]\\n      ├─ Export… [Export…]\\n      ├─ Export as PDF… [Export as PDF…]\\n      ├─ Send [Send]\\n      ├─ Preview in Web Browser [Preview in Web Browser]\\n      ├─ Print Preview [Print Preview]\\n      ├─ Print… [Print…]\\n      ├─ Printer Settings… [Printer Settings…]\\n      ├─ Properties… [Properties…]\\n      ├─ Digital Signatures [Digital Signatures]\\n      ├─ Exit LibreOffice [Exit LibreOffice]\\n  ├─ 编辑菜单 [编辑菜单]\\n  ├─ 视图菜单 [视图菜单]\\n  ├─ 插入菜单 [插入菜单]\\n  ├─ 格式菜单 [格式菜单]\\n  ├─ 样式菜单 [样式菜单]\\n  ├─ 工作表菜单 [工作表菜单]\\n  ├─ 数据菜单 [数据菜单]\\n  ├─ 工具菜单 [工具菜单]\\n  ├─ 窗口菜单 [窗口菜单]\\n  ├─ 帮助菜单 [帮助菜单]\\nCalc 工具栏 [Calc 工具栏]\\n  ├─ 新建文档 [新建文档]\\n  ├─ 打开文件 [打开文件]\\n  ├─ 保存 [保存]\\n  ├─ 导出为 PDF [导出为 PDF]\\n  ├─ 打印 [打印]\\n  ├─ 剪切 [剪切]\\n  ├─ 复制 [复制]\\n  ├─ 撤消 [撤消]\\n  ├─ 重做 [重做]\\n  ├─ 字体名称 [字体名称]\\n  ├─ 字号 [字号]\\n公式栏 [公式栏]\\n  ├─ 名称框 [名称框]\\n  ├─ 函数向导 [函数向导]\\n  ├─ 公式输入区域 [公式输入区域]\\n信息提示横幅 [信息提示横幅]\\n  ├─ Get involved [Get involved]\\n  ├─ 关闭参与提示 [关闭参与提示]\\n  ├─ Donate [Donate]\\n  ├─ 关闭捐赠提示 [关闭捐赠提示]\\n工作表网格 [工作表网格]\\n  ├─ 单元格 A1 [单元格 A1]\\n  ├─ 工作表数据区域 A1:C5 [工作表数据区域 A1:C5]\\n工作表标签与导航 [工作表标签与导航]\\n  ├─ 工作表 budget [工作表 budget]\\n  ├─ 工作表导航按钮 [工作表导航按钮]\\n  ├─ 新增工作表 [新增工作表]\\n状态栏 [状态栏]\\n  ├─ 缩放滑块 [缩放滑块]\\n侧边栏入口 [侧边栏入口]\\n  ├─ 属性面板入口 [属性面板入口]\\n  ├─ 侧边栏画笔图标入口 [侧边栏画笔图标入口]\\n  ├─ 图库入口 [图库入口]\\n  ├─ 导航器入口 [导航器入口]\\n  ├─ 函数入口 [函数入口]\\n原探索目标：文件命令菜单 / New\\n上次已登记前景：Calc 菜单栏、文件命令菜单\\n位置材料来自动作前；本步结果以动作后图为准。\\n上一步记录：动作 a0017\\n任务引用：文件命令菜单 / 功能探索（pending）\\n相关任务过程：\\na0017：click「文件菜单」；观察：点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。；该次更新未确认事项：New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。；除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。\",\n  \"可更新功能的区块\": [\n    {\n      \"名称\": \"文件命令菜单\",\n      \"ref\": \"文件命令菜单\"\n    }\n  ],\n  \"已有功能轮廓\": [\n    {\n      \"功能\": \"创建文档\",\n      \"引用\": \"文件命令菜单/创建文档\",\n      \"用途\": \"通过 New 进入新建目标选择；目前仅确认该菜单入口存在，具体目标待探索。\",\n      \"支持对象\": [\n        \"New\"\n      ]\n    }\n  ],\n  \"其他已有功能（仅目录）\": [\n    {\n      \"功能\": \"打开本地文档\",\n      \"引用\": \"文件命令菜单/打开本地文档\"\n    },\n    {\n      \"功能\": \"访问最近文档\",\n      \"引用\": \"文件命令菜单/访问最近文档\"\n    },\n    {\n      \"功能\": \"关闭文档\",\n      \"引用\": \"文件命令菜单/关闭文档\"\n    },\n    {\n      \"功能\": \"访问向导\",\n      \"引用\": \"文件命令菜单/访问向导\"\n    },\n    {\n      \"功能\": \"访问模板\",\n      \"引用\": \"文件命令菜单/访问模板\"\n    },\n    {\n      \"功能\": \"重新载入文档\",\n      \"引用\": \"文件命令菜单/重新载入文档\"\n    },\n    {\n      \"功能\": \"管理文档版本\",\n      \"引用\": \"文件命令菜单/管理文档版本\"\n    },\n    {\n      \"功能\": \"保存文档\",\n      \"引用\": \"文件命令菜单/保存文档\"\n    },\n    {\n      \"功能\": \"另存为文档\",\n      \"引用\": \"文件命令菜单/另存为文档\"\n    },\n    {\n      \"功能\": \"保存文档副本\",\n      \"引用\": \"文件命令菜单/保存文档副本\"\n    },\n    {\n      \"功能\": \"保存所有打开的文档\",\n      \"引用\": \"文件命令菜单/保存所有打开的文档\"\n    },\n    {\n      \"功能\": \"导出文档\",\n      \"引用\": \"文件命令菜单/导出文档\"\n    },\n    {\n      \"功能\": \"导出为 PDF\",\n      \"引用\": \"文件命令菜单/导出为 PDF\"\n    },\n    {\n      \"功能\": \"查看发送选项\",\n      \"引用\": \"文件命令菜单/查看发送选项\"\n    },\n    {\n      \"功能\": \"打印预览\",\n      \"引用\": \"文件命令菜单/打印预览\"\n    },\n    {\n      \"功能\": \"打印文档\",\n      \"引用\": \"文件命令菜单/打印文档\"\n    },\n    {\n      \"功能\": \"设置打印机\",\n      \"引用\": \"文件命令菜单/设置打印机\"\n    },\n    {\n      \"功能\": \"查看文档属性\",\n      \"引用\": \"文件命令菜单/查看文档属性\"\n    },\n    {\n      \"功能\": \"查看数字签名选项\",\n      \"引用\": \"文件命令菜单/查看数字签名选项\"\n    }\n  ]\n}\n\n图1：实际动作前图；核对原操作对象；原图 1280×800 像素。\n图2：原动作后图；原图 1280×800 像素。",
+  "_page_history_goal": {
+    "说明": "了解控件尚不明确的功能、直接效果或打开的内容。\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。",
+    "task_type": "function",
+    "原控件": "New"
+  },
+  "page_context": {
+    "current_tree": [
+      {
+        "ref": "r0013",
+        "name": "Calc 菜单栏",
+        "controls": [
+          {
+            "ref": "c0039",
+            "name": "文件菜单",
+            "evidence": "current_observation",
+            "knowledge": {}
+          }
+        ],
+        "children": [
+          {
+            "ref": "r0021",
+            "name": "文件命令菜单",
+            "controls": [
+              {
+                "ref": "c0079",
+                "name": "New",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0080",
+                "name": "Open…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0081",
+                "name": "Open Remote…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0082",
+                "name": "Recent Documents",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0083",
+                "name": "Close",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0084",
+                "name": "Wizards",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0085",
+                "name": "Templates",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0086",
+                "name": "Reload",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0087",
+                "name": "Versions…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0088",
+                "name": "Save",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0089",
+                "name": "Save As…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0090",
+                "name": "Save Remote…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0091",
+                "name": "Save a Copy…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0092",
+                "name": "Save All",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0093",
+                "name": "Export…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0094",
+                "name": "Export as PDF…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0095",
+                "name": "Send",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0096",
+                "name": "Preview in Web Browser",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0097",
+                "name": "Print Preview",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0098",
+                "name": "Print…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0099",
+                "name": "Printer Settings…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0100",
+                "name": "Properties…",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0101",
+                "name": "Digital Signatures",
+                "evidence": "current_observation",
+                "knowledge": {}
+              },
+              {
+                "ref": "c0102",
+                "name": "Exit LibreOffice",
+                "evidence": "current_observation",
+                "knowledge": {}
+              }
+            ],
+            "children": [],
+            "knowledge": {}
+          }
+        ],
+        "knowledge": {}
+      }
+    ],
+    "background_regions": [],
+    "names": {
+      "r0013": "Calc 菜单栏",
+      "r0014": "Calc 工具栏",
+      "r0015": "公式栏",
+      "r0016": "信息提示横幅",
+      "r0017": "工作表网格",
+      "r0018": "工作表标签与导航",
+      "r0019": "状态栏",
+      "r0020": "侧边栏入口",
+      "r0021": "文件命令菜单",
+      "c0039": "文件菜单",
+      "c0040": "编辑菜单",
+      "c0041": "视图菜单",
+      "c0042": "插入菜单",
+      "c0043": "格式菜单",
+      "c0044": "样式菜单",
+      "c0045": "工作表菜单",
+      "c0046": "数据菜单",
+      "c0047": "工具菜单",
+      "c0048": "窗口菜单",
+      "c0049": "帮助菜单",
+      "c0050": "新建文档",
+      "c0051": "打开文件",
+      "c0052": "保存",
+      "c0053": "导出为 PDF",
+      "c0054": "打印",
+      "c0055": "剪切",
+      "c0056": "复制",
+      "c0057": "撤消",
+      "c0058": "重做",
+      "c0059": "字体名称",
+      "c0060": "字号",
+      "c0061": "名称框",
+      "c0062": "函数向导",
+      "c0063": "公式输入区域",
+      "c0064": "Get involved",
+      "c0065": "关闭参与提示",
+      "c0066": "Donate",
+      "c0067": "关闭捐赠提示",
+      "c0068": "单元格 A1",
+      "c0069": "工作表数据区域 A1:C5",
+      "c0070": "工作表 budget",
+      "c0071": "工作表导航按钮",
+      "c0072": "新增工作表",
+      "c0073": "缩放滑块",
+      "c0074": "属性面板入口",
+      "c0075": "侧边栏画笔图标入口",
+      "c0076": "图库入口",
+      "c0077": "导航器入口",
+      "c0078": "函数入口",
+      "c0079": "New",
+      "c0080": "Open…",
+      "c0081": "Open Remote…",
+      "c0082": "Recent Documents",
+      "c0083": "Close",
+      "c0084": "Wizards",
+      "c0085": "Templates",
+      "c0086": "Reload",
+      "c0087": "Versions…",
+      "c0088": "Save",
+      "c0089": "Save As…",
+      "c0090": "Save Remote…",
+      "c0091": "Save a Copy…",
+      "c0092": "Save All",
+      "c0093": "Export…",
+      "c0094": "Export as PDF…",
+      "c0095": "Send",
+      "c0096": "Preview in Web Browser",
+      "c0097": "Print Preview",
+      "c0098": "Print…",
+      "c0099": "Printer Settings…",
+      "c0100": "Properties…",
+      "c0101": "Digital Signatures",
+      "c0102": "Exit LibreOffice"
+    },
+    "last_action": {
+      "region": "r0013",
+      "attempt": "a0017",
+      "changes_surface": true
+    },
+    "incoming_actions": {
+      "r0013": [],
+      "r0021": [
+        {
+          "region": "r0013",
+          "attempt": "a0017"
+        }
+      ]
+    },
+    "goal": {
+      "region": "r0021",
+      "name": "功能探索",
+      "status": "pending"
+    },
+    "origin": {
+      "entries": [
+        {
+          "from_regions": [
+            "r0013",
+            "r0014",
+            "r0015",
+            "r0016",
+            "r0017",
+            "r0018",
+            "r0019",
+            "r0020"
+          ],
+          "to_regions": [
+            "r0013",
+            "r0021"
+          ],
+          "via": {
+            "region": "r0013",
+            "attempt": "a0017",
+            "control": "c0039"
+          },
+          "before_observation": "discovery:0131",
+          "after_observation": "update:0134",
+          "parent_branches": [
+            {
+              "ref": "r0013",
+              "name": "Calc 菜单栏",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [
+                {
+                  "control": "c0039",
+                  "target_region": "r0021",
+                  "attempt": "a0017"
+                }
+              ],
+              "pending_tasks": [
+                "c0040 / 功能探索",
+                "c0041 / 功能探索",
+                "c0042 / 功能探索",
+                "c0043 / 功能探索",
+                "c0044 / 功能探索",
+                "c0045 / 功能探索",
+                "c0046 / 功能探索",
+                "c0047 / 功能探索",
+                "c0048 / 功能探索",
+                "c0049 / 功能探索"
+              ]
+            },
+            {
+              "ref": "r0014",
+              "name": "Calc 工具栏",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0015",
+              "name": "公式栏",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0016",
+              "name": "信息提示横幅",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0017",
+              "name": "工作表网格",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0018",
+              "name": "工作表标签与导航",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0019",
+              "name": "状态栏",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0020",
+              "name": "侧边栏入口",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            }
+          ]
+        }
+      ],
+      "boundary": "no_recorded_action_for_observation",
+      "last_effect": {
+        "region": "r0013",
+        "attempt": "a0017",
+        "result": {
+          "exception": "none",
+          "description": "点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。",
+          "recovery_handoff": "",
+          "returns_to_previous": false
+        }
+      },
+      "known_entries": []
+    },
+    "issues": [],
+    "localization_only": false,
+    "observation": {
+      "id": "update:0134",
+      "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/action_attempts/a0017/after.png",
+      "sha256": "e2837d485f75a55139c55782add556bf956d1f085e6aeedd5e6336c40a642422"
+    },
+    "usage": "before_action",
+    "run_root": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6",
+    "frame_relation": "historical_structure_needs_recheck",
+    "history": {
+      "regions": [
+        {
+          "ref": "r0013",
+          "name": "Calc 菜单栏",
+          "controls": [
+            {
+              "ref": "c0039",
+              "name": "文件菜单",
+              "attempts": [
+                "a0017"
+              ]
+            }
+          ],
+          "unbound": []
+        }
+      ],
+      "events": {
+        "a0017": {
+          "region": "r0013",
+          "control": "c0039",
+          "区块": "Calc 菜单栏",
+          "入口": "文件菜单",
+          "身份关联": "已登记",
+          "动作": "click",
+          "执行": "executed_receipt_zero",
+          "task": "r0013/功能探索",
+          "观察": "点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。",
+          "动作前区块": [
+            "Calc 菜单栏",
+            "Calc 工具栏",
+            "公式栏",
+            "信息提示横幅",
+            "工作表网格",
+            "工作表标签与导航",
+            "状态栏",
+            "侧边栏入口"
+          ],
+          "动作后可交互区块": [
+            "Calc 菜单栏",
+            "文件命令菜单"
+          ],
+          "实际执行": [
+            {
+              "target": "c0039",
+              "action": "click",
+              "text": null
+            }
+          ],
+          "该次更新未确认事项": [
+            "New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。",
+            "除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。"
+          ]
+        }
+      },
+      "unresolved": [],
+      "handoff": {
+        "attempt": "a0017",
+        "summary": "点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。",
+        "uncertainties": [
+          "New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。",
+          "除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。"
+        ],
+        "observation": "update:0134"
+      },
+      "task_contexts": {},
+      "event_texts": {
+        "a0017": "a0017：click「文件菜单」；观察：点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。；该次更新未确认事项：New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。；除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。"
+      },
+      "task_judgments": [],
+      "names": {
+        "r0013": "Calc 菜单栏",
+        "r0014": "Calc 工具栏",
+        "r0015": "公式栏",
+        "r0016": "信息提示横幅",
+        "r0017": "工作表网格",
+        "r0018": "工作表标签与导航",
+        "r0019": "状态栏",
+        "r0020": "侧边栏入口",
+        "r0021": "文件命令菜单"
+      }
+    },
+    "environment_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nCalc 菜单栏 [r0013]\n  ├─ 文件菜单 [c0039]\n    └─ 文件命令菜单 [r0021]（本步关注区块）\n      ├─ New [c0079]\n      ├─ Open… [c0080]\n      ├─ Open Remote… [c0081]\n      ├─ Recent Documents [c0082]\n      ├─ Close [c0083]\n      ├─ Wizards [c0084]\n      ├─ Templates [c0085]\n      ├─ Reload [c0086]\n      ├─ Versions… [c0087]\n      ├─ Save [c0088]\n      ├─ Save As… [c0089]\n      ├─ Save Remote… [c0090]\n      ├─ Save a Copy… [c0091]\n      ├─ Save All [c0092]\n      ├─ Export… [c0093]\n      ├─ Export as PDF… [c0094]\n      ├─ Send [c0095]\n      ├─ Preview in Web Browser [c0096]\n      ├─ Print Preview [c0097]\n      ├─ Print… [c0098]\n      ├─ Printer Settings… [c0099]\n      ├─ Properties… [c0100]\n      ├─ Digital Signatures [c0101]\n      ├─ Exit LibreOffice [c0102]\n  ├─ 编辑菜单 [c0040]\n  ├─ 视图菜单 [c0041]\n  ├─ 插入菜单 [c0042]\n  ├─ 格式菜单 [c0043]\n  ├─ 样式菜单 [c0044]\n  ├─ 工作表菜单 [c0045]\n  ├─ 数据菜单 [c0046]\n  ├─ 工具菜单 [c0047]\n  ├─ 窗口菜单 [c0048]\n  ├─ 帮助菜单 [c0049]\nCalc 工具栏 [r0014]\n  ├─ 新建文档 [c0050]\n  ├─ 打开文件 [c0051]\n  ├─ 保存 [c0052]\n  ├─ 导出为 PDF [c0053]\n  ├─ 打印 [c0054]\n  ├─ 剪切 [c0055]\n  ├─ 复制 [c0056]\n  ├─ 撤消 [c0057]\n  ├─ 重做 [c0058]\n  ├─ 字体名称 [c0059]\n  ├─ 字号 [c0060]\n公式栏 [r0015]\n  ├─ 名称框 [c0061]\n  ├─ 函数向导 [c0062]\n  ├─ 公式输入区域 [c0063]\n信息提示横幅 [r0016]\n  ├─ Get involved [c0064]\n  ├─ 关闭参与提示 [c0065]\n  ├─ Donate [c0066]\n  ├─ 关闭捐赠提示 [c0067]\n工作表网格 [r0017]\n  ├─ 单元格 A1 [c0068]\n  ├─ 工作表数据区域 A1:C5 [c0069]\n工作表标签与导航 [r0018]\n  ├─ 工作表 budget [c0070]\n  ├─ 工作表导航按钮 [c0071]\n  ├─ 新增工作表 [c0072]\n状态栏 [r0019]\n  ├─ 缩放滑块 [c0073]\n侧边栏入口 [r0020]\n  ├─ 属性面板入口 [c0074]\n  ├─ 侧边栏画笔图标入口 [c0075]\n  ├─ 图库入口 [c0076]\n  ├─ 导航器入口 [c0077]\n  ├─ 函数入口 [c0078]\n原探索目标：文件命令菜单 / New\n上次已登记前景：Calc 菜单栏、文件命令菜单\n位置材料来自动作前；本步结果以动作后图为准。",
+    "action_material": false
+  },
+  "_page_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nCalc 菜单栏 [r0013]\n  ├─ 文件菜单 [c0039]\n    └─ 文件命令菜单 [r0021]（本步关注区块）\n      ├─ New [c0079]\n      ├─ Open… [c0080]\n      ├─ Open Remote… [c0081]\n      ├─ Recent Documents [c0082]\n      ├─ Close [c0083]\n      ├─ Wizards [c0084]\n      ├─ Templates [c0085]\n      ├─ Reload [c0086]\n      ├─ Versions… [c0087]\n      ├─ Save [c0088]\n      ├─ Save As… [c0089]\n      ├─ Save Remote… [c0090]\n      ├─ Save a Copy… [c0091]\n      ├─ Save All [c0092]\n      ├─ Export… [c0093]\n      ├─ Export as PDF… [c0094]\n      ├─ Send [c0095]\n      ├─ Preview in Web Browser [c0096]\n      ├─ Print Preview [c0097]\n      ├─ Print… [c0098]\n      ├─ Printer Settings… [c0099]\n      ├─ Properties… [c0100]\n      ├─ Digital Signatures [c0101]\n      ├─ Exit LibreOffice [c0102]\n  ├─ 编辑菜单 [c0040]\n  ├─ 视图菜单 [c0041]\n  ├─ 插入菜单 [c0042]\n  ├─ 格式菜单 [c0043]\n  ├─ 样式菜单 [c0044]\n  ├─ 工作表菜单 [c0045]\n  ├─ 数据菜单 [c0046]\n  ├─ 工具菜单 [c0047]\n  ├─ 窗口菜单 [c0048]\n  ├─ 帮助菜单 [c0049]\nCalc 工具栏 [r0014]\n  ├─ 新建文档 [c0050]\n  ├─ 打开文件 [c0051]\n  ├─ 保存 [c0052]\n  ├─ 导出为 PDF [c0053]\n  ├─ 打印 [c0054]\n  ├─ 剪切 [c0055]\n  ├─ 复制 [c0056]\n  ├─ 撤消 [c0057]\n  ├─ 重做 [c0058]\n  ├─ 字体名称 [c0059]\n  ├─ 字号 [c0060]\n公式栏 [r0015]\n  ├─ 名称框 [c0061]\n  ├─ 函数向导 [c0062]\n  ├─ 公式输入区域 [c0063]\n信息提示横幅 [r0016]\n  ├─ Get involved [c0064]\n  ├─ 关闭参与提示 [c0065]\n  ├─ Donate [c0066]\n  ├─ 关闭捐赠提示 [c0067]\n工作表网格 [r0017]\n  ├─ 单元格 A1 [c0068]\n  ├─ 工作表数据区域 A1:C5 [c0069]\n工作表标签与导航 [r0018]\n  ├─ 工作表 budget [c0070]\n  ├─ 工作表导航按钮 [c0071]\n  ├─ 新增工作表 [c0072]\n状态栏 [r0019]\n  ├─ 缩放滑块 [c0073]\n侧边栏入口 [r0020]\n  ├─ 属性面板入口 [c0074]\n  ├─ 侧边栏画笔图标入口 [c0075]\n  ├─ 图库入口 [c0076]\n  ├─ 导航器入口 [c0077]\n  ├─ 函数入口 [c0078]\n原探索目标：文件命令菜单 / New\n上次已登记前景：Calc 菜单栏、文件命令菜单\n位置材料来自动作前；本步结果以动作后图为准。\n上一步记录：动作 a0017\n任务引用：文件命令菜单 / 功能探索（pending）\n相关任务过程：\na0017：click「文件菜单」；观察：点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。；该次更新未确认事项：New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。；除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。",
+  "function_update_regions": [
+    "r0021"
+  ],
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "control_refs": [
+    "c0039",
+    "c0040",
+    "c0041",
+    "c0042",
+    "c0043",
+    "c0044",
+    "c0045",
+    "c0046",
+    "c0047",
+    "c0048",
+    "c0049",
+    "c0050",
+    "c0051",
+    "c0052",
+    "c0053",
+    "c0054",
+    "c0055",
+    "c0056",
+    "c0057",
+    "c0058",
+    "c0059",
+    "c0060",
+    "c0061",
+    "c0062",
+    "c0063",
+    "c0064",
+    "c0065",
+    "c0066",
+    "c0067",
+    "c0068",
+    "c0069",
+    "c0070",
+    "c0071",
+    "c0072",
+    "c0073",
+    "c0074",
+    "c0075",
+    "c0076",
+    "c0077",
+    "c0078",
+    "c0079",
+    "c0080",
+    "c0081",
+    "c0082",
+    "c0083",
+    "c0084",
+    "c0085",
+    "c0086",
+    "c0087",
+    "c0088",
+    "c0089",
+    "c0090",
+    "c0091",
+    "c0092",
+    "c0093",
+    "c0094",
+    "c0095",
+    "c0096",
+    "c0097",
+    "c0098",
+    "c0099",
+    "c0100",
+    "c0101",
+    "c0102"
+  ],
+  "prompt_sections": [
+    "region.foreground_concept",
+    "region.common",
+    "region.identity",
+    "control.references",
+    "control.definition",
+    "control.identity",
+    "control.knowledge_base",
+    "region.function",
+    "task.definition",
+    "action.result",
+    "region.exception_values",
+    "action.returns_to_previous",
+    "region.recovery_handoff",
+    "region.exception_registration",
+    "region.foreground",
+    "region.registration",
+    "region.registration_identity",
+    "region.state_description",
+    "region.context_matches",
+    "region.scope_reason",
+    "region.task_review_reason",
+    "region.local_knowledge",
+    "region.nested",
+    "region.current",
+    "region.parent",
+    "control.registration",
+    "control.registration_ref",
+    "control.registration_name",
+    "control.knowledge_description",
+    "control.knowledge_constraints",
+    "control.knowledge_index",
+    "control.list_group",
+    "control.exploration_flags",
+    "control.add_image",
+    "action.jump_to",
+    "region.function_updates",
+    "region.function_constraints",
+    "task.update",
+    "task.update_ref",
+    "task.next_action",
+    "region.uncertainties"
+  ],
+  "prompt_composition": "field_sections",
+  "_structured_user_prompt": "{\n  \"动作后前台应用证据\": {\n    \"目标应用\": \"desktop.libreoffice_calc\",\n    \"与目标应用一致\": true,\n    \"窗口记录\": \"WM_CLASS(STRING) = \\\"libreoffice\\\", \\\"libreoffice-calc\\\"\\n_NET_WM_NAME(UTF8_STRING) = \\\"budget.xlsx - LibreOffice Calc\\\"\\n\\n\",\n    \"读取错误\": \"\",\n    \"来源\": \"OSWorld X11 active window WM_CLASS/title\",\n    \"control_transport_available\": true\n  },\n  \"目标应用\": \"本次要探索的应用：LibreOffice calc\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"工作区块\": \"文件命令菜单\",\n  \"实际来源区块\": \"文件命令菜单\",\n  \"实际入口\": \"New\",\n  \"动作意图\": {\n    \"action\": \"click\",\n    \"target\": \"c0079\",\n    \"reason\": \"展开 New 子菜单，确认其中显示的可选新建目标。\",\n    \"x\": 115,\n    \"y\": 101,\n    \"text\": null,\n    \"end_x\": null,\n    \"end_y\": null\n  },\n  \"实际动作\": [\n    {\n      \"action\": \"click\",\n      \"target\": \"c0079\",\n      \"reason\": \"展开 New 子菜单，确认其中显示的可选新建目标。\",\n      \"x\": 115,\n      \"y\": 101,\n      \"text\": null,\n      \"end_x\": null,\n      \"end_y\": null\n    }\n  ],\n  \"回执\": {\n    \"exit_code\": 0,\n    \"stdout\": \"\",\n    \"stderr\": \"\",\n    \"semantic_result\": \"unverified\",\n    \"executed_steps\": [\n      {\"action\":\"click\",\"target\":\"c0079\",\"reason\":\"展开 New 子菜单，确认其中显示的可选新建目标。\",\"x\":115,\"y\":101,\"text\":null,\"end_x\":null,\"end_y\":null}\n    ]\n  },\n  \"本轮探索任务\": \"功能探索\",\n  \"任务目标\": {\n    \"说明\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n    \"task_type\": \"function\",\n    \"原控件\": \"New\"\n  },\n  \"任务与实际对象核对\": {\n    \"任务区块\": \"文件命令菜单\",\n    \"待执行区块\": \"文件命令菜单\",\n    \"待执行控件\": \"New\",\n    \"所需登记\": \"function\",\n    \"适用条件\": [],\n    \"说明\": \"明确提交continue/answered/defer和本轮依据；框架核验实际绑定、执行或观察来源及所需产物，再登记判断。answered回答探索问题，不等于业务操作成功。\"\n  },\n  \"来源区块已有任务\": [\n    {\n      \"task\": \"r0021/功能探索\",\n      \"region\": \"r0021\",\n      \"name\": \"功能探索\",\n      \"control_name\": \"New\",\n      \"status\": \"pending\",\n      \"task_type\": \"function\",\n      \"conditions\": [],\n      \"当前控件知识\": [{\"index\":0,\"description\":\"文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\"}],\n      \"reason\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n      \"blocker\": {},\n      \"prerequisite\": null\n    }\n  ],\n  \"当前任务引用\": \"r0021/功能探索\",\n  \"已知区块\": [\n    {\n      \"name\": \"Calc 菜单栏\",\n      \"提供原因\": [\"动作前观察中的区块\",\"截图外观匹配候选（不等于前景）\"],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\"说明\":\"文件、编辑、视图、插入、格式、样式、工作表、数据、工具、窗口和帮助菜单均可见。\",\"来源\":\"discovery:0131\"},\n      \"ref\": \"r0013\",\n      \"历史描述\": \"Calc 窗口顶部的应用菜单入口。\",\n      \"controls\": [{\"name\":\"文件菜单\",\"ref\":\"c0039\",\"已保存外观\":\"文件菜单已展开，显示包含新建、打开、保存、导出、打印和退出等命令的下拉菜单。；文件菜单未展开，菜单栏中仅显示“文件”菜单项。\"},{\"name\":\"编辑菜单\",\"ref\":\"c0040\",\"已保存外观\":\"状态未注明\"},{\"name\":\"视图菜单\",\"ref\":\"c0041\",\"已保存外观\":\"状态未注明\"},{\"name\":\"插入菜单\",\"ref\":\"c0042\",\"已保存外观\":\"状态未注明\"},{\"name\":\"格式菜单\",\"ref\":\"c0043\",\"已保存外观\":\"状态未注明\"},{\"name\":\"样式菜单\",\"ref\":\"c0044\",\"已保存外观\":\"状态未注明\"},{\"name\":\"工作表菜单\",\"ref\":\"c0045\",\"已保存外观\":\"状态未注明\"},{\"name\":\"数据菜单\",\"ref\":\"c0046\",\"已保存外观\":\"状态未注明\"},{\"name\":\"工具菜单\",\"ref\":\"c0047\",\"已保存外观\":\"状态未注明\"},{\"name\":\"窗口菜单\",\"ref\":\"c0048\",\"已保存外观\":\"状态未注明\"},{\"name\":\"帮助菜单\",\"ref\":\"c0049\",\"已保存外观\":\"状态未注明\"}],\n      \"本图外观线索\": [\"文件菜单\",\"样式菜单\",\"窗口菜单\",\"编辑菜单\",\"工具菜单\",\"工作表菜单\",\"插入菜单\",\"视图菜单\",\"帮助菜单\",\"格式菜单\",\"数据菜单\"]\n    },\n    {\n      \"name\": \"信息提示横幅\",\n      \"提供原因\": [\"截图外观匹配候选（不等于前景）\"],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\"说明\":\"两条蓝色提示横幅均显示，各自有操作按钮和关闭按钮。\",\"来源\":\"discovery:0131\"},\n      \"ref\": \"r0016\",\n      \"历史描述\": \"工作表上方的 LibreOffice 社区参与及捐赠提示区域。\",\n      \"controls\": [{\"name\":\"Get involved\",\"ref\":\"c0064\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Donate\",\"ref\":\"c0066\",\"已保存外观\":\"状态未注明\"}],\n      \"本图外观线索\": [\"Get involved\",\"Donate\"]\n    },\n    {\n      \"name\": \"工作表标签与导航\",\n      \"提供原因\": [\"截图外观匹配候选（不等于前景）\"],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\"说明\":\"显示 budget 工作表标签及工作表导航和新增工作表图标；状态显示 Sheet 1 of 1。\",\"来源\":\"discovery:0131\"},\n      \"ref\": \"r0018\",\n      \"历史描述\": \"工作表标签及其切换、导航和新增入口。\",\n      \"controls\": [{\"name\":\"工作表 budget\",\"ref\":\"c0070\",\"已保存外观\":\"当前可见且已选中的工作表标签，状态未注明\"},{\"name\":\"工作表导航按钮\",\"ref\":\"c0071\",\"已保存外观\":\"工作表标签左侧的一组首个、前一个、后一个及末个导航图标，状态未注明\"},{\"name\":\"新增工作表\",\"ref\":\"c0072\",\"已保存外观\":\"工作表标签左侧带绿色加号的图标，状态未注明\"}],\n      \"本图外观线索\": [\"工作表 budget\",\"新增工作表\",\"工作表导航按钮\"]\n    },\n    {\n      \"name\": \"状态栏\",\n      \"提供原因\": [\"截图外观匹配候选（不等于前景）\"],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\"说明\":\"可见 PageStyle_budget、English (Hong Kong)、Average: ; Sum: 0 及 100% 缩放信息。\",\"来源\":\"discovery:0131\"},\n      \"ref\": \"r0019\",\n      \"历史描述\": \"窗口底部显示工作表状态、语言、计算摘要及缩放信息。\",\n      \"controls\": [{\"name\":\"缩放滑块\",\"ref\":\"c0073\",\"已保存外观\":\"状态栏右侧的缩小、滑块、放大和百分比显示区域，状态未注明\"}],\n      \"本图外观线索\": [\"缩放滑块\"]\n    },\n    {\n      \"name\": \"侧边栏入口\",\n      \"提供原因\": [\"截图外观匹配候选（不等于前景）\"],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"历史状态观察\": {\"说明\":\"多个图标入口可见，侧边栏内容面板当前未展开。\",\"来源\":\"discovery:0131\"},\n      \"ref\": \"r0020\",\n      \"历史描述\": \"Calc 窗口右侧垂直排列的侧边栏面板入口。\",\n      \"controls\": [{\"name\":\"属性面板入口\",\"ref\":\"c0074\",\"已保存外观\":\"顶部橙色滑块样式图标，状态未注明\"},{\"name\":\"侧边栏画笔图标入口\",\"ref\":\"c0075\",\"已保存外观\":\"属性图标下方的画笔样式图标，状态未注明\"},{\"name\":\"图库入口\",\"ref\":\"c0076\",\"已保存外观\":\"紫色图片样式图标，状态未注明\"},{\"name\":\"导航器入口\",\"ref\":\"c0077\",\"已保存外观\":\"蓝色圆形罗盘样式图标，状态未注明\"},{\"name\":\"函数入口\",\"ref\":\"c0078\",\"已保存外观\":\"标记为 fx 的侧边栏图标，状态未注明\"}],\n      \"本图外观线索\": [\"属性面板入口\",\"图库入口\",\"侧边栏画笔图标入口\",\"函数入口\",\"导航器入口\"]\n    },\n    {\n      \"name\": \"文件命令菜单\",\n      \"提供原因\": [\"动作前来源\",\"未完成工作所属区块\",\"动作前观察中的区块\",\"截图外观匹配候选（不等于前景）\"],\n      \"当前状态\": \"未由这份历史记录确认\",\n      \"local_knowledge\": {\"k0014\":\"列表展示文件相关命令及部分快捷键提示；带箭头的项目可继续展开子菜单。命令是否实际执行及其后续结果未在本次操作中验证。\"},\n      \"历史状态观察\": {\"说明\":\"命令列表已展开；Versions… 和 Save All 显示为灰色，若干命令带子菜单箭头。\",\"来源\":\"update:0134\"},\n      \"ref\": \"r0021\",\n      \"历史描述\": \"由文件菜单展开的文件相关命令列表，包含打开、保存、导出、打印及其他文件命令。\",\n      \"controls\": [{\"name\":\"New\",\"knowledge\":\"用途记录：文件命令菜单中的新建入口；带子菜单箭头，本次未展开其子菜单。\",\"ref\":\"c0079\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Open…\",\"ref\":\"c0080\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Open Remote…\",\"ref\":\"c0081\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Recent Documents\",\"ref\":\"c0082\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Close\",\"ref\":\"c0083\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Wizards\",\"ref\":\"c0084\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Templates\",\"ref\":\"c0085\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Reload\",\"ref\":\"c0086\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Versions…\",\"ref\":\"c0087\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Save\",\"ref\":\"c0088\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Save As…\",\"ref\":\"c0089\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Save Remote…\",\"ref\":\"c0090\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Save a Copy…\",\"ref\":\"c0091\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Save All\",\"ref\":\"c0092\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Export…\",\"ref\":\"c0093\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Export as PDF…\",\"ref\":\"c0094\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Send\",\"ref\":\"c0095\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Preview in Web Browser\",\"ref\":\"c0096\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Print Preview\",\"ref\":\"c0097\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Print…\",\"ref\":\"c0098\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Printer Settings…\",\"ref\":\"c0099\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Properties…\",\"ref\":\"c0100\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Digital Signatures\",\"ref\":\"c0101\",\"已保存外观\":\"状态未注明\"},{\"name\":\"Exit LibreOffice\",\"ref\":\"c0102\",\"已保存外观\":\"状态未注明\"}],\n      \"本图外观线索\": [\"Save All\",\"Export…\",\"Export as PDF…\",\"Print Preview\",\"Printer Settings…\",\"Properties…\",\"Exit LibreOffice\",\"Digital Signatures\",\"Preview in Web Browser\",\"Save a Copy…\",\"Print…\",\"Send\",\"Save Remote…\",\"Recent Documents\",\"Open Remote…\",\"Save As…\",\"Templates\",\"Wizards\",\"Open…\",\"Reload\",\"Save\",\"Close\",\"New\",\"Versions…\"]\n    }\n  ],\n  \"实际对象已有跳转\": [],\n  \"本次入口历史落点\": {\n    \"来源关联\": \"上一步执行记录所指控件的历史结果\",\n    \"历史结果\": [],\n    \"进入当前界面前的区块\": [\n      {\"region\":\"r0013\",\"name\":\"Calc 菜单栏\",\"description\":\"Calc 窗口顶部的应用菜单入口。\"}\n    ],\n    \"边界\": \"历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。\"\n  },\n  \"身份引用\": \"ref使用已提供的区块或控件编号；name只表示名称。\",\n  \"动作前对象观察\": {\n    \"来源\": {\n      \"region\": \"r0021\",\n      \"basis\": \"discovery\",\n      \"source_call\": \"0134\",\n      \"observation\": \"update:0134\"\n    },\n    \"控件\": \"New\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"登记实际动作结果\",\n    \"范围\": \"文件命令菜单\",\n    \"关联任务\": {\n      \"区块\": \"文件命令菜单\",\n      \"类型\": \"功能探索\",\n      \"控件\": \"New\"\n    },\n    \"所需信息\": \"控件可重复使用的功能及必要条件\",\n    \"原问题\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n    \"本步边界\": \"登记本次真实动作及观察，判断它回答了原问题的哪一部分；不以准备代替目标执行。\"\n  },\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\nCalc 菜单栏 [r0013]\\n  ├─ 文件菜单 [c0039]\\n    └─ 文件命令菜单 [r0021]（本步关注区块）\\n      ├─ New [c0079]\\n      ├─ Open… [c0080]\\n      ├─ Open Remote… [c0081]\\n      ├─ Recent Documents [c0082]\\n      ├─ Close [c0083]\\n      ├─ Wizards [c0084]\\n      ├─ Templates [c0085]\\n      ├─ Reload [c0086]\\n      ├─ Versions… [c0087]\\n      ├─ Save [c0088]\\n      ├─ Save As… [c0089]\\n      ├─ Save Remote… [c0090]\\n      ├─ Save a Copy… [c0091]\\n      ├─ Save All [c0092]\\n      ├─ Export… [c0093]\\n      ├─ Export as PDF… [c0094]\\n      ├─ Send [c0095]\\n      ├─ Preview in Web Browser [c0096]\\n      ├─ Print Preview [c0097]\\n      ├─ Print… [c0098]\\n      ├─ Printer Settings… [c0099]\\n      ├─ Properties… [c0100]\\n      ├─ Digital Signatures [c0101]\\n      ├─ Exit LibreOffice [c0102]\\n  ├─ 编辑菜单 [c0040]\\n  ├─ 视图菜单 [c0041]\\n  ├─ 插入菜单 [c0042]\\n  ├─ 格式菜单 [c0043]\\n  ├─ 样式菜单 [c0044]\\n  ├─ 工作表菜单 [c0045]\\n  ├─ 数据菜单 [c0046]\\n  ├─ 工具菜单 [c0047]\\n  ├─ 窗口菜单 [c0048]\\n  ├─ 帮助菜单 [c0049]\\nCalc 工具栏 [r0014]\\n  ├─ 新建文档 [c0050]\\n  ├─ 打开文件 [c0051]\\n  ├─ 保存 [c0052]\\n  ├─ 导出为 PDF [c0053]\\n  ├─ 打印 [c0054]\\n  ├─ 剪切 [c0055]\\n  ├─ 复制 [c0056]\\n  ├─ 撤消 [c0057]\\n  ├─ 重做 [c0058]\\n  ├─ 字体名称 [c0059]\\n  ├─ 字号 [c0060]\\n公式栏 [r0015]\\n  ├─ 名称框 [c0061]\\n  ├─ 函数向导 [c0062]\\n  ├─ 公式输入区域 [c0063]\\n信息提示横幅 [r0016]\\n  ├─ Get involved [c0064]\\n  ├─ 关闭参与提示 [c0065]\\n  ├─ Donate [c0066]\\n  ├─ 关闭捐赠提示 [c0067]\\n工作表网格 [r0017]\\n  ├─ 单元格 A1 [c0068]\\n  ├─ 工作表数据区域 A1:C5 [c0069]\\n工作表标签与导航 [r0018]\\n  ├─ 工作表 budget [c0070]\\n  ├─ 工作表导航按钮 [c0071]\\n  ├─ 新增工作表 [c0072]\\n状态栏 [r0019]\\n  ├─ 缩放滑块 [c0073]\\n侧边栏入口 [r0020]\\n  ├─ 属性面板入口 [c0074]\\n  ├─ 侧边栏画笔图标入口 [c0075]\\n  ├─ 图库入口 [c0076]\\n  ├─ 导航器入口 [c0077]\\n  ├─ 函数入口 [c0078]\\n原探索目标：文件命令菜单 / New\\n上次已登记前景：Calc 菜单栏、文件命令菜单\\n位置材料来自动作前；本步结果以动作后图为准。\\n上一步记录：动作 a0017\\n任务引用：文件命令菜单 / 功能探索（pending）\\n相关任务过程：\\na0017：click「文件菜单」；观察：点击“文件菜单”后，Calc 窗口内展开了文件命令菜单。菜单显示 New、Open…（Ctrl+O）、Open Remote…、Recent Documents、Close、Wizards、Templates、Reload、Versions…（灰色）、Save（Ctrl+S）、Save As…（Shift+Ctrl+S）、Save Remote…、Save a Copy…、Save All（灰色）、Export…、Export as PDF…、Send、Preview in Web Browser、Print Preview（Shift+Ctrl+O）、Print…（Ctrl+P）、Printer Settings…、Properties…、Digital Signatures 和 Exit LibreOffice（Ctrl+Q）。其中 New、Recent Documents、Wizards、Templates、Send、Digital Signatures 旁有子菜单箭头。未选择或执行任何命令；灰色项目在当前画面中不可用。；该次更新未确认事项：New、Recent Documents、Wizards、Templates、Send 和 Digital Signatures 的子菜单内容尚未展开查看。；除菜单中直接可见的名称、快捷键、子菜单箭头及灰色状态外，各命令的具体操作结果尚未通过执行验证。\",\n  \"可更新功能的区块\": [\n    {\n      \"名称\": \"文件命令菜单\",\n      \"ref\": \"r0021\"\n    }\n  ],\n  \"已有功能轮廓\": [\n    {\n      \"功能\": \"创建文档\",\n      \"引用\": \"r0021/创建文档\",\n      \"用途\": \"通过 New 进入新建目标选择；目前仅确认该菜单入口存在，具体目标待探索。\",\n      \"支持对象\": [\"New\"]\n    }\n  ],\n  \"其他已有功能（仅目录）\": [\n    {\n      \"功能\": \"打开本地文档\",\n      \"引用\": \"r0021/打开本地文档\"\n    },\n    {\n      \"功能\": \"访问最近文档\",\n      \"引用\": \"r0021/访问最近文档\"\n    },\n    {\n      \"功能\": \"关闭文档\",\n      \"引用\": \"r0021/关闭文档\"\n    },\n    {\n      \"功能\": \"访问向导\",\n      \"引用\": \"r0021/访问向导\"\n    },\n    {\n      \"功能\": \"访问模板\",\n      \"引用\": \"r0021/访问模板\"\n    },\n    {\n      \"功能\": \"重新载入文档\",\n      \"引用\": \"r0021/重新载入文档\"\n    },\n    {\n      \"功能\": \"管理文档版本\",\n      \"引用\": \"r0021/管理文档版本\"\n    },\n    {\n      \"功能\": \"保存文档\",\n      \"引用\": \"r0021/保存文档\"\n    },\n    {\n      \"功能\": \"另存为文档\",\n      \"引用\": \"r0021/另存为文档\"\n    },\n    {\n      \"功能\": \"保存文档副本\",\n      \"引用\": \"r0021/保存文档副本\"\n    },\n    {\n      \"功能\": \"保存所有打开的文档\",\n      \"引用\": \"r0021/保存所有打开的文档\"\n    },\n    {\n      \"功能\": \"导出文档\",\n      \"引用\": \"r0021/导出文档\"\n    },\n    {\n      \"功能\": \"导出为 PDF\",\n      \"引用\": \"r0021/导出为 PDF\"\n    },\n    {\n      \"功能\": \"查看发送选项\",\n      \"引用\": \"r0021/查看发送选项\"\n    },\n    {\n      \"功能\": \"打印预览\",\n      \"引用\": \"r0021/打印预览\"\n    },\n    {\n      \"功能\": \"打印文档\",\n      \"引用\": \"r0021/打印文档\"\n    },\n    {\n      \"功能\": \"设置打印机\",\n      \"引用\": \"r0021/设置打印机\"\n    },\n    {\n      \"功能\": \"查看文档属性\",\n      \"引用\": \"r0021/查看文档属性\"\n    },\n    {\n      \"功能\": \"查看数字签名选项\",\n      \"引用\": \"r0021/查看数字签名选项\"\n    }\n  ]\n}\n\n图1：实际动作前图；核对原操作对象；原图 1280×800 像素。\n图2：原动作后图；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "_presentation_digest": "c574c1178fd9ca4c41aa3621d950997039c1998f9d149247fad423a07f4912c9",
+  "named_nested": true
+}

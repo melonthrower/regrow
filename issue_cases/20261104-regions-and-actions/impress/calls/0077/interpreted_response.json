@@ -1,0 +1,109 @@
+{
+  "exception": "none",
+  "recovery_handoff": "",
+  "inventory": "complete",
+  "evidence": "当前截图确认正在查看 Impress 编辑窗口，菜单栏、标准工具栏、绘图工具栏、幻灯片列表和 Slide 属性与布局侧栏均可见。侧栏右缘各入口的面板用途仍未知；若干工具栏控件的具体作用、参数或操作条件也仍未知，均可由下列具体问题或已有的区块内容探索任务覆盖。同类幻灯片条目可复用共同操作方式，无需逐项登记。",
+  "operations": [
+    {
+      "control": "c0061",
+      "task_type": "parameter",
+      "completion_condition": "展开粘贴按钮旁的下拉菜单，确认可供选择的粘贴方式。"
+    },
+    {
+      "control": "c0062",
+      "task_type": "function",
+      "completion_condition": "确认格式刷怎样应用格式，以及使用它所需的选择或操作条件。"
+    },
+    {
+      "control": "c0063",
+      "task_type": "parameter",
+      "completion_condition": "查看并记录此按钮提供的布局候选项。"
+    },
+    {
+      "control": "c0064",
+      "task_type": "function",
+      "completion_condition": "确认点击此按钮打开的内容或产生的直接界面效果。"
+    },
+    {
+      "control": "c0065",
+      "task_type": "function",
+      "completion_condition": "确认此按钮是否从第一张幻灯片启动放映，并观察放映界面。"
+    },
+    {
+      "control": "c0066",
+      "task_type": "function",
+      "completion_condition": "确认此按钮是否从当前选中的幻灯片启动放映，并观察放映界面。"
+    },
+    {
+      "control": "c0067",
+      "task_type": "function",
+      "completion_condition": "确认点击按钮会新增幻灯片，并确认新增幻灯片在列表中的直接结果。"
+    },
+    {
+      "control": "c0067",
+      "task_type": "parameter",
+      "completion_condition": "查看新建幻灯片按钮旁的下拉菜单，确认可选版式。"
+    },
+    {
+      "control": "c0068",
+      "task_type": "function",
+      "completion_condition": "确认此按钮复制哪张幻灯片，以及复制后幻灯片列表中的直接结果。"
+    },
+    {
+      "control": "c0069",
+      "task_type": "function",
+      "completion_condition": "在允许删除的实验幻灯片上确认此按钮的作用对象及删除后的直接结果。"
+    },
+    {
+      "control": "c0070",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    },
+    {
+      "control": "c0071",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    },
+    {
+      "control": "c0072",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    },
+    {
+      "control": "c0073",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    },
+    {
+      "control": "c0074",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    },
+    {
+      "control": "c0075",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    },
+    {
+      "control": "c0076",
+      "task_type": "function",
+      "completion_condition": "确认点击后打开的侧栏内容，并记录其面板用途。"
+    }
+  ],
+  "shared_instances": [],
+  "function_updates": [],
+  "task_update": [
+    {
+      "task": "r0006/区块内容探索",
+      "decision": "continue",
+      "reason": "截图显示菜单栏及多排工具栏，但仅凭图像仍不能确认所有可见图标对应的控件身份；特别是 x832 附近的表格下拉图标与已登记的插入表格按钮之间的身份对应关系尚不明确。原任务要求确认可见入口的区域及是否存在未登记的独立功能入口，尚未完成。",
+      "remaining_question": "可见工具栏中尚未登记或身份对应不明的图标分别属于哪个工具栏区域，是否构成未登记的独立功能入口？",
+      "next_action": {
+        "region": "r0006",
+        "control": "标准工具栏 x832 附近的表格下拉图标",
+        "action": "hover",
+        "reason": "查看该图标的提示信息，以辨认其用途并判断它是否与已有的插入表格按钮为同一控件。"
+      }
+    }
+  ]
+}

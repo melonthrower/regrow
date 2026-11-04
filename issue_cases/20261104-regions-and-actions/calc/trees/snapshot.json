@@ -1,0 +1,6 @@
+{
+  "snapshot": "a0018-0142-95187eb91e6a",
+  "caption": "0142纠错后登记的图；包含a0018打开New菜单的结果",
+  "runtime_source_commit": "fceb3b74da9a86c3202de71f86d12c0ab80a09d6",
+  "derivation": "frozen source-v8 object_store.load and environment_context.forest; read-only; not a new accepted graph"
+}

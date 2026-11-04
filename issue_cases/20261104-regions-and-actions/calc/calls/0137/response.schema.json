@@ -1,0 +1,559 @@
+{
+  "type": "object",
+  "properties": {
+    "inventory": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "uncertain"
+      ]
+    },
+    "evidence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control": {
+            "type": "string",
+            "enum": [
+              "New",
+              "Open…",
+              "Open Remote…",
+              "Recent Documents",
+              "Close",
+              "Wizards",
+              "Templates",
+              "Reload",
+              "Versions…",
+              "Save",
+              "Save As…",
+              "Save Remote…",
+              "Save a Copy…",
+              "Save All",
+              "Export…",
+              "Export as PDF…",
+              "Send",
+              "Preview in Web Browser",
+              "Print Preview",
+              "Print…",
+              "Printer Settings…",
+              "Properties…",
+              "Digital Signatures",
+              "Exit LibreOffice",
+              ""
+            ]
+          },
+          "task_type": {
+            "type": "string",
+            "enum": [
+              "function",
+              "parameter",
+              "region_content"
+            ]
+          },
+          "completion_condition": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "结合本对象、已有知识与后续操作或导航需要，自行写明具体未知弄清到什么程度即可结算；允许观察推翻用途推测，不把出现预期界面或业务成功预填为必须结果，不预编操作步骤。"
+          },
+          "function_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "提出区块内容探索的具体理由，例如下缘条目被截断；不另建evidence字段。"
+          }
+        },
+        "required": [
+          "control",
+          "task_type",
+          "completion_condition"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "task_type": {
+                  "const": "region_content"
+                }
+              },
+              "required": [
+                "task_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "control": {
+                  "const": ""
+                }
+              },
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "shared_instances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "control": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "New",
+              "Open…",
+              "Open Remote…",
+              "Recent Documents",
+              "Close",
+              "Wizards",
+              "Templates",
+              "Reload",
+              "Versions…",
+              "Save",
+              "Save As…",
+              "Save Remote…",
+              "Save a Copy…",
+              "Save All",
+              "Export…",
+              "Export as PDF…",
+              "Send",
+              "Preview in Web Browser",
+              "Print Preview",
+              "Print…",
+              "Printer Settings…",
+              "Properties…",
+              "Digital Signatures",
+              "Exit LibreOffice"
+            ],
+            "description": "当前区块中的控件ID。"
+          },
+          "source_region": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "文件命令菜单"
+            ],
+            "description": "来源区块ID。"
+          },
+          "source_control": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "New",
+              "Open…",
+              "Open Remote…",
+              "Recent Documents",
+              "Close",
+              "Wizards",
+              "Templates",
+              "Reload",
+              "Versions…",
+              "Save",
+              "Save As…",
+              "Save Remote…",
+              "Save a Copy…",
+              "Save All",
+              "Export…",
+              "Export as PDF…",
+              "Send",
+              "Preview in Web Browser",
+              "Print Preview",
+              "Print…",
+              "Printer Settings…",
+              "Properties…",
+              "Digital Signatures",
+              "Exit LibreOffice"
+            ],
+            "description": "来源控件ID。"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "control",
+          "source_region",
+          "source_control",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "function_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "文件命令菜单"
+            ]
+          },
+          "add": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "supports": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "supports"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "update": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "changes": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "supports": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "constraints": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "ref",
+                "changes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "remove": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "replace_with": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "ref",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "region"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "enum": [
+              "New",
+              "Open…",
+              "Open Remote…",
+              "Recent Documents",
+              "Close",
+              "Wizards",
+              "Templates",
+              "Reload",
+              "Versions…",
+              "Save",
+              "Save As…",
+              "Save Remote…",
+              "Save a Copy…",
+              "Save All",
+              "Export…",
+              "Export as PDF…",
+              "Send",
+              "Preview in Web Browser",
+              "Print Preview",
+              "Print…",
+              "Printer Settings…",
+              "Properties…",
+              "Digital Signatures",
+              "Exit LibreOffice"
+            ],
+            "description": "控件树中的控件ID，例如c0008。"
+          },
+          "knowledge": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "修订给定已有知识时引用其序号；新增省略。"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                },
+                "constraints": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "description"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "ref",
+          "knowledge"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "enum": [
+              "文件命令菜单"
+            ]
+          },
+          "local_knowledge": {
+            "type": "object",
+            "properties": {
+              "add": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "update": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "delete": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "ref",
+          "local_knowledge"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "exception": {
+      "type": "string",
+      "enum": [
+        "none",
+        "blocking_popup",
+        "system_error",
+        "unexpected_exit",
+        "external_app",
+        "unclassified"
+      ]
+    },
+    "recovery_handoff": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "exception",
+    "recovery_handoff"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "exception": {
+            "const": "none"
+          }
+        },
+        "required": [
+          "exception"
+        ]
+      },
+      "then": {
+        "required": [
+          "inventory",
+          "evidence",
+          "operations",
+          "shared_instances",
+          "function_updates"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "inventory"
+              ]
+            },
+            {
+              "required": [
+                "evidence"
+              ]
+            },
+            {
+              "required": [
+                "operations"
+              ]
+            },
+            {
+              "required": [
+                "shared_instances"
+              ]
+            },
+            {
+              "required": [
+                "function_updates"
+              ]
+            },
+            {
+              "required": [
+                "controls"
+              ]
+            },
+            {
+              "required": [
+                "regions"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

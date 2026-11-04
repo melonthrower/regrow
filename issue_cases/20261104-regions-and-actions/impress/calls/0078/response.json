@@ -1,0 +1,9 @@
+{
+  "exception": "none",
+  "recovery_handoff": "",
+  "target": "粘贴按钮",
+  "reason": "展开粘贴按钮旁的下拉菜单，查看可供选择的粘贴方式。",
+  "x": 391,
+  "y": 108,
+  "action": "click"
+}

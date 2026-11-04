@@ -1,0 +1,81 @@
+{
+  "type": "object",
+  "properties": {
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "enum": [
+              "New 子菜单",
+              "New",
+              "Text Document",
+              "Spreadsheet",
+              "Presentation",
+              "Drawing",
+              "Formula",
+              "HTML Document",
+              "XML Form Document",
+              "Labels",
+              "Business Cards",
+              "Master Document",
+              "Templates…"
+            ]
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "top": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "right": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bottom": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "bbox",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 13,
+      "maxItems": 13
+    }
+  },
+  "required": [
+    "objects"
+  ],
+  "additionalProperties": false
+}

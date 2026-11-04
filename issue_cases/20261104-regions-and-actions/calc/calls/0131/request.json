@@ -1,0 +1,970 @@
+{
+  "pipeline_step": "discovery",
+  "role": "observation",
+  "stage": "discovery",
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n登记实际可见的用途、状态和范围。应用是否属于目标由当前任务决定，不按设置页面名称排除整款应用；观察不登记为修改效果。\n\n# 本步任务\n依据当前图和给定历史，识别本步范围内的区块与必要控件，复用已确认的身份，补充新对象和变化。保留影响识别、使用或继续探索的具体疑问。\n\n# 本步用到的概念\n\n前景是当前活动的页面、菜单、对话框或信息展示区。模态界面接管交互时，被接管的底层属于背景。\n\n区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。\n\n区块身份由职责、内容范围和实际延续关系确定。跨界面再次出现的同一区块沿用身份；数据、选中或排序变化可以是原区块的状态变化。\n正例：切换界面时，某区块连同其中的控件持续存在，且用途与范围延续，可复用它；另一部分内容整体替换时，结合变化和历史判断是原区块变化还是不同区块。\n\n引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\n结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。\n名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。\n正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。\n\n知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。\n\n# 当前活动界面：foreground\ndescription 简述当前表面及必要遮挡。\n正例：“导出对话框位于前景，后方编辑区暂不能操作。”\n\nexception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。\n\nrecovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `foreground` | 必填 | 对象 |\n\n### foreground\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字 |\n| `exception` | 必填 | 可用值：\"none\"、\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\"、\"region_ownership_review\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n# 登记区块：regions\ndescription 写区块的稳定职责和范围；name 用便于辨认的名称。已有对象按本节格式引用并补充变化。\n正例：区块描述为“编辑文档内容并访问导出功能的编辑区”。\n\nref 复制已确认的旧区块名称，沿用身份时 identity 为 same。没有可确认的旧身份时，按实际填写 new 或 uncertain，并提供 name、description；identity_evidence 保留判断依据、候选与具体缺口。\n正例：新出现的格式选择菜单有独立用途，未对应已有区块时登记为 new。\n\nstate_description 写这次可见的状态，description 保留稳定职责。\n正例：state_description 为“搜索结果为空”，区块用途仍为展示搜索结果。\n\ncontext_matches：当前画面符合该历史区块给出的行为适用上下文时填 true，不符合填 false；没有这种限定或无法判断时填 null。\n\nout_of_scope_reason：仅整个区块都超出本次探索范围时，说明具体原因。\n\ntask_review_reason：出现已有任务未覆盖的具体问题，或旧结论被新证据推翻时，写清对象和问题；普通观察更新省略。\n正例：“原本仅提供图片格式，现在出现独立音频导出入口，其可选格式尚不明确。”\n\nlocal_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。\n\nbbox 用原图整数 left、top、right、bottom 框住可供辨认的完整外观和必要标签。右、下边界不含在范围内，框须位于图内且有正面积。无法可靠辨认时填 null，并说明缺少的依据。\n正例：搜索框的范围包括输入区域和帮助辨认的标签。\n\n控件直接放在所属区块的 controls 列表中，不填写所属区块编号。新对象写 name；复用已有对象写材料中给出的 ref 名称。只补旧控件知识时，在原区块中用 ref 和 knowledge 更新，不把旧界面当成当前可见。\n\nparent 填物理包含它的父区块名称；没有父区块时省略或填 null。这里不是访问来路。\n\n# 登记控件：controls\n报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。\n大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。\n正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。\n\nref：已确认是材料中的旧控件时填写其名称；确认是新对象时省略。\n\nname 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。\n正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。\n\nknowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”\n\nknowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}\n\nknowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。\n\nlist_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。\n不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。\n正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。\n\nmay_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身用法是否还有影响后续使用的具体未知：true 有，false 没有，null 尚不能判断。\n正例：入口已知会打开设置面板，但面板内部尚未探索，可以是 may_open_content=true、needs_exploration=false。\n\nadd_image：已有控件出现值得保存的新外观或状态时填 true；image_conditions 描述这份外观适用的可见状态。只是位置、窗口大小或输入值变化时复用已有外观。\n正例：原来的“展开”按钮变为“收起”，说明“面板已展开时的收起状态”。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 必填 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字 |\n| `description` | 按需 | 文字 |\n| `bbox` | 按需 | 对象 或 null |\n| `ref` | 按需 | 文字 或 null |\n| `identity` | 按需 | 可用值：\"same\"、\"new\"、\"uncertain\" |\n| `identity_evidence` | 按需 | 文字 |\n| `local_knowledge` | 按需 | 对象 |\n| `state_description` | 按需 | 文字；不能为空 |\n| `task_review_reason` | 按需 | 文字 |\n| `context_matches` | 按需 | true 或 false 或 null |\n| `out_of_scope_reason` | 按需 | 文字 |\n| `controls` | 按需 | 列表 |\n| `parent` | 按需 | 文字 或 null |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n满足上述条件时：\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 沿用上文 | 固定为 \"same\" |\n| `ref` | 沿用上文 |  |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n不满足上述条件时：\n- 必须填写：`name`、`description`、`identity`。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 必填 | 可用值：\"new\"、\"uncertain\" |\n| `ref` | 沿用上文 | 可用值：null、\"\" |\n\n### regions → bbox\n\n至少符合以下一种格式。\n\n### regions → bbox — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `left` | 必填 | 整数 |\n| `top` | 必填 | 整数 |\n| `right` | 必填 | 整数 |\n| `bottom` | 必填 | 整数 |\n\n### regions → bbox — 格式 2\n\nnull\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n### regions → controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `bbox` | 按需 | 对象 或 null |\n| `description` | 按需 | 文字 |\n| `name` | 必填 | 文字 |\n| `list_group` | 按需 | 文字 |\n| `knowledge` | 必填 | 列表 |\n| `may_open_content` | 必填 | true 或 false |\n| `needs_exploration` | 必填 | true 或 false 或 null |\n\n### regions → controls → bbox\n\n至少符合以下一种格式。\n\n### regions → controls → bbox — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `left` | 必填 | 整数 |\n| `top` | 必填 | 整数 |\n| `right` | 必填 | 整数 |\n| `bottom` | 必填 | 整数 |\n\n### regions → controls → bbox — 格式 2\n\nnull\n\n### regions → controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### regions → controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |\n\n# 尚不能确认的事实：uncertainties\n简述具体对象、疑点与缺少的依据，供后续判断是否需要继续了解；已明确的内容照常登记。\n正例：“两个相同图标分别服务哪个列表，当前文字被遮挡，尚不能确认。”\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `uncertainties` | 必填 | 列表（元素要求：文字） |\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。必填的 regions、uncertainties 没有内容时填 []。正例说明写法，具体内容依据本次材料。\n\n# 本次重新定位\n结合当前图和已有身份，重新辨认给定区块与相关控件，补充确有变化的信息。\n",
+  "user_prompt": "## 背景\n范围：当前前景\n本轮目的：识别当前前景区块及能确认的控件，为区块探索建立对象记录。\n\n## 本步问题\n当前前景有哪些操作区或展示区，其中能确认哪些控件及其归属和身份？\n\n## 问题 1：本次需要辨认哪里？\n\n### 本轮观察范围\n当前前景的功能区块，以及本图中能确认的直接所属控件。\n\n### 目标应用\n本次要探索的应用：LibreOffice calc\n\n判断当前前景中正在探索的内容，是否属于这个应用。\n如果不属于，exception 填 external_app，\n简要说明现在到了什么界面，不再探索其中的功能。\n\n正例：前景已经是另一应用的页面，应报告 external_app。\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\n\n## 问题 2：当前区块和控件分别是什么，如何对应已有身份？\n\n### 登记页面组成与访问来路\n控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\n\n## 本步的补充依据与限制\n### 恢复交接（历史观察，不代表任务完成）\n已回到本次目标应用。当前可见工作表 budget 含 A1:C5 的 Item、Qty、Price 表格及样例数据；原探索尚未解决的 Calc 功能、操作参数和区块访问关系仍待继续了解。\n恢复观察：当前异常已消失；原探索问题尚未复核，建议中的后续动作尚未执行。\n\n本图：本次发现观察图；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "screenshots": [
+    "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/recovery_episodes/45b480d256bf/observation-0005/current.png"
+  ],
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "foreground": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none",
+              "blocking_popup",
+              "system_error",
+              "unexpected_exit",
+              "external_app",
+              "unclassified",
+              "region_ownership_review"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      "regions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "bbox": {
+              "$ref": "#/$defs/shared_1"
+            },
+            "ref": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。"
+            },
+            "identity": {
+              "type": "string",
+              "enum": [
+                "same",
+                "new",
+                "uncertain"
+              ]
+            },
+            "identity_evidence": {
+              "type": "string",
+              "description": "身份未定或存在歧义时说明具体依据和缺口。"
+            },
+            "local_knowledge": {
+              "type": "object",
+              "properties": {
+                "add": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "update": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "text"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "delete": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "state_description": {
+              "type": "string",
+              "minLength": 1,
+              "description": "本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。"
+            },
+            "task_review_reason": {
+              "type": "string",
+              "description": "仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。"
+            },
+            "context_matches": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。"
+            },
+            "out_of_scope_reason": {
+              "type": "string",
+              "description": "只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。"
+            },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "bbox": {
+                    "$ref": "#/$defs/shared_1"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "list_group": {
+                    "type": "string"
+                  },
+                  "knowledge": {
+                    "type": "array",
+                    "minItems": 0,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "index": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "修订给定已有知识时引用其序号；新增省略。"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                        },
+                        "constraints": {
+                          "type": "object",
+                          "minProperties": 1,
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "description": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "description"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "description"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "may_open_content": {
+                    "type": "boolean",
+                    "description": "是否打开或展开与应用主要功能相关、具有探索价值的内容。"
+                  },
+                  "needs_exploration": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "控件自身用法是否还有影响后续使用的具体未知；不确定填null。"
+                  }
+                },
+                "required": [
+                  "knowledge",
+                  "may_open_content",
+                  "needs_exploration",
+                  "name"
+                ],
+                "additionalProperties": false,
+                "description": "已有控件用ref及变化信息；新控件省略ref并填写新对象资料。"
+              }
+            },
+            "parent": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "ref"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "identity": {
+                    "const": "same"
+                  },
+                  "ref": {}
+                }
+              },
+              "else": {
+                "required": [
+                  "name",
+                  "description",
+                  "identity"
+                ],
+                "properties": {
+                  "identity": {
+                    "enum": [
+                      "new",
+                      "uncertain"
+                    ]
+                  },
+                  "ref": {
+                    "enum": [
+                      null,
+                      ""
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "description": "旧对象引用ref并只报新信息。新对象明确identity=new；身份未定用uncertain和具体缺口。"
+        },
+        "description": "本次识别或更新的区块；划分与复用依据实际观察。"
+      },
+      "uncertainties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "foreground",
+      "regions",
+      "uncertainties"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "shared_2": {
+        "type": "object",
+        "properties": {
+          "left": {
+            "type": "integer"
+          },
+          "top": {
+            "type": "integer"
+          },
+          "right": {
+            "type": "integer"
+          },
+          "bottom": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "left",
+          "top",
+          "right",
+          "bottom"
+        ],
+        "additionalProperties": false
+      },
+      "shared_1": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/shared_2"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+      }
+    }
+  },
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "平台/遍历环境只读.prompt",
+      "text": "操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n登记实际可见的用途、状态和范围。应用是否属于目标由当前任务决定，不按设置页面名称排除整款应用；观察不登记为修改效果。"
+    },
+    {
+      "path": "调用/界面识别.prompt",
+      "text": "# 本步任务\n依据当前图和给定历史，识别本步范围内的区块与必要控件，复用已确认的身份，补充新对象和变化。保留影响识别、使用或继续探索的具体疑问。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.foreground_concept",
+      "text": "前景是当前活动的页面、菜单、对话框或信息展示区。模态界面接管交互时，被接管的底层属于背景。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.common",
+      "text": "区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.identity",
+      "text": "区块身份由职责、内容范围和实际延续关系确定。跨界面再次出现的同一区块沿用身份；数据、选中或排序变化可以是原区块的状态变化。\n正例：切换界面时，某区块连同其中的控件持续存在，且用途与范围延续，可复用它；另一部分内容整体替换时，结合变化和历史判断是原区块变化还是不同区块。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.references",
+      "text": "引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.identity",
+      "text": "结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。\n名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。\n正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_base",
+      "text": "知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.foreground",
+      "text": "# 当前活动界面：foreground\ndescription 简述当前表面及必要遮挡。\n正例：“导出对话框位于前景，后方编辑区暂不能操作。”"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.exception_values",
+      "text": "exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.recovery_handoff",
+      "text": "recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”"
+    },
+    {
+      "path": "输出格式/字段组-region.foreground",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `foreground` | 必填 | 对象 |\n\n### foreground\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字 |\n| `exception` | 必填 | 可用值：\"none\"、\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\"、\"region_ownership_review\" |\n| `recovery_handoff` | 必填 | 文字 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.registration",
+      "text": "# 登记区块：regions\ndescription 写区块的稳定职责和范围；name 用便于辨认的名称。已有对象按本节格式引用并补充变化。\n正例：区块描述为“编辑文档内容并访问导出功能的编辑区”。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.registration_identity",
+      "text": "ref 复制已确认的旧区块名称，沿用身份时 identity 为 same。没有可确认的旧身份时，按实际填写 new 或 uncertain，并提供 name、description；identity_evidence 保留判断依据、候选与具体缺口。\n正例：新出现的格式选择菜单有独立用途，未对应已有区块时登记为 new。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.state_description",
+      "text": "state_description 写这次可见的状态，description 保留稳定职责。\n正例：state_description 为“搜索结果为空”，区块用途仍为展示搜索结果。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.context_matches",
+      "text": "context_matches：当前画面符合该历史区块给出的行为适用上下文时填 true，不符合填 false；没有这种限定或无法判断时填 null。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.scope_reason",
+      "text": "out_of_scope_reason：仅整个区块都超出本次探索范围时，说明具体原因。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.task_review_reason",
+      "text": "task_review_reason：出现已有任务未覆盖的具体问题，或旧结论被新证据推翻时，写清对象和问题；普通观察更新省略。\n正例：“原本仅提供图片格式，现在出现独立音频导出入口，其可选格式尚不明确。”"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.local_knowledge",
+      "text": "local_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.box_coordinates",
+      "text": "bbox 用原图整数 left、top、right、bottom 框住可供辨认的完整外观和必要标签。右、下边界不含在范围内，框须位于图内且有正面积。无法可靠辨认时填 null，并说明缺少的依据。\n正例：搜索框的范围包括输入区域和帮助辨认的标签。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.nested",
+      "text": "控件直接放在所属区块的 controls 列表中，不填写所属区块编号。新对象写 name；复用已有对象写材料中给出的 ref 名称。只补旧控件知识时，在原区块中用 ref 和 knowledge 更新，不把旧界面当成当前可见。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.parent",
+      "text": "parent 填物理包含它的父区块名称；没有父区块时省略或填 null。这里不是访问来路。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.registration",
+      "text": "# 登记控件：controls\n报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。\n大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。\n正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.registration_ref",
+      "text": "ref：已确认是材料中的旧控件时填写其名称；确认是新对象时省略。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.registration_name",
+      "text": "name 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。\n正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_description",
+      "text": "knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_constraints",
+      "text": "knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_index",
+      "text": "knowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.list_group",
+      "text": "list_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。\n不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。\n正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.exploration_flags",
+      "text": "may_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身用法是否还有影响后续使用的具体未知：true 有，false 没有，null 尚不能判断。\n正例：入口已知会打开设置面板，但面板内部尚未探索，可以是 may_open_content=true、needs_exploration=false。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.add_image",
+      "text": "add_image：已有控件出现值得保存的新外观或状态时填 true；image_conditions 描述这份外观适用的可见状态。只是位置、窗口大小或输入值变化时复用已有外观。\n正例：原来的“展开”按钮变为“收起”，说明“面板已展开时的收起状态”。"
+    },
+    {
+      "path": "输出格式/字段组-region.registration",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 必填 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字 |\n| `description` | 按需 | 文字 |\n| `bbox` | 按需 | 对象 或 null |\n| `ref` | 按需 | 文字 或 null |\n| `identity` | 按需 | 可用值：\"same\"、\"new\"、\"uncertain\" |\n| `identity_evidence` | 按需 | 文字 |\n| `local_knowledge` | 按需 | 对象 |\n| `state_description` | 按需 | 文字；不能为空 |\n| `task_review_reason` | 按需 | 文字 |\n| `context_matches` | 按需 | true 或 false 或 null |\n| `out_of_scope_reason` | 按需 | 文字 |\n| `controls` | 按需 | 列表 |\n| `parent` | 按需 | 文字 或 null |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n满足上述条件时：\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 沿用上文 | 固定为 \"same\" |\n| `ref` | 沿用上文 |  |\n\n**条件规则：regions**\n条件：填写 `ref`，且`ref`符合：文字；不能为空。\n不满足上述条件时：\n- 必须填写：`name`、`description`、`identity`。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `identity` | 必填 | 可用值：\"new\"、\"uncertain\" |\n| `ref` | 沿用上文 | 可用值：null、\"\" |\n\n### regions → bbox\n\n至少符合以下一种格式。\n\n### regions → bbox — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `left` | 必填 | 整数 |\n| `top` | 必填 | 整数 |\n| `right` | 必填 | 整数 |\n| `bottom` | 必填 | 整数 |\n\n### regions → bbox — 格式 2\n\nnull\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n### regions → controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `bbox` | 按需 | 对象 或 null |\n| `description` | 按需 | 文字 |\n| `name` | 必填 | 文字 |\n| `list_group` | 按需 | 文字 |\n| `knowledge` | 必填 | 列表 |\n| `may_open_content` | 必填 | true 或 false |\n| `needs_exploration` | 必填 | true 或 false 或 null |\n\n### regions → controls → bbox\n\n至少符合以下一种格式。\n\n### regions → controls → bbox — 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `left` | 必填 | 整数 |\n| `top` | 必填 | 整数 |\n| `right` | 必填 | 整数 |\n| `bottom` | 必填 | 整数 |\n\n### regions → controls → bbox — 格式 2\n\nnull\n\n### regions → controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### regions → controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.uncertainties",
+      "text": "# 尚不能确认的事实：uncertainties\n简述具体对象、疑点与缺少的依据，供后续判断是否需要继续了解；已明确的内容照常登记。\n正例：“两个相同图标分别服务哪个列表，当前文字被遮挡，尚不能确认。”"
+    },
+    {
+      "path": "输出格式/字段组-region.uncertainties",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `uncertainties` | 必填 | 列表（元素要求：文字） |"
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。必填的 regions、uncertainties 没有内容时填 []。正例说明写法，具体内容依据本次材料。"
+    },
+    {
+      "path": "任务/当前区块重定位.prompt",
+      "text": "# 本次重新定位\n结合当前图和已有身份，重新辨认给定区块与相关控件，补充确有变化的信息。\n"
+    }
+  ],
+  "discovery_context": {
+    "mode": "relocate",
+    "focus": null,
+    "region_names": {},
+    "control_names": {},
+    "visual_plan": {
+      "foreground_check": null,
+      "mode": "relocate",
+      "focus": null,
+      "focus_status": "unconfirmed",
+      "regions": [],
+      "controls": [],
+      "omitted_candidates": 0,
+      "attempts": []
+    },
+    "partition_context": null
+  },
+  "frame_context": {
+    "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/recovery_episodes/45b480d256bf/observation-0005/current.png": "本次发现观察图"
+  },
+  "work_context": {
+    "kind": "locate",
+    "region": null,
+    "task": null,
+    "reason": "识别当前前景区块及能确认的控件，为区块探索建立对象记录。"
+  },
+  "dynamic_prompt": "{\n  \"恢复交接（历史观察，不代表任务完成）\": \"已回到本次目标应用。当前可见工作表 budget 含 A1:C5 的 Item、Qty、Price 表格及样例数据；原探索尚未解决的 Calc 功能、操作参数和区块访问关系仍待继续了解。\\n恢复观察：当前异常已消失；原探索问题尚未复核，建议中的后续动作尚未执行。\",\n  \"本轮观察范围\": \"当前前景的功能区块，以及本图中能确认的直接所属控件。\",\n  \"本轮工作\": {\n    \"处理\": \"发现或定位\",\n    \"范围\": \"当前前景\",\n    \"目的\": \"识别当前前景区块及能确认的控件，为区块探索建立对象记录。\",\n    \"本步边界\": \"识别当前前景与指定对象；定位服务于原任务，不代表原问题已回答。\"\n  },\n  \"目标应用\": \"本次要探索的应用：LibreOffice calc\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\"\n}\n\n本图：本次发现观察图；原图 1280×800 像素。",
+  "context_scope": {
+    "region": null,
+    "kind": "locate",
+    "tasks": [],
+    "regions": [],
+    "controls": {},
+    "selection": {
+      "role": "observation",
+      "mode": "relocate",
+      "work_kind": "locate",
+      "source": {},
+      "task_types": [],
+      "preparatory_action": false
+    }
+  },
+  "matching_audit": [],
+  "page_context": {
+    "current_tree": [],
+    "background_regions": [],
+    "names": {},
+    "last_action": null,
+    "incoming_actions": {},
+    "goal": {
+      "status": "unknown"
+    },
+    "origin": {
+      "entries": [],
+      "boundary": "no_recorded_action_for_observation",
+      "last_effect": null,
+      "known_entries": []
+    },
+    "issues": [],
+    "localization_only": false,
+    "observation": {
+      "id": null,
+      "image": null,
+      "sha256": null
+    },
+    "usage": "discovery",
+    "run_root": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6",
+    "frame_relation": "historical_structure_needs_recheck",
+    "history": {
+      "regions": [],
+      "events": {},
+      "unresolved": [],
+      "handoff": null,
+      "task_contexts": {},
+      "event_texts": {},
+      "task_judgments": [],
+      "names": {}
+    },
+    "environment_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。",
+    "action_material": false
+  },
+  "_page_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。",
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "control_refs": [],
+  "name_contract": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "foreground": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none",
+                "blocking_popup",
+                "system_error",
+                "unexpected_exit",
+                "external_app",
+                "unclassified",
+                "region_ownership_review"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "description",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "parent_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "本轮regions数组0起始父行号；无父级为null。不是跨图身份ID。"
+              },
+              "description": {
+                "type": "string"
+              },
+              "bbox": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "left": {
+                        "type": "integer"
+                      },
+                      "top": {
+                        "type": "integer"
+                      },
+                      "right": {
+                        "type": "integer"
+                      },
+                      "bottom": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "left",
+                      "top",
+                      "right",
+                      "bottom"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+              },
+              "ref": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。"
+              },
+              "identity": {
+                "type": "string",
+                "enum": [
+                  "same",
+                  "new",
+                  "uncertain"
+                ]
+              },
+              "identity_evidence": {
+                "type": "string",
+                "description": "身份未定或存在歧义时说明具体依据和缺口。"
+              },
+              "local_knowledge": {
+                "type": "object",
+                "properties": {
+                  "add": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "update": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "text"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "delete": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "state_description": {
+                "type": "string",
+                "minLength": 1,
+                "description": "本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。"
+              },
+              "task_review_reason": {
+                "type": "string",
+                "description": "仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。"
+              },
+              "context_matches": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。"
+              },
+              "out_of_scope_reason": {
+                "type": "string",
+                "description": "只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。"
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "ref"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "identity": {
+                      "const": "same"
+                    },
+                    "ref": {
+                      "pattern": "^r[0-9]+$"
+                    }
+                  }
+                },
+                "else": {
+                  "required": [
+                    "name",
+                    "description",
+                    "identity"
+                  ],
+                  "properties": {
+                    "identity": {
+                      "enum": [
+                        "new",
+                        "uncertain"
+                      ]
+                    },
+                    "ref": {
+                      "enum": [
+                        null,
+                        ""
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "description": "旧对象引用ref并只报新信息。新对象明确identity=new；身份未定用uncertain和具体缺口。"
+          },
+          "description": "本次识别或更新的区块；划分与复用依据实际观察。"
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "region_index": {
+                "type": "integer",
+                "description": "唯一直接所属Region的0起始行号"
+              },
+              "bbox": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "left": {
+                        "type": "integer"
+                      },
+                      "top": {
+                        "type": "integer"
+                      },
+                      "right": {
+                        "type": "integer"
+                      },
+                      "bottom": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "left",
+                      "top",
+                      "right",
+                      "bottom"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+              },
+              "description": {
+                "type": "string",
+                "description": "仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。"
+              },
+              "name": {
+                "type": "string"
+              },
+              "list_group": {
+                "type": "string"
+              },
+              "knowledge": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "修订给定已有知识时引用其序号；新增省略。"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                    },
+                    "constraints": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "description"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "may_open_content": {
+                "type": "boolean",
+                "description": "是否打开或展开与应用主要功能相关、具有探索价值的内容。"
+              },
+              "needs_exploration": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "控件自身用法是否还有影响后续使用的具体未知；不确定填null。"
+              }
+            },
+            "required": [
+              "region_index",
+              "knowledge",
+              "may_open_content",
+              "needs_exploration",
+              "name"
+            ],
+            "additionalProperties": false,
+            "description": "已有控件用ref及变化信息；新控件省略ref并填写新对象资料。"
+          }
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "foreground",
+        "regions",
+        "controls",
+        "uncertainties"
+      ],
+      "additionalProperties": false
+    },
+    "names": {},
+    "aliases": {
+      "none": "none",
+      "blocking_popup": "blocking_popup",
+      "system_error": "system_error",
+      "unexpected_exit": "unexpected_exit",
+      "external_app": "external_app",
+      "unclassified": "unclassified",
+      "region_ownership_review": "region_ownership_review",
+      "same": "same",
+      "new": "new",
+      "uncertain": "uncertain",
+      "": ""
+    },
+    "owners": {},
+    "nested": true,
+    "current": false,
+    "paths": {}
+  },
+  "prompt_sections": [
+    "region.foreground_concept",
+    "region.common",
+    "region.identity",
+    "control.references",
+    "control.definition",
+    "control.identity",
+    "control.knowledge_base",
+    "region.foreground",
+    "region.exception_values",
+    "region.recovery_handoff",
+    "region.registration",
+    "region.registration_identity",
+    "region.state_description",
+    "region.context_matches",
+    "region.scope_reason",
+    "region.task_review_reason",
+    "region.local_knowledge",
+    "control.box_coordinates",
+    "region.nested",
+    "region.parent",
+    "control.registration",
+    "control.registration_ref",
+    "control.registration_name",
+    "control.knowledge_description",
+    "control.knowledge_constraints",
+    "control.knowledge_index",
+    "control.list_group",
+    "control.exploration_flags",
+    "control.add_image",
+    "region.uncertainties"
+  ],
+  "prompt_composition": "field_sections",
+  "_structured_user_prompt": "{\n  \"恢复交接（历史观察，不代表任务完成）\": \"已回到本次目标应用。当前可见工作表 budget 含 A1:C5 的 Item、Qty、Price 表格及样例数据；原探索尚未解决的 Calc 功能、操作参数和区块访问关系仍待继续了解。\\n恢复观察：当前异常已消失；原探索问题尚未复核，建议中的后续动作尚未执行。\",\n  \"本轮观察范围\": \"当前前景的功能区块，以及本图中能确认的直接所属控件。\",\n  \"本轮工作\": {\n    \"处理\": \"发现或定位\",\n    \"范围\": \"当前前景\",\n    \"目的\": \"识别当前前景区块及能确认的控件，为区块探索建立对象记录。\",\n    \"本步边界\": \"识别当前前景与指定对象；定位服务于原任务，不代表原问题已回答。\"\n  },\n  \"目标应用\": \"本次要探索的应用：LibreOffice calc\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\"\n}\n\n本图：本次发现观察图；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "_presentation_digest": "a26e92ff682f694c937f0eb101f636993c3d3559c784ba6472c067d40365aa58"
+}

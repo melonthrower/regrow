@@ -1,0 +1,17 @@
+{
+  "source_call": "0104",
+  "source_region": "r0009",
+  "source_control": "c0077",
+  "working_region": "r0006",
+  "action": {
+    "action": "click",
+    "target": "c0077",
+    "reason": "先选中第 1 张幻灯片上的标题对象作为格式来源，为随后验证格式刷的待应用状态及如何将格式应用到目标对象准备条件。",
+    "x": 514,
+    "y": 434,
+    "text": null,
+    "end_x": null,
+    "end_y": null
+  },
+  "status": "dispatching"
+}

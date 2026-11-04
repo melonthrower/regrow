@@ -1,0 +1,218 @@
+{
+  "role": "appearance_comparison",
+  "stage": "appearance_comparison",
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n# 本步任务\n比较给定控件的旧外观与当前外观，判断是否复用或保留另一状态。图1为原动作后图，图2为历史原图；结合给定旧范围与界面内容辨认。\n\n# 本步用到的概念\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\n结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。\n名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。\n正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。\n\n引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。\n\n# 比较外观：comparisons\n每个给定 ref 返回一次。relation 选择 same_appearance（同一控件、相同外观）、new_appearance（同一控件的新状态外观）、different_control（不同控件）或 uncertain（无法确认）。\nhistorical_state、current_state 分别写两图可见状态；same/new 时均写清楚，new 的两条说明应能区分状态。reason 写图像依据或具体缺口。\n正例：historical_state 为“未选中，浅色背景”，current_state 为“已选中，背景高亮”，relation 为 new_appearance。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `comparisons` | 必填 | 列表；至少 1 项；至多 1 项 |\n\n### comparisons（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"New\" |\n| `relation` | 必填 | 可用值：\"same_appearance\"、\"new_appearance\"、\"different_control\"、\"uncertain\" |\n| `historical_state` | 必填 | 文字 |\n| `current_state` | 必填 | 文字 |\n| `reason` | 必填 | 文字；不能为空 |\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。",
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "调用/控件外观状态比较.prompt",
+      "text": "# 本步任务\n比较给定控件的旧外观与当前外观，判断是否复用或保留另一状态。图1为原动作后图，图2为历史原图；结合给定旧范围与界面内容辨认。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.identity",
+      "text": "结合所属界面、服务对象、外观与已观察的变化判断是否同一控件。值、选中状态或标签改变时，仍可沿用同一身份；已登记的不同实际对象保留各自身份。\n名称或 list_group 相同本身不能确认是同一对象；身份不明确时保留具体疑点。\n正例：同一播放器的播放按钮切换为暂停，沿用该控件；已登记的两个独立播放器按钮各自保持身份。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.references",
+      "text": "引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.appearance_comparison",
+      "text": "# 比较外观：comparisons\n每个给定 ref 返回一次。relation 选择 same_appearance（同一控件、相同外观）、new_appearance（同一控件的新状态外观）、different_control（不同控件）或 uncertain（无法确认）。\nhistorical_state、current_state 分别写两图可见状态；same/new 时均写清楚，new 的两条说明应能区分状态。reason 写图像依据或具体缺口。\n正例：historical_state 为“未选中，浅色背景”，current_state 为“已选中，背景高亮”，relation 为 new_appearance。"
+    },
+    {
+      "path": "输出格式/字段组-control.appearance_comparison",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `comparisons` | 必填 | 列表；至少 1 项；至多 1 项 |\n\n### comparisons（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"New\" |\n| `relation` | 必填 | 可用值：\"same_appearance\"、\"new_appearance\"、\"different_control\"、\"uncertain\" |\n| `historical_state` | 必填 | 文字 |\n| `current_state` | 必填 | 文字 |\n| `reason` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。"
+    }
+  ],
+  "user_prompt": "## 本步问题\n这些控件的历史外观和当前外观是否相同，各是什么可见状态？\n\n### 原步骤\n工作区块：文件命令菜单\n实际来源区块：文件命令菜单\n实际入口：New\n本轮探索任务：功能探索\n任务目标：\n  说明：了解控件尚不明确的功能、直接效果或打开的内容。\n  本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\n  任务类型：功能探索\n  原控件：New\n实际操作：\n  1：\n    动作：click\n\n### 比较对象\n1：\n  ref：New\n  名称：New\n  历史图中范围：72, 89, 373, 115\n  本次提议状态：\n    New 行处于展开状态，右侧新建目标子菜单可见\n\n## 本步的补充依据与限制\n### 平台\nOSWorld Linux桌面\n\n图1：原动作后图；核对当前外观；原图 1280×800 像素。\n图2：已保存模板的历史原图；给定范围指认旧控件；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "screenshots": [
+    "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/action_attempts/a0018/after.png",
+    "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/action_attempts/a0017/after.png"
+  ],
+  "source": {
+    "region": "r0021",
+    "working_region": "r0021",
+    "observation": "update:0134",
+    "attempt": "a0018",
+    "control_ref": "c0079",
+    "task_region": "r0021",
+    "task_name": "功能探索"
+  },
+  "control_refs": [
+    "c0039",
+    "c0040",
+    "c0041",
+    "c0042",
+    "c0043",
+    "c0044",
+    "c0045",
+    "c0046",
+    "c0047",
+    "c0048",
+    "c0049",
+    "c0050",
+    "c0051",
+    "c0052",
+    "c0053",
+    "c0054",
+    "c0055",
+    "c0056",
+    "c0057",
+    "c0058",
+    "c0059",
+    "c0060",
+    "c0061",
+    "c0062",
+    "c0063",
+    "c0064",
+    "c0065",
+    "c0066",
+    "c0067",
+    "c0068",
+    "c0069",
+    "c0070",
+    "c0071",
+    "c0072",
+    "c0073",
+    "c0074",
+    "c0075",
+    "c0076",
+    "c0077",
+    "c0078",
+    "c0079",
+    "c0080",
+    "c0081",
+    "c0082",
+    "c0083",
+    "c0084",
+    "c0085",
+    "c0086",
+    "c0087",
+    "c0088",
+    "c0089",
+    "c0090",
+    "c0091",
+    "c0092",
+    "c0093",
+    "c0094",
+    "c0095",
+    "c0096",
+    "c0097",
+    "c0098",
+    "c0099",
+    "c0100",
+    "c0101",
+    "c0102"
+  ],
+  "appearance_rows": [
+    {
+      "ref": "c0079",
+      "position": 0,
+      "control": "c0079",
+      "name": "New",
+      "historical_box": {
+        "left": 72,
+        "top": 89,
+        "right": 373,
+        "bottom": 115
+      },
+      "image": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/knowledge_snapshots/a0017-0134-22820aff9741/regions/r0021/images/0134/c0079.png",
+      "description": "",
+      "proposed_state": [
+        "New 行处于展开状态，右侧新建目标子菜单可见"
+      ]
+    }
+  ],
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "comparisons": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "enum": [
+                "c0079"
+              ]
+            },
+            "relation": {
+              "type": "string",
+              "enum": [
+                "same_appearance",
+                "new_appearance",
+                "different_control",
+                "uncertain"
+              ]
+            },
+            "historical_state": {
+              "type": "string"
+            },
+            "current_state": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "ref",
+            "relation",
+            "historical_state",
+            "current_state",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 1,
+        "maxItems": 1
+      }
+    },
+    "required": [
+      "comparisons"
+    ],
+    "additionalProperties": false
+  },
+  "frame_context": {
+    "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/action_attempts/a0018/after.png": "原动作后图；核对当前外观",
+    "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-calc/runs/desktop.libreoffice_calc_20261101T084333_7e8d88e6/action_attempts/a0017/after.png": "已保存模板的历史原图；给定范围指认旧控件"
+  },
+  "comparison_required_refs": [
+    "c0079"
+  ],
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 LibreOffice calc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "dynamic_prompt": "{\n  \"原步骤\": {\n    \"工作区块\": \"文件命令菜单\",\n    \"实际来源区块\": \"文件命令菜单\",\n    \"实际入口\": \"New\",\n    \"本轮探索任务\": \"功能探索\",\n    \"任务目标\": {\n      \"说明\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n      \"task_type\": \"function\",\n      \"原控件\": \"New\"\n    },\n    \"实际操作\": [\n      {\n        \"动作\": \"click\"\n      }\n    ]\n  },\n  \"比较对象\": [\n    {\n      \"ref\": \"New\",\n      \"名称\": \"New\",\n      \"历史图中范围\": \"72, 89, 373, 115\",\n      \"历史外观\": \"\",\n      \"本次提议状态\": [\n        \"New 行处于展开状态，右侧新建目标子菜单可见\"\n      ]\n    }\n  ],\n  \"平台\": \"OSWorld Linux桌面\"\n}\n\n图1：原动作后图；核对当前外观；原图 1280×800 像素。\n图2：已保存模板的历史原图；给定范围指认旧控件；原图 1280×800 像素。",
+  "prompt_sections": [
+    "control.definition",
+    "control.identity",
+    "control.references",
+    "control.appearance_comparison"
+  ],
+  "prompt_composition": "field_sections",
+  "_structured_user_prompt": "{\n  \"原步骤\": {\n    \"工作区块\": \"文件命令菜单\",\n    \"实际来源区块\": \"文件命令菜单\",\n    \"实际入口\": \"New\",\n    \"本轮探索任务\": \"功能探索\",\n    \"任务目标\": {\n      \"说明\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：展开 New 子菜单并确认其中显示的可选新建目标。\",\n      \"task_type\": \"function\",\n      \"原控件\": \"New\"\n    },\n    \"实际操作\": [\n      {\"动作\":\"click\"}\n    ]\n  },\n  \"比较对象\": [\n    {\n      \"ref\": \"c0079\",\n      \"名称\": \"New\",\n      \"历史图中范围\": \"72, 89, 373, 115\",\n      \"历史外观\": \"\",\n      \"本次提议状态\": [\"New 行处于展开状态，右侧新建目标子菜单可见\"]\n    }\n  ],\n  \"平台\": \"OSWorld Linux桌面\"\n}\n\n图1：原动作后图；核对当前外观；原图 1280×800 像素。\n图2：已保存模板的历史原图；给定范围指认旧控件；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "_presentation_digest": "ea4e45504585162e555ffe3b857ad053215f51e5f168bc2e54e58b06581fe521",
+  "named_nested": false
+}

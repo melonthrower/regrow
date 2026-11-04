@@ -1,0 +1,75 @@
+{
+  "exception": "none",
+  "recovery_handoff": "",
+  "regions": [
+    {
+      "ref": "r0013",
+      "local_knowledge": {
+        "add": [
+          "菜单栏由文件、编辑、视图、插入、格式、样式、工作表、数据、工具、窗口和帮助等顶层菜单组成；打开各菜单可到达对应的命令菜单。各菜单内部命令及其用途尚未由现有材料说明。"
+        ]
+      }
+    }
+  ],
+  "operations": [
+    {
+      "control": "c0039",
+      "task_type": "function",
+      "completion_condition": "打开文件菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0040",
+      "task_type": "function",
+      "completion_condition": "打开编辑菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0041",
+      "task_type": "function",
+      "completion_condition": "打开视图菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0042",
+      "task_type": "function",
+      "completion_condition": "打开插入菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0043",
+      "task_type": "function",
+      "completion_condition": "打开格式菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0044",
+      "task_type": "function",
+      "completion_condition": "打开样式菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0045",
+      "task_type": "function",
+      "completion_condition": "打开工作表菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0046",
+      "task_type": "function",
+      "completion_condition": "打开数据菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0047",
+      "task_type": "function",
+      "completion_condition": "打开工具菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0048",
+      "task_type": "function",
+      "completion_condition": "打开窗口菜单并观察其显示的命令菜单内容。"
+    },
+    {
+      "control": "c0049",
+      "task_type": "function",
+      "completion_condition": "打开帮助菜单并观察其显示的命令菜单内容。"
+    }
+  ],
+  "inventory": "complete",
+  "evidence": "当前前景是 LibreOffice Calc，菜单栏及其 11 个顶层菜单均可见。已有控件知识说明这些菜单可打开相关命令菜单，但没有说明各菜单具体内容；这些独立入口均已安排探索。共同的菜单访问方式已有说明。侧边栏画笔图标和未登记的工具栏图标不属于本区块，未纳入本区块范围。",
+  "shared_instances": [],
+  "function_updates": []
+}

@@ -1,0 +1,299 @@
+[
+  {
+    "call": "0131",
+    "role": "observation",
+    "stage": "discovery",
+    "http_status": 200,
+    "seconds": 46.545868158340454,
+    "has_response": true,
+    "input_tokens": 5919,
+    "output_tokens": 6060,
+    "image_count": 1,
+    "source": {},
+    "action_associations": []
+  },
+  {
+    "call": "0132",
+    "role": "task_proposal",
+    "stage": "task_proposal",
+    "http_status": 200,
+    "seconds": 25.460431337356567,
+    "has_response": true,
+    "input_tokens": 7735,
+    "output_tokens": 1644,
+    "image_count": 1,
+    "source": {
+      "region": "r0013",
+      "observation": "discovery:0131",
+      "controls": [
+        "c0039",
+        "c0040",
+        "c0041",
+        "c0042",
+        "c0043",
+        "c0044",
+        "c0045",
+        "c0046",
+        "c0047",
+        "c0048",
+        "c0049"
+      ],
+      "snapshot": "knowledge_snapshots/discovery-0131-53d963bb7faf"
+    },
+    "action_associations": []
+  },
+  {
+    "call": "0133",
+    "role": "action_selection",
+    "stage": "action_selection",
+    "http_status": 200,
+    "seconds": 2.949721574783325,
+    "has_response": true,
+    "input_tokens": 8618,
+    "output_tokens": 121,
+    "image_count": 1,
+    "source": {
+      "observation": "discovery:0131",
+      "region": "r0013",
+      "working_region": "r0013",
+      "task_name": "功能探索",
+      "task_region": "r0013",
+      "task_type": "function",
+      "task_control": "c0039",
+      "completion_region": "r0013",
+      "snapshot": "knowledge_snapshots/task-plan-0132-0e3a1532f2f0"
+    },
+    "action_associations": [
+      "派发 a0017：回执0，已登记"
+    ]
+  },
+  {
+    "call": "0134",
+    "role": "observation_update",
+    "stage": "observation_update",
+    "http_status": 200,
+    "seconds": 38.54107427597046,
+    "has_response": true,
+    "input_tokens": 12374,
+    "output_tokens": 4421,
+    "image_count": 2,
+    "source": {
+      "region": "r0013",
+      "working_region": "r0013",
+      "observation": "discovery:0131",
+      "attempt": "a0017",
+      "control_ref": "c0039",
+      "task_region": "r0013",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "登记 a0017（不代表成功）"
+    ]
+  },
+  {
+    "call": "0135",
+    "role": "appearance_comparison",
+    "stage": "appearance_comparison",
+    "http_status": 200,
+    "seconds": 3.640392303466797,
+    "has_response": true,
+    "input_tokens": 3795,
+    "output_tokens": 190,
+    "image_count": 2,
+    "source": {
+      "region": "r0013",
+      "working_region": "r0013",
+      "observation": "discovery:0131",
+      "attempt": "a0017",
+      "control_ref": "c0039",
+      "task_region": "r0013",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "处理 a0017 的结果/纠错"
+    ]
+  },
+  {
+    "call": "0136",
+    "role": "object_registration",
+    "stage": "object_registration",
+    "http_status": 200,
+    "seconds": 14.800652980804443,
+    "has_response": true,
+    "input_tokens": 5120,
+    "output_tokens": 2338,
+    "image_count": 1,
+    "source": {
+      "region": "r0013",
+      "working_region": "r0013",
+      "observation": "discovery:0131",
+      "attempt": "a0017",
+      "control_ref": "c0039",
+      "task_region": "r0013",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "处理 a0017 的结果/纠错"
+    ]
+  },
+  {
+    "call": "0137",
+    "role": "task_proposal",
+    "stage": "task_proposal",
+    "http_status": 200,
+    "seconds": 76.93325614929199,
+    "has_response": true,
+    "input_tokens": 8884,
+    "output_tokens": 5187,
+    "image_count": 1,
+    "source": {
+      "region": "r0021",
+      "observation": "update:0134",
+      "controls": [
+        "c0079",
+        "c0080",
+        "c0081",
+        "c0082",
+        "c0083",
+        "c0084",
+        "c0085",
+        "c0086",
+        "c0087",
+        "c0088",
+        "c0089",
+        "c0090",
+        "c0091",
+        "c0092",
+        "c0093",
+        "c0094",
+        "c0095",
+        "c0096",
+        "c0097",
+        "c0098",
+        "c0099",
+        "c0100",
+        "c0101",
+        "c0102"
+      ],
+      "snapshot": "knowledge_snapshots/a0017-0134-22820aff9741"
+    },
+    "action_associations": []
+  },
+  {
+    "call": "0138",
+    "role": "action_selection",
+    "stage": "action_selection",
+    "http_status": 200,
+    "seconds": 3.583857536315918,
+    "has_response": true,
+    "input_tokens": 9756,
+    "output_tokens": 134,
+    "image_count": 1,
+    "source": {
+      "observation": "update:0134",
+      "region": "r0021",
+      "working_region": "r0021",
+      "task_name": "功能探索",
+      "task_region": "r0021",
+      "task_type": "function",
+      "task_control": "c0079",
+      "completion_region": "r0021",
+      "snapshot": "knowledge_snapshots/task-plan-0137-84134ad2ce13"
+    },
+    "action_associations": [
+      "派发 a0018：回执0，已登记"
+    ]
+  },
+  {
+    "call": "0139",
+    "role": "observation_update",
+    "stage": "observation_update",
+    "http_status": 200,
+    "seconds": 27.593159437179565,
+    "has_response": true,
+    "input_tokens": 14102,
+    "output_tokens": 2609,
+    "image_count": 2,
+    "source": {
+      "region": "r0021",
+      "working_region": "r0021",
+      "observation": "update:0134",
+      "attempt": "a0018",
+      "control_ref": "c0079",
+      "task_region": "r0021",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "处理 a0018 的结果/纠错"
+    ]
+  },
+  {
+    "call": "0140",
+    "role": "appearance_comparison",
+    "stage": "appearance_comparison",
+    "http_status": 200,
+    "seconds": 5.78019118309021,
+    "has_response": true,
+    "input_tokens": 3796,
+    "output_tokens": 204,
+    "image_count": 2,
+    "source": {
+      "region": "r0021",
+      "working_region": "r0021",
+      "observation": "update:0134",
+      "attempt": "a0018",
+      "control_ref": "c0079",
+      "task_region": "r0021",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "处理 a0018 的结果/纠错"
+    ]
+  },
+  {
+    "call": "0141",
+    "role": "object_registration",
+    "stage": "object_registration",
+    "http_status": 200,
+    "seconds": 9.22585153579712,
+    "has_response": true,
+    "input_tokens": 3998,
+    "output_tokens": 1174,
+    "image_count": 1,
+    "source": {
+      "region": "r0021",
+      "working_region": "r0021",
+      "observation": "update:0134",
+      "attempt": "a0018",
+      "control_ref": "c0079",
+      "task_region": "r0021",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "处理 a0018 的结果/纠错"
+    ]
+  },
+  {
+    "call": "0142",
+    "role": "step_correction",
+    "stage": "step_correction",
+    "http_status": 200,
+    "seconds": 12.357074975967407,
+    "has_response": true,
+    "input_tokens": 18787,
+    "output_tokens": 886,
+    "image_count": 2,
+    "source": {
+      "region": "r0021",
+      "working_region": "r0021",
+      "observation": "update:0134",
+      "attempt": "a0018",
+      "control_ref": "c0079",
+      "task_region": "r0021",
+      "task_name": "功能探索"
+    },
+    "action_associations": [
+      "登记 a0018（不代表成功）"
+    ]
+  }
+]

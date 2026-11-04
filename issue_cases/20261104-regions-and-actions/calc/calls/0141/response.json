@@ -1,0 +1,134 @@
+{
+  "objects": [
+    {
+      "path": "New 子菜单",
+      "bbox": {
+        "left": 371,
+        "top": 88,
+        "right": 664,
+        "bottom": 369
+      },
+      "reason": "文件菜单中 New 行右侧独立展开的子菜单，整体包含从 Text Document 到 Templates… 的新建目标列表。"
+    },
+    {
+      "path": "New",
+      "bbox": {
+        "left": 70,
+        "top": 89,
+        "right": 371,
+        "bottom": 115
+      },
+      "reason": "左侧文件命令菜单顶端的 New 行，文字右侧有展开箭头；右侧相邻的是其子菜单。"
+    },
+    {
+      "path": "Text Document",
+      "bbox": {
+        "left": 372,
+        "top": 89,
+        "right": 663,
+        "bottom": 114
+      },
+      "reason": "右侧 New 子菜单第一行，文字清晰显示为 Text Document。"
+    },
+    {
+      "path": "Spreadsheet",
+      "bbox": {
+        "left": 372,
+        "top": 114,
+        "right": 663,
+        "bottom": 139
+      },
+      "reason": "New 子菜单中 Text Document 下方一行，显示 Spreadsheet 及右侧 Ctrl+N。"
+    },
+    {
+      "path": "Presentation",
+      "bbox": {
+        "left": 372,
+        "top": 139,
+        "right": 663,
+        "bottom": 164
+      },
+      "reason": "New 子菜单中 Spreadsheet 下方一行，文字显示 Presentation。"
+    },
+    {
+      "path": "Drawing",
+      "bbox": {
+        "left": 372,
+        "top": 164,
+        "right": 663,
+        "bottom": 189
+      },
+      "reason": "New 子菜单中 Presentation 下方一行，文字显示 Drawing。"
+    },
+    {
+      "path": "Formula",
+      "bbox": {
+        "left": 372,
+        "top": 189,
+        "right": 663,
+        "bottom": 214
+      },
+      "reason": "New 子菜单中 Drawing 下方一行，文字显示 Formula。"
+    },
+    {
+      "path": "HTML Document",
+      "bbox": {
+        "left": 372,
+        "top": 214,
+        "right": 663,
+        "bottom": 239
+      },
+      "reason": "New 子菜单中 Formula 下方一行，文字显示 HTML Document。"
+    },
+    {
+      "path": "XML Form Document",
+      "bbox": {
+        "left": 372,
+        "top": 239,
+        "right": 663,
+        "bottom": 264
+      },
+      "reason": "New 子菜单中 HTML Document 下方一行，文字显示 XML Form Document。"
+    },
+    {
+      "path": "Labels",
+      "bbox": {
+        "left": 372,
+        "top": 264,
+        "right": 663,
+        "bottom": 290
+      },
+      "reason": "New 子菜单中 XML Form Document 下方一行，文字显示 Labels。"
+    },
+    {
+      "path": "Business Cards",
+      "bbox": {
+        "left": 372,
+        "top": 290,
+        "right": 663,
+        "bottom": 316
+      },
+      "reason": "New 子菜单中 Labels 下方一行，文字显示 Business Cards。"
+    },
+    {
+      "path": "Master Document",
+      "bbox": {
+        "left": 372,
+        "top": 316,
+        "right": 663,
+        "bottom": 342
+      },
+      "reason": "New 子菜单中 Business Cards 下方一行，文字显示 Master Document。"
+    },
+    {
+      "path": "Templates…",
+      "bbox": {
+        "left": 372,
+        "top": 342,
+        "right": 663,
+        "bottom": 368
+      },
+      "reason": "New 子菜单最底部一行，文字显示 Templates…，右侧可见 Shift+Ctrl+N。"
+    }
+  ]
+}

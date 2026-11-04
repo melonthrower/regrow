@@ -1,0 +1,461 @@
+## 背景
+范围：LibreOffice Impress 窗口
+本轮目的：核对当前区块清点报告中的具体登记缺口
+
+## 本步问题
+指定区块是否仍对应当前表面？有哪些未登记或确有变化的对象需要补充？
+
+## 问题 1：本次需要辨认哪里？
+
+### 待继续的工作区块
+LibreOffice Impress 窗口
+
+### 本轮定位区块
+LibreOffice Impress 窗口
+
+### 本轮观察范围
+本轮定位区块及其直接所属控件。
+
+### 目标应用
+本次要探索的应用：libreoffice impress
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+## 问题 2：看见的对象对应哪些已有身份？
+
+### 本次身份候选
+1：
+  ref：LibreOffice Impress 窗口
+  名称：LibreOffice Impress 窗口
+  最近登记描述：当前活动的 Impress 演示文稿编辑窗口，包含幻灯片列表、编辑画布和属性侧栏。
+
+### 登记页面组成与访问来路
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+LibreOffice Impress 窗口 [LibreOffice Impress 窗口]（本步关注区块）
+Impress 菜单栏 [Impress 菜单栏]
+  ├─ File 菜单 [File 菜单]
+  ├─ Edit 菜单 [Edit 菜单]
+  ├─ View 菜单 [View 菜单]
+  ├─ Insert 菜单 [Insert 菜单]
+  ├─ Format 菜单 [Format 菜单]
+  ├─ Slide 菜单 [Slide 菜单]
+  ├─ Slide Show 菜单 [Slide Show 菜单]
+  ├─ Tools 菜单 [Tools 菜单]
+  ├─ Window 菜单 [Window 菜单]
+  ├─ Help 菜单 [Help 菜单]
+幻灯片列表 [幻灯片列表]
+  ├─ 第 1 张幻灯片缩略图 [第 1 张幻灯片缩略图]
+  ├─ 第 2 张幻灯片缩略图 [第 2 张幻灯片缩略图]
+  ├─ 第 3 张幻灯片缩略图 [第 3 张幻灯片缩略图]
+幻灯片编辑画布 [幻灯片编辑画布]
+  ├─ 幻灯片页面 [幻灯片页面]
+  ├─ 参与提示横幅关闭按钮 [参与提示横幅关闭按钮]
+  ├─ 捐赠提示横幅关闭按钮 [捐赠提示横幅关闭按钮]
+Slide 属性与布局侧栏 [Slide 属性与布局侧栏]
+  ├─ Format 下拉框 [Format 下拉框]
+  ├─ Orientation 下拉框 [Orientation 下拉框]
+  ├─ Background 下拉框 [Background 下拉框]
+  ├─ Insert Image 按钮 [Insert Image 按钮]
+  ├─ Master Slide 下拉框 [Master Slide 下拉框]
+  ├─ Master Background 复选框 [Master Background 复选框]
+  ├─ Master Objects 复选框 [Master Objects 复选框]
+  ├─ Master View 按钮 [Master View 按钮]
+  ├─ 幻灯片布局缩略图组 [幻灯片布局缩略图组]
+标准工具栏 [标准工具栏]
+  ├─ 打开文件按钮 [打开文件按钮]
+  ├─ 保存按钮 [保存按钮]
+  ├─ 导出为 PDF 按钮 [导出为 PDF 按钮]
+  ├─ 打印按钮 [打印按钮]
+  ├─ 撤销按钮 [撤销按钮]
+  ├─ 重做按钮 [重做按钮]
+  ├─ 查找按钮 [查找按钮]
+  ├─ 拼写检查按钮 [拼写检查按钮]
+  ├─ 插入表格按钮 [插入表格按钮]
+  ├─ 插入图像按钮 [插入图像按钮]
+  ├─ 插入视频按钮 [插入视频按钮]
+  ├─ 插入图表按钮 [插入图表按钮]
+  ├─ 插入文本框按钮 [插入文本框按钮]
+  ├─ 特殊字符按钮 [特殊字符按钮]
+  ├─ 超链接按钮 [超链接按钮]
+  ├─ 新建演示文稿按钮 [新建演示文稿按钮]
+绘图工具栏 [绘图工具栏]
+  ├─ 选择工具 [选择工具]
+  ├─ 缩放工具 [缩放工具]
+  ├─ 线条工具 [线条工具]
+  ├─ 矩形工具 [矩形工具]
+  ├─ 椭圆工具 [椭圆工具]
+  ├─ 箭头工具 [箭头工具]
+  ├─ 自由线条工具 [自由线条工具]
+  ├─ 连接符工具 [连接符工具]
+  ├─ 形状工具组 [形状工具组]
+状态栏 [状态栏]
+  ├─ 缩小按钮 [缩小按钮]
+  ├─ 缩放滑块 [缩放滑块]
+  ├─ 放大按钮 [放大按钮]
+
+### 同帧已确认区块划分
+本区块：LibreOffice Impress 窗口
+划分来源调用：0071
+其他已确认区块：
+  1：
+    名称：Impress 菜单栏
+    职责：编辑窗口顶部提供文件、编辑、视图、插入、格式和幻灯片等菜单入口。
+    已匹配控件：
+      1：
+        名称：Edit 菜单
+        当前候选位置：
+          116；64；151；92
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/4
+      2：
+        名称：Slide Show 菜单
+        当前候选位置：
+          376；61；455；89
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/0
+      3：
+        名称：Tools 菜单
+        当前候选位置：
+          455；61；511；89
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/1
+      4：
+        名称：Window 菜单
+        当前候选位置：
+          511；61；580；89
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/2
+      5：
+        名称：File 菜单
+        当前候选位置：
+          77；64；108；92
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/3
+  2：
+    名称：幻灯片列表
+    职责：编辑窗口左侧的 Slides 区域，按缩略图列出演示文稿中的幻灯片。
+    已匹配控件：
+      1：
+        名称：第 1 张幻灯片缩略图
+        当前候选位置：
+          80；212；251；301
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/9
+  3：
+    名称：幻灯片编辑画布
+    职责：窗口中央展示当前幻灯片并用于编辑其内容的区域。
+    已匹配控件：
+      1：
+        名称：幻灯片页面
+        当前候选位置：
+          279；344；845；665
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/12
+  4：
+    名称：Slide 属性与布局侧栏
+    职责：编辑窗口右侧的属性面板，展示幻灯片页面设置、母版选项和布局选择。
+    已匹配控件：
+      1：
+        名称：Format 下拉框
+        当前候选位置：
+          1019；216；1178；252
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/15
+      2：
+        名称：Background 下拉框
+        当前候选位置：
+          1019；291；1178；327
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/17
+      3：
+        名称：Master Slide 下拉框
+        当前候选位置：
+          1019；365；1178；401
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/19
+      4：
+        名称：Master View 按钮
+        当前候选位置：
+          1019；451；1178；488
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/22
+      5：
+        名称：Insert Image 按钮
+        当前候选位置：
+          1019；328；1178；363
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/18
+      6：
+        名称：Master Objects 复选框
+        当前候选位置：
+          1023；425；1171；450
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/21
+      7：
+        名称：幻灯片布局缩略图组
+        当前候选位置：
+          891；517；1219；703
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/23
+      8：
+        名称：Orientation 下拉框
+        当前候选位置：
+          1019；254；1178；290
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/16
+      9：
+        名称：Master Background 复选框
+        当前候选位置：
+          1023；401；1171；425
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/20
+  5：
+    名称：标准工具栏
+    职责：菜单栏下方第一排，包含常见文档操作、插入内容及格式相关图标。
+    已匹配控件：
+      1：
+        名称：打开文件按钮
+        当前候选位置：
+          122；91；153；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/4
+      2：
+        名称：重做按钮
+        当前候选位置：
+          490；91；530；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/9
+      3：
+        名称：拼写检查按钮
+        当前候选位置：
+          586；91；612；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/11
+      4：
+        名称：插入视频按钮
+        当前候选位置：
+          899；91；930；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/14
+      5：
+        名称：特殊字符按钮
+        当前候选位置：
+          1003；91；1035；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/17
+      6：
+        名称：打印按钮
+        当前候选位置：
+          251；91；279；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/7
+      7：
+        名称：查找按钮
+        当前候选位置：
+          548；91；585；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/10
+      8：
+        名称：插入图表按钮
+        当前候选位置：
+          932；91；963；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/15
+      9：
+        名称：插入表格按钮
+        当前候选位置：
+          619；91；650；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/12
+      10：
+        名称：超链接按钮
+        当前候选位置：
+          1080；91；1111；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/18
+      11：
+        名称：新建演示文稿按钮
+        当前候选位置：
+          78；96；104；120
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/25
+      12：
+        名称：保存按钮
+        当前候选位置：
+          167；91；204；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/5
+      13：
+        名称：导出为 PDF 按钮
+        当前候选位置：
+          217；91；245；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/6
+      14：
+        名称：撤销按钮
+        当前候选位置：
+          446；91；487；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/8
+  6：
+    名称：绘图工具栏
+    职责：标准工具栏下方一排，提供选择、绘制线条和形状等画布操作入口。
+    已匹配控件：
+      1：
+        名称：矩形工具
+        当前候选位置：
+          279；129；313；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/22
+      2：
+        名称：连接符工具
+        当前候选位置：
+          439；129；482；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/26
+      3：
+        名称：线条工具
+        当前候选位置：
+          246；129；280；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/21
+      4：
+        名称：箭头工具
+        当前候选位置：
+          350；129；394；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/24
+      5：
+        名称：形状工具组
+        当前候选位置：
+          493；129；787；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/27
+      6：
+        名称：椭圆工具
+        当前候选位置：
+          314；129；348；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/23
+      7：
+        名称：自由线条工具
+        当前候选位置：
+          397；129；436；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/25
+  7：
+    名称：状态栏
+    职责：窗口底部显示当前幻灯片、布局、坐标、语言和缩放状态，并提供缩放操作。
+    已匹配控件：
+      1：
+        名称：缩小按钮
+        当前候选位置：
+          1080；782；1102；799
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/50
+      2：
+        名称：放大按钮
+        当前候选位置：
+          1211；782；1230；799
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/52
+      3：
+        名称：缩放滑块
+        当前候选位置：
+          1110；782；1211；799
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/51
+用途：同一截图已确认的区块划分；其他区块与控件只作归属和防重参照，不在本轮登记范围。匹配不是身份结论。局部候选缺席不证明控件是新对象。focus仍在当前前景时保持已确认范围，仅登记本区控件，纯展示区可以没有控件。需要核对划分写uncertainties；区块确已关闭或被另一表面接管时才报告not_interactive并留空。
+
+### 本区块待补登记
+清点时发现的具体缺口：菜单栏及标准工具栏、绘图工具栏已有代表性登记，但仍有可见工具栏图标未对应到控件树。Properties 侧栏右侧的竖向图标条用途及归属也未确认；已有同控件、同类型的区块内容探索任务，因此未重复新增 operations。
+
+本图：本次发现观察图；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

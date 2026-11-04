@@ -1,0 +1,7 @@
+{
+  "http_started": 0,
+  "gui_started": 2,
+  "max_http": 0,
+  "max_gui_commands": 2,
+  "status": "operator_readonly_tooltip_probe"
+}

@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "semantic_result": "unverified",
+  "executed_steps": [
+    {
+      "target": "c0013",
+      "action": "click",
+      "x": 176,
+      "y": 355,
+      "reason": "切换到另一张幻灯片，观察可作为格式刷目标的对象；这样可以继续验证如何指定目标并应用源对象格式，以及所需的操作条件。",
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    }
+  ]
+}

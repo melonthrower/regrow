@@ -1,0 +1,826 @@
+# 本次问题
+[
+  {
+    "对象": "控件：LibreOffice Impress 窗口中的蓝色画板铅笔图标按钮",
+    "字段": "是否打开内容",
+    "问题": "应填写true 或 false。",
+    "所在字段": "controls → may_open_content",
+    "实际填写": null
+  }
+]
+
+# 本次补充材料
+{
+  "执行状态": "本步骤尚未执行动作。",
+  "尚未完成的检查": [
+    "结构尚未通过，后续语义检查未执行。"
+  ]
+}
+
+# 原任务与相关材料
+### 背景
+范围：LibreOffice Impress 窗口
+本轮目的：核对当前区块清点报告中的具体登记缺口
+
+### 本步问题
+指定区块是否仍对应当前表面？有哪些未登记或确有变化的对象需要补充？
+
+### 问题 1：本次需要辨认哪里？
+
+#### 待继续的工作区块
+LibreOffice Impress 窗口
+
+#### 本轮定位区块
+LibreOffice Impress 窗口
+
+#### 本轮观察范围
+本轮定位区块及其直接所属控件。
+
+#### 目标应用
+本次要探索的应用：libreoffice impress
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+### 问题 2：看见的对象对应哪些已有身份？
+
+#### 本次身份候选
+1：
+  ref：LibreOffice Impress 窗口
+  名称：LibreOffice Impress 窗口
+  最近登记描述：当前活动的 Impress 演示文稿编辑窗口，包含幻灯片列表、编辑画布和属性侧栏。
+
+#### 登记页面组成与访问来路
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+LibreOffice Impress 窗口 [LibreOffice Impress 窗口]（本步关注区块）
+Impress 菜单栏 [Impress 菜单栏]
+  ├─ File 菜单 [File 菜单]
+  ├─ Edit 菜单 [Edit 菜单]
+  ├─ View 菜单 [View 菜单]
+  ├─ Insert 菜单 [Insert 菜单]
+  ├─ Format 菜单 [Format 菜单]
+  ├─ Slide 菜单 [Slide 菜单]
+  ├─ Slide Show 菜单 [Slide Show 菜单]
+  ├─ Tools 菜单 [Tools 菜单]
+  ├─ Window 菜单 [Window 菜单]
+  ├─ Help 菜单 [Help 菜单]
+幻灯片列表 [幻灯片列表]
+  ├─ 第 1 张幻灯片缩略图 [第 1 张幻灯片缩略图]
+  ├─ 第 2 张幻灯片缩略图 [第 2 张幻灯片缩略图]
+  ├─ 第 3 张幻灯片缩略图 [第 3 张幻灯片缩略图]
+幻灯片编辑画布 [幻灯片编辑画布]
+  ├─ 幻灯片页面 [幻灯片页面]
+  ├─ 参与提示横幅关闭按钮 [参与提示横幅关闭按钮]
+  ├─ 捐赠提示横幅关闭按钮 [捐赠提示横幅关闭按钮]
+Slide 属性与布局侧栏 [Slide 属性与布局侧栏]
+  ├─ Format 下拉框 [Format 下拉框]
+  ├─ Orientation 下拉框 [Orientation 下拉框]
+  ├─ Background 下拉框 [Background 下拉框]
+  ├─ Insert Image 按钮 [Insert Image 按钮]
+  ├─ Master Slide 下拉框 [Master Slide 下拉框]
+  ├─ Master Background 复选框 [Master Background 复选框]
+  ├─ Master Objects 复选框 [Master Objects 复选框]
+  ├─ Master View 按钮 [Master View 按钮]
+  ├─ 幻灯片布局缩略图组 [幻灯片布局缩略图组]
+标准工具栏 [标准工具栏]
+  ├─ 打开文件按钮 [打开文件按钮]
+  ├─ 保存按钮 [保存按钮]
+  ├─ 导出为 PDF 按钮 [导出为 PDF 按钮]
+  ├─ 打印按钮 [打印按钮]
+  ├─ 撤销按钮 [撤销按钮]
+  ├─ 重做按钮 [重做按钮]
+  ├─ 查找按钮 [查找按钮]
+  ├─ 拼写检查按钮 [拼写检查按钮]
+  ├─ 插入表格按钮 [插入表格按钮]
+  ├─ 插入图像按钮 [插入图像按钮]
+  ├─ 插入视频按钮 [插入视频按钮]
+  ├─ 插入图表按钮 [插入图表按钮]
+  ├─ 插入文本框按钮 [插入文本框按钮]
+  ├─ 特殊字符按钮 [特殊字符按钮]
+  ├─ 超链接按钮 [超链接按钮]
+  ├─ 新建演示文稿按钮 [新建演示文稿按钮]
+绘图工具栏 [绘图工具栏]
+  ├─ 选择工具 [选择工具]
+  ├─ 缩放工具 [缩放工具]
+  ├─ 线条工具 [线条工具]
+  ├─ 矩形工具 [矩形工具]
+  ├─ 椭圆工具 [椭圆工具]
+  ├─ 箭头工具 [箭头工具]
+  ├─ 自由线条工具 [自由线条工具]
+  ├─ 连接符工具 [连接符工具]
+  ├─ 形状工具组 [形状工具组]
+状态栏 [状态栏]
+  ├─ 缩小按钮 [缩小按钮]
+  ├─ 缩放滑块 [缩放滑块]
+  ├─ 放大按钮 [放大按钮]
+
+#### 同帧已确认区块划分
+本区块：LibreOffice Impress 窗口
+划分来源调用：0071
+其他已确认区块：
+  1：
+    名称：Impress 菜单栏
+    职责：编辑窗口顶部提供文件、编辑、视图、插入、格式和幻灯片等菜单入口。
+    已匹配控件：
+      1：
+        名称：Edit 菜单
+        当前候选位置：
+          116；64；151；92
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/4
+      2：
+        名称：Slide Show 菜单
+        当前候选位置：
+          376；61；455；89
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/0
+      3：
+        名称：Tools 菜单
+        当前候选位置：
+          455；61；511；89
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/1
+      4：
+        名称：Window 菜单
+        当前候选位置：
+          511；61；580；89
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/2
+      5：
+        名称：File 菜单
+        当前候选位置：
+          77；64；108；92
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/3
+  2：
+    名称：幻灯片列表
+    职责：编辑窗口左侧的 Slides 区域，按缩略图列出演示文稿中的幻灯片。
+    已匹配控件：
+      1：
+        名称：第 1 张幻灯片缩略图
+        当前候选位置：
+          80；212；251；301
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/9
+  3：
+    名称：幻灯片编辑画布
+    职责：窗口中央展示当前幻灯片并用于编辑其内容的区域。
+    已匹配控件：
+      1：
+        名称：幻灯片页面
+        当前候选位置：
+          279；344；845；665
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/12
+  4：
+    名称：Slide 属性与布局侧栏
+    职责：编辑窗口右侧的属性面板，展示幻灯片页面设置、母版选项和布局选择。
+    已匹配控件：
+      1：
+        名称：Format 下拉框
+        当前候选位置：
+          1019；216；1178；252
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/15
+      2：
+        名称：Background 下拉框
+        当前候选位置：
+          1019；291；1178；327
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/17
+      3：
+        名称：Master Slide 下拉框
+        当前候选位置：
+          1019；365；1178；401
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/19
+      4：
+        名称：Master View 按钮
+        当前候选位置：
+          1019；451；1178；488
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/22
+      5：
+        名称：Insert Image 按钮
+        当前候选位置：
+          1019；328；1178；363
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/18
+      6：
+        名称：Master Objects 复选框
+        当前候选位置：
+          1023；425；1171；450
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/21
+      7：
+        名称：幻灯片布局缩略图组
+        当前候选位置：
+          891；517；1219；703
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/23
+      8：
+        名称：Orientation 下拉框
+        当前候选位置：
+          1019；254；1178；290
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/16
+      9：
+        名称：Master Background 复选框
+        当前候选位置：
+          1023；401；1171；425
+        历史模板出处：
+          source_call：0043
+          observation：discovery:0043
+          source_field：/controls/20
+  5：
+    名称：标准工具栏
+    职责：菜单栏下方第一排，包含常见文档操作、插入内容及格式相关图标。
+    已匹配控件：
+      1：
+        名称：打开文件按钮
+        当前候选位置：
+          122；91；153；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/4
+      2：
+        名称：重做按钮
+        当前候选位置：
+          490；91；530；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/9
+      3：
+        名称：拼写检查按钮
+        当前候选位置：
+          586；91；612；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/11
+      4：
+        名称：插入视频按钮
+        当前候选位置：
+          899；91；930；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/14
+      5：
+        名称：特殊字符按钮
+        当前候选位置：
+          1003；91；1035；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/17
+      6：
+        名称：打印按钮
+        当前候选位置：
+          251；91；279；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/7
+      7：
+        名称：查找按钮
+        当前候选位置：
+          548；91；585；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/10
+      8：
+        名称：插入图表按钮
+        当前候选位置：
+          932；91；963；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/15
+      9：
+        名称：插入表格按钮
+        当前候选位置：
+          619；91；650；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/12
+      10：
+        名称：超链接按钮
+        当前候选位置：
+          1080；91；1111；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/18
+      11：
+        名称：新建演示文稿按钮
+        当前候选位置：
+          78；96；104；120
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/25
+      12：
+        名称：保存按钮
+        当前候选位置：
+          167；91；204；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/5
+      13：
+        名称：导出为 PDF 按钮
+        当前候选位置：
+          217；91；245；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/6
+      14：
+        名称：撤销按钮
+        当前候选位置：
+          446；91；487；124
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/8
+  6：
+    名称：绘图工具栏
+    职责：标准工具栏下方一排，提供选择、绘制线条和形状等画布操作入口。
+    已匹配控件：
+      1：
+        名称：矩形工具
+        当前候选位置：
+          279；129；313；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/22
+      2：
+        名称：连接符工具
+        当前候选位置：
+          439；129；482；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/26
+      3：
+        名称：线条工具
+        当前候选位置：
+          246；129；280；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/21
+      4：
+        名称：箭头工具
+        当前候选位置：
+          350；129；394；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/24
+      5：
+        名称：形状工具组
+        当前候选位置：
+          493；129；787；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/27
+      6：
+        名称：椭圆工具
+        当前候选位置：
+          314；129；348；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/23
+      7：
+        名称：自由线条工具
+        当前候选位置：
+          397；129；436；165
+        历史模板出处：
+          source_call：0061
+          observation：discovery:0061
+          source_field：/controls/25
+  7：
+    名称：状态栏
+    职责：窗口底部显示当前幻灯片、布局、坐标、语言和缩放状态，并提供缩放操作。
+    已匹配控件：
+      1：
+        名称：缩小按钮
+        当前候选位置：
+          1080；782；1102；799
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/50
+      2：
+        名称：放大按钮
+        当前候选位置：
+          1211；782；1230；799
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/52
+      3：
+        名称：缩放滑块
+        当前候选位置：
+          1110；782；1211；799
+        历史模板出处：
+          source_call：0071
+          observation：discovery:0071
+          source_field：/controls/51
+用途：同一截图已确认的区块划分；其他区块与控件只作归属和防重参照，不在本轮登记范围。匹配不是身份结论。局部候选缺席不证明控件是新对象。focus仍在当前前景时保持已确认范围，仅登记本区控件，纯展示区可以没有控件。需要核对划分写uncertainties；区块确已关闭或被另一表面接管时才报告not_interactive并留空。
+
+#### 本区块待补登记
+清点时发现的具体缺口：菜单栏及标准工具栏、绘图工具栏已有代表性登记，但仍有可见工具栏图标未对应到控件树。Properties 侧栏右侧的竖向图标条用途及归属也未确认；已有同控件、同类型的区块内容探索任务，因此未重复新增 operations。
+
+本图：本次发现观察图；原图 1280×800 像素。
+
+# 待修正回复
+```json
+{
+  "foreground": {
+    "description": "LibreOffice Impress 演示文稿编辑窗口位于前景，显示幻灯片列表、编辑画布、Slide 属性与布局侧栏及工具栏；未见模态对话框遮挡。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "interactive",
+  "regions": [
+    {
+      "ref": "LibreOffice Impress 窗口",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 27,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "当前活动的 quarterly_review.pptx 编辑窗口，第一张幻灯片处于选中状态；标准工具栏、绘图工具栏及 Properties 侧栏右缘的竖向图标条均可见。",
+      "context_matches": null,
+      "controls": [
+        {
+          "name": "剪切按钮",
+          "bbox": {
+            "left": 295,
+            "top": 91,
+            "right": 326,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "剪切所选内容；通常先选中幻灯片对象或文本，再点击此按钮。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "复制按钮",
+          "bbox": {
+            "left": 328,
+            "top": 91,
+            "right": 359,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "复制所选内容；通常先选中对象或文本，再点击此按钮。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": false
+        },
+        {
+          "name": "粘贴按钮",
+          "bbox": {
+            "left": 360,
+            "top": 91,
+            "right": 398,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "将剪贴板内容粘贴到当前文稿；按钮旁有下拉箭头，可进一步选择粘贴方式。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "格式刷图标按钮（标准工具栏）",
+          "description": "位于撤销、重做图标左侧的画刷图标。",
+          "bbox": {
+            "left": 408,
+            "top": 91,
+            "right": 432,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "画刷图标通常用于复制并应用格式；当前未实际操作确认其具体行为及可用条件。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "网格图标按钮",
+          "description": "标准工具栏上靠近拼写检查按钮的点阵图标。",
+          "bbox": {
+            "left": 619,
+            "top": 91,
+            "right": 650,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "可见点阵图标；其是否用于切换画布网格，或对应已有的插入表格登记，当前无法确认。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": null
+        },
+        {
+          "name": "幻灯片布局下拉按钮",
+          "description": "标准工具栏中的矩形版式图标及其下拉箭头。",
+          "bbox": {
+            "left": 655,
+            "top": 91,
+            "right": 701,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "图标旁有下拉箭头，可能提供版式相关选择；具体用途及候选项尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "蓝色画板铅笔图标按钮",
+          "bbox": {
+            "left": 706,
+            "top": 91,
+            "right": 738,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "工具栏中可见蓝色画板与铅笔图标；用途及操作结果尚未确认。"
+            }
+          ],
+          "may_open_content": null,
+          "needs_exploration": true
+        },
+        {
+          "name": "从第一张幻灯片开始放映按钮",
+          "bbox": {
+            "left": 747,
+            "top": 91,
+            "right": 775,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "点击该放映图标可启动幻灯片放映；从图标位置和外观推断为从第一张幻灯片开始，尚未实际启动验证。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "从当前幻灯片开始放映按钮",
+          "bbox": {
+            "left": 780,
+            "top": 91,
+            "right": 808,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "点击该放映图标可启动幻灯片放映；从图标位置和外观推断为从当前幻灯片开始，尚未实际启动验证。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "新建幻灯片按钮",
+          "bbox": {
+            "left": 1155,
+            "top": 91,
+            "right": 1194,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "页面加号图标用于新增幻灯片；旁有下拉箭头，可能可选择新幻灯片版式。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "复制幻灯片按钮",
+          "bbox": {
+            "left": 1201,
+            "top": 91,
+            "right": 1228,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "重叠页面图标看起来用于复制幻灯片；当前未实际操作确认其作用对象及条件。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "删除幻灯片按钮",
+          "bbox": {
+            "left": 1233,
+            "top": 91,
+            "right": 1260,
+            "bottom": 125
+          },
+          "knowledge": [
+            {
+              "description": "带红色叉号的页面图标看起来用于删除幻灯片；需先确定其作用对象，当前未实际操作确认。"
+            }
+          ],
+          "may_open_content": false,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏样式图标按钮",
+          "description": "Properties 侧栏右缘，A 字母与画刷图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 261,
+            "right": 1265,
+            "bottom": 294
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏图库图标按钮",
+          "description": "Properties 侧栏右缘的紫色图片图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 304,
+            "right": 1265,
+            "bottom": 334
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏导航器图标按钮",
+          "description": "Properties 侧栏右缘的蓝色圆形罗盘图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 346,
+            "right": 1265,
+            "bottom": 376
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏菱形图标按钮",
+          "description": "Properties 侧栏右缘的空心菱形图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 389,
+            "right": 1265,
+            "bottom": 419
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来用于切换侧栏内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏幻灯片动画图标按钮",
+          "description": "Properties 侧栏右缘的幻灯片与播放标记图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 431,
+            "right": 1265,
+            "bottom": 462
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来与幻灯片动画相关，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏媒体图标按钮",
+          "description": "Properties 侧栏右缘的胶片图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 473,
+            "right": 1265,
+            "bottom": 505
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；看起来与媒体相关，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        },
+        {
+          "name": "侧栏母版图标按钮",
+          "description": "Properties 侧栏右缘靠下的蓝色画板与画笔图标。",
+          "bbox": {
+            "left": 1239,
+            "top": 514,
+            "right": 1265,
+            "bottom": 544
+          },
+          "knowledge": [
+            {
+              "description": "位于侧栏右缘的独立图标入口；可能打开母版相关内容，具体面板用途尚未确认。"
+            }
+          ],
+          "may_open_content": true,
+          "needs_exploration": true
+        }
+      ]
+    }
+  ],
+  "uncertainties": [
+    "Properties 侧栏右缘的竖向图标条与侧栏内容相邻，外观上像侧栏面板切换器；其精确归属及各图标打开的面板尚未通过操作确认。",
+    "标准工具栏 x619–650 的点阵图标与已登记的“插入表格按钮”候选位置重合；当前工具栏 x832 附近另有带下拉箭头的表格图标，无法仅凭截图确认两者各自用途及已有身份对应关系。",
+    "幻灯片放映、复制与删除等工具栏图标的用途依据图标外观辨认，尚未实际操作验证。"
+  ]
+}
+```

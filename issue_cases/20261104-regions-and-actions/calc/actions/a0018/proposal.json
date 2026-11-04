@@ -1,0 +1,10 @@
+{
+  "action": "click",
+  "target": "c0079",
+  "reason": "展开 New 子菜单，确认其中显示的可选新建目标。",
+  "x": 115,
+  "y": 101,
+  "text": null,
+  "end_x": null,
+  "end_y": null
+}

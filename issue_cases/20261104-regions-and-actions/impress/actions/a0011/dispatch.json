@@ -1,0 +1,17 @@
+{
+  "source_call": "0101",
+  "source_region": "r0008",
+  "source_control": "c0012",
+  "working_region": "r0006",
+  "action": {
+    "action": "click",
+    "target": "c0012",
+    "reason": "格式刷是否进入待应用状态、如何指定目标对象并应用源格式，以及所需的选择条件尚未确认；先返回含已知蓝色标题源对象的第 1 张幻灯片，为后续验证应用步骤准备条件。",
+    "x": 169,
+    "y": 256,
+    "text": null,
+    "end_x": null,
+    "end_y": null
+  },
+  "status": "dispatching"
+}

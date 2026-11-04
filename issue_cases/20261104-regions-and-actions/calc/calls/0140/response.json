@@ -1,0 +1,11 @@
+{
+  "comparisons": [
+    {
+      "ref": "New",
+      "relation": "new_appearance",
+      "historical_state": "文件菜单中的 New 行未展开，右侧没有新建目标子菜单。",
+      "current_state": "同一文件菜单中的 New 行处于展开状态，右侧显示新建目标子菜单。",
+      "reason": "两图中该项均位于文件命令菜单相同位置；当前图的 New 行高亮并展开，子菜单可见，历史图中则未展开。"
+    }
+  ]
+}

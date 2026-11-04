@@ -1,0 +1,264 @@
+{
+  "objects": [
+    {
+      "path": "/regions/1",
+      "bbox": {
+        "left": 70,
+        "top": 88,
+        "right": 375,
+        "bottom": 697
+      },
+      "reason": "File 菜单下方展开的整块下拉列表，包含从 New 到 Exit LibreOffice 的文件命令。"
+    },
+    {
+      "path": "/controls/0",
+      "bbox": {
+        "left": 70,
+        "top": 63,
+        "right": 111,
+        "bottom": 89
+      },
+      "reason": "菜单栏中带下划线的 File 标签；其正下方显示文件命令菜单。"
+    },
+    {
+      "path": "/controls/1",
+      "bbox": {
+        "left": 72,
+        "top": 89,
+        "right": 373,
+        "bottom": 115
+      },
+      "reason": "下拉菜单首行显示 New，右侧有子菜单箭头。"
+    },
+    {
+      "path": "/controls/2",
+      "bbox": {
+        "left": 72,
+        "top": 115,
+        "right": 373,
+        "bottom": 139
+      },
+      "reason": "New 下方的 Open… 行，右侧显示快捷键 Ctrl+O。"
+    },
+    {
+      "path": "/controls/3",
+      "bbox": {
+        "left": 72,
+        "top": 139,
+        "right": 373,
+        "bottom": 163
+      },
+      "reason": "Open… 下方显示 Open Remote… 的菜单行。"
+    },
+    {
+      "path": "/controls/4",
+      "bbox": {
+        "left": 72,
+        "top": 163,
+        "right": 373,
+        "bottom": 187
+      },
+      "reason": "Open Remote… 下方显示 Recent Documents，右侧有子菜单箭头。"
+    },
+    {
+      "path": "/controls/5",
+      "bbox": {
+        "left": 72,
+        "top": 187,
+        "right": 373,
+        "bottom": 213
+      },
+      "reason": "Recent Documents 下方独立显示 Close 的菜单行。"
+    },
+    {
+      "path": "/controls/6",
+      "bbox": {
+        "left": 72,
+        "top": 213,
+        "right": 373,
+        "bottom": 239
+      },
+      "reason": "Close 下方显示 Wizards，右侧有子菜单箭头。"
+    },
+    {
+      "path": "/controls/7",
+      "bbox": {
+        "left": 72,
+        "top": 239,
+        "right": 373,
+        "bottom": 264
+      },
+      "reason": "Wizards 下方显示 Templates，右侧有子菜单箭头。"
+    },
+    {
+      "path": "/controls/8",
+      "bbox": {
+        "left": 72,
+        "top": 264,
+        "right": 373,
+        "bottom": 290
+      },
+      "reason": "Templates 下方显示 Reload 的菜单行。"
+    },
+    {
+      "path": "/controls/9",
+      "bbox": {
+        "left": 72,
+        "top": 290,
+        "right": 373,
+        "bottom": 316
+      },
+      "reason": "Reload 下方灰色显示 Versions…，位于分隔线前。"
+    },
+    {
+      "path": "/controls/10",
+      "bbox": {
+        "left": 72,
+        "top": 316,
+        "right": 373,
+        "bottom": 342
+      },
+      "reason": "分隔线下方首行显示 Save，右侧有 Ctrl+S 快捷键。"
+    },
+    {
+      "path": "/controls/11",
+      "bbox": {
+        "left": 72,
+        "top": 342,
+        "right": 373,
+        "bottom": 367
+      },
+      "reason": "Save 下方显示 Save As…，右侧有 Shift+Ctrl+S 快捷键。"
+    },
+    {
+      "path": "/controls/12",
+      "bbox": {
+        "left": 72,
+        "top": 367,
+        "right": 373,
+        "bottom": 391
+      },
+      "reason": "Save As… 下方显示 Save Remote… 的菜单行。"
+    },
+    {
+      "path": "/controls/13",
+      "bbox": {
+        "left": 72,
+        "top": 391,
+        "right": 373,
+        "bottom": 417
+      },
+      "reason": "Save Remote… 下方显示 Save a Copy… 的菜单行。"
+    },
+    {
+      "path": "/controls/14",
+      "bbox": {
+        "left": 72,
+        "top": 417,
+        "right": 373,
+        "bottom": 442
+      },
+      "reason": "Save a Copy… 下方灰色显示 Save All，位于下一条分隔线前。"
+    },
+    {
+      "path": "/controls/15",
+      "bbox": {
+        "left": 72,
+        "top": 442,
+        "right": 373,
+        "bottom": 467
+      },
+      "reason": "第二条分隔线下方首行显示 Export…。"
+    },
+    {
+      "path": "/controls/16",
+      "bbox": {
+        "left": 72,
+        "top": 467,
+        "right": 373,
+        "bottom": 491
+      },
+      "reason": "Export… 下方显示 Export as PDF… 的菜单行。"
+    },
+    {
+      "path": "/controls/17",
+      "bbox": {
+        "left": 72,
+        "top": 491,
+        "right": 373,
+        "bottom": 516
+      },
+      "reason": "Export as PDF… 下方显示 Send，右侧有子菜单箭头。"
+    },
+    {
+      "path": "/controls/18",
+      "bbox": {
+        "left": 72,
+        "top": 516,
+        "right": 373,
+        "bottom": 542
+      },
+      "reason": "Send 下方显示 Preview in Web Browser 的菜单行。"
+    },
+    {
+      "path": "/controls/19",
+      "bbox": {
+        "left": 72,
+        "top": 542,
+        "right": 373,
+        "bottom": 567
+      },
+      "reason": "Preview in Web Browser 下方显示 Print Preview，右侧有 Shift+Ctrl+O 快捷键。"
+    },
+    {
+      "path": "/controls/20",
+      "bbox": {
+        "left": 72,
+        "top": 567,
+        "right": 373,
+        "bottom": 592
+      },
+      "reason": "Print Preview 下方显示 Print…，右侧有 Ctrl+P 快捷键。"
+    },
+    {
+      "path": "/controls/21",
+      "bbox": {
+        "left": 72,
+        "top": 592,
+        "right": 373,
+        "bottom": 619
+      },
+      "reason": "Print… 下方显示 Printer Settings… 的菜单行。"
+    },
+    {
+      "path": "/controls/22",
+      "bbox": {
+        "left": 72,
+        "top": 619,
+        "right": 373,
+        "bottom": 644
+      },
+      "reason": "Printer Settings… 下方显示 Properties… 的菜单行。"
+    },
+    {
+      "path": "/controls/23",
+      "bbox": {
+        "left": 72,
+        "top": 644,
+        "right": 373,
+        "bottom": 670
+      },
+      "reason": "Properties… 下方显示 Digital Signatures，右侧有子菜单箭头。"
+    },
+    {
+      "path": "/controls/24",
+      "bbox": {
+        "left": 72,
+        "top": 670,
+        "right": 373,
+        "bottom": 697
+      },
+      "reason": "下拉菜单末行显示 Exit LibreOffice，右侧有 Ctrl+Q 快捷键。"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "semantic_result": "unverified",
+  "executed_steps": [
+    {
+      "action": "click",
+      "target": "c0061",
+      "reason": "原任务要求查看粘贴按钮旁的菜单。上次点击后未观察到菜单，当前仍在 Impress 编辑窗口；这次直接点击粘贴图标右侧的小下拉箭头（约 x=390、y=108），确认是否展开及列出的粘贴方式。",
+      "x": 390,
+      "y": 108,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    }
+  ]
+}

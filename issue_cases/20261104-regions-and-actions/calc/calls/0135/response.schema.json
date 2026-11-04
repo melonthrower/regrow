@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "properties": {
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "enum": [
+              "文件菜单"
+            ]
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "same_appearance",
+              "new_appearance",
+              "different_control",
+              "uncertain"
+            ]
+          },
+          "historical_state": {
+            "type": "string"
+          },
+          "current_state": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "ref",
+          "relation",
+          "historical_state",
+          "current_state",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 1
+    }
+  },
+  "required": [
+    "comparisons"
+  ],
+  "additionalProperties": false
+}

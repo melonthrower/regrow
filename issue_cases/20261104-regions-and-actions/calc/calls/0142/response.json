@@ -1,0 +1,18 @@
+{
+  "function_updates": [
+    {
+      "region": "文件命令菜单",
+      "update": [
+        {
+          "ref": "文件命令菜单/创建文档",
+          "changes": {
+            "description": "从文件命令菜单点击 New 可打开新建目标子菜单；其中可见 Text Document、Spreadsheet、Presentation、Drawing、Formula、HTML Document、XML Form Document、Labels、Business Cards、Master Document 和 Templates…，各目标选择后的具体结果尚未验证。",
+            "supports": [
+              "New"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

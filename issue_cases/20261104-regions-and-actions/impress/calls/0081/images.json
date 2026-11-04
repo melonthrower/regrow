@@ -1,0 +1,12 @@
+[
+  {
+    "order": 1,
+    "original_reference": "action_attempts/a0005/before.png",
+    "published_file": "input-1.png"
+  },
+  {
+    "order": 2,
+    "original_reference": "action_attempts/a0005/after.png",
+    "published_file": "input-2.png"
+  }
+]

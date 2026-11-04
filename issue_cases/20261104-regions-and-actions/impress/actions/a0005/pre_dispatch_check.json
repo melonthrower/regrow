@@ -1,0 +1,12 @@
+{
+  "window": {
+    "目标应用": "desktop.libreoffice_impress",
+    "与目标应用一致": true,
+    "窗口记录": "WM_CLASS(STRING) = \"libreoffice\", \"libreoffice-impress\"\n_NET_WM_NAME(UTF8_STRING) = \"quarterly_review.pptx - LibreOffice Impress\"\n\n",
+    "读取错误": "",
+    "来源": "OSWorld X11 active window WM_CLASS/title",
+    "control_transport_available": true
+  },
+  "changed_window": false,
+  "confirmed_call": null
+}

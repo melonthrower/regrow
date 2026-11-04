@@ -1,0 +1,215 @@
+{
+  "foreground": {
+    "description": "GIMP 主窗口处于前景，显示裁剪工具选项、图像工作区以及两侧停靠区；没有展开菜单或模态对话框。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "not_interactive",
+  "regions": [
+    {
+      "ref": "裁剪约束模式候选列表",
+      "identity": "same",
+      "bbox": null,
+      "state_description": "候选列表未展开，因此列表项当前不可见、不可操作。"
+    },
+    {
+      "ref": "主菜单栏",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 60,
+        "right": 620,
+        "bottom": 90
+      },
+      "controls": [
+        {
+          "ref": "File 菜单"
+        },
+        {
+          "ref": "Edit 菜单"
+        },
+        {
+          "ref": "Select 菜单"
+        },
+        {
+          "ref": "View 菜单"
+        },
+        {
+          "ref": "Image 菜单"
+        },
+        {
+          "ref": "Layer 菜单"
+        },
+        {
+          "ref": "Colors 菜单"
+        },
+        {
+          "ref": "Tools 菜单"
+        },
+        {
+          "ref": "Filters 菜单"
+        },
+        {
+          "ref": "Windows 菜单"
+        },
+        {
+          "ref": "Help 菜单"
+        }
+      ]
+    },
+    {
+      "ref": "工具箱",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 90,
+        "right": 260,
+        "bottom": 365
+      },
+      "controls": [
+        {
+          "ref": "工具选择按钮",
+          "description": "裁剪工具图标处于选中状态。"
+        },
+        {
+          "ref": "前景色与背景色控件",
+          "description": "显示前景色为黑色、背景色为白色。"
+        }
+      ]
+    },
+    {
+      "ref": "裁剪工具选项区",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 365,
+        "right": 260,
+        "bottom": 800
+      },
+      "state_description": "裁剪工具选项可见；约束模式为 Size，Fixed 已勾选，约束值显示 80x60。裁剪位置显示 140, 60 px，裁剪尺寸显示 80x60 px；Highlight 已启用并显示 50.0，参考线为 No guides。",
+      "controls": [
+        {
+          "ref": "Current layer only 选项",
+          "description": "当前未勾选。"
+        },
+        {
+          "ref": "Delete cropped pixels 选项",
+          "description": "当前未勾选。"
+        },
+        {
+          "ref": "Allow growing 选项",
+          "description": "当前未勾选。"
+        },
+        {
+          "ref": "Expand from center 选项",
+          "description": "当前未勾选。"
+        },
+        {
+          "ref": "裁剪约束模式选择器",
+          "description": "当前显示 Size；可通过该下拉选择裁剪约束模式。"
+        },
+        {
+          "ref": "Fixed 复选框",
+          "description": "当前已勾选。"
+        },
+        {
+          "ref": "Size 约束值输入框",
+          "knowledge": [
+            {
+              "description": "用于设置 Size 模式的约束尺寸。当前显示 80x60；同时画面中的裁剪尺寸读数为 80x60 px、位置为 140, 60 px。仅凭此画面不能确认尺寸读数与约束值相同是由约束生效导致，或确认约束值已被解析。"
+            }
+          ]
+        },
+        {
+          "ref": "裁剪位置输入框"
+        },
+        {
+          "ref": "裁剪尺寸输入框"
+        },
+        {
+          "ref": "Highlight 选项",
+          "description": "当前已勾选，数值显示为 50.0。"
+        },
+        {
+          "ref": "参考线模式下拉框",
+          "description": "当前显示 No guides。"
+        }
+      ]
+    },
+    {
+      "ref": "图像工作区（中央用于显示和编辑图像的工作区域。）",
+      "identity": "same",
+      "bbox": {
+        "left": 280,
+        "top": 152,
+        "right": 1070,
+        "bottom": 767
+      },
+      "state_description": "中央工作区显示一个 360x120 的图像及未提交的裁剪框；状态栏提示可点击或按 Enter 进行裁剪。",
+      "controls": [
+        {
+          "ref": "图像画布区域",
+          "description": "画布上可见裁剪框；框的尺寸读数为 80x60 px。"
+        }
+      ]
+    },
+    {
+      "ref": "画笔停靠区",
+      "identity": "same",
+      "bbox": {
+        "left": 1080,
+        "top": 90,
+        "right": 1280,
+        "bottom": 430
+      },
+      "controls": [
+        {
+          "ref": "画笔资源过滤框"
+        },
+        {
+          "ref": "画笔预设网格",
+          "description": "显示画笔预设缩略图；当前标示 Hardness 050 (51 × 51)。"
+        },
+        {
+          "ref": "Spacing 设置",
+          "description": "当前数值为 10.0。"
+        }
+      ]
+    },
+    {
+      "ref": "图层停靠区",
+      "identity": "same",
+      "bbox": {
+        "left": 1080,
+        "top": 430,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "图层面板可见，列表中有一个 Background 图层。",
+      "controls": [
+        {
+          "ref": "图层、通道和路径标签"
+        },
+        {
+          "ref": "混合模式下拉框",
+          "description": "当前显示 Normal。"
+        },
+        {
+          "ref": "图层不透明度设置",
+          "description": "当前显示 100.0。"
+        },
+        {
+          "ref": "图层锁定选项"
+        },
+        {
+          "ref": "图层列表",
+          "description": "显示 Background 图层。"
+        }
+      ]
+    }
+  ],
+  "uncertainties": [
+    "裁剪约束模式候选列表当前未展开；本图不能确认候选项是否有变化。",
+    "Size 模式下，约束值与裁剪尺寸读数都显示 80x60，但这不足以确认约束值已解析或裁剪框受其约束。"
+  ]
+}

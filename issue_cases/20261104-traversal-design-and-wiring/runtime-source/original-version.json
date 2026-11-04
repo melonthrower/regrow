@@ -1,0 +1,10 @@
+{
+  "baseline": "approved-source-v8",
+  "modified": [
+    "src/regrow/recognition/named_references.py",
+    "src/regrow/recognition/action_target_review.py"
+  ],
+  "scope": "experimental live traversal, not full acceptance",
+  "source_hash": "5f8c0fad8b1cdc5d24638cb50b0757686d87c6b157b15cff021f340bc2bfe7aa",
+  "unapproved_prompt_drafts_excluded": true
+}

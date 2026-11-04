@@ -1,0 +1,17 @@
+{
+  "source_call": "0157",
+  "source_region": "r0020",
+  "source_control": "c0174",
+  "working_region": "r0020",
+  "action": {
+    "action": "click",
+    "target": "c0174",
+    "reason": "点击 .config 项左侧的展开箭头，观察它是否展开子目录或产生其他可见结果。",
+    "x": 826,
+    "y": 192,
+    "text": null,
+    "end_x": null,
+    "end_y": null
+  },
+  "status": "dispatching"
+}

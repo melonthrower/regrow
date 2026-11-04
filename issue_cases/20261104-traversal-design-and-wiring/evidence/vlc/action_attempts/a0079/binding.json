@@ -1,0 +1,13 @@
+{
+  "region_ref": "r0014",
+  "observation_ref": "update:0250",
+  "control_ref": "c0119",
+  "working_region": "r0014",
+  "task_name": "c0119 / 参数探索",
+  "task_region": "r0014",
+  "task_type": "parameter",
+  "status": "matched",
+  "model_grounded": true,
+  "basis": "explicit recorded control selection; coordinates do not verify identity or outcome",
+  "preparatory_action": false
+}

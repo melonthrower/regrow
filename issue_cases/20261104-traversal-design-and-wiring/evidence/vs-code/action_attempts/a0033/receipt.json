@@ -1,0 +1,18 @@
+{
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "semantic_result": "unverified",
+  "executed_steps": [
+    {
+      "action": "click",
+      "target": "c0175",
+      "reason": "点击当前可见的 autostart 目录项，观察列表或路径面包屑是否变化，以及是否导航到该目录。",
+      "x": 873,
+      "y": 214,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "action": "input_text",
+  "target": "Subtitle speed 数值框",
+  "x": 420,
+  "y": 540,
+  "text": "0.000",
+  "reason": "当前数值框显示 1.000 fps，且输入文本已选中。先观察输入 0.000 后控件显示的值，为判断可接受范围提供边界证据；后续需继续验证并恢复为探索前的 1.000 fps。",
+  "exception": "none",
+  "recovery_handoff": ""
+}

@@ -1,0 +1,269 @@
+## 背景
+范围：路径面包屑目录列表
+本轮目的：梳理本区块的用法与待解决问题
+
+## 本步问题
+本区块哪些功能已经了解，哪些仍有值得探索的具体问题？
+
+## 问题 1：本区块已有材料支持哪些功能，还需要探索哪些具体问题？
+
+### 目标应用
+本次要探索的应用：VS Code
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+### 区块
+路径面包屑目录列表
+
+### 描述
+点击路径面包屑目录段后显示的目录项列表。
+
+### 控件
+#### 同类操作组
+
+**.config 子目录项**
+
+成员：autostart 目录项
+
+已有材料（autostart 目录项）：知识条目 0：作为 .config 的子目录项显示在路径目录列表中。本次仅确认其可见，尚未操作该项。此前判断：仍有使用疑问。
+
+**路径面包屑目录项**
+
+成员：.config 目录项
+
+已有材料（.config 目录项）：知识条目 0：在路径目录列表中显示 .config 目录项及展开箭头。点击其左侧展开箭头会在列表内展开并显示子目录；点击已展开的 .config 名称区域会将其折叠并显示同级目录。上述操作均未改变 settings.json 的路径面包屑或编辑器内容，未观察到导航。已点击。已点击。
+**已知直接目标**：路径面包屑目录列表 / autostart 目录项：点击 .config 项左侧的展开箭头后，该项保持选中并显示向下箭头，列表中出现其子目录（可见 autostart、Code、dconf、enchant、eog、evolution、gedit、GIMP、gnome-control-center、gnome-session、goa-1.0）。路径面包屑和编辑器仍显示原来的 settings.json 路径与内容；本次观察到的是列表内展开子目录，未观察到导航到其他目录。（在路径面包屑目录列表中点击 .config 项的展开箭头）。相关知识见「已登记直接目标知识」，当前区块内的目标见本区块控件资料。
+
+### 可更新功能的区块
+1：
+  名称：路径面包屑目录列表
+  ref：路径面包屑目录列表
+
+### 已有功能轮廓
+1：
+  功能：展开目录查看子目录
+  引用：路径面包屑目录列表/展开目录查看子目录
+  用途：在路径面包屑目录列表中点击目录项左侧的展开箭头，可在列表内显示该目录的子目录；本次在 .config 上观察到此效果，未发生路径导航。
+  支持对象：
+    .config 目录项
+2：
+  功能：收起已展开目录
+  引用：路径面包屑目录列表/收起已展开目录
+  用途：在路径面包屑目录列表中，点击已展开的 .config 项名称区域可收起该项并显示同级目录；本次未观察到路径导航。
+  支持对象：
+    .config 目录项
+
+## 问题 2：独立功能与共同操作方式是否已有代表？还缺少哪些必要对象或归属依据？
+
+### 环境位置
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+VS Code 菜单栏 [VS Code 菜单栏]
+  ├─ File 菜单 [File 菜单]
+  ├─ Edit 菜单 [Edit 菜单]
+  ├─ Selection 菜单 [Selection 菜单]
+  ├─ View 菜单 [View 菜单]
+  ├─ Go 菜单 [Go 菜单]
+  ├─ Run 菜单 [Run 菜单]
+    └─ Run 菜单展开内容 [Run 菜单展开内容]
+      ├─ Start Debugging [Start Debugging]
+      ├─ Run Without Debugging [Run Without Debugging]
+      ├─ Stop Debugging [Stop Debugging]
+      ├─ Restart Debugging [Restart Debugging]
+      ├─ Open Configurations [Open Configurations]
+      ├─ Add Configuration... [Add Configuration...]
+        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）文本编辑器 [文本编辑器]
+          ├─ meeting_notes.txt 标签 [meeting_notes.txt 标签]
+          ├─ 关闭 meeting_notes.txt 标签 [关闭 meeting_notes.txt 标签]
+          ├─ 路径面包屑 [路径面包屑]
+            └─ （条件：在文本编辑器中点击路径面包屑的目录段。）路径面包屑目录列表 [路径面包屑目录列表]（本步关注区块）
+              ├─ .config 目录项 [.config 目录项]
+                任务：功能探索；已完成
+                └─ （条件：在路径面包屑目录列表中点击 .config 项的展开箭头）[引用：路径面包屑目录列表 / autostart 目录项 autostart 目录项]
+              ├─ autostart 目录项 [autostart 目录项]
+          ├─ 文本编辑区 [文本编辑区]
+          ├─ 拆分编辑器 [拆分编辑器]
+            └─ （条件：在文本编辑器中点击拆分编辑器入口。）右侧编辑组 [右侧编辑组]
+          ├─ 编辑器更多操作 [编辑器更多操作]
+            └─ 编辑器更多操作菜单 [编辑器更多操作菜单]
+              ├─ Show Opened Editors [Show Opened Editors]
+              ├─ Close All [Close All]
+              ├─ Close Saved [Close Saved]
+              ├─ Enable Preview Editors [Enable Preview Editors]
+              ├─ Maximize Group [Maximize Group]
+              ├─ Lock Group [Lock Group]
+          ├─ settings.json 标签 [settings.json 标签]
+          ├─ 右侧 settings.json 标签 [右侧 settings.json 标签]
+          ├─ Untitled-1 标签 [Untitled-1 标签]
+          ├─ 已记录的区块操作
+            └─ （条件：光标位于 settings.json 的 launch.configurations 数组占位位置时按 Ctrl+Space。）编辑器补全建议列表 [编辑器补全建议列表]
+        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）调试配置模板补全列表 [调试配置模板补全列表]
+          ├─ Chrome: Attach [Chrome: Attach]
+      ├─ Step Over [Step Over]
+      ├─ Step Into [Step Into]
+      ├─ Step Out [Step Out]
+      ├─ Continue [Continue]
+      ├─ Toggle Breakpoint [Toggle Breakpoint]
+      ├─ New Breakpoint [New Breakpoint]
+      ├─ Enable All Breakpoints [Enable All Breakpoints]
+      ├─ Disable All Breakpoints [Disable All Breakpoints]
+      ├─ Remove All Breakpoints [Remove All Breakpoints]
+      ├─ Install Additional Debuggers... [Install Additional Debuggers...]
+  ├─ Terminal 菜单 [Terminal 菜单]
+    └─ Terminal 菜单展开内容 [Terminal 菜单展开内容]
+      ├─ New Terminal [New Terminal]
+        └─ 集成终端面板 [集成终端面板]
+      ├─ Split Terminal [Split Terminal]
+      ├─ Run Task... [Run Task...]
+      ├─ Run Build Task... [Run Build Task...]
+      ├─ Run Active File [Run Active File]
+      ├─ Run Selected Text [Run Selected Text]
+      ├─ Show Running Tasks... [Show Running Tasks...]
+      ├─ Restart Running Task... [Restart Running Task...]
+      ├─ Terminate Task... [Terminate Task...]
+      ├─ Configure Tasks... [Configure Tasks...]
+      ├─ Configure Default Build Task... [Configure Default Build Task...]
+  ├─ Help 菜单 [Help 菜单]
+活动栏 [活动栏]
+  ├─ Explorer 入口 [Explorer 入口]
+  ├─ Search 入口 [Search 入口]
+  ├─ Source Control 入口 [Source Control 入口]
+  ├─ Run and Debug 入口 [Run and Debug 入口]
+  ├─ Extensions 入口 [Extensions 入口]
+  ├─ Accounts 入口 [Accounts 入口]
+  ├─ Manage 入口 [Manage 入口]
+状态栏 [状态栏]
+  ├─ 行列位置 [行列位置]
+  ├─ 缩进状态 [缩进状态]
+  ├─ 文件编码状态 [文件编码状态]
+  ├─ 行尾格式状态 [行尾格式状态]
+  ├─ 语言模式状态 [语言模式状态]
+  ├─ 通知入口 [通知入口]
+File 菜单展开内容 [File 菜单展开内容]
+  ├─ New Text File [New Text File]
+  ├─ New File... [File 菜单展开内容 / New File...]
+  ├─ New Window [New Window]
+  ├─ Open File... [File 菜单展开内容 / Open File...]
+  ├─ Open Folder... [File 菜单展开内容 / Open Folder...]
+  ├─ Open Workspace from File... [Open Workspace from File...]
+  ├─ Open Recent [Open Recent]
+  ├─ Add Folder to Workspace... [Add Folder to Workspace...]
+  ├─ Save Workspace As... [Save Workspace As...]
+  ├─ Duplicate Workspace [Duplicate Workspace]
+  ├─ Save [Save]
+  ├─ Save As... [Save As...]
+  ├─ Save All [Save All]
+  ├─ Share [Share]
+  ├─ Auto Save [Auto Save]
+  ├─ Preferences [Preferences]
+  ├─ Revert File [Revert File]
+  ├─ Close Editor [Close Editor]
+  ├─ Close Window [Close Window]
+  ├─ Exit [Exit]
+Edit 菜单展开内容 [Edit 菜单展开内容]
+  ├─ Undo [Undo]
+  ├─ Redo [Redo]
+  ├─ Cut [Cut]
+  ├─ Copy [Copy]
+  ├─ Paste [Paste]
+  ├─ Find [Find]
+  ├─ Replace [Replace]
+  ├─ Find in Files [Find in Files]
+  ├─ Replace in Files [Replace in Files]
+  ├─ Toggle Line Comment [Toggle Line Comment]
+  ├─ Toggle Block Comment [Toggle Block Comment]
+  ├─ Emmet: Expand Abbreviation [Emmet: Expand Abbreviation]
+Selection 菜单展开内容 [Selection 菜单展开内容]
+  ├─ Select All [Select All]
+  ├─ Expand Selection [Expand Selection]
+  ├─ Shrink Selection [Shrink Selection]
+  ├─ Copy Line Up [Copy Line Up]
+  ├─ Copy Line Down [Copy Line Down]
+  ├─ Move Line Up [Move Line Up]
+  ├─ Move Line Down [Move Line Down]
+  ├─ Duplicate Selection [Duplicate Selection]
+  ├─ Add Cursor Above [Add Cursor Above]
+  ├─ Add Cursor Below [Add Cursor Below]
+  ├─ Add Cursors to Line Ends [Add Cursors to Line Ends]
+  ├─ Add Next Occurrence [Add Next Occurrence]
+  ├─ Add Previous Occurrence [Add Previous Occurrence]
+  ├─ Select All Occurrences [Select All Occurrences]
+  ├─ Switch to Ctrl+Click for Multi-Cursor [Switch to Ctrl+Click for Multi-Cursor]
+  ├─ Column Selection Mode [Column Selection Mode]
+View 菜单展开内容 [View 菜单展开内容]
+  ├─ Command Palette... [Command Palette...]
+  ├─ Open View... [Open View...]
+  ├─ Appearance [Appearance]
+  ├─ Editor Layout [Editor Layout]
+  ├─ Explorer [Explorer]
+  ├─ Search [Search]
+  ├─ Source Control [Source Control]
+  ├─ Run [Run]
+  ├─ Extensions [Extensions]
+  ├─ Problems [Problems]
+  ├─ Output [Output]
+  ├─ Debug Console [Debug Console]
+  ├─ Terminal [Terminal]
+  ├─ Word Wrap [Word Wrap]
+Go 菜单展开内容 [Go 菜单展开内容]
+  ├─ Back [Back]
+  ├─ Forward [Forward]
+  ├─ Last Edit Location [Last Edit Location]
+  ├─ Switch Editor [Switch Editor]
+  ├─ Switch Group [Switch Group]
+  ├─ Go to File... [Go to File...]
+  ├─ Go to Symbol in Workspace... [Go to Symbol in Workspace...]
+  ├─ Go to Symbol in Editor... [Go to Symbol in Editor...]
+  ├─ Go to Definition [Go to Definition]
+  ├─ Go to Declaration [Go to Declaration]
+  ├─ Go to Type Definition [Go to Type Definition]
+  ├─ Go to Implementations [Go to Implementations]
+  ├─ Go to References [Go to References]
+  ├─ Go to Line/Column... [Go to Line/Column...]
+  ├─ Go to Bracket [Go to Bracket]
+  ├─ Next Problem [Next Problem]
+  ├─ Previous Problem [Previous Problem]
+  ├─ Next Change [Next Change]
+  ├─ Previous Change [Previous Change]
+Help 菜单展开内容 [Help 菜单展开内容]
+  ├─ Welcome [Welcome]
+    └─ Welcome 页面 [Welcome 页面]
+      ├─ New File... [Welcome 页面 / New File...]
+        └─ （条件：在 Welcome 页面点击 New File...）New File... 快速选择器 [New File... 快速选择器]
+          ├─ 文件名或类型输入框 [文件名或类型输入框]
+          ├─ Text File [Text File]
+            └─ （条件：在 New File... 快速选择器中选择 Text File。）[引用：文本编辑器 文本编辑器]
+          ├─ Jupyter Notebook [Jupyter Notebook]
+      ├─ Open File... [Welcome 页面 / Open File...]
+      ├─ Open Folder... [Welcome 页面 / Open Folder...]
+      ├─ Clone Git Repository... [Clone Git Repository...]
+      ├─ Connect to... [Connect to...]
+      ├─ Get Started with V... [Get Started with V...]
+      ├─ Learn the Fundam... [Learn the Fundam...]
+      ├─ Show welcome page on startup [Show welcome page on startup]
+  ├─ Show All Commands [Show All Commands]
+  ├─ Documentation [Documentation]
+  ├─ Editor Playground [Editor Playground]
+  ├─ Show Release Notes [Show Release Notes]
+  ├─ Keyboard Shortcuts Reference [Keyboard Shortcuts Reference]
+  ├─ Video Tutorials [Video Tutorials]
+  ├─ Tips and Tricks [Tips and Tricks]
+  ├─ Join Us on YouTube [Join Us on YouTube]
+  ├─ Search Feature Requests [Search Feature Requests]
+  ├─ Report Issue [Report Issue]
+  ├─ View License [View License]
+  ├─ Privacy Statement [Privacy Statement]
+  ├─ Toggle Developer Tools [Toggle Developer Tools]
+  ├─ Open Process Explorer [Open Process Explorer]
+  ├─ Check for Updates... [Check for Updates...]
+  ├─ About [About]
+上次已登记前景：路径面包屑目录列表
+
+本图：本轮重新截取的当前图；供本步判断，历史观察与动作证据仍以各自来源为准；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

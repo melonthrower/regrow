@@ -1,0 +1,160 @@
+{
+  "matches": [
+    {
+      "object": "/regions/0",
+      "identity": "r0003",
+      "stable_fields": [
+        "name"
+      ]
+    }
+  ],
+  "effective_candidate": {
+    "action_result": {
+      "exception": "none",
+      "description": "点击有未保存修改标记的 meeting_notes.txt 标签关闭控件后，VS Code 显示确认对话框，询问是否保存对该文件所作的更改，并提示不保存将丢失更改。对话框可见“Don't Save”“Cancel”“Save”三个按钮；未选择按钮，因此文件是否关闭及修改如何处理尚未确认。",
+      "recovery_handoff": "",
+      "returns_to_previous": false
+    },
+    "foreground": {
+      "description": "VS Code 的未保存更改确认对话框位于前景并接管交互；文本编辑器仍在后方可见，meeting_notes.txt 标签尚未确认关闭。"
+    },
+    "regions": [
+      {
+        "ref": "r0003",
+        "identity": "same",
+        "state_description": "meeting_notes.txt 有未保存修改；其关闭操作已弹出确认对话框，编辑器仍在后方可见。",
+        "local_knowledge": {
+          "update": [
+            {
+              "id": "k0001",
+              "text": "编辑器顶部显示打开的文件标签和路径面包屑，主体区域用于显示和编辑文件内容；仅凭画面中的内容不能确认其是否已保存或是否存在未保存修改。"
+            },
+            {
+              "id": "k0013",
+              "text": "在 meeting_notes.txt 编辑区全选后输入新文本，会替换原有内容；本次编辑后标签和窗口标题出现未保存修改标记。之后点击该标签的关闭控件，出现询问是否保存更改的确认对话框；本次未选择对话框选项。"
+            }
+          ]
+        },
+        "name": "文本编辑器"
+      },
+      {
+        "name": "meeting_notes.txt 未保存更改确认对话框",
+        "description": "VS Code 在关闭有未保存修改的 meeting_notes.txt 时显示的保存确认提示。",
+        "identity": "new",
+        "identity_evidence": "动作后图中出现独立的 VS Code 模态对话框，显示文件名、未保存更改提示及三个操作按钮；材料中没有对应的既有区块。",
+        "state_description": "对话框正在前景显示，尚未选择任何按钮。",
+        "bbox": {
+          "left": 421,
+          "top": 327,
+          "right": 931,
+          "bottom": 501
+        },
+        "ref": null
+      }
+    ],
+    "jump_to": [
+      {
+        "region_index": 1
+      }
+    ],
+    "function_updates": [
+      {
+        "region": "r0003",
+        "update": [
+          {
+            "ref": "关闭有未保存修改的文件标签",
+            "changes": {
+              "supports": [
+                "c0017"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "task_update": [
+      {
+        "task": "r0003/c0017 / 功能探索",
+        "decision": "answered",
+        "reason": "已在 meeting_notes.txt 有未保存修改时点击关闭控件，并观察到保存更改确认对话框；符合提示出现即结束的任务条件。"
+      }
+    ],
+    "uncertainties": [
+      "“Don't Save”“Cancel”“Save”按钮的实际结果尚未验证；按本任务条件未继续操作。"
+    ],
+    "controls": [
+      {
+        "ref": "c0017",
+        "knowledge": [
+          {
+            "index": 0,
+            "description": "点击可关闭 meeting_notes.txt 编辑器标签；标签右侧悬停后会显示 × 关闭控件，工具提示为“Close (Ctrl+W)”。本次在文件有未保存修改时点击该控件，出现询问是否保存更改的确认对话框；尚未选择对话框选项，文件关闭结果未确认。"
+          }
+        ],
+        "identity": "same"
+      },
+      {
+        "name": "Don't Save",
+        "knowledge": [
+          {
+            "description": "对话框中可见的按钮；提示文字说明不保存将丢失更改。尚未点击，实际结果未验证。"
+          }
+        ],
+        "may_open_content": false,
+        "needs_exploration": true,
+        "region_index": 1,
+        "bbox": {
+          "left": 597,
+          "top": 449,
+          "right": 704,
+          "bottom": 495
+        },
+        "ref": null,
+        "identity": "new"
+      },
+      {
+        "name": "Cancel",
+        "knowledge": [
+          {
+            "description": "对话框中可见的取消按钮。尚未点击，实际结果未验证。"
+          }
+        ],
+        "may_open_content": false,
+        "needs_exploration": true,
+        "region_index": 1,
+        "bbox": {
+          "left": 707,
+          "top": 449,
+          "right": 814,
+          "bottom": 495
+        },
+        "ref": null,
+        "identity": "new"
+      },
+      {
+        "name": "Save",
+        "knowledge": [
+          {
+            "description": "对话框中可见的保存按钮。尚未点击，保存及关闭结果未验证。"
+          }
+        ],
+        "may_open_content": false,
+        "needs_exploration": true,
+        "region_index": 1,
+        "bbox": {
+          "left": 817,
+          "top": 449,
+          "right": 924,
+          "bottom": 495
+        },
+        "ref": null,
+        "identity": "new"
+      }
+    ],
+    "current_regions": [
+      {
+        "region_index": 1
+      }
+    ]
+  }
+}

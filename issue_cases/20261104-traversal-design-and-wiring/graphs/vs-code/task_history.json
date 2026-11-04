@@ -1,0 +1,313 @@
+{
+  "r0001/功能探索": {
+    "original_ref": "record_history/3bc1c8b4cc61f39e5971533d09d83bda683d23c14d00e8c5ea654cd67520949d.json",
+    "source_call": "record_history/edf7e17d0300fb12441f567a25d859673575aa5ee57e4fb8f97cddcf51f46e98.json"
+  },
+  "r0001/c0002 / 功能探索": {
+    "original_ref": "record_history/46eaa81d36d3249081e03456f7dac359f3389a893045876d407c7057e6949fbd.json",
+    "source_call": "record_history/38f9735960b872b9c5b49d94d09a2fbc1c46082c17335ed6ecc821cd18a1d3cc.json",
+    "latest_update": "record_history/7dbff894b6f24bdca82c4054e6e1a7c6ff7fe7499b46118d68ea5b7ca0eb6ad7.json",
+    "result_evidence": "record_history/f5167a254b78b83ae5711dccb370595ba1d4037cb09b178d51ad545fa58d688b.json",
+    "visited_regions": "record_history/ffa849c65095b6c0dbf63f62fc4f5fbec0749cd62eb2b6dd902aec47263809e0.json"
+  },
+  "r0001/c0003 / 功能探索": {
+    "original_ref": "record_history/b0e72d7ea0a8e07edc587ec6d31ee6267c5215de0d085db22fcb3dc8eeb90ca9.json",
+    "source_call": "record_history/f5a8bf5bbda114a38f7020932f2650c914eeade3fd8f80ea8757f04a1815c70e.json",
+    "latest_update": "record_history/c587d0e01076b453965904e917976f73e43c96f92a01dfa52cd7197a8afddb48.json",
+    "result_evidence": "record_history/54ea9153562ff68dba20740a856fcdbb05e2f25c1fe7379e9e7924e63bbb1887.json",
+    "visited_regions": "record_history/0c2b8512791bf3b2030bd62961c8e58deb68343ed75473b01880234a71fe2626.json"
+  },
+  "r0001/c0004 / 功能探索": {
+    "original_ref": "record_history/73f37e769f3238611e63b24f4bfb8953f6a055e5745fd056f3881b9e8ad75fa8.json",
+    "source_call": "record_history/728408506045b5bebe23f3bdfe1223474cd13816244f2a0378a8ff764ded70ce.json",
+    "latest_update": "record_history/6f161faa1289c30ec97fd49bbcfd101b0b8af439f46decce5695b0b17977f259.json",
+    "result_evidence": "record_history/ff9f26aeb200060246594735d7d158e097c7d1a28d1bca0c4d19a81ecb5e4634.json",
+    "visited_regions": "record_history/ce83bf98afa69c0723b13425cd1866c71cfaf6518ac160bb92bcf0c0fcaf6cd7.json"
+  },
+  "r0001/c0005 / 功能探索": {
+    "original_ref": "record_history/5134f39ed2fb9b2d187cb615bd60d473d1690f79c3b873b5a8571e208aa4f5a1.json",
+    "source_call": "record_history/0cea2c2e32f8fb571eaa63ecf9552c3f64b348ac75c4aa11072aaf8545ebb722.json",
+    "latest_update": "record_history/3cbe82d8c32ef2079b310c1658c356b8e4200198282334785fb0c6e5cc59ef5e.json",
+    "result_evidence": "record_history/32e37c5107295c70b59928b1dce6a1a8ddc16323d1a550d3b539598b27275ab9.json",
+    "visited_regions": "record_history/18562bfdefa861502892eedd14314ca29224519d757050c52c51128bfbe186c2.json"
+  },
+  "r0001/c0006 / 功能探索": {
+    "original_ref": "record_history/5e8d0ed829fabf534018e8a570530ded70fbf79ecd9151f7da26d49507412166.json",
+    "source_call": "record_history/dfa96bf11bbbd1963678da9b20aef037350dd999d28aabadf6e8a6fb9e983c05.json",
+    "latest_update": "record_history/ac36d9efa68831cea06d17b52c0d257443a9f734aea944b3a4af0062fb336fc9.json",
+    "result_evidence": "record_history/19bce3a85501085acc392543ad57a9d1b8b86f65933f04acb65dcc6d53fa194a.json",
+    "visited_regions": "record_history/197c15c938df4972321e814e54f34c35809ebc1db9bb2fdf33310b18c53a9da3.json",
+    "update_history": "record_history/beb80ed3909aace775f3605651753c0745afe4f8f6e6b57c27cf28ed3b815b8d.json",
+    "completion_basis": "record_history/2f8eb4123b618294e8788a9d8f78ca0581f1aa2c8bfe81e98ca74c9da3c4479c.json"
+  },
+  "r0001/c0007 / 功能探索": {
+    "original_ref": "record_history/dd25739517982efbdc66f6aa8d94adf0006c5b5803f50dc65d6db366aff1ebd0.json",
+    "source_call": "record_history/4f47fbe37f10885932231891f3c8b2df760da4fada74475e196b4902d3affc73.json",
+    "latest_update": "record_history/2a9c7ed11a55a5c969894bd1a5c665a0e53bcbe0e5a59bd35045b8fc2696d445.json",
+    "result_evidence": "record_history/db465d94f727aae308d3e7ed7a2f5dc37ca34c7ec71ab55cacc88129a40243a1.json",
+    "visited_regions": "record_history/78ace7f9f628b1f712838c59ef26e7e0bff216567e30c8cd8c306611cb659eb8.json",
+    "update_history": "record_history/a0cb4ed87443d240ca73e6a8f684f6629a04219e579b07aa138574e9fc27e8c7.json",
+    "completion_basis": "record_history/ff5ded80272840aa6d60c6f28b1ad81a71fde8b80efb94344750678470090331.json"
+  },
+  "r0001/c0008 / 功能探索": {
+    "original_ref": "record_history/4aa13889e8424beed94e3c2eaae1c9416da1089f0eac10e4ac21124fdef886ca.json",
+    "source_call": "record_history/58b3b99f3315b2611a014ce16d7ed4cf767fb0aa90be30d1afb684bcd7ea452f.json"
+  },
+  "r0010/功能探索": {
+    "original_ref": "record_history/2d5efa73d5ef3e7ba72abc60167d76b966faca69ff03cdad5bd48e6dadd3dd41.json",
+    "source_call": "record_history/dbd2a1044ae97087676812b754940bbae8d10717165dcc2b27152c0050f48d7b.json",
+    "latest_update": "record_history/f80b9e62441ed46f0f189ab90b0ab2ab0f0e37490547fb5d08ec75dd9778e8a5.json",
+    "result_evidence": "record_history/04c2ba79296c372400a5581f74bfdb1c6da2045d8fc02f088c82c81b514b21ce.json",
+    "completion_basis": "record_history/304b35d9376236b2ecd87196e5f1b9d197cc4fa124b54fd26fcf421c2d1455c5.json",
+    "visited_regions": "record_history/84e1955dc1273ebe3965563c2b1b5ff6cba11d411222feb4547c1d8a6d7e2ac3.json"
+  },
+  "r0010/c0113 / 功能探索": {
+    "original_ref": "record_history/a0dad994b60fcce00dfa414af6393466623a157c95075ecb21fd8749eb988481.json",
+    "source_call": "record_history/d708fb743a556654ed8d80c8520da6ca623b457a943b3dd05bad7ee36892ff88.json"
+  },
+  "r0010/c0120 / 功能探索": {
+    "original_ref": "record_history/d8479720c22a04f63adc975f094f83a4cf9f2d7f25bf7a9255b5f2ab8f0efa09.json",
+    "source_call": "record_history/0c499e4ef6a33927460c6e169b9455e407b2de99971d684c3a767880936343c8.json"
+  },
+  "r0010/c0119 / 功能探索": {
+    "original_ref": "record_history/a0afe81e037232af5ce7b2be65d92e7e0db99665064bf9e8abeac38ead79e6d4.json",
+    "source_call": "record_history/de8a7d583e685185892b257afbac5fd5772bdf911da7bf05f973c21cc4ff1b04.json"
+  },
+  "r0010/c0121 / 功能探索": {
+    "original_ref": "record_history/84ea945f1d226d77122b3b9074d239008a746333dc023c0ac3d278a9aafe9466.json",
+    "source_call": "record_history/7617d6aafde9cecbb93525cedf58ceda002d74e4ef46cb47c9d00004a072f984.json"
+  },
+  "r0010/c0122 / 功能探索": {
+    "original_ref": "record_history/0036197bf85b0b8b2ddc88e491719b39ea1185090b85a12fd2a32df1cb94f6c5.json",
+    "source_call": "record_history/3d9b8fb31ba8f0652a2c5113b51569260b638f8eceb75a6df1e9ad2f9b99028a.json"
+  },
+  "r0010/c0123 / 功能探索": {
+    "original_ref": "record_history/633922af17216df08c07dfe48c8bd1a1018c6935309fa7bdb4146f1ab1e641aa.json",
+    "source_call": "record_history/8ea2a8ff8a1a159a1ed3b5dbbf9ac36f6ebdd37302d798096d693153d9f6bdb4.json"
+  },
+  "r0010/c0111 / 功能探索": {
+    "original_ref": "record_history/8932a3db4a794308d9837e9bac60381a962c3dff1346fc8c1929315641e932c9.json",
+    "source_call": "record_history/701a18416e222b31bdb7697afd5bf441d0813465eb493a64a5a7f2931cf43af2.json"
+  },
+  "r0010/c0112 / 功能探索": {
+    "original_ref": "record_history/7db8d409dac47316d0b9c730d63cc2a69282f1ee7c73706bbdec4810966ed653.json",
+    "source_call": "record_history/ed21bb65623bc8b0ecbbb993cd694378cd39ddc1542dde1d93c5a9eeaab3579c.json"
+  },
+  "r0010/c0115 / 功能探索": {
+    "original_ref": "record_history/1030fad20bf2ffd3ff27aae856cbb9a585962c56a6ebb95522aa09f8abd8a30d.json",
+    "source_call": "record_history/c88b67d1ac446e4892697a0099e52ab3aef60d38593c6b4760aaae0a43378076.json"
+  },
+  "r0010/c0116 / 功能探索": {
+    "original_ref": "record_history/5226c24fa5e6b7d569782c5075db69743fe489349bb1b15f750dbb314315ab58.json",
+    "source_call": "record_history/df468901e9dac090a1b6f751079771c73384d486ce8dbaf44945ad8ac68d8eb8.json"
+  },
+  "r0010/c0117 / 功能探索": {
+    "original_ref": "record_history/d5ed33816a8cf52490b7f565c0b0ab1f0be768c8637d12aaaf4c2c998dc858f6.json",
+    "source_call": "record_history/2f04a020a8161d26ce4d2db466f1784f542cd6dde50f5618382ab2e4e4f05829.json"
+  },
+  "r0010/c0118 / 功能探索": {
+    "original_ref": "record_history/a1014b1b5f21c0399e6a683c595b393031d6a17cf3ac9777b94f90d7bc6ce243.json",
+    "source_call": "record_history/32a8f66e1ef85e278ee71cdfcb131aed15455acd01ee5d536920be78dfc736d5.json"
+  },
+  "r0003/功能探索": {
+    "original_ref": "record_history/554f8650d8311ab2938e260f3f4e40e91147031faf42526b38d46d1c3ffc2923.json",
+    "source_call": "record_history/3060da67d6b5e0c666ff6931467564e3a5f2951967a078e4b12bf402ef32bd1a.json",
+    "blocker_history": "record_history/5d490044b79795b63ab1552bd3fdb76ceb4a11a784c865cfbca4a290c485fff0.json",
+    "latest_update": "record_history/05ca20b69dc1410970bba64c33fb679b453d96ed5abf4f26972aa1a685c591e0.json",
+    "deferral_history": "record_history/ee3da19a875c61dbda5fea7d6b066c904d4dd42dbec6e433ef544bb8b67dddf1.json",
+    "update_history": "record_history/004e31fbabab888e88122512638ab1c25d88ed3597cf73acadd2e1c4a786325c.json",
+    "result_evidence": "record_history/39985905d1be6fe86d43479ec6151ff6f3ab0ab039a04c572de20d99b8da6303.json",
+    "visited_regions": "record_history/67cac96bef1e4a2685b45c91d187c149492b123434f3d843bbada4fe122bbaf0.json",
+    "completion_basis": "record_history/5a05725d88935ad323fec0f753a06bcbc39d39f795c66e75847f8ed93f1a4f4a.json"
+  },
+  "r0003/c0020 / 功能探索": {
+    "original_ref": "record_history/bd6b32c592e5f7e7f9882144f25431566ab6f21f49ad491dabf5cd8568863cb8.json",
+    "source_call": "record_history/c3f3aec8864096d8ca43c109ed98193afe8c7e887c582efbb81a93e684c2fd17.json",
+    "latest_update": "record_history/b75c947fc3667f1218d9dbe7d58681dedb1cc1678f0e6df0a2c05ac3563a6b40.json",
+    "result_evidence": "record_history/2e051ba7887ff3c822c2bea60ae70cc7d6461ef41d3d967463d8c0390956da2f.json",
+    "completion_basis": "record_history/0caf65aee6767c534fd66b101d428ac89eab702b5cbe01c8ecf7c91e8033afd4.json",
+    "visited_regions": "record_history/926d9f3c1e58c0d201bda3f757721e9fb360bf309a9068a3a54fd35746cb82aa.json"
+  },
+  "r0003/c0021 / 功能探索": {
+    "original_ref": "record_history/c7c0579b1f0ff2fe053c8bf951b0d4532144bc4ead610b49e18ced273607c8b7.json",
+    "source_call": "record_history/92adc7d418d2719e4fa5e5ae271c77ad3e84041f927b3dd42a06181b5c2a35e9.json",
+    "latest_update": "record_history/eeae7a71aff27445247432b2fa9473b0371274b9e0e8441f67701b7319604905.json",
+    "result_evidence": "record_history/5f6649716120ad3d7b57688eafe5ebe23bec1a0e55b349217201e79a8b462f0a.json",
+    "completion_basis": "record_history/1df46f59d6a161ad3449ca5dacc2a389538c930b2ba0ebbc62154fd0c84adca6.json",
+    "visited_regions": "record_history/5c33c1dad379ed5c340219e529c9203cb4f7698e486ff5d3ef51e163f9ccc4ed.json"
+  },
+  "r0003/c0018 / 功能探索": {
+    "original_ref": "record_history/e46ca03f33bdc136dff85e698a56e7baecf5e6e174be6017634ba7dafaf459b8.json",
+    "source_call": "record_history/d499b8a827f4a630652b3f97f8e93edbf98a26ee076c537eb15b452153790780.json",
+    "latest_update": "record_history/12857b26df0caa224f3aac0c1537363b2e227b89c7255864e7cd9033fb040f5c.json",
+    "result_evidence": "record_history/ee43e4b403c10a64fa21bcc59f9019f21af0bbfd99988b2f577c614a434ce878.json",
+    "completion_basis": "record_history/b42dabfb7cc22fbe92c8dcc04e20c98a73bef998494215ac1a45173fcb9bdfce.json",
+    "visited_regions": "record_history/acb215b9f5e7170c3c6afb4643e8698929b3372076da93e3c6788ec8beda9e7a.json"
+  },
+  "r0003/c0017 / 功能探索": {
+    "original_ref": "record_history/415465a8f69a293821464dbb2231fa22a3ca5f6a345616babc6c3979a5e60039.json",
+    "source_call": "record_history/33165a945f5c84dc01f84e976f9e360d374b847f7bb916323afc65a9b100c8a5.json",
+    "latest_update": "record_history/f6e470b14e5b3c78fa3b30c434699c4aaee5328f317c073f5fa753a0df06b768.json",
+    "result_evidence": "record_history/ec4fdfcb3bfa1a0c858fb8ae1e658a2063b8860b407d65dec9bb11fda00be5db.json",
+    "visited_regions": "record_history/c8a6f9479aa069d860a2fe03a27b9e556ac54be731b7467ea2ee284177f787b3.json",
+    "update_history": "record_history/8c57ec336bddeb17aaf5f2d37a810a31e28c93e987e7e41396339bfc88b6e7c0.json"
+  },
+  "r0012/区块内容探索": {
+    "original_ref": "record_history/248c2e9322dce4ad0adba38257c32a59eb9e513bd223ef18515f23443d019a43.json",
+    "source_call": "record_history/9b33af241f401c09e7de6486a4b40693d366f87e43c4cd382eb6c2a79aee090b.json",
+    "latest_update": "record_history/857f7edfd5143789f495dfb880c60d755fd02fd567234c8fab6d6f5cfb615510.json",
+    "result_evidence": "record_history/fe1d8559d676901e0cfb38d050929a611f6e24c50019d59afd5b32095d8afc5e.json",
+    "completion_basis": "record_history/dd8150a096a80d18f8b5d4db188b73263a6e456ca3b48632e3d8e911b5e36637.json",
+    "visited_regions": "record_history/de05d75656acb18897010411b5f7b654eb1ae95bd8d8feb8af424c06e1304edd.json"
+  },
+  "r0015/功能探索": {
+    "original_ref": "record_history/8f8379d6d08a345af1eefde9a8890a3c541af60bfe8b369ef9eefbb0059e2960.json",
+    "source_call": "record_history/a0c9e8aad44111a5bd49b6b3dd5a490354675afbec3cc8b26a20016f07205d27.json",
+    "latest_update": "record_history/58b54798576be331c2e9556e320aaa217cfba90bca21eeb4f24ab440a7b27da7.json",
+    "result_evidence": "record_history/cf438b707964a2f0451c8e90c5a5e774f664507f81f9a2acb44c4e31cea2e839.json",
+    "completion_basis": "record_history/5ac1a3990c1077f082d08107823c34b4629bbf974896e5fdbe565a936736ef67.json",
+    "visited_regions": "record_history/46092b96592a1e3ef58dbaa3d5bb022ad2df0f4a503f715d3379d1bc08b67c51.json"
+  },
+  "r0015/c0135 / 功能探索": {
+    "original_ref": "record_history/5bc9dd7eae10f2d4ff6f356ab89d51959ecf2a9b3bd4e0ea86bd22324f3b451d.json",
+    "source_call": "record_history/2e4907936694b58976eaf8a9d050e6a16e12bd61bd6c01c85857fc6cbe8a064a.json"
+  },
+  "r0015/c0136 / 功能探索": {
+    "original_ref": "record_history/37557e4ffec808c51652e2117155b7cbd64ef5ca4981d39e767147e69a537023.json",
+    "source_call": "record_history/312acefc327fe71341c7355659d5646ef1bf92b96b66cdfa853b7af217986ce9.json"
+  },
+  "r0015/c0137 / 功能探索": {
+    "original_ref": "record_history/718ef0c44dc28cd515ab78c457b71f3b92935a33f1600636f24dcf1e9b23734e.json",
+    "source_call": "record_history/2d8ccb720b9d9cffe7fdf6a6596a84ac5219bf15fa3778333127687caedbc0b2.json"
+  },
+  "r0015/c0138 / 功能探索": {
+    "original_ref": "record_history/56d68123f3f7436ade63fa47cd4fe710a2a3c23ca463ce8f71864d5592867f64.json",
+    "source_call": "record_history/e4446d864ec3f597da8822ab1f8c8f7f6217a742a54fb43b71aff1c8154c6166.json"
+  },
+  "r0015/c0139 / 功能探索": {
+    "original_ref": "record_history/8da1331df4ef261fbac8950af8c81f74efaa08cd261425ea5a989eb6e2962c8b.json",
+    "source_call": "record_history/935549066d79c7b15decd7f4c63801fc52caed15594926d3134a0cbab7f811a8.json"
+  },
+  "r0015/c0140 / 功能探索": {
+    "original_ref": "record_history/e5cc3d07938da5dc821bc699cebaff848d0548d333e39d870d617a5c6011e162.json",
+    "source_call": "record_history/15e55eadadc0c01662dcf0edd6ac19f6bcc3e37913c8be7c7fe46357fe787a33.json"
+  },
+  "r0015/c0141 / 功能探索": {
+    "original_ref": "record_history/f70ba5ca6dd871829204ec967d9272effd5d081aac963210b9bb8edf885dabb2.json",
+    "source_call": "record_history/b31becad45bf0c6d9f4e538702bda7d671416ec47f601afb7dabdebb06afeed2.json"
+  },
+  "r0015/c0142 / 功能探索": {
+    "original_ref": "record_history/4fda078100cb9dd5152dd26b6d2351b3dd385db69f869b9722d9e43db25f99d2.json",
+    "source_call": "record_history/93a37b6fd3656970e6d90b6ee6cc93c37e6f8ffa17b3ebf3659a33d7b0b287f5.json"
+  },
+  "r0015/c0143 / 功能探索": {
+    "original_ref": "record_history/9b6e67ff0c4db60b1b21b64d650262353732be475de72c38fae39c33b82f2e6f.json",
+    "source_call": "record_history/6987a540f51a720928f85a9d94fab18274154afd1d2d206074f41a4cd97b8b82.json"
+  },
+  "r0015/c0144 / 功能探索": {
+    "original_ref": "record_history/18a03e391f5f0d0592ba57a1e717b380591143cce3904b929bed0c24ce73a52f.json",
+    "source_call": "record_history/bf4ecebfda0f0f2328d3516ca04b0107932b7c78ae8c56539d884c215dd54a5a.json"
+  },
+  "r0017/功能探索": {
+    "original_ref": "record_history/e80e7b3cdbcce62cfb827d690d85b22bf6b3e132853f5d241e9a239e26789237.json",
+    "source_call": "record_history/9bee162cf8c30bb7a0d810fe4c2eaa908854b9fbadf406f573745426c2b8a6a4.json",
+    "latest_update": "record_history/ec569d3180a3632b221daf7db10a50321901f6cceebca6550f9467161c8f8625.json",
+    "result_evidence": "record_history/3688eb81b8765addb84a190c0f6d948e31f50ece2e0da963d3c78aa6f10b76c9.json",
+    "completion_basis": "record_history/4f14201a6b2865110cc2e796a8f605a20236bb18a596cb6a46b2018ff86e6b58.json",
+    "visited_regions": "record_history/9f6316350f931565d723b920ade03fd15095de03d9a47a15e79febb3530e740a.json"
+  },
+  "r0017/c0146 / 功能探索": {
+    "original_ref": "record_history/c85667f478296d47aa8d036556256139c3f3a578356b0aee80bae76a9d02a246.json",
+    "source_call": "record_history/60bf424e84c6bc30134ac4c305d548b5a1251598582d219e16ab1b1119224403.json"
+  },
+  "r0017/c0148 / 功能探索": {
+    "original_ref": "record_history/fde1cdbe7c4a14a0704079928c6c7e45d4b1f1b5c017125b3d2be1aeb5533a43.json",
+    "source_call": "record_history/cdaf71debcb4b61492c1bbbdcd45baeb8f0908b89508147cd4452d8562ab9af3.json"
+  },
+  "r0017/c0156 / 功能探索": {
+    "original_ref": "record_history/9159d9d1e75c6d860957b6c73dc1a588e8a9d227362d74c636c80775230d8d58.json",
+    "source_call": "record_history/babe62d8507de722e1e0082ddd64fa91ce252ce257ec4b8307ae441858bdbc13.json"
+  },
+  "r0017/c0158 / 功能探索": {
+    "original_ref": "record_history/5ba2de1af698d1ebf6e4388ad966255e398bf61633456713767398b03db4df53.json",
+    "source_call": "record_history/015508d74ac0ceda352a8cb578ce823e26a83cc1ff99f9874ba7a1f7e0057632.json"
+  },
+  "r0017/c0159 / 功能探索": {
+    "original_ref": "record_history/4037ee4692f5fb6fa04f401967ec996665f1b434b0c8e32ba532cca2fa563367.json",
+    "source_call": "record_history/a387c416de9118617e8d21df52386ae9bd92b5c1efa62b88ed22927c8c3b566b.json"
+  },
+  "r0017/c0161 / 功能探索": {
+    "original_ref": "record_history/666deafd8e69cf512d237572b7a3aed3ec6b532b89103377517d599b464035f6.json",
+    "source_call": "record_history/e16a2802c1df0cd6349f3efbe60e20437ff3e4e7f558dd34423b7c30a74da959.json"
+  },
+  "r0018/功能探索": {
+    "original_ref": "record_history/25d2b1db249358ebc2698cd8734dcb999a615377a37f0fc49a9e41c598b28079.json",
+    "source_call": "record_history/2e15461ece9cdf3285a2178104c9bf7c74297a3d77ca34185d8ecfefbdd98693.json",
+    "latest_update": "record_history/2b556f56efbfc6a9cf58a4fa83b15d39c2752c0ec06fc089804c94bf0051bae8.json",
+    "result_evidence": "record_history/d917ae9c80d6b77746e885ba1cc0cada4ccd75aa04b08bbf146cbfdc3efa2bf4.json",
+    "completion_basis": "record_history/c26e41099d8e4825138a672bd1440d5e8c811823c17aedb2fd3a898428f05809.json",
+    "visited_regions": "record_history/48276e65d3e21654e15cee171bb45b55ad165e85b9a6207fcae7d8bc56319510.json"
+  },
+  "r0018/c0163 / 功能探索": {
+    "original_ref": "record_history/7ff452c7aab795bf1cca3b5f7e31afcca64288402d6b5c6d41b2b6625d9b2122.json",
+    "source_call": "record_history/0f1140f987bd05c39dd3743a4a1f77107c57c1c7ef1bdb8fe8329a49843de8c0.json"
+  },
+  "r0018/c0164 / 功能探索": {
+    "original_ref": "record_history/ed6f7815c6f9c716d3b1b80e1287a152da96c3e1cefc91293535b81902a32b17.json",
+    "source_call": "record_history/2b5dc22792326e2a257feab6068c897ce7bb77f180d30079d0b1eee95df5caf0.json"
+  },
+  "r0018/c0165 / 功能探索": {
+    "original_ref": "record_history/9bac469f4d5e1bac9e41618d125e93b1691bfe14949c8c7c33c101759628efdc.json",
+    "source_call": "record_history/d3c41e0923a86aca56aa7c9c48bd6ca98104a22673b6ff450871bf51701ea5da.json"
+  },
+  "r0018/c0166 / 功能探索": {
+    "original_ref": "record_history/ac6255740107caa8b2c10caa1ae75c300978309a8f8aab8a01c898c1ea05e829.json",
+    "source_call": "record_history/638ffffa917e33af49034e0df24a722117d5171d843406ac90df01376b6c5972.json"
+  },
+  "r0018/c0167 / 功能探索": {
+    "original_ref": "record_history/2ee7f53a116064bcd32b69928d78eaa1906ddb92958d74f8c901f44fb5fb6ac1.json",
+    "source_call": "record_history/a55ca12539ca84b6bc760462b072742e5757bcbfa2d9c4843bf045c08864a0c8.json"
+  },
+  "r0018/c0168 / 功能探索": {
+    "original_ref": "record_history/aa137d56af77fa46c3b9a607aeae486c064af527f52323a4f6957baea2d6ef27.json",
+    "source_call": "record_history/e33c1d87f98d3c962827667212f0e7b01752eb8c91a9f68e69b73392891f18f7.json"
+  },
+  "r0019/功能探索": {
+    "original_ref": "record_history/4e31368d13026210f113ccaf772b983ffba38e8f7144af084f2f630b031804fa.json",
+    "source_call": "record_history/9aac9a798428f35d171a9a1f94430be460047569901202f09ace0b90df7ebc2c.json",
+    "latest_update": "record_history/67fb574198a1f17498c4f7b63aceb60c62f974030a02b5c5cef5dd6bc1571486.json",
+    "result_evidence": "record_history/88f5188cb1b59ce56f505ac79d348427ae56c6ddc6499fcd3dcf05b806eaf3ac.json",
+    "completion_basis": "record_history/a06f8b343f8b2a3967b2bec9176384a9b31f47c50505807c416c7dbdc4493b0a.json",
+    "visited_regions": "record_history/5e7adc56d13cdaececab62a239bbe0fc791baae2e9336324be2cd718a3a46298.json"
+  },
+  "r0019/c0172 / 功能探索": {
+    "original_ref": "record_history/e6e611c0eaf929c7e259eb04f72000e960e381d1e964c7a77aa9f012cfd7c207.json",
+    "source_call": "record_history/2116e574f445f819e4cc4f9885fdbe774518a983071fee1e2c90313fcb206146.json"
+  },
+  "r0020/功能探索": {
+    "original_ref": "record_history/a3f0233dc2d250719b4fb58d739d54df97fb9be4933daa858545c8362f15c230.json",
+    "source_call": "record_history/8df320197f0a4ed4298fafa5905416e1a8a510412744f8b8fa67127b0bbab8ef.json",
+    "latest_update": "record_history/6143018a60c7c639d5a77a73fe49ce6f64fb364adbf9b3f6489f8502bbac3fbb.json",
+    "result_evidence": "record_history/1d119e31a25c500a807152f3485d9160f3f162d91dc58c2a9d7fbbfa095b3ce3.json",
+    "visited_regions": "record_history/6a98a381274d2e2a4d765cea022697845f5f07f1eb3bddd5c03b4460a446c89c.json",
+    "update_history": "record_history/5b0050948f40feb2b8248b9e0f7d99a49ff8a1d20ddb876ee11d15f5a83febb5.json",
+    "completion_basis": "record_history/801b1337648698705f828b5faa9e737bb70ade2943dcdb055ce7573f1f552be2.json"
+  },
+  "r0020/c0175 / 功能探索": {
+    "original_ref": "record_history/2bdf0154558caaa4adff2e83259827abb4b4f8c50ed7a6486e3dfdb417065524.json",
+    "source_call": "record_history/2a711d4e083931ce4ecae88e617b6e2931f5dbc9273c222c4fae05e05b4f451a.json",
+    "latest_update": "record_history/70569bbb76338205e7ad40ba1470248562fe0fe55aff7fb1a5b6d96ee9c97bcd.json",
+    "result_evidence": "record_history/7f66882981f9890eec08805ca975d28254b06b61410a26f989490a79d13b9fb8.json",
+    "visited_regions": "record_history/111f9de1afb2b88c554d87a751a424b12b5d059e9e94dc3de384972ee546b7f0.json",
+    "update_history": "record_history/0868587d584f86ac94130c60856bf1c48da79c6a0954d8cc9d3412758c86b71b.json",
+    "completion_basis": "record_history/9df85966097e57bc4377a4fb70f50680dce1630bf098255cca405463a73c497c.json"
+  },
+  "r0020/c0176 / 功能探索": {
+    "original_ref": "record_history/67afb4ccc50dd07efa725e65d4b987419a1bbb49e8cd673d55d87d5db2f16573.json",
+    "source_call": "record_history/6742b3f0700139d4d20b86ab1cbfdd7892595c48dde22b98034c3acabfc8a2a3.json",
+    "latest_update": "record_history/0b84d5056d4fe8dac1ee4241da313af15334c202bd84cdd75a35038f72047ed6.json",
+    "result_evidence": "record_history/265941e5a88d0f8a8f81b202b6c395ad126ff21e88e7ccfa37ece97692e88072.json",
+    "completion_basis": "record_history/3cde8dbf74ccc47f091e67fd2154469aa3c58bee00ffc56d5f16ca5fd5f8f4c8.json",
+    "visited_regions": "record_history/dbcbb942e4cf81558587765651208c8bffcb69f78403ec12e0836f92878c5501.json"
+  }
+}

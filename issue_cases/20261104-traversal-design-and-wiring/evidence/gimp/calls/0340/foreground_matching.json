@@ -1,0 +1,1347 @@
+{
+  "identified_regions": [
+    {
+      "source_field": "/regions/1",
+      "bbox": {
+        "left": 70,
+        "top": 60,
+        "right": 620,
+        "bottom": 90
+      }
+    },
+    {
+      "source_field": "/regions/2",
+      "bbox": {
+        "left": 70,
+        "top": 90,
+        "right": 260,
+        "bottom": 365
+      }
+    },
+    {
+      "source_field": "/regions/3",
+      "bbox": {
+        "left": 70,
+        "top": 365,
+        "right": 260,
+        "bottom": 800
+      }
+    },
+    {
+      "source_field": "/regions/4",
+      "bbox": {
+        "left": 280,
+        "top": 152,
+        "right": 1070,
+        "bottom": 767
+      }
+    },
+    {
+      "source_field": "/regions/5",
+      "bbox": {
+        "left": 1080,
+        "top": 90,
+        "right": 1280,
+        "bottom": 430
+      }
+    },
+    {
+      "source_field": "/regions/6",
+      "bbox": {
+        "left": 1080,
+        "top": 430,
+        "right": 1280,
+        "bottom": 800
+      }
+    }
+  ],
+  "template_rejections": [],
+  "source_call": "0340",
+  "frame_sha256": "d690eebc3fb128930dbccb409aa9e4b631907a377898b4a6c1d036c6a7d4770d",
+  "scope": {},
+  "ranking": [
+    {
+      "region": "r0001",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0001",
+          "score": 1.0,
+          "box": [
+            74,
+            64,
+            105,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.24841785430908203,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                74,
+                64,
+                105,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 74,
+              "top": 64,
+              "right": 105,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0001.png",
+            "evidence": {
+              "source_field": "/controls/0",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [
+              "File 菜单未展开，显示为菜单栏中的普通菜单项。"
+            ],
+            "image_conditions_evidence": {
+              "source_call": "0054",
+              "reason": "两图中该控件均位于主菜单栏左侧，都是 File 菜单；当前图可见其下方展开的命令列表，历史图中没有展开列表。"
+            },
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0003",
+          "score": 1.0,
+          "box": [
+            148,
+            64,
+            195,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.33183586597442627,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                148,
+                64,
+                195,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 148,
+              "top": 64,
+              "right": 195,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0003.png",
+            "evidence": {
+              "source_field": "/controls/2",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0004",
+          "score": 1.0,
+          "box": [
+            200,
+            64,
+            240,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.2784097194671631,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                200,
+                64,
+                240,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 200,
+              "top": 64,
+              "right": 240,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0004.png",
+            "evidence": {
+              "source_field": "/controls/3",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0007",
+          "score": 1.0,
+          "box": [
+            345,
+            64,
+            397,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.32587456703186035,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                345,
+                64,
+                397,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 345,
+              "top": 64,
+              "right": 397,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0007.png",
+            "evidence": {
+              "source_field": "/controls/6",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0008",
+          "score": 1.0,
+          "box": [
+            402,
+            64,
+            447,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.42339181900024414,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                402,
+                64,
+                447,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 402,
+              "top": 64,
+              "right": 447,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0008.png",
+            "evidence": {
+              "source_field": "/controls/7",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0009",
+          "score": 1.0,
+          "box": [
+            452,
+            64,
+            499,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.20349520444869995,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                452,
+                64,
+                499,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 452,
+              "top": 64,
+              "right": 499,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0009.png",
+            "evidence": {
+              "source_field": "/controls/8",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0010",
+          "score": 1.0,
+          "box": [
+            504,
+            64,
+            571,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.4319249391555786,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                504,
+                64,
+                571,
+                89
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 504,
+              "top": 64,
+              "right": 571,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0010.png",
+            "evidence": {
+              "source_field": "/controls/9",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0011",
+          "score": 0.9999995827674866,
+          "box": [
+            576,
+            64,
+            618,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.3497281074523926,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                576,
+                64,
+                618,
+                89
+              ],
+              "score": 0.9999995827674866,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 576,
+              "top": 64,
+              "right": 618,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0011.png",
+            "evidence": {
+              "source_field": "/controls/10",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0002",
+          "score": 0.9999995231628418,
+          "box": [
+            109,
+            64,
+            143,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.2596260905265808,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                109,
+                64,
+                143,
+                89
+              ],
+              "score": 0.9999995231628418,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 109,
+              "top": 64,
+              "right": 143,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0002.png",
+            "evidence": {
+              "source_field": "/controls/1",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0006",
+          "score": 0.9999991059303284,
+          "box": [
+            299,
+            64,
+            340,
+            89
+          ],
+          "scale": 1,
+          "gap": 0.27060139179229736,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                299,
+                64,
+                340,
+                89
+              ],
+              "score": 0.9999991059303284,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 299,
+              "top": 64,
+              "right": 340,
+              "bottom": 89
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0006.png",
+            "evidence": {
+              "source_field": "/controls/5",
+              "region": "r0001",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 10,
+      "eligible_controls": 11,
+      "total_controls": 11,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0003",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0017",
+          "score": 1.0,
+          "box": [
+            77,
+            459,
+            213,
+            480
+          ],
+          "scale": 1,
+          "gap": 0.4230809807777405,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                459,
+                213,
+                480
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 459,
+              "right": 213,
+              "bottom": 480
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0017.png",
+            "evidence": {
+              "source_field": "/controls/16",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0023",
+          "score": 1.0,
+          "box": [
+            76,
+            745,
+            236,
+            769
+          ],
+          "scale": 1,
+          "gap": 0.5443223714828491,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                76,
+                745,
+                236,
+                769
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 76,
+              "top": 745,
+              "right": 236,
+              "bottom": 769
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0023.png",
+            "evidence": {
+              "source_field": "/controls/22",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0022",
+          "score": 0.9999998211860657,
+          "box": [
+            77,
+            687,
+            236,
+            738
+          ],
+          "scale": 1,
+          "gap": 0.6285190284252167,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                687,
+                236,
+                738
+              ],
+              "score": 0.9999998211860657,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 77,
+              "top": 687,
+              "right": 236,
+              "bottom": 738
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0022.png",
+            "evidence": {
+              "source_field": "/controls/21",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0015",
+          "score": 0.9999995231628418,
+          "box": [
+            77,
+            407,
+            236,
+            428
+          ],
+          "scale": 1,
+          "gap": 0.4433179497718811,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                407,
+                236,
+                428
+              ],
+              "score": 0.9999995231628418,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 407,
+              "right": 236,
+              "bottom": 428
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0015.png",
+            "evidence": {
+              "source_field": "/controls/14",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0016",
+          "score": 0.9999992847442627,
+          "box": [
+            77,
+            433,
+            190,
+            454
+          ],
+          "scale": 1,
+          "gap": 0.4807444214820862,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                433,
+                190,
+                454
+              ],
+              "score": 0.9999992847442627,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 433,
+              "right": 190,
+              "bottom": 454
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0016.png",
+            "evidence": {
+              "source_field": "/controls/15",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0014",
+          "score": 0.9999987483024597,
+          "box": [
+            77,
+            382,
+            229,
+            403
+          ],
+          "scale": 1,
+          "gap": 0.4888322949409485,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                382,
+                229,
+                403
+              ],
+              "score": 0.9999987483024597,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 382,
+              "right": 229,
+              "bottom": 403
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0014.png",
+            "evidence": {
+              "source_field": "/controls/13",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 6,
+      "eligible_controls": 15,
+      "total_controls": 15,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0005",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0026",
+          "score": 1.0,
+          "box": [
+            1087,
+            171,
+            1265,
+            330
+          ],
+          "scale": 1,
+          "gap": 0.7557998299598694,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1087,
+                171,
+                1265,
+                330
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "显示多个画笔缩略图，可选择其中的画笔预设。",
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 1087,
+              "top": 171,
+              "right": 1265,
+              "bottom": 330
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0005/images/0001/c0026.png",
+            "evidence": {
+              "source_field": "/controls/25",
+              "region": "r0005",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0027",
+          "score": 1.0,
+          "box": [
+            1087,
+            365,
+            1267,
+            389
+          ],
+          "scale": 1,
+          "gap": 0.3358476161956787,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1087,
+                365,
+                1267,
+                389
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 1087,
+              "top": 365,
+              "right": 1267,
+              "bottom": 389
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0005/images/0001/c0027.png",
+            "evidence": {
+              "source_field": "/controls/26",
+              "region": "r0005",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0025",
+          "score": 0.999998927116394,
+          "box": [
+            1087,
+            126,
+            1266,
+            152
+          ],
+          "scale": 1,
+          "gap": 0.40064364671707153,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1087,
+                126,
+                1266,
+                152
+              ],
+              "score": 0.999998927116394,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 1087,
+              "top": 126,
+              "right": 1266,
+              "bottom": 152
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0005/images/0001/c0025.png",
+            "evidence": {
+              "source_field": "/controls/24",
+              "region": "r0005",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 3,
+      "eligible_controls": 3,
+      "total_controls": 3,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0002",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0012",
+          "score": 1.0,
+          "box": [
+            78,
+            126,
+            255,
+            281
+          ],
+          "scale": 1,
+          "gap": 0.781741589307785,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                78,
+                126,
+                255,
+                281
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "工具箱中排列有多个可独立选择的工具图标；裁剪图标当前高亮。",
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 78,
+              "top": 126,
+              "right": 255,
+              "bottom": 281
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0002/images/0001/c0012.png",
+            "evidence": {
+              "source_field": "/controls/11",
+              "region": "r0002",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0013",
+          "score": 0.9999999403953552,
+          "box": [
+            144,
+            288,
+            184,
+            327
+          ],
+          "scale": 1,
+          "gap": 0.37802332639694214,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                144,
+                288,
+                184,
+                327
+              ],
+              "score": 0.9999999403953552,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 144,
+              "top": 288,
+              "right": 184,
+              "bottom": 327
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0002/images/0001/c0013.png",
+            "evidence": {
+              "source_field": "/controls/12",
+              "region": "r0002",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 2,
+      "eligible_controls": 2,
+      "total_controls": 2,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0006",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0028",
+          "score": 0.9999996423721313,
+          "box": [
+            1087,
+            437,
+            1165,
+            466
+          ],
+          "scale": 1,
+          "gap": 0.4707234501838684,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1087,
+                437,
+                1165,
+                466
+              ],
+              "score": 0.9999996423721313,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1087,
+              "top": 437,
+              "right": 1165,
+              "bottom": 466
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0028.png",
+            "evidence": {
+              "source_field": "/controls/27",
+              "region": "r0006",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0031",
+          "score": 0.9238929152488708,
+          "box": [
+            1087,
+            526,
+            1207,
+            553
+          ],
+          "scale": 1,
+          "gap": 0.4393436312675476,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1087,
+                526,
+                1207,
+                553
+              ],
+              "score": 0.9238929152488708,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1087,
+              "top": 526,
+              "right": 1207,
+              "bottom": 553
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0031.png",
+            "evidence": {
+              "source_field": "/controls/30",
+              "region": "r0006",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 2,
+      "eligible_controls": 5,
+      "total_controls": 5,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0004",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 1,
+      "total_controls": 1,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0007",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 21,
+      "total_controls": 21,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0008",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 2,
+      "total_controls": 2,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0009",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 2,
+      "total_controls": 2,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0010",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 19,
+      "total_controls": 19,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0011",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 11,
+      "total_controls": 11,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0012",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 11,
+      "total_controls": 11,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0013",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 4,
+      "total_controls": 4,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0014",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 1,
+      "total_controls": 1,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

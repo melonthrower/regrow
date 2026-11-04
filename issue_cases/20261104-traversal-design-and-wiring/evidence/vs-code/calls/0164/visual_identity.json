@@ -1,0 +1,85 @@
+{
+  "matches": [
+    {
+      "object": "/regions/0",
+      "identity": "r0020",
+      "stable_fields": [
+        "name"
+      ]
+    },
+    {
+      "object": "/controls/0",
+      "identity": "c0174",
+      "stable_fields": [
+        "name",
+        "list_group"
+      ],
+      "same_frame_fields": [],
+      "same_frame_source": {}
+    }
+  ],
+  "effective_candidate": {
+    "action_result": {
+      "exception": "none",
+      "description": "点击 .config 名称区域后，该项由展开状态变为折叠状态（箭头朝右），列表显示其同级目录，如 .gnupg、.ipython、.local 等；settings.json 的路径面包屑和编辑器内容未变，未观察到导航。",
+      "recovery_handoff": "",
+      "returns_to_previous": false
+    },
+    "foreground": {
+      "description": "VS Code 中的路径面包屑目录列表仍打开，.config 项已折叠；列表覆盖在 settings.json 编辑器上方。"
+    },
+    "regions": [
+      {
+        "ref": "r0020",
+        "identity": "same",
+        "state_description": ".config 项处于折叠状态，同级目录可见。",
+        "name": "路径面包屑目录列表"
+      }
+    ],
+    "function_updates": [
+      {
+        "region": "r0020",
+        "add": [
+          {
+            "name": "收起已展开目录",
+            "description": "在路径面包屑目录列表中，点击已展开的 .config 项名称区域可收起该项并显示同级目录；本次未观察到路径导航。",
+            "supports": [
+              "c0174"
+            ]
+          }
+        ]
+      }
+    ],
+    "task_update": [
+      {
+        "task": "r0020/功能探索",
+        "decision": "answered",
+        "reason": "已有观察确认点击 .config 展开箭头会显示其子目录；本次点击名称区域使已展开的 .config 折叠并显示同级目录，路径面包屑和编辑器内容保持不变。因此已回答名称区域是否导航或产生其他可见结果的问题。",
+        "next_action": null
+      }
+    ],
+    "uncertainties": [],
+    "controls": [
+      {
+        "ref": "c0174",
+        "knowledge": [
+          {
+            "index": 0,
+            "description": "在路径目录列表中显示 .config 目录项及展开箭头。点击其左侧展开箭头会在列表内展开并显示子目录；点击已展开的 .config 名称区域会将其折叠并显示同级目录。上述操作均未改变 settings.json 的路径面包屑或编辑器内容，未观察到导航。"
+          }
+        ],
+        "may_open_content": true,
+        "needs_exploration": false,
+        "region_index": 0,
+        "identity": "same",
+        "name": ".config 目录项",
+        "list_group": "路径面包屑目录项"
+      }
+    ],
+    "current_regions": [
+      {
+        "region_index": 0
+      }
+    ]
+  }
+}

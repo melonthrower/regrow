@@ -1,0 +1,1948 @@
+{
+  "pipeline_step": "discovery",
+  "stage": "task_proposal",
+  "role": "task_proposal",
+  "action_ready": false,
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 VS Code 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n在本轮范围内提出有信息价值的问题及必要准备；允许增删改时，不把相关任务统一缩成只看选项。具体问题需要本轮未允许或另行安排的操作时，说明阻碍，保留未解决部分；不为绕过限制另造任务。\n\n# 本步任务\n结合本区块的对象、已有知识和任务，为仍影响使用的具体未知提出探索问题，判断本轮范围是否已考虑完整。\n\n已有知识能回答的问题，不因尚未亲自操作而重复提出。未知入口的任务以打开目标内容为终点；内部控件的独立问题留给后续探索。\n\n判断直接目标是否仍有未知时，结合「已登记直接目标知识」中的区块知识、控件知识、已回答问题及适用条件；已有适用答案的问题不重复提出。目标资料仅供判断，不扩大当前入口的原任务、不改变本轮可更新任务范围，也不能证明本次已到达目标或补证未确认的对象关联。\n\n同类数据的共同用法未知时选择代表，已有认识足以使用时复用。只有数据不同的其余条目不需要逐项登记或立题；独立功能、不同流程或必要条件的差异，再为尚未明确的部分提问。\n\n正例：通过一个关键词和一个匹配结果了解搜索流程后，即可复用；作用明确的窗口操作已有足够用法依据；通向未知功能界面的入口继续探索。\n\n# 本步用到的概念\n\n区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\nexception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。\n\nrecovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”\n\n引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。\n\n知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。\n\n功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。\n\n遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。\n\n先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。\n\n正例：已进入另一应用，只报告 external_app 及当前界面说明。\n反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\"、\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n# 更新控件用法：controls\nref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。\n\nknowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”\n\nknowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。\n\nknowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `controls` | 按需 | 列表 |\n\n### controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\".config 目录项\" |\n| `knowledge` | 必填 | 列表；至少 1 项 |\n\n### controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |\n\n# 更新区块用法：regions\nref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。\n\nlocal_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 按需 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"路径面包屑目录列表\" |\n| `local_knowledge` | 必填 | 对象 |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。\n\n功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 Help 菜单/搜索词 时，填写 [\"Help 菜单/搜索词\"]。\n\n本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件名称/参数名”加入功能的 constraints。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"路径面包屑目录列表\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |\n\n# 新增探索问题：operations\n只提出已有认识和已有任务尚未覆盖、且影响后续使用的问题，并按必要依赖和离开当前界面的影响排序。\n先判断本轮允许更新的旧任务，再提出必要的新问题。操作中发现的独立未知按对应对象处理，不要求立即给所有未知控件立题；能直接登记的认识无需另建任务。共同操作方式已知，不等于不同目标内容的用途也已了解。\n本轮范围不允许验证的效果保留未验证说明，不为了补齐确认、取消或撤销流程而新增越出范围的任务；不要把未验证写成已经成功执行。\n\ncontrol 选择本轮给定控件；同一控件已有同类型任务时不重复新增。没有新问题时填 []。\n\n正例：格式选择框尚未展开，候选未知，可以提出查看可选格式的问题；已有任务正在回答这个问题时，不再新增。\n\ntask_type 按尚缺的信息选择：\n\nfunction：了解控件尚不明确的功能、直接效果或打开的内容。\nparameter：查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。\nregion_content：查看当前区块尚未显示、可能补充功能或用法认识的内容。\n\nregion_content 的 control 填空字符串，reason 写出当前图中的具体线索。继续看到的只是同类数据条目、共同用法已清楚，且没有尚待查看的独立功能线索时，可以结束；仍有具体线索时继续了解。\n正例：列表下缘有被截断的功能入口，reason 写“查看下方尚未显示的功能入口”。\n\ncompletion_condition：说明当前问题，以及确认什么即可结束。\n入口任务以观察到入口打开目标内容为终点，随本次观察登记内容、用途和有证据的跳转关系。不要求继续操作内部控件、展开子菜单、调查参数或验证它们的业务结果；这些独立问题留给后续探索，不提前加入入口任务的完成条件。\n如果结果被遮挡或还看不清，就继续了解原来没看清的部分。需要准备或继续观察时可以多步操作，不按点击次数判完成。\n只有原问题明确要求完成某项业务操作时，才需要相应的结果证据；打开设置页面不等于业务已经完成。参数问题看清原问题需要的候选或填写条件即可，不要求逐项试用。\n\nfunction_refs：问题与已给功能有关时，引用该功能。\n正例：查看导出格式的问题，关联“导出文档”功能。\n\n本次同时新增了相关功能时，function_refs 也可使用该新增功能的唯一名称。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `operations` | 按需 | 列表 |\n\n### operations（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `control` | 必填 | 可用值：\".config 目录项\"、\"\" |\n| `task_type` | 必填 | 可用值：\"function\"、\"parameter\"、\"region_content\" |\n| `completion_condition` | 必填 | 文字；不能为空；格式须匹配 `\\S` |\n| `function_refs` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n| `reason` | 按需 | 文字；不能为空 |\n\n**条件规则：operations**\n条件：填写 `task_type`，且`task_type`符合：固定为 \"region_content\"。\n满足上述条件时：\n- 必须填写：`reason`。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `control` | 沿用上文 | 固定为 \"\" |\n\n# 本次范围是否考虑完整：inventory、evidence\ninventory 为 complete，表示本次范围的独立功能和共同操作方式已考虑，必要未知已由任务覆盖；同类数据已有代表即可，任务可以尚未执行。\npartial 表示存在具体的对象、归属或覆盖缺口；uncertain 表示当前材料不足以判断。evidence 写依据或具体缺口。\n\n正例：文件列表已有代表条目及其操作控件，尚未知的编辑入口已有任务，可以填 complete；其余同类文件无需逐条补登记。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `inventory` | 按需 | 可用值：\"complete\"、\"partial\"、\"uncertain\" |\n| `evidence` | 按需 | 文字；不能为空 |\n\n# 确认同一控件：shared_instances\n只有能够确认是同一个控件时才填写。control 是当前成员，source_region/source_control 指向给定的已有来源，reason 说明身份依据；无可确认关系时填 []。\n\n正例：切换界面时，一个工具栏及其控件持续存在，可结合已有身份和实际界面延续确认是原控件。仅有相似名称或用法不足以确认同一身份。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `shared_instances` | 按需 | 列表 |\n\n### shared_instances（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `control` | 必填 | 可用值：\".config 目录项\" |\n| `source_region` | 必填 | 可用值：\"路径面包屑目录列表\" |\n| `source_control` | 必填 | 可用值：\".config 目录项\" |\n| `reason` | 必填 | 文字；不能为空 |\n\n# 字段之间的条件\n本节字段格式：\n\n\n**条件规则：本次回复**\n条件：填写 `exception`，且`exception`符合：固定为 \"none\"。\n满足上述条件时：\n- 必须填写：`inventory`、`evidence`、`operations`、`shared_instances`、`function_updates`。\n\n**条件规则：本次回复**\n条件：填写 `exception`，且`exception`符合：固定为 \"none\"。\n不满足上述条件时：\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。",
+  "user_prompt": "## 背景\n范围：路径面包屑目录列表\n本轮目的：梳理本区块的用法与待解决问题\n\n## 本步问题\n本区块哪些功能已经了解，哪些仍有值得探索的具体问题？\n\n## 问题 1：本区块已有材料支持哪些功能，还需要探索哪些具体问题？\n\n### 目标应用\n本次要探索的应用：VS Code\n\n判断当前前景中正在探索的内容，是否属于这个应用。\n如果不属于，exception 填 external_app，\n简要说明现在到了什么界面，不再探索其中的功能。\n\n正例：前景已经是另一应用的页面，应报告 external_app。\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\n\n### 区块\n路径面包屑目录列表\n\n### 描述\n点击路径面包屑目录段后显示的目录项列表。\n\n### 控件\n#### 同类操作组\n\n**路径面包屑目录项**\n\n成员：.config 目录项\n\n已有材料（.config 目录项）：知识条目 0：在路径目录列表中显示 .config 目录项及展开箭头。本次未操作该项，点击或展开后的具体结果尚未确认。此前判断：仍有使用疑问。\n\n### 可更新功能的区块\n1：\n  名称：路径面包屑目录列表\n  ref：路径面包屑目录列表\n\n## 问题 2：独立功能与共同操作方式是否已有代表？还缺少哪些必要对象或归属依据？\n\n### 环境位置\n控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nVS Code 菜单栏 [VS Code 菜单栏]\n  ├─ File 菜单 [File 菜单]\n  ├─ Edit 菜单 [Edit 菜单]\n  ├─ Selection 菜单 [Selection 菜单]\n  ├─ View 菜单 [View 菜单]\n  ├─ Go 菜单 [Go 菜单]\n  ├─ Run 菜单 [Run 菜单]\n    └─ Run 菜单展开内容 [Run 菜单展开内容]\n      ├─ Start Debugging [Start Debugging]\n      ├─ Run Without Debugging [Run Without Debugging]\n      ├─ Stop Debugging [Stop Debugging]\n      ├─ Restart Debugging [Restart Debugging]\n      ├─ Open Configurations [Open Configurations]\n      ├─ Add Configuration... [Add Configuration...]\n        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）文本编辑器 [文本编辑器]\n          ├─ meeting_notes.txt 标签 [meeting_notes.txt 标签]\n          ├─ 关闭 meeting_notes.txt 标签 [关闭 meeting_notes.txt 标签]\n          ├─ 路径面包屑 [路径面包屑]\n            └─ （条件：在文本编辑器中点击路径面包屑的目录段。）路径面包屑目录列表 [路径面包屑目录列表]（本步关注区块）\n              ├─ .config 目录项 [.config 目录项]\n          ├─ 文本编辑区 [文本编辑区]\n          ├─ 拆分编辑器 [拆分编辑器]\n            └─ （条件：在文本编辑器中点击拆分编辑器入口。）右侧编辑组 [右侧编辑组]\n          ├─ 编辑器更多操作 [编辑器更多操作]\n            └─ 编辑器更多操作菜单 [编辑器更多操作菜单]\n              ├─ Show Opened Editors [Show Opened Editors]\n              ├─ Close All [Close All]\n              ├─ Close Saved [Close Saved]\n              ├─ Enable Preview Editors [Enable Preview Editors]\n              ├─ Maximize Group [Maximize Group]\n              ├─ Lock Group [Lock Group]\n          ├─ settings.json 标签 [settings.json 标签]\n          ├─ 右侧 settings.json 标签 [右侧 settings.json 标签]\n          ├─ Untitled-1 标签 [Untitled-1 标签]\n          ├─ 已记录的区块操作\n            └─ （条件：光标位于 settings.json 的 launch.configurations 数组占位位置时按 Ctrl+Space。）编辑器补全建议列表 [编辑器补全建议列表]\n        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）调试配置模板补全列表 [调试配置模板补全列表]\n          ├─ Chrome: Attach [Chrome: Attach]\n      ├─ Step Over [Step Over]\n      ├─ Step Into [Step Into]\n      ├─ Step Out [Step Out]\n      ├─ Continue [Continue]\n      ├─ Toggle Breakpoint [Toggle Breakpoint]\n      ├─ New Breakpoint [New Breakpoint]\n      ├─ Enable All Breakpoints [Enable All Breakpoints]\n      ├─ Disable All Breakpoints [Disable All Breakpoints]\n      ├─ Remove All Breakpoints [Remove All Breakpoints]\n      ├─ Install Additional Debuggers... [Install Additional Debuggers...]\n  ├─ Terminal 菜单 [Terminal 菜单]\n    └─ Terminal 菜单展开内容 [Terminal 菜单展开内容]\n      ├─ New Terminal [New Terminal]\n        └─ 集成终端面板 [集成终端面板]\n      ├─ Split Terminal [Split Terminal]\n      ├─ Run Task... [Run Task...]\n      ├─ Run Build Task... [Run Build Task...]\n      ├─ Run Active File [Run Active File]\n      ├─ Run Selected Text [Run Selected Text]\n      ├─ Show Running Tasks... [Show Running Tasks...]\n      ├─ Restart Running Task... [Restart Running Task...]\n      ├─ Terminate Task... [Terminate Task...]\n      ├─ Configure Tasks... [Configure Tasks...]\n      ├─ Configure Default Build Task... [Configure Default Build Task...]\n  ├─ Help 菜单 [Help 菜单]\n活动栏 [活动栏]\n  ├─ Explorer 入口 [Explorer 入口]\n  ├─ Search 入口 [Search 入口]\n  ├─ Source Control 入口 [Source Control 入口]\n  ├─ Run and Debug 入口 [Run and Debug 入口]\n  ├─ Extensions 入口 [Extensions 入口]\n  ├─ Accounts 入口 [Accounts 入口]\n  ├─ Manage 入口 [Manage 入口]\n状态栏 [状态栏]\n  ├─ 行列位置 [行列位置]\n  ├─ 缩进状态 [缩进状态]\n  ├─ 文件编码状态 [文件编码状态]\n  ├─ 行尾格式状态 [行尾格式状态]\n  ├─ 语言模式状态 [语言模式状态]\n  ├─ 通知入口 [通知入口]\nFile 菜单展开内容 [File 菜单展开内容]\n  ├─ New Text File [New Text File]\n  ├─ New File... [File 菜单展开内容 / New File...]\n  ├─ New Window [New Window]\n  ├─ Open File... [File 菜单展开内容 / Open File...]\n  ├─ Open Folder... [File 菜单展开内容 / Open Folder...]\n  ├─ Open Workspace from File... [Open Workspace from File...]\n  ├─ Open Recent [Open Recent]\n  ├─ Add Folder to Workspace... [Add Folder to Workspace...]\n  ├─ Save Workspace As... [Save Workspace As...]\n  ├─ Duplicate Workspace [Duplicate Workspace]\n  ├─ Save [Save]\n  ├─ Save As... [Save As...]\n  ├─ Save All [Save All]\n  ├─ Share [Share]\n  ├─ Auto Save [Auto Save]\n  ├─ Preferences [Preferences]\n  ├─ Revert File [Revert File]\n  ├─ Close Editor [Close Editor]\n  ├─ Close Window [Close Window]\n  ├─ Exit [Exit]\nEdit 菜单展开内容 [Edit 菜单展开内容]\n  ├─ Undo [Undo]\n  ├─ Redo [Redo]\n  ├─ Cut [Cut]\n  ├─ Copy [Copy]\n  ├─ Paste [Paste]\n  ├─ Find [Find]\n  ├─ Replace [Replace]\n  ├─ Find in Files [Find in Files]\n  ├─ Replace in Files [Replace in Files]\n  ├─ Toggle Line Comment [Toggle Line Comment]\n  ├─ Toggle Block Comment [Toggle Block Comment]\n  ├─ Emmet: Expand Abbreviation [Emmet: Expand Abbreviation]\nSelection 菜单展开内容 [Selection 菜单展开内容]\n  ├─ Select All [Select All]\n  ├─ Expand Selection [Expand Selection]\n  ├─ Shrink Selection [Shrink Selection]\n  ├─ Copy Line Up [Copy Line Up]\n  ├─ Copy Line Down [Copy Line Down]\n  ├─ Move Line Up [Move Line Up]\n  ├─ Move Line Down [Move Line Down]\n  ├─ Duplicate Selection [Duplicate Selection]\n  ├─ Add Cursor Above [Add Cursor Above]\n  ├─ Add Cursor Below [Add Cursor Below]\n  ├─ Add Cursors to Line Ends [Add Cursors to Line Ends]\n  ├─ Add Next Occurrence [Add Next Occurrence]\n  ├─ Add Previous Occurrence [Add Previous Occurrence]\n  ├─ Select All Occurrences [Select All Occurrences]\n  ├─ Switch to Ctrl+Click for Multi-Cursor [Switch to Ctrl+Click for Multi-Cursor]\n  ├─ Column Selection Mode [Column Selection Mode]\nView 菜单展开内容 [View 菜单展开内容]\n  ├─ Command Palette... [Command Palette...]\n  ├─ Open View... [Open View...]\n  ├─ Appearance [Appearance]\n  ├─ Editor Layout [Editor Layout]\n  ├─ Explorer [Explorer]\n  ├─ Search [Search]\n  ├─ Source Control [Source Control]\n  ├─ Run [Run]\n  ├─ Extensions [Extensions]\n  ├─ Problems [Problems]\n  ├─ Output [Output]\n  ├─ Debug Console [Debug Console]\n  ├─ Terminal [Terminal]\n  ├─ Word Wrap [Word Wrap]\nGo 菜单展开内容 [Go 菜单展开内容]\n  ├─ Back [Back]\n  ├─ Forward [Forward]\n  ├─ Last Edit Location [Last Edit Location]\n  ├─ Switch Editor [Switch Editor]\n  ├─ Switch Group [Switch Group]\n  ├─ Go to File... [Go to File...]\n  ├─ Go to Symbol in Workspace... [Go to Symbol in Workspace...]\n  ├─ Go to Symbol in Editor... [Go to Symbol in Editor...]\n  ├─ Go to Definition [Go to Definition]\n  ├─ Go to Declaration [Go to Declaration]\n  ├─ Go to Type Definition [Go to Type Definition]\n  ├─ Go to Implementations [Go to Implementations]\n  ├─ Go to References [Go to References]\n  ├─ Go to Line/Column... [Go to Line/Column...]\n  ├─ Go to Bracket [Go to Bracket]\n  ├─ Next Problem [Next Problem]\n  ├─ Previous Problem [Previous Problem]\n  ├─ Next Change [Next Change]\n  ├─ Previous Change [Previous Change]\nHelp 菜单展开内容 [Help 菜单展开内容]\n  ├─ Welcome [Welcome]\n    └─ Welcome 页面 [Welcome 页面]\n      ├─ New File... [Welcome 页面 / New File...]\n        └─ （条件：在 Welcome 页面点击 New File...）New File... 快速选择器 [New File... 快速选择器]\n          ├─ 文件名或类型输入框 [文件名或类型输入框]\n          ├─ Text File [Text File]\n            └─ （条件：在 New File... 快速选择器中选择 Text File。）[引用：文本编辑器 文本编辑器]\n          ├─ Jupyter Notebook [Jupyter Notebook]\n      ├─ Open File... [Welcome 页面 / Open File...]\n      ├─ Open Folder... [Welcome 页面 / Open Folder...]\n      ├─ Clone Git Repository... [Clone Git Repository...]\n      ├─ Connect to... [Connect to...]\n      ├─ Get Started with V... [Get Started with V...]\n      ├─ Learn the Fundam... [Learn the Fundam...]\n      ├─ Show welcome page on startup [Show welcome page on startup]\n  ├─ Show All Commands [Show All Commands]\n  ├─ Documentation [Documentation]\n  ├─ Editor Playground [Editor Playground]\n  ├─ Show Release Notes [Show Release Notes]\n  ├─ Keyboard Shortcuts Reference [Keyboard Shortcuts Reference]\n  ├─ Video Tutorials [Video Tutorials]\n  ├─ Tips and Tricks [Tips and Tricks]\n  ├─ Join Us on YouTube [Join Us on YouTube]\n  ├─ Search Feature Requests [Search Feature Requests]\n  ├─ Report Issue [Report Issue]\n  ├─ View License [View License]\n  ├─ Privacy Statement [Privacy Statement]\n  ├─ Toggle Developer Tools [Toggle Developer Tools]\n  ├─ Open Process Explorer [Open Process Explorer]\n  ├─ Check for Updates... [Check for Updates...]\n  ├─ About [About]\n上次已登记前景：文本编辑器、路径面包屑目录列表\n\n## 本步的补充依据与限制\n### 本次观察的未确认事项\n来源与用途：以下是观察时留下、尚未判断是否值得调查的候选线索，不是用户要求或已有任务。由你结合当前对象、已有知识及后续使用需要决定是否提出任务；不因原文写了尚未验证，就把它纳入结算条件。\n观察原文：路径面包屑目录列表中的目录项被点击或通过展开箭头操作后，是导航到该目录、展开子目录还是产生其他结果，尚未确认。\n\n本图：本轮重新截取的当前图；供本步判断，历史观察与动作证据仍以各自来源为准；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "dynamic_prompt": "{\n  \"区块\": \"路径面包屑目录列表\",\n  \"描述\": \"点击路径面包屑目录段后显示的目录项列表。\",\n  \"控件\": \"### 同类操作组\\n\\n**路径面包屑目录项**\\n\\n成员：.config 目录项\\n\\n已有材料（.config 目录项）：知识条目 0：在路径目录列表中显示 .config 目录项及展开箭头。本次未操作该项，点击或展开后的具体结果尚未确认。此前判断：仍有使用疑问。\",\n  \"环境位置\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\nVS Code 菜单栏 [VS Code 菜单栏]\\n  ├─ File 菜单 [File 菜单]\\n  ├─ Edit 菜单 [Edit 菜单]\\n  ├─ Selection 菜单 [Selection 菜单]\\n  ├─ View 菜单 [View 菜单]\\n  ├─ Go 菜单 [Go 菜单]\\n  ├─ Run 菜单 [Run 菜单]\\n    └─ Run 菜单展开内容 [Run 菜单展开内容]\\n      ├─ Start Debugging [Start Debugging]\\n      ├─ Run Without Debugging [Run Without Debugging]\\n      ├─ Stop Debugging [Stop Debugging]\\n      ├─ Restart Debugging [Restart Debugging]\\n      ├─ Open Configurations [Open Configurations]\\n      ├─ Add Configuration... [Add Configuration...]\\n        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）文本编辑器 [文本编辑器]\\n          ├─ meeting_notes.txt 标签 [meeting_notes.txt 标签]\\n          ├─ 关闭 meeting_notes.txt 标签 [关闭 meeting_notes.txt 标签]\\n          ├─ 路径面包屑 [路径面包屑]\\n            └─ （条件：在文本编辑器中点击路径面包屑的目录段。）路径面包屑目录列表 [路径面包屑目录列表]（本步关注区块）\\n              ├─ .config 目录项 [.config 目录项]\\n          ├─ 文本编辑区 [文本编辑区]\\n          ├─ 拆分编辑器 [拆分编辑器]\\n            └─ （条件：在文本编辑器中点击拆分编辑器入口。）右侧编辑组 [右侧编辑组]\\n          ├─ 编辑器更多操作 [编辑器更多操作]\\n            └─ 编辑器更多操作菜单 [编辑器更多操作菜单]\\n              ├─ Show Opened Editors [Show Opened Editors]\\n              ├─ Close All [Close All]\\n              ├─ Close Saved [Close Saved]\\n              ├─ Enable Preview Editors [Enable Preview Editors]\\n              ├─ Maximize Group [Maximize Group]\\n              ├─ Lock Group [Lock Group]\\n          ├─ settings.json 标签 [settings.json 标签]\\n          ├─ 右侧 settings.json 标签 [右侧 settings.json 标签]\\n          ├─ Untitled-1 标签 [Untitled-1 标签]\\n          ├─ 已记录的区块操作\\n            └─ （条件：光标位于 settings.json 的 launch.configurations 数组占位位置时按 Ctrl+Space。）编辑器补全建议列表 [编辑器补全建议列表]\\n        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）调试配置模板补全列表 [调试配置模板补全列表]\\n          ├─ Chrome: Attach [Chrome: Attach]\\n      ├─ Step Over [Step Over]\\n      ├─ Step Into [Step Into]\\n      ├─ Step Out [Step Out]\\n      ├─ Continue [Continue]\\n      ├─ Toggle Breakpoint [Toggle Breakpoint]\\n      ├─ New Breakpoint [New Breakpoint]\\n      ├─ Enable All Breakpoints [Enable All Breakpoints]\\n      ├─ Disable All Breakpoints [Disable All Breakpoints]\\n      ├─ Remove All Breakpoints [Remove All Breakpoints]\\n      ├─ Install Additional Debuggers... [Install Additional Debuggers...]\\n  ├─ Terminal 菜单 [Terminal 菜单]\\n    └─ Terminal 菜单展开内容 [Terminal 菜单展开内容]\\n      ├─ New Terminal [New Terminal]\\n        └─ 集成终端面板 [集成终端面板]\\n      ├─ Split Terminal [Split Terminal]\\n      ├─ Run Task... [Run Task...]\\n      ├─ Run Build Task... [Run Build Task...]\\n      ├─ Run Active File [Run Active File]\\n      ├─ Run Selected Text [Run Selected Text]\\n      ├─ Show Running Tasks... [Show Running Tasks...]\\n      ├─ Restart Running Task... [Restart Running Task...]\\n      ├─ Terminate Task... [Terminate Task...]\\n      ├─ Configure Tasks... [Configure Tasks...]\\n      ├─ Configure Default Build Task... [Configure Default Build Task...]\\n  ├─ Help 菜单 [Help 菜单]\\n活动栏 [活动栏]\\n  ├─ Explorer 入口 [Explorer 入口]\\n  ├─ Search 入口 [Search 入口]\\n  ├─ Source Control 入口 [Source Control 入口]\\n  ├─ Run and Debug 入口 [Run and Debug 入口]\\n  ├─ Extensions 入口 [Extensions 入口]\\n  ├─ Accounts 入口 [Accounts 入口]\\n  ├─ Manage 入口 [Manage 入口]\\n状态栏 [状态栏]\\n  ├─ 行列位置 [行列位置]\\n  ├─ 缩进状态 [缩进状态]\\n  ├─ 文件编码状态 [文件编码状态]\\n  ├─ 行尾格式状态 [行尾格式状态]\\n  ├─ 语言模式状态 [语言模式状态]\\n  ├─ 通知入口 [通知入口]\\nFile 菜单展开内容 [File 菜单展开内容]\\n  ├─ New Text File [New Text File]\\n  ├─ New File... [File 菜单展开内容 / New File...]\\n  ├─ New Window [New Window]\\n  ├─ Open File... [File 菜单展开内容 / Open File...]\\n  ├─ Open Folder... [File 菜单展开内容 / Open Folder...]\\n  ├─ Open Workspace from File... [Open Workspace from File...]\\n  ├─ Open Recent [Open Recent]\\n  ├─ Add Folder to Workspace... [Add Folder to Workspace...]\\n  ├─ Save Workspace As... [Save Workspace As...]\\n  ├─ Duplicate Workspace [Duplicate Workspace]\\n  ├─ Save [Save]\\n  ├─ Save As... [Save As...]\\n  ├─ Save All [Save All]\\n  ├─ Share [Share]\\n  ├─ Auto Save [Auto Save]\\n  ├─ Preferences [Preferences]\\n  ├─ Revert File [Revert File]\\n  ├─ Close Editor [Close Editor]\\n  ├─ Close Window [Close Window]\\n  ├─ Exit [Exit]\\nEdit 菜单展开内容 [Edit 菜单展开内容]\\n  ├─ Undo [Undo]\\n  ├─ Redo [Redo]\\n  ├─ Cut [Cut]\\n  ├─ Copy [Copy]\\n  ├─ Paste [Paste]\\n  ├─ Find [Find]\\n  ├─ Replace [Replace]\\n  ├─ Find in Files [Find in Files]\\n  ├─ Replace in Files [Replace in Files]\\n  ├─ Toggle Line Comment [Toggle Line Comment]\\n  ├─ Toggle Block Comment [Toggle Block Comment]\\n  ├─ Emmet: Expand Abbreviation [Emmet: Expand Abbreviation]\\nSelection 菜单展开内容 [Selection 菜单展开内容]\\n  ├─ Select All [Select All]\\n  ├─ Expand Selection [Expand Selection]\\n  ├─ Shrink Selection [Shrink Selection]\\n  ├─ Copy Line Up [Copy Line Up]\\n  ├─ Copy Line Down [Copy Line Down]\\n  ├─ Move Line Up [Move Line Up]\\n  ├─ Move Line Down [Move Line Down]\\n  ├─ Duplicate Selection [Duplicate Selection]\\n  ├─ Add Cursor Above [Add Cursor Above]\\n  ├─ Add Cursor Below [Add Cursor Below]\\n  ├─ Add Cursors to Line Ends [Add Cursors to Line Ends]\\n  ├─ Add Next Occurrence [Add Next Occurrence]\\n  ├─ Add Previous Occurrence [Add Previous Occurrence]\\n  ├─ Select All Occurrences [Select All Occurrences]\\n  ├─ Switch to Ctrl+Click for Multi-Cursor [Switch to Ctrl+Click for Multi-Cursor]\\n  ├─ Column Selection Mode [Column Selection Mode]\\nView 菜单展开内容 [View 菜单展开内容]\\n  ├─ Command Palette... [Command Palette...]\\n  ├─ Open View... [Open View...]\\n  ├─ Appearance [Appearance]\\n  ├─ Editor Layout [Editor Layout]\\n  ├─ Explorer [Explorer]\\n  ├─ Search [Search]\\n  ├─ Source Control [Source Control]\\n  ├─ Run [Run]\\n  ├─ Extensions [Extensions]\\n  ├─ Problems [Problems]\\n  ├─ Output [Output]\\n  ├─ Debug Console [Debug Console]\\n  ├─ Terminal [Terminal]\\n  ├─ Word Wrap [Word Wrap]\\nGo 菜单展开内容 [Go 菜单展开内容]\\n  ├─ Back [Back]\\n  ├─ Forward [Forward]\\n  ├─ Last Edit Location [Last Edit Location]\\n  ├─ Switch Editor [Switch Editor]\\n  ├─ Switch Group [Switch Group]\\n  ├─ Go to File... [Go to File...]\\n  ├─ Go to Symbol in Workspace... [Go to Symbol in Workspace...]\\n  ├─ Go to Symbol in Editor... [Go to Symbol in Editor...]\\n  ├─ Go to Definition [Go to Definition]\\n  ├─ Go to Declaration [Go to Declaration]\\n  ├─ Go to Type Definition [Go to Type Definition]\\n  ├─ Go to Implementations [Go to Implementations]\\n  ├─ Go to References [Go to References]\\n  ├─ Go to Line/Column... [Go to Line/Column...]\\n  ├─ Go to Bracket [Go to Bracket]\\n  ├─ Next Problem [Next Problem]\\n  ├─ Previous Problem [Previous Problem]\\n  ├─ Next Change [Next Change]\\n  ├─ Previous Change [Previous Change]\\nHelp 菜单展开内容 [Help 菜单展开内容]\\n  ├─ Welcome [Welcome]\\n    └─ Welcome 页面 [Welcome 页面]\\n      ├─ New File... [Welcome 页面 / New File...]\\n        └─ （条件：在 Welcome 页面点击 New File...）New File... 快速选择器 [New File... 快速选择器]\\n          ├─ 文件名或类型输入框 [文件名或类型输入框]\\n          ├─ Text File [Text File]\\n            └─ （条件：在 New File... 快速选择器中选择 Text File。）[引用：文本编辑器 文本编辑器]\\n          ├─ Jupyter Notebook [Jupyter Notebook]\\n      ├─ Open File... [Welcome 页面 / Open File...]\\n      ├─ Open Folder... [Welcome 页面 / Open Folder...]\\n      ├─ Clone Git Repository... [Clone Git Repository...]\\n      ├─ Connect to... [Connect to...]\\n      ├─ Get Started with V... [Get Started with V...]\\n      ├─ Learn the Fundam... [Learn the Fundam...]\\n      ├─ Show welcome page on startup [Show welcome page on startup]\\n  ├─ Show All Commands [Show All Commands]\\n  ├─ Documentation [Documentation]\\n  ├─ Editor Playground [Editor Playground]\\n  ├─ Show Release Notes [Show Release Notes]\\n  ├─ Keyboard Shortcuts Reference [Keyboard Shortcuts Reference]\\n  ├─ Video Tutorials [Video Tutorials]\\n  ├─ Tips and Tricks [Tips and Tricks]\\n  ├─ Join Us on YouTube [Join Us on YouTube]\\n  ├─ Search Feature Requests [Search Feature Requests]\\n  ├─ Report Issue [Report Issue]\\n  ├─ View License [View License]\\n  ├─ Privacy Statement [Privacy Statement]\\n  ├─ Toggle Developer Tools [Toggle Developer Tools]\\n  ├─ Open Process Explorer [Open Process Explorer]\\n  ├─ Check for Updates... [Check for Updates...]\\n  ├─ About [About]\\n上次已登记前景：文本编辑器、路径面包屑目录列表\",\n  \"本次观察的未确认事项\": {\n    \"来源与用途\": \"以下是观察时留下、尚未判断是否值得调查的候选线索，不是用户要求或已有任务。由你结合当前对象、已有知识及后续使用需要决定是否提出任务；不因原文写了尚未验证，就把它纳入结算条件。\",\n    \"观察原文\": \"路径面包屑目录列表中的目录项被点击或通过展开箭头操作后，是导航到该目录、展开子目录还是产生其他结果，尚未确认。\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"区块任务清点\",\n    \"范围\": \"路径面包屑目录列表\",\n    \"目的\": \"梳理本区块的用法与待解决问题\",\n    \"本步边界\": \"按当前观察补充本区块的未知或本轮指定的旧问题；沿用已有任务。未展开的旧任务仍保留覆盖义务。\"\n  },\n  \"可更新功能的区块\": [\n    {\n      \"名称\": \"路径面包屑目录列表\",\n      \"ref\": \"路径面包屑目录列表\"\n    }\n  ],\n  \"目标应用\": \"本次要探索的应用：VS Code\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\"\n}\n\n本图：本轮重新截取的当前图；供本步判断，历史观察与动作证据仍以各自来源为准；原图 1280×800 像素。",
+  "screenshots": [
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/session-09/round-0002/current.png"
+  ],
+  "image_refs": [
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/session-09/round-0002/current.png"
+  ],
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "inventory": {
+        "type": "string",
+        "enum": [
+          "complete",
+          "partial",
+          "uncertain"
+        ]
+      },
+      "evidence": {
+        "type": "string",
+        "minLength": 1
+      },
+      "operations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "control": {
+              "type": "string",
+              "enum": [
+                ".config 目录项",
+                ""
+              ]
+            },
+            "task_type": {
+              "type": "string",
+              "enum": [
+                "function",
+                "parameter",
+                "region_content"
+              ]
+            },
+            "completion_condition": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S",
+              "description": "结合本对象、已有知识与后续操作或导航需要，自行写明具体未知弄清到什么程度即可结算；允许观察推翻用途推测，不把出现预期界面或业务成功预填为必须结果，不预编操作步骤。"
+            },
+            "function_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提出区块内容探索的具体理由，例如下缘条目被截断；不另建evidence字段。"
+            }
+          },
+          "required": [
+            "control",
+            "task_type",
+            "completion_condition"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "task_type": {
+                    "const": "region_content"
+                  }
+                },
+                "required": [
+                  "task_type"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "control": {
+                    "const": ""
+                  }
+                },
+                "required": [
+                  "reason"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "shared_instances": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "control": {
+              "type": "string",
+              "minLength": 1,
+              "enum": [
+                ".config 目录项"
+              ],
+              "description": "当前区块中的控件ID。"
+            },
+            "source_region": {
+              "type": "string",
+              "minLength": 1,
+              "enum": [
+                "路径面包屑目录列表"
+              ],
+              "description": "来源区块ID。"
+            },
+            "source_control": {
+              "type": "string",
+              "minLength": 1,
+              "enum": [
+                ".config 目录项"
+              ],
+              "description": "来源控件ID。"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "control",
+            "source_region",
+            "source_control",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "function_updates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "enum": [
+                "路径面包屑目录列表"
+              ]
+            },
+            "add": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "supports": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "constraints": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "description",
+                  "supports"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "update": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "changes": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "supports": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "constraints": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "uniqueItems": true
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "ref",
+                  "changes"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "remove": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "replace_with": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "ref",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "region"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "controls": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "enum": [
+                ".config 目录项"
+              ],
+              "description": "控件树中的控件ID，例如Help 菜单。"
+            },
+            "knowledge": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "修订给定已有知识时引用其序号；新增省略。"
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                  },
+                  "constraints": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "description"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "description"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "ref",
+            "knowledge"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "regions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "enum": [
+                "路径面包屑目录列表"
+              ]
+            },
+            "local_knowledge": {
+              "type": "object",
+              "properties": {
+                "add": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "update": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "text"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "delete": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "ref",
+            "local_knowledge"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "exception": {
+        "type": "string",
+        "enum": [
+          "none",
+          "blocking_popup",
+          "system_error",
+          "unexpected_exit",
+          "external_app",
+          "unclassified"
+        ]
+      },
+      "recovery_handoff": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "exception",
+      "recovery_handoff"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "exception": {
+              "const": "none"
+            }
+          },
+          "required": [
+            "exception"
+          ]
+        },
+        "then": {
+          "required": [
+            "inventory",
+            "evidence",
+            "operations",
+            "shared_instances",
+            "function_updates"
+          ]
+        },
+        "else": {
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "inventory"
+                ]
+              },
+              {
+                "required": [
+                  "evidence"
+                ]
+              },
+              {
+                "required": [
+                  "operations"
+                ]
+              },
+              {
+                "required": [
+                  "shared_instances"
+                ]
+              },
+              {
+                "required": [
+                  "function_updates"
+                ]
+              },
+              {
+                "required": [
+                  "controls"
+                ]
+              },
+              {
+                "required": [
+                  "regions"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 VS Code 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "平台/遍历环境只读.prompt",
+      "text": "操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n在本轮范围内提出有信息价值的问题及必要准备；允许增删改时，不把相关任务统一缩成只看选项。具体问题需要本轮未允许或另行安排的操作时，说明阻碍，保留未解决部分；不为绕过限制另造任务。"
+    },
+    {
+      "path": "调用/提出探索任务.prompt",
+      "text": "# 本步任务\n结合本区块的对象、已有知识和任务，为仍影响使用的具体未知提出探索问题，判断本轮范围是否已考虑完整。\n\n已有知识能回答的问题，不因尚未亲自操作而重复提出。未知入口的任务以打开目标内容为终点；内部控件的独立问题留给后续探索。\n\n判断直接目标是否仍有未知时，结合「已登记直接目标知识」中的区块知识、控件知识、已回答问题及适用条件；已有适用答案的问题不重复提出。目标资料仅供判断，不扩大当前入口的原任务、不改变本轮可更新任务范围，也不能证明本次已到达目标或补证未确认的对象关联。\n\n同类数据的共同用法未知时选择代表，已有认识足以使用时复用。只有数据不同的其余条目不需要逐项登记或立题；独立功能、不同流程或必要条件的差异，再为尚未明确的部分提问。\n\n正例：通过一个关键词和一个匹配结果了解搜索流程后，即可复用；作用明确的窗口操作已有足够用法依据；通向未知功能界面的入口继续探索。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.common",
+      "text": "区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.exception_values",
+      "text": "exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.recovery_handoff",
+      "text": "recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.references",
+      "text": "引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_base",
+      "text": "知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function",
+      "text": "功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.definition",
+      "text": "遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.application_exception",
+      "text": "先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。\n\n正例：已进入另一应用，只报告 external_app 及当前界面说明。\n反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。"
+    },
+    {
+      "path": "输出格式/字段组-region.application_exception",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\"、\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `recovery_handoff` | 必填 | 文字 |"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_revision",
+      "text": "# 更新控件用法：controls\nref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_description",
+      "text": "knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_index",
+      "text": "knowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_constraints",
+      "text": "knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}"
+    },
+    {
+      "path": "输出格式/字段组-control.knowledge_revision",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `controls` | 按需 | 列表 |\n\n### controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\".config 目录项\" |\n| `knowledge` | 必填 | 列表；至少 1 项 |\n\n### controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.knowledge_edit",
+      "text": "# 更新区块用法：regions\nref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.local_knowledge",
+      "text": "local_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。"
+    },
+    {
+      "path": "输出格式/字段组-region.knowledge_edit",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 按需 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"路径面包屑目录列表\" |\n| `local_knowledge` | 必填 | 对象 |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_updates",
+      "text": "# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_constraints",
+      "text": "功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 Help 菜单/搜索词 时，填写 [\"Help 菜单/搜索词\"]。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_new_constraints",
+      "text": "本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件名称/参数名”加入功能的 constraints。"
+    },
+    {
+      "path": "输出格式/字段组-region.function_updates",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"路径面包屑目录列表\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.operations",
+      "text": "# 新增探索问题：operations\n只提出已有认识和已有任务尚未覆盖、且影响后续使用的问题，并按必要依赖和离开当前界面的影响排序。\n先判断本轮允许更新的旧任务，再提出必要的新问题。操作中发现的独立未知按对应对象处理，不要求立即给所有未知控件立题；能直接登记的认识无需另建任务。共同操作方式已知，不等于不同目标内容的用途也已了解。\n本轮范围不允许验证的效果保留未验证说明，不为了补齐确认、取消或撤销流程而新增越出范围的任务；不要把未验证写成已经成功执行。\n\ncontrol 选择本轮给定控件；同一控件已有同类型任务时不重复新增。没有新问题时填 []。\n\n正例：格式选择框尚未展开，候选未知，可以提出查看可选格式的问题；已有任务正在回答这个问题时，不再新增。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.type",
+      "text": "task_type 按尚缺的信息选择：\n\nfunction：了解控件尚不明确的功能、直接效果或打开的内容。\nparameter：查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。\nregion_content：查看当前区块尚未显示、可能补充功能或用法认识的内容。\n\nregion_content 的 control 填空字符串，reason 写出当前图中的具体线索。继续看到的只是同类数据条目、共同用法已清楚，且没有尚待查看的独立功能线索时，可以结束；仍有具体线索时继续了解。\n正例：列表下缘有被截断的功能入口，reason 写“查看下方尚未显示的功能入口”。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.completion_condition",
+      "text": "completion_condition：说明当前问题，以及确认什么即可结束。\n入口任务以观察到入口打开目标内容为终点，随本次观察登记内容、用途和有证据的跳转关系。不要求继续操作内部控件、展开子菜单、调查参数或验证它们的业务结果；这些独立问题留给后续探索，不提前加入入口任务的完成条件。\n如果结果被遮挡或还看不清，就继续了解原来没看清的部分。需要准备或继续观察时可以多步操作，不按点击次数判完成。\n只有原问题明确要求完成某项业务操作时，才需要相应的结果证据；打开设置页面不等于业务已经完成。参数问题看清原问题需要的候选或填写条件即可，不要求逐项试用。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.function_refs",
+      "text": "function_refs：问题与已给功能有关时，引用该功能。\n正例：查看导出格式的问题，关联“导出文档”功能。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.new_function_refs",
+      "text": "本次同时新增了相关功能时，function_refs 也可使用该新增功能的唯一名称。"
+    },
+    {
+      "path": "输出格式/字段组-task.operations",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `operations` | 按需 | 列表 |\n\n### operations（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `control` | 必填 | 可用值：\".config 目录项\"、\"\" |\n| `task_type` | 必填 | 可用值：\"function\"、\"parameter\"、\"region_content\" |\n| `completion_condition` | 必填 | 文字；不能为空；格式须匹配 `\\S` |\n| `function_refs` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n| `reason` | 按需 | 文字；不能为空 |\n\n**条件规则：operations**\n条件：填写 `task_type`，且`task_type`符合：固定为 \"region_content\"。\n满足上述条件时：\n- 必须填写：`reason`。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `control` | 沿用上文 | 固定为 \"\" |"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.scope",
+      "text": "# 本次范围是否考虑完整：inventory、evidence\ninventory 为 complete，表示本次范围的独立功能和共同操作方式已考虑，必要未知已由任务覆盖；同类数据已有代表即可，任务可以尚未执行。\npartial 表示存在具体的对象、归属或覆盖缺口；uncertain 表示当前材料不足以判断。evidence 写依据或具体缺口。\n\n正例：文件列表已有代表条目及其操作控件，尚未知的编辑入口已有任务，可以填 complete；其余同类文件无需逐条补登记。"
+    },
+    {
+      "path": "输出格式/字段组-task.scope",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `inventory` | 按需 | 可用值：\"complete\"、\"partial\"、\"uncertain\" |\n| `evidence` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.shared_instances",
+      "text": "# 确认同一控件：shared_instances\n只有能够确认是同一个控件时才填写。control 是当前成员，source_region/source_control 指向给定的已有来源，reason 说明身份依据；无可确认关系时填 []。\n\n正例：切换界面时，一个工具栏及其控件持续存在，可结合已有身份和实际界面延续确认是原控件。仅有相似名称或用法不足以确认同一身份。"
+    },
+    {
+      "path": "输出格式/字段组-region.shared_instances",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `shared_instances` | 按需 | 列表 |\n\n### shared_instances（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `control` | 必填 | 可用值：\".config 目录项\" |\n| `source_region` | 必填 | 可用值：\"路径面包屑目录列表\" |\n| `source_control` | 必填 | 可用值：\".config 目录项\" |\n| `reason` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "输出格式/跨字段条件",
+      "text": "# 字段之间的条件\n本节字段格式：\n\n\n**条件规则：本次回复**\n条件：填写 `exception`，且`exception`符合：固定为 \"none\"。\n满足上述条件时：\n- 必须填写：`inventory`、`evidence`、`operations`、`shared_instances`、`function_updates`。\n\n**条件规则：本次回复**\n条件：填写 `exception`，且`exception`符合：固定为 \"none\"。\n不满足上述条件时："
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。"
+    }
+  ],
+  "source": {
+    "region": "r0020",
+    "observation": "update:0154",
+    "controls": [
+      "c0174"
+    ],
+    "snapshot": "knowledge_snapshots/a0029-0154-06d608ad6781"
+  },
+  "frame_context": {
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/runs/desktop.vs_code_20261104T122642_ca56278e/action_attempts/a0029/after.png": "本轮任务清点依据图",
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/session-09/round-0002/current.png": "本轮重新截取的当前图；供本步判断，历史观察与动作证据仍以各自来源为准"
+  },
+  "work_context": {
+    "kind": "task_proposal",
+    "region": "r0020",
+    "task": null,
+    "reason": "梳理本区块的用法与待解决问题"
+  },
+  "context_scope": {
+    "region": "r0020",
+    "kind": "task_proposal",
+    "tasks": [],
+    "regions": [
+      "r0020"
+    ],
+    "controls": {
+      "r0003": [],
+      "r0020": []
+    },
+    "selection": {
+      "role": "task_proposal",
+      "mode": null,
+      "work_kind": "task_proposal",
+      "source": {
+        "region": "r0020",
+        "observation": "update:0154",
+        "controls": [
+          "c0174"
+        ]
+      },
+      "task_types": [],
+      "preparatory_action": false
+    }
+  },
+  "function_update_regions": [
+    "r0020"
+  ],
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 VS Code 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "control_refs": [
+    "c0001",
+    "c0002",
+    "c0003",
+    "c0004",
+    "c0005",
+    "c0006",
+    "c0007",
+    "c0008",
+    "c0009",
+    "c0010",
+    "c0011",
+    "c0012",
+    "c0013",
+    "c0014",
+    "c0015",
+    "c0016",
+    "c0017",
+    "c0018",
+    "c0019",
+    "c0020",
+    "c0021",
+    "c0022",
+    "c0023",
+    "c0024",
+    "c0025",
+    "c0026",
+    "c0027",
+    "c0028",
+    "c0029",
+    "c0030",
+    "c0031",
+    "c0032",
+    "c0033",
+    "c0034",
+    "c0035",
+    "c0036",
+    "c0037",
+    "c0038",
+    "c0039",
+    "c0040",
+    "c0041",
+    "c0042",
+    "c0043",
+    "c0044",
+    "c0045",
+    "c0046",
+    "c0047",
+    "c0048",
+    "c0049",
+    "c0050",
+    "c0051",
+    "c0052",
+    "c0053",
+    "c0054",
+    "c0055",
+    "c0056",
+    "c0057",
+    "c0058",
+    "c0059",
+    "c0060",
+    "c0061",
+    "c0062",
+    "c0063",
+    "c0064",
+    "c0065",
+    "c0066",
+    "c0067",
+    "c0068",
+    "c0069",
+    "c0070",
+    "c0071",
+    "c0072",
+    "c0073",
+    "c0074",
+    "c0075",
+    "c0076",
+    "c0077",
+    "c0078",
+    "c0079",
+    "c0080",
+    "c0081",
+    "c0082",
+    "c0083",
+    "c0084",
+    "c0085",
+    "c0086",
+    "c0087",
+    "c0088",
+    "c0089",
+    "c0090",
+    "c0091",
+    "c0092",
+    "c0093",
+    "c0094",
+    "c0095",
+    "c0096",
+    "c0097",
+    "c0098",
+    "c0099",
+    "c0100",
+    "c0101",
+    "c0102",
+    "c0103",
+    "c0104",
+    "c0105",
+    "c0106",
+    "c0107",
+    "c0108",
+    "c0109",
+    "c0110",
+    "c0111",
+    "c0112",
+    "c0113",
+    "c0114",
+    "c0115",
+    "c0116",
+    "c0117",
+    "c0118",
+    "c0119",
+    "c0120",
+    "c0121",
+    "c0122",
+    "c0123",
+    "c0124",
+    "c0125",
+    "c0126",
+    "c0127",
+    "c0128",
+    "c0129",
+    "c0130",
+    "c0131",
+    "c0132",
+    "c0133",
+    "c0134",
+    "c0135",
+    "c0136",
+    "c0137",
+    "c0138",
+    "c0139",
+    "c0140",
+    "c0141",
+    "c0142",
+    "c0143",
+    "c0144",
+    "c0145",
+    "c0146",
+    "c0147",
+    "c0148",
+    "c0149",
+    "c0150",
+    "c0151",
+    "c0152",
+    "c0153",
+    "c0154",
+    "c0155",
+    "c0156",
+    "c0157",
+    "c0158",
+    "c0159",
+    "c0160",
+    "c0161",
+    "c0162",
+    "c0163",
+    "c0164",
+    "c0165",
+    "c0166",
+    "c0167",
+    "c0168",
+    "c0169",
+    "c0170",
+    "c0171",
+    "c0172",
+    "c0173",
+    "c0174"
+  ],
+  "name_contract": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "uncertain"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "control": {
+                "type": "string",
+                "enum": [
+                  "c0174",
+                  ""
+                ]
+              },
+              "task_type": {
+                "type": "string",
+                "enum": [
+                  "function",
+                  "parameter",
+                  "region_content"
+                ]
+              },
+              "completion_condition": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S",
+                "description": "结合本对象、已有知识与后续操作或导航需要，自行写明具体未知弄清到什么程度即可结算；允许观察推翻用途推测，不把出现预期界面或业务成功预填为必须结果，不预编操作步骤。"
+              },
+              "function_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "description": "提出区块内容探索的具体理由，例如下缘条目被截断；不另建evidence字段。"
+              }
+            },
+            "required": [
+              "control",
+              "task_type",
+              "completion_condition"
+            ],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "task_type": {
+                      "const": "region_content"
+                    }
+                  },
+                  "required": [
+                    "task_type"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "control": {
+                      "const": ""
+                    }
+                  },
+                  "required": [
+                    "reason"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "shared_instances": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "control": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "c0174"
+                ],
+                "description": "当前区块中的控件ID。"
+              },
+              "source_region": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "r0020"
+                ],
+                "description": "来源区块ID。"
+              },
+              "source_control": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "c0174"
+                ],
+                "description": "来源控件ID。"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "control",
+              "source_region",
+              "source_control",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "function_updates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "region": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "r0020"
+                ]
+              },
+              "add": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "supports": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "constraints": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "description",
+                    "supports"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "update": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "changes": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "supports": {
+                          "type": "array",
+                          "minItems": 1,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "constraints": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        }
+                      },
+                      "required": [],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "ref",
+                    "changes"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "remove": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "replace_with": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "ref",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "region"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "enum": [
+                  "c0174"
+                ],
+                "description": "控件树中的控件ID，例如c0008。"
+              },
+              "knowledge": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "修订给定已有知识时引用其序号；新增省略。"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                    },
+                    "constraints": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "description"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "ref",
+              "knowledge"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "enum": [
+                  "r0020"
+                ]
+              },
+              "local_knowledge": {
+                "type": "object",
+                "properties": {
+                  "add": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "update": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "text"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "delete": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "ref",
+              "local_knowledge"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none",
+            "blocking_popup",
+            "system_error",
+            "unexpected_exit",
+            "external_app",
+            "unclassified"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "exception": {
+                "const": "none"
+              }
+            },
+            "required": [
+              "exception"
+            ]
+          },
+          "then": {
+            "required": [
+              "inventory",
+              "evidence",
+              "operations",
+              "shared_instances",
+              "function_updates"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "inventory"
+                  ]
+                },
+                {
+                  "required": [
+                    "evidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "operations"
+                  ]
+                },
+                {
+                  "required": [
+                    "shared_instances"
+                  ]
+                },
+                {
+                  "required": [
+                    "function_updates"
+                  ]
+                },
+                {
+                  "required": [
+                    "controls"
+                  ]
+                },
+                {
+                  "required": [
+                    "regions"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "names": {
+      "r0001": "VS Code 菜单栏",
+      "r0002": "活动栏",
+      "r0003": "文本编辑器",
+      "r0004": "状态栏",
+      "r0005": "File 菜单展开内容",
+      "r0006": "Edit 菜单展开内容",
+      "r0007": "Selection 菜单展开内容",
+      "r0008": "View 菜单展开内容",
+      "r0009": "Go 菜单展开内容",
+      "r0010": "Run 菜单展开内容",
+      "r0011": "调试配置模板补全列表",
+      "r0012": "右侧编辑组",
+      "r0013": "编辑器补全建议列表",
+      "r0014": "编辑器更多操作菜单",
+      "r0015": "Terminal 菜单展开内容",
+      "r0016": "集成终端面板",
+      "r0017": "Help 菜单展开内容",
+      "r0018": "Welcome 页面",
+      "r0019": "New File... 快速选择器",
+      "r0020": "路径面包屑目录列表",
+      "c0001": "File 菜单",
+      "c0002": "Edit 菜单",
+      "c0003": "Selection 菜单",
+      "c0004": "View 菜单",
+      "c0005": "Go 菜单",
+      "c0006": "Run 菜单",
+      "c0007": "Terminal 菜单",
+      "c0008": "Help 菜单",
+      "c0009": "Explorer 入口",
+      "c0010": "Search 入口",
+      "c0011": "Source Control 入口",
+      "c0012": "Run and Debug 入口",
+      "c0013": "Extensions 入口",
+      "c0014": "Accounts 入口",
+      "c0015": "Manage 入口",
+      "c0016": "meeting_notes.txt 标签",
+      "c0017": "关闭 meeting_notes.txt 标签",
+      "c0018": "路径面包屑",
+      "c0019": "文本编辑区",
+      "c0020": "拆分编辑器",
+      "c0021": "编辑器更多操作",
+      "c0125": "settings.json 标签",
+      "c0126": "右侧 settings.json 标签",
+      "c0173": "Untitled-1 标签",
+      "c0022": "行列位置",
+      "c0023": "缩进状态",
+      "c0024": "文件编码状态",
+      "c0025": "行尾格式状态",
+      "c0026": "语言模式状态",
+      "c0027": "通知入口",
+      "c0028": "New Text File",
+      "c0029": "File 菜单展开内容 / New File...",
+      "c0030": "New Window",
+      "c0031": "File 菜单展开内容 / Open File...",
+      "c0032": "File 菜单展开内容 / Open Folder...",
+      "c0033": "Open Workspace from File...",
+      "c0034": "Open Recent",
+      "c0035": "Add Folder to Workspace...",
+      "c0036": "Save Workspace As...",
+      "c0037": "Duplicate Workspace",
+      "c0038": "Save",
+      "c0039": "Save As...",
+      "c0040": "Save All",
+      "c0041": "Share",
+      "c0042": "Auto Save",
+      "c0043": "Preferences",
+      "c0044": "Revert File",
+      "c0045": "Close Editor",
+      "c0046": "Close Window",
+      "c0047": "Exit",
+      "c0048": "Undo",
+      "c0049": "Redo",
+      "c0050": "Cut",
+      "c0051": "Copy",
+      "c0052": "Paste",
+      "c0053": "Find",
+      "c0054": "Replace",
+      "c0055": "Find in Files",
+      "c0056": "Replace in Files",
+      "c0057": "Toggle Line Comment",
+      "c0058": "Toggle Block Comment",
+      "c0059": "Emmet: Expand Abbreviation",
+      "c0060": "Select All",
+      "c0061": "Expand Selection",
+      "c0062": "Shrink Selection",
+      "c0063": "Copy Line Up",
+      "c0064": "Copy Line Down",
+      "c0065": "Move Line Up",
+      "c0066": "Move Line Down",
+      "c0067": "Duplicate Selection",
+      "c0068": "Add Cursor Above",
+      "c0069": "Add Cursor Below",
+      "c0070": "Add Cursors to Line Ends",
+      "c0071": "Add Next Occurrence",
+      "c0072": "Add Previous Occurrence",
+      "c0073": "Select All Occurrences",
+      "c0074": "Switch to Ctrl+Click for Multi-Cursor",
+      "c0075": "Column Selection Mode",
+      "c0076": "Command Palette...",
+      "c0077": "Open View...",
+      "c0078": "Appearance",
+      "c0079": "Editor Layout",
+      "c0080": "Explorer",
+      "c0081": "Search",
+      "c0082": "Source Control",
+      "c0083": "Run",
+      "c0084": "Extensions",
+      "c0085": "Problems",
+      "c0086": "Output",
+      "c0087": "Debug Console",
+      "c0088": "Terminal",
+      "c0089": "Word Wrap",
+      "c0090": "Back",
+      "c0091": "Forward",
+      "c0092": "Last Edit Location",
+      "c0093": "Switch Editor",
+      "c0094": "Switch Group",
+      "c0095": "Go to File...",
+      "c0096": "Go to Symbol in Workspace...",
+      "c0097": "Go to Symbol in Editor...",
+      "c0098": "Go to Definition",
+      "c0099": "Go to Declaration",
+      "c0100": "Go to Type Definition",
+      "c0101": "Go to Implementations",
+      "c0102": "Go to References",
+      "c0103": "Go to Line/Column...",
+      "c0104": "Go to Bracket",
+      "c0105": "Next Problem",
+      "c0106": "Previous Problem",
+      "c0107": "Next Change",
+      "c0108": "Previous Change",
+      "c0109": "Start Debugging",
+      "c0110": "Run Without Debugging",
+      "c0111": "Stop Debugging",
+      "c0112": "Restart Debugging",
+      "c0113": "Open Configurations",
+      "c0114": "Add Configuration...",
+      "c0115": "Step Over",
+      "c0116": "Step Into",
+      "c0117": "Step Out",
+      "c0118": "Continue",
+      "c0119": "Toggle Breakpoint",
+      "c0120": "New Breakpoint",
+      "c0121": "Enable All Breakpoints",
+      "c0122": "Disable All Breakpoints",
+      "c0123": "Remove All Breakpoints",
+      "c0124": "Install Additional Debuggers...",
+      "c0127": "Chrome: Attach",
+      "c0128": "Show Opened Editors",
+      "c0129": "Close All",
+      "c0130": "Close Saved",
+      "c0131": "Enable Preview Editors",
+      "c0132": "Maximize Group",
+      "c0133": "Lock Group",
+      "c0134": "New Terminal",
+      "c0135": "Split Terminal",
+      "c0136": "Run Task...",
+      "c0137": "Run Build Task...",
+      "c0138": "Run Active File",
+      "c0139": "Run Selected Text",
+      "c0140": "Show Running Tasks...",
+      "c0141": "Restart Running Task...",
+      "c0142": "Terminate Task...",
+      "c0143": "Configure Tasks...",
+      "c0144": "Configure Default Build Task...",
+      "c0145": "Welcome",
+      "c0146": "Show All Commands",
+      "c0147": "Documentation",
+      "c0148": "Editor Playground",
+      "c0149": "Show Release Notes",
+      "c0150": "Keyboard Shortcuts Reference",
+      "c0151": "Video Tutorials",
+      "c0152": "Tips and Tricks",
+      "c0153": "Join Us on YouTube",
+      "c0154": "Search Feature Requests",
+      "c0155": "Report Issue",
+      "c0156": "View License",
+      "c0157": "Privacy Statement",
+      "c0158": "Toggle Developer Tools",
+      "c0159": "Open Process Explorer",
+      "c0160": "Check for Updates...",
+      "c0161": "About",
+      "c0162": "Welcome 页面 / New File...",
+      "c0163": "Welcome 页面 / Open File...",
+      "c0164": "Welcome 页面 / Open Folder...",
+      "c0165": "Clone Git Repository...",
+      "c0166": "Connect to...",
+      "c0167": "Get Started with V...",
+      "c0168": "Learn the Fundam...",
+      "c0169": "Show welcome page on startup",
+      "c0170": "文件名或类型输入框",
+      "c0171": "Text File",
+      "c0172": "Jupyter Notebook",
+      "c0174": ".config 目录项"
+    },
+    "aliases": {
+      "VS Code 菜单栏": "r0001",
+      "活动栏": "r0002",
+      "文本编辑器": "r0003",
+      "状态栏": "r0004",
+      "File 菜单展开内容": "r0005",
+      "Edit 菜单展开内容": "r0006",
+      "Selection 菜单展开内容": "r0007",
+      "View 菜单展开内容": "r0008",
+      "Go 菜单展开内容": "r0009",
+      "Run 菜单展开内容": "r0010",
+      "调试配置模板补全列表": "r0011",
+      "右侧编辑组": "r0012",
+      "编辑器补全建议列表": "r0013",
+      "编辑器更多操作菜单": "r0014",
+      "Terminal 菜单展开内容": "r0015",
+      "集成终端面板": "r0016",
+      "Help 菜单展开内容": "r0017",
+      "Welcome 页面": "r0018",
+      "New File... 快速选择器": "r0019",
+      "路径面包屑目录列表": "r0020",
+      "File 菜单": "c0001",
+      "Edit 菜单": "c0002",
+      "Selection 菜单": "c0003",
+      "View 菜单": "c0004",
+      "Go 菜单": "c0005",
+      "Run 菜单": "c0006",
+      "Terminal 菜单": "c0007",
+      "Help 菜单": "c0008",
+      "Explorer 入口": "c0009",
+      "Search 入口": "c0010",
+      "Source Control 入口": "c0011",
+      "Run and Debug 入口": "c0012",
+      "Extensions 入口": "c0013",
+      "Accounts 入口": "c0014",
+      "Manage 入口": "c0015",
+      "meeting_notes.txt 标签": "c0016",
+      "关闭 meeting_notes.txt 标签": "c0017",
+      "路径面包屑": "c0018",
+      "文本编辑区": "c0019",
+      "拆分编辑器": "c0020",
+      "编辑器更多操作": "c0021",
+      "settings.json 标签": "c0125",
+      "右侧 settings.json 标签": "c0126",
+      "Untitled-1 标签": "c0173",
+      "行列位置": "c0022",
+      "缩进状态": "c0023",
+      "文件编码状态": "c0024",
+      "行尾格式状态": "c0025",
+      "语言模式状态": "c0026",
+      "通知入口": "c0027",
+      "New Text File": "c0028",
+      "File 菜单展开内容 / New File...": "c0029",
+      "New Window": "c0030",
+      "File 菜单展开内容 / Open File...": "c0031",
+      "File 菜单展开内容 / Open Folder...": "c0032",
+      "Open Workspace from File...": "c0033",
+      "Open Recent": "c0034",
+      "Add Folder to Workspace...": "c0035",
+      "Save Workspace As...": "c0036",
+      "Duplicate Workspace": "c0037",
+      "Save": "c0038",
+      "Save As...": "c0039",
+      "Save All": "c0040",
+      "Share": "c0041",
+      "Auto Save": "c0042",
+      "Preferences": "c0043",
+      "Revert File": "c0044",
+      "Close Editor": "c0045",
+      "Close Window": "c0046",
+      "Exit": "c0047",
+      "Undo": "c0048",
+      "Redo": "c0049",
+      "Cut": "c0050",
+      "Copy": "c0051",
+      "Paste": "c0052",
+      "Find": "c0053",
+      "Replace": "c0054",
+      "Find in Files": "c0055",
+      "Replace in Files": "c0056",
+      "Toggle Line Comment": "c0057",
+      "Toggle Block Comment": "c0058",
+      "Emmet: Expand Abbreviation": "c0059",
+      "Select All": "c0060",
+      "Expand Selection": "c0061",
+      "Shrink Selection": "c0062",
+      "Copy Line Up": "c0063",
+      "Copy Line Down": "c0064",
+      "Move Line Up": "c0065",
+      "Move Line Down": "c0066",
+      "Duplicate Selection": "c0067",
+      "Add Cursor Above": "c0068",
+      "Add Cursor Below": "c0069",
+      "Add Cursors to Line Ends": "c0070",
+      "Add Next Occurrence": "c0071",
+      "Add Previous Occurrence": "c0072",
+      "Select All Occurrences": "c0073",
+      "Switch to Ctrl+Click for Multi-Cursor": "c0074",
+      "Column Selection Mode": "c0075",
+      "Command Palette...": "c0076",
+      "Open View...": "c0077",
+      "Appearance": "c0078",
+      "Editor Layout": "c0079",
+      "Explorer": "c0080",
+      "Search": "c0081",
+      "Source Control": "c0082",
+      "Run": "c0083",
+      "Extensions": "c0084",
+      "Problems": "c0085",
+      "Output": "c0086",
+      "Debug Console": "c0087",
+      "Terminal": "c0088",
+      "Word Wrap": "c0089",
+      "Back": "c0090",
+      "Forward": "c0091",
+      "Last Edit Location": "c0092",
+      "Switch Editor": "c0093",
+      "Switch Group": "c0094",
+      "Go to File...": "c0095",
+      "Go to Symbol in Workspace...": "c0096",
+      "Go to Symbol in Editor...": "c0097",
+      "Go to Definition": "c0098",
+      "Go to Declaration": "c0099",
+      "Go to Type Definition": "c0100",
+      "Go to Implementations": "c0101",
+      "Go to References": "c0102",
+      "Go to Line/Column...": "c0103",
+      "Go to Bracket": "c0104",
+      "Next Problem": "c0105",
+      "Previous Problem": "c0106",
+      "Next Change": "c0107",
+      "Previous Change": "c0108",
+      "Start Debugging": "c0109",
+      "Run Without Debugging": "c0110",
+      "Stop Debugging": "c0111",
+      "Restart Debugging": "c0112",
+      "Open Configurations": "c0113",
+      "Add Configuration...": "c0114",
+      "Step Over": "c0115",
+      "Step Into": "c0116",
+      "Step Out": "c0117",
+      "Continue": "c0118",
+      "Toggle Breakpoint": "c0119",
+      "New Breakpoint": "c0120",
+      "Enable All Breakpoints": "c0121",
+      "Disable All Breakpoints": "c0122",
+      "Remove All Breakpoints": "c0123",
+      "Install Additional Debuggers...": "c0124",
+      "Chrome: Attach": "c0127",
+      "Show Opened Editors": "c0128",
+      "Close All": "c0129",
+      "Close Saved": "c0130",
+      "Enable Preview Editors": "c0131",
+      "Maximize Group": "c0132",
+      "Lock Group": "c0133",
+      "New Terminal": "c0134",
+      "Split Terminal": "c0135",
+      "Run Task...": "c0136",
+      "Run Build Task...": "c0137",
+      "Run Active File": "c0138",
+      "Run Selected Text": "c0139",
+      "Show Running Tasks...": "c0140",
+      "Restart Running Task...": "c0141",
+      "Terminate Task...": "c0142",
+      "Configure Tasks...": "c0143",
+      "Configure Default Build Task...": "c0144",
+      "Welcome": "c0145",
+      "Show All Commands": "c0146",
+      "Documentation": "c0147",
+      "Editor Playground": "c0148",
+      "Show Release Notes": "c0149",
+      "Keyboard Shortcuts Reference": "c0150",
+      "Video Tutorials": "c0151",
+      "Tips and Tricks": "c0152",
+      "Join Us on YouTube": "c0153",
+      "Search Feature Requests": "c0154",
+      "Report Issue": "c0155",
+      "View License": "c0156",
+      "Privacy Statement": "c0157",
+      "Toggle Developer Tools": "c0158",
+      "Open Process Explorer": "c0159",
+      "Check for Updates...": "c0160",
+      "About": "c0161",
+      "Welcome 页面 / New File...": "c0162",
+      "Welcome 页面 / Open File...": "c0163",
+      "Welcome 页面 / Open Folder...": "c0164",
+      "Clone Git Repository...": "c0165",
+      "Connect to...": "c0166",
+      "Get Started with V...": "c0167",
+      "Learn the Fundam...": "c0168",
+      "Show welcome page on startup": "c0169",
+      "文件名或类型输入框": "c0170",
+      "Text File": "c0171",
+      "Jupyter Notebook": "c0172",
+      ".config 目录项": "c0174",
+      "complete": "complete",
+      "partial": "partial",
+      "uncertain": "uncertain",
+      "": "",
+      "function": "function",
+      "parameter": "parameter",
+      "region_content": "region_content",
+      "none": "none",
+      "blocking_popup": "blocking_popup",
+      "system_error": "system_error",
+      "unexpected_exit": "unexpected_exit",
+      "external_app": "external_app",
+      "unclassified": "unclassified"
+    },
+    "owners": {
+      "c0001": "r0001",
+      "c0002": "r0001",
+      "c0003": "r0001",
+      "c0004": "r0001",
+      "c0005": "r0001",
+      "c0006": "r0001",
+      "c0007": "r0001",
+      "c0008": "r0001",
+      "c0009": "r0002",
+      "c0010": "r0002",
+      "c0011": "r0002",
+      "c0012": "r0002",
+      "c0013": "r0002",
+      "c0014": "r0002",
+      "c0015": "r0002",
+      "c0016": "r0003",
+      "c0017": "r0003",
+      "c0018": "r0003",
+      "c0019": "r0003",
+      "c0020": "r0003",
+      "c0021": "r0003",
+      "c0125": "r0003",
+      "c0126": "r0003",
+      "c0173": "r0003",
+      "c0022": "r0004",
+      "c0023": "r0004",
+      "c0024": "r0004",
+      "c0025": "r0004",
+      "c0026": "r0004",
+      "c0027": "r0004",
+      "c0028": "r0005",
+      "c0029": "r0005",
+      "c0030": "r0005",
+      "c0031": "r0005",
+      "c0032": "r0005",
+      "c0033": "r0005",
+      "c0034": "r0005",
+      "c0035": "r0005",
+      "c0036": "r0005",
+      "c0037": "r0005",
+      "c0038": "r0005",
+      "c0039": "r0005",
+      "c0040": "r0005",
+      "c0041": "r0005",
+      "c0042": "r0005",
+      "c0043": "r0005",
+      "c0044": "r0005",
+      "c0045": "r0005",
+      "c0046": "r0005",
+      "c0047": "r0005",
+      "c0048": "r0006",
+      "c0049": "r0006",
+      "c0050": "r0006",
+      "c0051": "r0006",
+      "c0052": "r0006",
+      "c0053": "r0006",
+      "c0054": "r0006",
+      "c0055": "r0006",
+      "c0056": "r0006",
+      "c0057": "r0006",
+      "c0058": "r0006",
+      "c0059": "r0006",
+      "c0060": "r0007",
+      "c0061": "r0007",
+      "c0062": "r0007",
+      "c0063": "r0007",
+      "c0064": "r0007",
+      "c0065": "r0007",
+      "c0066": "r0007",
+      "c0067": "r0007",
+      "c0068": "r0007",
+      "c0069": "r0007",
+      "c0070": "r0007",
+      "c0071": "r0007",
+      "c0072": "r0007",
+      "c0073": "r0007",
+      "c0074": "r0007",
+      "c0075": "r0007",
+      "c0076": "r0008",
+      "c0077": "r0008",
+      "c0078": "r0008",
+      "c0079": "r0008",
+      "c0080": "r0008",
+      "c0081": "r0008",
+      "c0082": "r0008",
+      "c0083": "r0008",
+      "c0084": "r0008",
+      "c0085": "r0008",
+      "c0086": "r0008",
+      "c0087": "r0008",
+      "c0088": "r0008",
+      "c0089": "r0008",
+      "c0090": "r0009",
+      "c0091": "r0009",
+      "c0092": "r0009",
+      "c0093": "r0009",
+      "c0094": "r0009",
+      "c0095": "r0009",
+      "c0096": "r0009",
+      "c0097": "r0009",
+      "c0098": "r0009",
+      "c0099": "r0009",
+      "c0100": "r0009",
+      "c0101": "r0009",
+      "c0102": "r0009",
+      "c0103": "r0009",
+      "c0104": "r0009",
+      "c0105": "r0009",
+      "c0106": "r0009",
+      "c0107": "r0009",
+      "c0108": "r0009",
+      "c0109": "r0010",
+      "c0110": "r0010",
+      "c0111": "r0010",
+      "c0112": "r0010",
+      "c0113": "r0010",
+      "c0114": "r0010",
+      "c0115": "r0010",
+      "c0116": "r0010",
+      "c0117": "r0010",
+      "c0118": "r0010",
+      "c0119": "r0010",
+      "c0120": "r0010",
+      "c0121": "r0010",
+      "c0122": "r0010",
+      "c0123": "r0010",
+      "c0124": "r0010",
+      "c0127": "r0011",
+      "c0128": "r0014",
+      "c0129": "r0014",
+      "c0130": "r0014",
+      "c0131": "r0014",
+      "c0132": "r0014",
+      "c0133": "r0014",
+      "c0134": "r0015",
+      "c0135": "r0015",
+      "c0136": "r0015",
+      "c0137": "r0015",
+      "c0138": "r0015",
+      "c0139": "r0015",
+      "c0140": "r0015",
+      "c0141": "r0015",
+      "c0142": "r0015",
+      "c0143": "r0015",
+      "c0144": "r0015",
+      "c0145": "r0017",
+      "c0146": "r0017",
+      "c0147": "r0017",
+      "c0148": "r0017",
+      "c0149": "r0017",
+      "c0150": "r0017",
+      "c0151": "r0017",
+      "c0152": "r0017",
+      "c0153": "r0017",
+      "c0154": "r0017",
+      "c0155": "r0017",
+      "c0156": "r0017",
+      "c0157": "r0017",
+      "c0158": "r0017",
+      "c0159": "r0017",
+      "c0160": "r0017",
+      "c0161": "r0017",
+      "c0162": "r0018",
+      "c0163": "r0018",
+      "c0164": "r0018",
+      "c0165": "r0018",
+      "c0166": "r0018",
+      "c0167": "r0018",
+      "c0168": "r0018",
+      "c0169": "r0018",
+      "c0170": "r0019",
+      "c0171": "r0019",
+      "c0172": "r0019",
+      "c0174": "r0020"
+    },
+    "nested": null,
+    "current": false,
+    "paths": {}
+  },
+  "prompt_sections": [
+    "region.common",
+    "control.definition",
+    "region.exception_values",
+    "region.recovery_handoff",
+    "control.references",
+    "control.knowledge_base",
+    "region.function",
+    "task.definition",
+    "region.application_exception",
+    "control.knowledge_revision",
+    "control.knowledge_description",
+    "control.knowledge_index",
+    "control.knowledge_constraints",
+    "region.knowledge_edit",
+    "region.local_knowledge",
+    "region.function_updates",
+    "region.function_constraints",
+    "region.function_new_constraints",
+    "task.operations",
+    "task.type",
+    "task.completion_condition",
+    "task.function_refs",
+    "task.new_function_refs",
+    "task.scope",
+    "region.shared_instances"
+  ],
+  "prompt_composition": "field_sections",
+  "_structured_user_prompt": "{\n  \"区块\": \"路径面包屑目录列表\",\n  \"描述\": \"点击路径面包屑目录段后显示的目录项列表。\",\n  \"控件\": \"### 同类操作组\\n\\n**路径面包屑目录项**\\n\\n成员：c0174\\n\\n已有材料（c0174）：知识条目 0：在路径目录列表中显示 .config 目录项及展开箭头。本次未操作该项，点击或展开后的具体结果尚未确认。此前判断：仍有使用疑问。\",\n  \"环境位置\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\nVS Code 菜单栏 [r0001]\\n  ├─ File 菜单 [c0001]\\n  ├─ Edit 菜单 [c0002]\\n  ├─ Selection 菜单 [c0003]\\n  ├─ View 菜单 [c0004]\\n  ├─ Go 菜单 [c0005]\\n  ├─ Run 菜单 [c0006]\\n    └─ Run 菜单展开内容 [r0010]\\n      ├─ Start Debugging [c0109]\\n      ├─ Run Without Debugging [c0110]\\n      ├─ Stop Debugging [c0111]\\n      ├─ Restart Debugging [c0112]\\n      ├─ Open Configurations [c0113]\\n      ├─ Add Configuration... [c0114]\\n        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）文本编辑器 [r0003]\\n          ├─ meeting_notes.txt 标签 [c0016]\\n          ├─ 关闭 meeting_notes.txt 标签 [c0017]\\n          ├─ 路径面包屑 [c0018]\\n            └─ （条件：在文本编辑器中点击路径面包屑的目录段。）路径面包屑目录列表 [r0020]（本步关注区块）\\n              ├─ .config 目录项 [c0174]\\n          ├─ 文本编辑区 [c0019]\\n          ├─ 拆分编辑器 [c0020]\\n            └─ （条件：在文本编辑器中点击拆分编辑器入口。）右侧编辑组 [r0012]\\n          ├─ 编辑器更多操作 [c0021]\\n            └─ 编辑器更多操作菜单 [r0014]\\n              ├─ Show Opened Editors [c0128]\\n              ├─ Close All [c0129]\\n              ├─ Close Saved [c0130]\\n              ├─ Enable Preview Editors [c0131]\\n              ├─ Maximize Group [c0132]\\n              ├─ Lock Group [c0133]\\n          ├─ settings.json 标签 [c0125]\\n          ├─ 右侧 settings.json 标签 [c0126]\\n          ├─ Untitled-1 标签 [c0173]\\n          ├─ 已记录的区块操作\\n            └─ （条件：光标位于 settings.json 的 launch.configurations 数组占位位置时按 Ctrl+Space。）编辑器补全建议列表 [r0013]\\n        └─ （条件：在 Run 菜单展开内容中点击 Add Configuration...）调试配置模板补全列表 [r0011]\\n          ├─ Chrome: Attach [c0127]\\n      ├─ Step Over [c0115]\\n      ├─ Step Into [c0116]\\n      ├─ Step Out [c0117]\\n      ├─ Continue [c0118]\\n      ├─ Toggle Breakpoint [c0119]\\n      ├─ New Breakpoint [c0120]\\n      ├─ Enable All Breakpoints [c0121]\\n      ├─ Disable All Breakpoints [c0122]\\n      ├─ Remove All Breakpoints [c0123]\\n      ├─ Install Additional Debuggers... [c0124]\\n  ├─ Terminal 菜单 [c0007]\\n    └─ Terminal 菜单展开内容 [r0015]\\n      ├─ New Terminal [c0134]\\n        └─ 集成终端面板 [r0016]\\n      ├─ Split Terminal [c0135]\\n      ├─ Run Task... [c0136]\\n      ├─ Run Build Task... [c0137]\\n      ├─ Run Active File [c0138]\\n      ├─ Run Selected Text [c0139]\\n      ├─ Show Running Tasks... [c0140]\\n      ├─ Restart Running Task... [c0141]\\n      ├─ Terminate Task... [c0142]\\n      ├─ Configure Tasks... [c0143]\\n      ├─ Configure Default Build Task... [c0144]\\n  ├─ Help 菜单 [c0008]\\n活动栏 [r0002]\\n  ├─ Explorer 入口 [c0009]\\n  ├─ Search 入口 [c0010]\\n  ├─ Source Control 入口 [c0011]\\n  ├─ Run and Debug 入口 [c0012]\\n  ├─ Extensions 入口 [c0013]\\n  ├─ Accounts 入口 [c0014]\\n  ├─ Manage 入口 [c0015]\\n状态栏 [r0004]\\n  ├─ 行列位置 [c0022]\\n  ├─ 缩进状态 [c0023]\\n  ├─ 文件编码状态 [c0024]\\n  ├─ 行尾格式状态 [c0025]\\n  ├─ 语言模式状态 [c0026]\\n  ├─ 通知入口 [c0027]\\nFile 菜单展开内容 [r0005]\\n  ├─ New Text File [c0028]\\n  ├─ New File... [c0029]\\n  ├─ New Window [c0030]\\n  ├─ Open File... [c0031]\\n  ├─ Open Folder... [c0032]\\n  ├─ Open Workspace from File... [c0033]\\n  ├─ Open Recent [c0034]\\n  ├─ Add Folder to Workspace... [c0035]\\n  ├─ Save Workspace As... [c0036]\\n  ├─ Duplicate Workspace [c0037]\\n  ├─ Save [c0038]\\n  ├─ Save As... [c0039]\\n  ├─ Save All [c0040]\\n  ├─ Share [c0041]\\n  ├─ Auto Save [c0042]\\n  ├─ Preferences [c0043]\\n  ├─ Revert File [c0044]\\n  ├─ Close Editor [c0045]\\n  ├─ Close Window [c0046]\\n  ├─ Exit [c0047]\\nEdit 菜单展开内容 [r0006]\\n  ├─ Undo [c0048]\\n  ├─ Redo [c0049]\\n  ├─ Cut [c0050]\\n  ├─ Copy [c0051]\\n  ├─ Paste [c0052]\\n  ├─ Find [c0053]\\n  ├─ Replace [c0054]\\n  ├─ Find in Files [c0055]\\n  ├─ Replace in Files [c0056]\\n  ├─ Toggle Line Comment [c0057]\\n  ├─ Toggle Block Comment [c0058]\\n  ├─ Emmet: Expand Abbreviation [c0059]\\nSelection 菜单展开内容 [r0007]\\n  ├─ Select All [c0060]\\n  ├─ Expand Selection [c0061]\\n  ├─ Shrink Selection [c0062]\\n  ├─ Copy Line Up [c0063]\\n  ├─ Copy Line Down [c0064]\\n  ├─ Move Line Up [c0065]\\n  ├─ Move Line Down [c0066]\\n  ├─ Duplicate Selection [c0067]\\n  ├─ Add Cursor Above [c0068]\\n  ├─ Add Cursor Below [c0069]\\n  ├─ Add Cursors to Line Ends [c0070]\\n  ├─ Add Next Occurrence [c0071]\\n  ├─ Add Previous Occurrence [c0072]\\n  ├─ Select All Occurrences [c0073]\\n  ├─ Switch to Ctrl+Click for Multi-Cursor [c0074]\\n  ├─ Column Selection Mode [c0075]\\nView 菜单展开内容 [r0008]\\n  ├─ Command Palette... [c0076]\\n  ├─ Open View... [c0077]\\n  ├─ Appearance [c0078]\\n  ├─ Editor Layout [c0079]\\n  ├─ Explorer [c0080]\\n  ├─ Search [c0081]\\n  ├─ Source Control [c0082]\\n  ├─ Run [c0083]\\n  ├─ Extensions [c0084]\\n  ├─ Problems [c0085]\\n  ├─ Output [c0086]\\n  ├─ Debug Console [c0087]\\n  ├─ Terminal [c0088]\\n  ├─ Word Wrap [c0089]\\nGo 菜单展开内容 [r0009]\\n  ├─ Back [c0090]\\n  ├─ Forward [c0091]\\n  ├─ Last Edit Location [c0092]\\n  ├─ Switch Editor [c0093]\\n  ├─ Switch Group [c0094]\\n  ├─ Go to File... [c0095]\\n  ├─ Go to Symbol in Workspace... [c0096]\\n  ├─ Go to Symbol in Editor... [c0097]\\n  ├─ Go to Definition [c0098]\\n  ├─ Go to Declaration [c0099]\\n  ├─ Go to Type Definition [c0100]\\n  ├─ Go to Implementations [c0101]\\n  ├─ Go to References [c0102]\\n  ├─ Go to Line/Column... [c0103]\\n  ├─ Go to Bracket [c0104]\\n  ├─ Next Problem [c0105]\\n  ├─ Previous Problem [c0106]\\n  ├─ Next Change [c0107]\\n  ├─ Previous Change [c0108]\\nHelp 菜单展开内容 [r0017]\\n  ├─ Welcome [c0145]\\n    └─ Welcome 页面 [r0018]\\n      ├─ New File... [c0162]\\n        └─ （条件：在 Welcome 页面点击 New File...）New File... 快速选择器 [r0019]\\n          ├─ 文件名或类型输入框 [c0170]\\n          ├─ Text File [c0171]\\n            └─ （条件：在 New File... 快速选择器中选择 Text File。）[引用：文本编辑器 r0003]\\n          ├─ Jupyter Notebook [c0172]\\n      ├─ Open File... [c0163]\\n      ├─ Open Folder... [c0164]\\n      ├─ Clone Git Repository... [c0165]\\n      ├─ Connect to... [c0166]\\n      ├─ Get Started with V... [c0167]\\n      ├─ Learn the Fundam... [c0168]\\n      ├─ Show welcome page on startup [c0169]\\n  ├─ Show All Commands [c0146]\\n  ├─ Documentation [c0147]\\n  ├─ Editor Playground [c0148]\\n  ├─ Show Release Notes [c0149]\\n  ├─ Keyboard Shortcuts Reference [c0150]\\n  ├─ Video Tutorials [c0151]\\n  ├─ Tips and Tricks [c0152]\\n  ├─ Join Us on YouTube [c0153]\\n  ├─ Search Feature Requests [c0154]\\n  ├─ Report Issue [c0155]\\n  ├─ View License [c0156]\\n  ├─ Privacy Statement [c0157]\\n  ├─ Toggle Developer Tools [c0158]\\n  ├─ Open Process Explorer [c0159]\\n  ├─ Check for Updates... [c0160]\\n  ├─ About [c0161]\\n上次已登记前景：文本编辑器、路径面包屑目录列表\",\n  \"本次观察的未确认事项\": {\n    \"来源与用途\": \"以下是观察时留下、尚未判断是否值得调查的候选线索，不是用户要求或已有任务。由你结合当前对象、已有知识及后续使用需要决定是否提出任务；不因原文写了尚未验证，就把它纳入结算条件。\",\n    \"观察原文\": \"路径面包屑目录列表中的目录项被点击或通过展开箭头操作后，是导航到该目录、展开子目录还是产生其他结果，尚未确认。\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"区块任务清点\",\n    \"范围\": \"路径面包屑目录列表\",\n    \"目的\": \"梳理本区块的用法与待解决问题\",\n    \"本步边界\": \"按当前观察补充本区块的未知或本轮指定的旧问题；沿用已有任务。未展开的旧任务仍保留覆盖义务。\"\n  },\n  \"可更新功能的区块\": [\n    {\n      \"名称\": \"路径面包屑目录列表\",\n      \"ref\": \"r0020\"\n    }\n  ],\n  \"目标应用\": \"本次要探索的应用：VS Code\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\"\n}\n\n本图：本轮重新截取的当前图；供本步判断，历史观察与动作证据仍以各自来源为准；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "_presentation_digest": "4496b0379274c7dbb6911dab92aef58ce2c6ec22894b85ba9041a00877d0f28d"
+}

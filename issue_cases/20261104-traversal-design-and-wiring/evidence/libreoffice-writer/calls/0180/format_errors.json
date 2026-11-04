@@ -1,0 +1,68 @@
+{
+  "errors": [
+    {
+      "code": "schema",
+      "path": "/jump_to/0",
+      "object": "reply",
+      "actual": {
+        "control": "Assigned Commands 列表",
+        "conditions": [
+          "Customize 对话框的 Toolbars 标签处于选中状态。",
+          "Target 为 Standard，且 Target 候选列表收起。"
+        ]
+      },
+      "expected": "{'control': 'Assigned Commands 列表', 'conditions': ['Customize 对话框的 Toolbars 标签处于选中状态。', 'Target 为 Standard，且 Target 候选列表收起。']} is not valid under any of the given schemas",
+      "validator": "anyOf",
+      "requirement": [
+        {
+          "type": "object",
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1
+            },
+            "control": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "region"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "index",
+            "conditions"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  ],
+  "unchecked": [
+    "格式尚未通过，业务语义检查尚未执行。"
+  ]
+}

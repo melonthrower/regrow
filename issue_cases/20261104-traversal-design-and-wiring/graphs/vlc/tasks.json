@@ -1,0 +1,743 @@
+{
+  "r0001/功能探索": {
+    "control": "c0001",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0002 / 功能探索": {
+    "control": "c0002",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0003 / 功能探索": {
+    "control": "c0003",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0004 / 功能探索": {
+    "control": "c0004",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/eccb0ccb3ace49cd8e9ae1d3a8fa80fe/episode.json",
+      "attempt": "a0034",
+      "failed_call": "0117",
+      "reason": "格式修正次数已用完；原请求和失败回复已保存",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-eccb0ccb3ace49cd8e9ae1d3a8fa80fe"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0005 / 功能探索": {
+    "control": "c0005",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/8cb3a8b0e73c47d6a158c1a13240ee42/episode.json",
+      "attempt": "a0036",
+      "failed_call": "0125",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-8cb3a8b0e73c47d6a158c1a13240ee42"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0006 / 功能探索": {
+    "control": "c0006",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0007 / 功能探索": {
+    "control": "c0007",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0008 / 功能探索": {
+    "control": "c0008",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别其中的功能入口及其直接用途或去向。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/功能探索": {
+    "control": "c0033",
+    "task_type": "function",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，展开该项并确认其直接显示的标题选择内容或空状态。",
+    "function_refs": [
+      "r0005/按标题选择播放内容"
+    ],
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/00c9d0e404844990822159598f7f0233/episode.json",
+      "attempt": "a0006",
+      "failed_call": "0026",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-00c9d0e404844990822159598f7f0233"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0005/c0034 / 功能探索": {
+    "control": "c0034",
+    "task_type": "function",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，展开该项并确认其直接显示的章节选择内容或空状态。",
+    "function_refs": [
+      "r0005/按章节选择播放内容"
+    ],
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "episode": "repair_episodes/d0f1ebacf16d4140ab32a5ab5a440f98/episode.json",
+      "observation": "update:0084",
+      "source_call": "0087",
+      "stage": "action",
+      "retry_when": "new_localized_control_observation"
+    },
+    "blocker": {
+      "condition": "review_required",
+      "source_call": "0087",
+      "episode": "repair_episodes/d0f1ebacf16d4140ab32a5ab5a440f98/episode.json"
+    }
+  },
+  "r0005/c0035 / 功能探索": {
+    "control": "c0035",
+    "task_type": "function",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，展开该项并确认其直接显示的节目选择内容或空状态。",
+    "function_refs": [
+      "r0005/按节目选择播放内容"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0036 / 功能探索": {
+    "control": "c0036",
+    "task_type": "function",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，展开该项并了解书签相关选项及其用途。",
+    "function_refs": [
+      "r0005/使用自定义书签"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0037 / 功能探索": {
+    "control": "c0037",
+    "task_type": "function",
+    "completion_condition": "展开 Renderer 菜单项并查看其直接显示的内容及可识别的用途。",
+    "function_refs": [
+      "r0005/打开 Renderer 相关入口"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/参数探索": {
+    "control": "c0038",
+    "task_type": "parameter",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，查看可选播放速度及如何选择。",
+    "function_refs": [
+      "r0005/设置播放速度"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0005/c0039 / 参数探索": {
+    "control": "c0039",
+    "task_type": "parameter",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，确认该项提供的向前跳转时长或可选时长。",
+    "function_refs": [
+      "r0005/向前跳转"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0005/c0040 / 参数探索": {
+    "control": "c0040",
+    "task_type": "parameter",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，确认该项提供的向后跳转时长或可选时长。",
+    "function_refs": [
+      "r0005/向后跳转"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0005/c0041 / 参数探索": {
+    "control": "c0041",
+    "task_type": "parameter",
+    "completion_condition": "打开指定时间跳转入口并查看时间参数的填写方式及必要条件。",
+    "function_refs": [
+      "r0005/跳转到指定时间"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0005/c0042 / 功能探索": {
+    "control": "c0042",
+    "task_type": "function",
+    "completion_condition": "展开 Play 菜单项并查看其直接显示的播放选项及用途。",
+    "function_refs": [
+      "r0005/访问 Play 相关选项"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0046 / 功能探索": {
+    "control": "c0046",
+    "task_type": "function",
+    "completion_condition": "使用本地实验媒体使菜单项可用后，查看录制入口的直接响应及可见的使用条件。",
+    "function_refs": [
+      "r0005/录制"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/参数探索": {
+    "control": "c0056",
+    "task_type": "parameter",
+    "completion_condition": "展开 Audio Device 子菜单并记录可见设备候选项；确认是否需要满足特定条件才能选择。",
+    "name": "参数探索",
+    "status": "done"
+  },
+  "r0007/c0055 / 参数探索": {
+    "control": "c0055",
+    "task_type": "parameter",
+    "function_refs": [
+      "r0007/选择音轨"
+    ],
+    "completion_condition": "在适用的本地样本已打开时，确认该菜单可用的条件并记录可见音轨候选项。",
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0007/c0057 / 参数探索": {
+    "control": "c0057",
+    "task_type": "parameter",
+    "function_refs": [
+      "r0007/选择立体声模式"
+    ],
+    "completion_condition": "在适用的本地样本已打开时，确认该菜单可用的条件并记录可见立体声模式候选项。",
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0007/c0058 / 参数探索": {
+    "control": "c0058",
+    "task_type": "parameter",
+    "function_refs": [
+      "r0007/选择可视化效果"
+    ],
+    "completion_condition": "在适用的本地样本已打开时，确认该菜单可用的条件并记录可见可视化候选项。",
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0008/功能探索": {
+    "control": "c0062",
+    "task_type": "function",
+    "function_refs": [
+      "r0008/查看可用音频设备及当前选择"
+    ],
+    "completion_condition": "点击当前已选中的 Dummy Output，并记录是否出现选中状态变化或其他可见反馈。若界面没有提供实际输出切换的直接证据，则保留“是否实际切换音频输出”这一点为未确认。",
+    "reason": "当前唯一可见设备已处于选中状态；点击它后的直接效果仍未知，且会影响后续理解设备选择的用法。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0012/功能探索": {
+    "control": "c0075",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口实际打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0012/c0076 / 功能探索": {
+    "control": "c0076",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口实际打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0012/c0077 / 功能探索": {
+    "control": "c0077",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口显示的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0078 / 功能探索": {
+    "control": "c0078",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口显示的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0079 / 功能探索": {
+    "control": "c0079",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0080 / 功能探索": {
+    "control": "c0080",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0081 / 功能探索": {
+    "control": "c0081",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口显示的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0082 / 功能探索": {
+    "control": "c0082",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0083 / 功能探索": {
+    "control": "c0083",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/c0084 / 功能探索": {
+    "control": "c0084",
+    "task_type": "function",
+    "completion_condition": "点击该菜单项并观察到其打开的目标内容，足以确认入口打开的内容及用途后结束。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/功能探索": {
+    "control": "c0086",
+    "task_type": "function",
+    "completion_condition": "打开 Video Effects 页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该标签可访问页面，但页面内容和功能尚未查看。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/a51a50029e494fdb8441b44474bc0354/episode.json",
+      "attempt": "a0040",
+      "failed_call": "0145",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-a51a50029e494fdb8441b44474bc0354"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0013/c0087 / 功能探索": {
+    "control": "c0087",
+    "task_type": "function",
+    "completion_condition": "打开 Synchronization 页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该标签可访问页面，但页面内容和功能尚未查看。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0013/c0088 / 功能探索": {
+    "control": "c0088",
+    "task_type": "function",
+    "completion_condition": "打开 v4l2 controls 页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该标签可访问页面，但页面内容和功能尚未查看。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0090 / 功能探索": {
+    "control": "c0090",
+    "task_type": "function",
+    "completion_condition": "打开 Compressor 子页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该子标签可访问页面，但页面内控件和功能尚未查看。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0091 / 功能探索": {
+    "control": "c0091",
+    "task_type": "function",
+    "completion_condition": "打开 Spatializer 子页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该子标签可访问页面，但页面内控件和功能尚未查看。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0092 / 功能探索": {
+    "control": "c0092",
+    "task_type": "function",
+    "completion_condition": "打开 Stereo Widener 子页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该子标签可访问页面，但页面内控件和功能尚未查看。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0093 / 功能探索": {
+    "control": "c0093",
+    "task_type": "function",
+    "completion_condition": "打开 Advanced 子页面并查看其当前显示的内容，记录页面提供的功能入口；不要求继续操作页面内控件。",
+    "reason": "已知该子标签可访问页面，但页面内控件和功能尚未查看。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0089 / 功能探索": {
+    "control": "c0089",
+    "task_type": "function",
+    "completion_condition": "查看 Equalizer 页面中前置增益和各频段滑块的标签及可见设置方式，并在有可用本地样本时用小幅、可恢复的调整确认其实际效果；若没有可用样本，记录这一限制，不把效果写成已验证。",
+    "function_refs": [
+      "r0013/启用或停用 Equalizer"
+    ],
+    "reason": "当前页面可见前置增益和频段滑块，但其具体作用和实际效果尚未验证。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/参数探索": {
+    "control": "c0095",
+    "task_type": "parameter",
+    "completion_condition": "展开下拉框并记录可选预设，以便后续任务能够指定一个候选预设；无需逐一应用或验证效果。",
+    "function_refs": [
+      "r0013/选择 Equalizer 预设"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0013/c0096 / 功能探索": {
+    "control": "c0096",
+    "task_type": "function",
+    "completion_condition": "在允许的范围内做一项可恢复的设置变更，确认 Save 是否因此可用及点击后可见的保存结果；如可行，重新打开窗口检查设置是否保留，并恢复原设置。若无法确认持久化结果，明确记录为未确认。",
+    "reason": "按钮当前呈灰色，尚未触发或验证其保存行为；需要通过有实际变更的正常使用情境判断。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/参数探索": {
+    "control": "c0117",
+    "task_type": "parameter",
+    "completion_condition": "确认音轨同步数值框可接受的范围和增减步进值，并恢复探索前的值。",
+    "name": "参数探索",
+    "status": "blocked",
+    "deferral": {
+      "reason": "当前仍是 Synchronization 页面，音轨同步数值框显示 99.000 s。此前已在同一界面通过该数值框输入 0 多次（a0045、a0059、a0064），按本轮要求不原样重试；改变框内点击位置也不能提供新依据。当前没有已验证的其他入口可据以恢复零值，也没有足够证据确定精确可接受范围，因此暂不操作并保留未完成状态。",
+      "retry_when": "出现界面变化，或有新的证据支持使用不同的恢复入口或参数时再继续。",
+      "remaining_question": "当前仍是 Synchronization 页面，音轨同步数值框显示 99.000 s。此前已在同一界面通过该数值框输入 0 多次（a0045、a0059、a0064），按本轮要求不原样重试；改变框内点击位置也不能提供新依据。当前没有已验证的其他入口可据以恢复零值，也没有足够证据确定精确可接受范围，因此暂不操作并保留未完成状态。",
+      "basis": "observation_only",
+      "observation": "update:0213",
+      "source_image": "../../../session-02/round-0002/current.png",
+      "sources": [
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0042",
+          "source_call": "0156",
+          "observation": "update:0156"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0043",
+          "source_call": "0158",
+          "observation": "update:0158"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0044",
+          "source_call": "0160",
+          "observation": "update:0160"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0045",
+          "source_call": "0162",
+          "observation": "update:0162"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0046",
+          "source_call": "0164",
+          "observation": "update:0164"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0047",
+          "source_call": "0166",
+          "observation": "update:0166"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0048",
+          "source_call": "0168",
+          "observation": "update:0168"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0049",
+          "source_call": "0170",
+          "observation": "update:0170"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0050",
+          "source_call": "0172",
+          "observation": "update:0172"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0051",
+          "source_call": "0174",
+          "observation": "update:0174"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0052",
+          "source_call": "0176",
+          "observation": "update:0176"
+        },
+        {
+          "basis": "explored",
+          "region": "r0001",
+          "control": "c0006",
+          "attempt": "a0053",
+          "source_call": "0184",
+          "observation": "update:0184"
+        },
+        {
+          "basis": "explored",
+          "region": "r0012",
+          "control": "c0076",
+          "attempt": "a0054",
+          "source_call": "0186",
+          "observation": "update:0186"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0055",
+          "source_call": "0188",
+          "observation": "update:0188"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0059",
+          "source_call": "0194",
+          "observation": "update:0194"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0060",
+          "source_call": "0196",
+          "observation": "update:0196"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0062",
+          "source_call": "0200",
+          "observation": "update:0200"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0064",
+          "source_call": "0204",
+          "observation": "update:0204"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0117",
+          "attempt": "a0065",
+          "source_call": "0207",
+          "observation": "update:0207"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0121",
+          "attempt": "a0066",
+          "source_call": "0213",
+          "observation": "update:0213"
+        }
+      ],
+      "source_call": "0217"
+    }
+  },
+  "r0014/c0118 / 参数探索": {
+    "control": "c0118",
+    "task_type": "parameter",
+    "completion_condition": "确认字幕轨道同步数值框可接受的范围和增减步进值，并恢复探索前的值。",
+    "name": "参数探索",
+    "status": "blocked",
+    "deferral": {
+      "reason": "拟操作「Subtitle track synchronization 数值框的增大按钮」仍未可靠关联；保留原问题，先探索其他任务。",
+      "episode": "repair_episodes/51945e520b064d96a4bc9b1cc4f4148a/episode.json",
+      "observation": "discovery:0220",
+      "source_call": "0219",
+      "stage": "action",
+      "retry_when": "target_identity_or_changed_surface"
+    },
+    "blocker": {
+      "condition": "review_required",
+      "source_call": "0219",
+      "episode": "repair_episodes/51945e520b064d96a4bc9b1cc4f4148a/episode.json"
+    }
+  },
+  "r0014/c0119 / 参数探索": {
+    "control": "c0119",
+    "task_type": "parameter",
+    "completion_condition": "确认字幕速度数值框可接受的范围和增减步进值，并恢复探索前的值。",
+    "name": "参数探索",
+    "status": "blocked",
+    "deferral": {
+      "reason": "当前仍在 Synchronization 页面，截图显示 Subtitle speed 数值框为 0.000 fps，目标是恢复探索前的 1.000 fps 并确认范围和步进。将该框再次全选输入 1.000 会重复 a0071、a0073 使用的同一入口和参数；现有证据没有支持另一种能可靠恢复该值的方法，因此暂不重试。",
+      "retry_when": "获得一个有新依据、不会重复上述尝试的恢复方式后继续；恢复显示值后，再寻找能够确认可接受范围与增减步进的证据。",
+      "remaining_question": "当前仍在 Synchronization 页面，截图显示 Subtitle speed 数值框为 0.000 fps，目标是恢复探索前的 1.000 fps 并确认范围和步进。将该框再次全选输入 1.000 会重复 a0071、a0073 使用的同一入口和参数；现有证据没有支持另一种能可靠恢复该值的方法，因此暂不重试。",
+      "basis": "observation_only",
+      "observation": "update:0252",
+      "source_image": "../../../session-03/round-0016/current.png",
+      "sources": [
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0067",
+          "source_call": "0222",
+          "observation": "update:0222"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0123",
+          "attempt": "a0068",
+          "source_call": "0226",
+          "observation": "update:0226"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0123",
+          "attempt": "a0069",
+          "source_call": "0228",
+          "observation": "update:0228"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0070",
+          "source_call": "0231",
+          "observation": "update:0231"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0071",
+          "source_call": "0233",
+          "observation": "update:0233"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0072",
+          "source_call": "0236",
+          "observation": "update:0236"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0073",
+          "source_call": "0238",
+          "observation": "update:0238"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0077",
+          "source_call": "0248",
+          "observation": "update:0248"
+        },
+        {
+          "basis": "explored",
+          "region": "r0014",
+          "control": "c0119",
+          "attempt": "a0079",
+          "source_call": "0252",
+          "observation": "update:0252"
+        }
+      ],
+      "source_call": "0255"
+    }
+  },
+  "r0014/c0120 / 参数探索": {
+    "control": "c0120",
+    "task_type": "parameter",
+    "completion_condition": "确认字幕持续时间因子数值框可接受的范围和增减步进值，并恢复探索前的值。",
+    "name": "参数探索",
+    "status": "blocked",
+    "deferral": {
+      "reason": "拟操作「Subtitle duration factor 数值框右侧的减小按钮」仍未可靠关联；保留原问题，先探索其他任务。",
+      "episode": "repair_episodes/55d402e6c36e4a3d82c878418b9581c2/episode.json",
+      "observation": "discovery:0267",
+      "source_call": "0266",
+      "stage": "action",
+      "retry_when": "target_identity_or_changed_surface"
+    },
+    "blocker": {
+      "condition": "review_required",
+      "source_call": "0266",
+      "episode": "repair_episodes/55d402e6c36e4a3d82c878418b9581c2/episode.json"
+    }
+  },
+  "r0014/功能探索": {
+    "control": "c0121",
+    "task_type": "function",
+    "completion_condition": "操作图标并观察直接结果，以确认它的用途及会影响哪些同步参数。",
+    "name": "功能探索",
+    "status": "pending"
+  }
+}

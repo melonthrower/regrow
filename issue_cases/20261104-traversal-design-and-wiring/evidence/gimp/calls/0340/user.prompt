@@ -1,0 +1,368 @@
+## 背景
+范围：裁剪约束模式候选列表
+本轮目的：识别当前前景区块及能确认的控件，确认原工作区块是否在其中。
+
+## 本步问题
+当前前景有哪些操作区或展示区，其中能确认哪些控件及其归属和身份？原工作区块是否在其中？
+
+## 问题 1：本次需要辨认哪里？
+
+### 待继续的工作区块
+裁剪约束模式候选列表
+
+### 本轮定位区块
+裁剪约束模式候选列表
+
+### 本轮观察范围
+当前前景的功能区块，以及本图中能确认的直接所属控件。
+
+### 目标应用
+本次要探索的应用：GIMP
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+## 问题 2：当前区块和控件分别是什么，如何对应已有身份？
+
+### 本次身份候选
+1：
+  ref：裁剪约束模式候选列表
+  名称：裁剪约束模式候选列表
+  最近登记描述：由“裁剪约束模式”下拉框展开、用于选择裁剪约束模式的候选项列表。
+  已有控件：
+    1：
+      名称：Aspect ratio
+      用途记录：点击此候选项会选择 Aspect ratio 裁剪约束模式；选择后候选列表收起，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前曾观察到 240×160 px（3:2）的裁剪框，当时输入框完整值不明。之后输入框明确显示 2:1，但已有裁剪框仍保持原尺寸；一次后续画布拖动产生 360×120 px（3:1）的未提交裁剪框，随后按 Enter 应用了该裁剪。对裁剪后 360×120 的图像再次拖动时，输入框仍显示 2:1，而未提交裁剪框为 320×100 px（3.2:1）。因此，这些拖动结果没有保持界面显示的 2:1；目前尚不能确定原因，也不能确认输入值是否已提交或约束未生效的具体机制。
+      ref：Aspect ratio
+    2：
+      名称：Width
+      用途记录：在裁剪约束模式候选列表中点击此候选项可选择 Width 模式。选择后列表收起，裁剪工具选项区显示 Width 模式及 100 px 的宽度值；尚未通过画布上的裁剪框验证该模式的实际约束效果。
+      ref：Width
+    3：
+      名称：Height
+      用途记录：此候选项属于裁剪约束模式候选列表；点击可选择 Height 模式。选中后列表收起，裁剪工具选项区显示 Fixed Height，Fixed 已勾选且约束值为 100 px。本次在画布上从裁剪框下边缘向下拖动后，尺寸读数由 100×52 px 变为 100×100 px，表明在该设定下调整后裁剪框高度为 100 px；裁剪框尚未提交。
+      ref：Height
+    4：
+      名称：Size
+      用途记录：点击可选择 Size 裁剪约束模式。选择后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现显示为“0x0”的约束输入；刚选择后裁剪位置仍为 260, 20、裁剪尺寸仍为 100×100 px。尚未验证设置非零尺寸后裁剪框如何响应。
+      ref：Size
+2：
+  ref：主菜单栏
+  名称：主菜单栏
+  最近登记描述：GIMP 主窗口顶部的菜单入口栏。
+  已有控件：
+    1：
+      名称：File 菜单
+      用途记录：点击可展开 File 菜单，显示文件创建、打开、保存、导出、关闭等命令；本次在未打开图像时观察到部分命令呈灰色不可用。
+      ref：File 菜单
+    2：
+      名称：Edit 菜单
+      用途记录：点击可展开 Edit 菜单；菜单内容尚未检查。
+      ref：Edit 菜单
+    3：
+      名称：Select 菜单
+      用途记录：点击可展开 Select 菜单；菜单内容尚未检查。
+      ref：Select 菜单
+    4：
+      名称：View 菜单
+      用途记录：点击可展开 View 菜单；菜单内容尚未检查。
+      ref：View 菜单
+    5：
+      名称：Image 菜单
+      用途记录：点击可展开 Image 菜单；菜单内容尚未检查。
+      ref：Image 菜单
+    6：
+      名称：Layer 菜单
+      用途记录：点击可展开 Layer 菜单；菜单内容尚未检查。
+      ref：Layer 菜单
+    7：
+      名称：Colors 菜单
+      用途记录：点击可展开 Colors 菜单；菜单内容尚未检查。
+      ref：Colors 菜单
+    8：
+      名称：Tools 菜单
+      用途记录：点击可展开 Tools 菜单；菜单内容尚未检查。
+      ref：Tools 菜单
+    9：
+      名称：Filters 菜单
+      用途记录：点击可展开 Filters 菜单；菜单内容尚未检查。
+      ref：Filters 菜单
+    10：
+      名称：Windows 菜单
+      用途记录：点击可展开 Windows 菜单；菜单内容尚未检查。
+      ref：Windows 菜单
+    11：
+      名称：Help 菜单
+      用途记录：点击可展开 Help 菜单；菜单内容尚未检查。
+      ref：Help 菜单
+  本图外观线索：
+    File 菜单；Select 菜单；View 菜单；Colors 菜单；Tools 菜单；Filters 菜单；Windows 菜单；Help 菜单；Edit 菜单；Layer 菜单
+3：
+  ref：工具箱
+  名称：工具箱
+  最近登记描述：左侧工具图标区及其下方的前景色、背景色控件。
+  已有控件：
+    1：
+      名称：工具选择按钮
+      说明：工具箱中排列有多个可独立选择的工具图标；裁剪图标当前高亮。
+      用途记录：点击某个工具图标可选择相应工具；当前可确认裁剪工具已选中，工具选项区显示其设置。
+      ref：工具选择按钮
+    2：
+      名称：前景色与背景色控件
+      用途记录：显示并提供前景色、背景色的颜色控件；当前显示前景黑色、背景白色。具体打开方式和可用参数尚未检查。
+      ref：前景色与背景色控件
+  本图外观线索：
+    工具选择按钮；前景色与背景色控件
+4：
+  ref：裁剪工具选项区
+  名称：裁剪工具选项区
+  最近登记描述：工具箱下方用于配置当前裁剪工具的选项。
+  已有控件：
+    1：
+      名称：Current layer only 选项
+      用途记录：复选框，用于设置裁剪是否仅作用于当前图层。
+      ref：Current layer only 选项
+    2：
+      名称：Delete cropped pixels 选项
+      用途记录：复选框，用于设置裁剪时是否删除裁剪区域外的像素。
+      ref：Delete cropped pixels 选项
+    3：
+      名称：Allow growing 选项
+      用途记录：复选框，用于设置裁剪边界是否允许扩展。
+      ref：Allow growing 选项
+    4：
+      名称：Expand from center 选项
+      用途记录：复选框，用于设置裁剪框是否从中心向外扩展。
+      ref：Expand from center 选项
+    5：
+      名称：裁剪约束模式
+      用途记录：下拉框用于选择裁剪约束模式。展开后可见 Aspect ratio、Width、Height 和 Size 四个候选项；本次未选择候选项，因此未确认当前设置或各模式对裁剪框的具体影响。
+      ref：裁剪约束模式
+    6：
+      名称：固定宽高比输入框
+      用途记录：在输入框中设置宽高比；选择 Aspect ratio 后，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前画布拖动曾得到 240×160 px（3:2）和 360×120 px（3:1）的未提交裁剪框；输入框显示 2:1 时，裁剪框仍可与该值不一致。对存在 360×120 px 未提交裁剪框的状态按 Enter 后，动作后的图像尺寸变为 360×120，裁剪框消失，表明该裁剪已应用；输入框仍显示 2:1。该操作未确认输入框值是否先被提交，也未验证之后拖动是否受 2:1 约束。；在固定宽高比模式下用于填写裁剪比例。本次点击后输入框仍显示被截断的“Curren…”文字；无法确认完整当前值，也未观察到数值改变。；在固定宽高比模式下填写裁剪比例。点击输入框后全选并输入“2:1”，动作后可见该值显示为 2:1；本次仅确认输入框显示值已改变，未由此确认裁剪框约束效果。
+      ref：固定宽高比输入框
+    7：
+      名称：裁剪位置输入框
+      用途记录：分别输入裁剪区域的位置坐标；当前两个坐标均显示 0，单位为 px。
+      ref：裁剪位置输入框
+    8：
+      名称：裁剪尺寸输入框
+      用途记录：分别输入裁剪区域的宽和高；当前两个数值均显示 0，单位为 px。
+      ref：裁剪尺寸输入框
+    9：
+      名称：Highlight 选项
+      用途记录：裁剪区域突出显示设置；可见 Highlight 选项及数值 50.0。
+      ref：Highlight 选项
+    10：
+      名称：参考线模式下拉框
+      用途记录：下拉框用于选择裁剪时的参考线显示模式；当前显示 No guides。
+      ref：参考线模式下拉框
+    11：
+      名称：裁剪约束模式选择器
+      用途记录：通过下拉列表选择裁剪约束模式；本次选择后显示 Width。
+      ref：裁剪约束模式选择器
+    12：
+      名称：Width 约束值输入框
+      用途记录：Width 模式下可见的约束值为 100 px。本次画布拖动后裁剪框尺寸读数为 334×96 px，故该次观察没有显示框宽被限制为 100 px；是否还需启用其他固定约束选项才能生效，尚未确认。
+      ref：Width 约束值输入框
+    13：
+      名称：Fixed 复选框
+      说明：裁剪工具选项区中带有 Fixed 标签、位于 Width 模式选择器左侧的复选框。
+      用途记录：可切换 Fixed 复选框。本轮只核对并登记了控件身份，没有操作它，也未验证它对 Width 模式或裁剪框的影响。截图中看起来未勾选。；点击可切换 Fixed 复选框状态。本次点击后由未勾选变为已勾选；在当前 Width 值为 100 px、现有裁剪尺寸为 334×96 px 时，尺寸读数没有改变。启用后对新建裁剪框的约束效果仍待验证。；在当前 Fixed Height 模式下此复选框显示为勾选；本次未切换它，未验证取消勾选后的效果。
+      ref：Fixed 复选框
+    14：
+      名称：Height 约束值输入框
+      说明：Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。
+      用途记录：用于填写固定裁剪高度；当前显示 100 px。修改数值后裁剪框如何响应尚未验证。
+      ref：Height 约束值输入框
+    15：
+      名称：Size 约束值输入框
+      说明：位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。
+      用途记录：这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。；输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。
+      ref：Size 约束值输入框
+  本图外观线索：
+    Expand from center 选项；参考线模式下拉框；Highlight 选项；Delete cropped pixels 选项；Allow growing 选项；Current layer only 选项
+5：
+  ref：画笔停靠区
+  名称：画笔停靠区
+  最近登记描述：右上停靠区用于查看画笔预设并显示画笔相关设置。
+  已有控件：
+    1：
+      名称：画笔资源过滤框
+      用途记录：输入过滤文字以筛选下方显示的画笔资源。
+      ref：画笔资源过滤框
+    2：
+      名称：画笔预设网格
+      说明：显示多个画笔缩略图，可选择其中的画笔预设。
+      用途记录：点击预设缩略图可选择画笔；当前显示的画笔为 Hardness 050 (51 × 51)。
+      ref：画笔预设网格
+    3：
+      名称：Spacing 设置
+      用途记录：设置当前画笔的间距；当前数值为 10.0。
+      ref：Spacing 设置
+  本图外观线索：
+    画笔预设网格；Spacing 设置；画笔资源过滤框
+6：
+  ref：图层停靠区
+  名称：图层停靠区
+  最近登记描述：右下停靠区提供图层、通道和路径标签，以及图层设置和列表区域。
+  已有控件：
+    1：
+      名称：图层、通道和路径标签
+      用途记录：通过标签切换图层、通道或路径面板；当前显示图层面板。
+      ref：图层、通道和路径标签
+    2：
+      名称：混合模式下拉框
+      用途记录：设置图层混合模式；当前显示 Normal。
+      ref：混合模式下拉框
+    3：
+      名称：图层不透明度设置
+      用途记录：设置选中图层的不透明度；当前显示 100.0。
+      ref：图层不透明度设置
+    4：
+      名称：图层锁定选项
+      用途记录：提供图层锁定相关控件；具体各锁定图标对应的作用尚未确认。
+      ref：图层锁定选项
+    5：
+      名称：图层列表
+      用途记录：显示当前图像的图层条目；本图中列表为空。；显示当前图像的图层；本次新建图像的列表中可见一个 Background 图层。
+      ref：图层列表
+  本图外观线索：
+    图层、通道和路径标签；图层锁定选项
+
+### 登记页面组成与访问来路
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+主菜单栏 [主菜单栏]
+  ├─ File 菜单 [File 菜单]
+    └─ File 菜单内容 [File 菜单内容]
+      ├─ New… [New…]
+        └─ Create a New Image 对话框 [Create a New Image 对话框]
+          ├─ Template 下拉框 [Template 下拉框]
+            └─ Template 候选列表 [Template 候选列表]
+              ├─ Apple iPhone 6/7 模板候选 [Apple iPhone 6/7 模板候选]
+              ├─ Apple iPhone 5 模板候选 [Apple iPhone 5 模板候选]
+              ├─ Template 列表向上滚动箭头 [Template 列表向上滚动箭头]
+              ├─ Template 列表向下滚动箭头 [Template 列表向下滚动箭头]
+              ├─ 3840x2160 (4K UHD) 模板候选 [3840x2160 (4K UHD) 模板候选]
+              ├─ 4096x2160 (Digital Cinema Initiatives 4K) 模板候选 [4096x2160 (Digital Cinema Initiatives 4K) 模板候选]
+              ├─ 3840x2160 4K UHD 模板候选 [3840x2160 4K UHD 模板候选]
+              ├─ B5 (300 ppi) [B5 (300 ppi)]
+              ├─ 88.9×50.8 US Business Card [88.9×50.8 US Business Card]
+              ├─ Web banner leaderboard 728x90 [Web banner leaderboard 728x90]
+              ├─ 1280x720 (HD 720p) [1280x720 (HD 720p)]
+          ├─ Width 输入框 [Width 输入框]
+          ├─ Height 输入框 [Height 输入框]
+          ├─ 图像尺寸单位下拉框 [图像尺寸单位下拉框]
+            └─ 图像尺寸单位候选列表 [图像尺寸单位候选列表]
+              ├─ pixels [pixels]
+              ├─ inches [inches]
+              ├─ millimeters [millimeters]
+              ├─ points [points]
+              ├─ picas [picas]
+              ├─ centimeters [centimeters]
+              ├─ meters [meters]
+              ├─ feet [feet]
+              ├─ yards [yards]
+              ├─ typogr. points [typogr. points]
+              ├─ typogr. picas [typogr. picas]
+          ├─ Advanced Options [Advanced Options]
+          ├─ Help [Help]
+          ├─ Reset [Reset]
+          ├─ Cancel [Cancel]
+          ├─ OK [OK]
+            └─ 图像工作区 [图像工作区（中央用于显示和编辑图像的工作区域。）]
+              ├─ 图像画布区域 [图像画布区域]
+          ├─ X resolution 输入框 [X resolution 输入框]
+          ├─ Y resolution 输入框 [Y resolution 输入框]
+          ├─ Resolution 单位下拉框 [Resolution 单位下拉框]
+          ├─ Color space 下拉框 [Color space 下拉框]
+          ├─ Precision 下拉框 [Precision 下拉框]
+          ├─ Gamma 下拉框 [Gamma 下拉框]
+          ├─ Color manage this image 选项 [Color manage this image 选项]
+          ├─ Color profile 下拉框 [Color profile 下拉框]
+          ├─ Fill with 下拉框 [Fill with 下拉框]
+          ├─ Comment 文本框 [Comment 文本框]
+      ├─ Create [Create]
+      ├─ Open… [Open…]
+      ├─ Open as Layers… [Open as Layers…]
+      ├─ Open Location… [Open Location…]
+      ├─ Open Recent [Open Recent]
+        └─ Open Recent 子菜单 [Open Recent 子菜单]
+          ├─ Screenshot from 2023-12-18 17-21-35.png [Screenshot from 2023-12-18 17-21-35.png]
+          ├─ Document History [Document History]
+      ├─ Save… [Save…]
+      ├─ Save As… [Save As…]
+      ├─ Save a Copy… [Save a Copy…]
+      ├─ Revert [Revert]
+      ├─ Export… [Export…]
+      ├─ Export As… [Export As…]
+      ├─ Create Template… [Create Template…]
+      ├─ Print… [Print…]
+      ├─ Send by Email… [Send by Email…]
+      ├─ Copy Image Location [Copy Image Location]
+      ├─ Show in File Manager [Show in File Manager]
+      ├─ Close View [Close View]
+      ├─ Close All [Close All]
+      ├─ Quit [Quit]
+      ├─ Overwrite city_skyline.jpg [Overwrite city_skyline.jpg]
+  ├─ Edit 菜单 [Edit 菜单]
+  ├─ Select 菜单 [Select 菜单]
+  ├─ View 菜单 [View 菜单]
+  ├─ Image 菜单 [Image 菜单]
+  ├─ Layer 菜单 [Layer 菜单]
+  ├─ Colors 菜单 [Colors 菜单]
+  ├─ Tools 菜单 [Tools 菜单]
+  ├─ Filters 菜单 [Filters 菜单]
+  ├─ Windows 菜单 [Windows 菜单]
+  ├─ Help 菜单 [Help 菜单]
+工具箱 [工具箱]
+  ├─ 工具选择按钮 [工具选择按钮]
+  ├─ 前景色与背景色控件 [前景色与背景色控件]
+裁剪工具选项区 [裁剪工具选项区]
+  ├─ Current layer only 选项 [Current layer only 选项]
+  ├─ Delete cropped pixels 选项 [Delete cropped pixels 选项]
+  ├─ Allow growing 选项 [Allow growing 选项]
+  ├─ Expand from center 选项 [Expand from center 选项]
+  ├─ 裁剪约束模式 [裁剪约束模式]
+    └─ 裁剪约束模式候选列表 [裁剪约束模式候选列表]（本步关注区块）
+      ├─ Aspect ratio [Aspect ratio]
+      ├─ Width [Width]
+      ├─ Height [Height]
+      ├─ Size [Size]
+  ├─ 固定宽高比输入框 [固定宽高比输入框]
+  ├─ 裁剪位置输入框 [裁剪位置输入框]
+  ├─ 裁剪尺寸输入框 [裁剪尺寸输入框]
+  ├─ Highlight 选项 [Highlight 选项]
+  ├─ 参考线模式下拉框 [参考线模式下拉框]
+  ├─ 裁剪约束模式选择器 [裁剪约束模式选择器]
+    └─ [引用：裁剪约束模式候选列表 裁剪约束模式候选列表]
+  ├─ Width 约束值输入框 [Width 约束值输入框]
+  ├─ Fixed 复选框 [Fixed 复选框]
+  ├─ Height 约束值输入框 [Height 约束值输入框]
+  ├─ Size 约束值输入框 [Size 约束值输入框]
+画笔停靠区 [画笔停靠区]
+  ├─ 画笔资源过滤框 [画笔资源过滤框]
+  ├─ 画笔预设网格 [画笔预设网格]
+  ├─ Spacing 设置 [Spacing 设置]
+图层停靠区 [图层停靠区]
+  ├─ 图层、通道和路径标签 [图层、通道和路径标签]
+  ├─ 混合模式下拉框 [混合模式下拉框]
+  ├─ 图层不透明度设置 [图层不透明度设置]
+  ├─ 图层锁定选项 [图层锁定选项]
+  ├─ 图层列表 [图层列表]
+Create 子菜单 [Create 子菜单]
+  ├─ From Clipboard [From Clipboard]
+  ├─ Screenshot… [Screenshot…]
+图像工作区 [图像工作区（显示当前图像画布及其上的裁剪框。）]
+  ├─ 图像画布区域 [图像画布区域]
+上次已登记前景：裁剪工具选项区、图像工作区
+
+本图：本次发现观察图；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

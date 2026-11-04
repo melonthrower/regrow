@@ -1,0 +1,73 @@
+{
+  "identified_regions": [],
+  "template_rejections": [],
+  "source_call": "0164",
+  "frame_sha256": "9e724007f0747c899f4db77fb53d874602b985240b8a514d07b3e6acffa92989",
+  "scope": {},
+  "ranking": [
+    {
+      "region": "r0020",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0174",
+          "score": 0.9623202085494995,
+          "box": [
+            807,
+            181,
+            1095,
+            204
+          ],
+          "scale": 1,
+          "gap": 0.40179842710494995,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                807,
+                181,
+                1095,
+                204
+              ],
+              "score": 0.9623202085494995,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "bbox": {
+              "left": 807,
+              "top": 181,
+              "right": 1095,
+              "bottom": 204
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/runs/desktop.vs_code_20261104T122642_ca56278e/knowledge_snapshots/a0030-0160-442710656b99/regions/r0020/images/0160/c0174.png",
+            "evidence": {
+              "source_field": "/controls/0",
+              "region": "r0020",
+              "source_call": "0160",
+              "observation": "update:0160"
+            },
+            "image_conditions": [
+              "目录项处于展开状态，左侧箭头朝下；下方显示了多个子目录。"
+            ],
+            "source_image": "../../action_attempts/a0030/after.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 1,
+      "eligible_controls": 2,
+      "total_controls": 2,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

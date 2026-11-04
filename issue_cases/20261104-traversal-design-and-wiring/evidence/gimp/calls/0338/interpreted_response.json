@@ -1,0 +1,97 @@
+{
+  "action_result": {
+    "exception": "none",
+    "description": "在 Size 模式、Fixed 已勾选且约束输入框显示“80x60”时，于画布拖动新建了裁剪框。动作后位置为 140, 60 px、尺寸为 80×60 px，与输入值一致；此前读数为位置 260, 20 px、尺寸 100×100 px。状态栏仍提示“Click or press Enter to crop”，因此裁剪框尚未应用。",
+    "recovery_handoff": "",
+    "returns_to_previous": false
+  },
+  "foreground": {
+    "description": "GIMP 图像工作区处于前景，画布上显示新建的未提交裁剪框；裁剪工具选项区显示 Fixed / Size、约束值“80x60”，以及位置 140, 60 px、尺寸 80×60 px。"
+  },
+  "regions": [
+    {
+      "ref": "r0004",
+      "identity": "same",
+      "state_description": "画布上有一个位置为 140, 60 px、尺寸为 80×60 px 的未提交裁剪框；状态栏提示需点击或按 Enter 才会裁剪。",
+      "candidate_index": 0
+    },
+    {
+      "ref": "r0003",
+      "identity": "same",
+      "state_description": "裁剪约束模式为 Fixed / Size，Fixed 已勾选，Size 约束值为“80x60”；裁剪位置和尺寸分别显示为 140, 60 px 与 80×60 px。",
+      "candidate_index": 1
+    },
+    {
+      "ref": "r0013",
+      "identity": "same",
+      "candidate_index": 2
+    }
+  ],
+  "function_updates": [
+    {
+      "region": "r0004",
+      "update": [
+        {
+          "ref": "按固定尺寸创建裁剪框",
+          "changes": {
+            "supports": [
+              "c0024"
+            ],
+            "constraints": []
+          }
+        }
+      ]
+    }
+  ],
+  "task_update": [
+    {
+      "task": "r0013/c0102 / 功能探索",
+      "decision": "answered",
+      "reason": "输入框显示“80x60”时于画布新建裁剪框，动作后尺寸读数为 80×60 px，与输入值一致，已确认 Size 模式对新建裁剪框的约束效果。裁剪框尚未应用不影响本任务对约束效果的验证。"
+    }
+  ],
+  "uncertainties": [],
+  "controls": [
+    {
+      "ref": "c0024",
+      "knowledge": [
+        {
+          "description": "裁剪工具处于 Fixed / Size 模式、Fixed 已勾选且约束值为“80x60”时，在画布上拖动新建裁剪框，本次得到的位置为 140, 60 px、尺寸为 80×60 px，与约束值一致。裁剪框尚未提交；状态栏提示需点击或按 Enter 才会应用裁剪。"
+        }
+      ],
+      "candidate_index": 0
+    },
+    {
+      "ref": "c0107",
+      "knowledge": [
+        {
+          "description": "在 Fixed / Size 模式下输入“宽x高”格式的值；本次输入“80x60”后，在画布上拖动新建裁剪框得到 80×60 px，表明该值被解析并用于约束新建裁剪框的尺寸。",
+          "constraints": {
+            "尺寸": {
+              "description": "填写宽度和高度，以“宽x高”格式输入，例如“80x60”；本次观察到该值用于约束新建裁剪框为 80×60 px。"
+            }
+          }
+        }
+      ],
+      "candidate_index": 1
+    },
+    {
+      "ref": "c0102",
+      "knowledge": [
+        {
+          "index": 0,
+          "description": "点击可选择 Size 裁剪约束模式。选择后模式选择器显示 Fixed / Size、Fixed 已勾选，并出现约束输入框。输入“80x60”后，在画布上拖动新建裁剪框得到 80×60 px，表明 Size 模式会按该输入值约束新建裁剪框的宽和高；裁剪框仍需进一步确认或按 Enter 才会应用裁剪。"
+        }
+      ],
+      "candidate_index": 2
+    }
+  ],
+  "current_regions": [
+    {
+      "region_index": 0
+    },
+    {
+      "region_index": 1
+    }
+  ]
+}

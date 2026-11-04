@@ -1,0 +1,371 @@
+{
+  "r0001/功能探索": {
+    "control": "c0001",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途；注意当前没有打开图像时可能出现的不可用命令。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0002 / 功能探索": {
+    "control": "c0002",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途；注意当前没有打开图像时可能出现的不可用命令。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/53ef31e6448f4d5fa8468c0eebe9c016/episode.json",
+      "attempt": "a0127",
+      "failed_call": "0348",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-53ef31e6448f4d5fa8468c0eebe9c016"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0003 / 功能探索": {
+    "control": "c0003",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途，并记录必要的使用条件。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/d8379cc57e624997bdc1e4b29b76522a/episode.json",
+      "attempt": "a0129",
+      "failed_call": "0357",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-d8379cc57e624997bdc1e4b29b76522a"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0004 / 功能探索": {
+    "control": "c0004",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途，并记录必要的使用条件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0005 / 功能探索": {
+    "control": "c0005",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途；注意当前没有打开图像时可能出现的不可用命令。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0006 / 功能探索": {
+    "control": "c0006",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途；注意当前没有打开图像或图层时可能出现的不可用命令。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0007 / 功能探索": {
+    "control": "c0007",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途；注意当前没有打开图像时可能出现的不可用命令。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0008 / 功能探索": {
+    "control": "c0008",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途，并记录必要的使用条件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0009 / 功能探索": {
+    "control": "c0009",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途；注意当前没有打开图像或适用图层时可能出现的不可用命令。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0010 / 功能探索": {
+    "control": "c0010",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途，并记录必要的使用条件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0001/c0011 / 功能探索": {
+    "control": "c0011",
+    "task_type": "function",
+    "completion_condition": "展开菜单，识别可用命令及其直接用途，并说明它们提供的帮助或信息类型。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/区块内容探索": {
+    "control": null,
+    "task_type": "region_content",
+    "reason": "Create 和 Open Recent 右侧均有子菜单箭头，子菜单内容尚未查看。",
+    "completion_condition": "展开 Create 和 Open Recent，并看清各自子菜单中显示的内容后结束。",
+    "name": "区块内容探索",
+    "status": "blocked",
+    "navigation_observation": "update:0053",
+    "deferral": {
+      "episode": "repair_episodes/f0fc8f1fa0cc4b7aa9d60b14a29dacc7/episode.json",
+      "attempt": "a0055",
+      "failed_call": "0074",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-f0fc8f1fa0cc4b7aa9d60b14a29dacc7"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0007/功能探索": {
+    "control": "c0033",
+    "task_type": "function",
+    "completion_condition": "触发 New… 并观察到新建图像界面后结束；不要求完成创建。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0007/c0035 / 功能探索": {
+    "control": "c0035",
+    "task_type": "function",
+    "completion_condition": "触发 Open… 并观察到文件选择界面后结束；不要求选择或打开文件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/c0036 / 功能探索": {
+    "control": "c0036",
+    "task_type": "function",
+    "completion_condition": "触发 Open as Layers… 并观察到其目标界面后结束；不要求选择或打开文件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/c0037 / 功能探索": {
+    "control": "c0037",
+    "task_type": "function",
+    "completion_condition": "触发 Open Location… 并观察到其位置输入或选择界面后结束；不要求打开内容。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/c0040 / 功能探索": {
+    "control": "c0040",
+    "task_type": "function",
+    "completion_condition": "在有打开图像时触发 Save As… 并观察到保存界面后结束；不要求保存文件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/c0044 / 功能探索": {
+    "control": "c0044",
+    "task_type": "function",
+    "completion_condition": "在有打开图像时触发 Export As… 并观察到导出界面后结束；不要求导出文件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/c0045 / 功能探索": {
+    "control": "c0045",
+    "task_type": "function",
+    "completion_condition": "在有打开图像时触发 Create Template… 并观察到其目标界面后结束；不要求创建模板。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/参数探索": {
+    "control": "c0057",
+    "task_type": "parameter",
+    "completion_condition": "展开下拉框并看清可选模板，以便确定后续可指定的模板。",
+    "function_refs": [
+      "r0010/创建新图像"
+    ],
+    "name": "参数探索",
+    "status": "done"
+  },
+  "r0010/c0060 / 参数探索": {
+    "control": "c0060",
+    "task_type": "parameter",
+    "completion_condition": "展开下拉框并看清可选尺寸单位，以便确定宽度和高度可以使用的单位。",
+    "function_refs": [
+      "r0010/创建新图像"
+    ],
+    "name": "参数探索",
+    "status": "done"
+  },
+  "r0010/功能探索": {
+    "control": "c0061",
+    "task_type": "function",
+    "completion_condition": "展开高级选项并观察其中显示的内容，以确认该控件打开了什么设置区。",
+    "function_refs": [
+      "r0010/创建新图像"
+    ],
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/9f6bed1cd2014fd39011897f94021e71/episode.json",
+      "attempt": "a0099",
+      "failed_call": "0237",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-9f6bed1cd2014fd39011897f94021e71"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0010/c0063 / 功能探索": {
+    "control": "c0063",
+    "task_type": "function",
+    "completion_condition": "观察点击重置后对话框中的设置变化，以确定重置的内容和范围。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0010/c0065 / 功能探索": {
+    "control": "c0065",
+    "task_type": "function",
+    "completion_condition": "确认后观察对话框是否关闭以及是否出现新图像，以确认创建操作的可见结果。",
+    "function_refs": [
+      "r0010/创建新图像"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0010/c0062 / 功能探索": {
+    "control": "c0062",
+    "task_type": "function",
+    "completion_condition": "点击帮助按钮并观察打开的内容或界面，以确认其直接效果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0011/区块内容探索": {
+    "control": null,
+    "task_type": "region_content",
+    "reason": "列表带有滚动指示，当前画面只显示部分候选；检查后续内容是否出现不同于已见纸张、名片、CD 和网页横幅模板的独立功能线索，无需逐项记录同类模板。",
+    "completion_condition": "滚动查看未显示的列表内容；若出现新的独立功能线索，记录其内容，否则在确认其余内容只是模板候选后结束。",
+    "name": "区块内容探索",
+    "status": "blocked",
+    "navigation_observation": "update:0107",
+    "completion_action": {
+      "region": "r0011",
+      "control": null,
+      "excluded_attempts": [
+        "a0058",
+        "a0059",
+        "a0060",
+        "a0061",
+        "a0062",
+        "a0063",
+        "a0064"
+      ]
+    },
+    "deferral": {
+      "episode": "repair_episodes/5acad4e236a84463a3a58506bd718ff4/episode.json",
+      "attempt": "a0093",
+      "failed_call": "0208",
+      "reason": "格式修正次数已用完；原请求和失败回复已保存",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-5acad4e236a84463a3a58506bd718ff4"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0011/功能探索": {
+    "control": "c0071",
+    "task_type": "function",
+    "completion_condition": "点击该候选后，观察 Template 列表是否收起、模板是否被选中，以及 Width、Height 或其他可见图像设置是否随之变化；确认直接结果即可结束，不要求创建图像。",
+    "function_refs": [
+      "r0011/浏览新图像模板候选"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0004/功能探索": {
+    "control": "c0024",
+    "task_type": "function",
+    "completion_condition": "选中裁剪工具后，在画布上拖动并确认一次；观察是否形成裁剪区域，以及确认后画布图像是否被裁剪。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0003/参数探索": {
+    "control": "c0018",
+    "task_type": "parameter",
+    "completion_condition": "展开下拉框并看清可选的裁剪约束模式。",
+    "name": "参数探索",
+    "status": "done"
+  },
+  "r0003/c0023 / 参数探索": {
+    "control": "c0023",
+    "task_type": "parameter",
+    "completion_condition": "展开下拉框并看清可选的参考线显示模式。",
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0003/功能探索": {
+    "control": "c0022",
+    "task_type": "function",
+    "completion_condition": "确认启用或关闭 Highlight 以及调整其数值分别会对裁剪区域显示产生什么作用。",
+    "function_refs": [
+      "r0003/配置裁剪工具选项"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/功能探索": {
+    "control": "c0099",
+    "task_type": "function",
+    "completion_condition": "选择 Aspect ratio 后，观察并确认该模式如何约束裁剪框。",
+    "function_refs": [
+      "r0013/选择裁剪约束模式"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0013/c0100 / 功能探索": {
+    "control": "c0100",
+    "task_type": "function",
+    "completion_condition": "选择 Width 后，观察并确认该模式如何约束裁剪框。",
+    "function_refs": [
+      "r0013/选择裁剪约束模式"
+    ],
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/1e17155d1c934f2ca3a2d6921b351db6/episode.json",
+      "attempt": "a0117",
+      "failed_call": "0309",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-1e17155d1c934f2ca3a2d6921b351db6"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0013/c0101 / 功能探索": {
+    "control": "c0101",
+    "task_type": "function",
+    "completion_condition": "选择 Height 后，观察并确认该模式如何约束裁剪框。",
+    "function_refs": [
+      "r0013/选择裁剪约束模式"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0013/c0102 / 功能探索": {
+    "control": "c0102",
+    "task_type": "function",
+    "completion_condition": "选择 Size 后，观察并确认该模式如何约束裁剪框。",
+    "function_refs": [
+      "r0013/选择裁剪约束模式"
+    ],
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/9418180021494a149b7d5b724dca39f8/episode.json",
+      "attempt": "a0126",
+      "failed_call": "0339",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-9418180021494a149b7d5b724dca39f8"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  }
+}

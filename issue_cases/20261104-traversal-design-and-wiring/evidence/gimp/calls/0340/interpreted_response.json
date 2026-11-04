@@ -1,0 +1,237 @@
+{
+  "foreground": {
+    "description": "GIMP 主窗口处于前景，显示裁剪工具选项、图像工作区以及两侧停靠区；没有展开菜单或模态对话框。",
+    "exception": "none",
+    "recovery_handoff": ""
+  },
+  "focus_presence": "not_interactive",
+  "regions": [
+    {
+      "ref": "r0013",
+      "identity": "same",
+      "bbox": null,
+      "state_description": "候选列表未展开，因此列表项当前不可见、不可操作。"
+    },
+    {
+      "ref": "r0001",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 60,
+        "right": 620,
+        "bottom": 90
+      }
+    },
+    {
+      "ref": "r0002",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 90,
+        "right": 260,
+        "bottom": 365
+      }
+    },
+    {
+      "ref": "r0003",
+      "identity": "same",
+      "bbox": {
+        "left": 70,
+        "top": 365,
+        "right": 260,
+        "bottom": 800
+      },
+      "state_description": "裁剪工具选项可见；约束模式为 Size，Fixed 已勾选，约束值显示 80x60。裁剪位置显示 140, 60 px，裁剪尺寸显示 80x60 px；Highlight 已启用并显示 50.0，参考线为 No guides。"
+    },
+    {
+      "ref": "r0004",
+      "identity": "same",
+      "bbox": {
+        "left": 280,
+        "top": 152,
+        "right": 1070,
+        "bottom": 767
+      },
+      "state_description": "中央工作区显示一个 360x120 的图像及未提交的裁剪框；状态栏提示可点击或按 Enter 进行裁剪。"
+    },
+    {
+      "ref": "r0005",
+      "identity": "same",
+      "bbox": {
+        "left": 1080,
+        "top": 90,
+        "right": 1280,
+        "bottom": 430
+      }
+    },
+    {
+      "ref": "r0006",
+      "identity": "same",
+      "bbox": {
+        "left": 1080,
+        "top": 430,
+        "right": 1280,
+        "bottom": 800
+      },
+      "state_description": "图层面板可见，列表中有一个 Background 图层。"
+    }
+  ],
+  "uncertainties": [
+    "裁剪约束模式候选列表当前未展开；本图不能确认候选项是否有变化。",
+    "Size 模式下，约束值与裁剪尺寸读数都显示 80x60，但这不足以确认约束值已解析或裁剪框受其约束。"
+  ],
+  "controls": [
+    {
+      "ref": "c0001",
+      "region_index": 1
+    },
+    {
+      "ref": "c0002",
+      "region_index": 1
+    },
+    {
+      "ref": "c0003",
+      "region_index": 1
+    },
+    {
+      "ref": "c0004",
+      "region_index": 1
+    },
+    {
+      "ref": "c0005",
+      "region_index": 1
+    },
+    {
+      "ref": "c0006",
+      "region_index": 1
+    },
+    {
+      "ref": "c0007",
+      "region_index": 1
+    },
+    {
+      "ref": "c0008",
+      "region_index": 1
+    },
+    {
+      "ref": "c0009",
+      "region_index": 1
+    },
+    {
+      "ref": "c0010",
+      "region_index": 1
+    },
+    {
+      "ref": "c0011",
+      "region_index": 1
+    },
+    {
+      "ref": "c0012",
+      "description": "裁剪工具图标处于选中状态。",
+      "region_index": 2
+    },
+    {
+      "ref": "c0013",
+      "description": "显示前景色为黑色、背景色为白色。",
+      "region_index": 2
+    },
+    {
+      "ref": "c0014",
+      "description": "当前未勾选。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0015",
+      "description": "当前未勾选。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0016",
+      "description": "当前未勾选。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0017",
+      "description": "当前未勾选。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0103",
+      "description": "当前显示 Size；可通过该下拉选择裁剪约束模式。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0105",
+      "description": "当前已勾选。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0107",
+      "knowledge": [
+        {
+          "description": "用于设置 Size 模式的约束尺寸。当前显示 80x60；同时画面中的裁剪尺寸读数为 80x60 px、位置为 140, 60 px。仅凭此画面不能确认尺寸读数与约束值相同是由约束生效导致，或确认约束值已被解析。"
+        }
+      ]
+    },
+    {
+      "ref": "c0020",
+      "region_index": 3
+    },
+    {
+      "ref": "c0021",
+      "region_index": 3
+    },
+    {
+      "ref": "c0022",
+      "description": "当前已勾选，数值显示为 50.0。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0023",
+      "description": "当前显示 No guides。",
+      "region_index": 3
+    },
+    {
+      "ref": "c0024",
+      "description": "画布上可见裁剪框；框的尺寸读数为 80x60 px。",
+      "region_index": 4
+    },
+    {
+      "ref": "c0025",
+      "region_index": 5
+    },
+    {
+      "ref": "c0026",
+      "description": "显示画笔预设缩略图；当前标示 Hardness 050 (51 × 51)。",
+      "region_index": 5
+    },
+    {
+      "ref": "c0027",
+      "description": "当前数值为 10.0。",
+      "region_index": 5
+    },
+    {
+      "ref": "c0028",
+      "region_index": 6
+    },
+    {
+      "ref": "c0029",
+      "description": "当前显示 Normal。",
+      "region_index": 6
+    },
+    {
+      "ref": "c0030",
+      "description": "当前显示 100.0。",
+      "region_index": 6
+    },
+    {
+      "ref": "c0031",
+      "region_index": 6
+    },
+    {
+      "ref": "c0032",
+      "description": "显示 Background 图层。",
+      "region_index": 6
+    }
+  ]
+}

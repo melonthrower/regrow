@@ -1,0 +1,20 @@
+{
+  "identified_regions": [
+    {
+      "source_field": "/regions/1",
+      "bbox": {
+        "left": 421,
+        "top": 327,
+        "right": 931,
+        "bottom": 501
+      }
+    }
+  ],
+  "template_rejections": [],
+  "source_call": "0198",
+  "frame_sha256": "4a4f69b0b7356104d272470a9d26b032d6601cd43b8570d39341244718547de4",
+  "scope": {},
+  "ranking": [],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

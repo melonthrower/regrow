@@ -1,0 +1,810 @@
+{
+  "type": "object",
+  "properties": {
+    "foreground": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。"
+          },
+          "local_knowledge": {
+            "type": "object",
+            "properties": {
+              "add": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "update": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "delete": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "state_description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。"
+          },
+          "task_review_reason": {
+            "type": "string",
+            "description": "仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。"
+          },
+          "context_matches": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。"
+          },
+          "out_of_scope_reason": {
+            "type": "string",
+            "description": "只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。"
+          },
+          "identity": {
+            "type": "string",
+            "enum": [
+              "same",
+              "new",
+              "uncertain"
+            ]
+          },
+          "identity_evidence": {
+            "type": "string",
+            "description": "身份未定或存在歧义时说明具体依据和缺口。"
+          },
+          "controls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "File 菜单",
+                    "Edit 菜单",
+                    "Selection 菜单",
+                    "View 菜单",
+                    "Go 菜单",
+                    "Run 菜单",
+                    "Terminal 菜单",
+                    "Help 菜单",
+                    "Explorer 入口",
+                    "Search 入口",
+                    "Source Control 入口",
+                    "Run and Debug 入口",
+                    "Extensions 入口",
+                    "Accounts 入口",
+                    "Manage 入口",
+                    "meeting_notes.txt 标签",
+                    "关闭 meeting_notes.txt 标签",
+                    "路径面包屑",
+                    "文本编辑区",
+                    "拆分编辑器",
+                    "编辑器更多操作",
+                    "行列位置",
+                    "缩进状态",
+                    "文件编码状态",
+                    "行尾格式状态",
+                    "语言模式状态",
+                    "通知入口",
+                    "New Text File",
+                    "File 菜单展开内容 / New File...",
+                    "New Window",
+                    "File 菜单展开内容 / Open File...",
+                    "File 菜单展开内容 / Open Folder...",
+                    "Open Workspace from File...",
+                    "Open Recent",
+                    "Add Folder to Workspace...",
+                    "Save Workspace As...",
+                    "Duplicate Workspace",
+                    "Save",
+                    "Save As...",
+                    "Save All",
+                    "Share",
+                    "Auto Save",
+                    "Preferences",
+                    "Revert File",
+                    "Close Editor",
+                    "Close Window",
+                    "Exit",
+                    "Undo",
+                    "Redo",
+                    "Cut",
+                    "Copy",
+                    "Paste",
+                    "Find",
+                    "Replace",
+                    "Find in Files",
+                    "Replace in Files",
+                    "Toggle Line Comment",
+                    "Toggle Block Comment",
+                    "Emmet: Expand Abbreviation",
+                    "Select All",
+                    "Expand Selection",
+                    "Shrink Selection",
+                    "Copy Line Up",
+                    "Copy Line Down",
+                    "Move Line Up",
+                    "Move Line Down",
+                    "Duplicate Selection",
+                    "Add Cursor Above",
+                    "Add Cursor Below",
+                    "Add Cursors to Line Ends",
+                    "Add Next Occurrence",
+                    "Add Previous Occurrence",
+                    "Select All Occurrences",
+                    "Switch to Ctrl+Click for Multi-Cursor",
+                    "Column Selection Mode",
+                    "Command Palette...",
+                    "Open View...",
+                    "Appearance",
+                    "Editor Layout",
+                    "Explorer",
+                    "Search",
+                    "Source Control",
+                    "Run",
+                    "Extensions",
+                    "Problems",
+                    "Output",
+                    "Debug Console",
+                    "Terminal",
+                    "Word Wrap",
+                    "Back",
+                    "Forward",
+                    "Last Edit Location",
+                    "Switch Editor",
+                    "Switch Group",
+                    "Go to File...",
+                    "Go to Symbol in Workspace...",
+                    "Go to Symbol in Editor...",
+                    "Go to Definition",
+                    "Go to Declaration",
+                    "Go to Type Definition",
+                    "Go to Implementations",
+                    "Go to References",
+                    "Go to Line/Column...",
+                    "Go to Bracket",
+                    "Next Problem",
+                    "Previous Problem",
+                    "Next Change",
+                    "Previous Change",
+                    "Start Debugging",
+                    "Run Without Debugging",
+                    "Stop Debugging",
+                    "Restart Debugging",
+                    "Open Configurations",
+                    "Add Configuration...",
+                    "Step Over",
+                    "Step Into",
+                    "Step Out",
+                    "Continue",
+                    "Toggle Breakpoint",
+                    "New Breakpoint",
+                    "Enable All Breakpoints",
+                    "Disable All Breakpoints",
+                    "Remove All Breakpoints",
+                    "Install Additional Debuggers...",
+                    "settings.json 标签",
+                    "右侧 settings.json 标签",
+                    "Chrome: Attach",
+                    "Show Opened Editors",
+                    "Close All",
+                    "Close Saved",
+                    "Enable Preview Editors",
+                    "Maximize Group",
+                    "Lock Group",
+                    "New Terminal",
+                    "Split Terminal",
+                    "Run Task...",
+                    "Run Build Task...",
+                    "Run Active File",
+                    "Run Selected Text",
+                    "Show Running Tasks...",
+                    "Restart Running Task...",
+                    "Terminate Task...",
+                    "Configure Tasks...",
+                    "Configure Default Build Task...",
+                    "Welcome",
+                    "Show All Commands",
+                    "Documentation",
+                    "Editor Playground",
+                    "Show Release Notes",
+                    "Keyboard Shortcuts Reference",
+                    "Video Tutorials",
+                    "Tips and Tricks",
+                    "Join Us on YouTube",
+                    "Search Feature Requests",
+                    "Report Issue",
+                    "View License",
+                    "Privacy Statement",
+                    "Toggle Developer Tools",
+                    "Open Process Explorer",
+                    "Check for Updates...",
+                    "About",
+                    "Welcome 页面 / New File...",
+                    "Welcome 页面 / Open File...",
+                    "Welcome 页面 / Open Folder...",
+                    "Clone Git Repository...",
+                    "Connect to...",
+                    "Get Started with V...",
+                    "Learn the Fundam...",
+                    "Show welcome page on startup",
+                    "文件名或类型输入框",
+                    "Text File",
+                    "Jupyter Notebook",
+                    "Untitled-1 标签",
+                    ".config 目录项",
+                    "autostart 目录项"
+                  ],
+                  "description": "已有控件填写控件树中的ID；新控件省略。"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "list_group": {
+                  "type": "string"
+                },
+                "knowledge": {
+                  "type": "array",
+                  "minItems": 0,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "修订给定已有知识时引用其序号；新增省略。"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                      },
+                      "constraints": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "description"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "may_open_content": {
+                  "type": "boolean",
+                  "description": "是否打开或展开与应用主要功能相关、具有探索价值的内容。"
+                },
+                "needs_exploration": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "控件自身用法是否还有影响后续使用的具体未知；不确定填null。"
+                },
+                "image_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "仅add_image=true时描述本张按钮状态图的适用条件；通用图填[]。"
+                },
+                "add_image": {
+                  "type": "boolean",
+                  "description": "仅真实按钮外观/语义状态变化时补状态图；默认false。文本框内容、位置、区块划分和窗口大小变化不算。"
+                }
+              },
+              "required": [],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "ref"
+                    ]
+                  },
+                  "then": {},
+                  "else": {
+                    "required": [
+                      "knowledge",
+                      "may_open_content",
+                      "needs_exploration",
+                      "name"
+                    ]
+                  }
+                }
+              ],
+              "description": "已有控件用ref及变化信息；新控件省略ref并填写新对象资料。"
+            }
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "ref"
+              ]
+            },
+            "then": {
+              "properties": {
+                "identity": {
+                  "const": "same"
+                },
+                "ref": {}
+              }
+            },
+            "else": {
+              "required": [
+                "name",
+                "description",
+                "identity"
+              ],
+              "properties": {
+                "identity": {
+                  "enum": [
+                    "new",
+                    "uncertain"
+                  ]
+                },
+                "ref": {
+                  "enum": [
+                    null,
+                    ""
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "description": "旧对象引用ref并只报新信息。新对象明确identity=new；身份未定用uncertain和具体缺口。"
+      },
+      "description": "本次识别或更新的区块；划分与复用依据实际观察。"
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_result": {
+      "type": "object",
+      "properties": {
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none",
+            "blocking_popup",
+            "system_error",
+            "unexpected_exit",
+            "external_app",
+            "unclassified"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "实际观察到的结果和未确认事项，不把预期当事实。"
+        },
+        "recovery_handoff": {
+          "type": "string"
+        },
+        "returns_to_previous": {
+          "type": "boolean",
+          "description": "刚执行的动作是否已返回进入前的位置，或已关闭浮层恢复下方界面。打开菜单/对话框为false，不因之后可关闭而填true；固定目标导航或语义未确认也为false"
+        }
+      },
+      "required": [
+        "exception",
+        "description",
+        "recovery_handoff",
+        "returns_to_previous"
+      ],
+      "additionalProperties": false
+    },
+    "jump_to": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "region": {
+                "type": "string",
+                "minLength": 1
+              },
+              "control": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "region"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "index",
+              "conditions"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "task_update": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "string",
+            "enum": [
+              "路径面包屑目录列表/autostart 目录项 / 功能探索"
+            ]
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "continue",
+              "answered",
+              "defer"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "按需补充判断理由；不重复动作结果或已有知识。"
+          },
+          "remaining_question": {
+            "type": "string",
+            "minLength": 1,
+            "description": "decision为continue或defer时必填：原问题尚未回答的具体部分；answered时不填写。"
+          },
+          "retry_when": {
+            "type": "string",
+            "minLength": 1,
+            "description": "decision为defer时必填：何种条件满足后可重新推进；其他decision不填写。"
+          },
+          "next_action": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "region": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "control": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "click",
+                      "double_click",
+                      "long_press",
+                      "input_text",
+                      "scroll",
+                      "key_press",
+                      "hotkey",
+                      "hover",
+                      "right_click",
+                      "drag",
+                      "back",
+                      "wait"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "region",
+                  "control",
+                  "action",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "task",
+          "decision"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "decision": {
+                  "enum": [
+                    "continue",
+                    "defer"
+                  ]
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "then": {
+              "required": [
+                "remaining_question"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "decision": {
+                  "const": "defer"
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "then": {
+              "required": [
+                "retry_when"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "function_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "路径面包屑目录列表"
+            ]
+          },
+          "add": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "supports": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "supports"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "update": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "changes": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "supports": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "constraints": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "ref",
+                "changes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "remove": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "replace_with": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "ref",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "region"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "foreground",
+    "regions",
+    "uncertainties",
+    "action_result",
+    "task_update"
+  ],
+  "additionalProperties": false
+}

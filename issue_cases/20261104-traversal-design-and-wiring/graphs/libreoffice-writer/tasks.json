@@ -1,0 +1,799 @@
+{
+  "r0005/功能探索": {
+    "control": "c0012",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/a10f6a958f5e41a58b485bc0001424b6/episode.json",
+      "attempt": "a0007",
+      "failed_call": "0030",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-a10f6a958f5e41a58b485bc0001424b6"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0005/c0013 / 功能探索": {
+    "control": "c0013",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0005/c0014 / 功能探索": {
+    "control": "c0014",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0005/c0015 / 功能探索": {
+    "control": "c0015",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0016 / 功能探索": {
+    "control": "c0016",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0017 / 功能探索": {
+    "control": "c0017",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0018 / 功能探索": {
+    "control": "c0018",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0019 / 功能探索": {
+    "control": "c0019",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0020 / 功能探索": {
+    "control": "c0020",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0021 / 功能探索": {
+    "control": "c0021",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0022 / 功能探索": {
+    "control": "c0022",
+    "task_type": "function",
+    "completion_condition": "打开菜单并识别其可见命令及主要用途，足以了解该入口提供的功能。",
+    "reason": "目前只知道点击会打开菜单，菜单命令及用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0023 / 功能探索": {
+    "control": "c0023",
+    "task_type": "function",
+    "completion_condition": "点击图标并识别其显示的面板内容和用途；若可见高亮状态，确认它表示什么。",
+    "reason": "该图标对应的面板和用途未知，且当前图中此图标呈高亮状态，其含义也未确认。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0024 / 功能探索": {
+    "control": "c0024",
+    "task_type": "function",
+    "completion_condition": "点击图标并识别其显示的面板内容和用途。",
+    "reason": "该侧边栏入口对应的面板和用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0025 / 功能探索": {
+    "control": "c0025",
+    "task_type": "function",
+    "completion_condition": "点击图标并识别其显示的面板内容和用途。",
+    "reason": "该侧边栏入口对应的面板和用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0026 / 功能探索": {
+    "control": "c0026",
+    "task_type": "function",
+    "completion_condition": "点击图标并识别其显示的面板内容和用途。",
+    "reason": "该侧边栏入口对应的面板和用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0027 / 功能探索": {
+    "control": "c0027",
+    "task_type": "function",
+    "completion_condition": "点击图标并识别其显示的面板内容和用途。",
+    "reason": "该侧边栏入口对应的面板和用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0005/c0028 / 功能探索": {
+    "control": "c0028",
+    "task_type": "function",
+    "completion_condition": "点击图标并识别其显示的面板内容和用途。",
+    "reason": "该侧边栏入口对应的面板和用途未知。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/功能探索": {
+    "control": "c0035",
+    "task_type": "function",
+    "completion_condition": "展开入口并看清可用的特殊粘贴选项及其用途。",
+    "function_refs": [
+      "r0006/剪切、复制与粘贴内容"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0006/c0037 / 功能探索": {
+    "control": "c0037",
+    "task_type": "function",
+    "completion_condition": "展开入口并看清选择模式的可用选项及其用途。",
+    "function_refs": [
+      "r0006/选择文档内容"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0039 / 功能探索": {
+    "control": "c0039",
+    "task_type": "function",
+    "completion_condition": "打开入口并了解其直接显示的查找界面及基本用途。",
+    "function_refs": [
+      "r0006/查找、替换与页导航"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0040 / 功能探索": {
+    "control": "c0040",
+    "task_type": "function",
+    "completion_condition": "打开入口并了解其直接显示的查找与替换界面及基本用途。",
+    "function_refs": [
+      "r0006/查找、替换与页导航"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0041 / 功能探索": {
+    "control": "c0041",
+    "task_type": "function",
+    "completion_condition": "打开入口并了解按页导航所需的目标信息及直接显示的界面。",
+    "function_refs": [
+      "r0006/查找、替换与页导航"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0042 / 功能探索": {
+    "control": "c0042",
+    "task_type": "function",
+    "completion_condition": "展开入口并看清修订跟踪相关命令及其用途。",
+    "function_refs": [
+      "r0006/修订跟踪与批注"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0043 / 功能探索": {
+    "control": "c0043",
+    "task_type": "function",
+    "completion_condition": "展开入口并看清批注相关命令及其用途。",
+    "function_refs": [
+      "r0006/修订跟踪与批注"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0045 / 功能探索": {
+    "control": "c0045",
+    "task_type": "function",
+    "completion_condition": "展开入口并看清引用相关命令及其用途。",
+    "function_refs": [
+      "r0006/处理超链接、引用、字段与外部链接"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0048 / 功能探索": {
+    "control": "c0048",
+    "task_type": "function",
+    "completion_condition": "展开入口并看清对象相关命令及其用途。",
+    "function_refs": [
+      "r0006/处理对象与数据库"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0049 / 功能探索": {
+    "control": "c0049",
+    "task_type": "function",
+    "completion_condition": "查看入口的直接响应，了解其打开的内容及数据库交换命令的用途。",
+    "function_refs": [
+      "r0006/处理对象与数据库"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0050 / 功能探索": {
+    "control": "c0050",
+    "task_type": "function",
+    "completion_condition": "查看入口的直接响应，了解该模式的用途及其可见状态或操作方式。",
+    "function_refs": [
+      "r0006/设置光标与编辑模式"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0006/c0051 / 功能探索": {
+    "control": "c0051",
+    "task_type": "function",
+    "completion_condition": "了解该命令的用途及可见的模式状态或直接响应。",
+    "function_refs": [
+      "r0006/设置光标与编辑模式"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0007/功能探索": {
+    "control": "c0053",
+    "task_type": "function",
+    "completion_condition": "在该选项可用时打开它，并确认直接打开的界面及其用途。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/667f5c9faa8a4eeabab3481cf3b7f9fb/episode.json",
+      "attempt": "a0013",
+      "failed_call": "0056",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-667f5c9faa8a4eeabab3481cf3b7f9fb"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0007/参数探索": {
+    "control": "c0052",
+    "task_type": "parameter",
+    "completion_condition": "确认使此选项可用所需的剪贴板内容和文档上下文。",
+    "name": "参数探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/6a661fd7b7bf4342a90a3f7a4c3ff123/episode.json",
+      "attempt": "a0019",
+      "failed_call": "0075",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-6a661fd7b7bf4342a90a3f7a4c3ff123"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0007/c0054 / 参数探索": {
+    "control": "c0054",
+    "task_type": "parameter",
+    "completion_condition": "确认使此选项可用所需的剪贴板内容和文档上下文。",
+    "name": "参数探索",
+    "status": "pending",
+    "deferral": {
+      "reason": "拟操作「文档中的表格单元格」仍未可靠关联；保留原问题，先探索其他任务。",
+      "episode": "repair_episodes/e8f68ea8f76a47c093696f8b5d8a2bd0/episode.json",
+      "observation": "discovery:0081",
+      "source_call": "0080",
+      "stage": "action",
+      "retry_when": "target_identity_or_changed_surface",
+      "trigger": {
+        "kind": "observation",
+        "source_call": "0083",
+        "frame": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-writer/runs/desktop.libreoffice_writer_20261101T084307_4d3ba647/action_attempts/a0020/after.png"
+      }
+    }
+  },
+  "r0007/c0055 / 参数探索": {
+    "control": "c0055",
+    "task_type": "parameter",
+    "completion_condition": "确认使此选项可用所需的剪贴板内容和文档上下文。",
+    "name": "参数探索",
+    "status": "pending",
+    "deferral": {
+      "reason": "拟操作「文档编辑区中的表格单元格」仍未可靠关联；保留原问题，先探索其他任务。",
+      "episode": "repair_episodes/5d02cda2cd81436e89403fa76d5d9a96/episode.json",
+      "observation": "discovery:0088",
+      "source_call": "0087",
+      "stage": "action",
+      "retry_when": "target_identity_or_changed_surface",
+      "trigger": {
+        "kind": "observation",
+        "source_call": "0093",
+        "frame": "<WORKSPACE>/artifacts/runs/parallel_traversal_20261101_01/batches/libreoffice-writer/runs/desktop.libreoffice_writer_20261101T084307_4d3ba647/action_attempts/a0022/after.png"
+      }
+    }
+  },
+  "r0007/c0056 / 参数探索": {
+    "control": "c0056",
+    "task_type": "parameter",
+    "completion_condition": "确认使此选项可用所需的剪贴板内容和文档上下文。",
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0010/功能探索": {
+    "control": "c0068",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察到其目标内容，足以记录它提供的用户界面调整内容及从该命令到目标内容的访问关系。",
+    "function_refs": [
+      "r0010/配置界面布局和显示"
+    ],
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/18e158c321ce47e087294e8bb94683cf/episode.json",
+      "attempt": "a0030",
+      "failed_call": "0126",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-18e158c321ce47e087294e8bb94683cf"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0010/参数探索": {
+    "control": "c0069",
+    "task_type": "parameter",
+    "completion_condition": "展开子菜单并看清可选工具栏项目，足以记录后续任务可选择的候选项。",
+    "function_refs": [
+      "r0010/配置界面布局和显示"
+    ],
+    "name": "参数探索",
+    "status": "done"
+  },
+  "r0010/c0071 / 参数探索": {
+    "control": "c0071",
+    "task_type": "parameter",
+    "completion_condition": "展开子菜单并看清标尺相关候选项，足以记录后续任务可选择的内容。",
+    "function_refs": [
+      "r0010/配置界面布局和显示"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0010/c0072 / 参数探索": {
+    "control": "c0072",
+    "task_type": "parameter",
+    "completion_condition": "展开子菜单并看清滚动条相关候选项，足以记录后续任务可选择的内容。",
+    "function_refs": [
+      "r0010/配置界面布局和显示"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0010/c0073 / 参数探索": {
+    "control": "c0073",
+    "task_type": "parameter",
+    "completion_condition": "展开子菜单并看清网格与辅助线相关候选项，足以记录后续任务可选择的内容。",
+    "function_refs": [
+      "r0010/控制文档显示辅助元素"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0010/c0090 / 参数探索": {
+    "control": "c0090",
+    "task_type": "parameter",
+    "completion_condition": "展开子菜单并看清缩放候选项，足以记录后续任务可选择的缩放方式或数值。",
+    "function_refs": [
+      "r0010/调整文档缩放"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0010/c0086 / 功能探索": {
+    "control": "c0086",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察到其目标内容，足以记录目标内容的用途及从该命令到目标内容的访问关系。",
+    "function_refs": [
+      "r0010/访问文档辅助面板"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0087 / 功能探索": {
+    "control": "c0087",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察到其目标内容，足以记录目标内容的用途及从该命令到目标内容的访问关系。",
+    "function_refs": [
+      "r0010/访问文档辅助面板"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0088 / 功能探索": {
+    "control": "c0088",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察到其目标内容，足以记录目标内容的用途及从该命令到目标内容的访问关系。",
+    "function_refs": [
+      "r0010/访问文档辅助面板"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0080 / 功能探索": {
+    "control": "c0080",
+    "task_type": "function",
+    "completion_condition": "查明该命令在当前菜单中灰显时所对应的可见条件，或观察到能使该命令可用的相关内容状态，并据此记录其适用条件。",
+    "function_refs": [
+      "r0010/按状态显示注释"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0081 / 功能探索": {
+    "control": "c0081",
+    "task_type": "function",
+    "completion_condition": "查明该命令在当前菜单中灰显时所对应的可见条件，或观察到能使该命令可用的相关内容状态，并据此记录其适用条件。",
+    "function_refs": [
+      "r0010/按状态显示注释"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0011/功能探索": {
+    "control": "c0106",
+    "task_type": "function",
+    "completion_condition": "选择该未勾选选项后，观察是否显示 Insert 工具栏及其出现位置；如可安全恢复，恢复选择前的显示状态。",
+    "function_refs": [],
+    "reason": "工具栏选项共同的选择操作已知，但是否会显示或隐藏对应工具栏及实际显示效果尚未验证；用一个代表选项即可了解共同操作方式。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/d8b74e4900e4422d959b521497965603/episode.json",
+      "attempt": "a0036",
+      "failed_call": "0151",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-d8b74e4900e4422d959b521497965603"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0011/c0118 / 功能探索": {
+    "control": "c0118",
+    "task_type": "function",
+    "completion_condition": "打开 Customize... 后看到其目标界面，足以确认打开了什么内容。",
+    "function_refs": [],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0011/c0119 / 功能探索": {
+    "control": "c0119",
+    "task_type": "function",
+    "completion_condition": "确认 Reset 的作用范围及其当前灰色不可用的具体条件；若需改动现有配置且无法安全恢复，则记录限制并停止。",
+    "function_refs": [],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/功能探索": {
+    "control": "c0122",
+    "task_type": "function",
+    "completion_condition": "打开 Toolbars 标签并观察到其自定义内容，确认该入口呈现的目标对象或配置区域；不要求操作其中的内部控件。",
+    "function_refs": [
+      "r0013/自定义工具栏"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0013/c0123 / 功能探索": {
+    "control": "c0123",
+    "task_type": "function",
+    "completion_condition": "打开 Notebookbar 标签并观察到其自定义内容，确认该入口呈现的目标对象或配置区域；不要求操作其中的内部控件。",
+    "function_refs": [
+      "r0013/自定义 Notebookbar"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0124 / 功能探索": {
+    "control": "c0124",
+    "task_type": "function",
+    "completion_condition": "打开 Context Menus 标签并观察到其自定义内容，确认该入口呈现的目标对象或配置区域；不要求操作其中的内部控件。",
+    "function_refs": [
+      "r0013/自定义上下文菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0125 / 功能探索": {
+    "control": "c0125",
+    "task_type": "function",
+    "completion_condition": "打开 Keyboard 标签并观察到其自定义内容，确认该入口呈现的目标对象或配置区域；不要求操作其中的内部控件。",
+    "function_refs": [
+      "r0013/自定义键盘快捷键"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0126 / 功能探索": {
+    "control": "c0126",
+    "task_type": "function",
+    "completion_condition": "打开 Events 标签并观察到其自定义内容，确认该入口呈现的目标对象或配置区域；不要求操作其中的内部控件。",
+    "function_refs": [
+      "r0013/自定义事件"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/参数探索": {
+    "control": "c0127",
+    "task_type": "parameter",
+    "completion_condition": "输入一个代表性搜索词并观察 Available Commands 列表如何筛选，确认搜索词的填写方式及匹配结果如何呈现。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0013/c0128 / 参数探索": {
+    "control": "c0128",
+    "task_type": "parameter",
+    "completion_condition": "展开 Category 并记录可选类别，确认如何选择类别以及选择后命令列表是否按类别变化。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0013/c0130 / 参数探索": {
+    "control": "c0130",
+    "task_type": "parameter",
+    "completion_condition": "展开 Scope 并记录可选作用范围及其含义线索，确认后续配置可以指定哪些范围。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0013/c0131 / 参数探索": {
+    "control": "c0131",
+    "task_type": "parameter",
+    "completion_condition": "展开 Target 并记录可选目标类型或目标项，确认后续配置可以选择哪些目标。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "参数探索",
+    "status": "pending"
+  },
+  "r0013/c0133 / 功能探索": {
+    "control": "c0133",
+    "task_type": "function",
+    "completion_condition": "在当前菜单配置中选择一个代表性可用命令并执行移入，观察 Assigned Commands 是否相应变化；如适合，用反向操作恢复未提交的实验改动。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0134 / 功能探索": {
+    "control": "c0134",
+    "task_type": "function",
+    "completion_condition": "选择一个代表性已分配命令并执行移出，观察列表变化及命令是否回到可用命令列表；如适合，用移入操作恢复未提交的实验改动。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0135 / 功能探索": {
+    "control": "c0135",
+    "task_type": "function",
+    "completion_condition": "选择一个有可上移相邻项的已分配命令并点击上移，确认列表顺序是否改变以及移动方向。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0136 / 功能探索": {
+    "control": "c0136",
+    "task_type": "function",
+    "completion_condition": "选择一个有可下移相邻项的已分配命令并点击下移，确认列表顺序是否改变以及移动方向。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0137 / 功能探索": {
+    "control": "c0137",
+    "task_type": "function",
+    "completion_condition": "展开 Insert 下拉按钮并观察其可选操作，确认插入入口提供什么内容或命令；本问题不要求逐项试用。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0138 / 功能探索": {
+    "control": "c0138",
+    "task_type": "function",
+    "completion_condition": "检查选择不同类型的可用或已分配条目时 Modify 的启用状态；若出现安全且明确可修改的条目，确认其打开的修改界面或直接效果。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0139 / 功能探索": {
+    "control": "c0139",
+    "task_type": "function",
+    "completion_condition": "确认 Defaults 针对当前目标的作用范围，并通过实际可见结果判断它如何影响自定义配置；记录是否有确认提示。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0140 / 功能探索": {
+    "control": "c0140",
+    "task_type": "function",
+    "completion_condition": "确认 Reset 的作用范围及实际效果，并记录是否出现确认提示；不要把仅显示的提示当作重置已完成。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0013/c0142 / 功能探索": {
+    "control": "c0142",
+    "task_type": "function",
+    "completion_condition": "对菜单配置做一个可识别的实验改动后点击 OK，观察对话框是否关闭及改动是否在对应菜单配置中生效；仅在实际观察到时记录提交结果。",
+    "function_refs": [
+      "r0013/自定义菜单"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/参数探索": {
+    "control": "c0131",
+    "task_type": "parameter",
+    "completion_condition": "查看工具栏目标下拉框的候选项，确认除 Standard 外可选择的工具栏。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "参数探索",
+    "status": "done"
+  },
+  "r0014/功能探索": {
+    "control": "c0132",
+    "task_type": "function",
+    "completion_condition": "确认条目前的勾选框控制什么，以及切换勾选状态会产生什么可见效果。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0133 / 功能探索": {
+    "control": "c0133",
+    "task_type": "function",
+    "completion_condition": "选择一个可用命令并移入配置后，确认该命令是否出现在 Assigned Commands 列表中。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0134 / 功能探索": {
+    "control": "c0134",
+    "task_type": "function",
+    "completion_condition": "选择一个已分配命令并移出后，确认该命令是否从 Assigned Commands 列表中移除。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0135 / 功能探索": {
+    "control": "c0135",
+    "task_type": "function",
+    "completion_condition": "选中一个非首位条目并上移，确认其在 Assigned Commands 列表中的顺序变化。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0136 / 功能探索": {
+    "control": "c0136",
+    "task_type": "function",
+    "completion_condition": "选中一个非末位条目并下移，确认其在 Assigned Commands 列表中的顺序变化。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0137 / 功能探索": {
+    "control": "c0137",
+    "task_type": "function",
+    "completion_condition": "展开 Insert 菜单，确认其中提供哪些插入内容或入口。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0138 / 功能探索": {
+    "control": "c0138",
+    "task_type": "function",
+    "completion_condition": "在找到适用的已选配置条目后确认 Modify 何时可用，并查看它打开或执行的修改内容。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0139 / 功能探索": {
+    "control": "c0139",
+    "task_type": "function",
+    "completion_condition": "确认 Defaults 操作涉及的配置范围及其直接结果。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0140 / 功能探索": {
+    "control": "c0140",
+    "task_type": "function",
+    "completion_condition": "确认 Reset 操作涉及的配置范围及其直接结果。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0014/c0142 / 功能探索": {
+    "control": "c0142",
+    "task_type": "function",
+    "completion_condition": "在安全的实验性配置变更后确认 OK 是否提交变更并关闭对话框，以及变更是否反映到目标工具栏。",
+    "function_refs": [
+      "r0014/查看和配置工具栏命令"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  }
+}

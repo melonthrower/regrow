@@ -1,0 +1,18 @@
+{
+  "exception": "none",
+  "recovery_handoff": "",
+  "inventory": "partial",
+  "evidence": "已了解路径面包屑目录列表中目录项的展开与收起用法，并在 .config 上有代表性操作证据。autostart 仅确认曾作为 .config 的子目录显示，尚未操作；其点击是否展开、导航或产生其他结果仍影响使用。",
+  "operations": [
+    {
+      "control": "c0175",
+      "task_type": "function",
+      "completion_condition": "操作 autostart 目录项后，确认列表或路径面包屑是否变化，以及是否导航到该目录。",
+      "function_refs": [
+        "展开目录查看子目录"
+      ]
+    }
+  ],
+  "shared_instances": [],
+  "function_updates": []
+}

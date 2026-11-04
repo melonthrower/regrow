@@ -1,0 +1,11 @@
+{
+  "region_id": "r0014",
+  "region": "Toolbars 自定义配置区",
+  "control_id": "c0131",
+  "control": "Target 下拉框",
+  "task": "功能探索",
+  "task_region": "r0014",
+  "category": "update",
+  "stage": "observation_update",
+  "session": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/session-02"
+}

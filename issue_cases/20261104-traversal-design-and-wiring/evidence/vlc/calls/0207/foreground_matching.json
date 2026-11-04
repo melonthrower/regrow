@@ -1,0 +1,215 @@
+{
+  "identified_regions": [],
+  "template_rejections": [],
+  "source_call": "0207",
+  "frame_sha256": "ce8cd79939dc7570a35aab8c75dc6fe24a93ec176b6c1918b84d770bd310c149",
+  "scope": {},
+  "ranking": [
+    {
+      "region": "r0014",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0117",
+          "score": 1.0,
+          "box": [
+            320,
+            456,
+            427,
+            478
+          ],
+          "scale": 1,
+          "gap": 0.225119948387146,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                320,
+                456,
+                427,
+                478
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "位于 Audio/Video 分组。",
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 320,
+              "top": 284,
+              "right": 427,
+              "bottom": 306
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0117.png",
+            "evidence": {
+              "source_field": "/controls/1",
+              "region": "r0014",
+              "source_call": "0152",
+              "observation": "update:0152"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0041/after.png"
+          }
+        },
+        {
+          "control": "c0119",
+          "score": 1.0,
+          "box": [
+            320,
+            529,
+            541,
+            551
+          ],
+          "scale": 1,
+          "gap": 0.23785793781280518,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                320,
+                529,
+                541,
+                551
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "位于 Subtitles/Video 分组。",
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 320,
+              "top": 492,
+              "right": 541,
+              "bottom": 514
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0119.png",
+            "evidence": {
+              "source_field": "/controls/3",
+              "region": "r0014",
+              "source_call": "0152",
+              "observation": "update:0152"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0041/after.png"
+          }
+        },
+        {
+          "control": "c0121",
+          "score": 1.0,
+          "box": [
+            533,
+            244,
+            548,
+            260
+          ],
+          "scale": 1,
+          "gap": 0.4600411653518677,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                533,
+                244,
+                548,
+                260
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "页面右上方的循环箭头图标控件。",
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 533,
+              "top": 207,
+              "right": 548,
+              "bottom": 223
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0121.png",
+            "evidence": {
+              "source_field": "/controls/5",
+              "region": "r0014",
+              "source_call": "0152",
+              "observation": "update:0152"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0041/after.png"
+          }
+        },
+        {
+          "control": "c0120",
+          "score": 0.9436905980110168,
+          "box": [
+            320,
+            559,
+            541,
+            581
+          ],
+          "scale": 1,
+          "gap": 0.19608008861541748,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                320,
+                559,
+                541,
+                581
+              ],
+              "score": 0.9436905980110168,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "description": "位于 Subtitles/Video 分组。",
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 320,
+              "top": 522,
+              "right": 541,
+              "bottom": 544
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0120.png",
+            "evidence": {
+              "source_field": "/controls/4",
+              "region": "r0014",
+              "source_call": "0152",
+              "observation": "update:0152"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0041/after.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 4,
+      "eligible_controls": 5,
+      "total_controls": 5,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

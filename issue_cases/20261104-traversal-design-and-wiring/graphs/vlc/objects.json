@@ -1,0 +1,3888 @@
+{
+  "regions": {
+    "r0001": {
+      "id": "r0001",
+      "name": "VLC 菜单栏",
+      "description": "主窗口顶部的应用菜单入口。",
+      "parent_region": null,
+      "functions": {
+        "按类别打开 VLC 菜单": {
+          "description": "点击顶部菜单栏中的类别入口可展开相应菜单，查看该类别下可用的 VLC 功能入口。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0001",
+              "name": "Media 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0002",
+              "name": "Playback 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0003",
+              "name": "Audio 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0004",
+              "name": "Video 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0005",
+              "name": "Subtitle 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0006",
+              "name": "Tools 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0007",
+              "name": "View 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0008",
+              "name": "Help 菜单",
+              "source": {
+                "region": "r0001",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0002",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0001"
+            },
+            {
+              "region": "r0001",
+              "control": "c0002"
+            },
+            {
+              "region": "r0001",
+              "control": "c0003"
+            },
+            {
+              "region": "r0001",
+              "control": "c0004"
+            },
+            {
+              "region": "r0001",
+              "control": "c0005"
+            },
+            {
+              "region": "r0001",
+              "control": "c0006"
+            },
+            {
+              "region": "r0001",
+              "control": "c0007"
+            },
+            {
+              "region": "r0001",
+              "control": "c0008"
+            }
+          ]
+        },
+        "访问音频选项": {
+          "description": "展开 Audio 菜单后，可访问音轨、音频设备、立体声模式和可视化选项；其中部分入口可能因当前状态而不可用，子菜单内容尚未确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0003",
+              "name": "Audio 菜单",
+              "source": {
+                "source_call": "0095",
+                "observation": "update:0095",
+                "region": "r0001",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0095",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0003"
+            }
+          ]
+        },
+        "控制音量与静音": {
+          "description": "展开 Audio 菜单后，可通过 Increase Volume、Decrease Volume 和 Mute 命令分别增加音量、降低音量或切换静音；本步只确认了命令入口，未执行或验证效果。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0003",
+              "name": "Audio 菜单",
+              "source": {
+                "source_call": "0095",
+                "observation": "update:0095",
+                "region": "r0001",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0095",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0003"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0002",
+          "target_region": "r0005",
+          "attempt": "a0003",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0001",
+          "target_region": "r0004",
+          "attempt": "a0005",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0003",
+          "target_region": "r0007",
+          "attempt": "a0030",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0006",
+          "target_region": "r0012",
+          "attempt": "a0038",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0180-285e1eb2ab7b/regions/r0001/images/0180/region.png",
+      "local_knowledge": {
+        "k0008": "当前空闲画面下展开 Subtitle 菜单，可见 Add Subtitle File... 和灰色的 Sub Track 子菜单入口；Sub Track 当前不可用，未确认其他状态下的可用条件。"
+      },
+      "controls": [
+        "c0001",
+        "c0002",
+        "c0003",
+        "c0004",
+        "c0005",
+        "c0006",
+        "c0007",
+        "c0008"
+      ]
+    },
+    "r0002": {
+      "id": "r0002",
+      "name": "VLC 视频显示区",
+      "description": "主窗口中用于显示媒体画面或播放器空闲画面的区域。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0001-441ba4c89cd8/regions/r0002/images/0001/region.png",
+      "controls": []
+    },
+    "r0003": {
+      "id": "r0003",
+      "name": "VLC 播放控制栏",
+      "description": "主窗口底部的媒体进度、播放控制、播放列表及音量控制区域。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0180-285e1eb2ab7b/regions/r0003/images/0180/region.png",
+      "controls": [
+        "c0009",
+        "c0010",
+        "c0011",
+        "c0012",
+        "c0013",
+        "c0014",
+        "c0015",
+        "c0016",
+        "c0017",
+        "c0018",
+        "c0019"
+      ]
+    },
+    "r0004": {
+      "id": "r0004",
+      "name": "Media 菜单展开面板",
+      "description": "Media 菜单展开后显示媒体打开、播放列表保存、转换/串流及退出等命令的下拉面板。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [
+        {
+          "source_control": "c0020",
+          "target_region": "r0006",
+          "attempt": "a0011",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0069-b6c0f7564132/regions/r0004/images/0069/region.png",
+      "controls": [
+        "c0020",
+        "c0021",
+        "c0022",
+        "c0023",
+        "c0024",
+        "c0025",
+        "c0026",
+        "c0027",
+        "c0028",
+        "c0029",
+        "c0030",
+        "c0031",
+        "c0032"
+      ]
+    },
+    "r0005": {
+      "id": "r0005",
+      "name": "Playback 菜单展开面板",
+      "description": "由 Playback 菜单展开的播放功能菜单，列出播放位置、播放控制及相关子菜单入口。",
+      "parent_region": "r0001",
+      "functions": {
+        "按标题选择播放内容": {
+          "description": "通过 Title 菜单项进入按标题选择内容的入口；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0033",
+              "name": "Title 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0033"
+            }
+          ]
+        },
+        "按章节选择播放内容": {
+          "description": "通过 Chapter 菜单项进入按章节选择内容的入口；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0034",
+              "name": "Chapter 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0034"
+            }
+          ]
+        },
+        "按节目选择播放内容": {
+          "description": "通过 Program 菜单项进入按节目选择内容的入口；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0035",
+              "name": "Program 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0035"
+            }
+          ]
+        },
+        "使用自定义书签": {
+          "description": "通过 Custom Bookmarks 菜单项进入自定义书签相关入口；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0036",
+              "name": "Custom Bookmarks 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0036"
+            }
+          ]
+        },
+        "打开 Renderer 相关入口": {
+          "description": "通过 Renderer 菜单项访问 Renderer 相关内容。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0037",
+              "name": "Renderer 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0037"
+            }
+          ]
+        },
+        "设置播放速度": {
+          "description": "通过 Speed 菜单项访问播放速度相关入口；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0038",
+              "name": "Speed 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0038"
+            }
+          ]
+        },
+        "向前跳转": {
+          "description": "通过 Jump Forward 菜单项向前跳转；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0039",
+              "name": "Jump Forward 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0039"
+            }
+          ]
+        },
+        "向后跳转": {
+          "description": "通过 Jump Backward 菜单项向后跳转；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0040",
+              "name": "Jump Backward 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0040"
+            }
+          ]
+        },
+        "跳转到指定时间": {
+          "description": "通过 Jump to Specific Time 菜单项打开指定时间跳转入口；该项显示快捷键 Ctrl+T。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0041",
+              "name": "Jump to Specific Time 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0041"
+            }
+          ]
+        },
+        "访问 Play 相关选项": {
+          "description": "通过 Play 菜单项进入播放相关选项。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0042",
+              "name": "Play 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0042"
+            }
+          ]
+        },
+        "停止播放": {
+          "description": "通过 Stop 菜单项停止播放；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0043",
+              "name": "Stop 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0043"
+            }
+          ]
+        },
+        "切换到上一项": {
+          "description": "通过 Previous 菜单项切换到上一项；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0044",
+              "name": "Previous 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0044"
+            }
+          ]
+        },
+        "切换到下一项": {
+          "description": "通过 Next 菜单项切换到下一项；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0045",
+              "name": "Next 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0045"
+            }
+          ]
+        },
+        "录制": {
+          "description": "通过 Record 菜单项访问录制入口；可用状态受当前媒体状态影响。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0046",
+              "name": "Record 菜单项",
+              "source": {
+                "region": "r0005",
+                "basis": "discovery",
+                "source_call": "0014",
+                "observation": "update:0014"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0016",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0046"
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "local_knowledge": {
+        "k0001": "菜单项会因当前媒体状态而呈现可用或灰色状态；本次在无媒体状态下观察到的灰色状态不代表这些入口在有媒体时也不可用。"
+      },
+      "image": "../a0003-0014-67c237434797/regions/r0005/images/0014/region.png",
+      "controls": [
+        "c0033",
+        "c0034",
+        "c0035",
+        "c0036",
+        "c0037",
+        "c0038",
+        "c0039",
+        "c0040",
+        "c0041",
+        "c0042",
+        "c0043",
+        "c0044",
+        "c0045",
+        "c0046"
+      ]
+    },
+    "r0006": {
+      "id": "r0006",
+      "name": "VLC 文件选择对话框",
+      "description": "用于浏览位置并选择一个或多个待打开文件的模态文件选择界面。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [
+        {
+          "source_control": "c0049",
+          "target_region": "r0002",
+          "attempt": "a0009",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        },
+        {
+          "source_control": "c0052",
+          "target_region": "r0002",
+          "attempt": "a0012",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0052",
+          "target_region": "r0002",
+          "attempt": "a0026",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0053",
+          "target_region": "r0001",
+          "attempt": "a0029",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        }
+      ],
+      "image": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/region.png",
+      "local_knowledge": {
+        "k0002": "在位置侧栏选择 user 后，文件列表显示 /home/user 中的文件夹；本次观察到其中包括 Videos。",
+        "k0003": "在 /home/user 中双击 Videos 文件夹后，当前位置变为 /home/user/Videos；列表中可见 sample_clip.mp4（MP4 文件）。",
+        "k0004": "在 Videos 文件夹中双击 sample_clip.mp4 后，文件选择对话框关闭，VLC 主窗口开始显示该媒体。",
+        "k0005": "在文件名输入框已有 sample_clip.mp4 且 Open 按钮可用时，点击 Open 按钮会关闭文件选择对话框，并在 VLC 主窗口开始播放该媒体。"
+      },
+      "controls": [
+        "c0047",
+        "c0048",
+        "c0049",
+        "c0050",
+        "c0051",
+        "c0052",
+        "c0053",
+        "c0054"
+      ]
+    },
+    "r0007": {
+      "id": "r0007",
+      "name": "Audio 菜单展开面板",
+      "description": "由 VLC 菜单栏中的 Audio 菜单展开，包含音轨、音频设备、立体声模式、可视化相关入口及音量控制命令。",
+      "parent_region": "r0001",
+      "functions": {
+        "选择音轨": {
+          "description": "通过 Audio Track 菜单访问音轨选项；可用选项及选择效果尚待确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0055",
+              "name": "Audio Track 菜单项",
+              "source": {
+                "region": "r0007",
+                "basis": "discovery",
+                "source_call": "0095",
+                "observation": "update:0095"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0097",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0055"
+            }
+          ]
+        },
+        "选择音频设备": {
+          "description": "通过 Audio Device 菜单项展开设备候选列表。本次可见 Dummy Output，显示为当前选中项；界面未显示选择设备所需的额外条件。实际切换设备的结果尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0056",
+              "name": "Audio Device 菜单项",
+              "source": {
+                "source_call": "0102",
+                "observation": "update:0102",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0102",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0056"
+            }
+          ]
+        },
+        "选择立体声模式": {
+          "description": "通过 Stereo Mode 菜单访问立体声模式选项；具体候选模式尚待确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0057",
+              "name": "Stereo Mode 菜单项",
+              "source": {
+                "region": "r0007",
+                "basis": "discovery",
+                "source_call": "0095",
+                "observation": "update:0095"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0097",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0057"
+            }
+          ]
+        },
+        "选择可视化效果": {
+          "description": "通过 Visualizations 菜单访问可视化选项；具体候选效果尚待确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0058",
+              "name": "Visualizations 菜单项",
+              "source": {
+                "region": "r0007",
+                "basis": "discovery",
+                "source_call": "0095",
+                "observation": "update:0095"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0097",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0058"
+            }
+          ]
+        },
+        "调整音量": {
+          "description": "使用 Increase Volume 或 Decrease Volume 命令增加或降低音量。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0059",
+              "name": "Increase Volume 菜单项",
+              "source": {
+                "region": "r0007",
+                "basis": "discovery",
+                "source_call": "0095",
+                "observation": "update:0095"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0060",
+              "name": "Decrease Volume 菜单项",
+              "source": {
+                "region": "r0007",
+                "basis": "discovery",
+                "source_call": "0095",
+                "observation": "update:0095"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0097",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0059"
+            },
+            {
+              "region": "r0007",
+              "control": "c0060"
+            }
+          ]
+        },
+        "切换静音": {
+          "description": "使用 Mute 命令切换静音状态。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0061",
+              "name": "Mute 菜单项",
+              "source": {
+                "region": "r0007",
+                "basis": "discovery",
+                "source_call": "0095",
+                "observation": "update:0095"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0097",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0061"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0056",
+          "target_region": "r0008",
+          "attempt": "a0032",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/region.png",
+      "controls": [
+        "c0055",
+        "c0056",
+        "c0057",
+        "c0058",
+        "c0059",
+        "c0060",
+        "c0061"
+      ]
+    },
+    "r0008": {
+      "id": "r0008",
+      "name": "Audio Device 子菜单",
+      "description": "由 Audio Device 菜单项展开，用于显示可选音频设备。",
+      "parent_region": "r0007",
+      "functions": {
+        "查看可用音频设备及当前选择": {
+          "description": "展开 Audio Device 子菜单可查看可选音频设备及当前选中的设备。本次显示 Dummy Output 且带有选中标记；点击该选项会关闭菜单，但这一可见结果不能确认音频输出是否实际切换。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0008",
+              "control": null,
+              "name": "Audio Device 子菜单"
+            },
+            {
+              "kind": "control",
+              "region": "r0008",
+              "control": "c0062",
+              "name": "Dummy Output",
+              "source": {
+                "source_call": "0110",
+                "observation": "update:0110",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0008",
+          "source_call": "0110",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0008",
+              "control": null
+            },
+            {
+              "region": "r0008",
+              "control": "c0062"
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "image": "../discovery-0107-f843eb67785b/regions/r0008/images/0107/region.png",
+      "local_knowledge": {
+        "k0006": "展开后显示可选音频设备；本次可见的 Dummy Output 左侧有选中标记，表示它当前被选中。点击该选项后，Audio Device 子菜单及 Audio 菜单面板关闭；仅凭此次可见反馈，无法确认音频输出是否实际切换。"
+      },
+      "controls": [
+        "c0062"
+      ]
+    },
+    "r0009": {
+      "id": "r0009",
+      "name": "VLC 视频显示区",
+      "description": "VLC 主窗口中显示媒体画面或待播放状态标志的区域。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../a0033-0110-083d16a00b78/regions/r0009/images/0110/region.png",
+      "controls": []
+    },
+    "r0010": {
+      "id": "r0010",
+      "name": "Video 菜单展开面板",
+      "description": "由 VLC 菜单栏中的 Video 菜单展开的媒体视频相关命令面板。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0007": "点击菜单栏的 Video 可展开此面板；面板列出视频轨道、全屏、窗口适配、壁纸、缩放、宽高比、裁剪、去隔行和截图等入口。"
+      },
+      "image": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/region.png",
+      "controls": [
+        "c0063",
+        "c0064",
+        "c0065",
+        "c0066",
+        "c0067",
+        "c0068",
+        "c0069",
+        "c0070",
+        "c0071",
+        "c0072"
+      ]
+    },
+    "r0011": {
+      "id": "r0011",
+      "name": "Subtitle 菜单展开面板",
+      "description": "由 VLC 菜单栏的 Subtitle 菜单展开的面板，显示字幕相关入口。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0128-48736fe253af/regions/r0011/images/0128/region.png",
+      "controls": [
+        "c0073",
+        "c0074"
+      ]
+    },
+    "r0012": {
+      "id": "r0012",
+      "name": "Tools 菜单展开面板",
+      "description": "由 VLC 菜单栏的 Tools 菜单展开，列出工具、信息、配置及偏好设置等入口的下拉面板。",
+      "parent_region": null,
+      "functions": {
+        "打开效果与调整设置": {
+          "description": "通过 Effects and Filters 菜单项打开 Adjustments and Effects 设置窗口，以访问音频效果、视频效果、同步及 v4l2 controls 页面。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0012",
+              "control": "c0075",
+              "name": "Effects and Filters 菜单项",
+              "source": {
+                "source_call": "0137",
+                "observation": "update:0137",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0012",
+          "source_call": "0137",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0012",
+              "control": "c0075"
+            }
+          ]
+        },
+        "打开轨道同步设置": {
+          "description": "点击 Track Synchronization 菜单项可打开 Adjustments and Effects 窗口并显示 Synchronization 页面。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0012",
+              "control": "c0076",
+              "name": "Track Synchronization 菜单项",
+              "source": {
+                "region": "r0012",
+                "basis": "discovery",
+                "source_call": "0132",
+                "observation": "update:0132"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0012",
+          "source_call": "0186",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0012",
+              "control": "c0076"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0075",
+          "target_region": "r0013",
+          "attempt": "a0039",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0076",
+          "target_region": "r0013",
+          "attempt": "a0054",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/region.png",
+      "controls": [
+        "c0075",
+        "c0076",
+        "c0077",
+        "c0078",
+        "c0079",
+        "c0080",
+        "c0081",
+        "c0082",
+        "c0083",
+        "c0084"
+      ]
+    },
+    "r0013": {
+      "id": "r0013",
+      "name": "Adjustments and Effects 设置窗口",
+      "description": "由 Tools 菜单中的 Effects and Filters 入口打开的 VLC 效果与调整设置窗口，包含音频效果、视频效果、同步和 v4l2 控制页面。",
+      "parent_region": null,
+      "functions": {
+        "启用或停用 Equalizer": {
+          "description": "使用 Equalizer Enable 复选框切换均衡器启用状态。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0094",
+              "name": "Equalizer Enable 复选框",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0094"
+            }
+          ]
+        },
+        "选择 Equalizer 预设": {
+          "description": "使用 Equalizer Preset 下拉框选择均衡器预设；具体可选预设尚未了解。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0095",
+              "name": "Equalizer Preset 下拉框",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0095"
+            }
+          ]
+        },
+        "查看音轨与字幕同步参数": {
+          "description": "点击 Synchronization 标签页可查看音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子的参数入口；本次未验证修改效果或可用范围。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0087",
+              "name": "Synchronization 标签页",
+              "source": {
+                "source_call": "0152",
+                "observation": "update:0152",
+                "region": "r0013",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0152",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0087"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0087",
+          "target_region": "r0014",
+          "attempt": "a0041",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "local_knowledge": {
+        "k0009": "窗口通过页面标签组织效果与调整相关内容；本次打开时显示 Audio Effects 页面中的 Equalizer 子页面。"
+      },
+      "image": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/region.png",
+      "controls": [
+        "c0085",
+        "c0086",
+        "c0087",
+        "c0088",
+        "c0089",
+        "c0090",
+        "c0091",
+        "c0092",
+        "c0093",
+        "c0094",
+        "c0095",
+        "c0096",
+        "c0097",
+        "c0098",
+        "c0099",
+        "c0100",
+        "c0101",
+        "c0102",
+        "c0103",
+        "c0104",
+        "c0105",
+        "c0106",
+        "c0107",
+        "c0108",
+        "c0109",
+        "c0110",
+        "c0111",
+        "c0112",
+        "c0113",
+        "c0114",
+        "c0115",
+        "c0116"
+      ]
+    },
+    "r0014": {
+      "id": "r0014",
+      "name": "Synchronization 页面内容区",
+      "description": "Adjustments and Effects 设置窗口中 Synchronization 标签页显示同步参数的页面区域。",
+      "parent_region": "r0013",
+      "functions": {
+        "设置同步参数": {
+          "description": "根据界面标签设置音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子。当前知识支持设置这些参数，但实际播放效果尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0117",
+              "name": "Audio track synchronization 数值框",
+              "source": {
+                "region": "r0014",
+                "basis": "discovery",
+                "source_call": "0152",
+                "observation": "update:0152"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0118",
+              "name": "Subtitle track synchronization 数值框",
+              "source": {
+                "region": "r0014",
+                "basis": "discovery",
+                "source_call": "0152",
+                "observation": "update:0152"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0119",
+              "name": "Subtitle speed 数值框",
+              "source": {
+                "region": "r0014",
+                "basis": "discovery",
+                "source_call": "0152",
+                "observation": "update:0152"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0120",
+              "name": "Subtitle duration factor 数值框",
+              "source": {
+                "region": "r0014",
+                "basis": "discovery",
+                "source_call": "0152",
+                "observation": "update:0152"
+              }
+            }
+          ],
+          "constraints": {
+            "c0117/同步值": {
+              "ref": "c0117/同步值",
+              "region": "r0014",
+              "control": "c0117"
+            },
+            "c0118/同步值": {
+              "ref": "c0118/同步值",
+              "region": "r0014",
+              "control": "c0118"
+            },
+            "c0119/速度": {
+              "ref": "c0119/速度",
+              "region": "r0014",
+              "control": "c0119"
+            },
+            "c0120/持续时间因子": {
+              "ref": "c0120/持续时间因子",
+              "region": "r0014",
+              "control": "c0120"
+            }
+          },
+          "region": "r0014",
+          "source_call": "0154",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0014",
+              "control": "c0117"
+            },
+            {
+              "region": "r0014",
+              "control": "c0118"
+            },
+            {
+              "region": "r0014",
+              "control": "c0119"
+            },
+            {
+              "region": "r0014",
+              "control": "c0120"
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "image": "../discovery-0267-096b000ac24b/regions/r0014/images/0267/region.png",
+      "controls": [
+        "c0117",
+        "c0118",
+        "c0119",
+        "c0120",
+        "c0121",
+        "c0122",
+        "c0123",
+        "c0124",
+        "c0125"
+      ]
+    }
+  },
+  "controls": {
+    "c0001": {
+      "name": "Media 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Media 菜单；菜单内具体功能尚未确认。"
+        },
+        {
+          "description": "点击可展开或收起 Media 菜单。展开后可见打开文件、多个文件、目录、光盘、网络串流、捕获设备、剪贴板位置、最近媒体、保存播放列表、转换/保存、串流及退出等命令；部分命令显示快捷键。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0001.png",
+          "conditions": [
+            "Media 菜单未展开，入口未高亮。"
+          ]
+        },
+        {
+          "path": "../a0018-0060-56775ec6c4e1/regions/r0001/images/0060/c0001.png",
+          "conditions": [
+            "Media 菜单已展开，入口呈蓝色高亮状态。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0004",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0002": {
+      "name": "Playback 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Playback 菜单，查看播放相关入口；本次已观察到菜单项及其在无媒体状态下的可用性。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0002.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0005",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0003": {
+      "name": "Audio 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Audio 菜单。展开后可见 Audio Track、Audio Device、Stereo Mode、Visualizations 四个子菜单入口，以及 Increase Volume、Decrease Volume、Mute 命令；部分入口可能呈灰色不可用，具体可用性以当前界面为准。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0003.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0007",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0004": {
+      "name": "Video 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Video 菜单；菜单内具体功能尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0004.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0005": {
+      "name": "Subtitle 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Subtitle 菜单；菜单内具体功能尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0005.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0006": {
+      "name": "Tools 菜单",
+      "knowledge": [
+        {
+          "description": "点击此入口可展开 Tools 菜单。在菜单栏没有其他菜单展开时，本次点击成功显示了包含 Effects and Filters、Track Synchronization、Media Information、Codec Information、VLM Configuration、Program Guide、Messages、Plugins and extensions、Customize Interface... 和 Preferences 的面板；部分入口显示快捷键。此前在 Subtitle 菜单已展开时点击，Subtitle 面板关闭但未见 Tools 面板。各入口的具体打开内容或执行效果尚未逐项验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0006.png",
+          "conditions": [
+            "VLC 菜单栏中的 Tools 菜单未选中，未展开。"
+          ]
+        },
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0001/images/0132/c0006.png",
+          "conditions": [
+            "同一 Tools 菜单呈蓝色高亮，已展开下拉菜单，显示功能入口。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0012",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0007": {
+      "name": "View 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 View 菜单；菜单内具体功能尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0007.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0008": {
+      "name": "Help 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Help 菜单；菜单内具体功能尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0001/images/0001/c0008.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0009": {
+      "name": "媒体进度条",
+      "description": "位于控制栏上方的水平进度轨道。",
+      "knowledge": [
+        {
+          "description": "媒体加载后可通过点击或拖动进度条定位播放位置；当前画面未显示媒体时长，具体可用状态未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0009.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0010": {
+      "name": "播放/暂停按钮",
+      "description": "左下方带三角形图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可开始播放或切换播放与暂停；需要有可播放的媒体。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0010.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0011": {
+      "name": "上一项按钮",
+      "description": "播放控制组中带上一项图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可切换到播放列表中的上一项；需要有可用的播放列表条目。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0011.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0012": {
+      "name": "停止按钮",
+      "description": "播放控制组中带方形图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可停止当前媒体播放。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0012.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0013": {
+      "name": "下一项按钮",
+      "description": "播放控制组中带下一项图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可切换到播放列表中的下一项；需要有可用的播放列表条目。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0013.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0014": {
+      "name": "全屏按钮",
+      "description": "带全屏图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可切换全屏显示状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0014.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0015": {
+      "name": "效果与调整按钮",
+      "description": "带滑块样式图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可打开效果或调整相关界面；具体内容和选项尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0015.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0016": {
+      "name": "播放列表按钮",
+      "description": "带列表图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可切换播放列表显示状态；列表内容及其操作方式尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0016.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0017": {
+      "name": "循环播放按钮",
+      "description": "带循环箭头图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可切换循环播放模式；具体模式及当前选中状态尚未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0017.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0018": {
+      "name": "随机播放按钮",
+      "description": "带交叉箭头图标的按钮。",
+      "knowledge": [
+        {
+          "description": "点击可切换随机播放；需要有可播放的列表内容。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0018.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0019": {
+      "name": "音量滑块",
+      "description": "右下方带扬声器图标和百分比读数的音量控制。",
+      "knowledge": [
+        {
+          "description": "通过点击或拖动滑块调整音量；当前可见读数为 0%。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-441ba4c89cd8/regions/r0003/images/0001/c0019.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0020": {
+      "name": "Open File 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可打开文件选择流程；菜单显示快捷键 Ctrl+O。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0020.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0006",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0021": {
+      "name": "Open Multiple Files 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可打开多个文件的流程；菜单显示快捷键 Ctrl+Shift+O。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0021.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0022": {
+      "name": "Open Directory 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可打开目录的流程；菜单显示快捷键 Ctrl+F。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0022.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0023": {
+      "name": "Open Disc 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可进入打开光盘的流程；菜单显示快捷键 Ctrl+D。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0023.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0024": {
+      "name": "Open Network Stream 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可进入打开网络串流的流程；菜单显示快捷键 Ctrl+N。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0024.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0025": {
+      "name": "Open Capture Device 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可进入打开捕获设备的流程；菜单显示快捷键 Ctrl+C。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0025.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0026": {
+      "name": "Open Location from Clipboard 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可打开剪贴板中的位置；菜单显示快捷键 Ctrl+V。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0026.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0027": {
+      "name": "Open Recent Media 菜单项",
+      "knowledge": [
+        {
+          "description": "用于访问最近媒体；本图中该项灰显，当前不可用。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0027.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0028": {
+      "name": "Save Playlist to File 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可进入将播放列表保存到文件的流程；菜单显示快捷键 Ctrl+Y。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0028.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0029": {
+      "name": "Convert / Save 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可进入转换或保存流程；菜单显示快捷键 Ctrl+R。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0029.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0030": {
+      "name": "Stream 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可进入串流流程；菜单显示快捷键 Ctrl+S。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0030.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0031": {
+      "name": "Quit at the end of playlist 复选框",
+      "knowledge": [
+        {
+          "description": "点击复选框可切换是否在播放列表结束时退出；本图中未勾选。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0031.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0032": {
+      "name": "Quit 菜单项",
+      "knowledge": [
+        {
+          "description": "选择可退出 VLC；菜单显示快捷键 Ctrl+Q。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0010-8b98b3dfc6a0/regions/r0004/images/0010/c0032.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0033": {
+      "name": "Title 菜单项",
+      "knowledge": [
+        {
+          "description": "提供按标题选择的入口；本次无媒体时显示为灰色，未验证其子菜单内容及操作效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0033.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0034": {
+      "name": "Chapter 菜单项",
+      "knowledge": [
+        {
+          "description": "提供按章节选择的入口；本次无媒体时显示为灰色，未验证其子菜单内容及操作效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0034.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0035": {
+      "name": "Program 菜单项",
+      "knowledge": [
+        {
+          "description": "提供按节目选择的入口；本次无媒体时显示为灰色，未验证其子菜单内容及操作效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0035.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0036": {
+      "name": "Custom Bookmarks 菜单项",
+      "knowledge": [
+        {
+          "description": "提供自定义书签入口；本次无媒体时显示为灰色，未验证其子菜单内容及操作效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0036.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0037": {
+      "name": "Renderer 菜单项",
+      "knowledge": [
+        {
+          "description": "提供 Renderer 相关子菜单入口；本次显示为可用，但未展开其内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0037.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0038": {
+      "name": "Speed 菜单项",
+      "knowledge": [
+        {
+          "description": "提供播放速度相关入口；本次无媒体时显示为灰色，未验证其子菜单内容或可选值。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0038.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0039": {
+      "name": "Jump Forward 菜单项",
+      "knowledge": [
+        {
+          "description": "提供向前跳转入口；本次无媒体时显示为灰色，未验证跳转操作及其参数。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0039.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0040": {
+      "name": "Jump Backward 菜单项",
+      "knowledge": [
+        {
+          "description": "提供向后跳转入口；本次无媒体时显示为灰色，未验证跳转操作及其参数。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0040.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0041": {
+      "name": "Jump to Specific Time 菜单项",
+      "knowledge": [
+        {
+          "description": "提供跳转到指定时间的入口；菜单显示快捷键 Ctrl+T。本次显示为可用，但未点击验证后续界面或时间参数的填写方式。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0041.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0042": {
+      "name": "Play 菜单项",
+      "knowledge": [
+        {
+          "description": "提供 Play 相关子菜单入口；本次显示为可用，但未展开其内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0042.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0043": {
+      "name": "Stop 菜单项",
+      "knowledge": [
+        {
+          "description": "提供停止播放入口；本次无媒体时显示为灰色，未验证其操作效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0043.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0044": {
+      "name": "Previous 菜单项",
+      "knowledge": [
+        {
+          "description": "提供切换到上一项的入口；本次无媒体时显示为灰色，未验证其操作效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0044.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0045": {
+      "name": "Next 菜单项",
+      "knowledge": [
+        {
+          "description": "提供切换到下一项的入口；本次无媒体时显示为灰色，未验证其操作效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0045.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0046": {
+      "name": "Record 菜单项",
+      "knowledge": [
+        {
+          "description": "提供录制入口；本次无媒体时显示为灰色，未验证其操作效果及使用条件。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0003-0014-67c237434797/regions/r0005/images/0014/c0046.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0047": {
+      "name": "当前位置选择框",
+      "description": "对话框顶部显示 /home/user 的位置栏，右侧带下拉箭头。",
+      "knowledge": [
+        {
+          "description": "显示当前浏览位置；可见位置栏及下拉入口。本图未验证如何通过该控件切换位置。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0047.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0048": {
+      "name": "位置侧栏",
+      "description": "文件列表左侧包含 Computer 与 user 位置入口。",
+      "knowledge": [
+        {
+          "description": "显示可选浏览位置；可见 Computer 和 user 两项。本图未验证选择它们后的导航结果。"
+        },
+        {
+          "description": "选择 user 可使文件列表显示 /home/user 中的文件夹；本次观察到当前位置仍显示 /home/user。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0048.png",
+          "conditions": [
+            "Computer 位置入口已选中并以蓝色高亮；user 位置入口未选中。"
+          ]
+        },
+        {
+          "path": "../a0007-0030-9a250923c9f6/regions/r0006/images/0030/c0048.png",
+          "conditions": [
+            "user 位置入口已选中并以蓝色高亮；Computer 位置入口未选中。"
+          ]
+        }
+      ],
+      "jump_to": []
+    },
+    "c0049": {
+      "name": "文件列表",
+      "description": "主列表区域带 Name、Size、Type、Date Modified 列标题；当前显示“/”驱动器条目。",
+      "knowledge": [
+        {
+          "description": "列出当前位置的文件或位置条目以供选择；本图只确认可见一个“/”驱动器条目，未验证打开或选择条目的效果。"
+        },
+        {
+          "description": "双击文件夹条目可进入该文件夹并更新当前位置；本次在 Videos 文件夹中看到 sample_clip.mp4，但尚未打开或选择该文件。"
+        },
+        {
+          "description": "在文件列表中双击可打开的本地媒体文件，可以将该媒体交给 VLC 打开；本次双击 Videos 中的 sample_clip.mp4 后，对话框关闭且 VLC 显示该媒体。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0049.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0002",
+          "conditions": [
+            "在 VLC 文件选择对话框的 Videos 文件夹中双击 sample_clip.mp4。"
+          ]
+        }
+      ]
+    },
+    "c0050": {
+      "name": "文件名输入框",
+      "description": "File name 标签右侧的输入框，当前文本“user”被选中。",
+      "knowledge": [
+        {
+          "description": "用于填写或显示文件名；本图中可见文本“user”处于选中状态，未验证该文本是否为用户输入或选择结果，也未验证提交效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0050.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0051": {
+      "name": "文件类型筛选框",
+      "description": "Files of type 标签右侧的下拉框，当前显示 Media Files 及扩展名过滤条件。",
+      "knowledge": [
+        {
+          "description": "用于选择文件类型筛选条件；当前可见 Media Files 及一串媒体扩展名，本图未展开候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0051.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0052": {
+      "name": "Open 按钮",
+      "description": "文件名输入框右侧的打开按钮，当前呈灰色禁用状态。",
+      "knowledge": [
+        {
+          "description": "用于打开所选文件；本图中按钮禁用，未验证可用条件或打开结果。"
+        },
+        {
+          "description": "点击可用的 Open 按钮会打开文件名输入框中指定的媒体；本次点击后文件选择对话框关闭，VLC 主窗口开始播放 sample_clip.mp4。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0052.png",
+          "conditions": [
+            "文件名输入框显示“user”，Open 按钮呈灰色禁用状态。"
+          ]
+        },
+        {
+          "path": "../a0011-0044-388d121af648/regions/r0006/images/0044/c0052.png",
+          "conditions": [
+            "文件名输入框显示“sample_clip.mp4”，Open 按钮可用。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0002",
+          "conditions": []
+        }
+      ]
+    },
+    "c0053": {
+      "name": "Cancel 按钮",
+      "description": "对话框右下角的取消按钮。",
+      "knowledge": [
+        {
+          "description": "提供取消并关闭文件选择对话框的入口；本图未点击验证关闭后的界面。"
+        },
+        {
+          "description": "点击可取消文件选择并关闭对话框；本次点击后 VLC 主窗口重新可见。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0053.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0001",
+          "conditions": []
+        }
+      ]
+    },
+    "c0054": {
+      "name": "对话框关闭按钮",
+      "description": "对话框标题栏右上角的关闭图标。",
+      "knowledge": [
+        {
+          "description": "提供关闭文件选择对话框的入口；本图未点击验证关闭后的界面。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0028-d65fdd7a82e2/regions/r0006/images/0028/c0054.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0055": {
+      "name": "Audio Track 菜单项",
+      "description": "Audio 菜单中的灰色子菜单入口。",
+      "knowledge": [
+        {
+          "description": "用于访问音轨选项；当前呈灰色，未能展开或确认其中的选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0055.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0056": {
+      "name": "Audio Device 菜单项",
+      "description": "Audio 菜单中的子菜单入口，右侧显示子菜单箭头。",
+      "knowledge": [
+        {
+          "description": "用于访问音频设备选项；点击后可展开子菜单。本次可见候选项 Dummy Output，旁有圆点标记，显示为当前选中项。候选项显示为可用，界面未显示选择设备所需的额外条件；本次未点击候选项，未验证切换结果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0056.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0008",
+          "conditions": []
+        }
+      ]
+    },
+    "c0057": {
+      "name": "Stereo Mode 菜单项",
+      "description": "Audio 菜单中的灰色子菜单入口。",
+      "knowledge": [
+        {
+          "description": "用于访问立体声模式选项；当前呈灰色，未能展开或确认其中的选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0057.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0058": {
+      "name": "Visualizations 菜单项",
+      "description": "Audio 菜单中的灰色子菜单入口。",
+      "knowledge": [
+        {
+          "description": "用于访问可视化选项；当前呈灰色，未能展开或确认其中的选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0058.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0059": {
+      "name": "Increase Volume 菜单项",
+      "knowledge": [
+        {
+          "description": "用于增加音量；本步未点击，实际音量变化未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0059.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0060": {
+      "name": "Decrease Volume 菜单项",
+      "knowledge": [
+        {
+          "description": "用于降低音量；本步未点击，实际音量变化未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0060.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0061": {
+      "name": "Mute 菜单项",
+      "knowledge": [
+        {
+          "description": "用于切换静音；本步未点击，静音状态是否改变未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0030-0095-46a823ada43a/regions/r0007/images/0095/c0061.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0062": {
+      "name": "Dummy Output",
+      "description": "Audio Device 子菜单中带圆点标记的音频设备选项。",
+      "knowledge": [
+        {
+          "description": "可点击此选项选择 Dummy Output；本次点击当前已选中的选项后，Audio Device 子菜单及 Audio 菜单面板关闭。菜单关闭本身不能证明音频输出已实际切换。",
+          "constraints": {
+            "音频设备": {
+              "description": "本次展开时可见的候选项为 Dummy Output，且带有选中标记；本界面未显示其他设备选项。",
+              "name": "音频设备"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0107-f843eb67785b/regions/r0008/images/0107/c0062.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0063": {
+      "name": "Video Track 菜单项",
+      "knowledge": [
+        {
+          "description": "显示为带子菜单箭头的视频轨道入口；当前呈灰色禁用，无法确认可用时的子菜单内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0063.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0064": {
+      "name": "Fullscreen 菜单项",
+      "knowledge": [
+        {
+          "description": "带复选框的全屏选项；当前复选框未勾选。画面可见该选项，但尚未操作验证其效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0064.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0065": {
+      "name": "Always Fit Window 菜单项",
+      "knowledge": [
+        {
+          "description": "带复选框的窗口适配选项；当前显示为灰色禁用，无法确认可用时的效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0065.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0066": {
+      "name": "Set as Wallpaper 菜单项",
+      "knowledge": [
+        {
+          "description": "带复选框的设为壁纸选项；当前复选框未勾选，尚未操作验证其效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0066.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0067": {
+      "name": "Zoom 菜单项",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的缩放入口；当前呈灰色禁用，无法确认可用时的候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0067.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0068": {
+      "name": "Aspect Ratio 菜单项",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的宽高比入口；当前呈灰色禁用，无法确认可用时的候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0068.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0069": {
+      "name": "Crop 菜单项",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的裁剪入口；当前呈灰色禁用，无法确认可用时的候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0069.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0070": {
+      "name": "Deinterlace 菜单项",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的去隔行入口；当前呈灰色禁用，无法确认可用时的候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0070.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0071": {
+      "name": "Deinterlace mode 菜单项",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的去隔行模式入口；当前呈灰色禁用，无法确认可用时的候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0071.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0072": {
+      "name": "Take Snapshot 菜单项",
+      "knowledge": [
+        {
+          "description": "截图命令；当前呈灰色禁用，无法确认可用时的操作结果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0118-1738ca816fb9/regions/r0010/images/0118/c0072.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0073": {
+      "name": "Add Subtitle File 菜单项",
+      "description": "展开面板中的可用字幕文件入口。",
+      "knowledge": [
+        {
+          "description": "点击可进入添加字幕文件的流程；后续界面及所需参数尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0128-48736fe253af/regions/r0011/images/0128/c0073.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0074": {
+      "name": "Sub Track 菜单项",
+      "description": "展开面板中的字幕轨道子菜单入口，当前显示为灰色并带有子菜单箭头。",
+      "knowledge": [
+        {
+          "description": "用于访问字幕轨道相关选项；当前呈灰色不可用，尚未确认其可用条件或展开内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0128-48736fe253af/regions/r0011/images/0128/c0074.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0075": {
+      "name": "Effects and Filters 菜单项",
+      "knowledge": [
+        {
+          "description": "点击此菜单项会打开标题为“Adjustments and Effects”的设置窗口。窗口提供 Audio Effects、Video Effects、Synchronization 和 v4l2 controls 页面；本次实际看到 Audio Effects > Equalizer 页面。",
+          "constraints": {
+            "键盘快捷键": {
+              "description": "菜单显示 Ctrl+E。",
+              "name": "键盘快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0075.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0013",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0076": {
+      "name": "Track Synchronization 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明用于访问轨道同步功能；本次未点击，具体打开内容及可用操作未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0076.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0013",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0077": {
+      "name": "Media Information 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明用于查看媒体信息；本次未点击，具体显示内容未验证。",
+          "constraints": {
+            "键盘快捷键": {
+              "description": "菜单显示 Ctrl+I。",
+              "name": "键盘快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0077.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0078": {
+      "name": "Codec Information 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明用于查看编解码器信息；本次未点击，具体显示内容未验证。",
+          "constraints": {
+            "键盘快捷键": {
+              "description": "菜单显示 Ctrl+J。",
+              "name": "键盘快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0078.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0079": {
+      "name": "VLM Configuration 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明用于访问 VLM 配置；本次未点击，具体配置界面及用途未验证。",
+          "constraints": {
+            "键盘快捷键": {
+              "description": "菜单显示 Ctrl+Shift+W。",
+              "name": "键盘快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0079.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0080": {
+      "name": "Program Guide 菜单项",
+      "knowledge": [
+        {
+          "description": "菜单提供 Program Guide 入口；本次未点击，具体用途及打开内容未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0080.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0081": {
+      "name": "Messages 菜单项",
+      "knowledge": [
+        {
+          "description": "菜单提供 Messages 入口；本次未点击，具体显示内容及操作未验证。",
+          "constraints": {
+            "键盘快捷键": {
+              "description": "菜单显示 Ctrl+M。",
+              "name": "键盘快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0081.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0082": {
+      "name": "Plugins and extensions 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明可访问插件与扩展功能；本次未点击，具体打开内容及可用操作未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0082.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0083": {
+      "name": "Customize Interface 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明用于自定义界面；本次未点击，具体界面及可调整项目未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0083.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0084": {
+      "name": "Preferences 菜单项",
+      "knowledge": [
+        {
+          "description": "入口标签表明用于访问偏好设置；本次未点击，具体设置内容及效果未验证。",
+          "constraints": {
+            "键盘快捷键": {
+              "description": "菜单显示 Ctrl+P。",
+              "name": "键盘快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0038-0132-a71de3892d6a/regions/r0012/images/0132/c0084.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0085": {
+      "name": "Audio Effects 标签页",
+      "knowledge": [
+        {
+          "description": "选择此标签可查看音频效果页面；本次打开的窗口当前显示该页面。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": null,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0085.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0086": {
+      "name": "Video Effects 标签页",
+      "knowledge": [
+        {
+          "description": "用于访问 Video Effects 页面；页面内的具体选项和效果本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0086.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0087": {
+      "name": "Synchronization 标签页",
+      "knowledge": [
+        {
+          "description": "点击可访问 Synchronization 页面。页面提供音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子参数；本次只查看了显示内容，未验证修改后的效果或取值范围。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0087.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0014",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0088": {
+      "name": "v4l2 controls 标签页",
+      "knowledge": [
+        {
+          "description": "用于访问 v4l2 controls 页面；页面内的具体选项和效果本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0088.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0089": {
+      "name": "Equalizer 子标签",
+      "knowledge": [
+        {
+          "description": "Audio Effects 页面中的 Equalizer 子页面入口；当前已选中并显示均衡器控件。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": null,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0089.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0090": {
+      "name": "Compressor 子标签",
+      "knowledge": [
+        {
+          "description": "Audio Effects 页面中的 Compressor 子页面入口；具体控件和效果本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0090.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0091": {
+      "name": "Spatializer 子标签",
+      "knowledge": [
+        {
+          "description": "Audio Effects 页面中的 Spatializer 子页面入口；具体控件和效果本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0091.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0092": {
+      "name": "Stereo Widener 子标签",
+      "knowledge": [
+        {
+          "description": "Audio Effects 页面中的 Stereo Widener 子页面入口；具体控件和效果本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0092.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0093": {
+      "name": "Advanced 子标签",
+      "knowledge": [
+        {
+          "description": "Audio Effects 页面中的 Advanced 子页面入口；具体控件和效果本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0093.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0094": {
+      "name": "Equalizer Enable 复选框",
+      "knowledge": [
+        {
+          "description": "用于启用或停用 Equalizer；本次观察到未勾选，未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0094.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0095": {
+      "name": "Equalizer Preset 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择 Equalizer 预设；本次未展开，候选值未知。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0095.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0096": {
+      "name": "Save 按钮",
+      "knowledge": [
+        {
+          "description": "窗口底部可见 Save 按钮；本次呈灰色，未点击，保存行为未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0096.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0097": {
+      "name": "Close 按钮",
+      "knowledge": [
+        {
+          "description": "点击可关闭 Adjustments and Effects 窗口。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0039-0137-0a2449570792/regions/r0013/images/0137/c0097.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0098": {
+      "name": "Essential 子标签",
+      "knowledge": [
+        {
+          "description": "选择此子标签可显示 Video Effects 的 Essential 页面；当前已选中。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0098.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0099": {
+      "name": "Crop 子标签",
+      "knowledge": [
+        {
+          "description": "选择此子标签可访问 Video Effects 的 Crop 页面；页面内选项本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0099.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0100": {
+      "name": "Colors 子标签",
+      "knowledge": [
+        {
+          "description": "选择此子标签可访问 Video Effects 的 Colors 页面；页面内选项本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0100.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0101": {
+      "name": "Geometry 子标签",
+      "knowledge": [
+        {
+          "description": "选择此子标签可访问 Video Effects 的 Geometry 页面；页面内选项本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0101.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0102": {
+      "name": "Overlay 子标签",
+      "knowledge": [
+        {
+          "description": "选择此子标签可访问 Video Effects 的 Overlay 页面；页面内选项本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0102.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0103": {
+      "name": "Video Effects Advanced 子标签",
+      "description": "Video Effects 页面中的 Advanced 子标签，与 Audio Effects 页面已有的 Advanced 子标签分属不同页面。",
+      "knowledge": [
+        {
+          "description": "选择此子标签可访问 Video Effects 的 Advanced 页面；页面内选项本次未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0103.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0104": {
+      "name": "Image adjust 复选框",
+      "knowledge": [
+        {
+          "description": "用于启用或停用 Image adjust 效果；当前未勾选，其下的图像调整滑块呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0104.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0105": {
+      "name": "Hue 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整图像色相；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0105.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0106": {
+      "name": "Brightness 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整图像亮度；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0106.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0107": {
+      "name": "Brightness Threshold 复选框",
+      "knowledge": [
+        {
+          "description": "用于切换 Brightness Threshold 选项；当前呈灰色且未勾选。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0107.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0108": {
+      "name": "Contrast 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整图像对比度；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0108.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0109": {
+      "name": "Saturation 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整图像饱和度；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0109.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0110": {
+      "name": "Gamma 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整图像 Gamma；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0110.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0111": {
+      "name": "Sharpen 复选框",
+      "knowledge": [
+        {
+          "description": "用于启用或停用 Sharpen 效果；当前未勾选，其下的 Sigma 滑块呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0111.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0112": {
+      "name": "Sigma 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整 Sharpen 效果的 Sigma 参数；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0112.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0113": {
+      "name": "Banding removal 复选框",
+      "knowledge": [
+        {
+          "description": "用于启用或停用 Banding removal 效果；当前未勾选，其下的 Radius 滑块呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0113.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0114": {
+      "name": "Radius 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整 Banding removal 效果的 Radius 参数；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0114.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0115": {
+      "name": "Film Grain 复选框",
+      "knowledge": [
+        {
+          "description": "用于启用或停用 Film Grain 效果；当前未勾选，其下的 Variance 滑块呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0115.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0116": {
+      "name": "Variance 滑块",
+      "knowledge": [
+        {
+          "description": "用于调整 Film Grain 效果的 Variance 参数；当前呈灰色。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0147-355b16ca755f/regions/r0013/images/0147/c0116.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0117": {
+      "name": "Audio track synchronization 数值框",
+      "description": "位于 Audio/Video 分组。",
+      "knowledge": [
+        {
+          "description": "用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。",
+          "constraints": {
+            "同步值": {
+              "description": "填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。",
+              "name": "同步值"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0041-0152-576c8d753491/regions/r0014/images/0152/c0117.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0118": {
+      "name": "Subtitle track synchronization 数值框",
+      "description": "位于 Subtitles/Video 分组。",
+      "knowledge": [
+        {
+          "description": "用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。",
+          "constraints": {
+            "同步值": {
+              "description": "填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。",
+              "name": "同步值"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0041-0152-576c8d753491/regions/r0014/images/0152/c0118.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0119": {
+      "name": "Subtitle speed 数值框",
+      "description": "位于 Subtitles/Video 分组。",
+      "knowledge": [
+        {
+          "description": "用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。",
+          "constraints": {
+            "速度": {
+              "description": "填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。",
+              "name": "速度"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0041-0152-576c8d753491/regions/r0014/images/0152/c0119.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0120": {
+      "name": "Subtitle duration factor 数值框",
+      "description": "位于 Subtitles/Video 分组。",
+      "knowledge": [
+        {
+          "description": "用于设置字幕持续时间因子，界面未显示单位；可直接输入或使用增减按钮。曾观察到从 2.000 单击增大按钮后显示 2.200（增加 0.200）。从显示并选中的 2.200 全选输入 999999 后，画面显示 9，不能据此确定可接受范围或输入处理机制。本步在数值框显示 9 时全选输入 2.000，动作后画面显示 2.000，恢复了探索前的显示值；这不证明该值已提交或持久生效。可接受范围及一般增减步进规律仍未确认。",
+          "constraints": {
+            "持续时间因子": {
+              "description": "填写或调整字幕持续时间因子；界面未显示单位。已观察到增大按钮的一次操作使显示值从 2.000 变为 2.200（增加 0.200）。全选输入 999999 后画面显示 9，但可接受范围、一般增减步进规律及输入处理机制仍未确认。",
+              "name": "持续时间因子"
+            }
+          }
+        },
+        {
+          "description": "用于设置字幕持续时间因子，界面未显示单位；其范围及效果未验证。本次动作前后截图均显示 2.000，未观察到该值因本次操作而变化。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0041-0152-576c8d753491/regions/r0014/images/0152/c0120.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0121": {
+      "name": "Synchronization 循环箭头图标",
+      "description": "页面右上方的循环箭头图标控件。",
+      "knowledge": [
+        {
+          "description": "此前点击后图标呈带边框状态，但四个可见同步参数未见变化，且没有提示或页面切换；本次悬停也未出现提示或可见变化。现有证据仍不能确认图标的具体用途、点击是否产生设置效果，或它会影响哪些同步参数。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0041-0152-576c8d753491/regions/r0014/images/0152/c0121.png",
+          "conditions": [
+            "Synchronization 页面右上方显示循环箭头图标，周围没有明显的方形边框。"
+          ]
+        },
+        {
+          "path": "../a0083-0270-0f019a538b7c/regions/r0014/images/0270/c0121.png",
+          "conditions": [
+            "Synchronization 页面右上方的同一循环箭头图标显示在带边框的方形按钮中。"
+          ]
+        }
+      ],
+      "jump_to": []
+    },
+    "c0122": {
+      "name": "Subtitle track synchronization 增大按钮",
+      "description": "位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号。",
+      "knowledge": [
+        {
+          "description": "点击此按钮用于增大所属的 Subtitle track synchronization 数值框的值；本次仅确认其外观和所属关系，未操作，具体步进值及可接受范围尚未核实。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0220-bd2f60111c89/regions/r0014/images/0220/c0122.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0123": {
+      "name": "Subtitle speed 增大按钮",
+      "description": "Subtitle speed 数值框右侧的上方增大按钮。",
+      "knowledge": [
+        {
+          "description": "用于尝试增大字幕速度。此次点击后数值框获得焦点，但显示值仍为 1.000 fps；尚不能确认按钮是否生效或其增量步进。"
+        },
+        {
+          "description": "位于 Subtitle speed 数值框右侧，用于尝试增大字幕速度。本次点击后，前后截图中的数值均为 1.000 fps；未能确认按钮是否生效或其增量步进。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0067-0222-b2b4835bb9c8/regions/r0014/images/0222/c0123.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0124": {
+      "name": "Subtitle duration factor 增大按钮",
+      "description": "Subtitle duration factor 数值框右侧带“+”的增大按钮。",
+      "knowledge": [
+        {
+          "description": "点击一次可使 Subtitle duration factor 数值框显示值从 2.000 增至 2.200；本次观察到的增量为 0.200。其他数值下的步进与可接受范围尚未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0080-0257-fd250baa2e20/regions/r0014/images/0257/c0124.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0125": {
+      "name": "Subtitle duration factor 减小按钮",
+      "description": "位于 Subtitle duration factor 数值框右侧窄按钮区域的下半部，可见“−”符号。",
+      "knowledge": [
+        {
+          "description": "用于尝试减小所属的 Subtitle duration factor 数值框的值；当前确认了按钮及其所属关系，减小步进和可接受范围尚未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0267-096b000ac24b/regions/r0014/images/0267/c0125.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    }
+  },
+  "next_ids": {
+    "region": 15,
+    "control": 126,
+    "knowledge": 10
+  }
+}

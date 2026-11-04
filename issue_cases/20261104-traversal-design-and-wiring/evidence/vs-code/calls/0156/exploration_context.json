@@ -1,0 +1,11 @@
+{
+  "region_id": "r0020",
+  "region": "路径面包屑目录列表",
+  "control_id": null,
+  "control": "区块级处理",
+  "task": null,
+  "task_region": "r0020",
+  "category": "other",
+  "stage": "task_proposal",
+  "session": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/session-09"
+}

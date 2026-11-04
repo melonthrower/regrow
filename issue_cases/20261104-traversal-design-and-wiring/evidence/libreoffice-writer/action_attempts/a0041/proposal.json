@@ -1,0 +1,10 @@
+{
+  "action": "click",
+  "target": "c0131",
+  "reason": "展开工具栏目标候选项，查看除 Standard 外是否还有可选择的工具栏，以满足本任务结算条件。",
+  "x": 969,
+  "y": 224,
+  "text": null,
+  "end_x": null,
+  "end_y": null
+}

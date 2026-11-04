@@ -1,0 +1,10 @@
+{
+  "action": "input_text",
+  "target": "Audio track synchronization 数值框",
+  "reason": "截图中该数值框位于约 (320, 321) 至 (427, 343)，拟定位置 (365, 332) 落在输入区域内；历史定位框的纵坐标与当前截图不符。精确可接受范围仍未确定，输入 9999 可补充较大正值的处理证据。",
+  "x": 365,
+  "y": 332,
+  "text": "9999",
+  "exception": "none",
+  "recovery_handoff": ""
+}

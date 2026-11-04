@@ -1,0 +1,3089 @@
+{
+  "stage": "action_selection",
+  "action_ready": true,
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 vlc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n按本轮范围及当前证据选择操作。正常增删改已获允许时，可为原问题执行必要操作；遇到具体范围冲突且无允许替代时用 none，reason 说明冲突及重新考虑条件。不得用“可能还会出现确认框”把受限制操作当成只读查看；位置未知本身不是禁止依据。\n\n# 本步任务\n推进给定的探索问题。对照完成条件和已有证据，已有答案就提交结论；仍有未知时，选择能补充信息的一步操作。需要准备时先建立条件，继续围绕原问题判断。\n\n所提动作尚未执行。\n\n# 本步用到的概念\n\n区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。\n\n遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。\n\nexception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。\n\nrecovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\n引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。\n\n当前可操作的对象应在当前界面中可见、可用，并且没有被其他界面遮挡。使用按键或返回时，同时考虑焦点所在位置。\n\n知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。\n\n功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。\n\n先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。\n\n正例：已进入另一应用，只报告 external_app 及当前界面说明。\n反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。\n\n本节字段格式：\n\n至少符合以下一种格式。\n\n### 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n### 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n# 提出一步操作\n根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。\n- target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。\n- x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。\n- text、end_x、end_y：按下方当前平台动作表填写。\n\n正例：点击当前图中的搜索按钮，reason 写“展开搜索输入框”。\n\n### 本轮平台：OSWorld Linux 桌面\n\n\n| action | 需要填写的字段 | 操作含义 |\n|---|---|---|\n| click、double_click、long_press、right_click、hover | target、reason、x、y、exception、recovery_handoff | 在(x,y)点击、双击、长按、右击或悬停；hover仅移动指针。 |\n| input_text | target、reason、x、y、text、exception、recovery_handoff | 在(x,y)对应输入框全选并替换为text（可打印ASCII），空字符串清空。无需另派聚焦验证或等待屏幕键盘。text_delivered=false表示文字未送达，结果结合回执与后图判断。 |\n| drag | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 从(x,y)按住拖动至(end_x,end_y)。 |\n| scroll | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 在(x,y)发送滚轮，end_x/end_y编码方向与幅度，不是拖动终点，也不要求落在同一内容区。查看下方时end_x=x、end_y<y；查看上方时end_y>y。reason说明希望查看哪侧，无变化不自动表示已到底。 |\n| key_press | reason、text、exception、recovery_handoff | text为一个键名，例如ENTER、ESC、TAB、BACKSPACE、F11、LEFT。 |\n| hotkey | reason、text、exception、recovery_handoff | text用+连接键名，例如CTRL+SHIFT+P；作用于当前焦点，不填坐标。 |\n| back | reason、exception、recovery_handoff | 发送Esc，仅用于有依据的取消或关闭菜单/弹层；页面返回优先使用可见返回按钮，不把Esc当作页面后退或Alt+Left。 |\n| wait | reason、exception、recovery_handoff | 等待新观察；不表示任务完成。 |\n\n键名可使用字母数字、F1–F24、方向键、HOME、END、PAGEUP、PAGEDOWN、INSERT、DELETE、SPACE 及 CTRL、ALT、SHIFT、SUPER；不输入命令或代码。\n滚动示例：桌面从 (700,550) 编码到 (700,250) 表示查看下方内容；该约定不适用于 drag 或 Android 滑动。\n\n# 原问题已有答案：complete\n对照原问题和完成条件，reason 写明现有证据如何回答了问题，并保留仍影响结论的限制。\n\n正例：原问题是“这个入口打开什么”，已有观察显示它打开导出面板，可以据此完成入口问题；面板内尚未了解的设置属于后续问题。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"complete\" |\n| `reason` | 必填 | 文字；不能为空 |\n\n# 本步不操作：none\nreason 说明原问题尚缺什么信息，以及本步为何没有可推进的动作。\n\n正例：需要选择文件才能继续，当前没有可用文件；说明这个缺口，保留原问题。\n\nretry_when：确有障碍需要暂挂时，写可判断的恢复条件。\n正例：“已有可供选择的文件后继续。”\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"none\" |\n| `reason` | 必填 | 文字；不能为空 |\n| `retry_when` | 按需 | 文字；不能为空 |\n\n# 提交本次新增认识\n以下记录更新只用于 action 为 complete 或 none 的回复；有新认识或修订时填写。\n\n# 更新控件用法：controls\nref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。\n\nknowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”\n\nknowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。\n\nknowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `controls` | 按需 | 列表 |\n\n### controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"Audio track synchronization 数值框\"、\"Subtitle track synchronization 数值框\"、\"Subtitle speed 数值框\"、\"Subtitle duration factor 数值框\"、\"Synchronization 循环箭头图标\"、\"Subtitle track synchronization 增大按钮\"、\"Subtitle speed 增大按钮\" |\n| `knowledge` | 必填 | 列表；至少 1 项 |\n\n### controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |\n\n# 更新区块用法：regions\nref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。\n\nlocal_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 按需 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"Synchronization 页面内容区\" |\n| `local_knowledge` | 必填 | 对象 |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。\n\n功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 Help 菜单/搜索词 时，填写 [\"Help 菜单/搜索词\"]。\n\n本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件名称/参数名”加入功能的 constraints。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"Synchronization 页面内容区\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。",
+  "user_prompt": "## 目标应用\n本次要探索的应用：vlc\n\n判断当前前景中正在探索的内容，是否属于这个应用。\n如果不属于，exception 填 external_app，\n简要说明现在到了什么界面，不再探索其中的功能。\n\n正例：前景已经是另一应用的页面，应报告 external_app。\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\n\n## 当前任务\n\n区块：Synchronization 页面内容区\n\n任务：了解「Subtitle speed 数值框」的可指定的候选、取值或输入依据及必要设置方式\n探索内容：查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。\n本任务结算条件：确认字幕速度数值框可接受的范围和增减步进值，并恢复探索前的值。\n未答部分：历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：恢复显示为探索前的 1.000 fps；确认数值框的可接受范围及增减步进值。当前显示 0.000 fps 是否属于可接受范围仍未确认。\n已确认规则：\n  用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\n\n## 页面与相关历史\n控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nVLC 菜单栏 [VLC 菜单栏]\n  ├─ Media 菜单 [Media 菜单]\n    └─ Media 菜单展开面板 [Media 菜单展开面板]\n      ├─ Open File 菜单项 [Open File 菜单项]\n        └─ VLC 文件选择对话框 [VLC 文件选择对话框]\n          ├─ 当前位置选择框 [当前位置选择框]\n          ├─ 位置侧栏 [位置侧栏]\n          ├─ 文件列表 [文件列表]\n          ├─ 文件名输入框 [文件名输入框]\n          ├─ 文件类型筛选框 [文件类型筛选框]\n          ├─ Open 按钮 [Open 按钮]\n            └─ VLC 视频显示区 [VLC 视频显示区（主窗口中用于显示媒体画面或播放器空闲画面的区域。）]\n          ├─ Cancel 按钮 [Cancel 按钮]\n          ├─ 对话框关闭按钮 [对话框关闭按钮]\n      ├─ Open Multiple Files 菜单项 [Open Multiple Files 菜单项]\n      ├─ Open Directory 菜单项 [Open Directory 菜单项]\n      ├─ Open Disc 菜单项 [Open Disc 菜单项]\n      ├─ Open Network Stream 菜单项 [Open Network Stream 菜单项]\n      ├─ Open Capture Device 菜单项 [Open Capture Device 菜单项]\n      ├─ Open Location from Clipboard 菜单项 [Open Location from Clipboard 菜单项]\n      ├─ Open Recent Media 菜单项 [Open Recent Media 菜单项]\n      ├─ Save Playlist to File 菜单项 [Save Playlist to File 菜单项]\n      ├─ Convert / Save 菜单项 [Convert / Save 菜单项]\n      ├─ Stream 菜单项 [Stream 菜单项]\n      ├─ Quit at the end of playlist 复选框 [Quit at the end of playlist 复选框]\n      ├─ Quit 菜单项 [Quit 菜单项]\n  ├─ Playback 菜单 [Playback 菜单]\n    └─ Playback 菜单展开面板 [Playback 菜单展开面板]\n      ├─ Title 菜单项 [Title 菜单项]\n      ├─ Chapter 菜单项 [Chapter 菜单项]\n      ├─ Program 菜单项 [Program 菜单项]\n      ├─ Custom Bookmarks 菜单项 [Custom Bookmarks 菜单项]\n      ├─ Renderer 菜单项 [Renderer 菜单项]\n      ├─ Speed 菜单项 [Speed 菜单项]\n      ├─ Jump Forward 菜单项 [Jump Forward 菜单项]\n      ├─ Jump Backward 菜单项 [Jump Backward 菜单项]\n      ├─ Jump to Specific Time 菜单项 [Jump to Specific Time 菜单项]\n      ├─ Play 菜单项 [Play 菜单项]\n      ├─ Stop 菜单项 [Stop 菜单项]\n      ├─ Previous 菜单项 [Previous 菜单项]\n      ├─ Next 菜单项 [Next 菜单项]\n      ├─ Record 菜单项 [Record 菜单项]\n  ├─ Audio 菜单 [Audio 菜单]\n    └─ Audio 菜单展开面板 [Audio 菜单展开面板]\n      ├─ Audio Track 菜单项 [Audio Track 菜单项]\n      ├─ Audio Device 菜单项 [Audio Device 菜单项]\n        └─ Audio Device 子菜单 [Audio Device 子菜单]\n          ├─ Dummy Output [Dummy Output]\n      ├─ Stereo Mode 菜单项 [Stereo Mode 菜单项]\n      ├─ Visualizations 菜单项 [Visualizations 菜单项]\n      ├─ Increase Volume 菜单项 [Increase Volume 菜单项]\n      ├─ Decrease Volume 菜单项 [Decrease Volume 菜单项]\n      ├─ Mute 菜单项 [Mute 菜单项]\n  ├─ Video 菜单 [Video 菜单]\n  ├─ Subtitle 菜单 [Subtitle 菜单]\n  ├─ Tools 菜单 [Tools 菜单]\n    └─ Tools 菜单展开面板 [Tools 菜单展开面板]\n      ├─ Effects and Filters 菜单项 [Effects and Filters 菜单项]\n        └─ Adjustments and Effects 设置窗口 [Adjustments and Effects 设置窗口]\n          ├─ Audio Effects 标签页 [Audio Effects 标签页]\n          ├─ Video Effects 标签页 [Video Effects 标签页]\n          ├─ Synchronization 标签页 [Synchronization 标签页]\n            └─ Synchronization 页面内容区 [Synchronization 页面内容区]（本步关注区块）\n              ├─ Audio track synchronization 数值框 [Audio track synchronization 数值框]\n              ├─ Subtitle track synchronization 数值框 [Subtitle track synchronization 数值框]\n              ├─ Subtitle speed 数值框 [Subtitle speed 数值框]\n              ├─ Subtitle duration factor 数值框 [Subtitle duration factor 数值框]\n              ├─ Synchronization 循环箭头图标 [Synchronization 循环箭头图标]\n              ├─ Subtitle track synchronization 增大按钮 [Subtitle track synchronization 增大按钮]\n              ├─ Subtitle speed 增大按钮 [Subtitle speed 增大按钮]\n          ├─ v4l2 controls 标签页 [v4l2 controls 标签页]\n          ├─ Equalizer 子标签 [Equalizer 子标签]\n          ├─ Compressor 子标签 [Compressor 子标签]\n          ├─ Spatializer 子标签 [Spatializer 子标签]\n          ├─ Stereo Widener 子标签 [Stereo Widener 子标签]\n          ├─ Advanced 子标签 [Advanced 子标签]\n          ├─ Equalizer Enable 复选框 [Equalizer Enable 复选框]\n          ├─ Equalizer Preset 下拉框 [Equalizer Preset 下拉框]\n          ├─ Save 按钮 [Save 按钮]\n          ├─ Close 按钮 [Close 按钮]\n          ├─ Essential 子标签 [Essential 子标签]\n          ├─ Crop 子标签 [Crop 子标签]\n          ├─ Colors 子标签 [Colors 子标签]\n          ├─ Geometry 子标签 [Geometry 子标签]\n          ├─ Overlay 子标签 [Overlay 子标签]\n          ├─ Video Effects Advanced 子标签 [Video Effects Advanced 子标签]\n          ├─ Image adjust 复选框 [Image adjust 复选框]\n          ├─ Hue 滑块 [Hue 滑块]\n          ├─ Brightness 滑块 [Brightness 滑块]\n          ├─ Brightness Threshold 复选框 [Brightness Threshold 复选框]\n          ├─ Contrast 滑块 [Contrast 滑块]\n          ├─ Saturation 滑块 [Saturation 滑块]\n          ├─ Gamma 滑块 [Gamma 滑块]\n          ├─ Sharpen 复选框 [Sharpen 复选框]\n          ├─ Sigma 滑块 [Sigma 滑块]\n          ├─ Banding removal 复选框 [Banding removal 复选框]\n          ├─ Radius 滑块 [Radius 滑块]\n          ├─ Film Grain 复选框 [Film Grain 复选框]\n          ├─ Variance 滑块 [Variance 滑块]\n      ├─ Track Synchronization 菜单项 [Track Synchronization 菜单项]\n        └─ [引用：Adjustments and Effects 设置窗口 Adjustments and Effects 设置窗口]\n      ├─ Media Information 菜单项 [Media Information 菜单项]\n      ├─ Codec Information 菜单项 [Codec Information 菜单项]\n      ├─ VLM Configuration 菜单项 [VLM Configuration 菜单项]\n      ├─ Program Guide 菜单项 [Program Guide 菜单项]\n      ├─ Messages 菜单项 [Messages 菜单项]\n      ├─ Plugins and extensions 菜单项 [Plugins and extensions 菜单项]\n      ├─ Customize Interface 菜单项 [Customize Interface 菜单项]\n      ├─ Preferences 菜单项 [Preferences 菜单项]\n  ├─ View 菜单 [View 菜单]\n  ├─ Help 菜单 [Help 菜单]\nVLC 播放控制栏 [VLC 播放控制栏]\n  ├─ 媒体进度条 [媒体进度条]\n  ├─ 播放/暂停按钮 [播放/暂停按钮]\n  ├─ 上一项按钮 [上一项按钮]\n  ├─ 停止按钮 [停止按钮]\n  ├─ 下一项按钮 [下一项按钮]\n  ├─ 全屏按钮 [全屏按钮]\n  ├─ 效果与调整按钮 [效果与调整按钮]\n  ├─ 播放列表按钮 [播放列表按钮]\n  ├─ 循环播放按钮 [循环播放按钮]\n  ├─ 随机播放按钮 [随机播放按钮]\n  ├─ 音量滑块 [音量滑块]\nVLC 视频显示区 [VLC 视频显示区（VLC 主窗口中显示媒体画面或待播放状态标志的区域。）]\nVideo 菜单展开面板 [Video 菜单展开面板]\n  ├─ Video Track 菜单项 [Video Track 菜单项]\n  ├─ Fullscreen 菜单项 [Fullscreen 菜单项]\n  ├─ Always Fit Window 菜单项 [Always Fit Window 菜单项]\n  ├─ Set as Wallpaper 菜单项 [Set as Wallpaper 菜单项]\n  ├─ Zoom 菜单项 [Zoom 菜单项]\n  ├─ Aspect Ratio 菜单项 [Aspect Ratio 菜单项]\n  ├─ Crop 菜单项 [Crop 菜单项]\n  ├─ Deinterlace 菜单项 [Deinterlace 菜单项]\n  ├─ Deinterlace mode 菜单项 [Deinterlace mode 菜单项]\n  ├─ Take Snapshot 菜单项 [Take Snapshot 菜单项]\nSubtitle 菜单展开面板 [Subtitle 菜单展开面板]\n  ├─ Add Subtitle File 菜单项 [Add Subtitle File 菜单项]\n  ├─ Sub Track 菜单项 [Sub Track 菜单项]\n原探索目标：Synchronization 页面内容区 / Subtitle speed 数值框\n上次已登记前景：Synchronization 页面内容区\na0067：click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。\na0068：click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。\na0069：click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。\na0070：input_text「Subtitle speed 数值框」；输入文本：2.000；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。\na0071：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。\na0072：input_text「Subtitle speed 数值框」；输入文本：1000.000；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。\na0073：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。\na0074：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：UP\n  target：当前工作；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。\na0075：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：DOWN\n  target：当前工作；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。\na0076：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：DOWN\n  target：Synchronization 页面内容区；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。\na0077：input_text「Subtitle speed 数值框」；输入文本：0.800；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。\na0078：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：UP\n  target：当前工作；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。\na0079：input_text「Subtitle speed 数值框」；输入文本：0.000；观察：在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。；该次更新未确认事项：Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。；完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。\n\n## 相关控件\n- Synchronization 页面内容区 Synchronization 页面内容区\n  - Audio track synchronization 数值框；target=\"Audio track synchronization 数值框\"\n    用途记录：用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。\n    外观：位于 Audio/Video 分组。\n  - Subtitle track synchronization 数值框；target=\"Subtitle track synchronization 数值框\"\n    用途记录：用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。\n    外观：位于 Subtitles/Video 分组。\n  - Subtitle speed 数值框；target=\"Subtitle speed 数值框\"\n    用途记录：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。\n    约束：\n      速度：\n        说明：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\n        名称：速度\n    外观：位于 Subtitles/Video 分组。\n  - Subtitle duration factor 数值框；target=\"Subtitle duration factor 数值框\"\n    用途记录：用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。；用于设置字幕持续时间因子，界面未显示单位；其范围及效果未验证。本次动作前后截图均显示 2.000，未观察到该值因本次操作而变化。\n    外观：位于 Subtitles/Video 分组。\n  - Synchronization 循环箭头图标；target=\"Synchronization 循环箭头图标\"\n    用途记录：点击后，图标周围出现边框；本次画面中音轨同步值及其他同步参数的可见值均未变化，也未出现提示或页面切换。该观察尚不能确认图标的具体用途、点击是否生效，或它会影响哪些同步参数。\n    外观：页面右上方的循环箭头图标控件。\n  - Subtitle track synchronization 增大按钮；target=\"Subtitle track synchronization 增大按钮\"\n    用途记录：点击此按钮用于增大所属的 Subtitle track synchronization 数值框的值；本次仅确认其外观和所属关系，未操作，具体步进值及可接受范围尚未核实。\n    外观：位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号。\n  - Subtitle speed 增大按钮；target=\"Subtitle speed 增大按钮\"\n    用途记录：用于尝试增大字幕速度。此次点击后数值框获得焦点，但显示值仍为 1.000 fps；尚不能确认按钮是否生效或其增量步进。；位于 Subtitle speed 数值框右侧，用于尝试增大字幕速度。本次点击后，前后截图中的数值均为 1.000 fps；未能确认按钮是否生效或其增量步进。\n    外观：Subtitle speed 数值框右侧的上方增大按钮。\n\n## 后续建议（尚未执行）\n区块：Synchronization 页面内容区\n控件：Subtitle speed 数值框\n操作：input_text\n理由：将当前显示的 0.000 fps 恢复为探索前的 1.000 fps。\n\n## 当前任务相关功能\n1：\n  功能：设置同步参数\n  引用：Synchronization 页面内容区/设置同步参数\n  用途：根据界面标签设置音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子。当前知识支持设置这些参数，但实际播放效果尚未验证。\n  支持对象：\n    Audio track synchronization 数值框；Subtitle track synchronization 数值框；Subtitle speed 数值框；Subtitle duration factor 数值框\n  参数知识引用：\n    Audio track synchronization 数值框/同步值：\n      说明：用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。 参数规则：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n      名称：同步值\n      来源：\n        依据类别：object_knowledge\n        source_call：0207\n        observation：update:0207\n      sources：\n        1：\n          依据类别：object_knowledge\n          source_call：0176\n          observation：update:0176\n        2：\n          依据类别：object_knowledge\n          source_call：0188\n          observation：update:0188\n        3：\n          依据类别：object_knowledge\n          source_call：0194\n          observation：update:0194\n        4：\n          依据类别：object_knowledge\n          source_call：0196\n          observation：update:0196\n        5：\n          依据类别：object_knowledge\n          source_call：0200\n          observation：update:0200\n        6：\n          区块：Synchronization 页面内容区\n          依据类别：discovery\n          source_call：0204\n          observation：update:0204\n        7：\n          依据类别：object_knowledge\n          source_call：0207\n          observation：update:0207\n      observations：\n        1：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            依据类别：object_knowledge\n            source_call：0176\n            observation：update:0176\n        2：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            依据类别：object_knowledge\n            source_call：0188\n            observation：update:0188\n        3：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            依据类别：object_knowledge\n            source_call：0194\n            observation：update:0194\n        4：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            依据类别：object_knowledge\n            source_call：0196\n            observation：update:0196\n        5：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            依据类别：object_knowledge\n            source_call：0200\n            observation：update:0200\n        6：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            区块：Synchronization 页面内容区\n            依据类别：discovery\n            source_call：0204\n            observation：update:0204\n        7：\n          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\n          来源：\n            依据类别：object_knowledge\n            source_call：0207\n            observation：update:0207\n      support：Audio track synchronization 数值框\n      区块：Synchronization 页面内容区\n      控件：Audio track synchronization 数值框\n    Subtitle track synchronization 数值框/同步值：\n      说明：用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。\n      名称：同步值\n      来源：\n        区块：Synchronization 页面内容区\n        依据类别：discovery\n        source_call：0152\n        observation：update:0152\n      sources：\n        1：\n          区块：Synchronization 页面内容区\n          依据类别：discovery\n          source_call：0152\n          observation：update:0152\n      observations：\n        1：\n          说明：填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。\n          来源：\n            区块：Synchronization 页面内容区\n            依据类别：discovery\n            source_call：0152\n            observation：update:0152\n      support：Subtitle track synchronization 数值框\n      区块：Synchronization 页面内容区\n      控件：Subtitle track synchronization 数值框\n    Subtitle speed 数值框/速度：\n      说明：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\n      名称：速度\n      来源：\n        区块：Synchronization 页面内容区\n        依据类别：discovery\n        source_call：0252\n        observation：update:0252\n      sources：\n        1：\n          区块：Synchronization 页面内容区\n          依据类别：discovery\n          source_call：0252\n          observation：update:0252\n      observations：\n        1：\n          说明：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\n          来源：\n            区块：Synchronization 页面内容区\n            依据类别：discovery\n            source_call：0252\n            observation：update:0252\n      support：Subtitle speed 数值框\n      区块：Synchronization 页面内容区\n      控件：Subtitle speed 数值框\n    Subtitle duration factor 数值框/持续时间因子：\n      说明：用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。\n      名称：持续时间因子\n      来源：\n        区块：Synchronization 页面内容区\n        依据类别：discovery\n        source_call：0152\n        observation：update:0152\n      sources：\n        1：\n          区块：Synchronization 页面内容区\n          依据类别：discovery\n          source_call：0152\n          observation：update:0152\n      observations：\n        1：\n          说明：填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。\n          来源：\n            区块：Synchronization 页面内容区\n            依据类别：discovery\n            source_call：0152\n            observation：update:0152\n      support：Subtitle duration factor 数值框\n      区块：Synchronization 页面内容区\n      控件：Subtitle duration factor 数值框\n\n## 可补充知识（仅none/complete）\n原任务所属区块：Synchronization 页面内容区\n本轮可更新控件引用：\n  Audio track synchronization 数值框 — ref=Audio track synchronization 数值框；Subtitle track synchronization 数值框 — ref=Subtitle track synchronization 数值框；Subtitle speed 数值框 — ref=Subtitle speed 数值框；Subtitle duration factor 数值框 — ref=Subtitle duration factor 数值框；Synchronization 循环箭头图标 — ref=Synchronization 循环箭头图标；Subtitle track synchronization 增大按钮 — ref=Subtitle track synchronization 增大按钮；Subtitle speed 增大按钮 — ref=Subtitle speed 增大按钮\n\n## 下一步\n根据当前截图和上述记录，下一步怎样推进这个探索任务？需要操作时给出动作及必要参数，已有答案时提交结论。\n\n本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "dynamic_prompt": "{\n  \"当前任务\": {\n    \"task\": \"Synchronization 页面内容区/Subtitle speed 数值框 / 参数探索\",\n    \"control\": \"Subtitle speed 数值框\",\n    \"任务\": \"了解「Subtitle speed 数值框」的可指定的候选、取值或输入依据及必要设置方式\",\n    \"探索内容\": \"查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。\\n本任务结算条件：确认字幕速度数值框可接受的范围和增减步进值，并恢复探索前的值。\",\n    \"未答部分\": \"历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：恢复显示为探索前的 1.000 fps；确认数值框的可接受范围及增减步进值。当前显示 0.000 fps 是否属于可接受范围仍未确认。\",\n    \"已确认规则\": [\n      \"用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\"\n    ]\n  },\n  \"后续建议（尚未执行）\": {\n    \"region\": \"Synchronization 页面内容区\",\n    \"control\": \"Subtitle speed 数值框\",\n    \"action\": \"input_text\",\n    \"reason\": \"将当前显示的 0.000 fps 恢复为探索前的 1.000 fps。\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"推进探索任务\",\n    \"范围\": \"Synchronization 页面内容区\",\n    \"本步边界\": \"围绕原问题选择下一动作；必要准备不替换原目标。\"\n  },\n  \"相关控件\": \"- Synchronization 页面内容区 Synchronization 页面内容区\\n  - Audio track synchronization 数值框；target=\\\"Audio track synchronization 数值框\\\"\\n    用途记录：用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。\\n    外观：位于 Audio/Video 分组。\\n  - Subtitle track synchronization 数值框；target=\\\"Subtitle track synchronization 数值框\\\"\\n    用途记录：用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。\\n    外观：位于 Subtitles/Video 分组。\\n  - Subtitle speed 数值框；target=\\\"Subtitle speed 数值框\\\"\\n    用途记录：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。\\n    约束：\\n      速度：\\n        说明：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\\n        名称：速度\\n    外观：位于 Subtitles/Video 分组。\\n  - Subtitle duration factor 数值框；target=\\\"Subtitle duration factor 数值框\\\"\\n    用途记录：用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。；用于设置字幕持续时间因子，界面未显示单位；其范围及效果未验证。本次动作前后截图均显示 2.000，未观察到该值因本次操作而变化。\\n    外观：位于 Subtitles/Video 分组。\\n  - Synchronization 循环箭头图标；target=\\\"Synchronization 循环箭头图标\\\"\\n    用途记录：点击后，图标周围出现边框；本次画面中音轨同步值及其他同步参数的可见值均未变化，也未出现提示或页面切换。该观察尚不能确认图标的具体用途、点击是否生效，或它会影响哪些同步参数。\\n    外观：页面右上方的循环箭头图标控件。\\n  - Subtitle track synchronization 增大按钮；target=\\\"Subtitle track synchronization 增大按钮\\\"\\n    用途记录：点击此按钮用于增大所属的 Subtitle track synchronization 数值框的值；本次仅确认其外观和所属关系，未操作，具体步进值及可接受范围尚未核实。\\n    外观：位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号。\\n  - Subtitle speed 增大按钮；target=\\\"Subtitle speed 增大按钮\\\"\\n    用途记录：用于尝试增大字幕速度。此次点击后数值框获得焦点，但显示值仍为 1.000 fps；尚不能确认按钮是否生效或其增量步进。；位于 Subtitle speed 数值框右侧，用于尝试增大字幕速度。本次点击后，前后截图中的数值均为 1.000 fps；未能确认按钮是否生效或其增量步进。\\n    外观：Subtitle speed 数值框右侧的上方增大按钮。\",\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\nVLC 菜单栏 [VLC 菜单栏]\\n  ├─ Media 菜单 [Media 菜单]\\n    └─ Media 菜单展开面板 [Media 菜单展开面板]\\n      ├─ Open File 菜单项 [Open File 菜单项]\\n        └─ VLC 文件选择对话框 [VLC 文件选择对话框]\\n          ├─ 当前位置选择框 [当前位置选择框]\\n          ├─ 位置侧栏 [位置侧栏]\\n          ├─ 文件列表 [文件列表]\\n          ├─ 文件名输入框 [文件名输入框]\\n          ├─ 文件类型筛选框 [文件类型筛选框]\\n          ├─ Open 按钮 [Open 按钮]\\n            └─ VLC 视频显示区 [VLC 视频显示区（主窗口中用于显示媒体画面或播放器空闲画面的区域。）]\\n          ├─ Cancel 按钮 [Cancel 按钮]\\n          ├─ 对话框关闭按钮 [对话框关闭按钮]\\n      ├─ Open Multiple Files 菜单项 [Open Multiple Files 菜单项]\\n      ├─ Open Directory 菜单项 [Open Directory 菜单项]\\n      ├─ Open Disc 菜单项 [Open Disc 菜单项]\\n      ├─ Open Network Stream 菜单项 [Open Network Stream 菜单项]\\n      ├─ Open Capture Device 菜单项 [Open Capture Device 菜单项]\\n      ├─ Open Location from Clipboard 菜单项 [Open Location from Clipboard 菜单项]\\n      ├─ Open Recent Media 菜单项 [Open Recent Media 菜单项]\\n      ├─ Save Playlist to File 菜单项 [Save Playlist to File 菜单项]\\n      ├─ Convert / Save 菜单项 [Convert / Save 菜单项]\\n      ├─ Stream 菜单项 [Stream 菜单项]\\n      ├─ Quit at the end of playlist 复选框 [Quit at the end of playlist 复选框]\\n      ├─ Quit 菜单项 [Quit 菜单项]\\n  ├─ Playback 菜单 [Playback 菜单]\\n    └─ Playback 菜单展开面板 [Playback 菜单展开面板]\\n      ├─ Title 菜单项 [Title 菜单项]\\n      ├─ Chapter 菜单项 [Chapter 菜单项]\\n      ├─ Program 菜单项 [Program 菜单项]\\n      ├─ Custom Bookmarks 菜单项 [Custom Bookmarks 菜单项]\\n      ├─ Renderer 菜单项 [Renderer 菜单项]\\n      ├─ Speed 菜单项 [Speed 菜单项]\\n      ├─ Jump Forward 菜单项 [Jump Forward 菜单项]\\n      ├─ Jump Backward 菜单项 [Jump Backward 菜单项]\\n      ├─ Jump to Specific Time 菜单项 [Jump to Specific Time 菜单项]\\n      ├─ Play 菜单项 [Play 菜单项]\\n      ├─ Stop 菜单项 [Stop 菜单项]\\n      ├─ Previous 菜单项 [Previous 菜单项]\\n      ├─ Next 菜单项 [Next 菜单项]\\n      ├─ Record 菜单项 [Record 菜单项]\\n  ├─ Audio 菜单 [Audio 菜单]\\n    └─ Audio 菜单展开面板 [Audio 菜单展开面板]\\n      ├─ Audio Track 菜单项 [Audio Track 菜单项]\\n      ├─ Audio Device 菜单项 [Audio Device 菜单项]\\n        └─ Audio Device 子菜单 [Audio Device 子菜单]\\n          ├─ Dummy Output [Dummy Output]\\n      ├─ Stereo Mode 菜单项 [Stereo Mode 菜单项]\\n      ├─ Visualizations 菜单项 [Visualizations 菜单项]\\n      ├─ Increase Volume 菜单项 [Increase Volume 菜单项]\\n      ├─ Decrease Volume 菜单项 [Decrease Volume 菜单项]\\n      ├─ Mute 菜单项 [Mute 菜单项]\\n  ├─ Video 菜单 [Video 菜单]\\n  ├─ Subtitle 菜单 [Subtitle 菜单]\\n  ├─ Tools 菜单 [Tools 菜单]\\n    └─ Tools 菜单展开面板 [Tools 菜单展开面板]\\n      ├─ Effects and Filters 菜单项 [Effects and Filters 菜单项]\\n        └─ Adjustments and Effects 设置窗口 [Adjustments and Effects 设置窗口]\\n          ├─ Audio Effects 标签页 [Audio Effects 标签页]\\n          ├─ Video Effects 标签页 [Video Effects 标签页]\\n          ├─ Synchronization 标签页 [Synchronization 标签页]\\n            └─ Synchronization 页面内容区 [Synchronization 页面内容区]（本步关注区块）\\n              ├─ Audio track synchronization 数值框 [Audio track synchronization 数值框]\\n              ├─ Subtitle track synchronization 数值框 [Subtitle track synchronization 数值框]\\n              ├─ Subtitle speed 数值框 [Subtitle speed 数值框]\\n              ├─ Subtitle duration factor 数值框 [Subtitle duration factor 数值框]\\n              ├─ Synchronization 循环箭头图标 [Synchronization 循环箭头图标]\\n              ├─ Subtitle track synchronization 增大按钮 [Subtitle track synchronization 增大按钮]\\n              ├─ Subtitle speed 增大按钮 [Subtitle speed 增大按钮]\\n          ├─ v4l2 controls 标签页 [v4l2 controls 标签页]\\n          ├─ Equalizer 子标签 [Equalizer 子标签]\\n          ├─ Compressor 子标签 [Compressor 子标签]\\n          ├─ Spatializer 子标签 [Spatializer 子标签]\\n          ├─ Stereo Widener 子标签 [Stereo Widener 子标签]\\n          ├─ Advanced 子标签 [Advanced 子标签]\\n          ├─ Equalizer Enable 复选框 [Equalizer Enable 复选框]\\n          ├─ Equalizer Preset 下拉框 [Equalizer Preset 下拉框]\\n          ├─ Save 按钮 [Save 按钮]\\n          ├─ Close 按钮 [Close 按钮]\\n          ├─ Essential 子标签 [Essential 子标签]\\n          ├─ Crop 子标签 [Crop 子标签]\\n          ├─ Colors 子标签 [Colors 子标签]\\n          ├─ Geometry 子标签 [Geometry 子标签]\\n          ├─ Overlay 子标签 [Overlay 子标签]\\n          ├─ Video Effects Advanced 子标签 [Video Effects Advanced 子标签]\\n          ├─ Image adjust 复选框 [Image adjust 复选框]\\n          ├─ Hue 滑块 [Hue 滑块]\\n          ├─ Brightness 滑块 [Brightness 滑块]\\n          ├─ Brightness Threshold 复选框 [Brightness Threshold 复选框]\\n          ├─ Contrast 滑块 [Contrast 滑块]\\n          ├─ Saturation 滑块 [Saturation 滑块]\\n          ├─ Gamma 滑块 [Gamma 滑块]\\n          ├─ Sharpen 复选框 [Sharpen 复选框]\\n          ├─ Sigma 滑块 [Sigma 滑块]\\n          ├─ Banding removal 复选框 [Banding removal 复选框]\\n          ├─ Radius 滑块 [Radius 滑块]\\n          ├─ Film Grain 复选框 [Film Grain 复选框]\\n          ├─ Variance 滑块 [Variance 滑块]\\n      ├─ Track Synchronization 菜单项 [Track Synchronization 菜单项]\\n        └─ [引用：Adjustments and Effects 设置窗口 Adjustments and Effects 设置窗口]\\n      ├─ Media Information 菜单项 [Media Information 菜单项]\\n      ├─ Codec Information 菜单项 [Codec Information 菜单项]\\n      ├─ VLM Configuration 菜单项 [VLM Configuration 菜单项]\\n      ├─ Program Guide 菜单项 [Program Guide 菜单项]\\n      ├─ Messages 菜单项 [Messages 菜单项]\\n      ├─ Plugins and extensions 菜单项 [Plugins and extensions 菜单项]\\n      ├─ Customize Interface 菜单项 [Customize Interface 菜单项]\\n      ├─ Preferences 菜单项 [Preferences 菜单项]\\n  ├─ View 菜单 [View 菜单]\\n  ├─ Help 菜单 [Help 菜单]\\nVLC 播放控制栏 [VLC 播放控制栏]\\n  ├─ 媒体进度条 [媒体进度条]\\n  ├─ 播放/暂停按钮 [播放/暂停按钮]\\n  ├─ 上一项按钮 [上一项按钮]\\n  ├─ 停止按钮 [停止按钮]\\n  ├─ 下一项按钮 [下一项按钮]\\n  ├─ 全屏按钮 [全屏按钮]\\n  ├─ 效果与调整按钮 [效果与调整按钮]\\n  ├─ 播放列表按钮 [播放列表按钮]\\n  ├─ 循环播放按钮 [循环播放按钮]\\n  ├─ 随机播放按钮 [随机播放按钮]\\n  ├─ 音量滑块 [音量滑块]\\nVLC 视频显示区 [VLC 视频显示区（VLC 主窗口中显示媒体画面或待播放状态标志的区域。）]\\nVideo 菜单展开面板 [Video 菜单展开面板]\\n  ├─ Video Track 菜单项 [Video Track 菜单项]\\n  ├─ Fullscreen 菜单项 [Fullscreen 菜单项]\\n  ├─ Always Fit Window 菜单项 [Always Fit Window 菜单项]\\n  ├─ Set as Wallpaper 菜单项 [Set as Wallpaper 菜单项]\\n  ├─ Zoom 菜单项 [Zoom 菜单项]\\n  ├─ Aspect Ratio 菜单项 [Aspect Ratio 菜单项]\\n  ├─ Crop 菜单项 [Crop 菜单项]\\n  ├─ Deinterlace 菜单项 [Deinterlace 菜单项]\\n  ├─ Deinterlace mode 菜单项 [Deinterlace mode 菜单项]\\n  ├─ Take Snapshot 菜单项 [Take Snapshot 菜单项]\\nSubtitle 菜单展开面板 [Subtitle 菜单展开面板]\\n  ├─ Add Subtitle File 菜单项 [Add Subtitle File 菜单项]\\n  ├─ Sub Track 菜单项 [Sub Track 菜单项]\\n原探索目标：Synchronization 页面内容区 / Subtitle speed 数值框\\n上次已登记前景：Synchronization 页面内容区\\na0067：click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。\\na0068：click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。\\na0069：click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。\\na0070：input_text「Subtitle speed 数值框」；输入文本：2.000；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。\\na0071：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。\\na0072：input_text「Subtitle speed 数值框」；输入文本：1000.000；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。\\na0073：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。\\na0074：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：UP\\n  target：当前工作；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。\\na0075：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：DOWN\\n  target：当前工作；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。\\na0076：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：DOWN\\n  target：Synchronization 页面内容区；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。\\na0077：input_text「Subtitle speed 数值框」；输入文本：0.800；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。\\na0078：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：UP\\n  target：当前工作；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。\\na0079：input_text「Subtitle speed 数值框」；输入文本：0.000；观察：在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。；该次更新未确认事项：Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。；完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。\",\n  \"当前任务相关功能\": [\n    {\n      \"功能\": \"设置同步参数\",\n      \"引用\": \"Synchronization 页面内容区/设置同步参数\",\n      \"用途\": \"根据界面标签设置音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子。当前知识支持设置这些参数，但实际播放效果尚未验证。\",\n      \"支持对象\": [\n        \"Audio track synchronization 数值框\",\n        \"Subtitle track synchronization 数值框\",\n        \"Subtitle speed 数值框\",\n        \"Subtitle duration factor 数值框\"\n      ],\n      \"参数知识引用\": {\n        \"Audio track synchronization 数值框/同步值\": {\n          \"description\": \"用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。 参数规则：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n          \"name\": \"同步值\",\n          \"source\": {\n            \"basis\": \"object_knowledge\",\n            \"source_call\": \"0207\",\n            \"observation\": \"update:0207\"\n          },\n          \"sources\": [\n            {\n              \"basis\": \"object_knowledge\",\n              \"source_call\": \"0176\",\n              \"observation\": \"update:0176\"\n            },\n            {\n              \"basis\": \"object_knowledge\",\n              \"source_call\": \"0188\",\n              \"observation\": \"update:0188\"\n            },\n            {\n              \"basis\": \"object_knowledge\",\n              \"source_call\": \"0194\",\n              \"observation\": \"update:0194\"\n            },\n            {\n              \"basis\": \"object_knowledge\",\n              \"source_call\": \"0196\",\n              \"observation\": \"update:0196\"\n            },\n            {\n              \"basis\": \"object_knowledge\",\n              \"source_call\": \"0200\",\n              \"observation\": \"update:0200\"\n            },\n            {\n              \"region\": \"Synchronization 页面内容区\",\n              \"basis\": \"discovery\",\n              \"source_call\": \"0204\",\n              \"observation\": \"update:0204\"\n            },\n            {\n              \"basis\": \"object_knowledge\",\n              \"source_call\": \"0207\",\n              \"observation\": \"update:0207\"\n            }\n          ],\n          \"observations\": [\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"basis\": \"object_knowledge\",\n                \"source_call\": \"0176\",\n                \"observation\": \"update:0176\"\n              }\n            },\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"basis\": \"object_knowledge\",\n                \"source_call\": \"0188\",\n                \"observation\": \"update:0188\"\n              }\n            },\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"basis\": \"object_knowledge\",\n                \"source_call\": \"0194\",\n                \"observation\": \"update:0194\"\n              }\n            },\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"basis\": \"object_knowledge\",\n                \"source_call\": \"0196\",\n                \"observation\": \"update:0196\"\n              }\n            },\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"basis\": \"object_knowledge\",\n                \"source_call\": \"0200\",\n                \"observation\": \"update:0200\"\n              }\n            },\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"region\": \"Synchronization 页面内容区\",\n                \"basis\": \"discovery\",\n                \"source_call\": \"0204\",\n                \"observation\": \"update:0204\"\n              }\n            },\n            {\n              \"description\": \"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\n              \"source\": {\n                \"basis\": \"object_knowledge\",\n                \"source_call\": \"0207\",\n                \"observation\": \"update:0207\"\n              }\n            }\n          ],\n          \"support\": \"Audio track synchronization 数值框\",\n          \"region\": \"Synchronization 页面内容区\",\n          \"control\": \"Audio track synchronization 数值框\"\n        },\n        \"Subtitle track synchronization 数值框/同步值\": {\n          \"description\": \"用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。\",\n          \"name\": \"同步值\",\n          \"source\": {\n            \"region\": \"Synchronization 页面内容区\",\n            \"basis\": \"discovery\",\n            \"source_call\": \"0152\",\n            \"observation\": \"update:0152\"\n          },\n          \"sources\": [\n            {\n              \"region\": \"Synchronization 页面内容区\",\n              \"basis\": \"discovery\",\n              \"source_call\": \"0152\",\n              \"observation\": \"update:0152\"\n            }\n          ],\n          \"observations\": [\n            {\n              \"description\": \"填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。\",\n              \"source\": {\n                \"region\": \"Synchronization 页面内容区\",\n                \"basis\": \"discovery\",\n                \"source_call\": \"0152\",\n                \"observation\": \"update:0152\"\n              }\n            }\n          ],\n          \"support\": \"Subtitle track synchronization 数值框\",\n          \"region\": \"Synchronization 页面内容区\",\n          \"control\": \"Subtitle track synchronization 数值框\"\n        },\n        \"Subtitle speed 数值框/速度\": {\n          \"description\": \"用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\",\n          \"name\": \"速度\",\n          \"source\": {\n            \"region\": \"Synchronization 页面内容区\",\n            \"basis\": \"discovery\",\n            \"source_call\": \"0252\",\n            \"observation\": \"update:0252\"\n          },\n          \"sources\": [\n            {\n              \"region\": \"Synchronization 页面内容区\",\n              \"basis\": \"discovery\",\n              \"source_call\": \"0252\",\n              \"observation\": \"update:0252\"\n            }\n          ],\n          \"observations\": [\n            {\n              \"description\": \"填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\",\n              \"source\": {\n                \"region\": \"Synchronization 页面内容区\",\n                \"basis\": \"discovery\",\n                \"source_call\": \"0252\",\n                \"observation\": \"update:0252\"\n              }\n            }\n          ],\n          \"support\": \"Subtitle speed 数值框\",\n          \"region\": \"Synchronization 页面内容区\",\n          \"control\": \"Subtitle speed 数值框\"\n        },\n        \"Subtitle duration factor 数值框/持续时间因子\": {\n          \"description\": \"用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。\",\n          \"name\": \"持续时间因子\",\n          \"source\": {\n            \"region\": \"Synchronization 页面内容区\",\n            \"basis\": \"discovery\",\n            \"source_call\": \"0152\",\n            \"observation\": \"update:0152\"\n          },\n          \"sources\": [\n            {\n              \"region\": \"Synchronization 页面内容区\",\n              \"basis\": \"discovery\",\n              \"source_call\": \"0152\",\n              \"observation\": \"update:0152\"\n            }\n          ],\n          \"observations\": [\n            {\n              \"description\": \"填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。\",\n              \"source\": {\n                \"region\": \"Synchronization 页面内容区\",\n                \"basis\": \"discovery\",\n                \"source_call\": \"0152\",\n                \"observation\": \"update:0152\"\n              }\n            }\n          ],\n          \"support\": \"Subtitle duration factor 数值框\",\n          \"region\": \"Synchronization 页面内容区\",\n          \"control\": \"Subtitle duration factor 数值框\"\n        }\n      }\n    }\n  ],\n  \"目标应用\": \"本次要探索的应用：vlc\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"可补充知识（仅none/complete）\": {\n    \"原任务所属区块\": \"Synchronization 页面内容区\",\n    \"本轮可更新控件引用\": [\n      \"Audio track synchronization 数值框 — ref=Audio track synchronization 数值框\",\n      \"Subtitle track synchronization 数值框 — ref=Subtitle track synchronization 数值框\",\n      \"Subtitle speed 数值框 — ref=Subtitle speed 数值框\",\n      \"Subtitle duration factor 数值框 — ref=Subtitle duration factor 数值框\",\n      \"Synchronization 循环箭头图标 — ref=Synchronization 循环箭头图标\",\n      \"Subtitle track synchronization 增大按钮 — ref=Subtitle track synchronization 增大按钮\",\n      \"Subtitle speed 增大按钮 — ref=Subtitle speed 增大按钮\"\n    ]\n  }\n}\n\n本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。",
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 vlc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "平台/遍历环境只读.prompt",
+      "text": "操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n按本轮范围及当前证据选择操作。正常增删改已获允许时，可为原问题执行必要操作；遇到具体范围冲突且无允许替代时用 none，reason 说明冲突及重新考虑条件。不得用“可能还会出现确认框”把受限制操作当成只读查看；位置未知本身不是禁止依据。"
+    },
+    {
+      "path": "调用/选择下一步.prompt",
+      "text": "# 本步任务\n推进给定的探索问题。对照完成条件和已有证据，已有答案就提交结论；仍有未知时，选择能补充信息的一步操作。需要准备时先建立条件，继续围绕原问题判断。\n\n所提动作尚未执行。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.common",
+      "text": "区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.definition",
+      "text": "遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.exception_values",
+      "text": "exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.recovery_handoff",
+      "text": "recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.references",
+      "text": "引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.action_availability",
+      "text": "当前可操作的对象应在当前界面中可见、可用，并且没有被其他界面遮挡。使用按键或返回时，同时考虑焦点所在位置。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_base",
+      "text": "知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function",
+      "text": "功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.application_exception",
+      "text": "先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。\n\n正例：已进入另一应用，只报告 external_app 及当前界面说明。\n反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。"
+    },
+    {
+      "path": "输出格式/字段组-region.application_exception",
+      "text": "本节字段格式：\n\n至少符合以下一种格式。\n\n### 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n### 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `recovery_handoff` | 必填 | 文字 |"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.proposal",
+      "text": "# 提出一步操作\n根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。\n- target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。\n- x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。\n- text、end_x、end_y：按下方当前平台动作表填写。\n\n正例：点击当前图中的搜索按钮，reason 写“展开搜索输入框”。"
+    },
+    {
+      "path": "平台/桌面执行.prompt/片段-动作合同",
+      "text": "### 本轮平台：OSWorld Linux 桌面\n\n\n| action | 需要填写的字段 | 操作含义 |\n|---|---|---|\n| click、double_click、long_press、right_click、hover | target、reason、x、y、exception、recovery_handoff | 在(x,y)点击、双击、长按、右击或悬停；hover仅移动指针。 |\n| input_text | target、reason、x、y、text、exception、recovery_handoff | 在(x,y)对应输入框全选并替换为text（可打印ASCII），空字符串清空。无需另派聚焦验证或等待屏幕键盘。text_delivered=false表示文字未送达，结果结合回执与后图判断。 |\n| drag | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 从(x,y)按住拖动至(end_x,end_y)。 |\n| scroll | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 在(x,y)发送滚轮，end_x/end_y编码方向与幅度，不是拖动终点，也不要求落在同一内容区。查看下方时end_x=x、end_y<y；查看上方时end_y>y。reason说明希望查看哪侧，无变化不自动表示已到底。 |\n| key_press | reason、text、exception、recovery_handoff | text为一个键名，例如ENTER、ESC、TAB、BACKSPACE、F11、LEFT。 |\n| hotkey | reason、text、exception、recovery_handoff | text用+连接键名，例如CTRL+SHIFT+P；作用于当前焦点，不填坐标。 |\n| back | reason、exception、recovery_handoff | 发送Esc，仅用于有依据的取消或关闭菜单/弹层；页面返回优先使用可见返回按钮，不把Esc当作页面后退或Alt+Left。 |\n| wait | reason、exception、recovery_handoff | 等待新观察；不表示任务完成。 |\n\n键名可使用字母数字、F1–F24、方向键、HOME、END、PAGEUP、PAGEDOWN、INSERT、DELETE、SPACE 及 CTRL、ALT、SHIFT、SUPER；不输入命令或代码。\n滚动示例：桌面从 (700,550) 编码到 (700,250) 表示查看下方内容；该约定不适用于 drag 或 Android 滑动。"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.complete",
+      "text": "# 原问题已有答案：complete\n对照原问题和完成条件，reason 写明现有证据如何回答了问题，并保留仍影响结论的限制。\n\n正例：原问题是“这个入口打开什么”，已有观察显示它打开导出面板，可以据此完成入口问题；面板内尚未了解的设置属于后续问题。"
+    },
+    {
+      "path": "输出格式/字段组-action.complete",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"complete\" |\n| `reason` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.none",
+      "text": "# 本步不操作：none\nreason 说明原问题尚缺什么信息，以及本步为何没有可推进的动作。\n\n正例：需要选择文件才能继续，当前没有可用文件；说明这个缺口，保留原问题。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.retry_when",
+      "text": "retry_when：确有障碍需要暂挂时，写可判断的恢复条件。\n正例：“已有可供选择的文件后继续。”"
+    },
+    {
+      "path": "输出格式/字段组-action.none",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"none\" |\n| `reason` | 必填 | 文字；不能为空 |\n| `retry_when` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "输出格式/记录更新分支-complete-none",
+      "text": "# 提交本次新增认识\n以下记录更新只用于 action 为 complete 或 none 的回复；有新认识或修订时填写。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_revision",
+      "text": "# 更新控件用法：controls\nref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_description",
+      "text": "knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_index",
+      "text": "knowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_constraints",
+      "text": "knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}"
+    },
+    {
+      "path": "输出格式/字段组-control.knowledge_revision",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `controls` | 按需 | 列表 |\n\n### controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"Audio track synchronization 数值框\"、\"Subtitle track synchronization 数值框\"、\"Subtitle speed 数值框\"、\"Subtitle duration factor 数值框\"、\"Synchronization 循环箭头图标\"、\"Subtitle track synchronization 增大按钮\"、\"Subtitle speed 增大按钮\" |\n| `knowledge` | 必填 | 列表；至少 1 项 |\n\n### controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.knowledge_edit",
+      "text": "# 更新区块用法：regions\nref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.local_knowledge",
+      "text": "local_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。"
+    },
+    {
+      "path": "输出格式/字段组-region.knowledge_edit",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 按需 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"Synchronization 页面内容区\" |\n| `local_knowledge` | 必填 | 对象 |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_updates",
+      "text": "# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_constraints",
+      "text": "功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 Help 菜单/搜索词 时，填写 [\"Help 菜单/搜索词\"]。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_new_constraints",
+      "text": "本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件名称/参数名”加入功能的 constraints。"
+    },
+    {
+      "path": "输出格式/字段组-region.function_updates",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"Synchronization 页面内容区\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。"
+    }
+  ],
+  "response_schema": {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "click"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "double_click"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "long_press"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "input_text"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "text",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "scroll"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "end_x",
+          "end_y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "back"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "wait"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "key_press"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "text",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "hotkey"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "text",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "hover"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "right_click"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "drag"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "end_x",
+          "end_y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retry_when": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          },
+          "controls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "c0117",
+                    "c0118",
+                    "c0119",
+                    "c0120",
+                    "c0121",
+                    "c0122",
+                    "c0123"
+                  ],
+                  "description": "控件树中的控件ID，例如c0008。"
+                },
+                "knowledge": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "修订给定已有知识时引用其序号；新增省略。"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                      },
+                      "constraints": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "description"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "ref",
+                "knowledge"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "r0014"
+                  ]
+                },
+                "local_knowledge": {
+                  "type": "object",
+                  "properties": {
+                    "add": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "update": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "text": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "delete": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "ref",
+                "local_knowledge"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "function_updates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "region": {
+                  "type": "string",
+                  "minLength": 1,
+                  "enum": [
+                    "r0014"
+                  ]
+                },
+                "add": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "supports": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "constraints": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "uniqueItems": true
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "description",
+                      "supports"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "update": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ref": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "changes": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "description": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "supports": {
+                            "type": "array",
+                            "minItems": 1,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "constraints": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "uniqueItems": true
+                          }
+                        },
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "ref",
+                      "changes"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "remove": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ref": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "replace_with": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "ref",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "region"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "complete"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "按需补充判断理由；不重复动作结果或已有知识。"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          },
+          "controls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "c0117",
+                    "c0118",
+                    "c0119",
+                    "c0120",
+                    "c0121",
+                    "c0122",
+                    "c0123"
+                  ],
+                  "description": "控件树中的控件ID，例如c0008。"
+                },
+                "knowledge": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "修订给定已有知识时引用其序号；新增省略。"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                      },
+                      "constraints": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "description"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "ref",
+                "knowledge"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "r0014"
+                  ]
+                },
+                "local_knowledge": {
+                  "type": "object",
+                  "properties": {
+                    "add": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "update": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "text": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "delete": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "ref",
+                "local_knowledge"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "function_updates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "region": {
+                  "type": "string",
+                  "minLength": 1,
+                  "enum": [
+                    "r0014"
+                  ]
+                },
+                "add": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "supports": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "constraints": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "uniqueItems": true
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "description",
+                      "supports"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "update": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ref": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "changes": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "description": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "supports": {
+                            "type": "array",
+                            "minItems": 1,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "constraints": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "uniqueItems": true
+                          }
+                        },
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "ref",
+                      "changes"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "remove": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ref": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "replace_with": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "ref",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "region"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "exception": {
+            "type": "string",
+            "enum": [
+              "blocking_popup",
+              "system_error",
+              "unexpected_exit",
+              "external_app",
+              "unclassified"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      }
+    ],
+    "type": "object"
+  },
+  "response_schema_path": "输出格式/选择探索入口.schema",
+  "image_refs": [
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/session-03/round-0016/current.png"
+  ],
+  "progress": {
+    "registered_controls": 7,
+    "controls_with_delivery": 4,
+    "controls_with_observed_effect": 0,
+    "controls_with_unresolved_attempts": 0,
+    "controls_without_record": 3,
+    "scope": "registered_region_controls"
+  },
+  "control_progress": {
+    "c0117": {
+      "attempts": [
+        "a0042",
+        "a0043",
+        "a0044",
+        "a0045",
+        "a0046",
+        "a0047",
+        "a0048",
+        "a0049",
+        "a0050",
+        "a0051",
+        "a0052",
+        "a0055",
+        "a0059",
+        "a0060",
+        "a0062",
+        "a0064",
+        "a0065"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0118": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0119": {
+      "attempts": [
+        "a0067",
+        "a0070",
+        "a0071",
+        "a0072",
+        "a0073",
+        "a0077",
+        "a0079"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0120": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0121": {
+      "attempts": [
+        "a0066"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0122": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0123": {
+      "attempts": [
+        "a0068",
+        "a0069"
+      ],
+      "summary": "有执行回执"
+    }
+  },
+  "backend_candidates": [
+    {
+      "id": "c0117",
+      "name": "Audio track synchronization 数值框",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0117.png",
+      "appearances": [
+        {
+          "description": "位于 Audio/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 284,
+            "right": 427,
+            "bottom": 306
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0117.png",
+          "evidence": {
+            "source_field": "/controls/1",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png",
+      "icon_description": "位于 Audio/Video 分组。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 320,
+        "top": 284,
+        "right": 427,
+        "bottom": 306
+      },
+      "target_observation": {
+        "观察来源": "discovery:0220",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。"
+    },
+    {
+      "id": "c0118",
+      "name": "Subtitle track synchronization 数值框",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0118.png",
+      "appearances": [
+        {
+          "description": "位于 Subtitles/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 419,
+            "right": 427,
+            "bottom": 441
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0118.png",
+          "evidence": {
+            "source_field": "/controls/2",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png",
+      "icon_description": "位于 Subtitles/Video 分组。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 320,
+        "top": 419,
+        "right": 427,
+        "bottom": 441
+      },
+      "target_observation": {
+        "观察来源": "discovery:0220",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。"
+    },
+    {
+      "id": "c0119",
+      "name": "Subtitle speed 数值框",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0119.png",
+      "appearances": [
+        {
+          "description": "位于 Subtitles/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 492,
+            "right": 541,
+            "bottom": 514
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0119.png",
+          "evidence": {
+            "source_field": "/controls/3",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png",
+      "icon_description": "位于 Subtitles/Video 分组。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 320,
+        "top": 492,
+        "right": 541,
+        "bottom": 514
+      },
+      "target_observation": {
+        "观察来源": "update:0252",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。",
+      "constraints": {
+        "速度": {
+          "description": "用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。",
+          "name": "速度"
+        }
+      }
+    },
+    {
+      "id": "c0120",
+      "name": "Subtitle duration factor 数值框",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0120.png",
+      "appearances": [
+        {
+          "description": "位于 Subtitles/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 522,
+            "right": 541,
+            "bottom": 544
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0120.png",
+          "evidence": {
+            "source_field": "/controls/4",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png",
+      "icon_description": "位于 Subtitles/Video 分组。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 320,
+        "top": 522,
+        "right": 541,
+        "bottom": 544
+      },
+      "target_observation": {
+        "观察来源": "update:0226",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。；用于设置字幕持续时间因子，界面未显示单位；其范围及效果未验证。本次动作前后截图均显示 2.000，未观察到该值因本次操作而变化。"
+    },
+    {
+      "id": "c0121",
+      "name": "Synchronization 循环箭头图标",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0121.png",
+      "appearances": [
+        {
+          "description": "页面右上方的循环箭头图标控件。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 533,
+            "top": 207,
+            "right": 548,
+            "bottom": 223
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0121.png",
+          "evidence": {
+            "source_field": "/controls/5",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png",
+      "icon_description": "页面右上方的循环箭头图标控件。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 533,
+        "top": 207,
+        "right": 548,
+        "bottom": 223
+      },
+      "target_observation": {
+        "观察来源": "discovery:0220",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：点击后，图标周围出现边框；本次画面中音轨同步值及其他同步参数的可见值均未变化，也未出现提示或页面切换。该观察尚不能确认图标的具体用途、点击是否生效，或它会影响哪些同步参数。"
+    },
+    {
+      "id": "c0122",
+      "name": "Subtitle track synchronization 增大按钮",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/c0122.png",
+      "appearances": [
+        {
+          "description": "位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 412,
+            "top": 456,
+            "right": 427,
+            "bottom": 479
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/c0122.png",
+          "evidence": {
+            "source_field": "/controls/2",
+            "region": "r0014",
+            "source_call": "0220",
+            "observation": "discovery:0220"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/session-03/round-0002/current.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/session-03/round-0002/current.png",
+      "icon_description": "位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 412,
+        "top": 456,
+        "right": 427,
+        "bottom": 479
+      },
+      "target_observation": {
+        "观察来源": "discovery:0220",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：点击此按钮用于增大所属的 Subtitle track synchronization 数值框的值；本次仅确认其外观和所属关系，未操作，具体步进值及可接受范围尚未核实。"
+    },
+    {
+      "id": "c0123",
+      "name": "Subtitle speed 增大按钮",
+      "region_ref": "r0014",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0067-0222-b2b4835bb9c8/regions/r0014/images/0222/c0123.png",
+      "appearances": [
+        {
+          "description": "Subtitle speed 数值框右侧的上方增大按钮。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 525,
+            "top": 529,
+            "right": 539,
+            "bottom": 551
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0067-0222-b2b4835bb9c8/regions/r0014/images/0222/c0123.png",
+          "evidence": {
+            "source_field": "/controls/1",
+            "region": "r0014",
+            "source_call": "0222",
+            "observation": "update:0222"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0067/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0067/after.png",
+      "icon_description": "Subtitle speed 数值框右侧的上方增大按钮。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+      "bbox": {
+        "left": 525,
+        "top": 529,
+        "right": 539,
+        "bottom": 551
+      },
+      "target_observation": {
+        "观察来源": "update:0226",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "Synchronization 页面内容区",
+      "knowledge": "用途记录：用于尝试增大字幕速度。此次点击后数值框获得焦点，但显示值仍为 1.000 fps；尚不能确认按钮是否生效或其增量步进。；位于 Subtitle speed 数值框右侧，用于尝试增大字幕速度。本次点击后，前后截图中的数值均为 1.000 fps；未能确认按钮是否生效或其增量步进。"
+    }
+  ],
+  "source": {
+    "observation": "update:0252",
+    "region": "r0014",
+    "working_region": "r0014",
+    "task_name": "c0119 / 参数探索",
+    "task_region": "r0014",
+    "task_type": "parameter",
+    "task_control": "c0119",
+    "completion_region": "r0014",
+    "snapshot": "knowledge_snapshots/a0079-0252-36fe97f24a07"
+  },
+  "pipeline_step": "action",
+  "preparation_allowed": true,
+  "allow_scroll": true,
+  "allow_input": true,
+  "region_target": "Synchronization 页面内容区",
+  "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/discovery-0220-bd2f60111c89/regions/r0014/images/0220/region.png",
+  "region_image_assessment": {},
+  "context_evidence": {
+    "task": {
+      "region": "r0014",
+      "name": "c0119 / 参数探索"
+    },
+    "recent_action": {
+      "region": "r0014",
+      "action": "a0079"
+    },
+    "resolved_blockers": [],
+    "definition": {
+      "control": "c0119",
+      "reason": null,
+      "task_type": "parameter",
+      "equivalent_to": null
+    },
+    "known_findings": [
+      {
+        "region": "r0014",
+        "task": "c0119 / 参数探索",
+        "finding": "速度",
+        "displayed": {
+          "description": "用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。"
+        },
+        "source": {
+          "region": "r0014",
+          "basis": "discovery",
+          "source_call": "0252",
+          "observation": "update:0252"
+        }
+      }
+    ]
+  },
+  "task_progress": {
+    "inventory_complete": false,
+    "complete": false,
+    "pending": [
+      "c0119 / 参数探索",
+      "c0120 / 参数探索",
+      "功能探索"
+    ],
+    "blocked": [
+      "参数探索",
+      "c0118 / 参数探索"
+    ],
+    "done": [],
+    "record_only": []
+  },
+  "work_context": {
+    "kind": "action",
+    "region": "r0014",
+    "task": {
+      "region": "r0014",
+      "name": "c0119 / 参数探索"
+    },
+    "reason": "围绕原问题选择下一动作；必要准备不替换原目标。"
+  },
+  "observation_handoff": {
+    "来源": "update:0252",
+    "交接说明": "在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。",
+    "未确认事项": [
+      "Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。",
+      "完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。"
+    ]
+  },
+  "context_scope": {
+    "region": "r0014",
+    "kind": "action",
+    "tasks": [
+      {
+        "region": "r0014",
+        "name": "c0119 / 参数探索"
+      }
+    ],
+    "regions": [
+      "r0014"
+    ],
+    "controls": {
+      "r0014": [
+        "c0119"
+      ]
+    },
+    "selection": {
+      "role": "action_selection",
+      "mode": null,
+      "work_kind": "action",
+      "source": {
+        "observation": "update:0252",
+        "region": "r0014",
+        "working_region": "r0014",
+        "task_name": "c0119 / 参数探索",
+        "task_region": "r0014",
+        "task_type": "parameter",
+        "task_control": "c0119",
+        "completion_region": "r0014",
+        "snapshot": "knowledge_snapshots/a0079-0252-36fe97f24a07"
+      },
+      "task_types": [
+        "parameter"
+      ],
+      "preparatory_action": false
+    }
+  },
+  "page_context": {
+    "current_tree": [
+      {
+        "ref": "r0014",
+        "name": "Synchronization 页面内容区",
+        "controls": [
+          {
+            "ref": "c0119",
+            "name": "Subtitle speed 数值框",
+            "evidence": "current_observation",
+            "knowledge": {
+              "knowledge": "用途记录：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。",
+              "constraints": {
+                "速度": {
+                  "description": "用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。",
+                  "name": "速度"
+                }
+              }
+            }
+          }
+        ],
+        "children": [],
+        "knowledge": {}
+      }
+    ],
+    "background_regions": [],
+    "names": {
+      "r0001": "VLC 菜单栏",
+      "r0002": "VLC 视频显示区",
+      "r0003": "VLC 播放控制栏",
+      "r0004": "Media 菜单展开面板",
+      "r0005": "Playback 菜单展开面板",
+      "r0006": "VLC 文件选择对话框",
+      "r0007": "Audio 菜单展开面板",
+      "r0008": "Audio Device 子菜单",
+      "r0009": "VLC 视频显示区",
+      "r0010": "Video 菜单展开面板",
+      "r0011": "Subtitle 菜单展开面板",
+      "r0012": "Tools 菜单展开面板",
+      "r0013": "Adjustments and Effects 设置窗口",
+      "r0014": "Synchronization 页面内容区",
+      "c0001": "Media 菜单",
+      "c0002": "Playback 菜单",
+      "c0003": "Audio 菜单",
+      "c0004": "Video 菜单",
+      "c0005": "Subtitle 菜单",
+      "c0006": "Tools 菜单",
+      "c0007": "View 菜单",
+      "c0008": "Help 菜单",
+      "c0009": "媒体进度条",
+      "c0010": "播放/暂停按钮",
+      "c0011": "上一项按钮",
+      "c0012": "停止按钮",
+      "c0013": "下一项按钮",
+      "c0014": "全屏按钮",
+      "c0015": "效果与调整按钮",
+      "c0016": "播放列表按钮",
+      "c0017": "循环播放按钮",
+      "c0018": "随机播放按钮",
+      "c0019": "音量滑块",
+      "c0020": "Open File 菜单项",
+      "c0021": "Open Multiple Files 菜单项",
+      "c0022": "Open Directory 菜单项",
+      "c0023": "Open Disc 菜单项",
+      "c0024": "Open Network Stream 菜单项",
+      "c0025": "Open Capture Device 菜单项",
+      "c0026": "Open Location from Clipboard 菜单项",
+      "c0027": "Open Recent Media 菜单项",
+      "c0028": "Save Playlist to File 菜单项",
+      "c0029": "Convert / Save 菜单项",
+      "c0030": "Stream 菜单项",
+      "c0031": "Quit at the end of playlist 复选框",
+      "c0032": "Quit 菜单项",
+      "c0033": "Title 菜单项",
+      "c0034": "Chapter 菜单项",
+      "c0035": "Program 菜单项",
+      "c0036": "Custom Bookmarks 菜单项",
+      "c0037": "Renderer 菜单项",
+      "c0038": "Speed 菜单项",
+      "c0039": "Jump Forward 菜单项",
+      "c0040": "Jump Backward 菜单项",
+      "c0041": "Jump to Specific Time 菜单项",
+      "c0042": "Play 菜单项",
+      "c0043": "Stop 菜单项",
+      "c0044": "Previous 菜单项",
+      "c0045": "Next 菜单项",
+      "c0046": "Record 菜单项",
+      "c0047": "当前位置选择框",
+      "c0048": "位置侧栏",
+      "c0049": "文件列表",
+      "c0050": "文件名输入框",
+      "c0051": "文件类型筛选框",
+      "c0052": "Open 按钮",
+      "c0053": "Cancel 按钮",
+      "c0054": "对话框关闭按钮",
+      "c0055": "Audio Track 菜单项",
+      "c0056": "Audio Device 菜单项",
+      "c0057": "Stereo Mode 菜单项",
+      "c0058": "Visualizations 菜单项",
+      "c0059": "Increase Volume 菜单项",
+      "c0060": "Decrease Volume 菜单项",
+      "c0061": "Mute 菜单项",
+      "c0062": "Dummy Output",
+      "c0063": "Video Track 菜单项",
+      "c0064": "Fullscreen 菜单项",
+      "c0065": "Always Fit Window 菜单项",
+      "c0066": "Set as Wallpaper 菜单项",
+      "c0067": "Zoom 菜单项",
+      "c0068": "Aspect Ratio 菜单项",
+      "c0069": "Crop 菜单项",
+      "c0070": "Deinterlace 菜单项",
+      "c0071": "Deinterlace mode 菜单项",
+      "c0072": "Take Snapshot 菜单项",
+      "c0073": "Add Subtitle File 菜单项",
+      "c0074": "Sub Track 菜单项",
+      "c0075": "Effects and Filters 菜单项",
+      "c0076": "Track Synchronization 菜单项",
+      "c0077": "Media Information 菜单项",
+      "c0078": "Codec Information 菜单项",
+      "c0079": "VLM Configuration 菜单项",
+      "c0080": "Program Guide 菜单项",
+      "c0081": "Messages 菜单项",
+      "c0082": "Plugins and extensions 菜单项",
+      "c0083": "Customize Interface 菜单项",
+      "c0084": "Preferences 菜单项",
+      "c0085": "Audio Effects 标签页",
+      "c0086": "Video Effects 标签页",
+      "c0087": "Synchronization 标签页",
+      "c0088": "v4l2 controls 标签页",
+      "c0089": "Equalizer 子标签",
+      "c0090": "Compressor 子标签",
+      "c0091": "Spatializer 子标签",
+      "c0092": "Stereo Widener 子标签",
+      "c0093": "Advanced 子标签",
+      "c0094": "Equalizer Enable 复选框",
+      "c0095": "Equalizer Preset 下拉框",
+      "c0096": "Save 按钮",
+      "c0097": "Close 按钮",
+      "c0098": "Essential 子标签",
+      "c0099": "Crop 子标签",
+      "c0100": "Colors 子标签",
+      "c0101": "Geometry 子标签",
+      "c0102": "Overlay 子标签",
+      "c0103": "Video Effects Advanced 子标签",
+      "c0104": "Image adjust 复选框",
+      "c0105": "Hue 滑块",
+      "c0106": "Brightness 滑块",
+      "c0107": "Brightness Threshold 复选框",
+      "c0108": "Contrast 滑块",
+      "c0109": "Saturation 滑块",
+      "c0110": "Gamma 滑块",
+      "c0111": "Sharpen 复选框",
+      "c0112": "Sigma 滑块",
+      "c0113": "Banding removal 复选框",
+      "c0114": "Radius 滑块",
+      "c0115": "Film Grain 复选框",
+      "c0116": "Variance 滑块",
+      "c0117": "Audio track synchronization 数值框",
+      "c0118": "Subtitle track synchronization 数值框",
+      "c0119": "Subtitle speed 数值框",
+      "c0120": "Subtitle duration factor 数值框",
+      "c0121": "Synchronization 循环箭头图标",
+      "c0122": "Subtitle track synchronization 增大按钮",
+      "c0123": "Subtitle speed 增大按钮"
+    },
+    "last_action": {
+      "region": "r0014",
+      "attempt": "a0079",
+      "changes_surface": false
+    },
+    "incoming_actions": {
+      "r0014": [
+        {
+          "region": "r0013",
+          "attempt": "a0041"
+        }
+      ]
+    },
+    "goal": {
+      "region": "r0014",
+      "name": "c0119 / 参数探索",
+      "status": "pending"
+    },
+    "origin": {
+      "entries": [],
+      "boundary": "no_recorded_action_for_observation",
+      "last_effect": {
+        "region": "r0014",
+        "attempt": "a0079",
+        "result": {
+          "exception": "none",
+          "description": "在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。",
+          "recovery_handoff": "",
+          "returns_to_previous": false
+        }
+      },
+      "known_entries": [
+        {
+          "from_regions": [
+            "r0013",
+            "r0014"
+          ],
+          "to_regions": [
+            "r0014"
+          ],
+          "via": {
+            "region": "r0014",
+            "attempt": "a0043",
+            "control": "c0117"
+          },
+          "before_observation": "update:0156",
+          "after_observation": "update:0158",
+          "parent_branches": [
+            {
+              "ref": "r0013",
+              "name": "Adjustments and Effects 设置窗口",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [
+                {
+                  "control": "c0087",
+                  "target_region": "r0014",
+                  "attempt": "a0041"
+                }
+              ],
+              "pending_tasks": [
+                "c0088 / 功能探索",
+                "c0090 / 功能探索",
+                "c0091 / 功能探索",
+                "c0092 / 功能探索",
+                "c0093 / 功能探索",
+                "c0089 / 功能探索",
+                "参数探索",
+                "c0096 / 功能探索"
+              ]
+            },
+            {
+              "ref": "r0014",
+              "name": "Synchronization 页面内容区",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": [
+                "c0119 / 参数探索",
+                "c0120 / 参数探索",
+                "功能探索"
+              ]
+            }
+          ]
+        },
+        {
+          "from_regions": [
+            "r0013",
+            "r0014"
+          ],
+          "to_regions": [
+            "r0014"
+          ],
+          "via": {
+            "region": "r0014",
+            "attempt": "a0055",
+            "control": "c0117"
+          },
+          "before_observation": "update:0186",
+          "after_observation": "update:0188",
+          "parent_branches": [
+            {
+              "ref": "r0013",
+              "name": "Adjustments and Effects 设置窗口",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [
+                {
+                  "control": "c0087",
+                  "target_region": "r0014",
+                  "attempt": "a0041"
+                }
+              ],
+              "pending_tasks": [
+                "c0088 / 功能探索",
+                "c0090 / 功能探索",
+                "c0091 / 功能探索",
+                "c0092 / 功能探索",
+                "c0093 / 功能探索",
+                "c0089 / 功能探索",
+                "参数探索",
+                "c0096 / 功能探索"
+              ]
+            },
+            {
+              "ref": "r0014",
+              "name": "Synchronization 页面内容区",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": [
+                "c0119 / 参数探索",
+                "c0120 / 参数探索",
+                "功能探索"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [
+      {
+        "kind": "unconfirmed_containment",
+        "ref": "r0014",
+        "parent": "r0013"
+      }
+    ],
+    "localization_only": false,
+    "observation": {
+      "id": "update:0252",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0079/after.png",
+      "sha256": "5d5f3c2d7b1fdb3b91b50ef3b944d456d0a11547f38345846ac09b0e65f7c27f"
+    },
+    "usage": "selection",
+    "run_root": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run",
+    "frame_relation": "historical_structure_needs_recheck",
+    "history": {
+      "regions": [
+        {
+          "ref": "r0014",
+          "name": "Synchronization 页面内容区",
+          "controls": [
+            {
+              "ref": "c0119",
+              "name": "Subtitle speed 数值框",
+              "attempts": [
+                "a0067",
+                "a0070",
+                "a0071",
+                "a0072",
+                "a0073",
+                "a0077",
+                "a0079"
+              ]
+            },
+            {
+              "ref": "c0123",
+              "name": "Subtitle speed 增大按钮",
+              "attempts": [
+                "a0068",
+                "a0069"
+              ]
+            }
+          ],
+          "unbound": [],
+          "region_actions": [
+            "a0074",
+            "a0075",
+            "a0076",
+            "a0078"
+          ]
+        }
+      ],
+      "events": {
+        "a0067": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "click",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。",
+          "实际执行": [
+            {
+              "action": "click",
+              "target": "Subtitle speed 数值框的增大按钮",
+              "text": null
+            }
+          ]
+        },
+        "a0068": {
+          "region": "r0014",
+          "control": "c0123",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 增大按钮",
+          "身份关联": "已登记",
+          "动作": "click",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。",
+          "实际执行": [
+            {
+              "action": "click",
+              "target": "c0123",
+              "text": null
+            }
+          ]
+        },
+        "a0069": {
+          "region": "r0014",
+          "control": "c0123",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 增大按钮",
+          "身份关联": "已登记",
+          "动作": "click",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。",
+          "实际执行": [
+            {
+              "action": "click",
+              "target": "c0123",
+              "text": null
+            }
+          ]
+        },
+        "a0070": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。",
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "2.000"
+            }
+          ]
+        },
+        "a0071": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。",
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "1.000"
+            }
+          ]
+        },
+        "a0072": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。",
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "1000.000"
+            }
+          ]
+        },
+        "a0073": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。",
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "1.000"
+            }
+          ]
+        },
+        "a0074": {
+          "region": "r0014",
+          "control": null,
+          "区块": "Synchronization 页面内容区",
+          "入口": "Synchronization 页面内容区",
+          "身份关联": "已登记",
+          "动作": "key_press",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。",
+          "实际执行": [
+            {
+              "action": "key_press",
+              "text": "UP",
+              "target": "当前工作"
+            }
+          ]
+        },
+        "a0075": {
+          "region": "r0014",
+          "control": null,
+          "区块": "Synchronization 页面内容区",
+          "入口": "Synchronization 页面内容区",
+          "身份关联": "已登记",
+          "动作": "key_press",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。",
+          "实际执行": [
+            {
+              "action": "key_press",
+              "text": "DOWN",
+              "target": "当前工作"
+            }
+          ]
+        },
+        "a0076": {
+          "region": "r0014",
+          "control": null,
+          "区块": "Synchronization 页面内容区",
+          "入口": "Synchronization 页面内容区",
+          "身份关联": "已登记",
+          "动作": "key_press",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。",
+          "实际执行": [
+            {
+              "action": "key_press",
+              "text": "DOWN",
+              "target": "r0014"
+            }
+          ]
+        },
+        "a0077": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。",
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "0.800"
+            }
+          ]
+        },
+        "a0078": {
+          "region": "r0014",
+          "control": null,
+          "区块": "Synchronization 页面内容区",
+          "入口": "Synchronization 页面内容区",
+          "身份关联": "已登记",
+          "动作": "key_press",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。",
+          "实际执行": [
+            {
+              "action": "key_press",
+              "text": "UP",
+              "target": "当前工作"
+            }
+          ]
+        },
+        "a0079": {
+          "region": "r0014",
+          "control": "c0119",
+          "区块": "Synchronization 页面内容区",
+          "入口": "Subtitle speed 数值框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0014/c0119 / 参数探索",
+          "观察": "在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。",
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "0.000"
+            }
+          ],
+          "该次更新未确认事项": [
+            "Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。",
+            "完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。"
+          ]
+        }
+      },
+      "unresolved": [],
+      "handoff": {
+        "attempt": "a0079",
+        "summary": "在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。",
+        "uncertainties": [
+          "Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。",
+          "完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。"
+        ],
+        "observation": "update:0252"
+      },
+      "task_contexts": {
+        "r0014": {
+          "c0119 / 参数探索": [
+            "已执行 click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。",
+            "已执行 click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。",
+            "已执行 click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。",
+            "已执行 input_text「Subtitle speed 数值框」；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。",
+            "已执行 input_text「Subtitle speed 数值框」；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。",
+            "已执行 input_text「Subtitle speed 数值框」；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。",
+            "已执行 input_text「Subtitle speed 数值框」；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。",
+            "已执行 key_press「Synchronization 页面内容区」；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。",
+            "已执行 key_press「Synchronization 页面内容区」；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。",
+            "已执行 key_press「Synchronization 页面内容区」；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。",
+            "已执行 input_text「Subtitle speed 数值框」；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。",
+            "已执行 key_press「Synchronization 页面内容区」；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。",
+            "已执行 input_text「Subtitle speed 数值框」；观察：在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。",
+            "任务判断：本次输入后数值框显示 0.000 fps，提供了一个新的显示值观察，但不足以确认可接受范围的下限或输入已被实际接受；也未验证步进，且尚未恢复探索前的 1.000 fps。"
+          ]
+        }
+      },
+      "event_texts": {
+        "a0067": "a0067：click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。",
+        "a0068": "a0068：click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。",
+        "a0069": "a0069：click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。",
+        "a0070": "a0070：input_text「Subtitle speed 数值框」；输入文本：2.000；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。",
+        "a0071": "a0071：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。",
+        "a0072": "a0072：input_text「Subtitle speed 数值框」；输入文本：1000.000；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。",
+        "a0073": "a0073：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。",
+        "a0074": "a0074：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：UP\n  target：当前工作；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。",
+        "a0075": "a0075：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：DOWN\n  target：当前工作；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。",
+        "a0076": "a0076：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：DOWN\n  target：r0014；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。",
+        "a0077": "a0077：input_text「Subtitle speed 数值框」；输入文本：0.800；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。",
+        "a0078": "a0078：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：UP\n  target：当前工作；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。",
+        "a0079": "a0079：input_text「Subtitle speed 数值框」；输入文本：0.000；观察：在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。；该次更新未确认事项：Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。；完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。"
+      },
+      "task_judgments": [
+        {
+          "region": "r0014",
+          "name": "c0119 / 参数探索",
+          "status": "pending",
+          "judgment": "本次输入后数值框显示 0.000 fps，提供了一个新的显示值观察，但不足以确认可接受范围的下限或输入已被实际接受；也未验证步进，且尚未恢复探索前的 1.000 fps。",
+          "attempts": [
+            "a0067",
+            "a0068",
+            "a0069",
+            "a0070",
+            "a0071",
+            "a0072",
+            "a0073",
+            "a0074",
+            "a0075",
+            "a0076",
+            "a0077",
+            "a0078",
+            "a0079"
+          ],
+          "invalidated": []
+        }
+      ],
+      "names": {
+        "r0001": "VLC 菜单栏",
+        "r0002": "VLC 视频显示区",
+        "r0003": "VLC 播放控制栏",
+        "r0004": "Media 菜单展开面板",
+        "r0005": "Playback 菜单展开面板",
+        "r0006": "VLC 文件选择对话框",
+        "r0007": "Audio 菜单展开面板",
+        "r0008": "Audio Device 子菜单",
+        "r0009": "VLC 视频显示区",
+        "r0010": "Video 菜单展开面板",
+        "r0011": "Subtitle 菜单展开面板",
+        "r0012": "Tools 菜单展开面板",
+        "r0013": "Adjustments and Effects 设置窗口",
+        "r0014": "Synchronization 页面内容区"
+      }
+    },
+    "environment_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nVLC 菜单栏 [r0001]\n  ├─ Media 菜单 [c0001]\n    └─ Media 菜单展开面板 [r0004]\n      ├─ Open File 菜单项 [c0020]\n        └─ VLC 文件选择对话框 [r0006]\n          ├─ 当前位置选择框 [c0047]\n          ├─ 位置侧栏 [c0048]\n          ├─ 文件列表 [c0049]\n          ├─ 文件名输入框 [c0050]\n          ├─ 文件类型筛选框 [c0051]\n          ├─ Open 按钮 [c0052]\n            └─ VLC 视频显示区 [r0002]\n          ├─ Cancel 按钮 [c0053]\n          ├─ 对话框关闭按钮 [c0054]\n      ├─ Open Multiple Files 菜单项 [c0021]\n      ├─ Open Directory 菜单项 [c0022]\n      ├─ Open Disc 菜单项 [c0023]\n      ├─ Open Network Stream 菜单项 [c0024]\n      ├─ Open Capture Device 菜单项 [c0025]\n      ├─ Open Location from Clipboard 菜单项 [c0026]\n      ├─ Open Recent Media 菜单项 [c0027]\n      ├─ Save Playlist to File 菜单项 [c0028]\n      ├─ Convert / Save 菜单项 [c0029]\n      ├─ Stream 菜单项 [c0030]\n      ├─ Quit at the end of playlist 复选框 [c0031]\n      ├─ Quit 菜单项 [c0032]\n  ├─ Playback 菜单 [c0002]\n    └─ Playback 菜单展开面板 [r0005]\n      ├─ Title 菜单项 [c0033]\n      ├─ Chapter 菜单项 [c0034]\n      ├─ Program 菜单项 [c0035]\n      ├─ Custom Bookmarks 菜单项 [c0036]\n      ├─ Renderer 菜单项 [c0037]\n      ├─ Speed 菜单项 [c0038]\n      ├─ Jump Forward 菜单项 [c0039]\n      ├─ Jump Backward 菜单项 [c0040]\n      ├─ Jump to Specific Time 菜单项 [c0041]\n      ├─ Play 菜单项 [c0042]\n      ├─ Stop 菜单项 [c0043]\n      ├─ Previous 菜单项 [c0044]\n      ├─ Next 菜单项 [c0045]\n      ├─ Record 菜单项 [c0046]\n  ├─ Audio 菜单 [c0003]\n    └─ Audio 菜单展开面板 [r0007]\n      ├─ Audio Track 菜单项 [c0055]\n      ├─ Audio Device 菜单项 [c0056]\n        └─ Audio Device 子菜单 [r0008]\n          ├─ Dummy Output [c0062]\n      ├─ Stereo Mode 菜单项 [c0057]\n      ├─ Visualizations 菜单项 [c0058]\n      ├─ Increase Volume 菜单项 [c0059]\n      ├─ Decrease Volume 菜单项 [c0060]\n      ├─ Mute 菜单项 [c0061]\n  ├─ Video 菜单 [c0004]\n  ├─ Subtitle 菜单 [c0005]\n  ├─ Tools 菜单 [c0006]\n    └─ Tools 菜单展开面板 [r0012]\n      ├─ Effects and Filters 菜单项 [c0075]\n        └─ Adjustments and Effects 设置窗口 [r0013]\n          ├─ Audio Effects 标签页 [c0085]\n          ├─ Video Effects 标签页 [c0086]\n          ├─ Synchronization 标签页 [c0087]\n            └─ Synchronization 页面内容区 [r0014]（本步关注区块）\n              ├─ Audio track synchronization 数值框 [c0117]\n              ├─ Subtitle track synchronization 数值框 [c0118]\n              ├─ Subtitle speed 数值框 [c0119]\n              ├─ Subtitle duration factor 数值框 [c0120]\n              ├─ Synchronization 循环箭头图标 [c0121]\n              ├─ Subtitle track synchronization 增大按钮 [c0122]\n              ├─ Subtitle speed 增大按钮 [c0123]\n          ├─ v4l2 controls 标签页 [c0088]\n          ├─ Equalizer 子标签 [c0089]\n          ├─ Compressor 子标签 [c0090]\n          ├─ Spatializer 子标签 [c0091]\n          ├─ Stereo Widener 子标签 [c0092]\n          ├─ Advanced 子标签 [c0093]\n          ├─ Equalizer Enable 复选框 [c0094]\n          ├─ Equalizer Preset 下拉框 [c0095]\n          ├─ Save 按钮 [c0096]\n          ├─ Close 按钮 [c0097]\n          ├─ Essential 子标签 [c0098]\n          ├─ Crop 子标签 [c0099]\n          ├─ Colors 子标签 [c0100]\n          ├─ Geometry 子标签 [c0101]\n          ├─ Overlay 子标签 [c0102]\n          ├─ Video Effects Advanced 子标签 [c0103]\n          ├─ Image adjust 复选框 [c0104]\n          ├─ Hue 滑块 [c0105]\n          ├─ Brightness 滑块 [c0106]\n          ├─ Brightness Threshold 复选框 [c0107]\n          ├─ Contrast 滑块 [c0108]\n          ├─ Saturation 滑块 [c0109]\n          ├─ Gamma 滑块 [c0110]\n          ├─ Sharpen 复选框 [c0111]\n          ├─ Sigma 滑块 [c0112]\n          ├─ Banding removal 复选框 [c0113]\n          ├─ Radius 滑块 [c0114]\n          ├─ Film Grain 复选框 [c0115]\n          ├─ Variance 滑块 [c0116]\n      ├─ Track Synchronization 菜单项 [c0076]\n        └─ [引用：Adjustments and Effects 设置窗口 r0013]\n      ├─ Media Information 菜单项 [c0077]\n      ├─ Codec Information 菜单项 [c0078]\n      ├─ VLM Configuration 菜单项 [c0079]\n      ├─ Program Guide 菜单项 [c0080]\n      ├─ Messages 菜单项 [c0081]\n      ├─ Plugins and extensions 菜单项 [c0082]\n      ├─ Customize Interface 菜单项 [c0083]\n      ├─ Preferences 菜单项 [c0084]\n  ├─ View 菜单 [c0007]\n  ├─ Help 菜单 [c0008]\nVLC 播放控制栏 [r0003]\n  ├─ 媒体进度条 [c0009]\n  ├─ 播放/暂停按钮 [c0010]\n  ├─ 上一项按钮 [c0011]\n  ├─ 停止按钮 [c0012]\n  ├─ 下一项按钮 [c0013]\n  ├─ 全屏按钮 [c0014]\n  ├─ 效果与调整按钮 [c0015]\n  ├─ 播放列表按钮 [c0016]\n  ├─ 循环播放按钮 [c0017]\n  ├─ 随机播放按钮 [c0018]\n  ├─ 音量滑块 [c0019]\nVLC 视频显示区 [r0009]\nVideo 菜单展开面板 [r0010]\n  ├─ Video Track 菜单项 [c0063]\n  ├─ Fullscreen 菜单项 [c0064]\n  ├─ Always Fit Window 菜单项 [c0065]\n  ├─ Set as Wallpaper 菜单项 [c0066]\n  ├─ Zoom 菜单项 [c0067]\n  ├─ Aspect Ratio 菜单项 [c0068]\n  ├─ Crop 菜单项 [c0069]\n  ├─ Deinterlace 菜单项 [c0070]\n  ├─ Deinterlace mode 菜单项 [c0071]\n  ├─ Take Snapshot 菜单项 [c0072]\nSubtitle 菜单展开面板 [r0011]\n  ├─ Add Subtitle File 菜单项 [c0073]\n  ├─ Sub Track 菜单项 [c0074]\n原探索目标：Synchronization 页面内容区 / Subtitle speed 数值框\n上次已登记前景：Synchronization 页面内容区",
+    "action_material": true
+  },
+  "_page_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\nVLC 菜单栏 [r0001]\n  ├─ Media 菜单 [c0001]\n    └─ Media 菜单展开面板 [r0004]\n      ├─ Open File 菜单项 [c0020]\n        └─ VLC 文件选择对话框 [r0006]\n          ├─ 当前位置选择框 [c0047]\n          ├─ 位置侧栏 [c0048]\n          ├─ 文件列表 [c0049]\n          ├─ 文件名输入框 [c0050]\n          ├─ 文件类型筛选框 [c0051]\n          ├─ Open 按钮 [c0052]\n            └─ VLC 视频显示区 [r0002]\n          ├─ Cancel 按钮 [c0053]\n          ├─ 对话框关闭按钮 [c0054]\n      ├─ Open Multiple Files 菜单项 [c0021]\n      ├─ Open Directory 菜单项 [c0022]\n      ├─ Open Disc 菜单项 [c0023]\n      ├─ Open Network Stream 菜单项 [c0024]\n      ├─ Open Capture Device 菜单项 [c0025]\n      ├─ Open Location from Clipboard 菜单项 [c0026]\n      ├─ Open Recent Media 菜单项 [c0027]\n      ├─ Save Playlist to File 菜单项 [c0028]\n      ├─ Convert / Save 菜单项 [c0029]\n      ├─ Stream 菜单项 [c0030]\n      ├─ Quit at the end of playlist 复选框 [c0031]\n      ├─ Quit 菜单项 [c0032]\n  ├─ Playback 菜单 [c0002]\n    └─ Playback 菜单展开面板 [r0005]\n      ├─ Title 菜单项 [c0033]\n      ├─ Chapter 菜单项 [c0034]\n      ├─ Program 菜单项 [c0035]\n      ├─ Custom Bookmarks 菜单项 [c0036]\n      ├─ Renderer 菜单项 [c0037]\n      ├─ Speed 菜单项 [c0038]\n      ├─ Jump Forward 菜单项 [c0039]\n      ├─ Jump Backward 菜单项 [c0040]\n      ├─ Jump to Specific Time 菜单项 [c0041]\n      ├─ Play 菜单项 [c0042]\n      ├─ Stop 菜单项 [c0043]\n      ├─ Previous 菜单项 [c0044]\n      ├─ Next 菜单项 [c0045]\n      ├─ Record 菜单项 [c0046]\n  ├─ Audio 菜单 [c0003]\n    └─ Audio 菜单展开面板 [r0007]\n      ├─ Audio Track 菜单项 [c0055]\n      ├─ Audio Device 菜单项 [c0056]\n        └─ Audio Device 子菜单 [r0008]\n          ├─ Dummy Output [c0062]\n      ├─ Stereo Mode 菜单项 [c0057]\n      ├─ Visualizations 菜单项 [c0058]\n      ├─ Increase Volume 菜单项 [c0059]\n      ├─ Decrease Volume 菜单项 [c0060]\n      ├─ Mute 菜单项 [c0061]\n  ├─ Video 菜单 [c0004]\n  ├─ Subtitle 菜单 [c0005]\n  ├─ Tools 菜单 [c0006]\n    └─ Tools 菜单展开面板 [r0012]\n      ├─ Effects and Filters 菜单项 [c0075]\n        └─ Adjustments and Effects 设置窗口 [r0013]\n          ├─ Audio Effects 标签页 [c0085]\n          ├─ Video Effects 标签页 [c0086]\n          ├─ Synchronization 标签页 [c0087]\n            └─ Synchronization 页面内容区 [r0014]（本步关注区块）\n              ├─ Audio track synchronization 数值框 [c0117]\n              ├─ Subtitle track synchronization 数值框 [c0118]\n              ├─ Subtitle speed 数值框 [c0119]\n              ├─ Subtitle duration factor 数值框 [c0120]\n              ├─ Synchronization 循环箭头图标 [c0121]\n              ├─ Subtitle track synchronization 增大按钮 [c0122]\n              ├─ Subtitle speed 增大按钮 [c0123]\n          ├─ v4l2 controls 标签页 [c0088]\n          ├─ Equalizer 子标签 [c0089]\n          ├─ Compressor 子标签 [c0090]\n          ├─ Spatializer 子标签 [c0091]\n          ├─ Stereo Widener 子标签 [c0092]\n          ├─ Advanced 子标签 [c0093]\n          ├─ Equalizer Enable 复选框 [c0094]\n          ├─ Equalizer Preset 下拉框 [c0095]\n          ├─ Save 按钮 [c0096]\n          ├─ Close 按钮 [c0097]\n          ├─ Essential 子标签 [c0098]\n          ├─ Crop 子标签 [c0099]\n          ├─ Colors 子标签 [c0100]\n          ├─ Geometry 子标签 [c0101]\n          ├─ Overlay 子标签 [c0102]\n          ├─ Video Effects Advanced 子标签 [c0103]\n          ├─ Image adjust 复选框 [c0104]\n          ├─ Hue 滑块 [c0105]\n          ├─ Brightness 滑块 [c0106]\n          ├─ Brightness Threshold 复选框 [c0107]\n          ├─ Contrast 滑块 [c0108]\n          ├─ Saturation 滑块 [c0109]\n          ├─ Gamma 滑块 [c0110]\n          ├─ Sharpen 复选框 [c0111]\n          ├─ Sigma 滑块 [c0112]\n          ├─ Banding removal 复选框 [c0113]\n          ├─ Radius 滑块 [c0114]\n          ├─ Film Grain 复选框 [c0115]\n          ├─ Variance 滑块 [c0116]\n      ├─ Track Synchronization 菜单项 [c0076]\n        └─ [引用：Adjustments and Effects 设置窗口 r0013]\n      ├─ Media Information 菜单项 [c0077]\n      ├─ Codec Information 菜单项 [c0078]\n      ├─ VLM Configuration 菜单项 [c0079]\n      ├─ Program Guide 菜单项 [c0080]\n      ├─ Messages 菜单项 [c0081]\n      ├─ Plugins and extensions 菜单项 [c0082]\n      ├─ Customize Interface 菜单项 [c0083]\n      ├─ Preferences 菜单项 [c0084]\n  ├─ View 菜单 [c0007]\n  ├─ Help 菜单 [c0008]\nVLC 播放控制栏 [r0003]\n  ├─ 媒体进度条 [c0009]\n  ├─ 播放/暂停按钮 [c0010]\n  ├─ 上一项按钮 [c0011]\n  ├─ 停止按钮 [c0012]\n  ├─ 下一项按钮 [c0013]\n  ├─ 全屏按钮 [c0014]\n  ├─ 效果与调整按钮 [c0015]\n  ├─ 播放列表按钮 [c0016]\n  ├─ 循环播放按钮 [c0017]\n  ├─ 随机播放按钮 [c0018]\n  ├─ 音量滑块 [c0019]\nVLC 视频显示区 [r0009]\nVideo 菜单展开面板 [r0010]\n  ├─ Video Track 菜单项 [c0063]\n  ├─ Fullscreen 菜单项 [c0064]\n  ├─ Always Fit Window 菜单项 [c0065]\n  ├─ Set as Wallpaper 菜单项 [c0066]\n  ├─ Zoom 菜单项 [c0067]\n  ├─ Aspect Ratio 菜单项 [c0068]\n  ├─ Crop 菜单项 [c0069]\n  ├─ Deinterlace 菜单项 [c0070]\n  ├─ Deinterlace mode 菜单项 [c0071]\n  ├─ Take Snapshot 菜单项 [c0072]\nSubtitle 菜单展开面板 [r0011]\n  ├─ Add Subtitle File 菜单项 [c0073]\n  ├─ Sub Track 菜单项 [c0074]\n原探索目标：Synchronization 页面内容区 / Subtitle speed 数值框\n上次已登记前景：Synchronization 页面内容区\na0067：click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。\na0068：click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。\na0069：click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。\na0070：input_text「Subtitle speed 数值框」；输入文本：2.000；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。\na0071：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。\na0072：input_text「Subtitle speed 数值框」；输入文本：1000.000；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。\na0073：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。\na0074：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：UP\n  target：当前工作；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。\na0075：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：DOWN\n  target：当前工作；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。\na0076：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：DOWN\n  target：r0014；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。\na0077：input_text「Subtitle speed 数值框」；输入文本：0.800；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。\na0078：key_press「Synchronization 页面内容区」；实际执行：1：\n  操作：key_press\n  输入文本：UP\n  target：当前工作；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。\na0079：input_text「Subtitle speed 数值框」；输入文本：0.000；观察：在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。；该次更新未确认事项：Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。；完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。",
+  "screenshots": [
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/session-03/round-0016/current.png"
+  ],
+  "frame_context": {
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/session-03/round-0016/current.png": "本次动作选点依据图；尚未执行所选动作"
+  },
+  "visual_choices": {
+    "c0117": [
+      {
+        "score": 0.9999973773956299,
+        "box": [
+          320,
+          456,
+          427,
+          478
+        ],
+        "scale": 1,
+        "gap": 0.17680048942565918,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              320,
+              456,
+              427,
+              478
+            ],
+            "score": 0.9999973773956299,
+            "scale": 1,
+            "identity_box": [
+              320,
+              456,
+              427,
+              478
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "description": "位于 Audio/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 284,
+            "right": 427,
+            "bottom": 306
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0117.png",
+          "evidence": {
+            "source_field": "/controls/1",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        },
+        "identity_box": [
+          320,
+          456,
+          427,
+          478
+        ]
+      }
+    ],
+    "c0118": [
+      {
+        "score": 0.9999973773956299,
+        "box": [
+          320,
+          456,
+          427,
+          478
+        ],
+        "scale": 1,
+        "gap": 0.17680048942565918,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              320,
+              456,
+              427,
+              478
+            ],
+            "score": 0.9999973773956299,
+            "scale": 1,
+            "identity_box": [
+              320,
+              456,
+              427,
+              478
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "description": "位于 Subtitles/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 419,
+            "right": 427,
+            "bottom": 441
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0118.png",
+          "evidence": {
+            "source_field": "/controls/2",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        },
+        "identity_box": [
+          320,
+          456,
+          427,
+          478
+        ]
+      }
+    ],
+    "c0119": [],
+    "c0120": [
+      {
+        "score": 0.9436905980110168,
+        "box": [
+          320,
+          559,
+          541,
+          581
+        ],
+        "scale": 1,
+        "gap": 0.13063818216323853,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              320,
+              559,
+              541,
+              581
+            ],
+            "score": 0.9436905980110168,
+            "scale": 1,
+            "identity_box": [
+              320,
+              559,
+              541,
+              581
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "description": "位于 Subtitles/Video 分组。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 320,
+            "top": 522,
+            "right": 541,
+            "bottom": 544
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0120.png",
+          "evidence": {
+            "source_field": "/controls/4",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        },
+        "identity_box": [
+          320,
+          559,
+          541,
+          581
+        ]
+      }
+    ],
+    "c0121": [
+      {
+        "score": 1.0,
+        "box": [
+          533,
+          244,
+          548,
+          260
+        ],
+        "scale": 1,
+        "gap": 0.4600411653518677,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              533,
+              244,
+              548,
+              260
+            ],
+            "score": 1.0,
+            "scale": 1,
+            "identity_box": [
+              533,
+              244,
+              548,
+              260
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "description": "页面右上方的循环箭头图标控件。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 533,
+            "top": 207,
+            "right": 548,
+            "bottom": 223
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0041-0152-576c8d753491/regions/r0014/images/0152/c0121.png",
+          "evidence": {
+            "source_field": "/controls/5",
+            "region": "r0014",
+            "source_call": "0152",
+            "observation": "update:0152"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0041/after.png"
+        },
+        "identity_box": [
+          533,
+          244,
+          548,
+          260
+        ]
+      }
+    ],
+    "c0122": [
+      {
+        "box": [
+          412,
+          321,
+          427,
+          344
+        ],
+        "score": 1.0,
+        "scale": 1,
+        "identity_box": [
+          412,
+          321,
+          427,
+          344
+        ]
+      },
+      {
+        "box": [
+          412,
+          456,
+          427,
+          479
+        ],
+        "score": 1.0,
+        "scale": 1,
+        "identity_box": [
+          412,
+          456,
+          427,
+          479
+        ]
+      },
+      {
+        "box": [
+          525,
+          559,
+          540,
+          582
+        ],
+        "score": 1.0,
+        "scale": 1,
+        "identity_box": [
+          525,
+          559,
+          540,
+          582
+        ]
+      }
+    ],
+    "c0123": [
+      {
+        "score": 1.0,
+        "box": [
+          525,
+          529,
+          539,
+          551
+        ],
+        "scale": 1,
+        "gap": 0.12032675743103027,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              525,
+              529,
+              539,
+              551
+            ],
+            "score": 1.0,
+            "scale": 1,
+            "identity_box": [
+              525,
+              529,
+              539,
+              551
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "description": "Subtitle speed 数值框右侧的上方增大按钮。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 525,
+            "top": 529,
+            "right": 539,
+            "bottom": 551
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/knowledge_snapshots/a0067-0222-b2b4835bb9c8/regions/r0014/images/0222/c0123.png",
+          "evidence": {
+            "source_field": "/controls/1",
+            "region": "r0014",
+            "source_call": "0222",
+            "observation": "update:0222"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/run/action_attempts/a0067/after.png"
+        },
+        "identity_box": [
+          525,
+          529,
+          539,
+          551
+        ]
+      }
+    ]
+  },
+  "role": "action_selection",
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 vlc 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "control_refs": [
+    "c0001",
+    "c0002",
+    "c0003",
+    "c0004",
+    "c0005",
+    "c0006",
+    "c0007",
+    "c0008",
+    "c0009",
+    "c0010",
+    "c0011",
+    "c0012",
+    "c0013",
+    "c0014",
+    "c0015",
+    "c0016",
+    "c0017",
+    "c0018",
+    "c0019",
+    "c0020",
+    "c0021",
+    "c0022",
+    "c0023",
+    "c0024",
+    "c0025",
+    "c0026",
+    "c0027",
+    "c0028",
+    "c0029",
+    "c0030",
+    "c0031",
+    "c0032",
+    "c0033",
+    "c0034",
+    "c0035",
+    "c0036",
+    "c0037",
+    "c0038",
+    "c0039",
+    "c0040",
+    "c0041",
+    "c0042",
+    "c0043",
+    "c0044",
+    "c0045",
+    "c0046",
+    "c0047",
+    "c0048",
+    "c0049",
+    "c0050",
+    "c0051",
+    "c0052",
+    "c0053",
+    "c0054",
+    "c0055",
+    "c0056",
+    "c0057",
+    "c0058",
+    "c0059",
+    "c0060",
+    "c0061",
+    "c0062",
+    "c0063",
+    "c0064",
+    "c0065",
+    "c0066",
+    "c0067",
+    "c0068",
+    "c0069",
+    "c0070",
+    "c0071",
+    "c0072",
+    "c0073",
+    "c0074",
+    "c0075",
+    "c0076",
+    "c0077",
+    "c0078",
+    "c0079",
+    "c0080",
+    "c0081",
+    "c0082",
+    "c0083",
+    "c0084",
+    "c0085",
+    "c0086",
+    "c0087",
+    "c0088",
+    "c0089",
+    "c0090",
+    "c0091",
+    "c0092",
+    "c0093",
+    "c0094",
+    "c0095",
+    "c0096",
+    "c0097",
+    "c0098",
+    "c0099",
+    "c0100",
+    "c0101",
+    "c0102",
+    "c0103",
+    "c0104",
+    "c0105",
+    "c0106",
+    "c0107",
+    "c0108",
+    "c0109",
+    "c0110",
+    "c0111",
+    "c0112",
+    "c0113",
+    "c0114",
+    "c0115",
+    "c0116",
+    "c0117",
+    "c0118",
+    "c0119",
+    "c0120",
+    "c0121",
+    "c0122",
+    "c0123"
+  ],
+  "prompt_sections": [
+    "region.common",
+    "task.definition",
+    "region.exception_values",
+    "region.recovery_handoff",
+    "control.definition",
+    "control.references",
+    "control.action_availability",
+    "control.knowledge_base",
+    "region.function",
+    "region.application_exception",
+    "action.proposal",
+    "action.complete",
+    "action.none",
+    "task.retry_when",
+    "control.knowledge_revision",
+    "control.knowledge_description",
+    "control.knowledge_index",
+    "control.knowledge_constraints",
+    "region.knowledge_edit",
+    "region.local_knowledge",
+    "region.function_updates",
+    "region.function_constraints",
+    "region.function_new_constraints"
+  ],
+  "prompt_composition": "field_sections",
+  "_structured_user_prompt": "{\n  \"当前任务\": {\n    \"task\": \"r0014/c0119 / 参数探索\",\n    \"control\": \"c0119\",\n    \"任务\": \"了解「Subtitle speed 数值框」的可指定的候选、取值或输入依据及必要设置方式\",\n    \"探索内容\": \"查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。\\n本任务结算条件：确认字幕速度数值框可接受的范围和增减步进值，并恢复探索前的值。\",\n    \"未答部分\": \"历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：恢复显示为探索前的 1.000 fps；确认数值框的可接受范围及增减步进值。当前显示 0.000 fps 是否属于可接受范围仍未确认。\",\n    \"已确认规则\": [\n      \"用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\"\n    ]\n  },\n  \"后续建议（尚未执行）\": {\n    \"region\": \"r0014\",\n    \"control\": \"c0119\",\n    \"action\": \"input_text\",\n    \"reason\": \"将当前显示的 0.000 fps 恢复为探索前的 1.000 fps。\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"推进探索任务\",\n    \"范围\": \"Synchronization 页面内容区\",\n    \"本步边界\": \"围绕原问题选择下一动作；必要准备不替换原目标。\"\n  },\n  \"相关控件\": \"- r0014 Synchronization 页面内容区\\n  - Audio track synchronization 数值框；target=\\\"c0117\\\"\\n    用途记录：用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。\\n    外观：位于 Audio/Video 分组。\\n  - Subtitle track synchronization 数值框；target=\\\"c0118\\\"\\n    用途记录：用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。\\n    外观：位于 Subtitles/Video 分组。\\n  - Subtitle speed 数值框；target=\\\"c0119\\\"\\n    用途记录：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。\\n    约束：\\n      速度：\\n        说明：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\\n        名称：速度\\n    外观：位于 Subtitles/Video 分组。\\n  - Subtitle duration factor 数值框；target=\\\"c0120\\\"\\n    用途记录：用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。；用于设置字幕持续时间因子，界面未显示单位；其范围及效果未验证。本次动作前后截图均显示 2.000，未观察到该值因本次操作而变化。\\n    外观：位于 Subtitles/Video 分组。\\n  - Synchronization 循环箭头图标；target=\\\"c0121\\\"\\n    用途记录：点击后，图标周围出现边框；本次画面中音轨同步值及其他同步参数的可见值均未变化，也未出现提示或页面切换。该观察尚不能确认图标的具体用途、点击是否生效，或它会影响哪些同步参数。\\n    外观：页面右上方的循环箭头图标控件。\\n  - Subtitle track synchronization 增大按钮；target=\\\"c0122\\\"\\n    用途记录：点击此按钮用于增大所属的 Subtitle track synchronization 数值框的值；本次仅确认其外观和所属关系，未操作，具体步进值及可接受范围尚未核实。\\n    外观：位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号。\\n  - Subtitle speed 增大按钮；target=\\\"c0123\\\"\\n    用途记录：用于尝试增大字幕速度。此次点击后数值框获得焦点，但显示值仍为 1.000 fps；尚不能确认按钮是否生效或其增量步进。；位于 Subtitle speed 数值框右侧，用于尝试增大字幕速度。本次点击后，前后截图中的数值均为 1.000 fps；未能确认按钮是否生效或其增量步进。\\n    外观：Subtitle speed 数值框右侧的上方增大按钮。\",\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\nVLC 菜单栏 [r0001]\\n  ├─ Media 菜单 [c0001]\\n    └─ Media 菜单展开面板 [r0004]\\n      ├─ Open File 菜单项 [c0020]\\n        └─ VLC 文件选择对话框 [r0006]\\n          ├─ 当前位置选择框 [c0047]\\n          ├─ 位置侧栏 [c0048]\\n          ├─ 文件列表 [c0049]\\n          ├─ 文件名输入框 [c0050]\\n          ├─ 文件类型筛选框 [c0051]\\n          ├─ Open 按钮 [c0052]\\n            └─ VLC 视频显示区 [r0002]\\n          ├─ Cancel 按钮 [c0053]\\n          ├─ 对话框关闭按钮 [c0054]\\n      ├─ Open Multiple Files 菜单项 [c0021]\\n      ├─ Open Directory 菜单项 [c0022]\\n      ├─ Open Disc 菜单项 [c0023]\\n      ├─ Open Network Stream 菜单项 [c0024]\\n      ├─ Open Capture Device 菜单项 [c0025]\\n      ├─ Open Location from Clipboard 菜单项 [c0026]\\n      ├─ Open Recent Media 菜单项 [c0027]\\n      ├─ Save Playlist to File 菜单项 [c0028]\\n      ├─ Convert / Save 菜单项 [c0029]\\n      ├─ Stream 菜单项 [c0030]\\n      ├─ Quit at the end of playlist 复选框 [c0031]\\n      ├─ Quit 菜单项 [c0032]\\n  ├─ Playback 菜单 [c0002]\\n    └─ Playback 菜单展开面板 [r0005]\\n      ├─ Title 菜单项 [c0033]\\n      ├─ Chapter 菜单项 [c0034]\\n      ├─ Program 菜单项 [c0035]\\n      ├─ Custom Bookmarks 菜单项 [c0036]\\n      ├─ Renderer 菜单项 [c0037]\\n      ├─ Speed 菜单项 [c0038]\\n      ├─ Jump Forward 菜单项 [c0039]\\n      ├─ Jump Backward 菜单项 [c0040]\\n      ├─ Jump to Specific Time 菜单项 [c0041]\\n      ├─ Play 菜单项 [c0042]\\n      ├─ Stop 菜单项 [c0043]\\n      ├─ Previous 菜单项 [c0044]\\n      ├─ Next 菜单项 [c0045]\\n      ├─ Record 菜单项 [c0046]\\n  ├─ Audio 菜单 [c0003]\\n    └─ Audio 菜单展开面板 [r0007]\\n      ├─ Audio Track 菜单项 [c0055]\\n      ├─ Audio Device 菜单项 [c0056]\\n        └─ Audio Device 子菜单 [r0008]\\n          ├─ Dummy Output [c0062]\\n      ├─ Stereo Mode 菜单项 [c0057]\\n      ├─ Visualizations 菜单项 [c0058]\\n      ├─ Increase Volume 菜单项 [c0059]\\n      ├─ Decrease Volume 菜单项 [c0060]\\n      ├─ Mute 菜单项 [c0061]\\n  ├─ Video 菜单 [c0004]\\n  ├─ Subtitle 菜单 [c0005]\\n  ├─ Tools 菜单 [c0006]\\n    └─ Tools 菜单展开面板 [r0012]\\n      ├─ Effects and Filters 菜单项 [c0075]\\n        └─ Adjustments and Effects 设置窗口 [r0013]\\n          ├─ Audio Effects 标签页 [c0085]\\n          ├─ Video Effects 标签页 [c0086]\\n          ├─ Synchronization 标签页 [c0087]\\n            └─ Synchronization 页面内容区 [r0014]（本步关注区块）\\n              ├─ Audio track synchronization 数值框 [c0117]\\n              ├─ Subtitle track synchronization 数值框 [c0118]\\n              ├─ Subtitle speed 数值框 [c0119]\\n              ├─ Subtitle duration factor 数值框 [c0120]\\n              ├─ Synchronization 循环箭头图标 [c0121]\\n              ├─ Subtitle track synchronization 增大按钮 [c0122]\\n              ├─ Subtitle speed 增大按钮 [c0123]\\n          ├─ v4l2 controls 标签页 [c0088]\\n          ├─ Equalizer 子标签 [c0089]\\n          ├─ Compressor 子标签 [c0090]\\n          ├─ Spatializer 子标签 [c0091]\\n          ├─ Stereo Widener 子标签 [c0092]\\n          ├─ Advanced 子标签 [c0093]\\n          ├─ Equalizer Enable 复选框 [c0094]\\n          ├─ Equalizer Preset 下拉框 [c0095]\\n          ├─ Save 按钮 [c0096]\\n          ├─ Close 按钮 [c0097]\\n          ├─ Essential 子标签 [c0098]\\n          ├─ Crop 子标签 [c0099]\\n          ├─ Colors 子标签 [c0100]\\n          ├─ Geometry 子标签 [c0101]\\n          ├─ Overlay 子标签 [c0102]\\n          ├─ Video Effects Advanced 子标签 [c0103]\\n          ├─ Image adjust 复选框 [c0104]\\n          ├─ Hue 滑块 [c0105]\\n          ├─ Brightness 滑块 [c0106]\\n          ├─ Brightness Threshold 复选框 [c0107]\\n          ├─ Contrast 滑块 [c0108]\\n          ├─ Saturation 滑块 [c0109]\\n          ├─ Gamma 滑块 [c0110]\\n          ├─ Sharpen 复选框 [c0111]\\n          ├─ Sigma 滑块 [c0112]\\n          ├─ Banding removal 复选框 [c0113]\\n          ├─ Radius 滑块 [c0114]\\n          ├─ Film Grain 复选框 [c0115]\\n          ├─ Variance 滑块 [c0116]\\n      ├─ Track Synchronization 菜单项 [c0076]\\n        └─ [引用：Adjustments and Effects 设置窗口 r0013]\\n      ├─ Media Information 菜单项 [c0077]\\n      ├─ Codec Information 菜单项 [c0078]\\n      ├─ VLM Configuration 菜单项 [c0079]\\n      ├─ Program Guide 菜单项 [c0080]\\n      ├─ Messages 菜单项 [c0081]\\n      ├─ Plugins and extensions 菜单项 [c0082]\\n      ├─ Customize Interface 菜单项 [c0083]\\n      ├─ Preferences 菜单项 [c0084]\\n  ├─ View 菜单 [c0007]\\n  ├─ Help 菜单 [c0008]\\nVLC 播放控制栏 [r0003]\\n  ├─ 媒体进度条 [c0009]\\n  ├─ 播放/暂停按钮 [c0010]\\n  ├─ 上一项按钮 [c0011]\\n  ├─ 停止按钮 [c0012]\\n  ├─ 下一项按钮 [c0013]\\n  ├─ 全屏按钮 [c0014]\\n  ├─ 效果与调整按钮 [c0015]\\n  ├─ 播放列表按钮 [c0016]\\n  ├─ 循环播放按钮 [c0017]\\n  ├─ 随机播放按钮 [c0018]\\n  ├─ 音量滑块 [c0019]\\nVLC 视频显示区 [r0009]\\nVideo 菜单展开面板 [r0010]\\n  ├─ Video Track 菜单项 [c0063]\\n  ├─ Fullscreen 菜单项 [c0064]\\n  ├─ Always Fit Window 菜单项 [c0065]\\n  ├─ Set as Wallpaper 菜单项 [c0066]\\n  ├─ Zoom 菜单项 [c0067]\\n  ├─ Aspect Ratio 菜单项 [c0068]\\n  ├─ Crop 菜单项 [c0069]\\n  ├─ Deinterlace 菜单项 [c0070]\\n  ├─ Deinterlace mode 菜单项 [c0071]\\n  ├─ Take Snapshot 菜单项 [c0072]\\nSubtitle 菜单展开面板 [r0011]\\n  ├─ Add Subtitle File 菜单项 [c0073]\\n  ├─ Sub Track 菜单项 [c0074]\\n原探索目标：Synchronization 页面内容区 / Subtitle speed 数值框\\n上次已登记前景：Synchronization 页面内容区\\na0067：click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。\\na0068：click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。\\na0069：click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。\\na0070：input_text「Subtitle speed 数值框」；输入文本：2.000；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。\\na0071：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。\\na0072：input_text「Subtitle speed 数值框」；输入文本：1000.000；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。\\na0073：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。\\na0074：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：UP\\n  target：当前工作；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。\\na0075：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：DOWN\\n  target：当前工作；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。\\na0076：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：DOWN\\n  target：r0014；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。\\na0077：input_text「Subtitle speed 数值框」；输入文本：0.800；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。\\na0078：key_press「Synchronization 页面内容区」；实际执行：1：\\n  操作：key_press\\n  输入文本：UP\\n  target：当前工作；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。\\na0079：input_text「Subtitle speed 数值框」；输入文本：0.000；观察：在 Subtitle speed 数值框中全选并输入 0.000。动作后图显示该框为 0.000 fps；动作前显示 1.000 fps。音轨同步仍显示 99.000 s，字幕轨道同步仍显示 0.000 s，字幕持续时间因子仍显示 2.000。当前只确认显示值改变，不能确认 0.000 已提交、持久生效或代表可接受范围下限；探索前的 1.000 fps 尚未恢复。；该次更新未确认事项：Subtitle speed 数值框输入 0.000 后显示为 0.000 fps，但是否已提交以及 0.000 是否为可接受范围下限尚无依据。；完整可接受范围及一般增减步进规律仍未确认；当前显示值尚未恢复为探索前的 1.000 fps。\",\n  \"当前任务相关功能\": [\n    {\n      \"功能\": \"设置同步参数\",\n      \"引用\": \"r0014/设置同步参数\",\n      \"用途\": \"根据界面标签设置音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子。当前知识支持设置这些参数，但实际播放效果尚未验证。\",\n      \"支持对象\": [\"Audio track synchronization 数值框\",\"Subtitle track synchronization 数值框\",\"Subtitle speed 数值框\",\"Subtitle duration factor 数值框\"],\n      \"参数知识引用\": {\"c0117/同步值\":{\"description\":\"用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。 参数规则：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"name\":\"同步值\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0207\",\"observation\":\"update:0207\"},\"sources\":[{\"basis\":\"object_knowledge\",\"source_call\":\"0176\",\"observation\":\"update:0176\"},{\"basis\":\"object_knowledge\",\"source_call\":\"0188\",\"observation\":\"update:0188\"},{\"basis\":\"object_knowledge\",\"source_call\":\"0194\",\"observation\":\"update:0194\"},{\"basis\":\"object_knowledge\",\"source_call\":\"0196\",\"observation\":\"update:0196\"},{\"basis\":\"object_knowledge\",\"source_call\":\"0200\",\"observation\":\"update:0200\"},{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0204\",\"observation\":\"update:0204\"},{\"basis\":\"object_knowledge\",\"source_call\":\"0207\",\"observation\":\"update:0207\"}],\"observations\":[{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0176\",\"observation\":\"update:0176\"}},{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0188\",\"observation\":\"update:0188\"}},{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0194\",\"observation\":\"update:0194\"}},{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0196\",\"observation\":\"update:0196\"}},{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0200\",\"observation\":\"update:0200\"}},{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0204\",\"observation\":\"update:0204\"}},{\"description\":\"填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。\",\"source\":{\"basis\":\"object_knowledge\",\"source_call\":\"0207\",\"observation\":\"update:0207\"}}],\"support\":\"c0117\",\"region\":\"r0014\",\"control\":\"c0117\"},\"c0118/同步值\":{\"description\":\"用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。\",\"name\":\"同步值\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0152\",\"observation\":\"update:0152\"},\"sources\":[{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0152\",\"observation\":\"update:0152\"}],\"observations\":[{\"description\":\"填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0152\",\"observation\":\"update:0152\"}}],\"support\":\"c0118\",\"region\":\"r0014\",\"control\":\"c0118\"},\"c0119/速度\":{\"description\":\"用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 和 0.800 后曾分别观察到显示对应数值；全选输入 0.000 后本次观察到显示 0.000 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。输入 0.000 后显示该值只证明显示发生变化，不能确认已提交或该值属于可接受范围。完整可接受范围及一般步进规律仍未确认。探索前显示值为 1.000 fps；本次动作后当前显示为 0.000 fps，尚待恢复。输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\",\"name\":\"速度\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0252\",\"observation\":\"update:0252\"},\"sources\":[{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0252\",\"observation\":\"update:0252\"}],\"observations\":[{\"description\":\"填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000、0.800 和 0.000 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、从 1.200 到 1.000，以及从 0.800 到 1.000 的特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。输入 0.000 后虽显示该值，尚不能据此确认其已提交或为可接受范围下限。完整可接受范围、一般增减步进规律及提交或播放效果未确认。探索前的 1.000 fps 尚未恢复，当前显示 0.000 fps。\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0252\",\"observation\":\"update:0252\"}}],\"support\":\"c0119\",\"region\":\"r0014\",\"control\":\"c0119\"},\"c0120/持续时间因子\":{\"description\":\"用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。\",\"name\":\"持续时间因子\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0152\",\"observation\":\"update:0152\"},\"sources\":[{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0152\",\"observation\":\"update:0152\"}],\"observations\":[{\"description\":\"填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。\",\"source\":{\"region\":\"r0014\",\"basis\":\"discovery\",\"source_call\":\"0152\",\"observation\":\"update:0152\"}}],\"support\":\"c0120\",\"region\":\"r0014\",\"control\":\"c0120\"}}\n    }\n  ],\n  \"目标应用\": \"本次要探索的应用：vlc\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"可补充知识（仅none/complete）\": {\n    \"原任务所属区块\": \"Synchronization 页面内容区\",\n    \"本轮可更新控件引用\": [\n      \"Audio track synchronization 数值框 — ref=c0117\",\n      \"Subtitle track synchronization 数值框 — ref=c0118\",\n      \"Subtitle speed 数值框 — ref=c0119\",\n      \"Subtitle duration factor 数值框 — ref=c0120\",\n      \"Synchronization 循环箭头图标 — ref=c0121\",\n      \"Subtitle track synchronization 增大按钮 — ref=c0122\",\n      \"Subtitle speed 增大按钮 — ref=c0123\"\n    ]\n  }\n}\n\n本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "_presentation_digest": "9794041d92db751841706d7fdc92fc5470db897a8ac84f90ff9a35af68774cea",
+  "named_nested": false
+}

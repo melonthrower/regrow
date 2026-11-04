@@ -1,0 +1,11 @@
+{
+  "region_id": "r0004",
+  "region": "图像工作区",
+  "control_id": "c0024",
+  "control": "图像画布区域",
+  "task": "功能探索",
+  "task_region": "r0013",
+  "category": "update",
+  "stage": "observation_update",
+  "session": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-04"
+}

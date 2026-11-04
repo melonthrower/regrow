@@ -1,0 +1,349 @@
+{
+  "identified_regions": [],
+  "template_rejections": [],
+  "source_call": "0173",
+  "frame_sha256": "8cb86997bc9e03690331bf67f552bb3ac0f3be348123b5d2483ea250baabeffe",
+  "scope": {},
+  "ranking": [
+    {
+      "region": "r0014",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0130",
+          "score": 1.0,
+          "box": [
+            660,
+            116,
+            1026,
+            176
+          ],
+          "scale": 1,
+          "gap": 0.4424740672111511,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                660,
+                116,
+                1026,
+                176
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 660,
+              "top": 116,
+              "right": 1026,
+              "bottom": 176
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0130.png",
+            "evidence": {
+              "source_field": "/controls/9",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        },
+        {
+          "control": "c0129",
+          "score": 1.0,
+          "box": [
+            282,
+            251,
+            605,
+            645
+          ],
+          "scale": 1,
+          "gap": 0.7478825449943542,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                282,
+                251,
+                605,
+                645
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 282,
+              "top": 251,
+              "right": 605,
+              "bottom": 645
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0129.png",
+            "evidence": {
+              "source_field": "/controls/8",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        },
+        {
+          "control": "c0133",
+          "score": 1.0,
+          "box": [
+            615,
+            411,
+            651,
+            445
+          ],
+          "scale": 1,
+          "gap": 0.5644874274730682,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                615,
+                411,
+                651,
+                445
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 615,
+              "top": 411,
+              "right": 651,
+              "bottom": 445
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0133.png",
+            "evidence": {
+              "source_field": "/controls/12",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        },
+        {
+          "control": "c0134",
+          "score": 1.0,
+          "box": [
+            615,
+            466,
+            651,
+            500
+          ],
+          "scale": 1,
+          "gap": 0.34315788745880127,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                615,
+                466,
+                651,
+                500
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 615,
+              "top": 466,
+              "right": 651,
+              "bottom": 500
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0134.png",
+            "evidence": {
+              "source_field": "/controls/13",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        },
+        {
+          "control": "c0135",
+          "score": 1.0,
+          "box": [
+            1029,
+            420,
+            1065,
+            455
+          ],
+          "scale": 1,
+          "gap": 0.21756958961486816,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1029,
+                420,
+                1065,
+                455
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1029,
+              "top": 420,
+              "right": 1065,
+              "bottom": 455
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0135.png",
+            "evidence": {
+              "source_field": "/controls/14",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        },
+        {
+          "control": "c0136",
+          "score": 1.0,
+          "box": [
+            1029,
+            460,
+            1065,
+            495
+          ],
+          "scale": 1,
+          "gap": 0.21756958961486816,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                1029,
+                460,
+                1065,
+                495
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 1029,
+              "top": 460,
+              "right": 1065,
+              "bottom": 495
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0136.png",
+            "evidence": {
+              "source_field": "/controls/15",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        },
+        {
+          "control": "c0142",
+          "score": 0.9549009203910828,
+          "box": [
+            986,
+            743,
+            1072,
+            777
+          ],
+          "scale": 1,
+          "gap": 0.4551425278186798,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                986,
+                743,
+                1072,
+                777
+              ],
+              "score": 0.9549009203910828,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 986,
+              "top": 743,
+              "right": 1072,
+              "bottom": 777
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/libreoffice-writer/run/knowledge_snapshots/a0039-0162-7f6328664315/regions/r0013/images/0162/c0142.png",
+            "evidence": {
+              "source_field": "/controls/21",
+              "region": "r0013",
+              "source_call": "0162",
+              "observation": "update:0162"
+            },
+            "image_conditions": [],
+            "source_image": "../../action_attempts/a0039/after.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 7,
+      "eligible_controls": 14,
+      "total_controls": 14,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

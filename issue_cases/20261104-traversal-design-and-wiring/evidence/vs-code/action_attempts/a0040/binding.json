@@ -1,0 +1,28 @@
+{
+  "region_ref": "r0003",
+  "observation_ref": "update:0190",
+  "control_ref": "c0017",
+  "working_region": "r0003",
+  "task_name": "c0017 / 功能探索",
+  "task_region": "r0003",
+  "task_type": "function",
+  "status": "matched",
+  "model_grounded": true,
+  "basis": "explicit recorded control selection; coordinates do not verify identity or outcome",
+  "preparatory_action": false,
+  "target_confirmation": {
+    "action": {
+      "action": "click",
+      "target": "c0017",
+      "x": 273,
+      "y": 106,
+      "text": null,
+      "end_x": null,
+      "end_y": null
+    },
+    "frames": [
+      "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/runs/desktop.vs_code_20261104T122642_ca56278e/action_attempts/a0039/pre_dispatch.png"
+    ],
+    "call": "0194"
+  }
+}

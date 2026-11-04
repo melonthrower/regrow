@@ -1,0 +1,11 @@
+{
+  "region_id": "r0003",
+  "region": "文本编辑器",
+  "control_id": "c0017",
+  "control": "关闭 meeting_notes.txt 标签",
+  "task": "c0017 / 功能探索",
+  "task_region": "r0003",
+  "category": "other",
+  "stage": "action_target_review",
+  "session": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/session-11"
+}

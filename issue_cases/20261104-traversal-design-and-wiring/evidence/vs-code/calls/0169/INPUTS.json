@@ -1,0 +1,10 @@
+[
+  {
+    "native_path": "action_attempts/a0033/before.png",
+    "exported_image": "input-01.png"
+  },
+  {
+    "native_path": "action_attempts/a0033/after.png",
+    "exported_image": "input-02.png"
+  }
+]

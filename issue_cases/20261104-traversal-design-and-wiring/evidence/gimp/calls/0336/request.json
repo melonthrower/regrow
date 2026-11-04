@@ -1,0 +1,4730 @@
+{
+  "stage": "action_selection",
+  "action_ready": true,
+  "system_prompt": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。\n\n# 运行范围\n\n探索本独立实验桌面 GIMP 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。\n\n操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n按本轮范围及当前证据选择操作。正常增删改已获允许时，可为原问题执行必要操作；遇到具体范围冲突且无允许替代时用 none，reason 说明冲突及重新考虑条件。不得用“可能还会出现确认框”把受限制操作当成只读查看；位置未知本身不是禁止依据。\n\n# 本步任务\n推进给定的探索问题。对照完成条件和已有证据，已有答案就提交结论；仍有未知时，选择能补充信息的一步操作。需要准备时先建立条件，继续围绕原问题判断。\n\n所提动作尚未执行。\n\n# 本步用到的概念\n\n区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。\n\n遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。\n\nexception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。\n\nrecovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”\n\n控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。\n\n引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。\n\n当前可操作的对象应在当前界面中可见、可用，并且没有被其他界面遮挡。使用按键或返回时，同时考虑焦点所在位置。\n\n知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。\n\n功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。\n\n先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。\n\n正例：已进入另一应用，只报告 external_app 及当前界面说明。\n反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。\n\n本节字段格式：\n\n至少符合以下一种格式。\n\n### 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n### 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n# 提出一步操作\n根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。\n- target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。\n- x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。\n- text、end_x、end_y：按下方当前平台动作表填写。\n\n正例：点击当前图中的搜索按钮，reason 写“展开搜索输入框”。\n\n### 本轮平台：OSWorld Linux 桌面\n\n\n| action | 需要填写的字段 | 操作含义 |\n|---|---|---|\n| click、double_click、long_press、right_click、hover | target、reason、x、y、exception、recovery_handoff | 在(x,y)点击、双击、长按、右击或悬停；hover仅移动指针。 |\n| input_text | target、reason、x、y、text、exception、recovery_handoff | 在(x,y)对应输入框全选并替换为text（可打印ASCII），空字符串清空。无需另派聚焦验证或等待屏幕键盘。text_delivered=false表示文字未送达，结果结合回执与后图判断。 |\n| drag | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 从(x,y)按住拖动至(end_x,end_y)。 |\n| scroll | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 在(x,y)发送滚轮，end_x/end_y编码方向与幅度，不是拖动终点，也不要求落在同一内容区。查看下方时end_x=x、end_y<y；查看上方时end_y>y。reason说明希望查看哪侧，无变化不自动表示已到底。 |\n| key_press | reason、text、exception、recovery_handoff | text为一个键名，例如ENTER、ESC、TAB、BACKSPACE、F11、LEFT。 |\n| hotkey | reason、text、exception、recovery_handoff | text用+连接键名，例如CTRL+SHIFT+P；作用于当前焦点，不填坐标。 |\n| back | reason、exception、recovery_handoff | 发送Esc，仅用于有依据的取消或关闭菜单/弹层；页面返回优先使用可见返回按钮，不把Esc当作页面后退或Alt+Left。 |\n| wait | reason、exception、recovery_handoff | 等待新观察；不表示任务完成。 |\n\n键名可使用字母数字、F1–F24、方向键、HOME、END、PAGEUP、PAGEDOWN、INSERT、DELETE、SPACE 及 CTRL、ALT、SHIFT、SUPER；不输入命令或代码。\n滚动示例：桌面从 (700,550) 编码到 (700,250) 表示查看下方内容；该约定不适用于 drag 或 Android 滑动。\n\n# 原问题已有答案：complete\n对照原问题和完成条件，reason 写明现有证据如何回答了问题，并保留仍影响结论的限制。\n\n正例：原问题是“这个入口打开什么”，已有观察显示它打开导出面板，可以据此完成入口问题；面板内尚未了解的设置属于后续问题。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"complete\" |\n| `reason` | 必填 | 文字；不能为空 |\n\n# 本步不操作：none\nreason 说明原问题尚缺什么信息，以及本步为何没有可推进的动作。\n\n正例：需要选择文件才能继续，当前没有可用文件；说明这个缺口，保留原问题。\n\nretry_when：确有障碍需要暂挂时，写可判断的恢复条件。\n正例：“已有可供选择的文件后继续。”\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"none\" |\n| `reason` | 必填 | 文字；不能为空 |\n| `retry_when` | 按需 | 文字；不能为空 |\n\n# 提交本次新增认识\n以下记录更新只用于 action 为 complete 或 none 的回复；有新认识或修订时填写。\n\n# 更新控件用法：controls\nref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。\n\nknowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”\n\nknowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。\n\nknowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `controls` | 按需 | 列表 |\n\n### controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"Aspect ratio\"、\"Width\"、\"Height\"、\"Size\" |\n| `knowledge` | 必填 | 列表；至少 1 项 |\n\n### controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |\n\n# 更新区块用法：regions\nref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。\n\nlocal_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 按需 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"裁剪约束模式候选列表\" |\n| `local_knowledge` | 必填 | 对象 |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |\n\n# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。\n\n功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 Tools 菜单/搜索词 时，填写 [\"Tools 菜单/搜索词\"]。\n\n本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件名称/参数名”加入功能的 constraints。\n\n本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"裁剪约束模式候选列表\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |\n\n# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。",
+  "user_prompt": "## 目标应用\n本次要探索的应用：GIMP\n\n判断当前前景中正在探索的内容，是否属于这个应用。\n如果不属于，exception 填 external_app，\n简要说明现在到了什么界面，不再探索其中的功能。\n\n正例：前景已经是另一应用的页面，应报告 external_app。\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\n\n## 当前任务\n\n区块：裁剪工具选项区\n\n任务：了解「Size」的功能及直接操作效果\n探索内容：了解控件尚不明确的功能、直接效果或打开的内容。\n本任务结算条件：选择 Size 后，观察并确认该模式如何约束裁剪框。\n未答部分：历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：“80x60”是否被解析并生效？在此设置下新建或调整裁剪框时，裁剪框尺寸是否受该值约束？\n\n## 页面与相关历史\n控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\n主菜单栏 [主菜单栏]\n  ├─ File 菜单 [File 菜单]\n    └─ File 菜单内容 [File 菜单内容]\n      ├─ New… [New…]\n        └─ Create a New Image 对话框 [Create a New Image 对话框]\n          ├─ Template 下拉框 [Template 下拉框]\n            └─ Template 候选列表 [Template 候选列表]\n              ├─ Apple iPhone 6/7 模板候选 [Apple iPhone 6/7 模板候选]\n              ├─ Apple iPhone 5 模板候选 [Apple iPhone 5 模板候选]\n              ├─ Template 列表向上滚动箭头 [Template 列表向上滚动箭头]\n              ├─ Template 列表向下滚动箭头 [Template 列表向下滚动箭头]\n              ├─ 3840x2160 (4K UHD) 模板候选 [3840x2160 (4K UHD) 模板候选]\n              ├─ 4096x2160 (Digital Cinema Initiatives 4K) 模板候选 [4096x2160 (Digital Cinema Initiatives 4K) 模板候选]\n              ├─ 3840x2160 4K UHD 模板候选 [3840x2160 4K UHD 模板候选]\n              ├─ B5 (300 ppi) [B5 (300 ppi)]\n              ├─ 88.9×50.8 US Business Card [88.9×50.8 US Business Card]\n              ├─ Web banner leaderboard 728x90 [Web banner leaderboard 728x90]\n              ├─ 1280x720 (HD 720p) [1280x720 (HD 720p)]\n          ├─ Width 输入框 [Width 输入框]\n          ├─ Height 输入框 [Height 输入框]\n          ├─ 图像尺寸单位下拉框 [图像尺寸单位下拉框]\n            └─ 图像尺寸单位候选列表 [图像尺寸单位候选列表]\n              ├─ pixels [pixels]\n              ├─ inches [inches]\n              ├─ millimeters [millimeters]\n              ├─ points [points]\n              ├─ picas [picas]\n              ├─ centimeters [centimeters]\n              ├─ meters [meters]\n              ├─ feet [feet]\n              ├─ yards [yards]\n              ├─ typogr. points [typogr. points]\n              ├─ typogr. picas [typogr. picas]\n          ├─ Advanced Options [Advanced Options]\n          ├─ Help [Help]\n          ├─ Reset [Reset]\n          ├─ Cancel [Cancel]\n          ├─ OK [OK]\n            └─ 图像工作区 [图像工作区（中央用于显示和编辑图像的工作区域。）]\n              ├─ 图像画布区域 [图像画布区域]\n          ├─ X resolution 输入框 [X resolution 输入框]\n          ├─ Y resolution 输入框 [Y resolution 输入框]\n          ├─ Resolution 单位下拉框 [Resolution 单位下拉框]\n          ├─ Color space 下拉框 [Color space 下拉框]\n          ├─ Precision 下拉框 [Precision 下拉框]\n          ├─ Gamma 下拉框 [Gamma 下拉框]\n          ├─ Color manage this image 选项 [Color manage this image 选项]\n          ├─ Color profile 下拉框 [Color profile 下拉框]\n          ├─ Fill with 下拉框 [Fill with 下拉框]\n          ├─ Comment 文本框 [Comment 文本框]\n      ├─ Create [Create]\n      ├─ Open… [Open…]\n      ├─ Open as Layers… [Open as Layers…]\n      ├─ Open Location… [Open Location…]\n      ├─ Open Recent [Open Recent]\n        └─ Open Recent 子菜单 [Open Recent 子菜单]\n          ├─ Screenshot from 2023-12-18 17-21-35.png [Screenshot from 2023-12-18 17-21-35.png]\n          ├─ Document History [Document History]\n      ├─ Save… [Save…]\n      ├─ Save As… [Save As…]\n      ├─ Save a Copy… [Save a Copy…]\n      ├─ Revert [Revert]\n      ├─ Export… [Export…]\n      ├─ Export As… [Export As…]\n      ├─ Create Template… [Create Template…]\n      ├─ Print… [Print…]\n      ├─ Send by Email… [Send by Email…]\n      ├─ Copy Image Location [Copy Image Location]\n      ├─ Show in File Manager [Show in File Manager]\n      ├─ Close View [Close View]\n      ├─ Close All [Close All]\n      ├─ Quit [Quit]\n      ├─ Overwrite city_skyline.jpg [Overwrite city_skyline.jpg]\n  ├─ Edit 菜单 [Edit 菜单]\n  ├─ Select 菜单 [Select 菜单]\n  ├─ View 菜单 [View 菜单]\n  ├─ Image 菜单 [Image 菜单]\n  ├─ Layer 菜单 [Layer 菜单]\n  ├─ Colors 菜单 [Colors 菜单]\n  ├─ Tools 菜单 [Tools 菜单]\n  ├─ Filters 菜单 [Filters 菜单]\n  ├─ Windows 菜单 [Windows 菜单]\n  ├─ Help 菜单 [Help 菜单]\n工具箱 [工具箱]\n  ├─ 工具选择按钮 [工具选择按钮]\n  ├─ 前景色与背景色控件 [前景色与背景色控件]\n裁剪工具选项区 [裁剪工具选项区]（本步关注区块）\n  ├─ Current layer only 选项 [Current layer only 选项]\n  ├─ Delete cropped pixels 选项 [Delete cropped pixels 选项]\n  ├─ Allow growing 选项 [Allow growing 选项]\n  ├─ Expand from center 选项 [Expand from center 选项]\n  ├─ 裁剪约束模式 [裁剪约束模式]\n    └─ 裁剪约束模式候选列表 [裁剪约束模式候选列表]\n      ├─ Aspect ratio [Aspect ratio]\n      ├─ Width [Width]\n      ├─ Height [Height]\n      ├─ Size [Size]\n  ├─ 固定宽高比输入框 [固定宽高比输入框]\n  ├─ 裁剪位置输入框 [裁剪位置输入框]\n  ├─ 裁剪尺寸输入框 [裁剪尺寸输入框]\n  ├─ Highlight 选项 [Highlight 选项]\n  ├─ 参考线模式下拉框 [参考线模式下拉框]\n  ├─ 裁剪约束模式选择器 [裁剪约束模式选择器]\n    └─ [引用：裁剪约束模式候选列表 裁剪约束模式候选列表]\n  ├─ Width 约束值输入框 [Width 约束值输入框]\n  ├─ Fixed 复选框 [Fixed 复选框]\n  ├─ Height 约束值输入框 [Height 约束值输入框]\n  ├─ Size 约束值输入框 [Size 约束值输入框]\n画笔停靠区 [画笔停靠区]\n  ├─ 画笔资源过滤框 [画笔资源过滤框]\n  ├─ 画笔预设网格 [画笔预设网格]\n  ├─ Spacing 设置 [Spacing 设置]\n图层停靠区 [图层停靠区]\n  ├─ 图层、通道和路径标签 [图层、通道和路径标签]\n  ├─ 混合模式下拉框 [混合模式下拉框]\n  ├─ 图层不透明度设置 [图层不透明度设置]\n  ├─ 图层锁定选项 [图层锁定选项]\n  ├─ 图层列表 [图层列表]\nCreate 子菜单 [Create 子菜单]\n  ├─ From Clipboard [From Clipboard]\n  ├─ Screenshot… [Screenshot…]\n图像工作区 [图像工作区（显示当前图像画布及其上的裁剪框。）]\n  ├─ 图像画布区域 [图像画布区域]\n原探索目标：裁剪约束模式候选列表 / Size\n上次已登记前景：裁剪工具选项区、图像工作区\na0122：click「裁剪约束模式选择器」；观察：点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。\na0123：click「Size」；观察：点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。\na0124：input_text「Size 约束值输入框」；输入文本：80x60；观察：在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。\na0125：key_press「裁剪工具选项区」；实际执行：1：\n  操作：key_press\n  输入文本：TAB\n  target：当前工作；观察：在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。；该次更新未确认事项：Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。；Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。\n\n## 相关控件\n- 裁剪工具选项区 裁剪工具选项区\n  k0027：此区块集中设置裁剪工具的行为、裁剪框约束与几何参数，以及裁剪区域的辅助显示。\n  k0029：画布上拖动后，位置和尺寸读数会反映当前裁剪框；本次读数由位置约 (20, 10)、尺寸 320×100 px 变为位置 (6, 4)、尺寸 334×96 px。\n  - Current layer only 选项；target=\"Current layer only 选项\"\n    用途记录：复选框，用于设置裁剪是否仅作用于当前图层。\n  - Delete cropped pixels 选项；target=\"Delete cropped pixels 选项\"\n    用途记录：复选框，用于设置裁剪时是否删除裁剪区域外的像素。\n  - Allow growing 选项；target=\"Allow growing 选项\"\n    用途记录：复选框，用于设置裁剪边界是否允许扩展。\n  - Expand from center 选项；target=\"Expand from center 选项\"\n    用途记录：复选框，用于设置裁剪框是否从中心向外扩展。\n  - 裁剪约束模式；target=\"裁剪约束模式\"\n    用途记录：下拉框用于选择裁剪约束模式。展开后可见 Aspect ratio、Width、Height 和 Size 四个候选项；本次未选择候选项，因此未确认当前设置或各模式对裁剪框的具体影响。\n  - 固定宽高比输入框；target=\"固定宽高比输入框\"\n    用途记录：在输入框中设置宽高比；选择 Aspect ratio 后，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前画布拖动曾得到 240×160 px（3:2）和 360×120 px（3:1）的未提交裁剪框；输入框显示 2:1 时，裁剪框仍可与该值不一致。对存在 360×120 px 未提交裁剪框的状态按 Enter 后，动作后的图像尺寸变为 360×120，裁剪框消失，表明该裁剪已应用；输入框仍显示 2:1。该操作未确认输入框值是否先被提交，也未验证之后拖动是否受 2:1 约束。；在固定宽高比模式下用于填写裁剪比例。本次点击后输入框仍显示被截断的“Curren…”文字；无法确认完整当前值，也未观察到数值改变。；在固定宽高比模式下填写裁剪比例。点击输入框后全选并输入“2:1”，动作后可见该值显示为 2:1；本次仅确认输入框显示值已改变，未由此确认裁剪框约束效果。\n  - 裁剪位置输入框；target=\"裁剪位置输入框\"\n    用途记录：分别输入裁剪区域的位置坐标；当前两个坐标均显示 0，单位为 px。\n  - 裁剪尺寸输入框；target=\"裁剪尺寸输入框\"\n    用途记录：分别输入裁剪区域的宽和高；当前两个数值均显示 0，单位为 px。\n  - Highlight 选项；target=\"Highlight 选项\"\n    用途记录：裁剪区域突出显示设置；可见 Highlight 选项及数值 50.0。\n  - 参考线模式下拉框；target=\"参考线模式下拉框\"\n    用途记录：下拉框用于选择裁剪时的参考线显示模式；当前显示 No guides。\n  - 裁剪约束模式选择器；target=\"裁剪约束模式选择器\"\n    用途记录：通过下拉列表选择裁剪约束模式；本次选择后显示 Width。\n  - Width 约束值输入框；target=\"Width 约束值输入框\"\n    用途记录：Width 模式下可见的约束值为 100 px。本次画布拖动后裁剪框尺寸读数为 334×96 px，故该次观察没有显示框宽被限制为 100 px；是否还需启用其他固定约束选项才能生效，尚未确认。\n  - Fixed 复选框；target=\"Fixed 复选框\"\n    用途记录：可切换 Fixed 复选框。本轮只核对并登记了控件身份，没有操作它，也未验证它对 Width 模式或裁剪框的影响。截图中看起来未勾选。；点击可切换 Fixed 复选框状态。本次点击后由未勾选变为已勾选；在当前 Width 值为 100 px、现有裁剪尺寸为 334×96 px 时，尺寸读数没有改变。启用后对新建裁剪框的约束效果仍待验证。；在当前 Fixed Height 模式下此复选框显示为勾选；本次未切换它，未验证取消勾选后的效果。\n    外观：裁剪工具选项区中带有 Fixed 标签、位于 Width 模式选择器左侧的复选框。\n  - Height 约束值输入框；target=\"Height 约束值输入框\"\n    用途记录：用于填写固定裁剪高度；当前显示 100 px。修改数值后裁剪框如何响应尚未验证。\n    外观：Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。\n  - Size 约束值输入框；target=\"Size 约束值输入框\"\n    用途记录：这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。；输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。\n    外观：位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。\n- 图像工作区（中央用于显示和编辑图像的工作区域。） 图像工作区\n  - 图像画布区域；target=\"图像画布区域\"\n    用途记录：用于显示和编辑已打开的图像；当前没有图像，因此无法确认画布上的编辑操作。；显示当前活动图像的画布。本次在此观察到点击 OK 后出现的 1920×1080 白色画布。；裁剪工具选中时，在画布上拖动可显示矩形裁剪边界；本次拖动后裁剪工具选项显示 Position 为 424, 238、Size 为 1000 × 600 px。按 Enter 确认后，裁剪边界消失，图像尺寸由 1920×1080 变为 1000×600，表明裁剪已应用；本次白色图像仍显示为白色，且有未保存更改标记。；使用裁剪工具在画布上拖动可创建裁剪框；工具选项中的位置和尺寸会显示裁剪框几何参数。本次拖动后位置为 64, 60，尺寸为 400×200 px。出现裁剪框并不表示已经裁剪图像；状态栏提示“Click or press Enter to crop”时，仍需进一步确认或按 Enter 才会应用裁剪。；裁剪工具选中时，在画布上拖动可创建或更新裁剪框；工具选项会显示其位置和尺寸。本次拖动后位置为 564, 100、尺寸为 240×160 px（3:2），裁剪框尚未应用。；裁剪工具选中时，在 Fixed Aspect ratio 输入框可见 2:1 的情况下于画布拖动，本次得到位置 364, 320、尺寸 360×120 px（3:1）的未提交裁剪框；工具选项仍显示 2:1，状态栏提示“Click or press Enter to crop”。本次结果未保持 2:1；尚不能确认原因，也不能确定输入值是否已提交或约束为何未体现。；在图像尺寸为 360×120、裁剪工具选中的情况下，本次于画布拖动后出现未提交的裁剪框，工具选项显示位置 20, 10、尺寸 320×100 px（3.2:1）。固定宽高比输入框同时显示 2:1，但本次框的比例与该值不一致。状态栏提示“Click or press Enter to crop”，图像尺寸仍为 360×120，故本次拖动没有应用裁剪。；在图像画布上拖动可创建或调整裁剪框。本次拖动后位置和尺寸读数变为 (6, 4) 与 334×96 px；此结果未显示宽度受限为 Width 模式中设定的 100 px。；裁剪工具选中且 Height 模式显示 Fixed Height、固定值为 100 px 时，本次拖动后 Position Y 从 60 变为 68，Size 仍为 100×52 px。无法确认拖动实际抓到了裁剪框边缘，因此此结果不能确认 Height 模式调整尺寸时的约束效果；裁剪框仍未提交。；在裁剪工具的 Fixed Height 模式下，Fixed 已勾选且设定值为 100 px 时，本次从裁剪框下边缘向下拖动后，裁剪框 Size 显示为 100×100 px；与拖动前的 100×52 px 相比，高度变为设定的 100 px。裁剪框仍未提交。\n- 裁剪约束模式候选列表 裁剪约束模式候选列表\n  - Size；target=\"Size\"\n    用途记录：点击可选择 Size 裁剪约束模式。选择后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现显示为“0x0”的约束输入；刚选择后裁剪位置仍为 260, 20、裁剪尺寸仍为 100×100 px。尚未验证设置非零尺寸后裁剪框如何响应。\n\n## 后续建议（尚未执行）\n区块：图像工作区（中央用于显示和编辑图像的工作区域。）\n控件：图像画布区域\n操作：drag\n理由：在 Size 模式及输入框显示“80x60”时拖动裁剪框，观察裁剪框及位置、尺寸读数是否体现该约束。\n\n## 当前任务相关功能\n1：\n  功能：选择裁剪约束模式\n  引用：裁剪约束模式候选列表/选择裁剪约束模式\n  用途：在裁剪工具选项区打开候选列表并选择 Aspect ratio、Width、Height 或 Size 模式。选择 Size 后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现约束输入框。该输入框中键入“80x60”后，输入框显示该文本，但裁剪框仍显示 100×100 px；尚未确认该输入已被解析或生效，也尚未验证 Size 模式对裁剪框的约束效果。\n  支持对象：\n    裁剪约束模式候选列表；Aspect ratio；Width；Height；Size\n\n## 可补充知识（仅none/complete）\n原任务所属区块：裁剪约束模式候选列表\n本轮可更新控件引用：\n  Aspect ratio — ref=Aspect ratio；Width — ref=Width；Height — ref=Height；Size — ref=Size\n\n## 下一步\n根据当前截图和上述记录，下一步怎样推进这个探索任务？需要操作时给出动作及必要参数，已有答案时提交结论。\n\n本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "dynamic_prompt": "{\n  \"当前任务\": {\n    \"task\": \"裁剪约束模式候选列表/Size / 功能探索\",\n    \"control\": \"Size\",\n    \"任务\": \"了解「Size」的功能及直接操作效果\",\n    \"探索内容\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：选择 Size 后，观察并确认该模式如何约束裁剪框。\",\n    \"未答部分\": \"历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：“80x60”是否被解析并生效？在此设置下新建或调整裁剪框时，裁剪框尺寸是否受该值约束？\"\n  },\n  \"后续建议（尚未执行）\": {\n    \"region\": \"图像工作区（中央用于显示和编辑图像的工作区域。）\",\n    \"control\": \"图像画布区域\",\n    \"action\": \"drag\",\n    \"reason\": \"在 Size 模式及输入框显示“80x60”时拖动裁剪框，观察裁剪框及位置、尺寸读数是否体现该约束。\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"推进探索任务\",\n    \"范围\": \"裁剪工具选项区\",\n    \"本步边界\": \"围绕原问题选择下一动作；必要准备不替换原目标。\"\n  },\n  \"相关控件\": \"- 裁剪工具选项区 裁剪工具选项区\\n  k0027：此区块集中设置裁剪工具的行为、裁剪框约束与几何参数，以及裁剪区域的辅助显示。\\n  k0029：画布上拖动后，位置和尺寸读数会反映当前裁剪框；本次读数由位置约 (20, 10)、尺寸 320×100 px 变为位置 (6, 4)、尺寸 334×96 px。\\n  - Current layer only 选项；target=\\\"Current layer only 选项\\\"\\n    用途记录：复选框，用于设置裁剪是否仅作用于当前图层。\\n  - Delete cropped pixels 选项；target=\\\"Delete cropped pixels 选项\\\"\\n    用途记录：复选框，用于设置裁剪时是否删除裁剪区域外的像素。\\n  - Allow growing 选项；target=\\\"Allow growing 选项\\\"\\n    用途记录：复选框，用于设置裁剪边界是否允许扩展。\\n  - Expand from center 选项；target=\\\"Expand from center 选项\\\"\\n    用途记录：复选框，用于设置裁剪框是否从中心向外扩展。\\n  - 裁剪约束模式；target=\\\"裁剪约束模式\\\"\\n    用途记录：下拉框用于选择裁剪约束模式。展开后可见 Aspect ratio、Width、Height 和 Size 四个候选项；本次未选择候选项，因此未确认当前设置或各模式对裁剪框的具体影响。\\n  - 固定宽高比输入框；target=\\\"固定宽高比输入框\\\"\\n    用途记录：在输入框中设置宽高比；选择 Aspect ratio 后，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前画布拖动曾得到 240×160 px（3:2）和 360×120 px（3:1）的未提交裁剪框；输入框显示 2:1 时，裁剪框仍可与该值不一致。对存在 360×120 px 未提交裁剪框的状态按 Enter 后，动作后的图像尺寸变为 360×120，裁剪框消失，表明该裁剪已应用；输入框仍显示 2:1。该操作未确认输入框值是否先被提交，也未验证之后拖动是否受 2:1 约束。；在固定宽高比模式下用于填写裁剪比例。本次点击后输入框仍显示被截断的“Curren…”文字；无法确认完整当前值，也未观察到数值改变。；在固定宽高比模式下填写裁剪比例。点击输入框后全选并输入“2:1”，动作后可见该值显示为 2:1；本次仅确认输入框显示值已改变，未由此确认裁剪框约束效果。\\n  - 裁剪位置输入框；target=\\\"裁剪位置输入框\\\"\\n    用途记录：分别输入裁剪区域的位置坐标；当前两个坐标均显示 0，单位为 px。\\n  - 裁剪尺寸输入框；target=\\\"裁剪尺寸输入框\\\"\\n    用途记录：分别输入裁剪区域的宽和高；当前两个数值均显示 0，单位为 px。\\n  - Highlight 选项；target=\\\"Highlight 选项\\\"\\n    用途记录：裁剪区域突出显示设置；可见 Highlight 选项及数值 50.0。\\n  - 参考线模式下拉框；target=\\\"参考线模式下拉框\\\"\\n    用途记录：下拉框用于选择裁剪时的参考线显示模式；当前显示 No guides。\\n  - 裁剪约束模式选择器；target=\\\"裁剪约束模式选择器\\\"\\n    用途记录：通过下拉列表选择裁剪约束模式；本次选择后显示 Width。\\n  - Width 约束值输入框；target=\\\"Width 约束值输入框\\\"\\n    用途记录：Width 模式下可见的约束值为 100 px。本次画布拖动后裁剪框尺寸读数为 334×96 px，故该次观察没有显示框宽被限制为 100 px；是否还需启用其他固定约束选项才能生效，尚未确认。\\n  - Fixed 复选框；target=\\\"Fixed 复选框\\\"\\n    用途记录：可切换 Fixed 复选框。本轮只核对并登记了控件身份，没有操作它，也未验证它对 Width 模式或裁剪框的影响。截图中看起来未勾选。；点击可切换 Fixed 复选框状态。本次点击后由未勾选变为已勾选；在当前 Width 值为 100 px、现有裁剪尺寸为 334×96 px 时，尺寸读数没有改变。启用后对新建裁剪框的约束效果仍待验证。；在当前 Fixed Height 模式下此复选框显示为勾选；本次未切换它，未验证取消勾选后的效果。\\n    外观：裁剪工具选项区中带有 Fixed 标签、位于 Width 模式选择器左侧的复选框。\\n  - Height 约束值输入框；target=\\\"Height 约束值输入框\\\"\\n    用途记录：用于填写固定裁剪高度；当前显示 100 px。修改数值后裁剪框如何响应尚未验证。\\n    外观：Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。\\n  - Size 约束值输入框；target=\\\"Size 约束值输入框\\\"\\n    用途记录：这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。；输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。\\n    外观：位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。\\n- 图像工作区（中央用于显示和编辑图像的工作区域。） 图像工作区\\n  - 图像画布区域；target=\\\"图像画布区域\\\"\\n    用途记录：用于显示和编辑已打开的图像；当前没有图像，因此无法确认画布上的编辑操作。；显示当前活动图像的画布。本次在此观察到点击 OK 后出现的 1920×1080 白色画布。；裁剪工具选中时，在画布上拖动可显示矩形裁剪边界；本次拖动后裁剪工具选项显示 Position 为 424, 238、Size 为 1000 × 600 px。按 Enter 确认后，裁剪边界消失，图像尺寸由 1920×1080 变为 1000×600，表明裁剪已应用；本次白色图像仍显示为白色，且有未保存更改标记。；使用裁剪工具在画布上拖动可创建裁剪框；工具选项中的位置和尺寸会显示裁剪框几何参数。本次拖动后位置为 64, 60，尺寸为 400×200 px。出现裁剪框并不表示已经裁剪图像；状态栏提示“Click or press Enter to crop”时，仍需进一步确认或按 Enter 才会应用裁剪。；裁剪工具选中时，在画布上拖动可创建或更新裁剪框；工具选项会显示其位置和尺寸。本次拖动后位置为 564, 100、尺寸为 240×160 px（3:2），裁剪框尚未应用。；裁剪工具选中时，在 Fixed Aspect ratio 输入框可见 2:1 的情况下于画布拖动，本次得到位置 364, 320、尺寸 360×120 px（3:1）的未提交裁剪框；工具选项仍显示 2:1，状态栏提示“Click or press Enter to crop”。本次结果未保持 2:1；尚不能确认原因，也不能确定输入值是否已提交或约束为何未体现。；在图像尺寸为 360×120、裁剪工具选中的情况下，本次于画布拖动后出现未提交的裁剪框，工具选项显示位置 20, 10、尺寸 320×100 px（3.2:1）。固定宽高比输入框同时显示 2:1，但本次框的比例与该值不一致。状态栏提示“Click or press Enter to crop”，图像尺寸仍为 360×120，故本次拖动没有应用裁剪。；在图像画布上拖动可创建或调整裁剪框。本次拖动后位置和尺寸读数变为 (6, 4) 与 334×96 px；此结果未显示宽度受限为 Width 模式中设定的 100 px。；裁剪工具选中且 Height 模式显示 Fixed Height、固定值为 100 px 时，本次拖动后 Position Y 从 60 变为 68，Size 仍为 100×52 px。无法确认拖动实际抓到了裁剪框边缘，因此此结果不能确认 Height 模式调整尺寸时的约束效果；裁剪框仍未提交。；在裁剪工具的 Fixed Height 模式下，Fixed 已勾选且设定值为 100 px 时，本次从裁剪框下边缘向下拖动后，裁剪框 Size 显示为 100×100 px；与拖动前的 100×52 px 相比，高度变为设定的 100 px。裁剪框仍未提交。\\n- 裁剪约束模式候选列表 裁剪约束模式候选列表\\n  - Size；target=\\\"Size\\\"\\n    用途记录：点击可选择 Size 裁剪约束模式。选择后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现显示为“0x0”的约束输入；刚选择后裁剪位置仍为 260, 20、裁剪尺寸仍为 100×100 px。尚未验证设置非零尺寸后裁剪框如何响应。\",\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\n主菜单栏 [主菜单栏]\\n  ├─ File 菜单 [File 菜单]\\n    └─ File 菜单内容 [File 菜单内容]\\n      ├─ New… [New…]\\n        └─ Create a New Image 对话框 [Create a New Image 对话框]\\n          ├─ Template 下拉框 [Template 下拉框]\\n            └─ Template 候选列表 [Template 候选列表]\\n              ├─ Apple iPhone 6/7 模板候选 [Apple iPhone 6/7 模板候选]\\n              ├─ Apple iPhone 5 模板候选 [Apple iPhone 5 模板候选]\\n              ├─ Template 列表向上滚动箭头 [Template 列表向上滚动箭头]\\n              ├─ Template 列表向下滚动箭头 [Template 列表向下滚动箭头]\\n              ├─ 3840x2160 (4K UHD) 模板候选 [3840x2160 (4K UHD) 模板候选]\\n              ├─ 4096x2160 (Digital Cinema Initiatives 4K) 模板候选 [4096x2160 (Digital Cinema Initiatives 4K) 模板候选]\\n              ├─ 3840x2160 4K UHD 模板候选 [3840x2160 4K UHD 模板候选]\\n              ├─ B5 (300 ppi) [B5 (300 ppi)]\\n              ├─ 88.9×50.8 US Business Card [88.9×50.8 US Business Card]\\n              ├─ Web banner leaderboard 728x90 [Web banner leaderboard 728x90]\\n              ├─ 1280x720 (HD 720p) [1280x720 (HD 720p)]\\n          ├─ Width 输入框 [Width 输入框]\\n          ├─ Height 输入框 [Height 输入框]\\n          ├─ 图像尺寸单位下拉框 [图像尺寸单位下拉框]\\n            └─ 图像尺寸单位候选列表 [图像尺寸单位候选列表]\\n              ├─ pixels [pixels]\\n              ├─ inches [inches]\\n              ├─ millimeters [millimeters]\\n              ├─ points [points]\\n              ├─ picas [picas]\\n              ├─ centimeters [centimeters]\\n              ├─ meters [meters]\\n              ├─ feet [feet]\\n              ├─ yards [yards]\\n              ├─ typogr. points [typogr. points]\\n              ├─ typogr. picas [typogr. picas]\\n          ├─ Advanced Options [Advanced Options]\\n          ├─ Help [Help]\\n          ├─ Reset [Reset]\\n          ├─ Cancel [Cancel]\\n          ├─ OK [OK]\\n            └─ 图像工作区 [图像工作区（中央用于显示和编辑图像的工作区域。）]\\n              ├─ 图像画布区域 [图像画布区域]\\n          ├─ X resolution 输入框 [X resolution 输入框]\\n          ├─ Y resolution 输入框 [Y resolution 输入框]\\n          ├─ Resolution 单位下拉框 [Resolution 单位下拉框]\\n          ├─ Color space 下拉框 [Color space 下拉框]\\n          ├─ Precision 下拉框 [Precision 下拉框]\\n          ├─ Gamma 下拉框 [Gamma 下拉框]\\n          ├─ Color manage this image 选项 [Color manage this image 选项]\\n          ├─ Color profile 下拉框 [Color profile 下拉框]\\n          ├─ Fill with 下拉框 [Fill with 下拉框]\\n          ├─ Comment 文本框 [Comment 文本框]\\n      ├─ Create [Create]\\n      ├─ Open… [Open…]\\n      ├─ Open as Layers… [Open as Layers…]\\n      ├─ Open Location… [Open Location…]\\n      ├─ Open Recent [Open Recent]\\n        └─ Open Recent 子菜单 [Open Recent 子菜单]\\n          ├─ Screenshot from 2023-12-18 17-21-35.png [Screenshot from 2023-12-18 17-21-35.png]\\n          ├─ Document History [Document History]\\n      ├─ Save… [Save…]\\n      ├─ Save As… [Save As…]\\n      ├─ Save a Copy… [Save a Copy…]\\n      ├─ Revert [Revert]\\n      ├─ Export… [Export…]\\n      ├─ Export As… [Export As…]\\n      ├─ Create Template… [Create Template…]\\n      ├─ Print… [Print…]\\n      ├─ Send by Email… [Send by Email…]\\n      ├─ Copy Image Location [Copy Image Location]\\n      ├─ Show in File Manager [Show in File Manager]\\n      ├─ Close View [Close View]\\n      ├─ Close All [Close All]\\n      ├─ Quit [Quit]\\n      ├─ Overwrite city_skyline.jpg [Overwrite city_skyline.jpg]\\n  ├─ Edit 菜单 [Edit 菜单]\\n  ├─ Select 菜单 [Select 菜单]\\n  ├─ View 菜单 [View 菜单]\\n  ├─ Image 菜单 [Image 菜单]\\n  ├─ Layer 菜单 [Layer 菜单]\\n  ├─ Colors 菜单 [Colors 菜单]\\n  ├─ Tools 菜单 [Tools 菜单]\\n  ├─ Filters 菜单 [Filters 菜单]\\n  ├─ Windows 菜单 [Windows 菜单]\\n  ├─ Help 菜单 [Help 菜单]\\n工具箱 [工具箱]\\n  ├─ 工具选择按钮 [工具选择按钮]\\n  ├─ 前景色与背景色控件 [前景色与背景色控件]\\n裁剪工具选项区 [裁剪工具选项区]（本步关注区块）\\n  ├─ Current layer only 选项 [Current layer only 选项]\\n  ├─ Delete cropped pixels 选项 [Delete cropped pixels 选项]\\n  ├─ Allow growing 选项 [Allow growing 选项]\\n  ├─ Expand from center 选项 [Expand from center 选项]\\n  ├─ 裁剪约束模式 [裁剪约束模式]\\n    └─ 裁剪约束模式候选列表 [裁剪约束模式候选列表]\\n      ├─ Aspect ratio [Aspect ratio]\\n      ├─ Width [Width]\\n      ├─ Height [Height]\\n      ├─ Size [Size]\\n  ├─ 固定宽高比输入框 [固定宽高比输入框]\\n  ├─ 裁剪位置输入框 [裁剪位置输入框]\\n  ├─ 裁剪尺寸输入框 [裁剪尺寸输入框]\\n  ├─ Highlight 选项 [Highlight 选项]\\n  ├─ 参考线模式下拉框 [参考线模式下拉框]\\n  ├─ 裁剪约束模式选择器 [裁剪约束模式选择器]\\n    └─ [引用：裁剪约束模式候选列表 裁剪约束模式候选列表]\\n  ├─ Width 约束值输入框 [Width 约束值输入框]\\n  ├─ Fixed 复选框 [Fixed 复选框]\\n  ├─ Height 约束值输入框 [Height 约束值输入框]\\n  ├─ Size 约束值输入框 [Size 约束值输入框]\\n画笔停靠区 [画笔停靠区]\\n  ├─ 画笔资源过滤框 [画笔资源过滤框]\\n  ├─ 画笔预设网格 [画笔预设网格]\\n  ├─ Spacing 设置 [Spacing 设置]\\n图层停靠区 [图层停靠区]\\n  ├─ 图层、通道和路径标签 [图层、通道和路径标签]\\n  ├─ 混合模式下拉框 [混合模式下拉框]\\n  ├─ 图层不透明度设置 [图层不透明度设置]\\n  ├─ 图层锁定选项 [图层锁定选项]\\n  ├─ 图层列表 [图层列表]\\nCreate 子菜单 [Create 子菜单]\\n  ├─ From Clipboard [From Clipboard]\\n  ├─ Screenshot… [Screenshot…]\\n图像工作区 [图像工作区（显示当前图像画布及其上的裁剪框。）]\\n  ├─ 图像画布区域 [图像画布区域]\\n原探索目标：裁剪约束模式候选列表 / Size\\n上次已登记前景：裁剪工具选项区、图像工作区\\na0122：click「裁剪约束模式选择器」；观察：点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。\\na0123：click「Size」；观察：点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。\\na0124：input_text「Size 约束值输入框」；输入文本：80x60；观察：在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。\\na0125：key_press「裁剪工具选项区」；实际执行：1：\\n  操作：key_press\\n  输入文本：TAB\\n  target：当前工作；观察：在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。；该次更新未确认事项：Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。；Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。\",\n  \"当前任务相关功能\": [\n    {\n      \"功能\": \"选择裁剪约束模式\",\n      \"引用\": \"裁剪约束模式候选列表/选择裁剪约束模式\",\n      \"用途\": \"在裁剪工具选项区打开候选列表并选择 Aspect ratio、Width、Height 或 Size 模式。选择 Size 后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现约束输入框。该输入框中键入“80x60”后，输入框显示该文本，但裁剪框仍显示 100×100 px；尚未确认该输入已被解析或生效，也尚未验证 Size 模式对裁剪框的约束效果。\",\n      \"支持对象\": [\n        \"裁剪约束模式候选列表\",\n        \"Aspect ratio\",\n        \"Width\",\n        \"Height\",\n        \"Size\"\n      ]\n    }\n  ],\n  \"目标应用\": \"本次要探索的应用：GIMP\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"可补充知识（仅none/complete）\": {\n    \"原任务所属区块\": \"裁剪约束模式候选列表\",\n    \"本轮可更新控件引用\": [\n      \"Aspect ratio — ref=Aspect ratio\",\n      \"Width — ref=Width\",\n      \"Height — ref=Height\",\n      \"Size — ref=Size\"\n    ]\n  }\n}\n\n本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。",
+  "fixed_parts": [
+    {
+      "path": "共享/探索角色.prompt",
+      "text": "# 角色与目标\n你通过观察和必要交互了解应用，记录区块中可完成的操作、使用所需的参数和区块间的访问关系。把这些认识组织成可复用的应用图，供后续组合复杂任务，并在实机上根据图与当前界面完成任务、采集轨迹。\n\n探索以掌握用法为止。明确的功能直接登记；同类数据选代表登记和探索，复用共同操作方式；通向尚未了解的功能内容的入口继续探索。"
+    },
+    {
+      "path": "运行/范围",
+      "text": "# 运行范围\n\n探索本独立实验桌面 GIMP 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。"
+    },
+    {
+      "path": "平台/遍历环境只读.prompt",
+      "text": "操作依据本轮运行范围。范围允许实验环境内的正常增删改时，可执行其中的创建、编辑、保存、提交和删除；不因按钮含有删除或保存等含义而一律排除。范围仍要求只读时，继续遵守只读限制；未提供修改授权时，不自行扩大范围。\n本轮明确要求另行安排的控制通道或环境操作，保留为具体限制，不扩大到整个设置应用或所有删除功能。依据实际对象和作用判断，历史任务与旧范围记录不构成本轮新增授权。\n\n按本轮范围及当前证据选择操作。正常增删改已获允许时，可为原问题执行必要操作；遇到具体范围冲突且无允许替代时用 none，reason 说明冲突及重新考虑条件。不得用“可能还会出现确认框”把受限制操作当成只读查看；位置未知本身不是禁止依据。"
+    },
+    {
+      "path": "调用/选择下一步.prompt",
+      "text": "# 本步任务\n推进给定的探索问题。对照完成条件和已有证据，已有答案就提交结论；仍有未知时，选择能补充信息的一步操作。需要准备时先建立条件，继续围绕原问题判断。\n\n所提动作尚未执行。"
+    },
+    {
+      "path": "输出格式/必要概念",
+      "text": "# 本步用到的概念"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.common",
+      "text": "区块是在界面中共同组织、服务相关操作或展示的一组内容，可以包含多个控件和功能，也可以只展示信息。结合服务对象、包含关系，以及探索中怎样一起出现、隐藏、替换或滚动来判断边界。\n正例：共同编辑并提交同一个对象的多个字段，可以组成一个区块。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.definition",
+      "text": "遍历的目标是逐步建立 GUI 探索图。每次任务只需解决当前对象的一个具体、尚未验证的问题，通过必要的界面操作和观察，确认其用途、操作结果或访问关系。\n\n- 简单明确：优先提出能够通过少量操作和直接观察得到答案的问题，不预先要求弄清整个功能流程。\n- 对象边界：任务围绕当前控件或区块提出。操作后发现的其他独立控件、子菜单或目标区块，可以成为后续任务，不自动纳入原任务的完成条件。\n- 完成条件：只要求获得足以回答当前问题的证据。若当前对象的结果仍不明确，可以继续观察；若问题已经回答，应结束任务。\n- 逐步扩展：探索过程中发现的新入口、功能或未知问题，按需另行提出，逐步补全探索图。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.exception_values",
+      "text": "exception：none 表示没有阻碍本次判断的异常；blocking_popup 是妨碍必要观察的提示；system_error 是系统或进程异常；unexpected_exit 是目标应用意外退出；external_app 表示当前前景中正在探索的内容不属于本次目标应用；unclassified 是存在阻碍但尚不能分类。\n正常业务菜单和对话框继续作为应用界面处理。\n正例：参数选择菜单正常展开时，exception 仍为 none。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.recovery_handoff",
+      "text": "recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要的线索；没有异常时填空字符串。\n正例：“登录提示遮住原表单，需要先关闭提示才能继续观察。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.definition",
+      "text": "控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。\n不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。\n正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.references",
+      "text": "引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.action_availability",
+      "text": "当前可操作的对象应在当前界面中可见、可用，并且没有被其他界面遮挡。使用按键或返回时，同时考虑焦点所在位置。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_base",
+      "text": "知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function",
+      "text": "功能描述用户能够完成的目的，例如“按名称查找条目”；相关对象及其知识说明怎样实现。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.application_exception",
+      "text": "先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。\n\n正例：已进入另一应用，只报告 external_app 及当前界面说明。\n反例：已经报告 external_app，却继续提出该界面的功能任务或探索动作。"
+    },
+    {
+      "path": "输出格式/字段组-region.application_exception",
+      "text": "本节字段格式：\n\n至少符合以下一种格式。\n\n### 格式 1（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"none\" |\n| `recovery_handoff` | 必填 | 文字 |\n\n### 格式 2（对象）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `exception` | 必填 | 可用值：\"blocking_popup\"、\"system_error\"、\"unexpected_exit\"、\"external_app\"、\"unclassified\" |\n| `recovery_handoff` | 必填 | 文字 |"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.proposal",
+      "text": "# 提出一步操作\n根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。\n- target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。\n- x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。\n- text、end_x、end_y：按下方当前平台动作表填写。\n\n正例：点击当前图中的搜索按钮，reason 写“展开搜索输入框”。"
+    },
+    {
+      "path": "平台/桌面执行.prompt/片段-动作合同",
+      "text": "### 本轮平台：OSWorld Linux 桌面\n\n\n| action | 需要填写的字段 | 操作含义 |\n|---|---|---|\n| click、double_click、long_press、right_click、hover | target、reason、x、y、exception、recovery_handoff | 在(x,y)点击、双击、长按、右击或悬停；hover仅移动指针。 |\n| input_text | target、reason、x、y、text、exception、recovery_handoff | 在(x,y)对应输入框全选并替换为text（可打印ASCII），空字符串清空。无需另派聚焦验证或等待屏幕键盘。text_delivered=false表示文字未送达，结果结合回执与后图判断。 |\n| drag | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 从(x,y)按住拖动至(end_x,end_y)。 |\n| scroll | target、reason、x、y、end_x、end_y、exception、recovery_handoff | 在(x,y)发送滚轮，end_x/end_y编码方向与幅度，不是拖动终点，也不要求落在同一内容区。查看下方时end_x=x、end_y<y；查看上方时end_y>y。reason说明希望查看哪侧，无变化不自动表示已到底。 |\n| key_press | reason、text、exception、recovery_handoff | text为一个键名，例如ENTER、ESC、TAB、BACKSPACE、F11、LEFT。 |\n| hotkey | reason、text、exception、recovery_handoff | text用+连接键名，例如CTRL+SHIFT+P；作用于当前焦点，不填坐标。 |\n| back | reason、exception、recovery_handoff | 发送Esc，仅用于有依据的取消或关闭菜单/弹层；页面返回优先使用可见返回按钮，不把Esc当作页面后退或Alt+Left。 |\n| wait | reason、exception、recovery_handoff | 等待新观察；不表示任务完成。 |\n\n键名可使用字母数字、F1–F24、方向键、HOME、END、PAGEUP、PAGEDOWN、INSERT、DELETE、SPACE 及 CTRL、ALT、SHIFT、SUPER；不输入命令或代码。\n滚动示例：桌面从 (700,550) 编码到 (700,250) 表示查看下方内容；该约定不适用于 drag 或 Android 滑动。"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.complete",
+      "text": "# 原问题已有答案：complete\n对照原问题和完成条件，reason 写明现有证据如何回答了问题，并保留仍影响结论的限制。\n\n正例：原问题是“这个入口打开什么”，已有观察显示它打开导出面板，可以据此完成入口问题；面板内尚未了解的设置属于后续问题。"
+    },
+    {
+      "path": "输出格式/字段组-action.complete",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"complete\" |\n| `reason` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/动作.prompt/片段-action.none",
+      "text": "# 本步不操作：none\nreason 说明原问题尚缺什么信息，以及本步为何没有可推进的动作。\n\n正例：需要选择文件才能继续，当前没有可用文件；说明这个缺口，保留原问题。"
+    },
+    {
+      "path": "对象/任务.prompt/片段-task.retry_when",
+      "text": "retry_when：确有障碍需要暂挂时，写可判断的恢复条件。\n正例：“已有可供选择的文件后继续。”"
+    },
+    {
+      "path": "输出格式/字段组-action.none",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `action` | 必填 | 可用值：\"none\" |\n| `reason` | 必填 | 文字；不能为空 |\n| `retry_when` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "输出格式/记录更新分支-complete-none",
+      "text": "# 提交本次新增认识\n以下记录更新只用于 action 为 complete 或 none 的回复；有新认识或修订时填写。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_revision",
+      "text": "# 更新控件用法：controls\nref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_description",
+      "text": "knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。\n正例：“选中条目后，点击此按钮可删除选中的条目。”"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_index",
+      "text": "knowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。"
+    },
+    {
+      "path": "对象/控件.prompt/片段-control.knowledge_constraints",
+      "text": "knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。\n正例：\"搜索词\": {\"description\": \"填写要查找的关键词。\"}；\"导出格式\": {\"description\": \"可选择 PDF 或纯文本。\"}"
+    },
+    {
+      "path": "输出格式/字段组-control.knowledge_revision",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `controls` | 按需 | 列表 |\n\n### controls（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"Aspect ratio\"、\"Width\"、\"Height\"、\"Size\" |\n| `knowledge` | 必填 | 列表；至少 1 项 |\n\n### controls → knowledge（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `index` | 按需 | 整数；不小于 0 |\n| `description` | 必填 | 文字；不能为空 |\n| `constraints` | 按需 | 对象；至少 1 个条目 |\n\n### controls → knowledge → constraints\n\n以名称作为键；每个键对应的值填写如下。\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `description` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.knowledge_edit",
+      "text": "# 更新区块用法：regions\nref 选择本轮提供的区块，local_knowledge 填本次新增或修订的整体用法。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.local_knowledge",
+      "text": "local_knowledge 记录区块整体用法或多个控件怎样配合。add 是新增说明的字符串列表；update 用旧段落 id 和完整新 text 修订；delete 填被证伪或被替代的旧段落 id。保留仍成立的条件，省略的旧段落保持。\n本轮证据补全或推翻了所提供的区块旧知识时，在同一回复中用 update 或 delete 修正相关段落，不另加一段与旧话矛盾的说明。具体控件的候选值和使用限制留在对应控件知识，区块知识概括整体用法；任务进度和“本次尚未查看”等时点记录不作为长期概述。只修订本轮允许修改的区块、有证据支持的部分，不将部分观察写成全部已确认，也不删除其他条件下仍成立的认识。\n正例：add 填 [\"先输入名称，再从匹配列表中选择目标条目\"]。\n修订例：旧段落 k0001 写“设置区提供两个延迟下拉框；尚未确认候选项”，本轮已查看候选项，则 update 填 [{\"id\":\"k0001\",\"text\":\"设置区提供两个延迟下拉框，分别配置屏幕空白和锁定的等待时间。\"}]，具体候选项写入对应控件知识；没有实际应用设置，不声称修改效果已验证。"
+    },
+    {
+      "path": "输出格式/字段组-region.knowledge_edit",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `regions` | 按需 | 列表 |\n\n### regions（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 可用值：\"裁剪约束模式候选列表\" |\n| `local_knowledge` | 必填 | 对象 |\n\n### regions → local_knowledge\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `add` | 按需 | 列表（元素要求：文字；不能为空） |\n| `update` | 按需 | 列表 |\n| `delete` | 按需 | 列表（元素要求：文字；不能为空） |\n\n### regions → local_knowledge → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `id` | 必填 | 文字；不能为空 |\n| `text` | 必填 | 文字；不能为空 |"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_updates",
+      "text": "# 更新可用功能：function_updates\nregion 选择承载功能的区块。add 新增功能；update 用已有 ref 和 changes 修订；remove 用 ref 和 reason 删除，合并时可用 replace_with 指明保留项。\n每项 name 写用户目的，description 说明用途和适用情况，supports 引用本区块中提供相应用法的控件名称或区块名称。已有知识和本次有据补充的对象知识均可作为支持。\n正例：输入框提供名称输入、列表提供匹配项选择，可新增“按名称查找条目”，用这些对象作为 supports。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_constraints",
+      "text": "功能的 constraints 是参数引用列表，复制材料给出的“控件名称/参数名”，参数来源控件同时列入 supports。\n正例：材料给出 Tools 菜单/搜索词 时，填写 [\"Tools 菜单/搜索词\"]。"
+    },
+    {
+      "path": "对象/区块.prompt/片段-region.function_new_constraints",
+      "text": "本次在 controls.knowledge.constraints 中有据新增的参数，也可按“控件名称/参数名”加入功能的 constraints。"
+    },
+    {
+      "path": "输出格式/字段组-region.function_updates",
+      "text": "本节字段格式：\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `function_updates` | 按需 | 列表 |\n\n### function_updates（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `region` | 必填 | 可用值：\"裁剪约束模式候选列表\" |\n| `add` | 按需 | 列表 |\n| `update` | 按需 | 列表 |\n| `remove` | 按需 | 列表 |\n\n### function_updates → add（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 必填 | 文字；不能为空 |\n| `description` | 必填 | 文字；不能为空 |\n| `supports` | 必填 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → update（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `changes` | 必填 | 对象 |\n\n### function_updates → update → changes\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `name` | 按需 | 文字；不能为空 |\n| `description` | 按需 | 文字；不能为空 |\n| `supports` | 按需 | 列表（元素要求：文字；不能为空）；至少 1 项；不能重复 |\n| `constraints` | 按需 | 列表（元素要求：文字；不能为空）；不能重复 |\n\n### function_updates → remove（列表中的一项）\n\n\n| 字段 | 是否填写 | 内容与取值 |\n|---|---|---|\n| `ref` | 必填 | 文字；不能为空 |\n| `reason` | 必填 | 文字；不能为空 |\n| `replace_with` | 按需 | 文字；不能为空 |"
+    },
+    {
+      "path": "输出格式/组合返回要求",
+      "text": "# 返回方式\n只返回一个 JSON 对象；必填项按本节格式填写，可选项在需要时提供。正例说明写法，具体内容依据本次材料。"
+    }
+  ],
+  "response_schema": {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "click"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "double_click"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "long_press"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "input_text"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "text",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "scroll"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "end_x",
+          "end_y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "back"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "wait"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "key_press"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "text",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "hotkey"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "text",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "hover"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "right_click"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "drag"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "action",
+          "reason",
+          "x",
+          "y",
+          "end_x",
+          "end_y",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retry_when": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          },
+          "controls": {
+            "$ref": "#/$defs/shared_1"
+          },
+          "regions": {
+            "$ref": "#/$defs/shared_8"
+          },
+          "function_updates": {
+            "$ref": "#/$defs/shared_13"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "complete"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "按需补充判断理由；不重复动作结果或已有知识。"
+          },
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          },
+          "controls": {
+            "$ref": "#/$defs/shared_1"
+          },
+          "regions": {
+            "$ref": "#/$defs/shared_8"
+          },
+          "function_updates": {
+            "$ref": "#/$defs/shared_13"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "exception": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "exception": {
+            "type": "string",
+            "enum": [
+              "blocking_popup",
+              "system_error",
+              "unexpected_exit",
+              "external_app",
+              "unclassified"
+            ]
+          },
+          "recovery_handoff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "exception",
+          "recovery_handoff"
+        ],
+        "additionalProperties": false
+      }
+    ],
+    "type": "object",
+    "$defs": {
+      "shared_3": {
+        "type": "string",
+        "enum": [
+          "Aspect ratio",
+          "Width",
+          "Height",
+          "Size"
+        ],
+        "description": "控件树中的控件ID，例如Tools 菜单。"
+      },
+      "shared_7": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "shared_6": {
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": {
+          "$ref": "#/$defs/shared_7"
+        }
+      },
+      "shared_5": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "修订给定已有知识时引用其序号；新增省略。"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+          },
+          "constraints": {
+            "$ref": "#/$defs/shared_6"
+          }
+        },
+        "required": [
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "shared_4": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/$defs/shared_5"
+        }
+      },
+      "shared_2": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "$ref": "#/$defs/shared_3"
+          },
+          "knowledge": {
+            "$ref": "#/$defs/shared_4"
+          }
+        },
+        "required": [
+          "ref",
+          "knowledge"
+        ],
+        "additionalProperties": false
+      },
+      "shared_1": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_2"
+        }
+      },
+      "shared_12": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "shared_11": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_12"
+        }
+      },
+      "shared_10": {
+        "type": "object",
+        "properties": {
+          "add": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "update": {
+            "$ref": "#/$defs/shared_11"
+          },
+          "delete": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "shared_9": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "enum": [
+              "裁剪约束模式候选列表"
+            ]
+          },
+          "local_knowledge": {
+            "$ref": "#/$defs/shared_10"
+          }
+        },
+        "required": [
+          "ref",
+          "local_knowledge"
+        ],
+        "additionalProperties": false
+      },
+      "shared_8": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_9"
+        }
+      },
+      "shared_16": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "supports": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "supports"
+        ],
+        "additionalProperties": false
+      },
+      "shared_15": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_16"
+        }
+      },
+      "shared_19": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "supports": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "shared_18": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changes": {
+            "$ref": "#/$defs/shared_19"
+          }
+        },
+        "required": [
+          "ref",
+          "changes"
+        ],
+        "additionalProperties": false
+      },
+      "shared_17": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_18"
+        }
+      },
+      "shared_21": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "replace_with": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "ref",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "shared_20": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_21"
+        }
+      },
+      "shared_14": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "裁剪约束模式候选列表"
+            ]
+          },
+          "add": {
+            "$ref": "#/$defs/shared_15"
+          },
+          "update": {
+            "$ref": "#/$defs/shared_17"
+          },
+          "remove": {
+            "$ref": "#/$defs/shared_20"
+          }
+        },
+        "required": [
+          "region"
+        ],
+        "additionalProperties": false
+      },
+      "shared_13": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/shared_14"
+        }
+      }
+    }
+  },
+  "response_schema_path": "输出格式/选择探索入口.schema",
+  "image_refs": [
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-06/round-0012/current.png"
+  ],
+  "progress": {
+    "registered_controls": 15,
+    "controls_with_delivery": 5,
+    "controls_with_observed_effect": 0,
+    "controls_with_unresolved_attempts": 0,
+    "controls_without_record": 10,
+    "scope": "registered_region_controls"
+  },
+  "control_progress": {
+    "c0014": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0015": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0016": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0017": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0018": {
+      "attempts": [
+        "a0104",
+        "a0113"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0019": {
+      "attempts": [
+        "a0108",
+        "a0109"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0020": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0021": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0022": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0023": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0103": {
+      "attempts": [
+        "a0118",
+        "a0122"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0104": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0105": {
+      "attempts": [
+        "a0116"
+      ],
+      "summary": "有执行回执"
+    },
+    "c0106": {
+      "attempts": [],
+      "summary": "所提供图中无动作记录"
+    },
+    "c0107": {
+      "attempts": [
+        "a0124"
+      ],
+      "summary": "有执行回执"
+    }
+  },
+  "backend_candidates": [
+    {
+      "id": "c0014",
+      "name": "Current layer only 选项",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0014.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 382,
+            "right": 229,
+            "bottom": 403
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0014.png",
+          "evidence": {
+            "source_field": "/controls/13",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 77,
+        "top": 382,
+        "right": 229,
+        "bottom": 403
+      },
+      "target_observation": {
+        "观察来源": "discovery:0311",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：复选框，用于设置裁剪是否仅作用于当前图层。"
+    },
+    {
+      "id": "c0015",
+      "name": "Delete cropped pixels 选项",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0015.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 407,
+            "right": 236,
+            "bottom": 428
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0015.png",
+          "evidence": {
+            "source_field": "/controls/14",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 77,
+        "top": 407,
+        "right": 236,
+        "bottom": 428
+      },
+      "target_observation": {
+        "观察来源": "discovery:0311",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：复选框，用于设置裁剪时是否删除裁剪区域外的像素。"
+    },
+    {
+      "id": "c0016",
+      "name": "Allow growing 选项",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0016.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 433,
+            "right": 190,
+            "bottom": 454
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0016.png",
+          "evidence": {
+            "source_field": "/controls/15",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 77,
+        "top": 433,
+        "right": 190,
+        "bottom": 454
+      },
+      "target_observation": {
+        "观察来源": "discovery:0311",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：复选框，用于设置裁剪边界是否允许扩展。"
+    },
+    {
+      "id": "c0017",
+      "name": "Expand from center 选项",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0017.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 459,
+            "right": 213,
+            "bottom": 480
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0017.png",
+          "evidence": {
+            "source_field": "/controls/16",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 77,
+        "top": 459,
+        "right": 213,
+        "bottom": 480
+      },
+      "target_observation": {
+        "观察来源": "discovery:0311",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：复选框，用于设置裁剪框是否从中心向外扩展。"
+    },
+    {
+      "id": "c0018",
+      "name": "裁剪约束模式",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0018.png",
+      "appearances": [
+        {
+          "may_open_content": true,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 98,
+            "top": 482,
+            "right": 236,
+            "bottom": 513
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0018.png",
+          "evidence": {
+            "source_field": "/controls/17",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 98,
+        "top": 482,
+        "right": 236,
+        "bottom": 513
+      },
+      "target_observation": {
+        "观察来源": "",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：下拉框用于选择裁剪约束模式。展开后可见 Aspect ratio、Width、Height 和 Size 四个候选项；本次未选择候选项，因此未确认当前设置或各模式对裁剪框的具体影响。"
+    },
+    {
+      "id": "c0019",
+      "name": "固定宽高比输入框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0019.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 87,
+            "top": 516,
+            "right": 171,
+            "bottom": 550
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0019.png",
+          "evidence": {
+            "source_field": "/controls/18",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 87,
+        "top": 516,
+        "right": 171,
+        "bottom": 550
+      },
+      "target_observation": {
+        "观察来源": "update:0282",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：在输入框中设置宽高比；选择 Aspect ratio 后，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前画布拖动曾得到 240×160 px（3:2）和 360×120 px（3:1）的未提交裁剪框；输入框显示 2:1 时，裁剪框仍可与该值不一致。对存在 360×120 px 未提交裁剪框的状态按 Enter 后，动作后的图像尺寸变为 360×120，裁剪框消失，表明该裁剪已应用；输入框仍显示 2:1。该操作未确认输入框值是否先被提交，也未验证之后拖动是否受 2:1 约束。；在固定宽高比模式下用于填写裁剪比例。本次点击后输入框仍显示被截断的“Curren…”文字；无法确认完整当前值，也未观察到数值改变。；在固定宽高比模式下填写裁剪比例。点击输入框后全选并输入“2:1”，动作后可见该值显示为 2:1；本次仅确认输入框显示值已改变，未由此确认裁剪框约束效果。"
+    },
+    {
+      "id": "c0020",
+      "name": "裁剪位置输入框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0020.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 87,
+            "top": 558,
+            "right": 236,
+            "bottom": 617
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0020.png",
+          "evidence": {
+            "source_field": "/controls/19",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 87,
+        "top": 558,
+        "right": 236,
+        "bottom": 617
+      },
+      "target_observation": {
+        "观察来源": "discovery:0331",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：分别输入裁剪区域的位置坐标；当前两个坐标均显示 0，单位为 px。"
+    },
+    {
+      "id": "c0021",
+      "name": "裁剪尺寸输入框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0021.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 87,
+            "top": 626,
+            "right": 236,
+            "bottom": 683
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0021.png",
+          "evidence": {
+            "source_field": "/controls/20",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 87,
+        "top": 626,
+        "right": 236,
+        "bottom": 683
+      },
+      "target_observation": {
+        "观察来源": "discovery:0331",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：分别输入裁剪区域的宽和高；当前两个数值均显示 0，单位为 px。"
+    },
+    {
+      "id": "c0022",
+      "name": "Highlight 选项",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0022.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 77,
+            "top": 687,
+            "right": 236,
+            "bottom": 738
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0022.png",
+          "evidence": {
+            "source_field": "/controls/21",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 77,
+        "top": 687,
+        "right": 236,
+        "bottom": 738
+      },
+      "target_observation": {
+        "观察来源": "discovery:0331",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：裁剪区域突出显示设置；可见 Highlight 选项及数值 50.0。"
+    },
+    {
+      "id": "c0023",
+      "name": "参考线模式下拉框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0023.png",
+      "appearances": [
+        {
+          "may_open_content": true,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 76,
+            "top": 745,
+            "right": 236,
+            "bottom": 769
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0023.png",
+          "evidence": {
+            "source_field": "/controls/22",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 76,
+        "top": 745,
+        "right": 236,
+        "bottom": 769
+      },
+      "target_observation": {
+        "观察来源": "discovery:0331",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：下拉框用于选择裁剪时的参考线显示模式；当前显示 No guides。"
+    },
+    {
+      "id": "c0103",
+      "name": "裁剪约束模式选择器",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0114-0289-27c54da74703/regions/r0003/images/0289/c0103.png",
+      "appearances": [
+        {
+          "may_open_content": true,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 100,
+            "top": 484,
+            "right": 236,
+            "bottom": 511
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0114-0289-27c54da74703/regions/r0003/images/0289/c0103.png",
+          "evidence": {
+            "source_field": "/controls/1",
+            "region": "r0003",
+            "source_call": "0289",
+            "observation": "update:0289"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0114/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0114/after.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 100,
+        "top": 484,
+        "right": 236,
+        "bottom": 511
+      },
+      "target_observation": {
+        "观察来源": "discovery:0331",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：通过下拉列表选择裁剪约束模式；本次选择后显示 Width。"
+    },
+    {
+      "id": "c0104",
+      "name": "Width 约束值输入框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0114-0289-27c54da74703/regions/r0003/images/0289/c0104.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 88,
+            "top": 515,
+            "right": 176,
+            "bottom": 543
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0114-0289-27c54da74703/regions/r0003/images/0289/c0104.png",
+          "evidence": {
+            "source_field": "/controls/2",
+            "region": "r0003",
+            "source_call": "0289",
+            "observation": "update:0289"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0114/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0114/after.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 88,
+        "top": 515,
+        "right": 176,
+        "bottom": 543
+      },
+      "target_observation": {
+        "观察来源": "update:0328",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：Width 模式下可见的约束值为 100 px。本次画布拖动后裁剪框尺寸读数为 334×96 px，故该次观察没有显示框宽被限制为 100 px；是否还需启用其他固定约束选项才能生效，尚未确认。"
+    },
+    {
+      "id": "c0105",
+      "name": "Fixed 复选框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0299-a03f374dc9d4/regions/r0003/images/0299/c0105.png",
+      "appearances": [
+        {
+          "description": "裁剪工具选项区中带有 Fixed 标签、位于 Width 模式选择器左侧的复选框。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 78,
+            "top": 484,
+            "right": 167,
+            "bottom": 513
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0299-a03f374dc9d4/regions/r0003/images/0299/c0105.png",
+          "evidence": {
+            "source_field": "/controls/4",
+            "region": "r0003",
+            "source_call": "0299",
+            "observation": "discovery:0299"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-05/round-0002/current.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-05/round-0002/current.png",
+      "icon_description": "裁剪工具选项区中带有 Fixed 标签、位于 Width 模式选择器左侧的复选框。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 78,
+        "top": 484,
+        "right": 167,
+        "bottom": 513
+      },
+      "target_observation": {
+        "观察来源": "discovery:0331",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：可切换 Fixed 复选框。本轮只核对并登记了控件身份，没有操作它，也未验证它对 Width 模式或裁剪框的影响。截图中看起来未勾选。；点击可切换 Fixed 复选框状态。本次点击后由未勾选变为已勾选；在当前 Width 值为 100 px、现有裁剪尺寸为 334×96 px 时，尺寸读数没有改变。启用后对新建裁剪框的约束效果仍待验证。；在当前 Fixed Height 模式下此复选框显示为勾选；本次未切换它，未验证取消勾选后的效果。"
+    },
+    {
+      "id": "c0106",
+      "name": "Height 约束值输入框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0119-0316-114509ae8eaf/regions/r0003/images/0316/c0106.png",
+      "appearances": [
+        {
+          "description": "Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 89,
+            "top": 515,
+            "right": 238,
+            "bottom": 545
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0119-0316-114509ae8eaf/regions/r0003/images/0316/c0106.png",
+          "evidence": {
+            "source_field": "/controls/3",
+            "region": "r0003",
+            "source_call": "0316",
+            "observation": "update:0316"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0119/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0119/after.png",
+      "icon_description": "Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 89,
+        "top": 515,
+        "right": 238,
+        "bottom": 545
+      },
+      "target_observation": {
+        "观察来源": "update:0328",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：用于填写固定裁剪高度；当前显示 100 px。修改数值后裁剪框如何响应尚未验证。"
+    },
+    {
+      "id": "c0107",
+      "name": "Size 约束值输入框",
+      "region_ref": "r0003",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/c0107.png",
+      "appearances": [
+        {
+          "description": "位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。",
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 88,
+            "top": 518,
+            "right": 171,
+            "bottom": 550
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/c0107.png",
+          "evidence": {
+            "source_field": "/controls/2",
+            "region": "r0003",
+            "source_call": "0331",
+            "observation": "discovery:0331"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-06/round-0009/current.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-06/round-0009/current.png",
+      "icon_description": "位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+      "bbox": {
+        "left": 88,
+        "top": 518,
+        "right": 171,
+        "bottom": 550
+      },
+      "target_observation": {
+        "观察来源": "update:0335",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪工具选项区",
+      "knowledge": "用途记录：这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。；输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。"
+    },
+    {
+      "id": "c0024",
+      "name": "图像画布区域",
+      "region_ref": "r0004",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0106-0268-383658507954/regions/r0004/images/0268/c0024.png",
+      "appearances": [
+        {
+          "needs_exploration": true,
+          "bbox": {
+            "left": 418,
+            "top": 300,
+            "right": 918,
+            "bottom": 600
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0106-0268-383658507954/regions/r0004/images/0268/c0024.png",
+          "evidence": {
+            "source_field": "/controls/0",
+            "region": "r0004",
+            "source_call": "0268",
+            "observation": "update:0268"
+          },
+          "image_conditions": [
+            "画布中显示一张灰色图像，图像左上区域有一个已创建但尚未提交的矩形裁剪框。"
+          ],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0106/after.png"
+        },
+        {
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 258,
+            "top": 91,
+            "right": 1080,
+            "bottom": 800
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0004/images/0001/c0024.png",
+          "evidence": {
+            "source_field": "/controls/23",
+            "region": "r0004",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [
+            "画布工作区为空，未显示图像或裁剪框。"
+          ],
+          "image_conditions_evidence": {
+            "source_call": "0269",
+            "reason": "两图所指均为 GIMP 的图像画布区域；当前画布显示图像和裁剪框，历史画布为空，属于同一画布区域的不同外观状态。"
+          },
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0106/after.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0004/images/0001/region.png",
+      "bbox": {
+        "left": 418,
+        "top": 300,
+        "right": 918,
+        "bottom": 600
+      },
+      "target_observation": {
+        "观察来源": "update:0333",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "图像工作区",
+      "knowledge": "用途记录：用于显示和编辑已打开的图像；当前没有图像，因此无法确认画布上的编辑操作。；显示当前活动图像的画布。本次在此观察到点击 OK 后出现的 1920×1080 白色画布。；裁剪工具选中时，在画布上拖动可显示矩形裁剪边界；本次拖动后裁剪工具选项显示 Position 为 424, 238、Size 为 1000 × 600 px。按 Enter 确认后，裁剪边界消失，图像尺寸由 1920×1080 变为 1000×600，表明裁剪已应用；本次白色图像仍显示为白色，且有未保存更改标记。；使用裁剪工具在画布上拖动可创建裁剪框；工具选项中的位置和尺寸会显示裁剪框几何参数。本次拖动后位置为 64, 60，尺寸为 400×200 px。出现裁剪框并不表示已经裁剪图像；状态栏提示“Click or press Enter to crop”时，仍需进一步确认或按 Enter 才会应用裁剪。；裁剪工具选中时，在画布上拖动可创建或更新裁剪框；工具选项会显示其位置和尺寸。本次拖动后位置为 564, 100、尺寸为 240×160 px（3:2），裁剪框尚未应用。；裁剪工具选中时，在 Fixed Aspect ratio 输入框可见 2:1 的情况下于画布拖动，本次得到位置 364, 320、尺寸 360×120 px（3:1）的未提交裁剪框；工具选项仍显示 2:1，状态栏提示“Click or press Enter to crop”。本次结果未保持 2:1；尚不能确认原因，也不能确定输入值是否已提交或约束为何未体现。；在图像尺寸为 360×120、裁剪工具选中的情况下，本次于画布拖动后出现未提交的裁剪框，工具选项显示位置 20, 10、尺寸 320×100 px（3.2:1）。固定宽高比输入框同时显示 2:1，但本次框的比例与该值不一致。状态栏提示“Click or press Enter to crop”，图像尺寸仍为 360×120，故本次拖动没有应用裁剪。；在图像画布上拖动可创建或调整裁剪框。本次拖动后位置和尺寸读数变为 (6, 4) 与 334×96 px；此结果未显示宽度受限为 Width 模式中设定的 100 px。；裁剪工具选中且 Height 模式显示 Fixed Height、固定值为 100 px 时，本次拖动后 Position Y 从 60 变为 68，Size 仍为 100×52 px。无法确认拖动实际抓到了裁剪框边缘，因此此结果不能确认 Height 模式调整尺寸时的约束效果；裁剪框仍未提交。；在裁剪工具的 Fixed Height 模式下，Fixed 已勾选且设定值为 100 px 时，本次从裁剪框下边缘向下拖动后，裁剪框 Size 显示为 100×100 px；与拖动前的 100×52 px 相比，高度变为设定的 100 px。裁剪框仍未提交。"
+    },
+    {
+      "id": "c0102",
+      "name": "Size",
+      "region_ref": "r0013",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0104-0256-50b0a9bda197/regions/r0013/images/0256/c0102.png",
+      "appearances": [
+        {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 100,
+            "top": 571,
+            "right": 237,
+            "bottom": 602
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0104-0256-50b0a9bda197/regions/r0013/images/0256/c0102.png",
+          "evidence": {
+            "source_field": "/controls/4",
+            "region": "r0013",
+            "source_call": "0256",
+            "observation": "update:0256"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0104/after.png"
+        }
+      ],
+      "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0104/after.png",
+      "icon_description": "",
+      "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/a0104-0256-50b0a9bda197/regions/r0013/images/0256/region.png",
+      "bbox": {
+        "left": 100,
+        "top": 571,
+        "right": 237,
+        "bottom": 602
+      },
+      "candidate_scope": "task_target_history",
+      "candidate_reason": "原任务目标的历史身份；按当前截图判断是否可操作，必要时先准备，不表示所属区块当前处于前景。",
+      "target_observation": {
+        "观察来源": "",
+        "登记外观": "",
+        "功能推测（未验证）": "",
+        "功能疑问": "",
+        "历史外观参考": ""
+      },
+      "region_name": "裁剪约束模式候选列表",
+      "knowledge": "用途记录：点击可选择 Size 裁剪约束模式。选择后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现显示为“0x0”的约束输入；刚选择后裁剪位置仍为 260, 20、裁剪尺寸仍为 100×100 px。尚未验证设置非零尺寸后裁剪框如何响应。"
+    }
+  ],
+  "source": {
+    "observation": "update:0335",
+    "region": "r0003",
+    "working_region": "r0013",
+    "task_name": "c0102 / 功能探索",
+    "task_region": "r0013",
+    "task_type": "function",
+    "task_control": "c0102",
+    "completion_region": "r0013",
+    "snapshot": "knowledge_snapshots/a0125-0335-7e316295ef74"
+  },
+  "pipeline_step": "action",
+  "preparation_allowed": true,
+  "allow_scroll": true,
+  "allow_input": true,
+  "region_target": "裁剪工具选项区",
+  "region_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0331-50215c4bee90/regions/r0003/images/0331/region.png",
+  "region_image_assessment": {},
+  "allow_back": true,
+  "context_evidence": {
+    "task": {
+      "region": "r0013",
+      "name": "c0102 / 功能探索"
+    },
+    "recent_action": {
+      "region": "r0003",
+      "action": "a0125"
+    },
+    "resolved_blockers": [],
+    "definition": {
+      "control": "c0102",
+      "reason": null,
+      "task_type": "function",
+      "equivalent_to": null
+    },
+    "known_findings": []
+  },
+  "task_progress": {
+    "inventory_complete": false,
+    "complete": false,
+    "pending": [
+      "c0023 / 参数探索",
+      "功能探索"
+    ],
+    "blocked": [],
+    "done": [
+      "参数探索"
+    ],
+    "record_only": []
+  },
+  "work_context": {
+    "kind": "action",
+    "region": "r0003",
+    "task": {
+      "region": "r0013",
+      "name": "c0102 / 功能探索"
+    },
+    "reason": "围绕原问题选择下一动作；必要准备不替换原目标。"
+  },
+  "observation_handoff": {
+    "来源": "update:0335",
+    "交接说明": "在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。",
+    "未确认事项": [
+      "Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。",
+      "Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。"
+    ]
+  },
+  "context_scope": {
+    "region": "r0003",
+    "kind": "action",
+    "tasks": [
+      {
+        "region": "r0013",
+        "name": "c0102 / 功能探索"
+      }
+    ],
+    "regions": [
+      "r0003",
+      "r0013"
+    ],
+    "controls": {
+      "r0003": [],
+      "r0004": [],
+      "r0013": [
+        "c0102"
+      ]
+    },
+    "selection": {
+      "role": "action_selection",
+      "mode": null,
+      "work_kind": "action",
+      "source": {
+        "observation": "update:0335",
+        "region": "r0003",
+        "working_region": "r0013",
+        "task_name": "c0102 / 功能探索",
+        "task_region": "r0013",
+        "task_type": "function",
+        "task_control": "c0102",
+        "completion_region": "r0013",
+        "snapshot": "knowledge_snapshots/a0125-0335-7e316295ef74"
+      },
+      "task_types": [
+        "function"
+      ],
+      "preparatory_action": false
+    }
+  },
+  "page_context": {
+    "current_tree": [
+      {
+        "ref": "r0003",
+        "name": "裁剪工具选项区",
+        "controls": [
+          {
+            "ref": "c0107",
+            "name": "Size 约束值输入框",
+            "evidence": "current_observation",
+            "knowledge": {
+              "knowledge": "用途记录：这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。；输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。"
+            }
+          }
+        ],
+        "children": [],
+        "knowledge": {
+          "local_knowledge": {
+            "k0027": "此区块集中设置裁剪工具的行为、裁剪框约束与几何参数，以及裁剪区域的辅助显示。",
+            "k0029": "画布上拖动后，位置和尺寸读数会反映当前裁剪框；本次读数由位置约 (20, 10)、尺寸 320×100 px 变为位置 (6, 4)、尺寸 334×96 px。"
+          }
+        }
+      },
+      {
+        "ref": "r0004",
+        "name": "图像工作区",
+        "controls": [],
+        "children": [],
+        "knowledge": {}
+      }
+    ],
+    "background_regions": [],
+    "names": {
+      "r0001": "主菜单栏",
+      "r0002": "工具箱",
+      "r0003": "裁剪工具选项区",
+      "r0004": "图像工作区",
+      "r0005": "画笔停靠区",
+      "r0006": "图层停靠区",
+      "r0007": "File 菜单内容",
+      "r0008": "Open Recent 子菜单",
+      "r0009": "Create 子菜单",
+      "r0010": "Create a New Image 对话框",
+      "r0011": "Template 候选列表",
+      "r0012": "图像尺寸单位候选列表",
+      "r0013": "裁剪约束模式候选列表",
+      "r0014": "图像工作区",
+      "c0001": "File 菜单",
+      "c0002": "Edit 菜单",
+      "c0003": "Select 菜单",
+      "c0004": "View 菜单",
+      "c0005": "Image 菜单",
+      "c0006": "Layer 菜单",
+      "c0007": "Colors 菜单",
+      "c0008": "Tools 菜单",
+      "c0009": "Filters 菜单",
+      "c0010": "Windows 菜单",
+      "c0011": "Help 菜单",
+      "c0012": "工具选择按钮",
+      "c0013": "前景色与背景色控件",
+      "c0014": "Current layer only 选项",
+      "c0015": "Delete cropped pixels 选项",
+      "c0016": "Allow growing 选项",
+      "c0017": "Expand from center 选项",
+      "c0018": "裁剪约束模式",
+      "c0019": "固定宽高比输入框",
+      "c0020": "裁剪位置输入框",
+      "c0021": "裁剪尺寸输入框",
+      "c0022": "Highlight 选项",
+      "c0023": "参考线模式下拉框",
+      "c0103": "裁剪约束模式选择器",
+      "c0104": "Width 约束值输入框",
+      "c0105": "Fixed 复选框",
+      "c0106": "Height 约束值输入框",
+      "c0107": "Size 约束值输入框",
+      "c0024": "图像画布区域",
+      "c0025": "画笔资源过滤框",
+      "c0026": "画笔预设网格",
+      "c0027": "Spacing 设置",
+      "c0028": "图层、通道和路径标签",
+      "c0029": "混合模式下拉框",
+      "c0030": "图层不透明度设置",
+      "c0031": "图层锁定选项",
+      "c0032": "图层列表",
+      "c0033": "New…",
+      "c0034": "Create",
+      "c0035": "Open…",
+      "c0036": "Open as Layers…",
+      "c0037": "Open Location…",
+      "c0038": "Open Recent",
+      "c0039": "Save…",
+      "c0040": "Save As…",
+      "c0041": "Save a Copy…",
+      "c0042": "Revert",
+      "c0043": "Export…",
+      "c0044": "Export As…",
+      "c0045": "Create Template…",
+      "c0046": "Print…",
+      "c0047": "Send by Email…",
+      "c0048": "Copy Image Location",
+      "c0049": "Show in File Manager",
+      "c0050": "Close View",
+      "c0051": "Close All",
+      "c0052": "Quit",
+      "c0066": "Overwrite city_skyline.jpg",
+      "c0053": "Screenshot from 2023-12-18 17-21-35.png",
+      "c0054": "Document History",
+      "c0055": "From Clipboard",
+      "c0056": "Screenshot…",
+      "c0057": "Template 下拉框",
+      "c0058": "Width 输入框",
+      "c0059": "Height 输入框",
+      "c0060": "图像尺寸单位下拉框",
+      "c0061": "Advanced Options",
+      "c0062": "Help",
+      "c0063": "Reset",
+      "c0064": "Cancel",
+      "c0065": "OK",
+      "c0089": "X resolution 输入框",
+      "c0090": "Y resolution 输入框",
+      "c0091": "Resolution 单位下拉框",
+      "c0092": "Color space 下拉框",
+      "c0093": "Precision 下拉框",
+      "c0094": "Gamma 下拉框",
+      "c0095": "Color manage this image 选项",
+      "c0096": "Color profile 下拉框",
+      "c0097": "Fill with 下拉框",
+      "c0098": "Comment 文本框",
+      "c0067": "Apple iPhone 6/7 模板候选",
+      "c0068": "Apple iPhone 5 模板候选",
+      "c0069": "Template 列表向上滚动箭头",
+      "c0070": "Template 列表向下滚动箭头",
+      "c0071": "3840x2160 (4K UHD) 模板候选",
+      "c0072": "4096x2160 (Digital Cinema Initiatives 4K) 模板候选",
+      "c0073": "3840x2160 4K UHD 模板候选",
+      "c0074": "B5 (300 ppi)",
+      "c0075": "88.9×50.8 US Business Card",
+      "c0076": "Web banner leaderboard 728x90",
+      "c0077": "1280x720 (HD 720p)",
+      "c0078": "pixels",
+      "c0079": "inches",
+      "c0080": "millimeters",
+      "c0081": "points",
+      "c0082": "picas",
+      "c0083": "centimeters",
+      "c0084": "meters",
+      "c0085": "feet",
+      "c0086": "yards",
+      "c0087": "typogr. points",
+      "c0088": "typogr. picas",
+      "c0099": "Aspect ratio",
+      "c0100": "Width",
+      "c0101": "Height",
+      "c0102": "Size"
+    },
+    "last_action": {
+      "region": "r0003",
+      "attempt": "a0125",
+      "changes_surface": false
+    },
+    "incoming_actions": {
+      "r0003": [
+        {
+          "region": "r0013",
+          "attempt": "a0119"
+        },
+        {
+          "region": "r0013",
+          "attempt": "a0123"
+        }
+      ],
+      "r0004": [
+        {
+          "region": "r0010",
+          "attempt": "a0101"
+        }
+      ]
+    },
+    "goal": {
+      "region": "r0013",
+      "name": "c0102 / 功能探索",
+      "status": "pending"
+    },
+    "origin": {
+      "entries": [
+        {
+          "from_regions": [
+            "r0013",
+            "r0003",
+            "r0001",
+            "r0002",
+            "r0005",
+            "r0006"
+          ],
+          "to_regions": [
+            "r0003",
+            "r0004"
+          ],
+          "via": {
+            "region": "r0003",
+            "attempt": "a0124",
+            "control": "c0107"
+          },
+          "before_observation": "discovery:0331",
+          "after_observation": "update:0333",
+          "parent_branches": [
+            {
+              "ref": "r0013",
+              "name": "裁剪约束模式候选列表",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [
+                {
+                  "control": "c0101",
+                  "target_region": "r0003",
+                  "attempt": "a0119"
+                },
+                {
+                  "control": "c0102",
+                  "target_region": "r0003",
+                  "attempt": "a0123"
+                }
+              ],
+              "pending_tasks": [
+                "c0102 / 功能探索"
+              ]
+            },
+            {
+              "ref": "r0003",
+              "name": "裁剪工具选项区",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [
+                {
+                  "control": "c0018",
+                  "target_region": "r0013",
+                  "attempt": "a0104"
+                },
+                {
+                  "control": "c0103",
+                  "target_region": "r0013",
+                  "attempt": "a0118"
+                }
+              ],
+              "pending_tasks": [
+                "c0023 / 参数探索",
+                "功能探索"
+              ]
+            },
+            {
+              "ref": "r0001",
+              "name": "主菜单栏",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [
+                {
+                  "control": "c0001",
+                  "target_region": "r0007",
+                  "attempt": "a0050"
+                }
+              ],
+              "pending_tasks": [
+                "c0002 / 功能探索",
+                "c0003 / 功能探索",
+                "c0004 / 功能探索",
+                "c0005 / 功能探索",
+                "c0006 / 功能探索",
+                "c0007 / 功能探索",
+                "c0008 / 功能探索",
+                "c0009 / 功能探索",
+                "c0010 / 功能探索",
+                "c0011 / 功能探索"
+              ]
+            },
+            {
+              "ref": "r0002",
+              "name": "工具箱",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0005",
+              "name": "画笔停靠区",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            },
+            {
+              "ref": "r0006",
+              "name": "图层停靠区",
+              "details_folded": true,
+              "completion": "not_evaluated",
+              "evidence": "historical_known_branches",
+              "entries": [],
+              "pending_tasks": []
+            }
+          ]
+        }
+      ],
+      "boundary": "no_recorded_action_for_observation",
+      "last_effect": {
+        "region": "r0003",
+        "attempt": "a0125",
+        "result": {
+          "exception": "none",
+          "description": "在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。",
+          "recovery_handoff": "",
+          "returns_to_previous": false
+        }
+      },
+      "known_entries": []
+    },
+    "issues": [],
+    "localization_only": false,
+    "observation": {
+      "id": "update:0335",
+      "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/action_attempts/a0125/after.png",
+      "sha256": "11141616d444a8f9e6c238efc8302c34615667079fa557e34e1442d80c93d5af"
+    },
+    "usage": "selection",
+    "run_root": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run",
+    "frame_relation": "same_observation_frame",
+    "history": {
+      "regions": [
+        {
+          "ref": "r0003",
+          "name": "裁剪工具选项区",
+          "controls": [
+            {
+              "ref": "c0103",
+              "name": "裁剪约束模式选择器",
+              "attempts": [
+                "a0122"
+              ]
+            },
+            {
+              "ref": "c0107",
+              "name": "Size 约束值输入框",
+              "attempts": [
+                "a0124"
+              ]
+            }
+          ],
+          "unbound": [],
+          "region_actions": [
+            "a0125"
+          ]
+        },
+        {
+          "ref": "r0013",
+          "name": "裁剪约束模式候选列表",
+          "controls": [
+            {
+              "ref": "c0102",
+              "name": "Size",
+              "attempts": [
+                "a0123"
+              ]
+            }
+          ],
+          "unbound": []
+        }
+      ],
+      "events": {
+        "a0122": {
+          "region": "r0003",
+          "control": "c0103",
+          "区块": "裁剪工具选项区",
+          "入口": "裁剪约束模式选择器",
+          "身份关联": "已登记",
+          "动作": "click",
+          "执行": "executed_receipt_zero",
+          "task": "r0013/c0102 / 功能探索",
+          "观察": "点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。",
+          "动作前区块": [
+            "图像工作区",
+            "裁剪工具选项区"
+          ],
+          "动作后可交互区块": [
+            "裁剪约束模式候选列表"
+          ],
+          "实际执行": [
+            {
+              "action": "click",
+              "target": "c0103",
+              "text": null
+            }
+          ]
+        },
+        "a0123": {
+          "region": "r0013",
+          "control": "c0102",
+          "区块": "裁剪约束模式候选列表",
+          "入口": "Size",
+          "身份关联": "已登记",
+          "动作": "click",
+          "执行": "executed_receipt_zero",
+          "task": "r0013/c0102 / 功能探索",
+          "观察": "点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。",
+          "动作前区块": [
+            "裁剪约束模式候选列表"
+          ],
+          "动作后可交互区块": [
+            "裁剪工具选项区"
+          ],
+          "实际执行": [
+            {
+              "action": "click",
+              "target": "c0102",
+              "text": null
+            }
+          ]
+        },
+        "a0124": {
+          "region": "r0003",
+          "control": "c0107",
+          "区块": "裁剪工具选项区",
+          "入口": "Size 约束值输入框",
+          "身份关联": "已登记",
+          "动作": "input_text",
+          "执行": "executed_receipt_zero",
+          "task": "r0013/c0102 / 功能探索",
+          "观察": "在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。",
+          "动作前区块": [
+            "裁剪约束模式候选列表",
+            "裁剪工具选项区",
+            "主菜单栏",
+            "工具箱",
+            "画笔停靠区",
+            "图层停靠区"
+          ],
+          "动作后可交互区块": [
+            "裁剪工具选项区",
+            "图像工作区"
+          ],
+          "实际执行": [
+            {
+              "action": "click"
+            },
+            {
+              "action": "select_all"
+            },
+            {
+              "action": "input_text",
+              "text": "80x60"
+            }
+          ]
+        },
+        "a0125": {
+          "region": "r0003",
+          "control": null,
+          "区块": "裁剪工具选项区",
+          "入口": "裁剪工具选项区",
+          "身份关联": "已登记",
+          "动作": "key_press",
+          "执行": "executed_receipt_zero",
+          "task": "r0013/c0102 / 功能探索",
+          "观察": "在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。",
+          "实际执行": [
+            {
+              "action": "key_press",
+              "text": "TAB",
+              "target": "当前工作"
+            }
+          ],
+          "该次更新未确认事项": [
+            "Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。",
+            "Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。"
+          ]
+        }
+      },
+      "unresolved": [],
+      "handoff": {
+        "attempt": "a0125",
+        "summary": "在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。",
+        "uncertainties": [
+          "Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。",
+          "Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。"
+        ],
+        "observation": "update:0335"
+      },
+      "task_contexts": {
+        "r0013": {
+          "c0102 / 功能探索": [
+            "已执行 click「裁剪约束模式选择器」；观察：点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。",
+            "已执行 click「Size」；观察：点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。",
+            "已执行 input_text「Size 约束值输入框」；观察：在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。",
+            "已执行 key_press「裁剪工具选项区」；观察：在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。",
+            "任务判断：本次只确认按 Tab 移开焦点后输入框仍显示“80x60”，裁剪框读数没有变化；尚未确认该值是否被解析或生效，也未验证 Size 模式如何约束裁剪框。"
+          ]
+        }
+      },
+      "event_texts": {
+        "a0122": "a0122：click「裁剪约束模式选择器」；观察：点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。",
+        "a0123": "a0123：click「Size」；观察：点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。",
+        "a0124": "a0124：input_text「Size 约束值输入框」；输入文本：80x60；观察：在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。",
+        "a0125": "a0125：key_press「裁剪工具选项区」；实际执行：1：\n  操作：key_press\n  输入文本：TAB\n  target：当前工作；观察：在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。；该次更新未确认事项：Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。；Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。"
+      },
+      "task_judgments": [
+        {
+          "region": "r0013",
+          "name": "c0102 / 功能探索",
+          "status": "pending",
+          "judgment": "本次只确认按 Tab 移开焦点后输入框仍显示“80x60”，裁剪框读数没有变化；尚未确认该值是否被解析或生效，也未验证 Size 模式如何约束裁剪框。",
+          "attempts": [
+            "a0122",
+            "a0123",
+            "a0124",
+            "a0125"
+          ],
+          "invalidated": []
+        }
+      ],
+      "names": {
+        "r0001": "主菜单栏",
+        "r0002": "工具箱",
+        "r0003": "裁剪工具选项区",
+        "r0004": "图像工作区",
+        "r0005": "画笔停靠区",
+        "r0006": "图层停靠区",
+        "r0007": "File 菜单内容",
+        "r0008": "Open Recent 子菜单",
+        "r0009": "Create 子菜单",
+        "r0010": "Create a New Image 对话框",
+        "r0011": "Template 候选列表",
+        "r0012": "图像尺寸单位候选列表",
+        "r0013": "裁剪约束模式候选列表",
+        "r0014": "图像工作区"
+      }
+    },
+    "environment_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\n主菜单栏 [r0001]\n  ├─ File 菜单 [c0001]\n    └─ File 菜单内容 [r0007]\n      ├─ New… [c0033]\n        └─ Create a New Image 对话框 [r0010]\n          ├─ Template 下拉框 [c0057]\n            └─ Template 候选列表 [r0011]\n              ├─ Apple iPhone 6/7 模板候选 [c0067]\n              ├─ Apple iPhone 5 模板候选 [c0068]\n              ├─ Template 列表向上滚动箭头 [c0069]\n              ├─ Template 列表向下滚动箭头 [c0070]\n              ├─ 3840x2160 (4K UHD) 模板候选 [c0071]\n              ├─ 4096x2160 (Digital Cinema Initiatives 4K) 模板候选 [c0072]\n              ├─ 3840x2160 4K UHD 模板候选 [c0073]\n              ├─ B5 (300 ppi) [c0074]\n              ├─ 88.9×50.8 US Business Card [c0075]\n              ├─ Web banner leaderboard 728x90 [c0076]\n              ├─ 1280x720 (HD 720p) [c0077]\n          ├─ Width 输入框 [c0058]\n          ├─ Height 输入框 [c0059]\n          ├─ 图像尺寸单位下拉框 [c0060]\n            └─ 图像尺寸单位候选列表 [r0012]\n              ├─ pixels [c0078]\n              ├─ inches [c0079]\n              ├─ millimeters [c0080]\n              ├─ points [c0081]\n              ├─ picas [c0082]\n              ├─ centimeters [c0083]\n              ├─ meters [c0084]\n              ├─ feet [c0085]\n              ├─ yards [c0086]\n              ├─ typogr. points [c0087]\n              ├─ typogr. picas [c0088]\n          ├─ Advanced Options [c0061]\n          ├─ Help [c0062]\n          ├─ Reset [c0063]\n          ├─ Cancel [c0064]\n          ├─ OK [c0065]\n            └─ 图像工作区 [r0004]\n              ├─ 图像画布区域 [c0024]\n          ├─ X resolution 输入框 [c0089]\n          ├─ Y resolution 输入框 [c0090]\n          ├─ Resolution 单位下拉框 [c0091]\n          ├─ Color space 下拉框 [c0092]\n          ├─ Precision 下拉框 [c0093]\n          ├─ Gamma 下拉框 [c0094]\n          ├─ Color manage this image 选项 [c0095]\n          ├─ Color profile 下拉框 [c0096]\n          ├─ Fill with 下拉框 [c0097]\n          ├─ Comment 文本框 [c0098]\n      ├─ Create [c0034]\n      ├─ Open… [c0035]\n      ├─ Open as Layers… [c0036]\n      ├─ Open Location… [c0037]\n      ├─ Open Recent [c0038]\n        └─ Open Recent 子菜单 [r0008]\n          ├─ Screenshot from 2023-12-18 17-21-35.png [c0053]\n          ├─ Document History [c0054]\n      ├─ Save… [c0039]\n      ├─ Save As… [c0040]\n      ├─ Save a Copy… [c0041]\n      ├─ Revert [c0042]\n      ├─ Export… [c0043]\n      ├─ Export As… [c0044]\n      ├─ Create Template… [c0045]\n      ├─ Print… [c0046]\n      ├─ Send by Email… [c0047]\n      ├─ Copy Image Location [c0048]\n      ├─ Show in File Manager [c0049]\n      ├─ Close View [c0050]\n      ├─ Close All [c0051]\n      ├─ Quit [c0052]\n      ├─ Overwrite city_skyline.jpg [c0066]\n  ├─ Edit 菜单 [c0002]\n  ├─ Select 菜单 [c0003]\n  ├─ View 菜单 [c0004]\n  ├─ Image 菜单 [c0005]\n  ├─ Layer 菜单 [c0006]\n  ├─ Colors 菜单 [c0007]\n  ├─ Tools 菜单 [c0008]\n  ├─ Filters 菜单 [c0009]\n  ├─ Windows 菜单 [c0010]\n  ├─ Help 菜单 [c0011]\n工具箱 [r0002]\n  ├─ 工具选择按钮 [c0012]\n  ├─ 前景色与背景色控件 [c0013]\n裁剪工具选项区 [r0003]（本步关注区块）\n  ├─ Current layer only 选项 [c0014]\n  ├─ Delete cropped pixels 选项 [c0015]\n  ├─ Allow growing 选项 [c0016]\n  ├─ Expand from center 选项 [c0017]\n  ├─ 裁剪约束模式 [c0018]\n    └─ 裁剪约束模式候选列表 [r0013]\n      ├─ Aspect ratio [c0099]\n      ├─ Width [c0100]\n      ├─ Height [c0101]\n      ├─ Size [c0102]\n  ├─ 固定宽高比输入框 [c0019]\n  ├─ 裁剪位置输入框 [c0020]\n  ├─ 裁剪尺寸输入框 [c0021]\n  ├─ Highlight 选项 [c0022]\n  ├─ 参考线模式下拉框 [c0023]\n  ├─ 裁剪约束模式选择器 [c0103]\n    └─ [引用：裁剪约束模式候选列表 r0013]\n  ├─ Width 约束值输入框 [c0104]\n  ├─ Fixed 复选框 [c0105]\n  ├─ Height 约束值输入框 [c0106]\n  ├─ Size 约束值输入框 [c0107]\n画笔停靠区 [r0005]\n  ├─ 画笔资源过滤框 [c0025]\n  ├─ 画笔预设网格 [c0026]\n  ├─ Spacing 设置 [c0027]\n图层停靠区 [r0006]\n  ├─ 图层、通道和路径标签 [c0028]\n  ├─ 混合模式下拉框 [c0029]\n  ├─ 图层不透明度设置 [c0030]\n  ├─ 图层锁定选项 [c0031]\n  ├─ 图层列表 [c0032]\nCreate 子菜单 [r0009]\n  ├─ From Clipboard [c0055]\n  ├─ Screenshot… [c0056]\n图像工作区 [r0014]\n  ├─ 图像画布区域 [c0024]\n原探索目标：裁剪约束模式候选列表 / Size\n上次已登记前景：裁剪工具选项区、图像工作区",
+    "action_material": true
+  },
+  "_page_context_text": "控件树（已登记内容与已观察的访问关系）\n下级区块表示操作可到达的目标；条件标在相应去向旁。\n主菜单栏 [r0001]\n  ├─ File 菜单 [c0001]\n    └─ File 菜单内容 [r0007]\n      ├─ New… [c0033]\n        └─ Create a New Image 对话框 [r0010]\n          ├─ Template 下拉框 [c0057]\n            └─ Template 候选列表 [r0011]\n              ├─ Apple iPhone 6/7 模板候选 [c0067]\n              ├─ Apple iPhone 5 模板候选 [c0068]\n              ├─ Template 列表向上滚动箭头 [c0069]\n              ├─ Template 列表向下滚动箭头 [c0070]\n              ├─ 3840x2160 (4K UHD) 模板候选 [c0071]\n              ├─ 4096x2160 (Digital Cinema Initiatives 4K) 模板候选 [c0072]\n              ├─ 3840x2160 4K UHD 模板候选 [c0073]\n              ├─ B5 (300 ppi) [c0074]\n              ├─ 88.9×50.8 US Business Card [c0075]\n              ├─ Web banner leaderboard 728x90 [c0076]\n              ├─ 1280x720 (HD 720p) [c0077]\n          ├─ Width 输入框 [c0058]\n          ├─ Height 输入框 [c0059]\n          ├─ 图像尺寸单位下拉框 [c0060]\n            └─ 图像尺寸单位候选列表 [r0012]\n              ├─ pixels [c0078]\n              ├─ inches [c0079]\n              ├─ millimeters [c0080]\n              ├─ points [c0081]\n              ├─ picas [c0082]\n              ├─ centimeters [c0083]\n              ├─ meters [c0084]\n              ├─ feet [c0085]\n              ├─ yards [c0086]\n              ├─ typogr. points [c0087]\n              ├─ typogr. picas [c0088]\n          ├─ Advanced Options [c0061]\n          ├─ Help [c0062]\n          ├─ Reset [c0063]\n          ├─ Cancel [c0064]\n          ├─ OK [c0065]\n            └─ 图像工作区 [r0004]\n              ├─ 图像画布区域 [c0024]\n          ├─ X resolution 输入框 [c0089]\n          ├─ Y resolution 输入框 [c0090]\n          ├─ Resolution 单位下拉框 [c0091]\n          ├─ Color space 下拉框 [c0092]\n          ├─ Precision 下拉框 [c0093]\n          ├─ Gamma 下拉框 [c0094]\n          ├─ Color manage this image 选项 [c0095]\n          ├─ Color profile 下拉框 [c0096]\n          ├─ Fill with 下拉框 [c0097]\n          ├─ Comment 文本框 [c0098]\n      ├─ Create [c0034]\n      ├─ Open… [c0035]\n      ├─ Open as Layers… [c0036]\n      ├─ Open Location… [c0037]\n      ├─ Open Recent [c0038]\n        └─ Open Recent 子菜单 [r0008]\n          ├─ Screenshot from 2023-12-18 17-21-35.png [c0053]\n          ├─ Document History [c0054]\n      ├─ Save… [c0039]\n      ├─ Save As… [c0040]\n      ├─ Save a Copy… [c0041]\n      ├─ Revert [c0042]\n      ├─ Export… [c0043]\n      ├─ Export As… [c0044]\n      ├─ Create Template… [c0045]\n      ├─ Print… [c0046]\n      ├─ Send by Email… [c0047]\n      ├─ Copy Image Location [c0048]\n      ├─ Show in File Manager [c0049]\n      ├─ Close View [c0050]\n      ├─ Close All [c0051]\n      ├─ Quit [c0052]\n      ├─ Overwrite city_skyline.jpg [c0066]\n  ├─ Edit 菜单 [c0002]\n  ├─ Select 菜单 [c0003]\n  ├─ View 菜单 [c0004]\n  ├─ Image 菜单 [c0005]\n  ├─ Layer 菜单 [c0006]\n  ├─ Colors 菜单 [c0007]\n  ├─ Tools 菜单 [c0008]\n  ├─ Filters 菜单 [c0009]\n  ├─ Windows 菜单 [c0010]\n  ├─ Help 菜单 [c0011]\n工具箱 [r0002]\n  ├─ 工具选择按钮 [c0012]\n  ├─ 前景色与背景色控件 [c0013]\n裁剪工具选项区 [r0003]（本步关注区块）\n  ├─ Current layer only 选项 [c0014]\n  ├─ Delete cropped pixels 选项 [c0015]\n  ├─ Allow growing 选项 [c0016]\n  ├─ Expand from center 选项 [c0017]\n  ├─ 裁剪约束模式 [c0018]\n    └─ 裁剪约束模式候选列表 [r0013]\n      ├─ Aspect ratio [c0099]\n      ├─ Width [c0100]\n      ├─ Height [c0101]\n      ├─ Size [c0102]\n  ├─ 固定宽高比输入框 [c0019]\n  ├─ 裁剪位置输入框 [c0020]\n  ├─ 裁剪尺寸输入框 [c0021]\n  ├─ Highlight 选项 [c0022]\n  ├─ 参考线模式下拉框 [c0023]\n  ├─ 裁剪约束模式选择器 [c0103]\n    └─ [引用：裁剪约束模式候选列表 r0013]\n  ├─ Width 约束值输入框 [c0104]\n  ├─ Fixed 复选框 [c0105]\n  ├─ Height 约束值输入框 [c0106]\n  ├─ Size 约束值输入框 [c0107]\n画笔停靠区 [r0005]\n  ├─ 画笔资源过滤框 [c0025]\n  ├─ 画笔预设网格 [c0026]\n  ├─ Spacing 设置 [c0027]\n图层停靠区 [r0006]\n  ├─ 图层、通道和路径标签 [c0028]\n  ├─ 混合模式下拉框 [c0029]\n  ├─ 图层不透明度设置 [c0030]\n  ├─ 图层锁定选项 [c0031]\n  ├─ 图层列表 [c0032]\nCreate 子菜单 [r0009]\n  ├─ From Clipboard [c0055]\n  ├─ Screenshot… [c0056]\n图像工作区 [r0014]\n  ├─ 图像画布区域 [c0024]\n原探索目标：裁剪约束模式候选列表 / Size\n上次已登记前景：裁剪工具选项区、图像工作区\na0122：click「裁剪约束模式选择器」；观察：点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。\na0123：click「Size」；观察：点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。\na0124：input_text「Size 约束值输入框」；输入文本：80x60；观察：在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。\na0125：key_press「裁剪工具选项区」；实际执行：1：\n  操作：key_press\n  输入文本：TAB\n  target：当前工作；观察：在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。；该次更新未确认事项：Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。；Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。",
+  "screenshots": [
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-06/round-0012/current.png"
+  ],
+  "frame_context": {
+    "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-06/round-0012/current.png": "本次动作选点依据图；尚未执行所选动作"
+  },
+  "visual_choices": {
+    "c0014": [
+      {
+        "score": 0.9999987483024597,
+        "box": [
+          77,
+          382,
+          229,
+          403
+        ],
+        "scale": 1,
+        "gap": 0.4888334274291992,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              77,
+              382,
+              229,
+              403
+            ],
+            "score": 0.9999987483024597,
+            "scale": 1,
+            "identity_box": [
+              77,
+              382,
+              229,
+              403
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 382,
+            "right": 229,
+            "bottom": 403
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0014.png",
+          "evidence": {
+            "source_field": "/controls/13",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        },
+        "identity_box": [
+          77,
+          382,
+          229,
+          403
+        ]
+      }
+    ],
+    "c0015": [
+      {
+        "score": 0.9999995231628418,
+        "box": [
+          77,
+          407,
+          236,
+          428
+        ],
+        "scale": 1,
+        "gap": 0.4433174133300781,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              77,
+              407,
+              236,
+              428
+            ],
+            "score": 0.9999995231628418,
+            "scale": 1,
+            "identity_box": [
+              77,
+              407,
+              236,
+              428
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 407,
+            "right": 236,
+            "bottom": 428
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0015.png",
+          "evidence": {
+            "source_field": "/controls/14",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        },
+        "identity_box": [
+          77,
+          407,
+          236,
+          428
+        ]
+      }
+    ],
+    "c0016": [
+      {
+        "score": 0.9999992847442627,
+        "box": [
+          77,
+          433,
+          190,
+          454
+        ],
+        "scale": 1,
+        "gap": 0.48074406385421753,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              77,
+              433,
+              190,
+              454
+            ],
+            "score": 0.9999992847442627,
+            "scale": 1,
+            "identity_box": [
+              77,
+              433,
+              190,
+              454
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 433,
+            "right": 190,
+            "bottom": 454
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0016.png",
+          "evidence": {
+            "source_field": "/controls/15",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        },
+        "identity_box": [
+          77,
+          433,
+          190,
+          454
+        ]
+      }
+    ],
+    "c0017": [
+      {
+        "score": 1.0,
+        "box": [
+          77,
+          459,
+          213,
+          480
+        ],
+        "scale": 1,
+        "gap": 0.4230809807777405,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              77,
+              459,
+              213,
+              480
+            ],
+            "score": 1.0,
+            "scale": 1,
+            "identity_box": [
+              77,
+              459,
+              213,
+              480
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "may_open_content": false,
+          "needs_exploration": false,
+          "bbox": {
+            "left": 77,
+            "top": 459,
+            "right": 213,
+            "bottom": 480
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0017.png",
+          "evidence": {
+            "source_field": "/controls/16",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        },
+        "identity_box": [
+          77,
+          459,
+          213,
+          480
+        ]
+      }
+    ],
+    "c0018": [],
+    "c0019": [],
+    "c0020": [],
+    "c0021": [],
+    "c0022": [
+      {
+        "score": 0.9999994039535522,
+        "box": [
+          77,
+          687,
+          236,
+          738
+        ],
+        "scale": 1,
+        "gap": 0.6285186111927032,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              77,
+              687,
+              236,
+              738
+            ],
+            "score": 0.9999994039535522,
+            "scale": 1,
+            "identity_box": [
+              77,
+              687,
+              236,
+              738
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "may_open_content": false,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 77,
+            "top": 687,
+            "right": 236,
+            "bottom": 738
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0022.png",
+          "evidence": {
+            "source_field": "/controls/21",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        },
+        "identity_box": [
+          77,
+          687,
+          236,
+          738
+        ]
+      }
+    ],
+    "c0023": [
+      {
+        "score": 1.0,
+        "box": [
+          76,
+          745,
+          236,
+          769
+        ],
+        "scale": 1,
+        "gap": 0.5418358445167542,
+        "accepted": true,
+        "candidates": [
+          {
+            "box": [
+              76,
+              745,
+              236,
+              769
+            ],
+            "score": 1.0,
+            "scale": 1,
+            "identity_box": [
+              76,
+              745,
+              236,
+              769
+            ]
+          }
+        ],
+        "candidates_truncated": false,
+        "reason": "matched",
+        "matched_appearance": {
+          "may_open_content": true,
+          "needs_exploration": true,
+          "bbox": {
+            "left": 76,
+            "top": 745,
+            "right": 236,
+            "bottom": 769
+          },
+          "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0023.png",
+          "evidence": {
+            "source_field": "/controls/22",
+            "region": "r0003",
+            "source_call": "0001",
+            "observation": "discovery:0001"
+          },
+          "image_conditions": [],
+          "source_image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/screenshots/initial.png"
+        },
+        "identity_box": [
+          76,
+          745,
+          236,
+          769
+        ]
+      }
+    ],
+    "c0103": [],
+    "c0104": [],
+    "c0105": [],
+    "c0106": [],
+    "c0107": [],
+    "c0024": [],
+    "c0102": []
+  },
+  "role": "action_selection",
+  "platform": "desktop",
+  "run_scope": "探索本独立实验桌面 GIMP 应用的主要功能、界面结构、可用参数、依赖及正常使用方式。允许为回答范围内问题，对本实验对象执行正常创建、修改、保存、提交和删除；同流程选择代表，以足以使用为终点。\n保留当前控制与观察通道以及运行环境：本实验唯一活动网络连接为 Wired connection 1（enp0s3），不删除、停用或替换它；不退出当前桌面会话、关闭虚拟机或修改承载系统与控制服务的磁盘/服务。新建的其他实验对象可正常增删改，限制不扩大到整个设置应用或所有删除功能。不得以可能先出现确认框为由尝试受限制操作。\n只使用本独立VM中的预制样本或新建实验数据。不访问私人账户、不登录或向外部收件人发送消息、不上传文件到外部服务；邮件以离线本地文件夹和草稿为范围，浏览器从空白页及本地样本开始。需摄像头、扫描仪、测试磁盘或外部服务而当前环境没有时，记录具体限制，不无限重试。\n按实际动作、回执和可见结果记录事实；看到选项、修改值与持久生效分别判断。已投递但结果未确认的动作保持未知，不原样重放。",
+  "control_refs": [
+    "c0001",
+    "c0002",
+    "c0003",
+    "c0004",
+    "c0005",
+    "c0006",
+    "c0007",
+    "c0008",
+    "c0009",
+    "c0010",
+    "c0011",
+    "c0012",
+    "c0013",
+    "c0014",
+    "c0015",
+    "c0016",
+    "c0017",
+    "c0018",
+    "c0019",
+    "c0020",
+    "c0021",
+    "c0022",
+    "c0023",
+    "c0024",
+    "c0025",
+    "c0026",
+    "c0027",
+    "c0028",
+    "c0029",
+    "c0030",
+    "c0031",
+    "c0032",
+    "c0033",
+    "c0034",
+    "c0035",
+    "c0036",
+    "c0037",
+    "c0038",
+    "c0039",
+    "c0040",
+    "c0041",
+    "c0042",
+    "c0043",
+    "c0044",
+    "c0045",
+    "c0046",
+    "c0047",
+    "c0048",
+    "c0049",
+    "c0050",
+    "c0051",
+    "c0052",
+    "c0053",
+    "c0054",
+    "c0055",
+    "c0056",
+    "c0057",
+    "c0058",
+    "c0059",
+    "c0060",
+    "c0061",
+    "c0062",
+    "c0063",
+    "c0064",
+    "c0065",
+    "c0066",
+    "c0067",
+    "c0068",
+    "c0069",
+    "c0070",
+    "c0071",
+    "c0072",
+    "c0073",
+    "c0074",
+    "c0075",
+    "c0076",
+    "c0077",
+    "c0078",
+    "c0079",
+    "c0080",
+    "c0081",
+    "c0082",
+    "c0083",
+    "c0084",
+    "c0085",
+    "c0086",
+    "c0087",
+    "c0088",
+    "c0089",
+    "c0090",
+    "c0091",
+    "c0092",
+    "c0093",
+    "c0094",
+    "c0095",
+    "c0096",
+    "c0097",
+    "c0098",
+    "c0099",
+    "c0100",
+    "c0101",
+    "c0102",
+    "c0103",
+    "c0104",
+    "c0105",
+    "c0106",
+    "c0107"
+  ],
+  "name_contract": {
+    "schema": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "click"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "double_click"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "long_press"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "text": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "text",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "scroll"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "end_x",
+            "end_y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "back"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "wait"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "key_press"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "text",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "hotkey"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "text",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "hover"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "right_click"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "drag"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "end_x",
+            "end_y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "retry_when": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "enum": [
+                      "c0099",
+                      "c0100",
+                      "c0101",
+                      "c0102"
+                    ],
+                    "description": "控件树中的控件ID，例如c0008。"
+                  },
+                  "knowledge": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "index": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "修订给定已有知识时引用其序号；新增省略。"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                        },
+                        "constraints": {
+                          "type": "object",
+                          "minProperties": 1,
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "description": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "description"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "description"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "ref",
+                  "knowledge"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "enum": [
+                      "r0013"
+                    ]
+                  },
+                  "local_knowledge": {
+                    "type": "object",
+                    "properties": {
+                      "add": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "update": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "text"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "delete": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "ref",
+                  "local_knowledge"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "function_updates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "region": {
+                    "type": "string",
+                    "minLength": 1,
+                    "enum": [
+                      "r0013"
+                    ]
+                  },
+                  "add": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "supports": {
+                          "type": "array",
+                          "minItems": 1,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "constraints": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "description",
+                        "supports"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "update": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "ref": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "changes": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "supports": {
+                              "type": "array",
+                              "minItems": 1,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "constraints": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "uniqueItems": true
+                            }
+                          },
+                          "required": [],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "ref",
+                        "changes"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "remove": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "ref": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "reason": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "replace_with": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "ref",
+                        "reason"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "region"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "complete"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "description": "按需补充判断理由；不重复动作结果或已有知识。"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "enum": [
+                      "c0099",
+                      "c0100",
+                      "c0101",
+                      "c0102"
+                    ],
+                    "description": "控件树中的控件ID，例如c0008。"
+                  },
+                  "knowledge": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "index": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "修订给定已有知识时引用其序号；新增省略。"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                        },
+                        "constraints": {
+                          "type": "object",
+                          "minProperties": 1,
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "description": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "description"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "description"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "ref",
+                  "knowledge"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "enum": [
+                      "r0013"
+                    ]
+                  },
+                  "local_knowledge": {
+                    "type": "object",
+                    "properties": {
+                      "add": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "update": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "text"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "delete": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "ref",
+                  "local_knowledge"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "function_updates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "region": {
+                    "type": "string",
+                    "minLength": 1,
+                    "enum": [
+                      "r0013"
+                    ]
+                  },
+                  "add": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "supports": {
+                          "type": "array",
+                          "minItems": 1,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "constraints": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "description",
+                        "supports"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "update": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "ref": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "changes": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "supports": {
+                              "type": "array",
+                              "minItems": 1,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "constraints": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "uniqueItems": true
+                            }
+                          },
+                          "required": [],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "ref",
+                        "changes"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "remove": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "ref": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "reason": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "replace_with": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "ref",
+                        "reason"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "region"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "exception": {
+              "type": "string",
+              "enum": [
+                "blocking_popup",
+                "system_error",
+                "unexpected_exit",
+                "external_app",
+                "unclassified"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "type": "object"
+    },
+    "names": {
+      "r0001": "主菜单栏",
+      "r0002": "工具箱",
+      "r0003": "裁剪工具选项区",
+      "r0004": "图像工作区（中央用于显示和编辑图像的工作区域。）",
+      "r0005": "画笔停靠区",
+      "r0006": "图层停靠区",
+      "r0007": "File 菜单内容",
+      "r0008": "Open Recent 子菜单",
+      "r0009": "Create 子菜单",
+      "r0010": "Create a New Image 对话框",
+      "r0011": "Template 候选列表",
+      "r0012": "图像尺寸单位候选列表",
+      "r0013": "裁剪约束模式候选列表",
+      "r0014": "图像工作区（显示当前图像画布及其上的裁剪框。）",
+      "c0001": "File 菜单",
+      "c0002": "Edit 菜单",
+      "c0003": "Select 菜单",
+      "c0004": "View 菜单",
+      "c0005": "Image 菜单",
+      "c0006": "Layer 菜单",
+      "c0007": "Colors 菜单",
+      "c0008": "Tools 菜单",
+      "c0009": "Filters 菜单",
+      "c0010": "Windows 菜单",
+      "c0011": "Help 菜单",
+      "c0012": "工具选择按钮",
+      "c0013": "前景色与背景色控件",
+      "c0014": "Current layer only 选项",
+      "c0015": "Delete cropped pixels 选项",
+      "c0016": "Allow growing 选项",
+      "c0017": "Expand from center 选项",
+      "c0018": "裁剪约束模式",
+      "c0019": "固定宽高比输入框",
+      "c0020": "裁剪位置输入框",
+      "c0021": "裁剪尺寸输入框",
+      "c0022": "Highlight 选项",
+      "c0023": "参考线模式下拉框",
+      "c0103": "裁剪约束模式选择器",
+      "c0104": "Width 约束值输入框",
+      "c0105": "Fixed 复选框",
+      "c0106": "Height 约束值输入框",
+      "c0107": "Size 约束值输入框",
+      "c0024": "图像画布区域",
+      "c0025": "画笔资源过滤框",
+      "c0026": "画笔预设网格",
+      "c0027": "Spacing 设置",
+      "c0028": "图层、通道和路径标签",
+      "c0029": "混合模式下拉框",
+      "c0030": "图层不透明度设置",
+      "c0031": "图层锁定选项",
+      "c0032": "图层列表",
+      "c0033": "New…",
+      "c0034": "Create",
+      "c0035": "Open…",
+      "c0036": "Open as Layers…",
+      "c0037": "Open Location…",
+      "c0038": "Open Recent",
+      "c0039": "Save…",
+      "c0040": "Save As…",
+      "c0041": "Save a Copy…",
+      "c0042": "Revert",
+      "c0043": "Export…",
+      "c0044": "Export As…",
+      "c0045": "Create Template…",
+      "c0046": "Print…",
+      "c0047": "Send by Email…",
+      "c0048": "Copy Image Location",
+      "c0049": "Show in File Manager",
+      "c0050": "Close View",
+      "c0051": "Close All",
+      "c0052": "Quit",
+      "c0066": "Overwrite city_skyline.jpg",
+      "c0053": "Screenshot from 2023-12-18 17-21-35.png",
+      "c0054": "Document History",
+      "c0055": "From Clipboard",
+      "c0056": "Screenshot…",
+      "c0057": "Template 下拉框",
+      "c0058": "Width 输入框",
+      "c0059": "Height 输入框",
+      "c0060": "图像尺寸单位下拉框",
+      "c0061": "Advanced Options",
+      "c0062": "Help",
+      "c0063": "Reset",
+      "c0064": "Cancel",
+      "c0065": "OK",
+      "c0089": "X resolution 输入框",
+      "c0090": "Y resolution 输入框",
+      "c0091": "Resolution 单位下拉框",
+      "c0092": "Color space 下拉框",
+      "c0093": "Precision 下拉框",
+      "c0094": "Gamma 下拉框",
+      "c0095": "Color manage this image 选项",
+      "c0096": "Color profile 下拉框",
+      "c0097": "Fill with 下拉框",
+      "c0098": "Comment 文本框",
+      "c0067": "Apple iPhone 6/7 模板候选",
+      "c0068": "Apple iPhone 5 模板候选",
+      "c0069": "Template 列表向上滚动箭头",
+      "c0070": "Template 列表向下滚动箭头",
+      "c0071": "3840x2160 (4K UHD) 模板候选",
+      "c0072": "4096x2160 (Digital Cinema Initiatives 4K) 模板候选",
+      "c0073": "3840x2160 4K UHD 模板候选",
+      "c0074": "B5 (300 ppi)",
+      "c0075": "88.9×50.8 US Business Card",
+      "c0076": "Web banner leaderboard 728x90",
+      "c0077": "1280x720 (HD 720p)",
+      "c0078": "pixels",
+      "c0079": "inches",
+      "c0080": "millimeters",
+      "c0081": "points",
+      "c0082": "picas",
+      "c0083": "centimeters",
+      "c0084": "meters",
+      "c0085": "feet",
+      "c0086": "yards",
+      "c0087": "typogr. points",
+      "c0088": "typogr. picas",
+      "c0099": "Aspect ratio",
+      "c0100": "Width",
+      "c0101": "Height",
+      "c0102": "Size"
+    },
+    "aliases": {
+      "主菜单栏": "r0001",
+      "工具箱": "r0002",
+      "裁剪工具选项区": "r0003",
+      "图像工作区（中央用于显示和编辑图像的工作区域。）": "r0004",
+      "画笔停靠区": "r0005",
+      "图层停靠区": "r0006",
+      "File 菜单内容": "r0007",
+      "Open Recent 子菜单": "r0008",
+      "Create 子菜单": "r0009",
+      "Create a New Image 对话框": "r0010",
+      "Template 候选列表": "r0011",
+      "图像尺寸单位候选列表": "r0012",
+      "裁剪约束模式候选列表": "r0013",
+      "图像工作区（显示当前图像画布及其上的裁剪框。）": "r0014",
+      "File 菜单": "c0001",
+      "Edit 菜单": "c0002",
+      "Select 菜单": "c0003",
+      "View 菜单": "c0004",
+      "Image 菜单": "c0005",
+      "Layer 菜单": "c0006",
+      "Colors 菜单": "c0007",
+      "Tools 菜单": "c0008",
+      "Filters 菜单": "c0009",
+      "Windows 菜单": "c0010",
+      "Help 菜单": "c0011",
+      "工具选择按钮": "c0012",
+      "前景色与背景色控件": "c0013",
+      "Current layer only 选项": "c0014",
+      "Delete cropped pixels 选项": "c0015",
+      "Allow growing 选项": "c0016",
+      "Expand from center 选项": "c0017",
+      "裁剪约束模式": "c0018",
+      "固定宽高比输入框": "c0019",
+      "裁剪位置输入框": "c0020",
+      "裁剪尺寸输入框": "c0021",
+      "Highlight 选项": "c0022",
+      "参考线模式下拉框": "c0023",
+      "裁剪约束模式选择器": "c0103",
+      "Width 约束值输入框": "c0104",
+      "Fixed 复选框": "c0105",
+      "Height 约束值输入框": "c0106",
+      "Size 约束值输入框": "c0107",
+      "图像画布区域": "c0024",
+      "画笔资源过滤框": "c0025",
+      "画笔预设网格": "c0026",
+      "Spacing 设置": "c0027",
+      "图层、通道和路径标签": "c0028",
+      "混合模式下拉框": "c0029",
+      "图层不透明度设置": "c0030",
+      "图层锁定选项": "c0031",
+      "图层列表": "c0032",
+      "New…": "c0033",
+      "Create": "c0034",
+      "Open…": "c0035",
+      "Open as Layers…": "c0036",
+      "Open Location…": "c0037",
+      "Open Recent": "c0038",
+      "Save…": "c0039",
+      "Save As…": "c0040",
+      "Save a Copy…": "c0041",
+      "Revert": "c0042",
+      "Export…": "c0043",
+      "Export As…": "c0044",
+      "Create Template…": "c0045",
+      "Print…": "c0046",
+      "Send by Email…": "c0047",
+      "Copy Image Location": "c0048",
+      "Show in File Manager": "c0049",
+      "Close View": "c0050",
+      "Close All": "c0051",
+      "Quit": "c0052",
+      "Overwrite city_skyline.jpg": "c0066",
+      "Screenshot from 2023-12-18 17-21-35.png": "c0053",
+      "Document History": "c0054",
+      "From Clipboard": "c0055",
+      "Screenshot…": "c0056",
+      "Template 下拉框": "c0057",
+      "Width 输入框": "c0058",
+      "Height 输入框": "c0059",
+      "图像尺寸单位下拉框": "c0060",
+      "Advanced Options": "c0061",
+      "Help": "c0062",
+      "Reset": "c0063",
+      "Cancel": "c0064",
+      "OK": "c0065",
+      "X resolution 输入框": "c0089",
+      "Y resolution 输入框": "c0090",
+      "Resolution 单位下拉框": "c0091",
+      "Color space 下拉框": "c0092",
+      "Precision 下拉框": "c0093",
+      "Gamma 下拉框": "c0094",
+      "Color manage this image 选项": "c0095",
+      "Color profile 下拉框": "c0096",
+      "Fill with 下拉框": "c0097",
+      "Comment 文本框": "c0098",
+      "Apple iPhone 6/7 模板候选": "c0067",
+      "Apple iPhone 5 模板候选": "c0068",
+      "Template 列表向上滚动箭头": "c0069",
+      "Template 列表向下滚动箭头": "c0070",
+      "3840x2160 (4K UHD) 模板候选": "c0071",
+      "4096x2160 (Digital Cinema Initiatives 4K) 模板候选": "c0072",
+      "3840x2160 4K UHD 模板候选": "c0073",
+      "B5 (300 ppi)": "c0074",
+      "88.9×50.8 US Business Card": "c0075",
+      "Web banner leaderboard 728x90": "c0076",
+      "1280x720 (HD 720p)": "c0077",
+      "pixels": "c0078",
+      "inches": "c0079",
+      "millimeters": "c0080",
+      "points": "c0081",
+      "picas": "c0082",
+      "centimeters": "c0083",
+      "meters": "c0084",
+      "feet": "c0085",
+      "yards": "c0086",
+      "typogr. points": "c0087",
+      "typogr. picas": "c0088",
+      "Aspect ratio": "c0099",
+      "Width": "c0100",
+      "Height": "c0101",
+      "Size": "c0102",
+      "click": "click",
+      "none": "none",
+      "double_click": "double_click",
+      "long_press": "long_press",
+      "input_text": "input_text",
+      "scroll": "scroll",
+      "back": "back",
+      "wait": "wait",
+      "key_press": "key_press",
+      "hotkey": "hotkey",
+      "hover": "hover",
+      "right_click": "right_click",
+      "drag": "drag",
+      "complete": "complete",
+      "blocking_popup": "blocking_popup",
+      "system_error": "system_error",
+      "unexpected_exit": "unexpected_exit",
+      "external_app": "external_app",
+      "unclassified": "unclassified"
+    },
+    "owners": {
+      "c0001": "r0001",
+      "c0002": "r0001",
+      "c0003": "r0001",
+      "c0004": "r0001",
+      "c0005": "r0001",
+      "c0006": "r0001",
+      "c0007": "r0001",
+      "c0008": "r0001",
+      "c0009": "r0001",
+      "c0010": "r0001",
+      "c0011": "r0001",
+      "c0012": "r0002",
+      "c0013": "r0002",
+      "c0014": "r0003",
+      "c0015": "r0003",
+      "c0016": "r0003",
+      "c0017": "r0003",
+      "c0018": "r0003",
+      "c0019": "r0003",
+      "c0020": "r0003",
+      "c0021": "r0003",
+      "c0022": "r0003",
+      "c0023": "r0003",
+      "c0103": "r0003",
+      "c0104": "r0003",
+      "c0105": "r0003",
+      "c0106": "r0003",
+      "c0107": "r0003",
+      "c0025": "r0005",
+      "c0026": "r0005",
+      "c0027": "r0005",
+      "c0028": "r0006",
+      "c0029": "r0006",
+      "c0030": "r0006",
+      "c0031": "r0006",
+      "c0032": "r0006",
+      "c0033": "r0007",
+      "c0034": "r0007",
+      "c0035": "r0007",
+      "c0036": "r0007",
+      "c0037": "r0007",
+      "c0038": "r0007",
+      "c0039": "r0007",
+      "c0040": "r0007",
+      "c0041": "r0007",
+      "c0042": "r0007",
+      "c0043": "r0007",
+      "c0044": "r0007",
+      "c0045": "r0007",
+      "c0046": "r0007",
+      "c0047": "r0007",
+      "c0048": "r0007",
+      "c0049": "r0007",
+      "c0050": "r0007",
+      "c0051": "r0007",
+      "c0052": "r0007",
+      "c0066": "r0007",
+      "c0053": "r0008",
+      "c0054": "r0008",
+      "c0055": "r0009",
+      "c0056": "r0009",
+      "c0057": "r0010",
+      "c0058": "r0010",
+      "c0059": "r0010",
+      "c0060": "r0010",
+      "c0061": "r0010",
+      "c0062": "r0010",
+      "c0063": "r0010",
+      "c0064": "r0010",
+      "c0065": "r0010",
+      "c0089": "r0010",
+      "c0090": "r0010",
+      "c0091": "r0010",
+      "c0092": "r0010",
+      "c0093": "r0010",
+      "c0094": "r0010",
+      "c0095": "r0010",
+      "c0096": "r0010",
+      "c0097": "r0010",
+      "c0098": "r0010",
+      "c0067": "r0011",
+      "c0068": "r0011",
+      "c0069": "r0011",
+      "c0070": "r0011",
+      "c0071": "r0011",
+      "c0072": "r0011",
+      "c0073": "r0011",
+      "c0074": "r0011",
+      "c0075": "r0011",
+      "c0076": "r0011",
+      "c0077": "r0011",
+      "c0078": "r0012",
+      "c0079": "r0012",
+      "c0080": "r0012",
+      "c0081": "r0012",
+      "c0082": "r0012",
+      "c0083": "r0012",
+      "c0084": "r0012",
+      "c0085": "r0012",
+      "c0086": "r0012",
+      "c0087": "r0012",
+      "c0088": "r0012",
+      "c0099": "r0013",
+      "c0100": "r0013",
+      "c0101": "r0013",
+      "c0102": "r0013"
+    },
+    "nested": false,
+    "current": false,
+    "paths": {}
+  },
+  "prompt_sections": [
+    "region.common",
+    "task.definition",
+    "region.exception_values",
+    "region.recovery_handoff",
+    "control.definition",
+    "control.references",
+    "control.action_availability",
+    "control.knowledge_base",
+    "region.function",
+    "region.application_exception",
+    "action.proposal",
+    "action.complete",
+    "action.none",
+    "task.retry_when",
+    "control.knowledge_revision",
+    "control.knowledge_description",
+    "control.knowledge_index",
+    "control.knowledge_constraints",
+    "region.knowledge_edit",
+    "region.local_knowledge",
+    "region.function_updates",
+    "region.function_constraints",
+    "region.function_new_constraints"
+  ],
+  "prompt_composition": "field_sections",
+  "_structured_user_prompt": "{\n  \"当前任务\": {\n    \"task\": \"r0013/c0102 / 功能探索\",\n    \"control\": \"c0102\",\n    \"任务\": \"了解「Size」的功能及直接操作效果\",\n    \"探索内容\": \"了解控件尚不明确的功能、直接效果或打开的内容。\\n本任务结算条件：选择 Size 后，观察并确认该模式如何约束裁剪框。\",\n    \"未答部分\": \"历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：“80x60”是否被解析并生效？在此设置下新建或调整裁剪框时，裁剪框尺寸是否受该值约束？\"\n  },\n  \"后续建议（尚未执行）\": {\n    \"region\": \"r0004\",\n    \"control\": \"c0024\",\n    \"action\": \"drag\",\n    \"reason\": \"在 Size 模式及输入框显示“80x60”时拖动裁剪框，观察裁剪框及位置、尺寸读数是否体现该约束。\"\n  },\n  \"本轮工作\": {\n    \"处理\": \"推进探索任务\",\n    \"范围\": \"裁剪工具选项区\",\n    \"本步边界\": \"围绕原问题选择下一动作；必要准备不替换原目标。\"\n  },\n  \"相关控件\": \"- r0003 裁剪工具选项区\\n  k0027：此区块集中设置裁剪工具的行为、裁剪框约束与几何参数，以及裁剪区域的辅助显示。\\n  k0029：画布上拖动后，位置和尺寸读数会反映当前裁剪框；本次读数由位置约 (20, 10)、尺寸 320×100 px 变为位置 (6, 4)、尺寸 334×96 px。\\n  - Current layer only 选项；target=\\\"c0014\\\"\\n    用途记录：复选框，用于设置裁剪是否仅作用于当前图层。\\n  - Delete cropped pixels 选项；target=\\\"c0015\\\"\\n    用途记录：复选框，用于设置裁剪时是否删除裁剪区域外的像素。\\n  - Allow growing 选项；target=\\\"c0016\\\"\\n    用途记录：复选框，用于设置裁剪边界是否允许扩展。\\n  - Expand from center 选项；target=\\\"c0017\\\"\\n    用途记录：复选框，用于设置裁剪框是否从中心向外扩展。\\n  - 裁剪约束模式；target=\\\"c0018\\\"\\n    用途记录：下拉框用于选择裁剪约束模式。展开后可见 Aspect ratio、Width、Height 和 Size 四个候选项；本次未选择候选项，因此未确认当前设置或各模式对裁剪框的具体影响。\\n  - 固定宽高比输入框；target=\\\"c0019\\\"\\n    用途记录：在输入框中设置宽高比；选择 Aspect ratio 后，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前画布拖动曾得到 240×160 px（3:2）和 360×120 px（3:1）的未提交裁剪框；输入框显示 2:1 时，裁剪框仍可与该值不一致。对存在 360×120 px 未提交裁剪框的状态按 Enter 后，动作后的图像尺寸变为 360×120，裁剪框消失，表明该裁剪已应用；输入框仍显示 2:1。该操作未确认输入框值是否先被提交，也未验证之后拖动是否受 2:1 约束。；在固定宽高比模式下用于填写裁剪比例。本次点击后输入框仍显示被截断的“Curren…”文字；无法确认完整当前值，也未观察到数值改变。；在固定宽高比模式下填写裁剪比例。点击输入框后全选并输入“2:1”，动作后可见该值显示为 2:1；本次仅确认输入框显示值已改变，未由此确认裁剪框约束效果。\\n  - 裁剪位置输入框；target=\\\"c0020\\\"\\n    用途记录：分别输入裁剪区域的位置坐标；当前两个坐标均显示 0，单位为 px。\\n  - 裁剪尺寸输入框；target=\\\"c0021\\\"\\n    用途记录：分别输入裁剪区域的宽和高；当前两个数值均显示 0，单位为 px。\\n  - Highlight 选项；target=\\\"c0022\\\"\\n    用途记录：裁剪区域突出显示设置；可见 Highlight 选项及数值 50.0。\\n  - 参考线模式下拉框；target=\\\"c0023\\\"\\n    用途记录：下拉框用于选择裁剪时的参考线显示模式；当前显示 No guides。\\n  - 裁剪约束模式选择器；target=\\\"c0103\\\"\\n    用途记录：通过下拉列表选择裁剪约束模式；本次选择后显示 Width。\\n  - Width 约束值输入框；target=\\\"c0104\\\"\\n    用途记录：Width 模式下可见的约束值为 100 px。本次画布拖动后裁剪框尺寸读数为 334×96 px，故该次观察没有显示框宽被限制为 100 px；是否还需启用其他固定约束选项才能生效，尚未确认。\\n  - Fixed 复选框；target=\\\"c0105\\\"\\n    用途记录：可切换 Fixed 复选框。本轮只核对并登记了控件身份，没有操作它，也未验证它对 Width 模式或裁剪框的影响。截图中看起来未勾选。；点击可切换 Fixed 复选框状态。本次点击后由未勾选变为已勾选；在当前 Width 值为 100 px、现有裁剪尺寸为 334×96 px 时，尺寸读数没有改变。启用后对新建裁剪框的约束效果仍待验证。；在当前 Fixed Height 模式下此复选框显示为勾选；本次未切换它，未验证取消勾选后的效果。\\n    外观：裁剪工具选项区中带有 Fixed 标签、位于 Width 模式选择器左侧的复选框。\\n  - Height 约束值输入框；target=\\\"c0106\\\"\\n    用途记录：用于填写固定裁剪高度；当前显示 100 px。修改数值后裁剪框如何响应尚未验证。\\n    外观：Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。\\n  - Size 约束值输入框；target=\\\"c0107\\\"\\n    用途记录：这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。；输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。\\n    外观：位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。\\n- r0004 图像工作区\\n  - 图像画布区域；target=\\\"c0024\\\"\\n    用途记录：用于显示和编辑已打开的图像；当前没有图像，因此无法确认画布上的编辑操作。；显示当前活动图像的画布。本次在此观察到点击 OK 后出现的 1920×1080 白色画布。；裁剪工具选中时，在画布上拖动可显示矩形裁剪边界；本次拖动后裁剪工具选项显示 Position 为 424, 238、Size 为 1000 × 600 px。按 Enter 确认后，裁剪边界消失，图像尺寸由 1920×1080 变为 1000×600，表明裁剪已应用；本次白色图像仍显示为白色，且有未保存更改标记。；使用裁剪工具在画布上拖动可创建裁剪框；工具选项中的位置和尺寸会显示裁剪框几何参数。本次拖动后位置为 64, 60，尺寸为 400×200 px。出现裁剪框并不表示已经裁剪图像；状态栏提示“Click or press Enter to crop”时，仍需进一步确认或按 Enter 才会应用裁剪。；裁剪工具选中时，在画布上拖动可创建或更新裁剪框；工具选项会显示其位置和尺寸。本次拖动后位置为 564, 100、尺寸为 240×160 px（3:2），裁剪框尚未应用。；裁剪工具选中时，在 Fixed Aspect ratio 输入框可见 2:1 的情况下于画布拖动，本次得到位置 364, 320、尺寸 360×120 px（3:1）的未提交裁剪框；工具选项仍显示 2:1，状态栏提示“Click or press Enter to crop”。本次结果未保持 2:1；尚不能确认原因，也不能确定输入值是否已提交或约束为何未体现。；在图像尺寸为 360×120、裁剪工具选中的情况下，本次于画布拖动后出现未提交的裁剪框，工具选项显示位置 20, 10、尺寸 320×100 px（3.2:1）。固定宽高比输入框同时显示 2:1，但本次框的比例与该值不一致。状态栏提示“Click or press Enter to crop”，图像尺寸仍为 360×120，故本次拖动没有应用裁剪。；在图像画布上拖动可创建或调整裁剪框。本次拖动后位置和尺寸读数变为 (6, 4) 与 334×96 px；此结果未显示宽度受限为 Width 模式中设定的 100 px。；裁剪工具选中且 Height 模式显示 Fixed Height、固定值为 100 px 时，本次拖动后 Position Y 从 60 变为 68，Size 仍为 100×52 px。无法确认拖动实际抓到了裁剪框边缘，因此此结果不能确认 Height 模式调整尺寸时的约束效果；裁剪框仍未提交。；在裁剪工具的 Fixed Height 模式下，Fixed 已勾选且设定值为 100 px 时，本次从裁剪框下边缘向下拖动后，裁剪框 Size 显示为 100×100 px；与拖动前的 100×52 px 相比，高度变为设定的 100 px。裁剪框仍未提交。\\n- r0013 裁剪约束模式候选列表\\n  - Size；target=\\\"c0102\\\"\\n    用途记录：点击可选择 Size 裁剪约束模式。选择后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现显示为“0x0”的约束输入；刚选择后裁剪位置仍为 260, 20、裁剪尺寸仍为 100×100 px。尚未验证设置非零尺寸后裁剪框如何响应。\",\n  \"登记页面组成与访问来路\": \"控件树（已登记内容与已观察的访问关系）\\n下级区块表示操作可到达的目标；条件标在相应去向旁。\\n主菜单栏 [r0001]\\n  ├─ File 菜单 [c0001]\\n    └─ File 菜单内容 [r0007]\\n      ├─ New… [c0033]\\n        └─ Create a New Image 对话框 [r0010]\\n          ├─ Template 下拉框 [c0057]\\n            └─ Template 候选列表 [r0011]\\n              ├─ Apple iPhone 6/7 模板候选 [c0067]\\n              ├─ Apple iPhone 5 模板候选 [c0068]\\n              ├─ Template 列表向上滚动箭头 [c0069]\\n              ├─ Template 列表向下滚动箭头 [c0070]\\n              ├─ 3840x2160 (4K UHD) 模板候选 [c0071]\\n              ├─ 4096x2160 (Digital Cinema Initiatives 4K) 模板候选 [c0072]\\n              ├─ 3840x2160 4K UHD 模板候选 [c0073]\\n              ├─ B5 (300 ppi) [c0074]\\n              ├─ 88.9×50.8 US Business Card [c0075]\\n              ├─ Web banner leaderboard 728x90 [c0076]\\n              ├─ 1280x720 (HD 720p) [c0077]\\n          ├─ Width 输入框 [c0058]\\n          ├─ Height 输入框 [c0059]\\n          ├─ 图像尺寸单位下拉框 [c0060]\\n            └─ 图像尺寸单位候选列表 [r0012]\\n              ├─ pixels [c0078]\\n              ├─ inches [c0079]\\n              ├─ millimeters [c0080]\\n              ├─ points [c0081]\\n              ├─ picas [c0082]\\n              ├─ centimeters [c0083]\\n              ├─ meters [c0084]\\n              ├─ feet [c0085]\\n              ├─ yards [c0086]\\n              ├─ typogr. points [c0087]\\n              ├─ typogr. picas [c0088]\\n          ├─ Advanced Options [c0061]\\n          ├─ Help [c0062]\\n          ├─ Reset [c0063]\\n          ├─ Cancel [c0064]\\n          ├─ OK [c0065]\\n            └─ 图像工作区 [r0004]\\n              ├─ 图像画布区域 [c0024]\\n          ├─ X resolution 输入框 [c0089]\\n          ├─ Y resolution 输入框 [c0090]\\n          ├─ Resolution 单位下拉框 [c0091]\\n          ├─ Color space 下拉框 [c0092]\\n          ├─ Precision 下拉框 [c0093]\\n          ├─ Gamma 下拉框 [c0094]\\n          ├─ Color manage this image 选项 [c0095]\\n          ├─ Color profile 下拉框 [c0096]\\n          ├─ Fill with 下拉框 [c0097]\\n          ├─ Comment 文本框 [c0098]\\n      ├─ Create [c0034]\\n      ├─ Open… [c0035]\\n      ├─ Open as Layers… [c0036]\\n      ├─ Open Location… [c0037]\\n      ├─ Open Recent [c0038]\\n        └─ Open Recent 子菜单 [r0008]\\n          ├─ Screenshot from 2023-12-18 17-21-35.png [c0053]\\n          ├─ Document History [c0054]\\n      ├─ Save… [c0039]\\n      ├─ Save As… [c0040]\\n      ├─ Save a Copy… [c0041]\\n      ├─ Revert [c0042]\\n      ├─ Export… [c0043]\\n      ├─ Export As… [c0044]\\n      ├─ Create Template… [c0045]\\n      ├─ Print… [c0046]\\n      ├─ Send by Email… [c0047]\\n      ├─ Copy Image Location [c0048]\\n      ├─ Show in File Manager [c0049]\\n      ├─ Close View [c0050]\\n      ├─ Close All [c0051]\\n      ├─ Quit [c0052]\\n      ├─ Overwrite city_skyline.jpg [c0066]\\n  ├─ Edit 菜单 [c0002]\\n  ├─ Select 菜单 [c0003]\\n  ├─ View 菜单 [c0004]\\n  ├─ Image 菜单 [c0005]\\n  ├─ Layer 菜单 [c0006]\\n  ├─ Colors 菜单 [c0007]\\n  ├─ Tools 菜单 [c0008]\\n  ├─ Filters 菜单 [c0009]\\n  ├─ Windows 菜单 [c0010]\\n  ├─ Help 菜单 [c0011]\\n工具箱 [r0002]\\n  ├─ 工具选择按钮 [c0012]\\n  ├─ 前景色与背景色控件 [c0013]\\n裁剪工具选项区 [r0003]（本步关注区块）\\n  ├─ Current layer only 选项 [c0014]\\n  ├─ Delete cropped pixels 选项 [c0015]\\n  ├─ Allow growing 选项 [c0016]\\n  ├─ Expand from center 选项 [c0017]\\n  ├─ 裁剪约束模式 [c0018]\\n    └─ 裁剪约束模式候选列表 [r0013]\\n      ├─ Aspect ratio [c0099]\\n      ├─ Width [c0100]\\n      ├─ Height [c0101]\\n      ├─ Size [c0102]\\n  ├─ 固定宽高比输入框 [c0019]\\n  ├─ 裁剪位置输入框 [c0020]\\n  ├─ 裁剪尺寸输入框 [c0021]\\n  ├─ Highlight 选项 [c0022]\\n  ├─ 参考线模式下拉框 [c0023]\\n  ├─ 裁剪约束模式选择器 [c0103]\\n    └─ [引用：裁剪约束模式候选列表 r0013]\\n  ├─ Width 约束值输入框 [c0104]\\n  ├─ Fixed 复选框 [c0105]\\n  ├─ Height 约束值输入框 [c0106]\\n  ├─ Size 约束值输入框 [c0107]\\n画笔停靠区 [r0005]\\n  ├─ 画笔资源过滤框 [c0025]\\n  ├─ 画笔预设网格 [c0026]\\n  ├─ Spacing 设置 [c0027]\\n图层停靠区 [r0006]\\n  ├─ 图层、通道和路径标签 [c0028]\\n  ├─ 混合模式下拉框 [c0029]\\n  ├─ 图层不透明度设置 [c0030]\\n  ├─ 图层锁定选项 [c0031]\\n  ├─ 图层列表 [c0032]\\nCreate 子菜单 [r0009]\\n  ├─ From Clipboard [c0055]\\n  ├─ Screenshot… [c0056]\\n图像工作区 [r0014]\\n  ├─ 图像画布区域 [c0024]\\n原探索目标：裁剪约束模式候选列表 / Size\\n上次已登记前景：裁剪工具选项区、图像工作区\\na0122：click「裁剪约束模式选择器」；观察：点击“裁剪约束模式选择器”后，候选列表展开，可见 Aspect ratio、Width、Height、Size；Height 仍为当前选中模式，未选择 Size。动作后图中裁剪框仍显示 Size 100×100 px、Position (260, 20)，没有证据表明本步改变了裁剪约束或裁剪框。\\na0123：click「Size」；观察：点击 Size 后，候选列表收起并返回裁剪工具选项区。模式选择器显示 Fixed / Size，Fixed 已勾选，并出现显示为“0x0”的约束输入。裁剪位置仍显示 260, 20，裁剪尺寸仍为 100×100 px；动作后图中没有观察到裁剪框尺寸变化。\\na0124：input_text「Size 约束值输入框」；输入文本：80x60；观察：在 Size 约束值输入框中替换输入为“80x60”后，动作后画面中该输入框显示“80x60”。裁剪位置仍显示 260, 20 px，裁剪尺寸仍显示 100×100 px；未观察到裁剪框尺寸随输入立即变化。没有证据确认该值已被解析或生效。\\na0125：key_press「裁剪工具选项区」；实际执行：1：\\n  操作：key_press\\n  输入文本：TAB\\n  target：当前工作；观察：在 Size 约束值输入框中按 Tab 后，焦点移到了旁边的控件；输入框仍显示“80x60”。裁剪位置仍为 260, 20 px，裁剪尺寸仍为 100×100 px。未观察到裁剪框变化，也没有证据确认“80x60”已被解析或生效。；该次更新未确认事项：Size 约束值输入框中的“80x60”是否已被解析或生效仍不明确；仅确认移开焦点后文本保持显示。；Size 模式是否会将裁剪框约束为对应的宽高，以及新建或调整裁剪框时的具体响应，尚未验证。\",\n  \"当前任务相关功能\": [\n    {\n      \"功能\": \"选择裁剪约束模式\",\n      \"引用\": \"r0013/选择裁剪约束模式\",\n      \"用途\": \"在裁剪工具选项区打开候选列表并选择 Aspect ratio、Width、Height 或 Size 模式。选择 Size 后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现约束输入框。该输入框中键入“80x60”后，输入框显示该文本，但裁剪框仍显示 100×100 px；尚未确认该输入已被解析或生效，也尚未验证 Size 模式对裁剪框的约束效果。\",\n      \"支持对象\": [\"裁剪约束模式候选列表\",\"Aspect ratio\",\"Width\",\"Height\",\"Size\"]\n    }\n  ],\n  \"目标应用\": \"本次要探索的应用：GIMP\\n\\n判断当前前景中正在探索的内容，是否属于这个应用。\\n如果不属于，exception 填 external_app，\\n简要说明现在到了什么界面，不再探索其中的功能。\\n\\n正例：前景已经是另一应用的页面，应报告 external_app。\\n反例：当前应用展开了自己的菜单或对话框，仍属于该应用。\",\n  \"可补充知识（仅none/complete）\": {\n    \"原任务所属区块\": \"裁剪约束模式候选列表\",\n    \"本轮可更新控件引用\": [\n      \"Aspect ratio — ref=c0099\",\n      \"Width — ref=c0100\",\n      \"Height — ref=c0101\",\n      \"Size — ref=c0102\"\n    ]\n  }\n}\n\n本图：本次动作选点依据图；尚未执行所选动作；原图 1280×800 像素。\n\n请按上述字段与输出要求返回一个JSON对象。",
+  "_presentation_digest": "6f6fae8ded76b724862ee2504a0c79ae8b25cc9f4758751769ce38557a24203e"
+}

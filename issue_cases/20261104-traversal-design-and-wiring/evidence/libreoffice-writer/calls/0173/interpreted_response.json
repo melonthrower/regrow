@@ -1,0 +1,49 @@
+{
+  "action_result": {
+    "exception": "none",
+    "description": "点击 Target 下拉框后，Customize 对话框中的候选列表展开，Standard 仍为当前选中项。可见选项包括 Frame、Full Screen、Image、Image Filter、Insert、Lines and Arrows、Mail Merge、Media Playback、Navigation、Notebookbar shortcuts、OLE-Object、Optimize Size、Print Preview、Standard、Standard (Single Mode)、Standard (Viewing Mode)、Stars and Banners、Symbol Shapes、TSCP Classification、Table、Text Box Formatting、Text Object、Tools 和 Track Changes。列表带滚动条，本次只记录实际可见的部分；没有选择其他目标或提交任何配置。",
+    "recovery_handoff": "",
+    "returns_to_previous": false
+  },
+  "foreground": {
+    "description": "LibreOffice Writer 的 Customize 对话框仍在前景，Toolbars 标签内的 Target 下拉候选列表展开并遮住部分配置区。虽然窗口记录的目标应用一致性标记为 false，但可见内容属于 LibreOffice Writer 自身的自定义对话框。"
+  },
+  "regions": [
+    {
+      "ref": "r0014",
+      "identity": "same",
+      "state_description": "Scope 显示 LibreOffice Writer，Target 显示 Standard；Target 候选列表已展开，显示多个工具栏名称。"
+    }
+  ],
+  "task_update": [
+    {
+      "task": "r0014/参数探索",
+      "decision": "answered",
+      "reason": "展开 Target 下拉框后，直接观察到除 Standard 外的多个可选工具栏，已满足查看候选项并确认存在其他可选目标的结算条件。"
+    }
+  ],
+  "uncertainties": [
+    "Target 候选列表带滚动条，本次只确认了当前可见的候选项，尚未确认完整候选列表。"
+  ],
+  "controls": [
+    {
+      "ref": "c0131",
+      "knowledge": [
+        {
+          "index": 1,
+          "description": "用于选择要查看或配置的目标工具栏。展开后可见候选包括 Frame、Full Screen、Image、Image Filter、Insert、Lines and Arrows、Mail Merge、Media Playback、Navigation、Notebookbar shortcuts、OLE-Object、Optimize Size、Print Preview、Standard、Standard (Single Mode)、Standard (Viewing Mode)、Stars and Banners、Symbol Shapes、TSCP Classification、Table、Text Box Formatting、Text Object、Tools 和 Track Changes。列表带滚动条，因此这些是本次可见的候选，不代表已确认完整列表；本次未选择其他目标。",
+          "constraints": {
+            "工具栏目标": {
+              "description": "选择要配置的工具栏。本次展开时确认除 Standard 外还有多个可选目标；可见项包括 Frame、Full Screen、Image、Image Filter、Insert、Lines and Arrows、Mail Merge、Media Playback、Navigation、Notebookbar shortcuts、OLE-Object、Optimize Size、Print Preview、Standard (Single Mode)、Standard (Viewing Mode)、Stars and Banners、Symbol Shapes、TSCP Classification、Table、Text Box Formatting、Text Object、Tools 和 Track Changes。候选列表可滚动，完整候选范围尚未确认。"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "current_regions": [
+    {
+      "region_index": 0
+    }
+  ]
+}

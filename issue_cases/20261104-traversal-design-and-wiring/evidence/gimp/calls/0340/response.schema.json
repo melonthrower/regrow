@@ -1,0 +1,450 @@
+{
+  "type": "object",
+  "properties": {
+    "foreground": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "exception": {
+          "type": "string",
+          "enum": [
+            "none",
+            "blocking_popup",
+            "system_error",
+            "unexpected_exit",
+            "external_app",
+            "unclassified",
+            "region_ownership_review"
+          ]
+        },
+        "recovery_handoff": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "exception",
+        "recovery_handoff"
+      ],
+      "additionalProperties": false
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "bbox": {
+            "$ref": "#/$defs/shared_1"
+          },
+          "ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。"
+          },
+          "identity": {
+            "type": "string",
+            "enum": [
+              "same",
+              "new",
+              "uncertain"
+            ]
+          },
+          "identity_evidence": {
+            "type": "string",
+            "description": "身份未定或存在歧义时说明具体依据和缺口。"
+          },
+          "local_knowledge": {
+            "type": "object",
+            "properties": {
+              "add": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "update": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "delete": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "state_description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。"
+          },
+          "task_review_reason": {
+            "type": "string",
+            "description": "仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。"
+          },
+          "context_matches": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。"
+          },
+          "out_of_scope_reason": {
+            "type": "string",
+            "description": "只依据本轮用户允许的探索范围判断：整个区块都不应开展业务探索时写具体原因；范围内或不能确定时填空。共享导航与范围外内容应分开。不是完成声明。"
+          },
+          "controls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bbox": {
+                  "$ref": "#/$defs/shared_1"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。"
+                },
+                "ref": {
+                  "type": "string",
+                  "enum": [
+                    "File 菜单",
+                    "Edit 菜单",
+                    "Select 菜单",
+                    "View 菜单",
+                    "Image 菜单",
+                    "Layer 菜单",
+                    "Colors 菜单",
+                    "Tools 菜单",
+                    "Filters 菜单",
+                    "Windows 菜单",
+                    "Help 菜单",
+                    "工具选择按钮",
+                    "前景色与背景色控件",
+                    "Current layer only 选项",
+                    "Delete cropped pixels 选项",
+                    "Allow growing 选项",
+                    "Expand from center 选项",
+                    "裁剪约束模式",
+                    "固定宽高比输入框",
+                    "裁剪位置输入框",
+                    "裁剪尺寸输入框",
+                    "Highlight 选项",
+                    "参考线模式下拉框",
+                    "图像画布区域",
+                    "画笔资源过滤框",
+                    "画笔预设网格",
+                    "Spacing 设置",
+                    "图层、通道和路径标签",
+                    "混合模式下拉框",
+                    "图层不透明度设置",
+                    "图层锁定选项",
+                    "图层列表",
+                    "New…",
+                    "Create",
+                    "Open…",
+                    "Open as Layers…",
+                    "Open Location…",
+                    "Open Recent",
+                    "Save…",
+                    "Save As…",
+                    "Save a Copy…",
+                    "Revert",
+                    "Export…",
+                    "Export As…",
+                    "Create Template…",
+                    "Print…",
+                    "Send by Email…",
+                    "Copy Image Location",
+                    "Show in File Manager",
+                    "Close View",
+                    "Close All",
+                    "Quit",
+                    "Screenshot from 2023-12-18 17-21-35.png",
+                    "Document History",
+                    "From Clipboard",
+                    "Screenshot…",
+                    "Template 下拉框",
+                    "Width 输入框",
+                    "Height 输入框",
+                    "图像尺寸单位下拉框",
+                    "Advanced Options",
+                    "Help",
+                    "Reset",
+                    "Cancel",
+                    "OK",
+                    "Overwrite city_skyline.jpg",
+                    "Apple iPhone 6/7 模板候选",
+                    "Apple iPhone 5 模板候选",
+                    "Template 列表向上滚动箭头",
+                    "Template 列表向下滚动箭头",
+                    "3840x2160 (4K UHD) 模板候选",
+                    "4096x2160 (Digital Cinema Initiatives 4K) 模板候选",
+                    "3840x2160 4K UHD 模板候选",
+                    "B5 (300 ppi)",
+                    "88.9×50.8 US Business Card",
+                    "Web banner leaderboard 728x90",
+                    "1280x720 (HD 720p)",
+                    "pixels",
+                    "inches",
+                    "millimeters",
+                    "points",
+                    "picas",
+                    "centimeters",
+                    "meters",
+                    "feet",
+                    "yards",
+                    "typogr. points",
+                    "typogr. picas",
+                    "X resolution 输入框",
+                    "Y resolution 输入框",
+                    "Resolution 单位下拉框",
+                    "Color space 下拉框",
+                    "Precision 下拉框",
+                    "Gamma 下拉框",
+                    "Color manage this image 选项",
+                    "Color profile 下拉框",
+                    "Fill with 下拉框",
+                    "Comment 文本框",
+                    "Aspect ratio",
+                    "Width",
+                    "Height",
+                    "Size",
+                    "裁剪约束模式选择器",
+                    "Width 约束值输入框",
+                    "Fixed 复选框",
+                    "Height 约束值输入框",
+                    "Size 约束值输入框"
+                  ],
+                  "description": "已有控件填写控件树中的ID；新控件省略。"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "list_group": {
+                  "type": "string"
+                },
+                "knowledge": {
+                  "type": "array",
+                  "minItems": 0,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "修订给定已有知识时引用其序号；新增省略。"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "控件用途与规则；必要的页面、模式和限制写在同一描述中。"
+                      },
+                      "constraints": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "description"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "may_open_content": {
+                  "type": "boolean",
+                  "description": "是否打开或展开与应用主要功能相关、具有探索价值的内容。"
+                },
+                "needs_exploration": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "控件自身用法是否还有影响后续使用的具体未知；不确定填null。"
+                }
+              },
+              "required": [],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "ref"
+                    ]
+                  },
+                  "then": {},
+                  "else": {
+                    "required": [
+                      "knowledge",
+                      "may_open_content",
+                      "needs_exploration",
+                      "name"
+                    ]
+                  }
+                }
+              ],
+              "description": "已有控件用ref及变化信息；新控件省略ref并填写新对象资料。"
+            }
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "ref"
+              ]
+            },
+            "then": {
+              "properties": {
+                "identity": {
+                  "const": "same"
+                },
+                "ref": {}
+              }
+            },
+            "else": {
+              "required": [
+                "name",
+                "description",
+                "identity"
+              ],
+              "properties": {
+                "identity": {
+                  "enum": [
+                    "new",
+                    "uncertain"
+                  ]
+                },
+                "ref": {
+                  "enum": [
+                    null,
+                    ""
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "description": "旧对象引用ref并只报新信息。新对象明确identity=new；身份未定用uncertain和具体缺口。"
+      },
+      "description": "本次识别或更新的区块；划分与复用依据实际观察。"
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "focus_presence": {
+      "type": "string",
+      "enum": [
+        "interactive",
+        "not_interactive",
+        "uncertain"
+      ],
+      "description": "指定区块的前景归属：interactive表示处于当前前景，可继续观察或导航，不要求有控件；not_interactive表示不在当前前景或被其他表面接管；uncertain表示归属未确认。"
+    }
+  },
+  "required": [
+    "foreground",
+    "regions",
+    "uncertainties",
+    "focus_presence"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "shared_2": {
+      "type": "object",
+      "properties": {
+        "left": {
+          "type": "integer"
+        },
+        "top": {
+          "type": "integer"
+        },
+        "right": {
+          "type": "integer"
+        },
+        "bottom": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "additionalProperties": false
+    },
+    "shared_1": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/shared_2"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+    }
+  }
+}

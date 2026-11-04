@@ -1,0 +1,27 @@
+{
+  "errors": [
+    {
+      "code": "schema",
+      "path": "/",
+      "object": "reply",
+      "actual": {
+        "action": "none",
+        "reason": "当前仍在 Synchronization 页面，截图显示 Subtitle speed 数值框为 0.000 fps，目标是恢复探索前的 1.000 fps 并确认范围和步进。将该框再次全选输入 1.000 会重复 a0071、a0073 使用的同一入口和参数；现有证据没有支持另一种能可靠恢复该值的方法，因此暂不重试。",
+        "retry_when": "获得一个有新依据、不会重复上述尝试的恢复方式后继续；恢复显示值后，再寻找能够确认可接受范围与增减步进的证据。"
+      },
+      "expected": "缺少必填字段：exception、recovery_handoff；exception 可选：none、blocking_popup、system_error、unexpected_exit、external_app、unclassified",
+      "validator": "required",
+      "requirement": [
+        "exception",
+        "recovery_handoff"
+      ],
+      "fields": [
+        "exception",
+        "recovery_handoff"
+      ]
+    }
+  ],
+  "unchecked": [
+    "格式尚未通过，业务语义检查尚未执行。"
+  ]
+}

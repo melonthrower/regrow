@@ -1,0 +1,17 @@
+{
+  "source_call": "0283",
+  "source_region": "r0004",
+  "source_control": "c0024",
+  "working_region": "r0013",
+  "action": {
+    "target": "c0024",
+    "reason": "在当前没有未提交裁剪框的 360×120 图像上，以明显不同于 2:1 的方向拖出新裁剪框，观察工具选项中的尺寸是否显示为 2:1，从而复核固定宽高比的直接约束效果。",
+    "action": "drag",
+    "x": 610,
+    "y": 465,
+    "end_x": 770,
+    "end_y": 515,
+    "text": null
+  },
+  "status": "dispatching"
+}

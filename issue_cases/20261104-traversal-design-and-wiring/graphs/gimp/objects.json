@@ -1,0 +1,3997 @@
+{
+  "regions": {
+    "r0001": {
+      "id": "r0001",
+      "name": "主菜单栏",
+      "description": "GIMP 主窗口顶部的菜单入口栏。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [
+        {
+          "source_control": "c0001",
+          "target_region": "r0007",
+          "attempt": "a0050",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0359-42473f112092/regions/r0001/images/0359/region.png",
+      "controls": [
+        "c0001",
+        "c0002",
+        "c0003",
+        "c0004",
+        "c0005",
+        "c0006",
+        "c0007",
+        "c0008",
+        "c0009",
+        "c0010",
+        "c0011"
+      ]
+    },
+    "r0002": {
+      "id": "r0002",
+      "name": "工具箱",
+      "description": "左侧工具图标区及其下方的前景色、背景色控件。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "list_groups": {
+        "工具选择按钮": [
+          "c0012"
+        ]
+      },
+      "image": "../discovery-0340-3b3fbbd1a84a/regions/r0002/images/0340/region.png",
+      "controls": [
+        "c0012",
+        "c0013"
+      ]
+    },
+    "r0003": {
+      "id": "r0003",
+      "name": "裁剪工具选项区",
+      "description": "工具箱下方用于配置当前裁剪工具的选项。",
+      "parent_region": null,
+      "functions": {
+        "配置裁剪工具选项": {
+          "description": "通过裁剪工具选项设置裁剪行为与裁剪框约束、位置和尺寸，并配置裁剪区域的突出显示及参考线模式。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0014",
+              "name": "Current layer only 选项",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0015",
+              "name": "Delete cropped pixels 选项",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0016",
+              "name": "Allow growing 选项",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0017",
+              "name": "Expand from center 选项",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0018",
+              "name": "裁剪约束模式",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0019",
+              "name": "固定宽高比输入框",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0020",
+              "name": "裁剪位置输入框",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0021",
+              "name": "裁剪尺寸输入框",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0022",
+              "name": "Highlight 选项",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0023",
+              "name": "参考线模式下拉框",
+              "source": {
+                "region": "r0003",
+                "basis": "discovery",
+                "source_call": "0001",
+                "observation": "discovery:0001"
+              }
+            }
+          ],
+          "constraints": {
+            "c0019/宽高比": {
+              "ref": "c0019/宽高比",
+              "region": "r0003",
+              "control": "c0019"
+            },
+            "c0020/位置坐标": {
+              "ref": "c0020/位置坐标",
+              "region": "r0003",
+              "control": "c0020"
+            },
+            "c0020/单位": {
+              "ref": "c0020/单位",
+              "region": "r0003",
+              "control": "c0020"
+            },
+            "c0021/尺寸": {
+              "ref": "c0021/尺寸",
+              "region": "r0003",
+              "control": "c0021"
+            },
+            "c0021/单位": {
+              "ref": "c0021/单位",
+              "region": "r0003",
+              "control": "c0021"
+            }
+          },
+          "region": "r0003",
+          "source_call": "0254",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0003",
+              "control": "c0014"
+            },
+            {
+              "region": "r0003",
+              "control": "c0015"
+            },
+            {
+              "region": "r0003",
+              "control": "c0016"
+            },
+            {
+              "region": "r0003",
+              "control": "c0017"
+            },
+            {
+              "region": "r0003",
+              "control": "c0018"
+            },
+            {
+              "region": "r0003",
+              "control": "c0019"
+            },
+            {
+              "region": "r0003",
+              "control": "c0020"
+            },
+            {
+              "region": "r0003",
+              "control": "c0021"
+            },
+            {
+              "region": "r0003",
+              "control": "c0022"
+            },
+            {
+              "region": "r0003",
+              "control": "c0023"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0018",
+          "target_region": "r0013",
+          "attempt": "a0104",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0103",
+          "target_region": "r0013",
+          "attempt": "a0118",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0340-3b3fbbd1a84a/regions/r0003/images/0340/region.png",
+      "local_knowledge": {
+        "k0027": "此区块集中设置裁剪工具的行为、裁剪框约束与几何参数，以及裁剪区域的辅助显示。",
+        "k0029": "画布上拖动后，位置和尺寸读数会反映当前裁剪框；本次读数由位置约 (20, 10)、尺寸 320×100 px 变为位置 (6, 4)、尺寸 334×96 px。"
+      },
+      "controls": [
+        "c0014",
+        "c0015",
+        "c0016",
+        "c0017",
+        "c0018",
+        "c0019",
+        "c0020",
+        "c0021",
+        "c0022",
+        "c0023",
+        "c0103",
+        "c0104",
+        "c0105",
+        "c0106",
+        "c0107"
+      ]
+    },
+    "r0004": {
+      "id": "r0004",
+      "name": "图像工作区",
+      "description": "中央用于显示和编辑图像的工作区域。",
+      "parent_region": null,
+      "functions": {
+        "裁剪图像": {
+          "description": "选择裁剪工具后，在画布上拖动定义裁剪区域，再按 Enter 应用裁剪；已观察到画布尺寸随裁剪结果改变。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0004",
+              "control": "c0024",
+              "name": "图像画布区域",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0004",
+                    "basis": "discovery",
+                    "source_call": "0001",
+                    "observation": "discovery:0001"
+                  },
+                  {
+                    "region": "r0004",
+                    "basis": "discovery",
+                    "source_call": "0245",
+                    "observation": "update:0245"
+                  },
+                  {
+                    "basis": "object_knowledge",
+                    "source_call": "0252",
+                    "observation": "update:0252"
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0004",
+          "source_call": "0253",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0004",
+              "control": "c0024"
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "image": "../discovery-0001-a027f91f5f4b/regions/r0004/images/0001/region.png",
+      "controls": [
+        "c0024"
+      ]
+    },
+    "r0005": {
+      "id": "r0005",
+      "name": "画笔停靠区",
+      "description": "右上停靠区用于查看画笔预设并显示画笔相关设置。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "list_groups": {
+        "画笔预设": [
+          "c0026"
+        ]
+      },
+      "image": "../discovery-0350-7c091e33205f/regions/r0005/images/0350/region.png",
+      "controls": [
+        "c0025",
+        "c0026",
+        "c0027"
+      ]
+    },
+    "r0006": {
+      "id": "r0006",
+      "name": "图层停靠区",
+      "description": "右下停靠区提供图层、通道和路径标签，以及图层设置和列表区域。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0350-7c091e33205f/regions/r0006/images/0350/region.png",
+      "controls": [
+        "c0028",
+        "c0029",
+        "c0030",
+        "c0031",
+        "c0032"
+      ]
+    },
+    "r0007": {
+      "id": "r0007",
+      "name": "File 菜单内容",
+      "description": "由主菜单栏的 File 菜单展开，列出 GIMP 的文件创建、打开、保存、导出及关闭等命令。",
+      "parent_region": "r0001",
+      "functions": {
+        "访问最近文件和文档历史入口": {
+          "description": "通过 Open Recent 展开子菜单，可见最近文件条目及 Document History 入口；本次未选择它们，后续行为未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0007",
+              "control": "c0038",
+              "name": "Open Recent",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0007",
+                    "basis": "discovery",
+                    "source_call": "0053",
+                    "observation": "update:0053"
+                  },
+                  {
+                    "source_call": "0065",
+                    "observation": "update:0065",
+                    "region": "r0007",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0007",
+          "source_call": "0065",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0007",
+              "control": "c0038"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0038",
+          "target_region": "r0008",
+          "attempt": "a0053",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0033",
+          "target_region": "r0010",
+          "attempt": "a0056",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "local_knowledge": {
+        "k0001": "菜单中可见创建、打开、保存、导出、打印、文件位置及关闭等命令；当前无打开图像时，多项依赖图像的命令呈灰色不可用。",
+        "k0002": "Create 子菜单当前显示 From Clipboard 和 Screenshot… 两个命令；本次只观察菜单内容，未执行命令。"
+      },
+      "image": "../discovery-0076-08a57deba5f0/regions/r0007/images/0076/region.png",
+      "controls": [
+        "c0033",
+        "c0034",
+        "c0035",
+        "c0036",
+        "c0037",
+        "c0038",
+        "c0039",
+        "c0040",
+        "c0041",
+        "c0042",
+        "c0043",
+        "c0044",
+        "c0045",
+        "c0046",
+        "c0047",
+        "c0048",
+        "c0049",
+        "c0050",
+        "c0051",
+        "c0052",
+        "c0066"
+      ]
+    },
+    "r0008": {
+      "id": "r0008",
+      "name": "Open Recent 子菜单",
+      "description": "由 File 菜单内容中的 Open Recent 展开的子菜单，列出最近文件入口及文档历史入口。",
+      "parent_region": "r0007",
+      "functions": {},
+      "transitions": [],
+      "image": "../a0053-0065-b6d4124a7cfe/regions/r0008/images/0065/region.png",
+      "controls": [
+        "c0053",
+        "c0054"
+      ]
+    },
+    "r0009": {
+      "id": "r0009",
+      "name": "Create 子菜单",
+      "description": "由 File 菜单中的 Create 项展开，列出从剪贴板或屏幕截图创建图像的命令。",
+      "parent_region": "r0007",
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0076-08a57deba5f0/regions/r0009/images/0076/region.png",
+      "controls": [
+        "c0055",
+        "c0056"
+      ]
+    },
+    "r0010": {
+      "id": "r0010",
+      "name": "Create a New Image 对话框",
+      "description": "用于配置新图像的模板和尺寸，并确认或取消新建。",
+      "parent_region": null,
+      "functions": {
+        "创建新图像": {
+          "description": "通过选择模板、设置宽度和高度及其单位，并点击 OK 发起新图像创建。点击 OK 后对话框关闭，编辑区显示新图像；本次可见结果为 1920×1080 的白色新图像及其 Background 图层。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0010",
+              "control": null,
+              "name": "Create a New Image 对话框"
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0057",
+              "name": "Template 下拉框",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0086",
+                "observation": "update:0086"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0058",
+              "name": "Width 输入框",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0080",
+                "observation": "update:0080"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0059",
+              "name": "Height 输入框",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0080",
+                "observation": "update:0080"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0060",
+              "name": "图像尺寸单位下拉框",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0225",
+                "observation": "update:0225"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0065",
+              "name": "OK",
+              "source": {
+                "source_call": "0245",
+                "observation": "update:0245",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0245",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": null
+            },
+            {
+              "region": "r0010",
+              "control": "c0057"
+            },
+            {
+              "region": "r0010",
+              "control": "c0058"
+            },
+            {
+              "region": "r0010",
+              "control": "c0059"
+            },
+            {
+              "region": "r0010",
+              "control": "c0060"
+            },
+            {
+              "region": "r0010",
+              "control": "c0065"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0057",
+          "target_region": "r0011",
+          "attempt": "a0057",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0057",
+          "target_region": "r0011",
+          "attempt": "a0085",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0060",
+          "target_region": "r0012",
+          "attempt": "a0097",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0065",
+          "target_region": "r0004",
+          "attempt": "a0101",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/region.png",
+      "local_knowledge": {
+        "k0003": "该对话框用于配置并发起新图像创建：可选择模板，设置宽度、高度及尺寸单位，并可查看或设置图像分辨率和颜色模式等选项。配置后点击 OK 会关闭对话框并创建新图像；本次设置为 1920×1080 px，点击 OK 后观察到相应尺寸的新图像出现在 GIMP 编辑区。可用 Cancel 取消。",
+        "k0024": "关闭下拉候选列表后，点击 Advanced Options 可展开高级设置；展开时可配置 X/Y resolution、Color space、Precision、Gamma、Color profile、Fill with 和 Comment 等项目。此前在单位候选列表打开时点击未能展开的观察适用于候选列表仍打开的状态。",
+        "k0025": "高级设置展开后，Help、Reset、Cancel 和 OK 按钮仍位于对话框底部。点击 OK 会关闭对话框并创建图像；本次观察到 1920×1080 的新图像。Cancel 用于取消。",
+        "k0026": "点击 Reset 后，本次观察到 Template 变为空白，宽高变为 1920×1080 px，X/Y resolution 变为 300.000 pixels/in，Comment 变为“Created with GIMP”。RGB color、8-bit integer、Perceptual gamma (sRGB)、Color profile 和 Background color 等可见设置前后显示相同；无法据此判断这些相同设置是否也被重置。"
+      },
+      "controls": [
+        "c0057",
+        "c0058",
+        "c0059",
+        "c0060",
+        "c0061",
+        "c0062",
+        "c0063",
+        "c0064",
+        "c0065",
+        "c0089",
+        "c0090",
+        "c0091",
+        "c0092",
+        "c0093",
+        "c0094",
+        "c0095",
+        "c0096",
+        "c0097",
+        "c0098"
+      ]
+    },
+    "r0011": {
+      "id": "r0011",
+      "name": "Template 候选列表",
+      "description": "由 Create a New Image 对话框中的 Template 下拉框展开、展示新图像模板候选的列表。",
+      "parent_region": "r0010",
+      "functions": {
+        "浏览新图像模板候选": {
+          "description": "展开 Template 候选列表可浏览新图像模板；列表可滚动，滚动后可继续查看未显示的候选。目前滚动后新看到的“Web banner large skyscraper 300×600”仍是模板候选。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0011",
+              "control": null,
+              "name": "Template 候选列表"
+            }
+          ],
+          "constraints": {},
+          "region": "r0011",
+          "source_call": "0091",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0011",
+              "control": null
+            }
+          ]
+        },
+        "选择新图像模板": {
+          "description": "在展开的候选列表中点击模板，可收起列表并在 Create a New Image 对话框中选中该模板，同时显示相应的图像尺寸设置。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0011",
+              "control": "c0071",
+              "name": "3840x2160 (4K UHD) 模板候选",
+              "source": {
+                "source_call": "0222",
+                "observation": "update:0222",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0011",
+          "source_call": "0222",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0011",
+              "control": "c0071"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0071",
+          "target_region": "r0010",
+          "attempt": "a0096",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        }
+      ],
+      "local_knowledge": {
+        "k0004": "展开 Template 下拉框后可浏览新图像模板候选；列表具有滚动指示，向下滚动可查看此前未显示的候选。已观察到的候选包括“Web banner large skyscraper 300×600”、“1280×720 (HD 720p)”、“1920×1080 (Full HD 1080p)”、“3840×2160 (4K UHD)”、“4096×2160 (Digital Cinema Initiatives 4K)”、“1366×768 HD”、“1920×1200 WUXGA”、“2560×1600 WQXGA”、“3840×2160 4K UHD”、“Apple iPhone 6/7”、“Apple iPhone 5”、“Apple iPad 3&4, Air”、“Samsung Galaxy S6”、“Samsung Galaxy S5”和“Samsung Galaxy Tab 2&3 10,1 inch”；这些均呈模板候选形式，未见独立功能线索。高亮行不代表已确认选中模板，也没有证据表明图像尺寸发生变化。列表仍显示向下箭头，尚未确认已到达末尾。",
+        "k0005": "当前可见候选还包括纸张规格、名片尺寸、卫生纸、CD 封面及多个网页横幅尺寸；它们均呈模板候选形式，未见独立功能线索。列表底部显示向下滚动箭头，表明仍有未显示内容。",
+        "k0006": "一次向上滚动手势后，可见列表内容和位置基本未变，但高亮行从“Samsung Galaxy S5”变为“Samsung Galaxy S6”；高亮不证明模板已选中。",
+        "k0007": "本次向下滚动手势后，列表内容和位置基本未变，高亮行由“Samsung Galaxy S6”变为“Samsung Galaxy S5”；高亮变化不证明模板已选中，也不能确认列表已到末尾。",
+        "k0008": "本次向下滚动手势后，列表可见内容和位置基本未变，高亮行由“Samsung Galaxy S5”变为“Samsung Galaxy S6”；底部仍显示“Samsung Galaxy Tab 2&3 10,1 inch”和向下箭头。未观察到其下方的新内容或列表末尾；高亮变化不证明模板已选中，也没有证据表明图像尺寸发生变化。",
+        "k0009": "本次向下滚动后，列表内容和位置基本未变，高亮行由“Samsung Galaxy S6”变为“Samsung Galaxy S5”；底部仍显示“Samsung Galaxy Tab 2&3 10,1 inch”和向下箭头。未观察到其下方的新候选或列表末尾；高亮变化不证明模板已选中。",
+        "k0010": "本次向下滚动手势后，列表可见内容和位置基本未变，高亮行由“Samsung Galaxy S5”变为“Samsung Galaxy S6”；底部仍显示“Samsung Galaxy Tab 2&3 10,1 inch”和向下箭头。未观察到其下方的新候选、列表末尾或独立功能线索；高亮变化不证明模板已选中，也没有证据表明图像尺寸发生变化。",
+        "k0011": "本次向下滚动手势后，列表内容和位置基本未变；高亮行由“Samsung Galaxy S6”变为“Apple iPhone 5”。仍未观察到“Samsung Galaxy Tab 2&3 10,1 inch”下方的候选或列表末尾；高亮变化不证明模板已选中，也没有证据表明图像尺寸发生变化。",
+        "k0012": "本次向下滚动手势后，列表可见内容和位置基本未变；高亮行由“Apple iPhone 5”变为“Samsung Galaxy S5”。底部仍显示“Samsung Galaxy Tab 2&3 10,1 inch”和向下箭头，未观察到其下方的新候选或列表末尾；高亮变化不证明模板已选中，也没有证据表明图像尺寸发生变化。",
+        "k0013": "本次向下滚动后，列表底部新显示“Web banner large skyscraper 300×600”；该项仍呈图像模板候选形式，未见独立功能线索。列表仍有向下滚动指示，尚未确认到达末尾。",
+        "k0014": "本次向下滚动后，列表底部新显示“1280×720 (HD 720p)”和“1920×1080 (Full HD 1080p)”；两项仍呈图像尺寸模板候选形式，未见独立功能线索。列表仍显示向下滚动指示，尚未确认到达末尾。",
+        "k0015": "本次向下滚动后，列表内容继续上移；顶部从部分可见的 A0 移至 A1，底部仍显示“1920×1080 (Full HD 1080p)”及一条无法辨认的截断候选。高亮行变为“Web banner large skyscraper 300×600”，但没有证据表明模板已选中或图像尺寸发生变化；列表仍显示滚动指示，未确认到达末尾。",
+        "k0016": "本次向下滚动后，“1920×1080 (Full HD 1080p)”下方显示“3840×2160 (4K UHD)”和“4096×2160 (Digital Cinema Initiatives 4K)”，底部部分露出“1366×768 HD”；这些仍呈图像尺寸模板候选形式，未见独立功能线索。高亮行变为“1920×1080 (Full HD 1080p)”，但这不证明模板已选中或图像尺寸已改变；列表仍有向下滚动指示，尚未确认到达末尾。",
+        "k0017": "本次向下滚动后，顶部可见内容从 A3 变为 A4；“1366×768 HD”完整显示，其下方部分露出“1920×1200 WUXGA”。所见仍呈图像尺寸模板候选形式，未见独立功能线索。列表仍有向下滚动指示，尚未确认到达末尾；高亮不证明模板已选中或图像尺寸已改变。",
+        "k0018": "本次向下滚动后，顶部从 A4 移至 A6；“1920×1200 WUXGA”完整可见，其下方出现“2560×1600 WQXGA”。所见仍为图像尺寸模板候选，未见独立功能线索；底部仍显示向下滚动指示，尚未确认列表末尾。高亮行不证明模板已选中，也没有证据表明图像尺寸发生变化。",
+        "k0019": "本次向下滚动后，“2560×1600 WQXGA”下方可见“3840×2160 4K UHD”和“Apple iPhone 6/7”，底部部分显示“Apple iPhone 5”；这些仍呈模板候选形式，未见独立功能线索。“3840×2160 4K UHD”行高亮，但没有证据表明模板已被选中或图像尺寸发生变化。列表仍显示向下滚动指示，尚未确认到达末尾。",
+        "k0020": "展开的列表中可见多种新图像模板候选；可滚动浏览并通过选择候选来设置新图像模板。当前画面未确认任何候选已被选中，也未确认新图像尺寸因此发生变化。",
+        "k0021": "点击列表中的候选后，候选列表可以收起并返回 Create a New Image 对话框；对话框显示选中的模板值及相应的可见图像设置。本次点击“3840x2160 (4K UHD)”后，Template 显示“3840x2160 (4K UHD)”，Width 为 3840、Height 为 2160 px，摘要显示 3840 × 2160 pixels、72 ppi、RGB color。此前一次记录中，点击目标后却显示另一个模板；本次结果确认该候选可被选中并设置相应尺寸，但不能据此解释此前结果的原因。",
+        "k0022": "本图仍显示向下滚动箭头；仅凭当前列表内容和箭头不能确认已到达候选列表末尾。"
+      },
+      "image": "../discovery-0214-ff694c93702e/regions/r0011/images/0214/region.png",
+      "list_groups": {
+        "Template 候选项": [
+          "c0067",
+          "c0068"
+        ],
+        "Template 候选": [
+          "c0071",
+          "c0072",
+          "c0073"
+        ],
+        "Template 候选条目": [
+          "c0074",
+          "c0075",
+          "c0076",
+          "c0077"
+        ]
+      },
+      "controls": [
+        "c0067",
+        "c0068",
+        "c0069",
+        "c0070",
+        "c0071",
+        "c0072",
+        "c0073",
+        "c0074",
+        "c0075",
+        "c0076",
+        "c0077"
+      ]
+    },
+    "r0012": {
+      "id": "r0012",
+      "name": "图像尺寸单位候选列表",
+      "description": "由 Create a New Image 对话框中的图像尺寸单位下拉框展开，列出可选的图像尺寸单位。",
+      "parent_region": "r0010",
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0023": "展开后可查看并选择宽度和高度共用的尺寸单位；本次确认了候选项，但未选择或验证切换单位后的设置。"
+      },
+      "list_groups": {
+        "图像尺寸单位候选项": [
+          "c0078",
+          "c0079",
+          "c0080",
+          "c0081",
+          "c0082",
+          "c0083",
+          "c0084",
+          "c0085",
+          "c0086",
+          "c0087",
+          "c0088"
+        ]
+      },
+      "image": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/region.png",
+      "controls": [
+        "c0078",
+        "c0079",
+        "c0080",
+        "c0081",
+        "c0082",
+        "c0083",
+        "c0084",
+        "c0085",
+        "c0086",
+        "c0087",
+        "c0088"
+      ]
+    },
+    "r0013": {
+      "id": "r0013",
+      "name": "裁剪约束模式候选列表",
+      "description": "由“裁剪约束模式”下拉框展开、用于选择裁剪约束模式的候选项列表。",
+      "parent_region": "r0003",
+      "functions": {
+        "选择裁剪约束模式": {
+          "description": "在裁剪工具选项区打开候选列表并选择 Aspect ratio、Width、Height 或 Size 模式。选择 Size 后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现约束输入框。该输入框中键入“80x60”后，输入框显示该文本，但裁剪框仍显示 100×100 px；尚未确认该输入已被解析或生效，也尚未验证 Size 模式对裁剪框的约束效果。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0013",
+              "control": null,
+              "name": "裁剪约束模式候选列表"
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0099",
+              "name": "Aspect ratio",
+              "source": {
+                "basis": "object_knowledge",
+                "source_call": "0284",
+                "observation": "update:0284"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0100",
+              "name": "Width",
+              "source": {
+                "basis": "object_knowledge",
+                "source_call": "0289",
+                "observation": "update:0289"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0101",
+              "name": "Height",
+              "source": {
+                "basis": "object_knowledge",
+                "source_call": "0322",
+                "observation": "update:0322"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0102",
+              "name": "Size",
+              "source": {
+                "source_call": "0328",
+                "observation": "update:0328",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0333",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": null
+            },
+            {
+              "region": "r0013",
+              "control": "c0099"
+            },
+            {
+              "region": "r0013",
+              "control": "c0100"
+            },
+            {
+              "region": "r0013",
+              "control": "c0101"
+            },
+            {
+              "region": "r0013",
+              "control": "c0102"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0101",
+          "target_region": "r0003",
+          "attempt": "a0119",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        },
+        {
+          "source_control": "c0102",
+          "target_region": "r0003",
+          "attempt": "a0123",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        }
+      ],
+      "list_groups": {
+        "裁剪约束模式候选项": [
+          "c0099",
+          "c0100",
+          "c0101",
+          "c0102"
+        ]
+      },
+      "image": "../a0104-0256-50b0a9bda197/regions/r0013/images/0256/region.png",
+      "local_knowledge": {
+        "k0028": "在裁剪工具选项区展开“裁剪约束模式”下拉框可访问此列表；点击候选项可选择相应的裁剪约束模式。列表包含 Aspect ratio、Width、Height 和 Size。"
+      },
+      "controls": [
+        "c0099",
+        "c0100",
+        "c0101",
+        "c0102"
+      ]
+    },
+    "r0014": {
+      "id": "r0014",
+      "name": "图像工作区",
+      "description": "显示当前图像画布及其上的裁剪框。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../a0115-0293-654ea832d0bf/regions/r0014/images/0293/region.png",
+      "controls": [
+        "c0024"
+      ]
+    },
+    "r0015": {
+      "id": "r0015",
+      "name": "Edit 菜单内容",
+      "description": "由主菜单栏的 Edit 菜单展开，列出编辑、填充、描边和设置相关命令。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0030": "菜单包含撤销与历史、剪切复制粘贴、清除、填充、描边，以及 Preferences、Input Devices、Keyboard Shortcuts、Modules 和 Units 等命令。灰色命令在当前状态下不可用；各命令的执行结果尚未逐项验证。"
+      },
+      "image": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/region.png",
+      "controls": [
+        "c0108",
+        "c0109",
+        "c0110",
+        "c0111",
+        "c0112",
+        "c0113",
+        "c0114",
+        "c0115",
+        "c0116",
+        "c0117",
+        "c0118",
+        "c0119",
+        "c0120",
+        "c0121",
+        "c0122",
+        "c0123",
+        "c0124",
+        "c0125",
+        "c0126",
+        "c0127",
+        "c0128",
+        "c0129",
+        "c0130",
+        "c0131",
+        "c0132"
+      ]
+    },
+    "r0016": {
+      "id": "r0016",
+      "name": "Select 菜单内容",
+      "description": "从主菜单栏的 Select 菜单展开的选择相关命令列表。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0031": "Select 菜单列出选择创建、转换、编辑及选择边界处理相关命令；部分命令在当前画面呈灰色不可用，菜单中可用状态会受当前图像或选择状态影响。"
+      },
+      "image": "../discovery-0359-42473f112092/regions/r0016/images/0359/region.png",
+      "controls": [
+        "c0133",
+        "c0134",
+        "c0135",
+        "c0136",
+        "c0137",
+        "c0138",
+        "c0139",
+        "c0140",
+        "c0141",
+        "c0142",
+        "c0143",
+        "c0144",
+        "c0145",
+        "c0146",
+        "c0147",
+        "c0148",
+        "c0149",
+        "c0150"
+      ]
+    }
+  },
+  "controls": {
+    "c0001": {
+      "name": "File 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 File 菜单，显示文件创建、打开、保存、导出、关闭等命令；本次在未打开图像时观察到部分命令呈灰色不可用。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0001.png",
+          "conditions": [
+            "File 菜单未展开，显示为菜单栏中的普通菜单项。"
+          ]
+        },
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0001/images/0053/c0001.png",
+          "conditions": [
+            "File 菜单已展开，下面显示下拉命令列表。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0007",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0002": {
+      "name": "Edit 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Edit 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0002.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0003": {
+      "name": "Select 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Select 菜单；菜单内容尚未检查。"
+        },
+        {
+          "description": "点击可展开 Select 菜单。本图中该菜单已展开，显示选择相关命令；仅凭显示菜单不能确认各命令已执行或其效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0003.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0004": {
+      "name": "View 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 View 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0004.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0005": {
+      "name": "Image 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Image 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0005.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0006": {
+      "name": "Layer 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Layer 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0006.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0007": {
+      "name": "Colors 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Colors 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0007.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0008": {
+      "name": "Tools 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Tools 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0008.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0009": {
+      "name": "Filters 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Filters 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0009.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0010": {
+      "name": "Windows 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Windows 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0010.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0011": {
+      "name": "Help 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Help 菜单；菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0001/images/0001/c0011.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0012": {
+      "name": "工具选择按钮",
+      "description": "裁剪工具图标处于选中状态。",
+      "knowledge": [
+        {
+          "description": "点击某个工具图标可选择相应工具；当前可确认裁剪工具已选中，工具选项区显示其设置。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0002/images/0001/c0012.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0013": {
+      "name": "前景色与背景色控件",
+      "knowledge": [
+        {
+          "description": "显示并提供前景色、背景色的颜色控件；当前显示前景黑色、背景白色。具体打开方式和可用参数尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0002/images/0001/c0013.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "显示前景色为黑色、背景色为白色。"
+    },
+    "c0014": {
+      "name": "Current layer only 选项",
+      "knowledge": [
+        {
+          "description": "复选框，用于设置裁剪是否仅作用于当前图层。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0014.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前未勾选。"
+    },
+    "c0015": {
+      "name": "Delete cropped pixels 选项",
+      "knowledge": [
+        {
+          "description": "复选框，用于设置裁剪时是否删除裁剪区域外的像素。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0015.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前未勾选。"
+    },
+    "c0016": {
+      "name": "Allow growing 选项",
+      "knowledge": [
+        {
+          "description": "复选框，用于设置裁剪边界是否允许扩展。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0016.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前未勾选。"
+    },
+    "c0017": {
+      "name": "Expand from center 选项",
+      "knowledge": [
+        {
+          "description": "复选框，用于设置裁剪框是否从中心向外扩展。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0017.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前未勾选。"
+    },
+    "c0018": {
+      "name": "裁剪约束模式",
+      "knowledge": [
+        {
+          "description": "下拉框用于选择裁剪约束模式。展开后可见 Aspect ratio、Width、Height 和 Size 四个候选项；本次未选择候选项，因此未确认当前设置或各模式对裁剪框的具体影响。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0018.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0013",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0019": {
+      "name": "固定宽高比输入框",
+      "knowledge": [
+        {
+          "description": "在输入框中设置宽高比；选择 Aspect ratio 后，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前画布拖动曾得到 240×160 px（3:2）和 360×120 px（3:1）的未提交裁剪框；输入框显示 2:1 时，裁剪框仍可与该值不一致。对存在 360×120 px 未提交裁剪框的状态按 Enter 后，动作后的图像尺寸变为 360×120，裁剪框消失，表明该裁剪已应用；输入框仍显示 2:1。该操作未确认输入框值是否先被提交，也未验证之后拖动是否受 2:1 约束。",
+          "constraints": {
+            "宽高比": {
+              "description": "填写裁剪宽度与高度的比例；当前值为 1:1。",
+              "name": "宽高比"
+            }
+          }
+        },
+        {
+          "description": "在固定宽高比模式下用于填写裁剪比例。本次点击后输入框仍显示被截断的“Curren…”文字；无法确认完整当前值，也未观察到数值改变。",
+          "constraints": {
+            "宽高比": {
+              "description": "填写裁剪宽度与高度的比例；本次未能从截断文字确认当前比例。",
+              "name": "宽高比"
+            }
+          }
+        },
+        {
+          "description": "在固定宽高比模式下填写裁剪比例。点击输入框后全选并输入“2:1”，动作后可见该值显示为 2:1；本次仅确认输入框显示值已改变，未由此确认裁剪框约束效果。",
+          "constraints": {
+            "宽高比": {
+              "description": "填写裁剪宽度与高度的比例；本次输入并观察到的值为 2:1。",
+              "name": "宽高比"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0019.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0020": {
+      "name": "裁剪位置输入框",
+      "knowledge": [
+        {
+          "description": "分别输入裁剪区域的位置坐标；当前两个坐标均显示 0，单位为 px。",
+          "constraints": {
+            "位置坐标": {
+              "description": "在两个数值框中分别填写位置坐标；可见单位选择为 px。",
+              "name": "位置坐标"
+            },
+            "单位": {
+              "description": "位置坐标单位下拉框当前显示 px。",
+              "name": "单位"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0020.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0021": {
+      "name": "裁剪尺寸输入框",
+      "knowledge": [
+        {
+          "description": "分别输入裁剪区域的宽和高；当前两个数值均显示 0，单位为 px。",
+          "constraints": {
+            "尺寸": {
+              "description": "在两个数值框中分别填写宽度和高度；可见单位选择为 px。",
+              "name": "尺寸"
+            },
+            "单位": {
+              "description": "尺寸单位下拉框当前显示 px。",
+              "name": "单位"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0021.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0022": {
+      "name": "Highlight 选项",
+      "knowledge": [
+        {
+          "description": "裁剪区域突出显示设置；可见 Highlight 选项及数值 50.0。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0022.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前已勾选，数值显示为 50.0。"
+    },
+    "c0023": {
+      "name": "参考线模式下拉框",
+      "knowledge": [
+        {
+          "description": "下拉框用于选择裁剪时的参考线显示模式；当前显示 No guides。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0023.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前显示 No guides。"
+    },
+    "c0024": {
+      "name": "图像画布区域",
+      "knowledge": [
+        {
+          "description": "用于显示和编辑已打开的图像；当前没有图像，因此无法确认画布上的编辑操作。"
+        },
+        {
+          "description": "显示当前活动图像的画布。本次在此观察到点击 OK 后出现的 1920×1080 白色画布。"
+        },
+        {
+          "description": "裁剪工具选中时，在画布上拖动可显示矩形裁剪边界；本次拖动后裁剪工具选项显示 Position 为 424, 238、Size 为 1000 × 600 px。按 Enter 确认后，裁剪边界消失，图像尺寸由 1920×1080 变为 1000×600，表明裁剪已应用；本次白色图像仍显示为白色，且有未保存更改标记。"
+        },
+        {
+          "description": "使用裁剪工具在画布上拖动可创建裁剪框；工具选项中的位置和尺寸会显示裁剪框几何参数。本次拖动后位置为 64, 60，尺寸为 400×200 px。出现裁剪框并不表示已经裁剪图像；状态栏提示“Click or press Enter to crop”时，仍需进一步确认或按 Enter 才会应用裁剪。"
+        },
+        {
+          "description": "裁剪工具选中时，在画布上拖动可创建或更新裁剪框；工具选项会显示其位置和尺寸。本次拖动后位置为 564, 100、尺寸为 240×160 px（3:2），裁剪框尚未应用。"
+        },
+        {
+          "description": "裁剪工具选中时，在 Fixed Aspect ratio 输入框可见 2:1 的情况下于画布拖动，本次得到位置 364, 320、尺寸 360×120 px（3:1）的未提交裁剪框；工具选项仍显示 2:1，状态栏提示“Click or press Enter to crop”。本次结果未保持 2:1；尚不能确认原因，也不能确定输入值是否已提交或约束为何未体现。"
+        },
+        {
+          "description": "在图像尺寸为 360×120、裁剪工具选中的情况下，本次于画布拖动后出现未提交的裁剪框，工具选项显示位置 20, 10、尺寸 320×100 px（3.2:1）。固定宽高比输入框同时显示 2:1，但本次框的比例与该值不一致。状态栏提示“Click or press Enter to crop”，图像尺寸仍为 360×120，故本次拖动没有应用裁剪。"
+        },
+        {
+          "description": "在图像画布上拖动可创建或调整裁剪框。本次拖动后位置和尺寸读数变为 (6, 4) 与 334×96 px；此结果未显示宽度受限为 Width 模式中设定的 100 px。"
+        },
+        {
+          "description": "裁剪工具选中且 Height 模式显示 Fixed Height、固定值为 100 px 时，本次拖动后 Position Y 从 60 变为 68，Size 仍为 100×52 px。无法确认拖动实际抓到了裁剪框边缘，因此此结果不能确认 Height 模式调整尺寸时的约束效果；裁剪框仍未提交。"
+        },
+        {
+          "description": "在裁剪工具的 Fixed Height 模式下，Fixed 已勾选且设定值为 100 px 时，本次从裁剪框下边缘向下拖动后，裁剪框 Size 显示为 100×100 px；与拖动前的 100×52 px 相比，高度变为设定的 100 px。裁剪框仍未提交。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0004/images/0001/c0024.png",
+          "conditions": [
+            "画布工作区为空，未显示图像或裁剪框。"
+          ]
+        },
+        {
+          "path": "../a0106-0268-383658507954/regions/r0004/images/0268/c0024.png",
+          "conditions": [
+            "画布中显示一张灰色图像，图像左上区域有一个已创建但尚未提交的矩形裁剪框。"
+          ]
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0025": {
+      "name": "画笔资源过滤框",
+      "knowledge": [
+        {
+          "description": "输入过滤文字以筛选下方显示的画笔资源。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0005/images/0001/c0025.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0026": {
+      "name": "画笔预设网格",
+      "description": "显示画笔预设缩略图；当前标示 Hardness 050 (51 × 51)。",
+      "knowledge": [
+        {
+          "description": "点击预设缩略图可选择画笔；当前显示的画笔为 Hardness 050 (51 × 51)。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0005/images/0001/c0026.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0027": {
+      "name": "Spacing 设置",
+      "knowledge": [
+        {
+          "description": "设置当前画笔的间距；当前数值为 10.0。",
+          "constraints": {
+            "间距": {
+              "description": "在数值控件中输入或调整画笔间距。",
+              "name": "间距"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0005/images/0001/c0027.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前数值为 10.0。"
+    },
+    "c0028": {
+      "name": "图层、通道和路径标签",
+      "knowledge": [
+        {
+          "description": "通过标签切换图层、通道或路径面板；当前显示图层面板。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0028.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0029": {
+      "name": "混合模式下拉框",
+      "knowledge": [
+        {
+          "description": "设置图层混合模式；当前显示 Normal。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0029.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前显示 Normal。"
+    },
+    "c0030": {
+      "name": "图层不透明度设置",
+      "knowledge": [
+        {
+          "description": "设置选中图层的不透明度；当前显示 100.0。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0030.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前显示 100.0。"
+    },
+    "c0031": {
+      "name": "图层锁定选项",
+      "knowledge": [
+        {
+          "description": "提供图层锁定相关控件；具体各锁定图标对应的作用尚未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0031.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0032": {
+      "name": "图层列表",
+      "knowledge": [
+        {
+          "description": "显示当前图像的图层条目；本图中列表为空。"
+        },
+        {
+          "description": "显示当前图像的图层；本次新建图像的列表中可见一个 Background 图层。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-a027f91f5f4b/regions/r0006/images/0001/c0032.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "显示 Background 图层。"
+    },
+    "c0033": {
+      "name": "New…",
+      "knowledge": [
+        {
+          "description": "可用于创建新图像；在 File 菜单内容中点击后，打开“Create a New Image”对话框，可设置模板、图像宽高和单位，并可展开 Advanced Options。默认尺寸为 1920 × 1080 px，摘要显示 300 ppi、RGB color。本次仅打开对话框，未确认创建。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0033.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0010",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0034": {
+      "name": "Create",
+      "knowledge": [
+        {
+          "description": "可展开创建相关命令的子菜单；本次未展开，子菜单内容未知。"
+        },
+        {
+          "description": "可展开创建相关命令的子菜单；本次将指针移至该项后行高亮，但子菜单未显示，具体内容仍未知。"
+        },
+        {
+          "description": "可展开创建相关命令的子菜单；当前展开后可见 From Clipboard 和 Screenshot… 两项。本次未执行子菜单命令。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0034.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0035": {
+      "name": "Open…",
+      "knowledge": [
+        {
+          "description": "可用于打开图像文件；本次未执行，未核实后续文件选择界面。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0035.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0036": {
+      "name": "Open as Layers…",
+      "knowledge": [
+        {
+          "description": "可用于将文件作为图层打开；本次未执行，未核实后续界面。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0036.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0037": {
+      "name": "Open Location…",
+      "knowledge": [
+        {
+          "description": "可用于从指定位置打开内容；本次未执行，未核实其位置输入方式或后续结果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0037.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0038": {
+      "name": "Open Recent",
+      "knowledge": [
+        {
+          "description": "可展开最近打开项目的相关命令或列表；本次未展开，具体内容未知。"
+        },
+        {
+          "description": "悬停时会展开子菜单；本次可见一项最近文件“Screenshot from 2023-12-18 17-21-35.png”和“Document History”。本次未选择条目，选择后的行为未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0038.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0008",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0039": {
+      "name": "Save…",
+      "knowledge": [
+        {
+          "description": "用于保存图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0039.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0040": {
+      "name": "Save As…",
+      "knowledge": [
+        {
+          "description": "用于另存图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0040.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0041": {
+      "name": "Save a Copy…",
+      "knowledge": [
+        {
+          "description": "用于保存图像副本；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0041.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0042": {
+      "name": "Revert",
+      "knowledge": [
+        {
+          "description": "用于恢复图像至先前保存状态；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0042.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0043": {
+      "name": "Export…",
+      "knowledge": [
+        {
+          "description": "用于导出图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0043.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0044": {
+      "name": "Export As…",
+      "knowledge": [
+        {
+          "description": "用于指定名称或格式导出图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0044.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0045": {
+      "name": "Create Template…",
+      "knowledge": [
+        {
+          "description": "用于从图像创建模板；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0045.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0046": {
+      "name": "Print…",
+      "knowledge": [
+        {
+          "description": "用于打印图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0046.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0047": {
+      "name": "Send by Email…",
+      "knowledge": [
+        {
+          "description": "菜单标签表明可通过电子邮件发送图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0047.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0048": {
+      "name": "Copy Image Location",
+      "knowledge": [
+        {
+          "description": "用于复制图像位置；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0048.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0049": {
+      "name": "Show in File Manager",
+      "knowledge": [
+        {
+          "description": "用于在文件管理器中显示图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0049.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0050": {
+      "name": "Close View",
+      "knowledge": [
+        {
+          "description": "用于关闭当前图像视图；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0050.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0051": {
+      "name": "Close All",
+      "knowledge": [
+        {
+          "description": "用于关闭所有图像；本次在没有打开图像时呈灰色不可用，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0051.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0052": {
+      "name": "Quit",
+      "knowledge": [
+        {
+          "description": "用于退出 GIMP；本次显示为可用，但未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0050-0053-bf73286b776b/regions/r0007/images/0053/c0052.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0053": {
+      "name": "Screenshot from 2023-12-18 17-21-35.png",
+      "description": "Open Recent 子菜单中显示的最近文件条目，旁标快捷键 Ctrl+1。",
+      "knowledge": [
+        {
+          "description": "作为最近文件条目显示在 Open Recent 子菜单中；本次未选择，打开结果未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0053-0065-b6d4124a7cfe/regions/r0008/images/0065/c0053.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0054": {
+      "name": "Document History",
+      "description": "Open Recent 子菜单中的文档历史入口。",
+      "knowledge": [
+        {
+          "description": "作为 Document History 入口显示在 Open Recent 子菜单中；本次未选择，打开后的内容和行为未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0053-0065-b6d4124a7cfe/regions/r0008/images/0065/c0054.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0055": {
+      "name": "From Clipboard",
+      "knowledge": [
+        {
+          "description": "用于启动从剪贴板创建图像的命令；本次只观察到菜单项，未执行，剪贴板内容要求及执行结果未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0076-08a57deba5f0/regions/r0009/images/0076/c0055.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0056": {
+      "name": "Screenshot…",
+      "knowledge": [
+        {
+          "description": "用于启动截图相关的创建命令；本次只观察到菜单项，未执行，后续界面和可选参数未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0076-08a57deba5f0/regions/r0009/images/0076/c0056.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0057": {
+      "name": "Template 下拉框",
+      "knowledge": [
+        {
+          "description": "用于查看并选择新图像模板；展开后显示模板候选列表。",
+          "constraints": {
+            "模板": {
+              "description": "当前可见候选包括 A0 (300 ppi)、A1 (300 ppi)、A2 (300 ppi)、A3 (300 ppi)、A4 (300 ppi)、A5 (300 ppi)、A6 (300 ppi)、A7 (300 ppi)、B4 (300 ppi)、B5 (300 ppi)、B5-Japan (300 ppi)、US Letter (300 ppi)、US Legal (300 ppi)、88.9×50.8 US Business Card、85×55 Western Europe Business Card、90×50 Eastern Europe Business Card、90×55 Business Card (AU, IN, etc.)、87×49 Vistaprint Business Card、Toilet paper (US, 300 ppi)、CD cover (300 ppi)、Web banner leaderboard 728×90、Web banner large rectangle 336×280、Web banner medium rectangle 300×250，以及 Web banner large mobile 320×100（该项在图中可见）。列表可滚动，未确认列表其余内容。",
+              "name": "模板"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0057.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0011",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0058": {
+      "name": "Width 输入框",
+      "knowledge": [
+        {
+          "description": "用于设置新图像宽度；当前显示 1920。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0058.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0059": {
+      "name": "Height 输入框",
+      "knowledge": [
+        {
+          "description": "用于设置新图像高度；当前显示 1080。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0059.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0060": {
+      "name": "图像尺寸单位下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择宽度和高度共用的尺寸单位；展开后可见 pixels、inches、millimeters、points、picas、centimeters、meters、feet、yards、typogr. points 和 typogr. picas。当前显示 px；本次只展开列表，未选择新单位。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0060.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0012",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0061": {
+      "name": "Advanced Options",
+      "knowledge": [
+        {
+          "description": "用于展开新图像的高级选项。本次在图像尺寸单位候选列表展开时点击该控件，候选列表关闭而高级选项仍保持折叠，未显示高级设置内容；需在候选列表关闭后再次点击，才能验证其展开内容。"
+        },
+        {
+          "description": "Advanced Options 当前处于展开状态，显示新图像的高级设置。单位候选列表关闭时点击可展开；若单位候选列表仍打开，点击可能只关闭候选列表而不展开高级设置。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0061.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0062": {
+      "name": "Help",
+      "knowledge": [
+        {
+          "description": "对话框中的帮助按钮；本次未操作，直接效果未知。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0062.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0063": {
+      "name": "Reset",
+      "knowledge": [
+        {
+          "description": "点击可重置 Create a New Image 对话框中的设置。本次点击后，Template 变为空白，宽高变为 1920×1080 px，X/Y resolution 变为 300.000 pixels/in，Comment 变为“Created with GIMP”。RGB color、8-bit integer、Perceptual gamma (sRGB)、Color profile 和 Background color 等可见设置前后显示相同；尚不能确定这些相同设置是否也被重置。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0063.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0064": {
+      "name": "Cancel",
+      "knowledge": [
+        {
+          "description": "取消新建对话框的按钮；本次未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0064.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0065": {
+      "name": "OK",
+      "knowledge": [
+        {
+          "description": "在 Create a New Image 对话框中点击此按钮确认当前新图像设置；本次点击后对话框关闭，编辑区显示 1920×1080 的新图像及其 Background 图层。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0056-0080-072a448a46a1/regions/r0010/images/0080/c0065.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0004",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0066": {
+      "name": "Overwrite city_skyline.jpg",
+      "description": "File 菜单中针对当前图像显示的命令。",
+      "knowledge": [
+        {
+          "description": "菜单项名称表明其用于覆盖当前图像对应的 city_skyline.jpg 文件；本次仅观察到该命令，未执行，具体保存行为未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0083-0173-aa2422963678/regions/r0007/images/0173/c0066.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0067": {
+      "name": "Apple iPhone 6/7 模板候选",
+      "description": "Template 候选列表中的手机模板条目，当前呈深色高亮。",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择 Apple iPhone 6/7 模板；当前高亮外观不能单独证明模板已选中。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0209-0d28c23cb18a/regions/r0011/images/0209/c0067.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0068": {
+      "name": "Apple iPhone 5 模板候选",
+      "description": "Apple iPhone 6/7 下方可见的手机模板条目。",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择 Apple iPhone 5 模板。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0209-0d28c23cb18a/regions/r0011/images/0209/c0068.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0069": {
+      "name": "Template 列表向上滚动箭头",
+      "description": "候选列表顶部边缘可见的向上箭头。",
+      "knowledge": [
+        {
+          "description": "用于向上滚动 Template 候选列表；本轮未操作验证滚动结果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0209-0d28c23cb18a/regions/r0011/images/0209/c0069.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0070": {
+      "name": "Template 列表向下滚动箭头",
+      "description": "候选列表底部边缘可见的向下箭头。",
+      "knowledge": [
+        {
+          "description": "用于向下滚动 Template 候选列表；箭头可见且列表内容尚未确认到末尾。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0209-0d28c23cb18a/regions/r0011/images/0209/c0070.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0071": {
+      "name": "3840x2160 (4K UHD) 模板候选",
+      "description": "Template 候选列表中的 3840x2160 (4K UHD) 条目，与列表下方另一个名称为 3840x2160 4K UHD 的条目分别呈现。",
+      "knowledge": [
+        {
+          "description": "点击此候选会收起候选列表并在 Create a New Image 对话框中选中“3840x2160 (4K UHD)”；可见设置更新为 Width 3840、Height 2160 px，摘要显示 3840 × 2160 pixels、72 ppi、RGB color。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0212-416acebe2439/regions/r0011/images/0212/c0071.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0010",
+          "conditions": []
+        }
+      ]
+    },
+    "c0072": {
+      "name": "4096x2160 (Digital Cinema Initiatives 4K) 模板候选",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择该图像模板；本轮未操作确认选择后图像尺寸或其他设置的变化。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0212-416acebe2439/regions/r0011/images/0212/c0072.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0073": {
+      "name": "3840x2160 4K UHD 模板候选",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择该图像模板；此条目与列表上方名称为 3840x2160 (4K UHD) 的候选视觉上是两个独立条目。本轮未操作确认选择后图像尺寸或其他设置的变化。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0212-416acebe2439/regions/r0011/images/0212/c0073.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0074": {
+      "name": "B5 (300 ppi)",
+      "description": "Template 候选列表中的纸张尺寸模板条目。",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择 B5 (300 ppi) 图像模板。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0214-ff694c93702e/regions/r0011/images/0214/c0074.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0075": {
+      "name": "88.9×50.8 US Business Card",
+      "description": "Template 候选列表中的名片尺寸模板条目。",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择 88.9×50.8 US Business Card 图像模板。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0214-ff694c93702e/regions/r0011/images/0214/c0075.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0076": {
+      "name": "Web banner leaderboard 728x90",
+      "description": "Template 候选列表中的网页横幅尺寸模板条目。",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择 Web banner leaderboard 728x90 图像模板。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0214-ff694c93702e/regions/r0011/images/0214/c0076.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0077": {
+      "name": "1280x720 (HD 720p)",
+      "description": "Template 候选列表中的常用图像尺寸模板条目。",
+      "knowledge": [
+        {
+          "description": "点击此条目可选择 1280x720 (HD 720p) 图像模板。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0214-ff694c93702e/regions/r0011/images/0214/c0077.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0078": {
+      "name": "pixels",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 pixels。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0078.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0079": {
+      "name": "inches",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 inches。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0079.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0080": {
+      "name": "millimeters",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 millimeters。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0080.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0081": {
+      "name": "points",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 points。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0081.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0082": {
+      "name": "picas",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 picas。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0082.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0083": {
+      "name": "centimeters",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 centimeters。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0083.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0084": {
+      "name": "meters",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 meters。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0084.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0085": {
+      "name": "feet",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 feet。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0085.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0086": {
+      "name": "yards",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 yards。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0086.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0087": {
+      "name": "typogr. points",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 typogr. points。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0087.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0088": {
+      "name": "typogr. picas",
+      "knowledge": [
+        {
+          "description": "选择此项可将宽度和高度的单位设为 typogr. picas。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0097-0225-69f4394b6c8a/regions/r0012/images/0225/c0088.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0089": {
+      "name": "X resolution 输入框",
+      "description": "Advanced Options 中用于设置图像的水平分辨率。",
+      "knowledge": [
+        {
+          "description": "可输入 X resolution 数值；当前显示 72.000。",
+          "constraints": {
+            "X resolution": {
+              "description": "填写图像的水平分辨率数值。当前值为 72.000。",
+              "name": "X resolution"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0089.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0090": {
+      "name": "Y resolution 输入框",
+      "description": "Advanced Options 中用于设置图像的垂直分辨率。",
+      "knowledge": [
+        {
+          "description": "可输入 Y resolution 数值；当前显示 72.000。",
+          "constraints": {
+            "Y resolution": {
+              "description": "填写图像的垂直分辨率数值。当前值为 72.000。",
+              "name": "Y resolution"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0090.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0091": {
+      "name": "Resolution 单位下拉框",
+      "description": "Advanced Options 中 X、Y resolution 共用的单位选择控件。",
+      "knowledge": [
+        {
+          "description": "可选择分辨率单位；当前显示 pixels/in。其他候选项尚未查看。",
+          "constraints": {
+            "分辨率单位": {
+              "description": "选择 X、Y resolution 使用的单位。当前可确认的选中值为 pixels/in；其他可选值尚未确认。",
+              "name": "分辨率单位"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0091.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0092": {
+      "name": "Color space 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择新图像的色彩空间；当前显示 RGB color。",
+          "constraints": {
+            "Color space": {
+              "description": "选择新图像的色彩空间。当前可见选中值为 RGB color；其他候选项尚未查看。",
+              "name": "Color space"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0092.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0093": {
+      "name": "Precision 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择新图像的精度；当前显示 8-bit integer。",
+          "constraints": {
+            "Precision": {
+              "description": "选择新图像的精度。当前可见选中值为 8-bit integer；其他候选项尚未查看。",
+              "name": "Precision"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0093.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0094": {
+      "name": "Gamma 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择新图像的伽马设置；当前显示 Perceptual gamma (sRGB)。",
+          "constraints": {
+            "Gamma": {
+              "description": "选择新图像的伽马设置。当前可见选中值为 Perceptual gamma (sRGB)；其他候选项尚未查看。",
+              "name": "Gamma"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0094.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0095": {
+      "name": "Color manage this image 选项",
+      "description": "Advanced Options 中的色彩管理复选框。",
+      "knowledge": [
+        {
+          "description": "用于切换是否对新图像启用色彩管理；截图中复选框呈勾选状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0095.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0096": {
+      "name": "Color profile 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择新图像的色彩配置文件；当前显示 Built-in RGB (GIMP built-in sRGB)。",
+          "constraints": {
+            "Color profile": {
+              "description": "选择新图像使用的色彩配置文件。当前可见选中值为 Built-in RGB (GIMP built-in sRGB)；其他候选项尚未查看。",
+              "name": "Color profile"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0096.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0097": {
+      "name": "Fill with 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择新图像的填充内容；当前显示 Background color。",
+          "constraints": {
+            "Fill with": {
+              "description": "选择新图像的初始填充内容。当前可见选中值为 Background color；其他候选项尚未查看。",
+              "name": "Fill with"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0097.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0098": {
+      "name": "Comment 文本框",
+      "description": "Advanced Options 底部用于输入图像注释的多行文本区域。",
+      "knowledge": [
+        {
+          "description": "可在文本区域输入新图像的注释；当前为空。",
+          "constraints": {
+            "Comment": {
+              "description": "输入要附加到新图像的注释文本；当前为空。",
+              "name": "Comment"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0239-e570f9fc89b1/regions/r0010/images/0239/c0098.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0099": {
+      "name": "Aspect ratio",
+      "knowledge": [
+        {
+          "description": "点击此候选项会选择 Aspect ratio 裁剪约束模式；选择后候选列表收起，裁剪工具选项显示 Fixed Aspect ratio 和宽高比输入区域。此前曾观察到 240×160 px（3:2）的裁剪框，当时输入框完整值不明。之后输入框明确显示 2:1，但已有裁剪框仍保持原尺寸；一次后续画布拖动产生 360×120 px（3:1）的未提交裁剪框，随后按 Enter 应用了该裁剪。对裁剪后 360×120 的图像再次拖动时，输入框仍显示 2:1，而未提交裁剪框为 320×100 px（3.2:1）。因此，这些拖动结果没有保持界面显示的 2:1；目前尚不能确定原因，也不能确认输入值是否已提交或约束未生效的具体机制。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0104-0256-50b0a9bda197/regions/r0013/images/0256/c0099.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0100": {
+      "name": "Width",
+      "knowledge": [
+        {
+          "description": "在裁剪约束模式候选列表中点击此候选项可选择 Width 模式。选择后列表收起，裁剪工具选项区显示 Width 模式及 100 px 的宽度值；尚未通过画布上的裁剪框验证该模式的实际约束效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0104-0256-50b0a9bda197/regions/r0013/images/0256/c0100.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0101": {
+      "name": "Height",
+      "knowledge": [
+        {
+          "description": "此候选项属于裁剪约束模式候选列表；点击可选择 Height 模式。选中后列表收起，裁剪工具选项区显示 Fixed Height，Fixed 已勾选且约束值为 100 px。本次在画布上从裁剪框下边缘向下拖动后，尺寸读数由 100×52 px 变为 100×100 px，表明在该设定下调整后裁剪框高度为 100 px；裁剪框尚未提交。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0104-0256-50b0a9bda197/regions/r0013/images/0256/c0101.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0003",
+          "conditions": [
+            "在裁剪约束模式候选列表中选择 Height 后，列表收起，裁剪工具选项区显示 Fixed Height 设置。"
+          ]
+        }
+      ],
+      "description": ""
+    },
+    "c0102": {
+      "name": "Size",
+      "knowledge": [
+        {
+          "description": "点击可选择 Size 裁剪约束模式。选择后观察到模式选择器显示 Fixed / Size、Fixed 已勾选，并出现显示为“0x0”的约束输入；刚选择后裁剪位置仍为 260, 20、裁剪尺寸仍为 100×100 px。尚未验证设置非零尺寸后裁剪框如何响应。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0104-0256-50b0a9bda197/regions/r0013/images/0256/c0102.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0003",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0103": {
+      "name": "裁剪约束模式选择器",
+      "knowledge": [
+        {
+          "description": "通过下拉列表选择裁剪约束模式；本次选择后显示 Width。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0114-0289-27c54da74703/regions/r0003/images/0289/c0103.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0013",
+          "conditions": []
+        }
+      ],
+      "description": "当前显示 Size；可通过该下拉选择裁剪约束模式。"
+    },
+    "c0104": {
+      "name": "Width 约束值输入框",
+      "knowledge": [
+        {
+          "description": "Width 模式下可见的约束值为 100 px。本次画布拖动后裁剪框尺寸读数为 334×96 px，故该次观察没有显示框宽被限制为 100 px；是否还需启用其他固定约束选项才能生效，尚未确认。",
+          "constraints": {
+            "宽度值": {
+              "description": "输入或调整 Width 模式使用的宽度数值；本次显示 100 px。",
+              "name": "宽度值"
+            },
+            "单位": {
+              "description": "本次显示单位为 px。",
+              "name": "单位"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0114-0289-27c54da74703/regions/r0003/images/0289/c0104.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0105": {
+      "name": "Fixed 复选框",
+      "description": "当前已勾选。",
+      "knowledge": [
+        {
+          "description": "可切换 Fixed 复选框。本轮只核对并登记了控件身份，没有操作它，也未验证它对 Width 模式或裁剪框的影响。截图中看起来未勾选。"
+        },
+        {
+          "description": "点击可切换 Fixed 复选框状态。本次点击后由未勾选变为已勾选；在当前 Width 值为 100 px、现有裁剪尺寸为 334×96 px 时，尺寸读数没有改变。启用后对新建裁剪框的约束效果仍待验证。"
+        },
+        {
+          "description": "在当前 Fixed Height 模式下此复选框显示为勾选；本次未切换它，未验证取消勾选后的效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0299-a03f374dc9d4/regions/r0003/images/0299/c0105.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0106": {
+      "name": "Height 约束值输入框",
+      "description": "Fixed Height 模式下显示的数值输入框，旁边显示 px 单位；当前值为 100。",
+      "knowledge": [
+        {
+          "description": "用于填写固定裁剪高度；当前显示 100 px。修改数值后裁剪框如何响应尚未验证。",
+          "constraints": {
+            "高度": {
+              "description": "填写固定高度数值；当前单位为 px。",
+              "name": "高度"
+            }
+          }
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0119-0316-114509ae8eaf/regions/r0003/images/0316/c0106.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0107": {
+      "name": "Size 约束值输入框",
+      "description": "位于 Fixed / Size 模式选择器下方，当前显示“0x0”的输入控件。",
+      "knowledge": [
+        {
+          "description": "这是裁剪工具选项区中 Size 模式下的约束输入控件。选择 Size 后曾显示“0x0”；本次输入“80x60”后，输入框可见该文本，但裁剪位置仍为 260, 20 px、尺寸仍为 100×100 px。尚未确认该值是否已被解析或生效，也未确认它对后续裁剪框的约束效果。",
+          "constraints": {
+            "尺寸文本": {
+              "description": "本次在输入框中键入“80x60”，画面显示该文本；尚未确认宽高分隔格式是否已被解析，或何时生效。",
+              "name": "尺寸文本"
+            }
+          }
+        },
+        {
+          "description": "输入“80x60”后按 Tab 移开焦点，输入框仍显示“80x60”；观察到裁剪位置为 260, 20 px、尺寸为 100×100 px，未见裁剪框变化。仅凭这些观察无法确认该文本是否被解析或约束已生效。"
+        },
+        {
+          "description": "用于设置 Size 模式的约束尺寸。当前显示 80x60；同时画面中的裁剪尺寸读数为 80x60 px、位置为 140, 60 px。仅凭此画面不能确认尺寸读数与约束值相同是由约束生效导致，或确认约束值已被解析。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0331-50215c4bee90/regions/r0003/images/0331/c0107.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0108": {
+      "name": "Undo Resize Image",
+      "knowledge": [
+        {
+          "description": "点击可撤销菜单标签所示的 Resize Image 操作；右侧显示快捷键 Ctrl+Z。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0108.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0109": {
+      "name": "Redo",
+      "knowledge": [
+        {
+          "description": "此处显示为灰色不可用；右侧标示快捷键 Ctrl+Y。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0109.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0110": {
+      "name": "Undo History",
+      "knowledge": [
+        {
+          "description": "点击可打开撤销历史相关界面；具体界面内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0110.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0111": {
+      "name": "Cut",
+      "knowledge": [
+        {
+          "description": "点击可执行 Cut；右侧显示快捷键 Ctrl+X。具体作用对象取决于当前编辑状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0111.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0112": {
+      "name": "Copy",
+      "knowledge": [
+        {
+          "description": "点击可执行 Copy；右侧显示快捷键 Ctrl+C。具体作用对象取决于当前编辑状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0112.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0113": {
+      "name": "Copy Visible",
+      "knowledge": [
+        {
+          "description": "点击可执行 Copy Visible；右侧显示快捷键 Shift+Ctrl+C。具体作用对象取决于当前图像状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0113.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0114": {
+      "name": "Paste",
+      "knowledge": [
+        {
+          "description": "点击可执行 Paste；右侧显示快捷键 Ctrl+V。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0114.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0115": {
+      "name": "Paste In Place",
+      "knowledge": [
+        {
+          "description": "点击可执行 Paste In Place；右侧显示快捷键 Ctrl+Alt+V。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0115.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0116": {
+      "name": "Paste Into Selection",
+      "knowledge": [
+        {
+          "description": "点击可执行 Paste Into Selection；当前具体结果尚未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0116.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0117": {
+      "name": "Paste Into Selection In Place",
+      "knowledge": [
+        {
+          "description": "点击可执行 Paste Into Selection In Place；当前具体结果尚未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0117.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0118": {
+      "name": "Paste as",
+      "knowledge": [
+        {
+          "description": "展开 Paste as 子菜单，可继续选择粘贴方式；子菜单候选尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0118.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0119": {
+      "name": "Buffer",
+      "knowledge": [
+        {
+          "description": "展开 Buffer 子菜单；子菜单内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0119.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0120": {
+      "name": "Clear",
+      "knowledge": [
+        {
+          "description": "点击可执行 Clear；右侧显示 Delete 键。具体作用对象取决于当前选择或编辑状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0120.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0121": {
+      "name": "Fill with FG Color",
+      "knowledge": [
+        {
+          "description": "点击可使用前景色填充当前适用对象；右侧显示快捷键 Ctrl+,。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0121.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0122": {
+      "name": "Fill with BG Color",
+      "knowledge": [
+        {
+          "description": "点击可使用背景色填充当前适用对象；右侧显示快捷键 Ctrl+.。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0122.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0123": {
+      "name": "Fill with Pattern",
+      "knowledge": [
+        {
+          "description": "点击可使用图案填充当前适用对象；右侧显示快捷键 Ctrl+:。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0123.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0124": {
+      "name": "Fill Selection Outline",
+      "knowledge": [
+        {
+          "description": "当前显示为灰色不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0124.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0125": {
+      "name": "Fill Path",
+      "knowledge": [
+        {
+          "description": "当前显示为灰色不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0125.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0126": {
+      "name": "Stroke Selection",
+      "knowledge": [
+        {
+          "description": "当前显示为灰色不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0126.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0127": {
+      "name": "Stroke Path",
+      "knowledge": [
+        {
+          "description": "当前显示为灰色不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0127.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0128": {
+      "name": "Preferences",
+      "knowledge": [
+        {
+          "description": "点击可打开偏好设置界面；其内部内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0128.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0129": {
+      "name": "Input Devices",
+      "knowledge": [
+        {
+          "description": "点击可打开输入设备相关界面；其内部内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0129.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0130": {
+      "name": "Keyboard Shortcuts",
+      "knowledge": [
+        {
+          "description": "点击可打开键盘快捷键相关界面；其内部内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0130.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0131": {
+      "name": "Modules",
+      "knowledge": [
+        {
+          "description": "点击可打开 Modules 相关界面；其内部内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0131.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0132": {
+      "name": "Units",
+      "knowledge": [
+        {
+          "description": "点击可打开单位相关界面；其内部内容尚未检查。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0350-7c091e33205f/regions/r0015/images/0350/c0132.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0133": {
+      "name": "All",
+      "knowledge": [
+        {
+          "description": "选择全部图像区域的命令；本图中呈可用外观，未执行，效果未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0133.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0134": {
+      "name": "None",
+      "knowledge": [
+        {
+          "description": "用于取消选择的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0134.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0135": {
+      "name": "Invert",
+      "knowledge": [
+        {
+          "description": "用于反转当前选择的命令；本图中呈可用外观，未执行，效果未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0135.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0136": {
+      "name": "Float",
+      "knowledge": [
+        {
+          "description": "浮动当前选择的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0136.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0137": {
+      "name": "By Color",
+      "knowledge": [
+        {
+          "description": "按颜色创建选择的命令；本图中呈可用外观，未执行，具体操作和结果未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0137.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0138": {
+      "name": "From Path",
+      "knowledge": [
+        {
+          "description": "从路径生成选择的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0138.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0139": {
+      "name": "Selection Editor",
+      "knowledge": [
+        {
+          "description": "打开选择编辑器的菜单命令；本图中呈可用外观，未执行，打开内容和用法尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0139.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0140": {
+      "name": "Feather...",
+      "knowledge": [
+        {
+          "description": "用于羽化选择边界的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0140.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0141": {
+      "name": "Sharpen...",
+      "knowledge": [
+        {
+          "description": "用于锐化选择边界的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0141.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0142": {
+      "name": "Shrink...",
+      "knowledge": [
+        {
+          "description": "用于缩小选择范围的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0142.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0143": {
+      "name": "Grow...",
+      "knowledge": [
+        {
+          "description": "用于扩大选择范围的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0143.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0144": {
+      "name": "Border...",
+      "knowledge": [
+        {
+          "description": "用于从选择边缘生成边框选择的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0144.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0145": {
+      "name": "Remove Holes",
+      "knowledge": [
+        {
+          "description": "用于移除选择中的孔洞的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0145.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0146": {
+      "name": "Distort...",
+      "knowledge": [
+        {
+          "description": "选择边界变形相关命令；本图中呈可用外观，未执行，具体效果和参数尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0146.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0147": {
+      "name": "Rounded Rectangle...",
+      "knowledge": [
+        {
+          "description": "圆角矩形选择相关命令；本图中呈可用外观，未执行，具体用法和参数尚未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0147.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0148": {
+      "name": "Toggle Quick Mask",
+      "knowledge": [
+        {
+          "description": "用于切换快速蒙版状态的命令；本图中复选标记未显示，未执行。快捷键为 Shift+Q。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0148.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0149": {
+      "name": "Save to Channel",
+      "knowledge": [
+        {
+          "description": "将选择保存到通道的命令；本图中呈可用外观，未执行，结果及必要条件尚未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0149.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0150": {
+      "name": "To Path",
+      "knowledge": [
+        {
+          "description": "将选择转换为路径的命令；本图中呈灰色外观，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0359-42473f112092/regions/r0016/images/0359/c0150.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    }
+  },
+  "next_ids": {
+    "region": 17,
+    "control": 151,
+    "knowledge": 32
+  }
+}

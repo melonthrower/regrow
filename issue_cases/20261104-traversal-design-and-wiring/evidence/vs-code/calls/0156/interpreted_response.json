@@ -1,0 +1,16 @@
+{
+  "exception": "none",
+  "recovery_handoff": "",
+  "inventory": "complete",
+  "evidence": "本区块已由 .config 目录项作为代表；当前界面显示路径目录列表及该项的展开箭头。同类目录项可复用这一代表，但点击目录名称和展开箭头的具体效果仍未确认，已由探索任务覆盖。没有其他已知的独立功能或必要对象缺口。",
+  "operations": [
+    {
+      "control": "c0174",
+      "task_type": "function",
+      "completion_condition": "分别操作 .config 名称区域和展开箭头，观察并确认各自是否导航到该目录、展开子目录或产生其他可见结果。",
+      "reason": "现有材料只确认该目录项及其展开箭头存在；当前列表中该项处于选中状态，但尚无证据说明这两种操作的结果。"
+    }
+  ],
+  "shared_instances": [],
+  "function_updates": []
+}

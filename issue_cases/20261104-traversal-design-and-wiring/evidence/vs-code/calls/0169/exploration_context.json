@@ -1,0 +1,11 @@
+{
+  "region_id": "r0020",
+  "region": "路径面包屑目录列表",
+  "control_id": "c0175",
+  "control": "autostart 目录项",
+  "task": "c0175 / 功能探索",
+  "task_region": "r0020",
+  "category": "update",
+  "stage": "observation_update",
+  "session": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vs-code/session-09"
+}

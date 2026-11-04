@@ -1,0 +1,10 @@
+{
+  "target": "c0131",
+  "action": "click",
+  "x": 820,
+  "y": 223,
+  "reason": "关闭展开的目标工具栏候选列表，使 Standard 的 Assigned Commands 列表可见；随后才能定位条目前的勾选框并验证切换效果。",
+  "text": null,
+  "end_x": null,
+  "end_y": null
+}

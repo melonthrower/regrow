@@ -1,0 +1,537 @@
+## 背景
+范围：Toolbars 自定义配置区
+任务引用：Toolbars 自定义配置区/参数探索
+探索内容：查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。
+本任务结算条件：查看工具栏目标下拉框的候选项，确认除 Standard 外可选择的工具栏。
+
+## 本步问题
+刚才的实际操作改变了什么？这些观察回答了原探索问题的哪一部分？
+
+## 问题 1：刚才实际做了什么，页面发生了什么变化？
+
+### 实际来源区块
+Toolbars 自定义配置区
+
+### 实际入口
+Target 下拉框
+
+### 实际动作
+1：
+  操作：click
+  target：Target 下拉框
+  理由：展开工具栏目标候选项，查看除 Standard 外是否还有可选择的工具栏，以满足本任务结算条件。
+  x：969
+  y：224
+
+### 回执
+exit_code：0
+semantic_result：unverified
+
+### 动作后前台应用证据
+目标应用：desktop.libreoffice_writer
+与目标应用一致：false
+窗口记录：WM_CLASS(STRING) = "soffice", "Soffice"
+_NET_WM_NAME(UTF8_STRING) = "Customize"
+
+
+来源：OSWorld X11 active window WM_CLASS/title
+control_transport_available：true
+
+### 目标应用
+本次要探索的应用：LibreOffice writer
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+### 登记页面组成与访问来路
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+LibreOffice Writer 文档窗口 [LibreOffice Writer 文档窗口]
+  ├─ File 菜单 [File 菜单]
+  ├─ Edit 菜单 [Edit 菜单]
+    └─ Edit 菜单命令列表 [Edit 菜单命令列表]
+      ├─ Undo 命令 [Undo 命令]
+      ├─ Redo 命令 [Redo 命令]
+      ├─ Repeat 命令 [Repeat 命令]
+      ├─ Cut 命令 [Cut 命令]
+      ├─ Copy 命令 [Copy 命令]
+      ├─ Paste 命令 [Paste 命令]
+      ├─ Paste Special 命令 [Paste Special 命令]
+        └─ Paste Special 子菜单 [Paste Special 子菜单]
+          ├─ Paste Unformatted Text 选项 [Paste Unformatted Text 选项]
+          ├─ Paste Special... 选项 [Paste Special... 选项]
+          ├─ Paste as Nested Table 选项 [Paste as Nested Table 选项]
+          ├─ Paste as Rows Above 选项 [Paste as Rows Above 选项]
+          ├─ Paste as Columns Before 选项 [Paste as Columns Before 选项]
+      ├─ Select All 命令 [Select All 命令]
+      ├─ Selection Mode 命令 [Selection Mode 命令]
+      ├─ Select Text 命令 [Select Text 命令]
+      ├─ Find 命令 [Find 命令]
+      ├─ Find and Replace 命令 [Find and Replace 命令]
+      ├─ Go to Page 命令 [Go to Page 命令]
+      ├─ Track Changes 命令 [Track Changes 命令]
+      ├─ Comment 命令 [Comment 命令]
+      ├─ Hyperlink 命令 [Hyperlink 命令]
+      ├─ Reference 命令 [Reference 命令]
+      ├─ Fields 命令 [Fields 命令]
+      ├─ Links to External Files 命令 [Links to External Files 命令]
+      ├─ Object 命令 [Object 命令]
+      ├─ Exchange Database 命令 [Exchange Database 命令]
+      ├─ Direct Cursor Mode 命令 [Direct Cursor Mode 命令]
+      ├─ Edit Mode 命令 [Edit Mode 命令]
+  ├─ View 菜单 [View 菜单]
+    └─ View 菜单命令列表 [View 菜单命令列表]
+      ├─ Normal 命令 [Normal 命令]
+      ├─ Web 命令 [Web 命令]
+      ├─ User Interface... 命令 [User Interface... 命令]
+      ├─ Toolbars 命令 [Toolbars 命令]
+        └─ Toolbars 子菜单 [Toolbars 子菜单]
+          ├─ 3D-Settings 工具栏选项 [3D-Settings 工具栏选项]
+          ├─ Align Objects 工具栏选项 [Align Objects 工具栏选项]
+          ├─ Bullets and Numbering 工具栏选项 [Bullets and Numbering 工具栏选项]
+          ├─ Drawing 工具栏选项 [Drawing 工具栏选项]
+          ├─ Drawing Object Properties 工具栏选项 [Drawing Object Properties 工具栏选项]
+          ├─ Edit Points 工具栏选项 [Edit Points 工具栏选项]
+          ├─ Find 工具栏选项 [Find 工具栏选项]
+          ├─ Fontwork 工具栏选项 [Fontwork 工具栏选项]
+          ├─ Form Controls 工具栏选项 [Form Controls 工具栏选项]
+          ├─ Form Design 工具栏选项 [Form Design 工具栏选项]
+          ├─ Form Navigation 工具栏选项 [Form Navigation 工具栏选项]
+          ├─ Formatting 工具栏选项 [Formatting 工具栏选项]
+          ├─ Formatting (Styles) 工具栏选项 [Formatting (Styles) 工具栏选项]
+          ├─ Frame 工具栏选项 [Frame 工具栏选项]
+          ├─ Image 工具栏选项 [Image 工具栏选项]
+          ├─ Insert 工具栏选项 [Insert 工具栏选项]
+          ├─ Mail Merge 工具栏选项 [Mail Merge 工具栏选项]
+          ├─ Media Playback 工具栏选项 [Media Playback 工具栏选项]
+          ├─ Navigation 工具栏选项 [Navigation 工具栏选项]
+          ├─ OLE-Object 工具栏选项 [OLE-Object 工具栏选项]
+          ├─ Standard 工具栏选项 [Standard 工具栏选项]
+          ├─ Standard (Single Mode) 工具栏选项 [Standard (Single Mode) 工具栏选项]
+          ├─ Table 工具栏选项 [Table 工具栏选项]
+          ├─ Text Object 工具栏选项 [Text Object 工具栏选项]
+          ├─ Tools 工具栏选项 [Tools 工具栏选项]
+          ├─ Track Changes 工具栏选项 [Track Changes 工具栏选项]
+          ├─ TSCP Classification 工具栏选项 [TSCP Classification 工具栏选项]
+          ├─ Customize... 命令 [Customize... 命令]
+            └─ Customize 对话框 [Customize 对话框]
+              ├─ Menus 标签 [Menus 标签]
+              ├─ Toolbars 标签 [Toolbars 标签]
+                └─ Toolbars 自定义配置区 [Toolbars 自定义配置区]（本步关注区块）
+                  ├─ Scope 下拉框 [Scope 下拉框]
+                  ├─ Target 下拉框 [Target 下拉框]
+                  ├─ Available Commands 列表 [Available Commands 列表]
+                  ├─ Assigned Commands 列表 [Assigned Commands 列表]
+                  ├─ 命令移入按钮 [命令移入按钮]
+                  ├─ 命令移出按钮 [命令移出按钮]
+                  ├─ Assigned Commands 上移按钮 [Assigned Commands 上移按钮]
+                  ├─ Assigned Commands 下移按钮 [Assigned Commands 下移按钮]
+                  ├─ Insert 按钮 [Insert 按钮]
+                  ├─ Modify 按钮 [Modify 按钮]
+                  ├─ Defaults 按钮 [Defaults 按钮]
+                  ├─ Reset 按钮 [Reset 按钮]
+                  ├─ Cancel 按钮 [Cancel 按钮]
+                  ├─ OK 按钮 [OK 按钮]
+              ├─ Notebookbar 标签 [Notebookbar 标签]
+              ├─ Context Menus 标签 [Context Menus 标签]
+              ├─ Keyboard 标签 [Keyboard 标签]
+              ├─ Events 标签 [Events 标签]
+              ├─ Search 输入框 [Search 输入框]
+              ├─ Category 下拉框 [Category 下拉框]
+              ├─ Available Commands 列表 [Available Commands 列表]
+              ├─ Scope 下拉框 [Scope 下拉框]
+              ├─ Target 下拉框 [Target 下拉框]
+              ├─ Assigned Commands 列表 [Assigned Commands 列表]
+              ├─ 命令移入按钮 [命令移入按钮]
+              ├─ 命令移出按钮 [命令移出按钮]
+              ├─ Assigned Commands 上移按钮 [Assigned Commands 上移按钮]
+              ├─ Assigned Commands 下移按钮 [Assigned Commands 下移按钮]
+              ├─ Insert 按钮 [Insert 按钮]
+              ├─ Modify 按钮 [Modify 按钮]
+              ├─ Defaults 按钮 [Defaults 按钮]
+              ├─ Reset 按钮 [Reset 按钮]
+              ├─ Cancel 按钮 [Cancel 按钮]
+              ├─ OK 按钮 [OK 按钮]
+          ├─ Reset 命令 [Reset 命令]
+          ├─ Lock Toolbars 选项 [Lock Toolbars 选项]
+      ├─ Status Bar 命令 [Status Bar 命令]
+      ├─ Rulers 命令 [Rulers 命令]
+      ├─ Scrollbars 命令 [Scrollbars 命令]
+      ├─ Grid and Helplines 命令 [Grid and Helplines 命令]
+      ├─ Formatting Marks 命令 [Formatting Marks 命令]
+      ├─ Text Boundaries 命令 [Text Boundaries 命令]
+      ├─ Table Boundaries 命令 [Table Boundaries 命令]
+      ├─ Images and Charts 命令 [Images and Charts 命令]
+      ├─ Show Whitespace 命令 [Show Whitespace 命令]
+      ├─ Show Tracked Changes 命令 [Show Tracked Changes 命令]
+      ├─ Comments 命令 [Comments 命令]
+      ├─ Resolved Comments 命令 [Resolved Comments 命令]
+      ├─ Field Shadings 命令 [Field Shadings 命令]
+      ├─ Field Names 命令 [Field Names 命令]
+      ├─ Field Hidden Paragraphs 命令 [Field Hidden Paragraphs 命令]
+      ├─ Sidebar 命令 [Sidebar 命令]
+      ├─ Styles 命令 [Styles 命令]
+      ├─ Gallery 命令 [Gallery 命令]
+      ├─ Navigator 命令 [Navigator 命令]
+      ├─ Full Screen 命令 [Full Screen 命令]
+      ├─ Zoom 命令 [Zoom 命令]
+  ├─ Insert 菜单 [Insert 菜单]
+  ├─ Format 菜单 [Format 菜单]
+  ├─ Styles 菜单 [Styles 菜单]
+  ├─ Table 菜单 [Table 菜单]
+  ├─ Form 菜单 [Form 菜单]
+  ├─ Tools 菜单 [Tools 菜单]
+  ├─ Window 菜单 [Window 菜单]
+  ├─ Help 菜单 [Help 菜单]
+  ├─ 侧边栏顶部滑块图标 [侧边栏顶部滑块图标]
+  ├─ 侧边栏画笔与字母图标 [侧边栏画笔与字母图标]
+  ├─ 侧边栏图片图标 [侧边栏图片图标]
+  ├─ 侧边栏指南针图标 [侧边栏指南针图标]
+  ├─ 侧边栏页面图标 [侧边栏页面图标]
+  ├─ 侧边栏放大镜与字母图标 [侧边栏放大镜与字母图标]
+文档编辑区 [文档编辑区]
+Insert 工具栏 [Insert 工具栏]
+原探索目标：Toolbars 自定义配置区 / Target 下拉框
+上次已登记前景：Customize 对话框、Toolbars 自定义配置区
+位置材料来自动作前；本步结果以动作后图为准。
+上一步记录：动作 a0040
+任务引用：Toolbars 自定义配置区 / 参数探索（pending）
+相关任务过程：
+a0040：click「Toolbars 标签」；观察：点击 Toolbars 标签后，Customize 对话框仍在前景，标签切换为选中状态。内容区显示工具栏自定义配置：Scope 为 LibreOffice Writer，Target 当前为 Standard，Assigned Commands 列表呈现命令及勾选框；例如 New、Open、Save 和 Export Directly as PDF 已勾选，Templates、Open Remote、Save As、Email、Edit Mode、Read Only Mode 和 EPUB 未勾选。未操作这些配置，也没有证据表明任何设置已修改或提交。窗口记录仍为 soffice / Customize，结合界面内容判断这是 LibreOffice Writer 自身的对话框。；该次更新未确认事项：尚未验证 Assigned Commands 的勾选框、命令移入移出、排序及 Insert、Modify、Defaults、Reset 控件的具体操作效果，也未验证确认后配置是否生效。
+
+### 实际对象已有跳转
+无
+
+## 问题 2：出现的对象如何对应已有区块和控件？
+
+### 历史身份参考
+1：
+  名称：LibreOffice Writer 文档窗口
+  提供原因：
+    截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：文档窗口前景显示，Toolbars 子菜单未展开。
+    来源：discovery:0152
+  ref：LibreOffice Writer 文档窗口
+  历史描述：显示并编辑当前打开的 Writer 文档；本次可见文档标题为“recommend sheet.docx”。
+  controls：
+    1：
+      名称：File 菜单
+      ref：File 菜单
+      已保存外观：状态未注明
+    2：
+      名称：Insert 菜单
+      ref：Insert 菜单
+      已保存外观：状态未注明
+    3：
+      名称：Table 菜单
+      ref：Table 菜单
+      已保存外观：状态未注明
+    4：
+      名称：Tools 菜单
+      ref：Tools 菜单
+      已保存外观：状态未注明
+    5：
+      名称：Help 菜单
+      ref：Help 菜单
+      已保存外观：状态未注明
+    6：
+      名称：侧边栏顶部滑块图标
+      ref：侧边栏顶部滑块图标
+      已保存外观：右侧竖排侧边栏图标中的顶部按钮，图标呈橙色滑块且当前有高亮背景，状态未注明
+    7：
+      名称：侧边栏画笔与字母图标
+      ref：侧边栏画笔与字母图标
+      已保存外观：状态未注明
+    8：
+      名称：侧边栏图片图标
+      ref：侧边栏图片图标
+      已保存外观：状态未注明
+    9：
+      名称：侧边栏页面图标
+      ref：侧边栏页面图标
+      已保存外观：状态未注明
+    10：
+      名称：侧边栏放大镜与字母图标
+      ref：侧边栏放大镜与字母图标
+      已保存外观：状态未注明
+  本图外观线索：
+    Help 菜单；侧边栏图片图标；侧边栏放大镜与字母图标；侧边栏画笔与字母图标；Table 菜单；Insert 菜单；Tools 菜单；侧边栏页面图标；File 菜单；侧边栏顶部滑块图标
+2：
+  名称：Toolbars 子菜单
+  提供原因：
+    截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：子菜单已展开，显示工具栏选项以及 Customize...、Reset、Lock Toolbars；Formatting、Standard 和 Lock Toolbars 带勾选标记。
+    来源：update:0158
+  ref：Toolbars 子菜单
+  历史描述：由 View 菜单的 Toolbars 命令展开，列出工具栏项目及相关命令。
+  controls：
+    1：
+      名称：Image 工具栏选项
+      ref：Image 工具栏选项
+      已保存外观：状态未注明
+    2：
+      名称：Insert 工具栏选项
+      ref：Insert 工具栏选项
+      已保存外观：状态未注明
+    3：
+      名称：Mail Merge 工具栏选项
+      ref：Mail Merge 工具栏选项
+      已保存外观：状态未注明
+    4：
+      名称：Media Playback 工具栏选项
+      ref：Media Playback 工具栏选项
+      已保存外观：状态未注明
+    5：
+      名称：Navigation 工具栏选项
+      ref：Navigation 工具栏选项
+      已保存外观：状态未注明
+    6：
+      名称：OLE-Object 工具栏选项
+      ref：OLE-Object 工具栏选项
+      已保存外观：状态未注明
+    7：
+      名称：Standard (Single Mode) 工具栏选项
+      ref：Standard (Single Mode) 工具栏选项
+      已保存外观：状态未注明
+    8：
+      名称：Table 工具栏选项
+      ref：Table 工具栏选项
+      已保存外观：状态未注明
+    9：
+      名称：Text Object 工具栏选项
+      ref：Text Object 工具栏选项
+      已保存外观：状态未注明
+    10：
+      名称：Tools 工具栏选项
+      ref：Tools 工具栏选项
+      已保存外观：状态未注明
+    11：
+      名称：TSCP Classification 工具栏选项
+      ref：TSCP Classification 工具栏选项
+      已保存外观：状态未注明
+  本图外观线索：
+    TSCP Classification 工具栏选项；Mail Merge 工具栏选项；Media Playback 工具栏选项；OLE-Object 工具栏选项；Image 工具栏选项；Text Object 工具栏选项；Navigation 工具栏选项；Table 工具栏选项；Insert 工具栏选项；Tools 工具栏选项；Standard (Single Mode) 工具栏选项
+3：
+  名称：Customize 对话框
+  提供原因：
+    动作前观察中的区块；截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：Toolbars 标签选中，显示 Standard 工具栏的命令配置内容。
+    来源：update:0167
+  ref：Customize 对话框
+  历史描述：用于查看和配置 LibreOffice Writer 的菜单、工具栏、Notebookbar、上下文菜单、键盘快捷键及事件的自定义对话框。
+  controls：
+    1：
+      名称：Notebookbar 标签
+      ref：Notebookbar 标签
+      已保存外观：状态未注明
+    2：
+      名称：Context Menus 标签
+      ref：Context Menus 标签
+      已保存外观：状态未注明
+    3：
+      名称：Keyboard 标签
+      ref：Keyboard 标签
+      已保存外观：状态未注明
+    4：
+      名称：Events 标签
+      ref：Events 标签
+      已保存外观：状态未注明
+    5：
+      名称：Search 输入框
+      ref：Search 输入框
+      已保存外观：状态未注明
+    6：
+      名称：Category 下拉框
+      ref：Category 下拉框
+      已保存外观：状态未注明
+    7：
+      名称：Available Commands 列表
+      ref：Available Commands 列表
+      已保存外观：状态未注明
+    8：
+      名称：Scope 下拉框
+      ref：Scope 下拉框
+      已保存外观：状态未注明
+    9：
+      名称：Target 下拉框
+      用途记录：用于选择要查看或配置的目标；当前显示 File。本次未展开或更改。；用于选择要查看或配置的目标工具栏；本次显示 Standard。
+      ref：Target 下拉框
+      已保存外观：状态未注明
+    10：
+      名称：命令移入按钮
+      ref：命令移入按钮
+      已保存外观：状态未注明
+    11：
+      名称：命令移出按钮
+      ref：命令移出按钮
+      已保存外观：状态未注明
+    12：
+      名称：Assigned Commands 上移按钮
+      ref：Assigned Commands 上移按钮
+      已保存外观：状态未注明
+    13：
+      名称：Assigned Commands 下移按钮
+      ref：Assigned Commands 下移按钮
+      已保存外观：状态未注明
+    14：
+      名称：OK 按钮
+      ref：OK 按钮
+      已保存外观：状态未注明
+  本图外观线索：
+    Notebookbar 标签；Keyboard 标签；Events 标签；Search 输入框；Available Commands 列表；Scope 下拉框；命令移入按钮；命令移出按钮；Assigned Commands 上移按钮；Assigned Commands 下移按钮；Context Menus 标签；Category 下拉框；OK 按钮
+4：
+  名称：Toolbars 自定义配置区
+  提供原因：
+    动作前来源；未完成工作所属区块；动作前观察中的区块；截图外观匹配候选（不等于前景）
+  k0008：该区块位于 Customize 对话框的 Toolbars 标签中，用于查看和配置所选工具栏的命令。可见控件包括作用范围与目标工具栏下拉框、可用命令和已分配命令列表，以及用于调整配置的按钮；当前可见作用范围为 LibreOffice Writer，目标工具栏为 Standard。
+  历史状态观察：
+    说明：Target 当前为 Standard；Assigned Commands 列表显示工具栏命令及勾选状态。
+    来源：update:0167
+  ref：Toolbars 自定义配置区
+  历史描述：Customize 对话框中用于查看和配置所选工具栏命令的区域。
+  controls：
+    1：
+      名称：Scope 下拉框
+      ref：Scope 下拉框
+      已保存外观：状态未注明
+    2：
+      名称：Target 下拉框
+      用途记录：用于选择要查看或配置的目标；当前显示 File。本次未展开或更改。；用于选择要查看或配置的目标工具栏；本次显示 Standard。
+      ref：Target 下拉框
+      已保存外观：状态未注明
+    3：
+      名称：Available Commands 列表
+      ref：Available Commands 列表
+      已保存外观：状态未注明
+    4：
+      名称：Assigned Commands 列表
+      ref：Assigned Commands 列表
+      已保存外观：状态未注明
+    5：
+      名称：命令移入按钮
+      ref：命令移入按钮
+      已保存外观：状态未注明
+    6：
+      名称：命令移出按钮
+      ref：命令移出按钮
+      已保存外观：状态未注明
+    7：
+      名称：Assigned Commands 上移按钮
+      ref：Assigned Commands 上移按钮
+      已保存外观：状态未注明
+    8：
+      名称：Assigned Commands 下移按钮
+      ref：Assigned Commands 下移按钮
+      已保存外观：状态未注明
+    9：
+      名称：Insert 按钮
+      ref：Insert 按钮
+      已保存外观：状态未注明
+    10：
+      名称：Modify 按钮
+      ref：Modify 按钮
+      已保存外观：状态未注明
+    11：
+      名称：Defaults 按钮
+      ref：Defaults 按钮
+      已保存外观：状态未注明
+    12：
+      名称：Reset 按钮
+      ref：Reset 按钮
+      已保存外观：状态未注明
+    13：
+      名称：Cancel 按钮
+      ref：Cancel 按钮
+      已保存外观：状态未注明
+    14：
+      名称：OK 按钮
+      ref：OK 按钮
+      已保存外观：状态未注明
+  本图外观线索：
+    Scope 下拉框；Available Commands 列表；命令移入按钮；命令移出按钮；Assigned Commands 上移按钮；Assigned Commands 下移按钮；OK 按钮
+
+### 本次入口历史落点
+来源关联：上一步执行记录所指控件的历史结果
+历史结果：无
+进入当前界面前的区块：
+  1：
+    区块：Customize 对话框
+    名称：Customize 对话框
+    说明：用于查看和配置 LibreOffice Writer 的菜单、工具栏、Notebookbar、上下文菜单、键盘快捷键及事件的自定义对话框。
+边界：历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。
+
+## 问题 3：这些观察是否回答了原探索问题？
+
+### 当前任务
+任务：Toolbars 自定义配置区/参数探索
+区块：Toolbars 自定义配置区
+控件：Target 下拉框
+进度：待探索
+任务类型：参数问题
+已确认规则：
+  用于选择要查看或配置的目标工具栏；本次显示 Standard。 参数规则：选择要配置的工具栏。本次可见候选状态为 Standard；其他候选项尚未查看。
+当前控件知识：
+  1：
+    index：0
+    说明：用于选择要查看或配置的目标；当前显示 File。本次未展开或更改。
+  2：
+    index：1
+    说明：用于选择要查看或配置的目标工具栏；本次显示 Standard。
+    约束：
+      工具栏目标：
+        说明：选择要配置的工具栏。本次可见候选状态为 Standard；其他候选项尚未查看。
+
+## 本步的补充依据与限制
+### 身份引用
+ref使用已提供的区块或控件编号；name只表示名称。
+
+### 可更新功能的区块
+1：
+  名称：Toolbars 自定义配置区
+  ref：Toolbars 自定义配置区
+
+### 已有功能轮廓
+1：
+  功能：查看和配置工具栏命令
+  引用：Toolbars 自定义配置区/查看和配置工具栏命令
+  用途：选择作用范围和目标工具栏，查看可用命令及已分配命令，并通过配置区入口调整目标工具栏。具体的勾选、插入、移除、排序及提交效果仍需验证。
+  支持对象：
+    Toolbars 自定义配置区；Scope 下拉框；Target 下拉框；Available Commands 列表；Assigned Commands 列表；命令移入按钮；命令移出按钮；Assigned Commands 上移按钮；Assigned Commands 下移按钮；Insert 按钮；Modify 按钮；OK 按钮
+  参数知识引用：
+    Target 下拉框/工具栏目标：
+      说明：用于选择要查看或配置的目标工具栏；本次显示 Standard。 参数规则：选择要配置的工具栏。本次可见候选状态为 Standard；其他候选项尚未查看。
+      名称：工具栏目标
+      来源：
+        区块：Toolbars 自定义配置区
+        依据类别：discovery
+        source_call：0167
+        observation：update:0167
+      sources：
+        1：
+          区块：Toolbars 自定义配置区
+          依据类别：discovery
+          source_call：0167
+          observation：update:0167
+      observations：
+        1：
+          说明：选择要配置的工具栏。本次可见候选状态为 Standard；其他候选项尚未查看。
+          来源：
+            区块：Toolbars 自定义配置区
+            依据类别：discovery
+            source_call：0167
+            observation：update:0167
+      support：Target 下拉框
+      区块：Toolbars 自定义配置区
+      控件：Target 下拉框
+
+图1：实际动作前图；核对原操作对象；原图 1280×800 像素。
+图2：原动作后图；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

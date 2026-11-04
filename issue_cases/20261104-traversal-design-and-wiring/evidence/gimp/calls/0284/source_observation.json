@@ -1,0 +1,9 @@
+{
+  "id": "update:0282",
+  "region_refs": [
+    "r0003",
+    "r0004"
+  ],
+  "snapshot": "knowledge_snapshots/a0111-0282-7af0f599f227",
+  "selection_call": "0283"
+}

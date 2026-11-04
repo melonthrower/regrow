@@ -1,0 +1,9 @@
+{
+  "target": "c0017",
+  "action": "click",
+  "reason": "当前图中 meeting_notes.txt 标签右侧的 × 关闭控件位于此处，工具提示显示“Close (Ctrl+W)”。该文件有未保存修改标记；点击以观察是否出现提示或其他阻止关闭的结果。",
+  "x": 273,
+  "y": 106,
+  "exception": "none",
+  "recovery_handoff": ""
+}

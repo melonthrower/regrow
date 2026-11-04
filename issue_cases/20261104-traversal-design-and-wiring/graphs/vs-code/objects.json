@@ -1,0 +1,5195 @@
+{
+  "regions": {
+    "r0001": {
+      "id": "r0001",
+      "name": "VS Code 菜单栏",
+      "description": "应用顶部提供文件、编辑、选择、视图、转到、运行、终端和帮助菜单入口。",
+      "parent_region": null,
+      "functions": {
+        "运行或启动调试": {
+          "description": "通过 Run 菜单访问启动调试或不调试运行等命令；菜单还列出停止、重启及继续调试等命令，部分命令在本次画面中不可用。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0006",
+              "name": "Run 菜单",
+              "source": {
+                "source_call": "0058",
+                "observation": "update:0058",
+                "region": "r0001",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0058",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0006"
+            }
+          ]
+        },
+        "管理断点": {
+          "description": "通过 Run 菜单访问切换、新建、启用、禁用或移除断点的命令；新建断点的子菜单内容尚未观察。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0006",
+              "name": "Run 菜单",
+              "source": {
+                "source_call": "0058",
+                "observation": "update:0058",
+                "region": "r0001",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0058",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0006"
+            }
+          ]
+        },
+        "访问调试配置与调试器安装入口": {
+          "description": "通过 Run 菜单访问添加或打开调试配置，以及安装额外调试器的入口；这些入口尚未执行。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0006",
+              "name": "Run 菜单",
+              "source": {
+                "source_call": "0058",
+                "observation": "update:0058",
+                "region": "r0001",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0058",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0006"
+            }
+          ]
+        },
+        "访问终端命令": {
+          "description": "展开 Terminal 菜单，查看其中提供的终端、任务运行和任务配置命令入口。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0001",
+              "control": "c0007",
+              "name": "Terminal 菜单",
+              "source": {
+                "source_call": "0119",
+                "observation": "update:0119",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0001",
+          "source_call": "0119",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0001",
+              "control": "c0007"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0006",
+          "target_region": "r0010",
+          "attempt": "a0011",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0007",
+          "target_region": "r0015",
+          "attempt": "a0023",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0133-af6046b9e74f/regions/r0001/images/0133/region.png",
+      "controls": [
+        "c0001",
+        "c0002",
+        "c0003",
+        "c0004",
+        "c0005",
+        "c0006",
+        "c0007",
+        "c0008"
+      ]
+    },
+    "r0002": {
+      "id": "r0002",
+      "name": "活动栏",
+      "description": "编辑器左侧的视图与应用功能入口栏。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0089-f192e5d29973/regions/r0002/images/0089/region.png",
+      "controls": [
+        "c0009",
+        "c0010",
+        "c0011",
+        "c0012",
+        "c0013",
+        "c0014",
+        "c0015"
+      ]
+    },
+    "r0003": {
+      "id": "r0003",
+      "name": "文本编辑器",
+      "description": "显示并编辑当前打开的 meeting_notes.txt，包含文件内容区域及编辑器操作入口。",
+      "parent_region": null,
+      "functions": {
+        "编辑已打开的文本文件": {
+          "description": "在编辑器中查看并编辑当前打开的文本文件内容；适用于已打开的文本文件，包括 JSON 配置文件。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0019",
+              "name": "文本编辑区",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0003",
+                    "basis": "discovery",
+                    "source_call": "0001",
+                    "observation": "discovery:0001"
+                  },
+                  {
+                    "source_call": "0065",
+                    "basis": "observation_only",
+                    "observation": "update:0062"
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0003",
+          "source_call": "0065",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0003",
+              "control": "c0019"
+            }
+          ]
+        },
+        "拆分编辑器视图": {
+          "description": "将编辑器拆分为左右并排的两个编辑组；本次观察到拆分后活动文件同时显示在两组中。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0020",
+              "name": "拆分编辑器",
+              "source": {
+                "source_call": "0073",
+                "observation": "update:0073",
+                "region": "r0003",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0003",
+          "source_call": "0073",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0003",
+              "control": "c0020"
+            }
+          ]
+        },
+        "保存已编辑的文件": {
+          "description": "在编辑器中按 Ctrl+S 可保存当前编辑文件；本次 settings.json 标签上的未保存标记在操作后消失。该界面状态变化未单独验证磁盘上的持久化内容。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0003",
+              "control": "c0019",
+              "name": "文本编辑区",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0003",
+                    "basis": "discovery",
+                    "source_call": "0001",
+                    "observation": "discovery:0001"
+                  },
+                  {
+                    "source_call": "0104",
+                    "observation": "update:0104",
+                    "basis": "object_knowledge"
+                  },
+                  {
+                    "basis": "object_knowledge",
+                    "source_call": "0083",
+                    "observation": "update:0083"
+                  },
+                  {
+                    "basis": "object_knowledge",
+                    "source_call": "0085",
+                    "observation": "update:0085"
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0003",
+          "source_call": "0104",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0003",
+              "control": "c0019"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0020",
+          "target_region": "r0012",
+          "attempt": "a0013",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": null,
+          "target_region": "r0013",
+          "attempt": "a0016",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0021",
+          "target_region": "r0014",
+          "attempt": "a0021",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0018",
+          "target_region": "r0020",
+          "attempt": "a0029",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "local_knowledge": {
+        "k0001": "编辑器顶部显示打开的文件标签和路径面包屑，主体区域用于显示和编辑文件内容；仅凭画面中的内容不能确认其是否已保存或是否存在未保存修改。",
+        "k0006": "点击拆分编辑器入口后，编辑器区域显示左右并排的两个编辑组；本次观察到拆分时的活动文件 settings.json 同时显示在两组中。",
+        "k0012": "从 New File... 快速选择器选择 Text File 后，文本编辑器打开名为「Untitled-1」的空白文档；这表明已打开未命名编辑器文档，但不证明文档已保存到磁盘。",
+        "k0013": "在 meeting_notes.txt 编辑区全选后输入新文本，会替换原有内容；本次编辑后标签和窗口标题出现未保存修改标记。"
+      },
+      "image": "../discovery-0089-f192e5d29973/regions/r0003/images/0089/region.png",
+      "jump_to": [
+        {
+          "region": "r0013",
+          "conditions": [
+            "光标位于 settings.json 的 launch.configurations 数组占位位置时按 Ctrl+Space。"
+          ]
+        }
+      ],
+      "controls": [
+        "c0016",
+        "c0017",
+        "c0018",
+        "c0019",
+        "c0020",
+        "c0021",
+        "c0125",
+        "c0126",
+        "c0173"
+      ]
+    },
+    "r0004": {
+      "id": "r0004",
+      "name": "状态栏",
+      "description": "VS Code 窗口底部展示编辑器位置、缩进、编码、行尾、语言模式及通知等状态和入口。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0089-f192e5d29973/regions/r0004/images/0089/region.png",
+      "controls": [
+        "c0022",
+        "c0023",
+        "c0024",
+        "c0025",
+        "c0026",
+        "c0027"
+      ]
+    },
+    "r0005": {
+      "id": "r0005",
+      "name": "File 菜单展开内容",
+      "description": "由菜单栏 File 入口展开的命令列表，包含文件、工作区和窗口相关操作。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0002": "从菜单栏打开 File 可查看文件与工作区命令；菜单项右侧可显示快捷键，带右箭头的项目表示还有子菜单。菜单项是否可用以当前显示状态为准。"
+      },
+      "image": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/region.png",
+      "controls": [
+        "c0028",
+        "c0029",
+        "c0030",
+        "c0031",
+        "c0032",
+        "c0033",
+        "c0034",
+        "c0035",
+        "c0036",
+        "c0037",
+        "c0038",
+        "c0039",
+        "c0040",
+        "c0041",
+        "c0042",
+        "c0043",
+        "c0044",
+        "c0045",
+        "c0046",
+        "c0047"
+      ]
+    },
+    "r0006": {
+      "id": "r0006",
+      "name": "Edit 菜单展开内容",
+      "description": "Edit 菜单展开后显示的编辑命令列表。",
+      "parent_region": null,
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/region.png",
+      "controls": [
+        "c0048",
+        "c0049",
+        "c0050",
+        "c0051",
+        "c0052",
+        "c0053",
+        "c0054",
+        "c0055",
+        "c0056",
+        "c0057",
+        "c0058",
+        "c0059"
+      ]
+    },
+    "r0007": {
+      "id": "r0007",
+      "name": "Selection 菜单展开内容",
+      "description": "VS Code 菜单栏中 Selection 入口展开的命令列表。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/region.png",
+      "controls": [
+        "c0060",
+        "c0061",
+        "c0062",
+        "c0063",
+        "c0064",
+        "c0065",
+        "c0066",
+        "c0067",
+        "c0068",
+        "c0069",
+        "c0070",
+        "c0071",
+        "c0072",
+        "c0073",
+        "c0074",
+        "c0075"
+      ]
+    },
+    "r0008": {
+      "id": "r0008",
+      "name": "View 菜单展开内容",
+      "description": "View 菜单展开后显示的命令列表。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/region.png",
+      "controls": [
+        "c0076",
+        "c0077",
+        "c0078",
+        "c0079",
+        "c0080",
+        "c0081",
+        "c0082",
+        "c0083",
+        "c0084",
+        "c0085",
+        "c0086",
+        "c0087",
+        "c0088",
+        "c0089"
+      ]
+    },
+    "r0009": {
+      "id": "r0009",
+      "name": "Go 菜单展开内容",
+      "description": "从 VS Code 菜单栏的 Go 菜单展开的命令列表。",
+      "parent_region": "r0001",
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0003": "点击菜单栏的 Go 菜单可展开此命令列表；点击列表项可调用对应命令。带右箭头的 Switch Editor 和 Switch Group 是子菜单入口。"
+      },
+      "image": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/region.png",
+      "controls": [
+        "c0090",
+        "c0091",
+        "c0092",
+        "c0093",
+        "c0094",
+        "c0095",
+        "c0096",
+        "c0097",
+        "c0098",
+        "c0099",
+        "c0100",
+        "c0101",
+        "c0102",
+        "c0103",
+        "c0104",
+        "c0105",
+        "c0106",
+        "c0107",
+        "c0108"
+      ]
+    },
+    "r0010": {
+      "id": "r0010",
+      "name": "Run 菜单展开内容",
+      "description": "Run 菜单展开后展示的调试、配置和断点相关命令。",
+      "parent_region": "r0001",
+      "functions": {
+        "启动调试": {
+          "description": "使用 Start Debugging 启动调试；菜单显示快捷键 F5。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0109",
+              "name": "Start Debugging",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0060",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0109"
+            }
+          ]
+        },
+        "不调试运行": {
+          "description": "使用 Run Without Debugging 运行而不启动调试；菜单显示快捷键 Ctrl+F5。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0110",
+              "name": "Run Without Debugging",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0060",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0110"
+            }
+          ]
+        },
+        "控制调试执行": {
+          "description": "使用 Step Over、Step Into、Step Out 或 Continue 控制调试执行；这些命令当前显示为灰色，可用条件及具体效果仍待确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0115",
+              "name": "Step Over",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0116",
+              "name": "Step Into",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0117",
+              "name": "Step Out",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0118",
+              "name": "Continue",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0060",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0115"
+            },
+            {
+              "region": "r0010",
+              "control": "c0116"
+            },
+            {
+              "region": "r0010",
+              "control": "c0117"
+            },
+            {
+              "region": "r0010",
+              "control": "c0118"
+            }
+          ]
+        },
+        "管理断点": {
+          "description": "使用断点相关命令切换断点、启用或禁用所有断点，或移除所有断点；具体作用与可观察结果仍待确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0119",
+              "name": "Toggle Breakpoint",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0120",
+              "name": "New Breakpoint",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0121",
+              "name": "Enable All Breakpoints",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0122",
+              "name": "Disable All Breakpoints",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0123",
+              "name": "Remove All Breakpoints",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0060",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0119"
+            },
+            {
+              "region": "r0010",
+              "control": "c0120"
+            },
+            {
+              "region": "r0010",
+              "control": "c0121"
+            },
+            {
+              "region": "r0010",
+              "control": "c0122"
+            },
+            {
+              "region": "r0010",
+              "control": "c0123"
+            }
+          ]
+        },
+        "添加调试配置": {
+          "description": "通过 Add Configuration... 打开 settings.json 中 launch.configurations 的配置位置，并显示调试配置模板候选。选择候选后的配置生成结果及保存状态尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0114",
+              "name": "Add Configuration...",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0062",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0114"
+            }
+          ]
+        },
+        "打开调试配置": {
+          "description": "通过 Open Configurations 打开调试配置；该命令当前显示为灰色，其可用条件及目标内容尚待确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0113",
+              "name": "Open Configurations",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0058",
+                "observation": "update:0058"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0060",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0113"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0114",
+          "target_region": "r0003",
+          "attempt": "a0012",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0114",
+          "target_region": "r0011",
+          "attempt": "a0018",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "local_knowledge": {
+        "k0004": "菜单提供启动或运行、调试配置、单步执行、断点管理以及安装额外调试器等入口；呈灰色的命令在本次画面中不可用，其具体可用条件尚未确认。"
+      },
+      "image": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/region.png",
+      "controls": [
+        "c0109",
+        "c0110",
+        "c0111",
+        "c0112",
+        "c0113",
+        "c0114",
+        "c0115",
+        "c0116",
+        "c0117",
+        "c0118",
+        "c0119",
+        "c0120",
+        "c0121",
+        "c0122",
+        "c0123",
+        "c0124"
+      ]
+    },
+    "r0011": {
+      "id": "r0011",
+      "name": "调试配置模板补全列表",
+      "description": "显示可选择的调试配置模板候选，覆盖在 settings.json 的 launch.configurations 编辑位置附近。",
+      "parent_region": "r0003",
+      "functions": {
+        "插入调试配置模板": {
+          "description": "在 launch.configurations 数组位置选择可见模板，可将相应调试配置对象插入 settings.json；已确认“Chrome: Attach”会插入 Chrome 附加调试配置。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0011",
+              "control": "c0127",
+              "name": "Chrome: Attach",
+              "source": {
+                "source_call": "0102",
+                "observation": "update:0102",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0011",
+          "source_call": "0102",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0011",
+              "control": "c0127"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0127",
+          "target_region": "r0003",
+          "attempt": "a0019",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        }
+      ],
+      "local_knowledge": {
+        "k0005": "在 launch.configurations 数组位置显示调试配置模板候选；可见候选包括 Chrome、Edge 和多种 Node.js 模板。选择“Chrome: Attach”后，settings.json 的数组中插入 name 为 “Attach to Chrome”、port 为 9222、request 为 “attach”、type 为 “chrome”、webRoot 为 “${workspaceFolder}” 的配置对象。此次选择前标签已有未保存标记，选择后仍可见；是否由此次选择产生未保存状态尚不能确定。"
+      },
+      "image": "../a0012-0062-c50a04b4b93d/regions/r0011/images/0062/region.png",
+      "list_groups": {
+        "调试配置模板候选": [
+          "c0127"
+        ]
+      },
+      "controls": [
+        "c0127"
+      ]
+    },
+    "r0012": {
+      "id": "r0012",
+      "name": "右侧编辑组",
+      "description": "文本编辑器拆分后出现的右侧编辑区域，包含文件标签、路径面包屑和文件内容显示区。",
+      "parent_region": "r0003",
+      "functions": {
+        "查看和编辑打开的文件": {
+          "description": "在右侧编辑组查看当前打开文件的路径和内容；当同一文件也在左侧编辑组打开时，左侧编辑该文件后，右侧会同步反映缓冲区修改。适用于本次观察到的同一 settings.json；保存后的持久化结果未验证。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0012",
+              "control": null,
+              "name": "右侧编辑组"
+            }
+          ],
+          "constraints": {},
+          "region": "r0012",
+          "source_call": "0080",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0012",
+              "control": null
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "image": "../a0013-0073-e572cba56c2f/regions/r0012/images/0073/region.png",
+      "local_knowledge": {
+        "k0007": "右侧编辑组显示打开文件的标签、路径面包屑和文本内容。本次左右两组均显示 settings.json；在左侧编辑区全选并输入新内容后，右侧也显示了对应修改，确认同一文件在两组中的编辑缓冲区内容会同步反映。编辑后标签显示未保存标记；保存及持久化行为未验证。"
+      },
+      "controls": []
+    },
+    "r0013": {
+      "id": "r0013",
+      "name": "编辑器补全建议列表",
+      "description": "覆盖在文本编辑区上的普通文本补全候选列表，不是调试配置模板列表。",
+      "parent_region": "r0003",
+      "functions": {},
+      "transitions": [],
+      "image": "../a0016-0085-ddf70e78a33f/regions/r0013/images/0085/region.png",
+      "controls": []
+    },
+    "r0014": {
+      "id": "r0014",
+      "name": "编辑器更多操作菜单",
+      "description": "由编辑器更多操作入口展开的菜单，提供打开的编辑器及编辑组相关操作。",
+      "parent_region": "r0003",
+      "functions": {},
+      "transitions": [],
+      "local_knowledge": {
+        "k0008": "从文本编辑器点击编辑器更多操作入口可展开此菜单；菜单中可见的操作项目包括 Show Opened Editors、Close All、Close Saved、Enable Preview Editors、Maximize Group 和 Lock Group。"
+      },
+      "image": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/region.png",
+      "controls": [
+        "c0128",
+        "c0129",
+        "c0130",
+        "c0131",
+        "c0132",
+        "c0133"
+      ]
+    },
+    "r0015": {
+      "id": "r0015",
+      "name": "Terminal 菜单展开内容",
+      "description": "展示终端、任务运行及任务配置命令的下拉菜单。",
+      "parent_region": "r0001",
+      "functions": {
+        "创建终端": {
+          "description": "通过 Terminal 菜单中的 New Terminal 命令请求创建集成终端；本次执行后观察到 bash 会话显示在编辑器下方的终端面板中。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0134",
+              "name": "New Terminal",
+              "source": {
+                "source_call": "0121",
+                "basis": "observation_only",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0123",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0134"
+            }
+          ]
+        },
+        "分割终端": {
+          "description": "通过 Split Terminal 命令请求分割终端；本次该命令呈禁用外观，尚未验证可用条件或结果。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0135",
+              "name": "Split Terminal",
+              "source": {
+                "source_call": "0121",
+                "basis": "observation_only",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0135"
+            }
+          ]
+        },
+        "运行任务": {
+          "description": "通过 Run Task... 入口选择或运行任务；入口内容及操作结果尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0136",
+              "name": "Run Task...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0136"
+            }
+          ]
+        },
+        "运行构建任务": {
+          "description": "通过 Run Build Task... 入口运行构建任务；入口内容及操作结果尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0137",
+              "name": "Run Build Task...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0137"
+            }
+          ]
+        },
+        "运行活动文件": {
+          "description": "通过 Run Active File 命令请求运行当前活动文件；适用条件和执行结果尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0138",
+              "name": "Run Active File",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0138"
+            }
+          ]
+        },
+        "运行所选文本": {
+          "description": "通过 Run Selected Text 命令请求运行所选文本；适用条件和执行结果尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0139",
+              "name": "Run Selected Text",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0139"
+            }
+          ]
+        },
+        "查看运行中任务": {
+          "description": "通过 Show Running Tasks... 入口查看运行中任务；本次该入口呈禁用外观，尚未验证可用条件或内容。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0140",
+              "name": "Show Running Tasks...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0140"
+            }
+          ]
+        },
+        "重启运行中任务": {
+          "description": "通过 Restart Running Task... 命令请求重启运行中任务；本次该命令呈禁用外观，尚未验证可用条件或结果。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0141",
+              "name": "Restart Running Task...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0141"
+            }
+          ]
+        },
+        "终止任务": {
+          "description": "通过 Terminate Task... 命令请求终止任务；本次该命令呈禁用外观，尚未验证可用条件或结果。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0142",
+              "name": "Terminate Task...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0142"
+            }
+          ]
+        },
+        "配置任务": {
+          "description": "通过 Configure Tasks... 入口打开任务配置；本次尚未打开或修改配置。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0143",
+              "name": "Configure Tasks...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0143"
+            }
+          ]
+        },
+        "配置默认构建任务": {
+          "description": "通过 Configure Default Build Task... 入口配置默认构建任务；本次尚未打开入口或修改配置。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0015",
+              "control": "c0144",
+              "name": "Configure Default Build Task...",
+              "source": {
+                "region": "r0015",
+                "basis": "discovery",
+                "source_call": "0119",
+                "observation": "update:0119"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0015",
+          "source_call": "0121",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0015",
+              "control": "c0144"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0134",
+          "target_region": "r0016",
+          "attempt": "a0024",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/region.png",
+      "controls": [
+        "c0134",
+        "c0135",
+        "c0136",
+        "c0137",
+        "c0138",
+        "c0139",
+        "c0140",
+        "c0141",
+        "c0142",
+        "c0143",
+        "c0144"
+      ]
+    },
+    "r0016": {
+      "id": "r0016",
+      "name": "集成终端面板",
+      "description": "显示 VS Code 集成终端会话的面板。",
+      "parent_region": null,
+      "functions": {
+        "创建并查看集成终端会话": {
+          "description": "通过 Terminal 菜单中的 New Terminal 创建会话后，可在编辑器下方的集成终端面板中看到 bash 会话及 shell 提示符；尚未验证在提示符中执行命令的结果。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0016",
+              "control": null,
+              "name": "集成终端面板"
+            }
+          ],
+          "constraints": {},
+          "region": "r0016",
+          "source_call": "0127",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0016",
+              "control": null
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "local_knowledge": {
+        "k0009": "新建的集成终端显示在编辑器下方的终端面板中；本次创建后可见 bash 会话及 shell 提示符。",
+        "k0010": "面板包含 Problems、Output、Debug Console、Terminal 和 Ports 标签；当前 Terminal 页面显示 bash 会话及 shell 提示符。工具栏可见会话选择器、创建终端、拆分、终止、更多操作、面板最大化和关闭入口。"
+      },
+      "image": "../a0024-0123-4930c7759da8/regions/r0016/images/0123/region.png",
+      "controls": []
+    },
+    "r0017": {
+      "id": "r0017",
+      "name": "Help 菜单展开内容",
+      "description": "展开 Help 菜单后展示 VS Code 帮助、文档、反馈、许可、开发工具及版本信息相关命令的列表。",
+      "parent_region": "r0001",
+      "functions": {
+        "打开 Welcome 页面": {
+          "description": "从 Help 菜单执行 Welcome 命令，在编辑器区域打开 Welcome 页面。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0017",
+              "control": "c0145",
+              "name": "Welcome",
+              "source": {
+                "source_call": "0137",
+                "observation": "update:0137",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0017",
+          "source_call": "0137",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0017",
+              "control": "c0145"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0145",
+          "target_region": "r0018",
+          "attempt": "a0026",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/region.png",
+      "controls": [
+        "c0145",
+        "c0146",
+        "c0147",
+        "c0148",
+        "c0149",
+        "c0150",
+        "c0151",
+        "c0152",
+        "c0153",
+        "c0154",
+        "c0155",
+        "c0156",
+        "c0157",
+        "c0158",
+        "c0159",
+        "c0160",
+        "c0161"
+      ]
+    },
+    "r0018": {
+      "id": "r0018",
+      "name": "Welcome 页面",
+      "description": "作为编辑器标签显示 VS Code 的开始入口、入门 walkthrough 卡片及最近文件夹信息。",
+      "parent_region": null,
+      "functions": {
+        "创建新文件": {
+          "description": "通过 Start 区域的 New File... 入口开始创建文件；具体操作流程尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0162",
+              "name": "New File...",
+              "source": {
+                "source_call": "0143",
+                "observation": "update:0143",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0143",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0162"
+            }
+          ]
+        },
+        "打开文件": {
+          "description": "通过 Start 区域的 Open File... 入口开始打开文件；具体操作流程尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0163",
+              "name": "Open File...",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0163"
+            }
+          ]
+        },
+        "打开文件夹": {
+          "description": "通过 Start 区域的 Open Folder... 入口开始打开文件夹；具体操作流程尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0164",
+              "name": "Open Folder...",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0164"
+            }
+          ]
+        },
+        "克隆 Git 仓库": {
+          "description": "通过 Start 区域的 Clone Git Repository... 入口开始克隆仓库；具体流程尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0165",
+              "name": "Clone Git Repository...",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0165"
+            }
+          ]
+        },
+        "启动连接流程": {
+          "description": "通过 Start 区域的 Connect to... 入口启动连接流程；可连接的目标类型及具体流程尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0166",
+              "name": "Connect to...",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0166"
+            }
+          ]
+        },
+        "打开 VS Code 入门内容": {
+          "description": "通过 Walkthroughs 区域的 Get Started with V... 卡片打开入门内容；卡片打开后的内容尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0167",
+              "name": "Get Started with V...",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0167"
+            }
+          ]
+        },
+        "打开基础学习内容": {
+          "description": "通过 Walkthroughs 区域的 Learn the Fundam... 卡片打开基础学习内容；卡片打开后的内容尚待探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0168",
+              "name": "Learn the Fundam...",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0168"
+            }
+          ]
+        },
+        "控制启动时是否显示欢迎页": {
+          "description": "使用页面底部的复选框控制启动时是否显示欢迎页；当前可见为已勾选。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0018",
+              "control": "c0169",
+              "name": "Show welcome page on startup",
+              "source": {
+                "region": "r0018",
+                "basis": "discovery",
+                "source_call": "0137",
+                "observation": "update:0137"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0018",
+          "source_call": "0139",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0018",
+              "control": "c0169"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0162",
+          "target_region": "r0019",
+          "attempt": "a0027",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/region.png",
+      "local_knowledge": {
+        "k0011": "Welcome 页面可见 Start 区域的文件与连接入口、Walkthroughs 区域的两张入门卡片，以及 Recent 区域；当前 Recent 显示没有最近文件夹。底部显示已勾选的“Show welcome page on startup”。"
+      },
+      "controls": [
+        "c0162",
+        "c0163",
+        "c0164",
+        "c0165",
+        "c0166",
+        "c0167",
+        "c0168",
+        "c0169"
+      ]
+    },
+    "r0019": {
+      "id": "r0019",
+      "name": "New File... 快速选择器",
+      "description": "用于输入文件名或选择文件类型的新建文件快速选择界面。",
+      "parent_region": null,
+      "functions": {
+        "按名称或类型启动新建文件": {
+          "description": "可在输入框填写文件名，或选择列出的文件类型来启动新文件操作。已确认选择 Text File 会打开名为「Untitled-1」的空白文本编辑器；本次未保存，文件路径及磁盘持久化状态尚未确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0019",
+              "control": "c0170",
+              "name": "文件名或类型输入框",
+              "source": {
+                "region": "r0019",
+                "basis": "discovery",
+                "source_call": "0143",
+                "observation": "update:0143"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0019",
+              "control": "c0171",
+              "name": "Text File",
+              "source": {
+                "source_call": "0150",
+                "observation": "update:0150",
+                "basis": "object_knowledge"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0019",
+              "control": "c0172",
+              "name": "Jupyter Notebook",
+              "source": {
+                "region": "r0019",
+                "basis": "discovery",
+                "source_call": "0143",
+                "observation": "update:0143"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0019",
+          "source_call": "0150",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0019",
+              "control": "c0170"
+            },
+            {
+              "region": "r0019",
+              "control": "c0171"
+            },
+            {
+              "region": "r0019",
+              "control": "c0172"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0171",
+          "target_region": "r0003",
+          "attempt": "a0028",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../a0027-0143-5e5558f8d229/regions/r0019/images/0143/region.png",
+      "controls": [
+        "c0170",
+        "c0171",
+        "c0172"
+      ]
+    },
+    "r0020": {
+      "id": "r0020",
+      "name": "路径面包屑目录列表",
+      "description": "点击路径面包屑目录段后显示的目录项列表。",
+      "parent_region": "r0003",
+      "functions": {
+        "收起已展开目录": {
+          "description": "在路径面包屑目录列表中，点击已展开的 .config 项名称区域可收起该项并显示同级目录；本次未观察到路径导航。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0020",
+              "control": "c0174",
+              "name": ".config 目录项",
+              "source": {
+                "source_call": "0164",
+                "observation": "update:0164",
+                "region": "r0020",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0020",
+          "source_call": "0164",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0020",
+              "control": "c0174"
+            }
+          ]
+        },
+        "展开目录查看内容": {
+          "description": "点击路径面包屑目录列表中目录项的展开箭头，可在列表内显示该目录的子项；子项可能是目录或文件。已观察到 .config 展开后显示子目录，autostart 展开后显示文件；这些操作未导致路径导航。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0020",
+              "control": "c0174",
+              "name": ".config 目录项",
+              "source": {
+                "region": "r0020",
+                "basis": "discovery",
+                "source_call": "0164",
+                "observation": "update:0164"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0020",
+              "control": "c0175",
+              "name": "autostart 目录项",
+              "source": {
+                "source_call": "0169",
+                "observation": "update:0169",
+                "region": "r0020",
+                "basis": "discovery"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0020",
+          "source_call": "0169",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0020",
+              "control": "c0174"
+            },
+            {
+              "region": "r0020",
+              "control": "c0175"
+            }
+          ]
+        },
+        "打开目录列表中的文件": {
+          "description": "在路径面包屑目录列表中点击文件项，可在文本编辑器中打开并选中对应文件；本次观察到 update-notifier.desktop 以编辑器标签和文件内容形式打开。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0020",
+              "control": "c0176",
+              "name": "update-notifier.desktop",
+              "source": {
+                "source_call": "0177",
+                "observation": "update:0177",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0020",
+          "source_call": "0177",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0020",
+              "control": "c0176"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0176",
+          "target_region": "r0003",
+          "attempt": "a0034",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "list_groups": {
+        "路径面包屑目录项": [
+          "c0174"
+        ],
+        ".config 子目录项": [
+          "c0175"
+        ]
+      },
+      "image": "../a0029-0154-06d608ad6781/regions/r0020/images/0154/region.png",
+      "controls": [
+        "c0174",
+        "c0175",
+        "c0176"
+      ]
+    }
+  },
+  "controls": {
+    "c0001": {
+      "name": "File 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 File 菜单；菜单中的具体命令和操作条件尚未观察。"
+        },
+        {
+          "description": "点击可展开 File 菜单；展开后可见新建、打开、工作区、保存、分享、偏好设置、关闭及退出等命令。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0001.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0002": {
+      "name": "Edit 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Edit 菜单；菜单中的具体命令和操作条件尚未观察。"
+        },
+        {
+          "description": "本次在 File 菜单已展开时点击 Edit 菜单后，File 菜单关闭，但 Edit 命令列表未显示；此次结果未能确认 Edit 菜单的可见命令。"
+        },
+        {
+          "description": "点击可展开 Edit 命令列表；本次已观察到 Undo、Redo、剪切、复制、粘贴、查找、替换、文件内查找与替换、注释切换及 Emmet 命令。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0002.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0003": {
+      "name": "Selection 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Selection 菜单；菜单中的具体命令和操作条件尚未观察。"
+        },
+        {
+          "description": "点击可展开 Selection 命令列表。本次实际展开后观察到 Select All、Expand Selection、Shrink Selection、行复制与移动、Duplicate Selection、多光标及列选择相关命令；具体操作效果和适用条件未通过执行验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0003.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0004": {
+      "name": "View 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 View 菜单；菜单中的具体命令和操作条件尚未观察。"
+        },
+        {
+          "description": "点击可展开 View 命令列表。本次展开后可见 Command Palette、Open View、Appearance、Editor Layout、视图切换入口、Problems、Output、Debug Console、Terminal 和 Word Wrap。列表中的命令已从界面辨认，但未通过执行验证其效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0004.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0005": {
+      "name": "Go 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Go 菜单；菜单中的具体命令和操作条件尚未观察。"
+        },
+        {
+          "description": "点击可展开 Go 命令列表。本次展开后可见返回与前进、编辑器和编辑器组切换、文件及符号导航、定义与引用导航、行列和括号导航，以及问题和更改导航命令；命令的实际效果及适用条件未通过执行验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0005.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0006": {
+      "name": "Run 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Run 菜单。本次展开后可见启动或运行、调试配置、单步执行、断点管理及安装额外调试器等命令；部分命令呈灰色。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0006.png",
+          "conditions": [
+            "Run 菜单处于收起状态，菜单栏仅显示“Run”标签。"
+          ]
+        },
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0001/images/0058/c0006.png",
+          "conditions": [
+            "Run 菜单处于展开状态，显示调试、断点及安装调试器等命令。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0010",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0007": {
+      "name": "Terminal 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Terminal 菜单。展开后可见新建终端、分割终端、运行任务或文件内容、查看和管理运行中任务，以及配置任务和默认构建任务等命令。本次确认菜单可以展开；菜单命令的实际执行结果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0007.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0015",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0008": {
+      "name": "Help 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Help 菜单；菜单中的具体命令和操作条件尚未观察。"
+        },
+        {
+          "description": "点击可展开 Help 命令列表。本次展开后可见 Welcome、Show All Commands、Documentation、Editor Playground、Show Release Notes、Keyboard Shortcuts Reference、Video Tutorials、Tips and Tricks、Join Us on YouTube、Search Feature Requests、Report Issue、View License、Privacy Statement、Toggle Developer Tools、Open Process Explorer、Check for Updates... 和 About；这些命令的实际效果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0001/images/0001/c0008.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0009": {
+      "name": "Explorer 入口",
+      "description": "活动栏顶部的文件/资源管理器图标。",
+      "knowledge": [
+        {
+          "description": "点击可切换到 Explorer 视图；该视图的具体内容和操作尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0009.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0010": {
+      "name": "Search 入口",
+      "description": "放大镜图标。",
+      "knowledge": [
+        {
+          "description": "点击可切换到搜索视图；搜索范围、输入方式和结果操作尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0010.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0011": {
+      "name": "Source Control 入口",
+      "description": "分支图标。",
+      "knowledge": [
+        {
+          "description": "点击可切换到 Source Control 视图；其可用操作和前置条件尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0011.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0012": {
+      "name": "Run and Debug 入口",
+      "description": "播放与调试标记图标。",
+      "knowledge": [
+        {
+          "description": "点击可切换到 Run and Debug 视图；具体调试配置和运行条件尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0012.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0013": {
+      "name": "Extensions 入口",
+      "description": "方块组合图标。",
+      "knowledge": [
+        {
+          "description": "点击可切换到 Extensions 视图；扩展列表及相关操作尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0013.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0014": {
+      "name": "Accounts 入口",
+      "description": "活动栏底部的人像圆形图标。",
+      "knowledge": [
+        {
+          "description": "点击可打开账户相关入口；其中包含的功能尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0014.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0015": {
+      "name": "Manage 入口",
+      "description": "活动栏底部的齿轮图标。",
+      "knowledge": [
+        {
+          "description": "点击可打开管理相关入口；具体菜单项和操作尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0002/images/0001/c0015.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0016": {
+      "name": "meeting_notes.txt 标签",
+      "description": "编辑器顶部当前活动文件标签。",
+      "knowledge": [
+        {
+          "description": "点击文件标签可切换到该编辑器文档；标签上的关闭按钮单独登记。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0003/images/0001/c0016.png",
+          "conditions": [
+            "顶部仅有 meeting_notes.txt 文件标签，处于活动选中状态，右侧显示关闭图标；编辑器显示该文件内容。"
+          ]
+        },
+        {
+          "path": "../a0036-0185-fd8a1c72365c/regions/r0003/images/0185/c0016.png",
+          "conditions": [
+            "文件有未保存修改时，标签右侧显示白色圆点标记。"
+          ]
+        }
+      ],
+      "jump_to": []
+    },
+    "c0017": {
+      "name": "关闭 meeting_notes.txt 标签",
+      "description": "文件标签右侧的 × 图标。",
+      "knowledge": [
+        {
+          "description": "点击可关闭 meeting_notes.txt 编辑器标签；标签右侧悬停后会显示 × 关闭控件，工具提示为“Close (Ctrl+W)”。本次仅悬停、未点击；有未保存修改时点击关闭的结果仍未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0003/images/0001/c0017.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0018": {
+      "name": "路径面包屑",
+      "description": "显示 home > user > Documents > meeting_notes.txt 的路径导航。",
+      "knowledge": [
+        {
+          "description": "面包屑展示当前文件的目录路径。点击目录段可打开目录列表；本次点击 settings.json 路径中的“.config”段后，出现包含多个目录项的列表。列表项的导航或展开行为尚未通过操作确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0003/images/0001/c0018.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0020",
+          "conditions": [
+            "在文本编辑器中点击路径面包屑的目录段。"
+          ]
+        }
+      ]
+    },
+    "c0019": {
+      "name": "文本编辑区",
+      "description": "带行号的 Plain Text 文档内容区域。",
+      "knowledge": [
+        {
+          "description": "可在编辑区中查看和编辑当前文本文件；当前可见内容为“Team Sync - June 2026”及三条以连字符开头的条目。保存方式和未保存状态标记尚未验证。"
+        },
+        {
+          "description": "在 settings.json 的 launch.configurations 数组位置，点击 Run 菜单中的 Add Configuration... 会显示调试配置模板补全列表。选择“Chrome: Attach”后，数组中插入包含 name “Attach to Chrome”、port 9222、request “attach”、type “chrome” 和 webRoot “${workspaceFolder}” 的配置对象；左右编辑组均显示该内容。选择前文件标签已显示未保存标记，选择后仍显示该标记，因此不能仅凭此变化确认标记由模板插入造成。随后按 Ctrl+S 后，左右标签及窗口标题上的未保存标记消失；未另行验证磁盘上的持久化内容。"
+        },
+        {
+          "description": "在编辑区查看和编辑当前文本文件。本步在左侧 settings.json 编辑区全选并输入新内容后，右侧同一文件也显示了对应内容，确认同一文件在两组中的编辑缓冲区修改会同步反映。编辑后标签显示未保存标记；按 Ctrl+S 后标签上的未保存标记消失。未另行验证磁盘上的持久化内容。"
+        },
+        {
+          "description": "点击编辑区可定位光标；本次点击将光标定位到 launch.configurations 数组的占位位置，面包屑随之显示 launch > [] > configurations。前后可见配置内容没有变化，也未出现模板补全列表。"
+        },
+        {
+          "description": "在 settings.json 的 launch.configurations 数组占位位置按 Ctrl+Space，会弹出普通补全建议列表；本次可见候选为若干文本值（如“000000c0”“007E”“0_enabled”），并非调试配置模板。未选择候选，因此候选插入后的内容及状态未知。"
+        },
+        {
+          "description": "可在编辑区全选并输入文本以替换当前文件内容。本次输入后编辑器显示文本末尾，状态栏为 Ln 1, Col 110；标签出现未保存修改标记，尚未保存。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0003/images/0001/c0019.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0020": {
+      "name": "拆分编辑器",
+      "description": "编辑器右上方的分栏图标。",
+      "knowledge": [
+        {
+          "description": "点击可将编辑器拆分为左右并排的两个编辑组；本次观察到原活动文件 settings.json 同时显示在两组中。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0003/images/0001/c0020.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0012",
+          "conditions": [
+            "在文本编辑器中点击拆分编辑器入口。"
+          ]
+        }
+      ]
+    },
+    "c0021": {
+      "name": "编辑器更多操作",
+      "description": "编辑器右上方的省略号按钮。",
+      "knowledge": [
+        {
+          "description": "点击可打开编辑器更多操作菜单。已观察到菜单包含 Show Opened Editors、Close All、Close Saved、Enable Preview Editors、Maximize Group 和 Lock Group。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0003/images/0001/c0021.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0014",
+          "conditions": []
+        }
+      ]
+    },
+    "c0022": {
+      "name": "行列位置",
+      "description": "状态栏右侧显示 Ln 1, Col 1。",
+      "knowledge": [
+        {
+          "description": "显示当前光标所在行和列；可点击行为尚未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0004/images/0001/c0022.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0023": {
+      "name": "缩进状态",
+      "description": "显示 Spaces: 4。",
+      "knowledge": [
+        {
+          "description": "显示当前缩进使用空格及宽度为 4；可配置选项和操作方式尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0004/images/0001/c0023.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0024": {
+      "name": "文件编码状态",
+      "description": "显示 UTF-8。",
+      "knowledge": [
+        {
+          "description": "显示当前文件编码为 UTF-8；可用编码及切换方式尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0004/images/0001/c0024.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0025": {
+      "name": "行尾格式状态",
+      "description": "显示 LF。",
+      "knowledge": [
+        {
+          "description": "显示当前行尾格式为 LF；可选格式及切换方式尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0004/images/0001/c0025.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0026": {
+      "name": "语言模式状态",
+      "description": "显示 Plain Text。",
+      "knowledge": [
+        {
+          "description": "显示当前文件语言模式为 Plain Text；可选语言模式及切换方式尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0004/images/0001/c0026.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0027": {
+      "name": "通知入口",
+      "description": "状态栏最右侧的铃铛图标。",
+      "knowledge": [
+        {
+          "description": "点击可打开通知相关内容；具体内容和操作尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0001-4aa6afcc7faf/regions/r0004/images/0001/c0027.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0028": {
+      "name": "New Text File",
+      "knowledge": [
+        {
+          "description": "点击可新建文本文件；当前菜单显示快捷键 Ctrl+N，实际创建结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0028.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0029": {
+      "name": "New File...",
+      "knowledge": [
+        {
+          "description": "点击可启动新建文件操作；当前菜单显示快捷键 Alt+Ctrl+N，具体后续步骤和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0029.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0030": {
+      "name": "New Window",
+      "knowledge": [
+        {
+          "description": "点击可请求打开新窗口；当前菜单显示快捷键 Ctrl+Shift+N，实际结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0030.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0031": {
+      "name": "Open File...",
+      "knowledge": [
+        {
+          "description": "点击可启动打开文件操作；当前菜单显示快捷键 Ctrl+O，后续选择界面和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0031.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0032": {
+      "name": "Open Folder...",
+      "knowledge": [
+        {
+          "description": "点击可启动打开文件夹操作；当前菜单显示快捷键 Ctrl+K Ctrl+O，后续选择界面和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0032.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0033": {
+      "name": "Open Workspace from File...",
+      "knowledge": [
+        {
+          "description": "点击可启动从文件打开工作区的操作；后续选择界面和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0033.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0034": {
+      "name": "Open Recent",
+      "knowledge": [
+        {
+          "description": "带右箭头的菜单项；可展开以查看近期项目，子菜单内容尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0034.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0035": {
+      "name": "Add Folder to Workspace...",
+      "knowledge": [
+        {
+          "description": "点击可启动向工作区添加文件夹的操作；具体前置条件和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0035.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0036": {
+      "name": "Save Workspace As...",
+      "knowledge": [
+        {
+          "description": "点击可启动将工作区另存为的操作；具体保存步骤和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0036.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0037": {
+      "name": "Duplicate Workspace",
+      "knowledge": [
+        {
+          "description": "点击可请求复制当前工作区；实际操作流程和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0037.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0038": {
+      "name": "Save",
+      "knowledge": [
+        {
+          "description": "点击可保存当前文件；当前菜单显示快捷键 Ctrl+S。此处仅确认命令可见，未执行保存。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0038.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0039": {
+      "name": "Save As...",
+      "knowledge": [
+        {
+          "description": "点击可启动另存当前文件的操作；当前菜单显示快捷键 Ctrl+Shift+S，后续步骤和结果未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0039.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0040": {
+      "name": "Save All",
+      "knowledge": [
+        {
+          "description": "用于保存全部文件；当前呈灰色禁用状态，不能据此确认其在其他状态下的可用条件。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0040.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0041": {
+      "name": "Share",
+      "knowledge": [
+        {
+          "description": "带右箭头的菜单项，可展开分享相关子菜单；子菜单内容尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0041.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0042": {
+      "name": "Auto Save",
+      "knowledge": [
+        {
+          "description": "自动保存相关菜单项；当前未确认其启用状态或切换效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0042.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0043": {
+      "name": "Preferences",
+      "knowledge": [
+        {
+          "description": "带右箭头的菜单项，可展开偏好设置相关子菜单；子菜单内容尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0043.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0044": {
+      "name": "Revert File",
+      "knowledge": [
+        {
+          "description": "用于还原当前文件的菜单项；还原来源、确认步骤和影响未测试。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0044.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0045": {
+      "name": "Close Editor",
+      "knowledge": [
+        {
+          "description": "点击可关闭当前编辑器；当前菜单显示快捷键 Ctrl+W，未测试未保存内容时的提示行为。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0045.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0046": {
+      "name": "Close Window",
+      "knowledge": [
+        {
+          "description": "点击可请求关闭当前窗口；当前菜单显示快捷键 Alt+F4，实际结果未测试。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0046.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0047": {
+      "name": "Exit",
+      "knowledge": [
+        {
+          "description": "点击可请求退出 VS Code；当前菜单显示快捷键 Ctrl+Q，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0012-e4d502eb6452/regions/r0005/images/0012/c0047.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0048": {
+      "name": "Undo",
+      "knowledge": [
+        {
+          "description": "执行撤销操作；菜单显示快捷键 Ctrl+Z。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0048.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0049": {
+      "name": "Redo",
+      "knowledge": [
+        {
+          "description": "执行重做操作；菜单显示快捷键 Ctrl+Y。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0049.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0050": {
+      "name": "Cut",
+      "knowledge": [
+        {
+          "description": "剪切当前选中内容；菜单显示快捷键 Ctrl+X。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0050.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0051": {
+      "name": "Copy",
+      "knowledge": [
+        {
+          "description": "复制当前选中内容；菜单显示快捷键 Ctrl+C。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0051.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0052": {
+      "name": "Paste",
+      "knowledge": [
+        {
+          "description": "粘贴剪贴板内容；菜单显示快捷键 Ctrl+V。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0052.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0053": {
+      "name": "Find",
+      "knowledge": [
+        {
+          "description": "打开查找功能；菜单显示快捷键 Ctrl+F。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0053.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0054": {
+      "name": "Replace",
+      "knowledge": [
+        {
+          "description": "打开替换功能；菜单显示快捷键 Ctrl+H。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0054.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0055": {
+      "name": "Find in Files",
+      "knowledge": [
+        {
+          "description": "打开文件范围的查找功能；菜单显示快捷键 Ctrl+Shift+F。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0055.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0056": {
+      "name": "Replace in Files",
+      "knowledge": [
+        {
+          "description": "打开文件范围的替换功能；菜单显示快捷键 Ctrl+Shift+H。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0056.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0057": {
+      "name": "Toggle Line Comment",
+      "knowledge": [
+        {
+          "description": "切换当前行注释状态；菜单显示快捷键 Ctrl+/。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0057.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0058": {
+      "name": "Toggle Block Comment",
+      "knowledge": [
+        {
+          "description": "切换块注释状态；菜单显示快捷键 Ctrl+Shift+A。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0058.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0059": {
+      "name": "Emmet: Expand Abbreviation",
+      "knowledge": [
+        {
+          "description": "执行 Emmet 缩写展开；菜单显示快捷键 Tab。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0022-4c5fdba0936c/regions/r0006/images/0022/c0059.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0060": {
+      "name": "Select All",
+      "knowledge": [
+        {
+          "description": "点击可执行 Select All；菜单显示快捷键 Ctrl+A。具体作用范围和执行结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0060.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0061": {
+      "name": "Expand Selection",
+      "knowledge": [
+        {
+          "description": "点击可执行 Expand Selection；菜单显示快捷键 Alt+Shift+Right Arrow。具体扩展规则本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0061.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0062": {
+      "name": "Shrink Selection",
+      "knowledge": [
+        {
+          "description": "点击可执行 Shrink Selection；菜单显示快捷键 Alt+Shift+Left Arrow。具体收缩规则本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0062.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0063": {
+      "name": "Copy Line Up",
+      "knowledge": [
+        {
+          "description": "点击可执行 Copy Line Up；菜单显示快捷键 Alt+Ctrl+Shift+Up Arrow。具体复制结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0063.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0064": {
+      "name": "Copy Line Down",
+      "knowledge": [
+        {
+          "description": "点击可执行 Copy Line Down；菜单显示快捷键 Alt+Ctrl+Shift+Down Arrow。具体复制结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0064.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0065": {
+      "name": "Move Line Up",
+      "knowledge": [
+        {
+          "description": "点击可执行 Move Line Up；菜单显示快捷键 Alt+Up Arrow。具体移动结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0065.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0066": {
+      "name": "Move Line Down",
+      "knowledge": [
+        {
+          "description": "点击可执行 Move Line Down；菜单显示快捷键 Alt+Down Arrow。具体移动结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0066.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0067": {
+      "name": "Duplicate Selection",
+      "knowledge": [
+        {
+          "description": "点击可执行 Duplicate Selection；菜单未显示快捷键。具体复制对象及结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0067.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0068": {
+      "name": "Add Cursor Above",
+      "knowledge": [
+        {
+          "description": "点击可执行 Add Cursor Above；菜单显示快捷键 Alt+Shift+Up Arrow。具体光标变化本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0068.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0069": {
+      "name": "Add Cursor Below",
+      "knowledge": [
+        {
+          "description": "点击可执行 Add Cursor Below；菜单显示快捷键 Alt+Shift+Down Arrow。具体光标变化本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0069.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0070": {
+      "name": "Add Cursors to Line Ends",
+      "knowledge": [
+        {
+          "description": "点击可执行 Add Cursors to Line Ends；菜单显示快捷键 Alt+Shift+I。具体光标变化本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0070.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0071": {
+      "name": "Add Next Occurrence",
+      "knowledge": [
+        {
+          "description": "点击可执行 Add Next Occurrence；菜单显示快捷键 Ctrl+D。匹配范围和光标变化本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0071.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0072": {
+      "name": "Add Previous Occurrence",
+      "knowledge": [
+        {
+          "description": "点击可执行 Add Previous Occurrence；菜单未显示快捷键。匹配范围和光标变化本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0072.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0073": {
+      "name": "Select All Occurrences",
+      "knowledge": [
+        {
+          "description": "点击可执行 Select All Occurrences；菜单显示快捷键 Ctrl+Shift+L。匹配范围和选择结果本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0073.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0074": {
+      "name": "Switch to Ctrl+Click for Multi-Cursor",
+      "knowledge": [
+        {
+          "description": "点击可切换与多光标相关的 Ctrl+Click 操作设置；当前设置状态及切换效果未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0074.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0075": {
+      "name": "Column Selection Mode",
+      "knowledge": [
+        {
+          "description": "点击可进入 Column Selection Mode；菜单未显示快捷键。模式状态和选择行为本次未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0031-a4df9f3b6302/regions/r0007/images/0031/c0075.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0076": {
+      "name": "Command Palette...",
+      "knowledge": [
+        {
+          "description": "点击可打开命令面板；菜单显示快捷键 Ctrl+Shift+P。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0076.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0077": {
+      "name": "Open View...",
+      "knowledge": [
+        {
+          "description": "点击可进入打开视图的入口；具体后续界面和操作尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0077.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0078": {
+      "name": "Appearance",
+      "knowledge": [
+        {
+          "description": "带有子菜单箭头的外观相关菜单项；可展开查看其子项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0078.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0079": {
+      "name": "Editor Layout",
+      "knowledge": [
+        {
+          "description": "带有子菜单箭头的编辑器布局相关菜单项；可展开查看其子项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0079.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0080": {
+      "name": "Explorer",
+      "knowledge": [
+        {
+          "description": "点击可打开 Explorer 视图；菜单显示快捷键 Ctrl+Shift+E。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0080.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0081": {
+      "name": "Search",
+      "knowledge": [
+        {
+          "description": "点击可打开 Search 视图。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0081.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0082": {
+      "name": "Source Control",
+      "knowledge": [
+        {
+          "description": "点击可打开 Source Control 视图。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0082.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0083": {
+      "name": "Run",
+      "knowledge": [
+        {
+          "description": "点击可打开 Run 视图。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0083.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0084": {
+      "name": "Extensions",
+      "knowledge": [
+        {
+          "description": "点击可打开 Extensions 视图。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0084.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0085": {
+      "name": "Problems",
+      "knowledge": [
+        {
+          "description": "点击可打开 Problems 面板；菜单显示快捷键 Ctrl+Shift+M。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0085.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0086": {
+      "name": "Output",
+      "knowledge": [
+        {
+          "description": "点击可打开 Output 面板；菜单显示快捷键 Ctrl+K Ctrl+H。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0086.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0087": {
+      "name": "Debug Console",
+      "knowledge": [
+        {
+          "description": "点击可打开 Debug Console；菜单显示快捷键 Ctrl+Shift+Y。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0087.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0088": {
+      "name": "Terminal",
+      "knowledge": [
+        {
+          "description": "点击可打开 Terminal 面板；菜单显示快捷键 Ctrl+`。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0088.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0089": {
+      "name": "Word Wrap",
+      "knowledge": [
+        {
+          "description": "点击可切换 Word Wrap（自动换行）相关设置；具体切换状态和效果未通过执行验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0039-053fa835eb98/regions/r0008/images/0039/c0089.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0090": {
+      "name": "Back",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的返回命令，旁边显示快捷键 Alt+Ctrl+←；本图中显示为灰色，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0090.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0091": {
+      "name": "Forward",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的前进命令，旁边显示快捷键 Ctrl+Shift+→；本图中显示为灰色，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0091.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0092": {
+      "name": "Last Edit Location",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的返回上次编辑位置命令，旁边显示快捷键 Ctrl+K Ctrl+Q；本图中显示为灰色，当前不可用。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0092.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0093": {
+      "name": "Switch Editor",
+      "knowledge": [
+        {
+          "description": "编辑器切换子菜单入口；行末有右箭头，子菜单内容尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0093.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0094": {
+      "name": "Switch Group",
+      "knowledge": [
+        {
+          "description": "编辑器组切换子菜单入口；行末有右箭头，子菜单内容尚未观察。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0094.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0095": {
+      "name": "Go to File...",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的文件导航命令，旁边显示快捷键 Ctrl+P；实际打开的选择界面和使用方式尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0095.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0096": {
+      "name": "Go to Symbol in Workspace...",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的工作区符号导航命令，旁边显示快捷键 Ctrl+T；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0096.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0097": {
+      "name": "Go to Symbol in Editor...",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的编辑器内符号导航命令，旁边显示快捷键 Ctrl+Shift+O；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0097.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0098": {
+      "name": "Go to Definition",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的定义导航命令，旁边显示快捷键 F12；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0098.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0099": {
+      "name": "Go to Declaration",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的声明导航命令；界面未显示快捷键，实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0099.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0100": {
+      "name": "Go to Type Definition",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的类型定义导航命令；界面未显示快捷键，实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0100.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0101": {
+      "name": "Go to Implementations",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的实现导航命令，旁边显示快捷键 Ctrl+F12；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0101.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0102": {
+      "name": "Go to References",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的引用导航命令，旁边显示快捷键 Shift+F12；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0102.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0103": {
+      "name": "Go to Line/Column...",
+      "knowledge": [
+        {
+          "description": "打开行/列导航命令，旁边显示快捷键 Ctrl+G；对话界面和可填写参数尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0103.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0104": {
+      "name": "Go to Bracket",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的括号导航命令，旁边显示快捷键 Ctrl+Shift+\\；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0104.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0105": {
+      "name": "Next Problem",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的下一个问题导航命令，旁边显示快捷键 F8；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0105.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0106": {
+      "name": "Previous Problem",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的上一个问题导航命令，旁边显示快捷键 Shift+F8；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0106.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0107": {
+      "name": "Next Change",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的下一个更改导航命令，旁边显示快捷键 Alt+F3；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0107.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0108": {
+      "name": "Previous Change",
+      "knowledge": [
+        {
+          "description": "Go 菜单中的上一个更改导航命令，旁边显示快捷键 Alt+Shift+F3；实际操作效果和适用条件尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0050-8b99f1f1f64a/regions/r0009/images/0050/c0108.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0109": {
+      "name": "Start Debugging",
+      "knowledge": [
+        {
+          "description": "启动调试的命令；菜单中显示快捷键 F5。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0109.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0110": {
+      "name": "Run Without Debugging",
+      "knowledge": [
+        {
+          "description": "不启动调试而运行的命令；菜单中显示快捷键 Ctrl+F5。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0110.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0111": {
+      "name": "Stop Debugging",
+      "knowledge": [
+        {
+          "description": "停止调试的命令；本次菜单中呈灰色，具体可用条件未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0111.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0112": {
+      "name": "Restart Debugging",
+      "knowledge": [
+        {
+          "description": "重新启动调试的命令；本次菜单中呈灰色，具体可用条件未确认。菜单显示快捷键 Ctrl+Shift+F5。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0112.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0113": {
+      "name": "Open Configurations",
+      "knowledge": [
+        {
+          "description": "打开调试配置的命令；本次菜单中呈灰色，具体可用条件及打开内容未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0113.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0114": {
+      "name": "Add Configuration...",
+      "knowledge": [
+        {
+          "description": "点击可打开 settings.json 中 launch.configurations 的配置位置，并显示调试配置模板补全列表；需要选择模板才能继续配置。此次未选择模板，也未验证配置内容的生成或保存结果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0114.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0003",
+          "conditions": [
+            "在 Run 菜单展开内容中点击 Add Configuration..."
+          ]
+        },
+        {
+          "region": "r0011",
+          "conditions": [
+            "在 Run 菜单展开内容中点击 Add Configuration..."
+          ]
+        }
+      ],
+      "description": ""
+    },
+    "c0115": {
+      "name": "Step Over",
+      "knowledge": [
+        {
+          "description": "调试单步执行命令；本次菜单中呈灰色。菜单显示快捷键 F10，具体可用条件未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0115.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0116": {
+      "name": "Step Into",
+      "knowledge": [
+        {
+          "description": "调试单步执行命令；本次菜单中呈灰色。菜单显示快捷键 F11，具体可用条件未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0116.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0117": {
+      "name": "Step Out",
+      "knowledge": [
+        {
+          "description": "调试单步执行命令；本次菜单中呈灰色。菜单显示快捷键 Shift+F11，具体可用条件未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0117.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0118": {
+      "name": "Continue",
+      "knowledge": [
+        {
+          "description": "继续调试的命令；本次菜单中呈灰色。菜单显示快捷键 F5，具体可用条件未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0118.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0119": {
+      "name": "Toggle Breakpoint",
+      "knowledge": [
+        {
+          "description": "切换断点的命令；菜单显示快捷键 F9。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0119.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0120": {
+      "name": "New Breakpoint",
+      "knowledge": [
+        {
+          "description": "新建断点的子菜单入口；本次仅观察到右侧子菜单箭头，尚未展开其内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0120.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0121": {
+      "name": "Enable All Breakpoints",
+      "knowledge": [
+        {
+          "description": "启用所有断点的命令；本次仅确认该命令出现在菜单中。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0121.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0122": {
+      "name": "Disable All Breakpoints",
+      "knowledge": [
+        {
+          "description": "禁用所有断点的命令；本次仅确认该命令出现在菜单中。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0122.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0123": {
+      "name": "Remove All Breakpoints",
+      "knowledge": [
+        {
+          "description": "移除所有断点的命令；本次仅确认该命令出现在菜单中，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0123.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0124": {
+      "name": "Install Additional Debuggers...",
+      "knowledge": [
+        {
+          "description": "安装额外调试器的入口；本次仅确认该命令出现在菜单中，未执行。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0011-0058-9d0ebfc49494/regions/r0010/images/0058/c0124.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0125": {
+      "name": "settings.json 标签",
+      "description": "文本编辑器顶部显示的 settings.json 文件标签。",
+      "knowledge": [
+        {
+          "description": "标识当前打开的 settings.json 文件；标签旁的未保存标记表示当前内容尚未保存。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0012-0062-c50a04b4b93d/regions/r0003/images/0062/c0125.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0126": {
+      "name": "右侧 settings.json 标签",
+      "description": "拆分后右侧编辑组顶部显示的 settings.json 标签。",
+      "knowledge": [
+        {
+          "description": "用于标识右侧编辑组中显示的 settings.json 文件；本次仅观察到该标签及对应内容，未单独操作此标签。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": null,
+      "image": [
+        {
+          "path": "../a0013-0073-e572cba56c2f/regions/r0003/images/0073/c0126.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0127": {
+      "name": "Chrome: Attach",
+      "description": "当前高亮的调试配置模板候选。",
+      "knowledge": [
+        {
+          "description": "选择此候选会在 settings.json 的 launch.configurations 数组中插入一个 Chrome 附加调试配置对象；本次插入的字段和值为 name “Attach to Chrome”、port 9222、request “attach”、type “chrome” 和 webRoot “${workspaceFolder}”。选择前后文件均显示未保存标记，因标记在选择前已存在，无法据此确认此次选择是否新造成未保存状态。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0018-0097-5b7fa4501328/regions/r0011/images/0097/c0127.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0003",
+          "conditions": [
+            "在调试配置模板补全列表中选择“Chrome: Attach”。"
+          ]
+        }
+      ]
+    },
+    "c0128": {
+      "name": "Show Opened Editors",
+      "knowledge": [
+        {
+          "description": "菜单项用于显示已打开的编辑器；本步只确认菜单项可见，未点击验证其打开内容或具体效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/c0128.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0129": {
+      "name": "Close All",
+      "knowledge": [
+        {
+          "description": "菜单项显示快捷键 Ctrl+K W；本步只确认菜单项可见，未执行关闭操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/c0129.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0130": {
+      "name": "Close Saved",
+      "knowledge": [
+        {
+          "description": "菜单项显示快捷键 Ctrl+K U；本步只确认菜单项可见，未执行关闭操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/c0130.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0131": {
+      "name": "Enable Preview Editors",
+      "knowledge": [
+        {
+          "description": "菜单项用于控制 Preview Editors；当前菜单中显示为已勾选。本步未点击，不能据此确认修改或持久生效。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/c0131.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0132": {
+      "name": "Maximize Group",
+      "knowledge": [
+        {
+          "description": "菜单项显示快捷键 Ctrl+K Ctrl+M；本步只确认菜单项可见，未执行以验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/c0132.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0133": {
+      "name": "Lock Group",
+      "knowledge": [
+        {
+          "description": "菜单项用于锁定编辑组；本步只确认菜单项可见，未点击验证具体效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0021-0106-a94b58aecf69/regions/r0014/images/0106/c0133.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0134": {
+      "name": "New Terminal",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的新建终端命令；可从菜单选择，也显示快捷键 Ctrl+Shift+`。本次只确认入口和快捷键可见，尚未验证创建结果。",
+          "constraints": {
+            "快捷键": {
+              "description": "Ctrl+Shift+`。",
+              "name": "快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0134.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0016",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0135": {
+      "name": "Split Terminal",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的分割终端命令；显示快捷键 Ctrl+Shift+5。本次呈禁用外观，尚未验证可用条件或分割结果。",
+          "constraints": {
+            "快捷键": {
+              "description": "Ctrl+Shift+5。",
+              "name": "快捷键"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0135.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0136": {
+      "name": "Run Task...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的运行任务入口。本次确认入口可见，未打开或运行任务。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0136.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0137": {
+      "name": "Run Build Task...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的运行构建任务入口。本次确认入口可见，未打开或运行任务。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0137.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0138": {
+      "name": "Run Active File",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的运行当前活动文件命令。本次确认入口可见，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0138.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0139": {
+      "name": "Run Selected Text",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的运行所选文本命令。本次确认入口可见，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0139.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0140": {
+      "name": "Show Running Tasks...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的查看运行中任务入口；本次呈禁用外观，未打开或验证其内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0140.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0141": {
+      "name": "Restart Running Task...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的重启运行中任务命令；本次呈禁用外观，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0141.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0142": {
+      "name": "Terminate Task...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的终止任务命令；本次呈禁用外观，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0142.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0143": {
+      "name": "Configure Tasks...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的任务配置入口。本次确认入口可见，未打开或修改配置。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0143.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0144": {
+      "name": "Configure Default Build Task...",
+      "knowledge": [
+        {
+          "description": "Terminal 菜单中的默认构建任务配置入口。本次确认入口可见，未打开或修改配置。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0023-0119-bf06d6cf8f3a/regions/r0015/images/0119/c0144.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0145": {
+      "name": "Welcome",
+      "knowledge": [
+        {
+          "description": "点击可打开 Welcome 页面作为编辑器标签。页面包含 Start 操作入口、Walkthroughs 卡片和 Recent 区域；本次观察到 Recent 提示没有最近文件夹。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0145.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0018",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0146": {
+      "name": "Show All Commands",
+      "knowledge": [
+        {
+          "description": "点击可选择 Show All Commands 命令；实际显示内容尚未验证。菜单项标注快捷键 Ctrl+Shift+P。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0146.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0147": {
+      "name": "Documentation",
+      "knowledge": [
+        {
+          "description": "点击可选择 Documentation 命令；实际打开位置和内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0147.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0148": {
+      "name": "Editor Playground",
+      "knowledge": [
+        {
+          "description": "点击可选择 Editor Playground 命令；实际打开内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0148.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0149": {
+      "name": "Show Release Notes",
+      "knowledge": [
+        {
+          "description": "点击可选择 Show Release Notes 命令；实际打开内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0149.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0150": {
+      "name": "Keyboard Shortcuts Reference",
+      "knowledge": [
+        {
+          "description": "点击可选择 Keyboard Shortcuts Reference 命令；实际打开内容尚未验证。菜单项标注快捷键 Ctrl+K Ctrl+R。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0150.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0151": {
+      "name": "Video Tutorials",
+      "knowledge": [
+        {
+          "description": "点击可选择 Video Tutorials 命令；实际打开位置和内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0151.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0152": {
+      "name": "Tips and Tricks",
+      "knowledge": [
+        {
+          "description": "点击可选择 Tips and Tricks 命令；实际打开内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0152.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0153": {
+      "name": "Join Us on YouTube",
+      "knowledge": [
+        {
+          "description": "点击可选择 Join Us on YouTube 命令；实际去向尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0153.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0154": {
+      "name": "Search Feature Requests",
+      "knowledge": [
+        {
+          "description": "点击可选择 Search Feature Requests 命令；实际去向尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0154.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0155": {
+      "name": "Report Issue",
+      "knowledge": [
+        {
+          "description": "点击可选择 Report Issue 命令；实际去向和提交方式尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0155.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0156": {
+      "name": "View License",
+      "knowledge": [
+        {
+          "description": "点击可选择 View License 命令；实际显示内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0156.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0157": {
+      "name": "Privacy Statement",
+      "knowledge": [
+        {
+          "description": "点击可选择 Privacy Statement 命令；实际去向尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0157.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0158": {
+      "name": "Toggle Developer Tools",
+      "knowledge": [
+        {
+          "description": "点击可选择 Toggle Developer Tools 命令；开发工具的打开或关闭状态及其界面尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0158.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0159": {
+      "name": "Open Process Explorer",
+      "knowledge": [
+        {
+          "description": "点击可选择 Open Process Explorer 命令；实际打开内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0159.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0160": {
+      "name": "Check for Updates...",
+      "knowledge": [
+        {
+          "description": "点击可选择 Check for Updates... 命令；实际检查过程和结果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0160.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0161": {
+      "name": "About",
+      "knowledge": [
+        {
+          "description": "点击可选择 About 命令；实际显示内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0133-af6046b9e74f/regions/r0017/images/0133/c0161.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0162": {
+      "name": "New File...",
+      "knowledge": [
+        {
+          "description": "点击后打开「New File...」快速选择器，提供文件名输入或文件类型选项，作为新建文件流程的起点；打开选择器本身不表示文件已创建。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0162.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0019",
+          "conditions": [
+            "在 Welcome 页面点击 New File..."
+          ]
+        }
+      ],
+      "description": ""
+    },
+    "c0163": {
+      "name": "Open File...",
+      "knowledge": [
+        {
+          "description": "Welcome 页 Start 区域中的打开文件入口；本次未点击，具体打开流程未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0163.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0164": {
+      "name": "Open Folder...",
+      "knowledge": [
+        {
+          "description": "Welcome 页 Start 区域中的打开文件夹入口；本次未点击，具体打开流程未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0164.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0165": {
+      "name": "Clone Git Repository...",
+      "knowledge": [
+        {
+          "description": "Welcome 页 Start 区域中的克隆 Git 仓库入口；本次未点击，具体流程未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0165.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0166": {
+      "name": "Connect to...",
+      "knowledge": [
+        {
+          "description": "Welcome 页 Start 区域中的连接入口；本次未点击，具体用途和流程未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0166.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0167": {
+      "name": "Get Started with V...",
+      "description": "Walkthroughs 区域中的卡片，标题在当前显示中被截断。",
+      "knowledge": [
+        {
+          "description": "Welcome 页 Walkthroughs 区域中的入门卡片；本次未点击，卡片打开的内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0167.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0168": {
+      "name": "Learn the Fundam...",
+      "description": "Walkthroughs 区域中的卡片，标题在当前显示中被截断。",
+      "knowledge": [
+        {
+          "description": "Welcome 页 Walkthroughs 区域中的基础学习卡片；本次未点击，卡片打开的内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0168.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0169": {
+      "name": "Show welcome page on startup",
+      "knowledge": [
+        {
+          "description": "Welcome 页面底部的复选框，用于控制启动时是否显示欢迎页；本次可见为已勾选，未操作，未验证该状态是否持久生效。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0026-0137-0e61c9a73557/regions/r0018/images/0137/c0169.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0170": {
+      "name": "文件名或类型输入框",
+      "description": "New File... 选择器顶部的输入框。",
+      "knowledge": [
+        {
+          "description": "可在此输入文件名，或按提示选择文件类型。当前没有输入内容。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0027-0143-5e5558f8d229/regions/r0019/images/0143/c0170.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0171": {
+      "name": "Text File",
+      "description": "标注为 Built-in 的文件类型选项；当前显示为高亮。",
+      "knowledge": [
+        {
+          "description": "此 Built-in 文件类型选项位于 New File... 快速选择器中。选择它会关闭快速选择器，并打开名为「Untitled-1」的空白文本编辑器标签；编辑区提示可选择语言、填充模板或打开其他编辑器。本次未保存文档，磁盘文件路径及持久化状态未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0027-0143-5e5558f8d229/regions/r0019/images/0143/c0171.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0003",
+          "conditions": [
+            "在 New File... 快速选择器中选择 Text File。"
+          ]
+        }
+      ]
+    },
+    "c0172": {
+      "name": "Jupyter Notebook",
+      "description": "标注为 .ipynb Support 的文件类型选项。",
+      "knowledge": [
+        {
+          "description": "可作为新建文件时的文件类型选项；本次未选择它，后续创建结果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0027-0143-5e5558f8d229/regions/r0019/images/0143/c0172.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0173": {
+      "name": "Untitled-1 标签",
+      "description": "当前选中的新建未命名文本文档标签。",
+      "knowledge": [
+        {
+          "description": "标识并显示当前的 Untitled-1 文档；本次可见其对应的空白文本编辑区。未执行保存，文件路径及磁盘持久化状态未确认。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0028-0150-7e863d028edb/regions/r0003/images/0150/c0173.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0174": {
+      "name": ".config 目录项",
+      "description": "目录列表中高亮的 .config 项，左侧可见展开箭头。",
+      "knowledge": [
+        {
+          "description": "在路径目录列表中显示 .config 目录项及展开箭头。点击其左侧展开箭头会在列表内展开并显示子目录；点击已展开的 .config 名称区域会将其折叠并显示同级目录。上述操作均未改变 settings.json 的路径面包屑或编辑器内容，未观察到导航。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0029-0154-06d608ad6781/regions/r0020/images/0154/c0174.png",
+          "conditions": [
+            "目录项处于折叠状态，左侧箭头朝右；未显示其子目录。"
+          ]
+        },
+        {
+          "path": "../a0030-0160-442710656b99/regions/r0020/images/0160/c0174.png",
+          "conditions": [
+            "目录项处于展开状态，左侧箭头朝下；下方显示了多个子目录。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0020",
+          "control": "c0175",
+          "conditions": [
+            "在路径面包屑目录列表中点击 .config 项的展开箭头"
+          ]
+        }
+      ]
+    },
+    "c0175": {
+      "name": "autostart 目录项",
+      "description": "展开的 .config 目录下可见的子目录项，带有自己的展开箭头。",
+      "knowledge": [
+        {
+          "description": "作为 .config 的子目录项显示在路径目录列表中。点击该目录项的展开箭头可在列表中展开它，并显示其子项；本次显示了 update-notifier.desktop，路径面包屑未变化，未发生导航。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0030-0160-442710656b99/regions/r0020/images/0160/c0175.png",
+          "conditions": [
+            "位于已展开的 .config 目录下，autostart 目录项处于折叠状态，左侧箭头朝右，未显示子项。"
+          ]
+        },
+        {
+          "path": "../a0033-0169-14c0f32e31b7/regions/r0020/images/0169/c0175.png",
+          "conditions": [
+            "同一 autostart 目录项处于展开状态，左侧箭头朝下，下方显示 update-notifier.desktop。"
+          ]
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0020",
+          "control": "c0176",
+          "conditions": [
+            "在路径面包屑目录列表中点击 autostart 目录项的展开箭头"
+          ]
+        }
+      ]
+    },
+    "c0176": {
+      "name": "update-notifier.desktop",
+      "description": "autostart 目录项展开后显示的子项。",
+      "knowledge": [
+        {
+          "description": "在路径面包屑目录列表中作为 autostart 的子项显示；点击该文件项会在文本编辑器中打开并选中对应文件，显示其内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0033-0169-14c0f32e31b7/regions/r0020/images/0169/c0176.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0003",
+          "conditions": [
+            "在路径面包屑目录列表中点击 update-notifier.desktop 文件项。"
+          ]
+        }
+      ]
+    }
+  },
+  "next_ids": {
+    "region": 21,
+    "control": 177,
+    "knowledge": 14
+  }
+}

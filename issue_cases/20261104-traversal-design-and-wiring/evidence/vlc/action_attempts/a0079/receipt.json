@@ -1,0 +1,23 @@
+{
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "semantic_result": "unverified",
+  "executed_steps": [
+    {
+      "action": "click",
+      "x": 420,
+      "y": 540
+    },
+    {
+      "action": "select_all",
+      "method": "CTRL+A"
+    },
+    {
+      "action": "input_text",
+      "text": "0.000"
+    }
+  ],
+  "text_delivered": true,
+  "input_mode": "replace"
+}

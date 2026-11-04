@@ -1,0 +1,35 @@
+{
+  "待补齐对象": [
+    {
+      "path": "Load URL 条目前勾选框",
+      "name": "Load URL 条目前勾选框",
+      "description": "Standard 的 Assigned Commands 列表中，Load URL 条目前的独立勾选框。",
+      "list_group": "Assigned Commands 条目勾选框",
+      "knowledge": [
+        {
+          "description": "用于切换 Load URL 条目前的勾选状态；本次仅观察到其未勾选，尚未操作，勾选框的用途和切换后的可见效果未知。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "region_index": 1
+    }
+  ],
+  "所属区块": [
+    {
+      "ref": "Customize 对话框",
+      "identity": "same",
+      "state_description": "Customize 对话框位于前景，Toolbars 标签选中。"
+    },
+    {
+      "ref": "Toolbars 自定义配置区",
+      "identity": "same",
+      "state_description": "Scope 显示 LibreOffice Writer，Target 显示 Standard；Target 候选列表收起，Assigned Commands 列表可见。"
+    }
+  ],
+  "平台": "OSWorld Linux桌面"
+}
+
+本图：原动作后图；仅补齐本批对象外观，不判断动作效果；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

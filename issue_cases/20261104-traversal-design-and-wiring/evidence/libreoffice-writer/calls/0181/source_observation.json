@@ -1,0 +1,9 @@
+{
+  "id": "discovery:0177",
+  "region_refs": [
+    "r0013",
+    "r0014"
+  ],
+  "snapshot": "knowledge_snapshots/target-registered-0177-fb6cc992b068",
+  "selection_call": "0179"
+}

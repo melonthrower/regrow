@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "properties": {
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "enum": [
+              "/controls/2"
+            ]
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "top": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "right": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bottom": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "bbox"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 1
+    }
+  },
+  "required": [
+    "objects"
+  ],
+  "additionalProperties": false
+}

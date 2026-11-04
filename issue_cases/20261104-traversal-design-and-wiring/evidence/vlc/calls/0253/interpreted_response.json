@@ -1,0 +1,10 @@
+{
+  "action": "input_text",
+  "target": "c0119",
+  "reason": "将当前显示的 0.000 fps 恢复为探索前的 1.000 fps；恢复后仍需另行确认可接受范围及增减步进值。",
+  "x": 414,
+  "y": 541,
+  "text": "1.000",
+  "exception": "none",
+  "recovery_handoff": ""
+}

@@ -1,0 +1,543 @@
+{
+  "r0001/功能探索": {
+    "control": "c0001",
+    "task_type": "function",
+    "completion_condition": "打开 File 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/946b4433968c414ca756f055f134ac75/episode.json",
+      "attempt": "a0001",
+      "failed_call": "0011",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-946b4433968c414ca756f055f134ac75"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0002 / 功能探索": {
+    "control": "c0002",
+    "task_type": "function",
+    "completion_condition": "打开 Edit 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/9c26f7ef30d34cd5af63ad3de293194b/episode.json",
+      "attempt": "a0003",
+      "failed_call": "0020",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-9c26f7ef30d34cd5af63ad3de293194b"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0003 / 功能探索": {
+    "control": "c0003",
+    "task_type": "function",
+    "completion_condition": "打开 Selection 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/46bc6bdb52a24563bd83d98b50f46582/episode.json",
+      "attempt": "a0005",
+      "failed_call": "0029",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-46bc6bdb52a24563bd83d98b50f46582"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0004 / 功能探索": {
+    "control": "c0004",
+    "task_type": "function",
+    "completion_condition": "打开 View 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/6354031c0d65458c8a1b0856227d3f73/episode.json",
+      "attempt": "a0007",
+      "failed_call": "0037",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-6354031c0d65458c8a1b0856227d3f73"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0005 / 功能探索": {
+    "control": "c0005",
+    "task_type": "function",
+    "completion_condition": "打开 Go 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/8498b83ca1aa4c44b21ec74301f23fd4/episode.json",
+      "attempt": "a0009",
+      "failed_call": "0048",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-8498b83ca1aa4c44b21ec74301f23fd4"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0001/c0006 / 功能探索": {
+    "control": "c0006",
+    "task_type": "function",
+    "completion_condition": "打开 Run 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0007 / 功能探索": {
+    "control": "c0007",
+    "task_type": "function",
+    "completion_condition": "打开 Terminal 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0001/c0008 / 功能探索": {
+    "control": "c0008",
+    "task_type": "function",
+    "completion_condition": "打开 Help 菜单并观察其可见命令，确认该菜单提供的功能入口。",
+    "name": "功能探索",
+    "status": "blocked",
+    "deferral": {
+      "episode": "repair_episodes/d01c34f06c604eafba86b4d5be59248c/episode.json",
+      "attempt": "a0025",
+      "failed_call": "0131",
+      "reason": "纠错次数已用完；保留原任务和未解决记录",
+      "status": "unresolved",
+      "archive": "suspended_steps/result-d01c34f06c604eafba86b4d5be59248c"
+    },
+    "blocker": {
+      "condition": "result_registration_pending"
+    }
+  },
+  "r0010/功能探索": {
+    "control": "c0114",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察到它提供的目标内容；记录由此可确认的用途与跳转关系。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0010/c0113 / 功能探索": {
+    "control": "c0113",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用；在可用时打开并观察其目标内容。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0120 / 功能探索": {
+    "control": "c0120",
+    "task_type": "function",
+    "completion_condition": "展开子菜单并看清其中的入口，记录各入口可确认的用途。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0119 / 功能探索": {
+    "control": "c0119",
+    "task_type": "function",
+    "completion_condition": "确认该命令作用于什么对象、怎样触发，以及界面上能观察到的切换结果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0121 / 功能探索": {
+    "control": "c0121",
+    "task_type": "function",
+    "completion_condition": "确认该命令对断点产生的作用，并观察可见结果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0122 / 功能探索": {
+    "control": "c0122",
+    "task_type": "function",
+    "completion_condition": "确认该命令对断点产生的作用，并观察可见结果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0123 / 功能探索": {
+    "control": "c0123",
+    "task_type": "function",
+    "completion_condition": "确认该命令对断点产生的作用，并观察可见结果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0111 / 功能探索": {
+    "control": "c0111",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用，以及在调试会话中触发后可观察到的结果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0112 / 功能探索": {
+    "control": "c0112",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用，以及在调试会话中触发后可观察到的结果。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0115 / 功能探索": {
+    "control": "c0115",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用，以及触发后调试执行位置的可观察变化。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0116 / 功能探索": {
+    "control": "c0116",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用，以及触发后调试执行位置的可观察变化。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0117 / 功能探索": {
+    "control": "c0117",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用，以及触发后调试执行位置的可观察变化。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0010/c0118 / 功能探索": {
+    "control": "c0118",
+    "task_type": "function",
+    "completion_condition": "确认该命令何时可用，以及触发后调试会话的可观察变化。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0003/功能探索": {
+    "control": "c0019",
+    "task_type": "function",
+    "function_refs": [
+      "r0003/编辑已打开的文本文件"
+    ],
+    "completion_condition": "在 settings.json 的 launch.configurations 数组中选择一个可见模板，确认编辑区插入了什么配置内容，以及插入后文件是否显示未保存状态；如需保存，使用正常保存操作并观察保存状态。无需验证该配置能否实际启动调试。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0003/c0020 / 功能探索": {
+    "control": "c0020",
+    "task_type": "function",
+    "completion_condition": "点击拆分编辑器入口，观察拆分后的布局以及文件在各编辑组中的呈现方式。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0003/c0021 / 功能探索": {
+    "control": "c0021",
+    "task_type": "function",
+    "completion_condition": "打开编辑器更多操作菜单，确认菜单中可见的操作项目。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0003/c0018 / 功能探索": {
+    "control": "c0018",
+    "task_type": "function",
+    "completion_condition": "操作一个路径面包屑段，确认它是否可交互，以及出现的导航或其他结果。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0003/c0017 / 功能探索": {
+    "control": "c0017",
+    "task_type": "function",
+    "completion_condition": "在 meeting_notes.txt 有未保存修改时点击关闭按钮，确认是否出现提示或其他阻止关闭的结果；若出现提示，观察到提示即结束，不继续探索其确认或取消选项。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0012/区块内容探索": {
+    "control": null,
+    "task_type": "region_content",
+    "reason": "当前画面中左右两侧编辑组都显示 settings.json，存在需要确认的跨编辑组内容同步问题。",
+    "completion_condition": "通过在一侧编辑 settings.json 并观察另一侧，确认另一侧是否同步反映该修改。",
+    "name": "区块内容探索",
+    "status": "done",
+    "navigation_observation": "update:0073"
+  },
+  "r0015/功能探索": {
+    "control": "c0134",
+    "task_type": "function",
+    "completion_condition": "在当前实验环境中调用该命令后，观察到新终端是否创建及其显示位置，足以确认命令的直接效果。",
+    "function_refs": [
+      "r0015/创建终端"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0015/c0135 / 功能探索": {
+    "control": "c0135",
+    "task_type": "function",
+    "completion_condition": "先有一个可用于实验的终端，再观察该命令是否可用及调用后终端如何分割；确认其直接效果和必要条件。",
+    "function_refs": [
+      "r0015/分割终端"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0136 / 功能探索": {
+    "control": "c0136",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察出现的目标内容或提示，确认此入口如何进入任务运行流程；不要求运行任一任务。",
+    "function_refs": [
+      "r0015/运行任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0137 / 功能探索": {
+    "control": "c0137",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察出现的目标内容或提示，确认此入口如何进入构建任务运行流程；不要求运行任一任务。",
+    "function_refs": [
+      "r0015/运行构建任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0138 / 功能探索": {
+    "control": "c0138",
+    "task_type": "function",
+    "completion_condition": "使用本地无害实验文件观察该命令的直接效果或必要条件，确认何种活动文件可用于该操作。",
+    "function_refs": [
+      "r0015/运行活动文件"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0139 / 功能探索": {
+    "control": "c0139",
+    "task_type": "function",
+    "completion_condition": "使用本地无害实验文本观察该命令的直接效果或必要条件，确认选中文本如何用于该操作。",
+    "function_refs": [
+      "r0015/运行所选文本"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0140 / 功能探索": {
+    "control": "c0140",
+    "task_type": "function",
+    "completion_condition": "在实验环境中具备运行中任务后，打开该入口并观察其目标内容，确认它如何显示运行中任务。",
+    "function_refs": [
+      "r0015/查看运行中任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0141 / 功能探索": {
+    "control": "c0141",
+    "task_type": "function",
+    "completion_condition": "在实验环境中具备可安全重启的运行中任务后，观察该命令的可用条件及其直接结果。",
+    "function_refs": [
+      "r0015/重启运行中任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0142 / 功能探索": {
+    "control": "c0142",
+    "task_type": "function",
+    "completion_condition": "在实验环境中具备可安全终止的实验任务后，观察该命令的可用条件及任务终止结果。",
+    "function_refs": [
+      "r0015/终止任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0143 / 功能探索": {
+    "control": "c0143",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察目标配置内容，确认任务配置从何处开始；不要求继续编辑或保存配置。",
+    "function_refs": [
+      "r0015/配置任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0015/c0144 / 功能探索": {
+    "control": "c0144",
+    "task_type": "function",
+    "completion_condition": "打开该入口并观察目标内容或选择提示，确认默认构建任务配置从何处开始；不要求完成配置。",
+    "function_refs": [
+      "r0015/配置默认构建任务"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0017/功能探索": {
+    "control": "c0145",
+    "task_type": "function",
+    "completion_condition": "执行 Help 菜单中的 Welcome 命令，观察其打开的内容；确认目标内容后即可结束。",
+    "reason": "目前只知道可以选择该命令，尚未确认它打开的内容。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0017/c0146 / 功能探索": {
+    "control": "c0146",
+    "task_type": "function",
+    "completion_condition": "执行 Show All Commands，观察其打开的界面；确认显示内容后即可结束。",
+    "reason": "菜单标注了快捷键，但命令实际显示的界面尚未确认。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0017/c0148 / 功能探索": {
+    "control": "c0148",
+    "task_type": "function",
+    "completion_condition": "执行 Editor Playground，观察其打开的内容；确认目标内容后即可结束。",
+    "reason": "尚未确认该命令打开的内容。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0017/c0156 / 功能探索": {
+    "control": "c0156",
+    "task_type": "function",
+    "completion_condition": "执行 View License，观察应用内显示或打开的内容；确认目标内容后即可结束。",
+    "reason": "尚未确认该命令显示的许可内容及其打开方式。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0017/c0158 / 功能探索": {
+    "control": "c0158",
+    "task_type": "function",
+    "completion_condition": "执行 Toggle Developer Tools，观察开发工具界面是否打开或关闭；确认其直接效果后即可结束。",
+    "reason": "命令名称提示其会切换开发工具，但实际界面和直接效果尚未确认。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0017/c0159 / 功能探索": {
+    "control": "c0159",
+    "task_type": "function",
+    "completion_condition": "执行 Open Process Explorer，观察其打开的内容；确认目标界面后即可结束。",
+    "reason": "尚未确认该命令打开的进程查看界面及内容。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0017/c0161 / 功能探索": {
+    "control": "c0161",
+    "task_type": "function",
+    "completion_condition": "执行 About，观察其显示的关于信息；确认内容后即可结束。",
+    "reason": "尚未确认该命令实际显示的信息。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0018/功能探索": {
+    "control": "c0162",
+    "task_type": "function",
+    "completion_condition": "点击入口并观察其打开的目标内容或创建界面，以确认新建文件流程的起点。",
+    "function_refs": [
+      "r0018/创建新文件"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0018/c0163 / 功能探索": {
+    "control": "c0163",
+    "task_type": "function",
+    "completion_condition": "点击入口并观察打开的目标内容或文件选择界面，以确认打开文件流程的起点。",
+    "function_refs": [
+      "r0018/打开文件"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0018/c0164 / 功能探索": {
+    "control": "c0164",
+    "task_type": "function",
+    "completion_condition": "点击入口并观察打开的目标内容或文件夹选择界面，以确认打开文件夹流程的起点。",
+    "function_refs": [
+      "r0018/打开文件夹"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0018/c0165 / 功能探索": {
+    "control": "c0165",
+    "task_type": "function",
+    "completion_condition": "点击入口并观察其打开的目标内容或克隆流程界面，以确认入口的直接用途。",
+    "function_refs": [
+      "r0018/克隆 Git 仓库"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0018/c0166 / 功能探索": {
+    "control": "c0166",
+    "task_type": "function",
+    "completion_condition": "点击入口并观察其打开的目标内容，以确认连接入口直接呈现的用途或选项。",
+    "function_refs": [
+      "r0018/启动连接流程"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0018/c0167 / 功能探索": {
+    "control": "c0167",
+    "task_type": "function",
+    "completion_condition": "点击卡片并观察打开的目标内容，以确认该入门卡片的内容。",
+    "function_refs": [
+      "r0018/打开 VS Code 入门内容"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0018/c0168 / 功能探索": {
+    "control": "c0168",
+    "task_type": "function",
+    "completion_condition": "点击卡片并观察打开的目标内容，以确认该基础学习卡片的内容。",
+    "function_refs": [
+      "r0018/打开基础学习内容"
+    ],
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0019/功能探索": {
+    "control": "c0171",
+    "task_type": "function",
+    "function_refs": [
+      "r0019/按名称或类型启动新建文件"
+    ],
+    "completion_condition": "选择 Text File 后，确认它直接打开的内容或下一界面，并记录当时可见的文件名或创建状态；不继续探索目标界面的内部控件。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0019/c0172 / 功能探索": {
+    "control": "c0172",
+    "task_type": "function",
+    "function_refs": [
+      "r0019/按名称或类型启动新建文件"
+    ],
+    "completion_condition": "选择 Jupyter Notebook 后，确认它直接打开的内容或下一界面，并记录当时可见的文件名或创建状态；不继续探索目标界面的内部控件。",
+    "name": "功能探索",
+    "status": "pending"
+  },
+  "r0020/功能探索": {
+    "control": "c0174",
+    "task_type": "function",
+    "completion_condition": "分别操作 .config 名称区域和展开箭头，观察并确认各自是否导航到该目录、展开子目录或产生其他可见结果。",
+    "reason": "现有材料只确认该目录项及其展开箭头存在；当前列表中该项处于选中状态，但尚无证据说明这两种操作的结果。",
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0020/c0175 / 功能探索": {
+    "control": "c0175",
+    "task_type": "function",
+    "completion_condition": "操作 autostart 目录项后，确认列表或路径面包屑是否变化，以及是否导航到该目录。",
+    "function_refs": [
+      "r0020/展开目录查看内容"
+    ],
+    "name": "功能探索",
+    "status": "done"
+  },
+  "r0020/c0176 / 功能探索": {
+    "control": "c0176",
+    "task_type": "function",
+    "completion_condition": "点击 update-notifier.desktop 后，确认其直接效果及是否打开目标内容；观察到打开的内容即可结束，不继续探索其中的内部控件。",
+    "name": "功能探索",
+    "status": "done"
+  }
+}

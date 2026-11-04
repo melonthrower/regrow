@@ -1,0 +1,90 @@
+{
+  "action_result": {
+    "exception": "none",
+    "description": "点击 autostart 目录项后，该项左侧箭头由向右变为向下，并在其下方显示子项 update-notifier.desktop；.config 仍处于展开状态。路径面包屑仍显示原路径，未观察到导航；编辑器内容也未见变化。",
+    "recovery_handoff": "",
+    "returns_to_previous": false
+  },
+  "foreground": {
+    "description": "VS Code 的路径面包屑目录列表仍在前景；autostart 目录项已展开并显示 update-notifier.desktop。"
+  },
+  "regions": [
+    {
+      "ref": "r0020",
+      "identity": "same",
+      "state_description": "autostart 目录项处于展开状态，显示子项 update-notifier.desktop；路径面包屑未见变化。"
+    }
+  ],
+  "jump_to": [
+    {
+      "conditions": [
+        "在路径面包屑目录列表中点击 autostart 目录项的展开箭头"
+      ],
+      "region_index": 0,
+      "control_index": 1
+    }
+  ],
+  "function_updates": [
+    {
+      "region": "r0020",
+      "update": [
+        {
+          "ref": "r0020/展开目录查看子目录",
+          "changes": {
+            "name": "展开目录查看内容",
+            "description": "点击路径面包屑目录列表中目录项的展开箭头，可在列表内显示该目录的子项；子项可能是目录或文件。已观察到 .config 展开后显示子目录，autostart 展开后显示文件；这些操作未导致路径导航。",
+            "supports": [
+              "c0174",
+              "c0175"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "task_update": [
+    {
+      "task": "r0020/c0175 / 功能探索",
+      "decision": "answered",
+      "reason": "点击后 autostart 在列表内展开并显示 update-notifier.desktop；路径面包屑未变化，未观察到导航，已满足原探索的结算条件。",
+      "next_action": null
+    }
+  ],
+  "uncertainties": [
+    "update-notifier.desktop 子项的点击效果及是否会打开内容尚未探索。"
+  ],
+  "controls": [
+    {
+      "ref": "c0175",
+      "knowledge": [
+        {
+          "index": 0,
+          "description": "作为 .config 的子目录项显示在路径目录列表中。点击该目录项的展开箭头可在列表中展开它，并显示其子项；本次显示了 update-notifier.desktop，路径面包屑未变化，未发生导航。"
+        }
+      ],
+      "add_image": true,
+      "image_conditions": [
+        "autostart 目录项处于展开状态，左侧箭头朝下，下方显示 update-notifier.desktop"
+      ],
+      "needs_exploration": false,
+      "region_index": 0
+    },
+    {
+      "name": "update-notifier.desktop",
+      "description": "autostart 目录项展开后显示的子项。",
+      "knowledge": [
+        {
+          "description": "在路径面包屑目录列表中作为 autostart 的子项显示。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "region_index": 0
+    }
+  ],
+  "current_regions": [
+    {
+      "region_index": 0
+    }
+  ]
+}

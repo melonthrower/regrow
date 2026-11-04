@@ -1,0 +1,691 @@
+{
+  "errors": [
+    {
+      "code": "schema",
+      "path": "/",
+      "object": "reply",
+      "actual": {
+        "exception": "none",
+        "recovery_handoff": "",
+        "target": "Target 下拉框",
+        "reason": "展开工具栏目标候选项，查看除 Standard 外是否还有可选择的工具栏，以满足本任务结算条件。",
+        "x": 969,
+        "y": 224
+      },
+      "expected": "{'exception': 'none', 'recovery_handoff': '', 'target': 'Target 下拉框', 'reason': '展开工具栏目标候选项，查看除 Standard 外是否还有可选择的工具栏，以满足本任务结算条件。', 'x': 969, 'y': 224} is not valid under any of the given schemas",
+      "validator": "anyOf",
+      "requirement": [
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "click"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "double_click"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "long_press"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "text": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "text",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "scroll"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "end_x",
+            "end_y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "back"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "wait"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "key_press"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "text",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "hotkey"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "text",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "hover"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "right_click"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "drag"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target",
+            "action",
+            "reason",
+            "x",
+            "y",
+            "end_x",
+            "end_y",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "retry_when": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            },
+            "controls": {
+              "$ref": "#/$defs/shared_1"
+            },
+            "regions": {
+              "$ref": "#/$defs/shared_8"
+            },
+            "function_updates": {
+              "$ref": "#/$defs/shared_13"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "complete"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "description": "按需补充判断理由；不重复动作结果或已有知识。"
+            },
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            },
+            "controls": {
+              "$ref": "#/$defs/shared_1"
+            },
+            "regions": {
+              "$ref": "#/$defs/shared_8"
+            },
+            "function_updates": {
+              "$ref": "#/$defs/shared_13"
+            }
+          },
+          "required": [
+            "action",
+            "reason",
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "exception": {
+              "type": "string",
+              "enum": [
+                "none"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "exception": {
+              "type": "string",
+              "enum": [
+                "blocking_popup",
+                "system_error",
+                "unexpected_exit",
+                "external_app",
+                "unclassified"
+              ]
+            },
+            "recovery_handoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "exception",
+            "recovery_handoff"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  ],
+  "unchecked": [
+    "格式尚未通过，业务语义检查尚未执行。"
+  ]
+}

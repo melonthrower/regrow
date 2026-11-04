@@ -1,0 +1,35 @@
+--- public-base/src/regrow/recognition/named_references.py
++++ frozen-runtime/src/regrow/recognition/named_references.py
+@@ -72,7 +72,31 @@
+     # both unresolved; never silently map a shared label to the last object.
+     counts = Counter(names.values())
+     names = {ref:name for ref,name in names.items() if counts[name] == 1}
+-    return names, {cid:rids[0] for cid,rids in owners.items() if len(rids)==1}
++    return names, _display_owners(run, request, owners)
++
++
++def _display_owners(run, request, memberships):
++    """Choose a call-local display location, never a control's stored owner."""
++    from pathlib import Path
++    from regrow.records.snapshots import read
++    owners = {cid:rids[0] for cid,rids in memberships.items() if len(rids)==1}
++    source = (request.get('original_request', {}).get('source')
++              or request.get('source', {}))
++    attempt = source.get('attempt')
++    if not attempt:
++        return owners
++    cid, rid = source.get('control_ref'), source.get('region')
++    path = Path(run) / 'action_attempts' / attempt / 'binding.json'
++    if path.exists():
++        binding = read(path)
++        bound_cid, bound_rid = binding.get('control_ref'), binding.get('region_ref')
++        if ((cid and bound_cid and cid != bound_cid)
++                or (rid and bound_rid and rid != bound_rid)):
++            return owners
++        cid, rid = cid or bound_cid, rid or bound_rid
++    if rid in memberships.get(cid, []):
++        owners[cid] = rid
++    return owners
+ 
+ 
+ def _drop(schema, keys):

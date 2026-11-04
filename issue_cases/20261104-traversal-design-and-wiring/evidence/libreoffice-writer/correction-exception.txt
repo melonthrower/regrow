@@ -1,0 +1,43 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/__main__.py", line 18, in <module>
+    runpy.run_module(ENTRIES[command], run_name='__main__')
+  File "<frozen runpy>", line 229, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/run_progress_session.py", line 117, in <module>
+    run_session(SOURCE_ROOT, a.run, a.output, a.mode)
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/run_progress_session.py", line 47, in run_session
+    step(root, run, folder, limits=allowance)
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/runtime/progress.py", line 105, in wrapped
+    return fn(root, run, out, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/run_task_step.py", line 248, in run_step
+    _run_step(root, run, out, review_update=review_update, limits=limits)
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/run_task_step.py", line 126, in _run_step
+    result = updater.resume(work)
+             ^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/result_updater.py", line 299, in resume
+    result = self.repair.perform('update')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/step_repair.py", line 663, in perform
+    (ref, reply) = self.call(q)
+                   ^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/traversal/run_task_step.py", line 94, in call
+    (ref, reply) = transport.call(q)
+                   ^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/runtime/model_transport.py", line 174, in call
+    return call(self, request)
+           ^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/runtime/reply_correction.py", line 73, in call
+    prepared = prepare_request(transport.root, transport.run, incoming, getattr(transport, 'platform', 'android'))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/runtime/model_transport.py", line 111, in prepare_request
+    return render(prepare(run, request))
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/recognition/named_references.py", line 259, in prepare
+    shown = encode_objects(feedback['reply'], names, owners, current=contract['current'])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/source/regrow/recognition/named_references.py", line 195, in encode_objects
+    raise ValueError('无法确定知识修订控件的所属区块：'+str(c.get('ref')))
+ValueError: 无法确定知识修订控件的所属区块：c0132

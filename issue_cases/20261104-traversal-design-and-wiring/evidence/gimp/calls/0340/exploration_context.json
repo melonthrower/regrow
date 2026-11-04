@@ -1,0 +1,11 @@
+{
+  "region_id": "r0013",
+  "region": "裁剪约束模式候选列表",
+  "control_id": null,
+  "control": "区块发现",
+  "task": null,
+  "task_region": "r0013",
+  "category": "discovery",
+  "stage": "discovery",
+  "session": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/session-06"
+}

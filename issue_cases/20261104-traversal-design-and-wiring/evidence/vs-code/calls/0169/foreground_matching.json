@@ -1,0 +1,26 @@
+{
+  "identified_regions": [],
+  "template_rejections": [],
+  "source_call": "0169",
+  "frame_sha256": "9cd2f9030085bfbdf84a5425dd48e027bce7e4530d1a22bdc9df4aff1e5e5d97",
+  "scope": {},
+  "ranking": [
+    {
+      "region": "r0020",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 2,
+      "total_controls": 2,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

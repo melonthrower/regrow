@@ -1,0 +1,580 @@
+## 背景
+范围：Synchronization 页面内容区
+任务引用：Synchronization 页面内容区/Subtitle speed 数值框 / 参数探索
+探索内容：查看后续任务可指定的候选项，或弄清完成操作所必需但尚未知的填写方式与条件。
+本任务结算条件：确认字幕速度数值框可接受的范围和增减步进值，并恢复探索前的值。
+
+## 本步问题
+刚才的实际操作改变了什么？这些观察回答了原探索问题的哪一部分？
+
+## 问题 1：刚才实际做了什么，页面发生了什么变化？
+
+### 实际来源区块
+Synchronization 页面内容区
+
+### 实际入口
+Subtitle speed 数值框
+
+### 实际动作
+1：
+  操作：click
+  x：420
+  y：540
+2：
+  操作：select_all
+  method：CTRL+A
+3：
+  操作：input_text
+  输入文本：0.000
+
+### 动作意图
+操作：input_text
+target：Subtitle speed 数值框
+x：420
+y：540
+输入文本：0.000
+理由：当前数值框显示 1.000 fps，且输入文本已选中。先观察输入 0.000 后控件显示的值，为判断可接受范围提供边界证据；后续需继续验证并恢复为探索前的 1.000 fps。
+
+### 回执
+exit_code：0
+semantic_result：unverified
+text_delivered：true
+input_mode：replace
+
+### 动作后前台应用证据
+目标应用：desktop.vlc
+与目标应用一致：true
+control_transport_available：true
+
+### 目标应用
+本次要探索的应用：vlc
+
+判断当前前景中正在探索的内容，是否属于这个应用。
+如果不属于，exception 填 external_app，
+简要说明现在到了什么界面，不再探索其中的功能。
+
+正例：前景已经是另一应用的页面，应报告 external_app。
+反例：当前应用展开了自己的菜单或对话框，仍属于该应用。
+
+### 登记页面组成与访问来路
+控件树（已登记内容与已观察的访问关系）
+下级区块表示操作可到达的目标；条件标在相应去向旁。
+VLC 菜单栏 [VLC 菜单栏]
+  ├─ Media 菜单 [Media 菜单]
+    └─ Media 菜单展开面板 [Media 菜单展开面板]
+      ├─ Open File 菜单项 [Open File 菜单项]
+        └─ VLC 文件选择对话框 [VLC 文件选择对话框]
+          ├─ 当前位置选择框 [当前位置选择框]
+          ├─ 位置侧栏 [位置侧栏]
+          ├─ 文件列表 [文件列表]
+          ├─ 文件名输入框 [文件名输入框]
+          ├─ 文件类型筛选框 [文件类型筛选框]
+          ├─ Open 按钮 [Open 按钮]
+            └─ VLC 视频显示区 [VLC 视频显示区（主窗口中用于显示媒体画面或播放器空闲画面的区域。）]
+          ├─ Cancel 按钮 [Cancel 按钮]
+          ├─ 对话框关闭按钮 [对话框关闭按钮]
+      ├─ Open Multiple Files 菜单项 [Open Multiple Files 菜单项]
+      ├─ Open Directory 菜单项 [Open Directory 菜单项]
+      ├─ Open Disc 菜单项 [Open Disc 菜单项]
+      ├─ Open Network Stream 菜单项 [Open Network Stream 菜单项]
+      ├─ Open Capture Device 菜单项 [Open Capture Device 菜单项]
+      ├─ Open Location from Clipboard 菜单项 [Open Location from Clipboard 菜单项]
+      ├─ Open Recent Media 菜单项 [Open Recent Media 菜单项]
+      ├─ Save Playlist to File 菜单项 [Save Playlist to File 菜单项]
+      ├─ Convert / Save 菜单项 [Convert / Save 菜单项]
+      ├─ Stream 菜单项 [Stream 菜单项]
+      ├─ Quit at the end of playlist 复选框 [Quit at the end of playlist 复选框]
+      ├─ Quit 菜单项 [Quit 菜单项]
+  ├─ Playback 菜单 [Playback 菜单]
+    └─ Playback 菜单展开面板 [Playback 菜单展开面板]
+      ├─ Title 菜单项 [Title 菜单项]
+      ├─ Chapter 菜单项 [Chapter 菜单项]
+      ├─ Program 菜单项 [Program 菜单项]
+      ├─ Custom Bookmarks 菜单项 [Custom Bookmarks 菜单项]
+      ├─ Renderer 菜单项 [Renderer 菜单项]
+      ├─ Speed 菜单项 [Speed 菜单项]
+      ├─ Jump Forward 菜单项 [Jump Forward 菜单项]
+      ├─ Jump Backward 菜单项 [Jump Backward 菜单项]
+      ├─ Jump to Specific Time 菜单项 [Jump to Specific Time 菜单项]
+      ├─ Play 菜单项 [Play 菜单项]
+      ├─ Stop 菜单项 [Stop 菜单项]
+      ├─ Previous 菜单项 [Previous 菜单项]
+      ├─ Next 菜单项 [Next 菜单项]
+      ├─ Record 菜单项 [Record 菜单项]
+  ├─ Audio 菜单 [Audio 菜单]
+    └─ Audio 菜单展开面板 [Audio 菜单展开面板]
+      ├─ Audio Track 菜单项 [Audio Track 菜单项]
+      ├─ Audio Device 菜单项 [Audio Device 菜单项]
+        └─ Audio Device 子菜单 [Audio Device 子菜单]
+          ├─ Dummy Output [Dummy Output]
+      ├─ Stereo Mode 菜单项 [Stereo Mode 菜单项]
+      ├─ Visualizations 菜单项 [Visualizations 菜单项]
+      ├─ Increase Volume 菜单项 [Increase Volume 菜单项]
+      ├─ Decrease Volume 菜单项 [Decrease Volume 菜单项]
+      ├─ Mute 菜单项 [Mute 菜单项]
+  ├─ Video 菜单 [Video 菜单]
+  ├─ Subtitle 菜单 [Subtitle 菜单]
+  ├─ Tools 菜单 [Tools 菜单]
+    └─ Tools 菜单展开面板 [Tools 菜单展开面板]
+      ├─ Effects and Filters 菜单项 [Effects and Filters 菜单项]
+        └─ Adjustments and Effects 设置窗口 [Adjustments and Effects 设置窗口]
+          ├─ Audio Effects 标签页 [Audio Effects 标签页]
+          ├─ Video Effects 标签页 [Video Effects 标签页]
+          ├─ Synchronization 标签页 [Synchronization 标签页]
+            └─ Synchronization 页面内容区 [Synchronization 页面内容区]（本步关注区块）
+              ├─ Audio track synchronization 数值框 [Audio track synchronization 数值框]
+              ├─ Subtitle track synchronization 数值框 [Subtitle track synchronization 数值框]
+              ├─ Subtitle speed 数值框 [Subtitle speed 数值框]
+              ├─ Subtitle duration factor 数值框 [Subtitle duration factor 数值框]
+              ├─ Synchronization 循环箭头图标 [Synchronization 循环箭头图标]
+              ├─ Subtitle track synchronization 增大按钮 [Subtitle track synchronization 增大按钮]
+              ├─ Subtitle speed 增大按钮 [Subtitle speed 增大按钮]
+          ├─ v4l2 controls 标签页 [v4l2 controls 标签页]
+          ├─ Equalizer 子标签 [Equalizer 子标签]
+          ├─ Compressor 子标签 [Compressor 子标签]
+          ├─ Spatializer 子标签 [Spatializer 子标签]
+          ├─ Stereo Widener 子标签 [Stereo Widener 子标签]
+          ├─ Advanced 子标签 [Advanced 子标签]
+          ├─ Equalizer Enable 复选框 [Equalizer Enable 复选框]
+          ├─ Equalizer Preset 下拉框 [Equalizer Preset 下拉框]
+          ├─ Save 按钮 [Save 按钮]
+          ├─ Close 按钮 [Close 按钮]
+          ├─ Essential 子标签 [Essential 子标签]
+          ├─ Crop 子标签 [Crop 子标签]
+          ├─ Colors 子标签 [Colors 子标签]
+          ├─ Geometry 子标签 [Geometry 子标签]
+          ├─ Overlay 子标签 [Overlay 子标签]
+          ├─ Video Effects Advanced 子标签 [Video Effects Advanced 子标签]
+          ├─ Image adjust 复选框 [Image adjust 复选框]
+          ├─ Hue 滑块 [Hue 滑块]
+          ├─ Brightness 滑块 [Brightness 滑块]
+          ├─ Brightness Threshold 复选框 [Brightness Threshold 复选框]
+          ├─ Contrast 滑块 [Contrast 滑块]
+          ├─ Saturation 滑块 [Saturation 滑块]
+          ├─ Gamma 滑块 [Gamma 滑块]
+          ├─ Sharpen 复选框 [Sharpen 复选框]
+          ├─ Sigma 滑块 [Sigma 滑块]
+          ├─ Banding removal 复选框 [Banding removal 复选框]
+          ├─ Radius 滑块 [Radius 滑块]
+          ├─ Film Grain 复选框 [Film Grain 复选框]
+          ├─ Variance 滑块 [Variance 滑块]
+      ├─ Track Synchronization 菜单项 [Track Synchronization 菜单项]
+        └─ [引用：Adjustments and Effects 设置窗口 Adjustments and Effects 设置窗口]
+      ├─ Media Information 菜单项 [Media Information 菜单项]
+      ├─ Codec Information 菜单项 [Codec Information 菜单项]
+      ├─ VLM Configuration 菜单项 [VLM Configuration 菜单项]
+      ├─ Program Guide 菜单项 [Program Guide 菜单项]
+      ├─ Messages 菜单项 [Messages 菜单项]
+      ├─ Plugins and extensions 菜单项 [Plugins and extensions 菜单项]
+      ├─ Customize Interface 菜单项 [Customize Interface 菜单项]
+      ├─ Preferences 菜单项 [Preferences 菜单项]
+  ├─ View 菜单 [View 菜单]
+  ├─ Help 菜单 [Help 菜单]
+VLC 播放控制栏 [VLC 播放控制栏]
+  ├─ 媒体进度条 [媒体进度条]
+  ├─ 播放/暂停按钮 [播放/暂停按钮]
+  ├─ 上一项按钮 [上一项按钮]
+  ├─ 停止按钮 [停止按钮]
+  ├─ 下一项按钮 [下一项按钮]
+  ├─ 全屏按钮 [全屏按钮]
+  ├─ 效果与调整按钮 [效果与调整按钮]
+  ├─ 播放列表按钮 [播放列表按钮]
+  ├─ 循环播放按钮 [循环播放按钮]
+  ├─ 随机播放按钮 [随机播放按钮]
+  ├─ 音量滑块 [音量滑块]
+VLC 视频显示区 [VLC 视频显示区（VLC 主窗口中显示媒体画面或待播放状态标志的区域。）]
+Video 菜单展开面板 [Video 菜单展开面板]
+  ├─ Video Track 菜单项 [Video Track 菜单项]
+  ├─ Fullscreen 菜单项 [Fullscreen 菜单项]
+  ├─ Always Fit Window 菜单项 [Always Fit Window 菜单项]
+  ├─ Set as Wallpaper 菜单项 [Set as Wallpaper 菜单项]
+  ├─ Zoom 菜单项 [Zoom 菜单项]
+  ├─ Aspect Ratio 菜单项 [Aspect Ratio 菜单项]
+  ├─ Crop 菜单项 [Crop 菜单项]
+  ├─ Deinterlace 菜单项 [Deinterlace 菜单项]
+  ├─ Deinterlace mode 菜单项 [Deinterlace mode 菜单项]
+  ├─ Take Snapshot 菜单项 [Take Snapshot 菜单项]
+Subtitle 菜单展开面板 [Subtitle 菜单展开面板]
+  ├─ Add Subtitle File 菜单项 [Add Subtitle File 菜单项]
+  ├─ Sub Track 菜单项 [Sub Track 菜单项]
+原探索目标：Synchronization 页面内容区 / Subtitle speed 数值框
+上次已登记前景：Synchronization 页面内容区
+位置材料来自动作前；本步结果以动作后图为准。
+上一步记录：动作 a0078
+任务引用：Synchronization 页面内容区 / Subtitle speed 数值框 / 参数探索（pending）
+相关任务过程：
+a0067：click「Subtitle speed 数值框」；观察：点击 Subtitle speed 数值框右侧的增大按钮后，数值框获得焦点并显示插入光标；显示值仍为 1.000 fps，与操作前相同。此次没有观察到数值增量，因此不能确认步进值。数值仍是探索前的值。
+a0068：click「Subtitle speed 增大按钮」；观察：点击“Subtitle speed 增大按钮”后，动作前后截图中的 Subtitle speed 均显示 1.000 fps，未观察到数值变化；页面仍在 Synchronization 内容区。该次观察没有确认增量步进或可接受范围，且数值保持探索前的 1.000 fps。截图中 Subtitle duration factor 显示 2.000，动作前后相同，不能归因于本次点击。
+a0069：click「Subtitle speed 增大按钮」；观察：再次点击 Subtitle speed 增大按钮后，动作后截图仍显示 1.000 fps，未见数值变化；数值框中可见插入光标。页面仍为 Synchronization 内容区。画面中的 Audio track synchronization 仍显示 99.000 s，未见本次点击导致其变化。未确认增大按钮是否生效、字幕速度步进值或可接受范围；字幕速度仍为探索前的 1.000 fps。
+a0070：input_text「Subtitle speed 数值框」；输入文本：2.000；观察：在 Subtitle speed 数值框中全选并输入 2.000 后，动作后截图显示数值变为 2.000 fps；动作前为 1.000 fps。其他可见同步值未见变化。该结果证明输入使显示值改变，但未确认失焦提交、实际生效或可接受范围；本步也未恢复原值。
+a0071：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。回执确认文本已投递；动作前截图显示 2.000 fps，动作后截图显示 1.000 fps，符合恢复探索前显示值的意图。其他可见同步值未见变化。截图只确认当前显示值已恢复，不能确认失焦提交、持久状态或播放效果；本次没有验证可接受范围或增减步进值。
+a0072：input_text「Subtitle speed 数值框」；输入文本：1000.000；观察：在 Subtitle speed 数值框中全选并输入 1000.000。动作前截图显示 1.000 fps，动作后截图显示 100.000 fps；音轨同步、字幕轨道同步及字幕持续时间因子的可见值未变。截图仅确认显示值变化，不能确认输入被接受为实际上限、是否失焦提交或对播放生效；探索前的 1.000 fps 尚未恢复。
+a0073：input_text「Subtitle speed 数值框」；输入文本：1.000；观察：在 Subtitle speed 数值框中全选并输入 1.000。动作前图显示 100.000 fps，动作后图显示 1.000 fps，显示值已恢复为探索前的值；其他可见同步值未变。截图只确认当前显示值，不能确认已提交、持久生效或影响播放。
+a0074：key_press「Synchronization 页面内容区」；实际执行：1：
+  操作：key_press
+  输入文本：UP
+  target：当前工作；观察：在 Synchronization 页面中，Subtitle speed 数值框原显示 1.000 fps 且已聚焦。按一次上方向键后，动作后图显示 1.200 fps，显示值增加了 0.200 fps；其他可见同步值未变。该观察确认了这一次按键的增量，但没有确认完整可接受范围。探索前的 1.000 fps 尚未恢复。
+a0075：key_press「Synchronization 页面内容区」；实际执行：1：
+  操作：key_press
+  输入文本：DOWN
+  target：当前工作；观察：在 Subtitle speed 数值框聚焦并显示 1.200 fps 时按下 DOWN。动作后截图显示该框为 1.000 fps，下降 0.200 fps，恢复了探索前的显示值。其他可见同步值未变。截图仅确认当前显示值，不能证明该值已提交、持久生效或影响播放。
+a0076：key_press「Synchronization 页面内容区」；实际执行：1：
+  操作：key_press
+  输入文本：DOWN
+  target：Synchronization 页面内容区；观察：在 Subtitle speed 数值框聚焦、显示 1.000 fps 时按了一次 DOWN。动作后图中数值仍显示 1.000 fps，未观察到可见变化；探索前的显示值保持恢复状态。该结果不能判断数值框是否在 1.000 fps 达到下限，也不能确认该按键是否被控件接受。页面其余可见同步值未见变化。
+a0077：input_text「Subtitle speed 数值框」；输入文本：0.800；观察：在「Subtitle speed 数值框」中全选并输入 0.800 后，动作后图显示为 0.800 fps；动作前显示 1.000 fps。确认的是数值框的可见显示发生变化，不能据此确认输入已提交、持久生效或播放效果。当前尚未恢复探索前的 1.000 fps。
+a0078：key_press「Synchronization 页面内容区」；实际执行：1：
+  操作：key_press
+  输入文本：UP
+  target：当前工作；观察：在聚焦的「Subtitle speed 数值框」显示 0.800 fps 时按了一次上方向键。动作后截图显示数值为 1.000 fps，增加了 0.200 fps，并恢复为探索前的显示值。其他可见同步值未见变化。截图只能确认显示值变化，不能确认该值已提交、持久生效或影响播放；完整可接受范围仍未确认。；该次更新未确认事项：「Subtitle speed 数值框」的完整可接受范围及一般增减步进规律尚未确认；本次观察仅确认从 0.800 fps 按一次上方向键后显示为 1.000 fps。；当前显示已恢复为 1.000 fps，但调整是否提交、持久保持或影响播放尚未确认。
+
+### 实际对象已有跳转
+无
+
+## 问题 2：出现的对象如何对应已有区块和控件？
+
+### 历史身份参考
+1：
+  名称：VLC 菜单栏
+  提供原因：
+    截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：Media、Playback、Audio、Video、Subtitle、Tools、View 和 Help 菜单均可见，未展开。
+    来源：discovery:0180
+  ref：VLC 菜单栏
+  历史描述：主窗口顶部的应用菜单入口。
+  controls：
+    1：
+      名称：Subtitle 菜单
+      ref：Subtitle 菜单
+      已保存外观：状态未注明
+    2：
+      名称：Tools 菜单
+      ref：Tools 菜单
+      已保存外观：同一 Tools 菜单呈蓝色高亮，已展开下拉菜单，显示功能入口。；VLC 菜单栏中的 Tools 菜单未选中，未展开。
+    3：
+      名称：View 菜单
+      ref：View 菜单
+      已保存外观：状态未注明
+    4：
+      名称：Help 菜单
+      ref：Help 菜单
+      已保存外观：状态未注明
+  本图外观线索：
+    Help 菜单；Subtitle 菜单；Tools 菜单；View 菜单
+2：
+  名称：VLC 播放控制栏
+  提供原因：
+    截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：进度显示 00:00 / 00:10，音量读数为 0%；播放按钮显示三角形图标。
+    来源：discovery:0180
+  ref：VLC 播放控制栏
+  历史描述：主窗口底部的媒体进度、播放控制、播放列表及音量控制区域。
+  controls：
+    1：
+      名称：播放列表按钮
+      ref：播放列表按钮
+      已保存外观：带列表图标的按钮，状态未注明
+    2：
+      名称：循环播放按钮
+      ref：循环播放按钮
+      已保存外观：带循环箭头图标的按钮，状态未注明
+    3：
+      名称：随机播放按钮
+      ref：随机播放按钮
+      已保存外观：带交叉箭头图标的按钮，状态未注明
+    4：
+      名称：音量滑块
+      ref：音量滑块
+      已保存外观：右下方带扬声器图标和百分比读数的音量控制，状态未注明
+  本图外观线索：
+    随机播放按钮；音量滑块；循环播放按钮；播放列表按钮
+3：
+  名称：Adjustments and Effects 设置窗口
+  提供原因：
+    截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：窗口打开，Synchronization 标签页显示同步参数。
+    来源：update:0186
+  ref：Adjustments and Effects 设置窗口
+  历史描述：由 Tools 菜单中的 Effects and Filters 入口打开的 VLC 效果与调整设置窗口，包含音频效果、视频效果、同步和 v4l2 控制页面。
+  controls：
+    1：
+      名称：Audio Effects 标签页
+      ref：Audio Effects 标签页
+      已保存外观：状态未注明
+    2：
+      名称：Video Effects 标签页
+      ref：Video Effects 标签页
+      已保存外观：状态未注明
+    3：
+      名称：v4l2 controls 标签页
+      ref：v4l2 controls 标签页
+      已保存外观：状态未注明
+    4：
+      名称：Close 按钮
+      ref：Close 按钮
+      已保存外观：状态未注明
+  本图外观线索：
+    Close 按钮；v4l2 controls 标签页；Video Effects 标签页；Audio Effects 标签页
+4：
+  名称：Synchronization 页面内容区
+  提供原因：
+    动作前来源；未完成工作所属区块；动作前观察中的区块；截图外观匹配候选（不等于前景）
+  历史状态观察：
+    说明：Synchronization 页面可见；Subtitle speed 数值框显示 1.000 fps，数值处于选中状态。
+    来源：update:0250
+  ref：Synchronization 页面内容区
+  历史描述：Adjustments and Effects 设置窗口中 Synchronization 标签页显示同步参数的页面区域。
+  controls：
+    1：
+      名称：Audio track synchronization 数值框
+      ref：Audio track synchronization 数值框
+      已保存外观：位于 Audio/Video 分组，状态未注明
+    2：
+      名称：Subtitle track synchronization 数值框
+      ref：Subtitle track synchronization 数值框
+      已保存外观：位于 Subtitles/Video 分组，状态未注明
+    3：
+      名称：Subtitle speed 数值框
+      说明：位于 Subtitles/Video 分组。
+      用途记录：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 后曾分别观察到显示对应数值；全选输入 0.800 后观察到显示 0.800 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；本次在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。完整可接受范围及一般步进规律仍未确认。当前显示值已恢复为探索前的 1.000 fps；输入或调整是否提交、持久保持或对播放生效仍未确认。
+      ref：Subtitle speed 数值框
+      已保存外观：位于 Subtitles/Video 分组，状态未注明
+    4：
+      名称：Subtitle duration factor 数值框
+      ref：Subtitle duration factor 数值框
+      已保存外观：位于 Subtitles/Video 分组，状态未注明
+    5：
+      名称：Synchronization 循环箭头图标
+      ref：Synchronization 循环箭头图标
+      已保存外观：页面右上方的循环箭头图标控件，状态未注明
+    6：
+      名称：Subtitle track synchronization 增大按钮
+      ref：Subtitle track synchronization 增大按钮
+      已保存外观：位于 Subtitle track synchronization 数值框右侧的窄按钮区域，可见“+”符号，状态未注明
+    7：
+      名称：Subtitle speed 增大按钮
+      ref：Subtitle speed 增大按钮
+      已保存外观：Subtitle speed 数值框右侧的上方增大按钮，状态未注明
+  本图外观线索：
+    Audio track synchronization 数值框；Synchronization 循环箭头图标；Subtitle speed 增大按钮；Subtitle duration factor 数值框
+
+### 本次入口历史落点
+来源关联：上一步执行记录所指控件的历史结果
+历史结果：无
+进入当前界面前的区块：
+  1：
+    区块：Adjustments and Effects 设置窗口
+    名称：Adjustments and Effects 设置窗口
+    说明：由 Tools 菜单中的 Effects and Filters 入口打开的 VLC 效果与调整设置窗口，包含音频效果、视频效果、同步和 v4l2 控制页面。
+边界：历史落点只是优先候选；不同入口也可到达同一区块，候选缺失不等于新区块。
+
+## 问题 3：这些观察是否回答了原探索问题？
+
+### 当前任务
+任务：Synchronization 页面内容区/Subtitle speed 数值框 / 参数探索
+区块：Synchronization 页面内容区
+控件：Subtitle speed 数值框
+进度：待探索
+任务类型：参数问题
+未答部分：历史模型更新提出，须按本轮探索目标复核，不是新增的原始要求：Subtitle speed 数值框的完整可接受范围尚未确认；也未确认显示值调整是否提交、持久生效或影响播放。
+已确认规则：
+  用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 后曾分别观察到显示对应数值；全选输入 0.800 后观察到显示 0.800 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；本次在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。完整可接受范围及一般步进规律仍未确认。当前显示值已恢复为探索前的 1.000 fps；输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000 和 0.800 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、再从 1.200 到 1.000 的两次特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。完整可接受范围、一般增减步进规律及提交或播放效果未确认。当前显示 0.800 fps，尚未恢复探索前的 1.000 fps。
+当前控件知识：
+  1：
+    index：0
+    说明：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 后曾分别观察到显示对应数值；全选输入 0.800 后观察到显示 0.800 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；本次在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。完整可接受范围及一般步进规律仍未确认。当前显示值已恢复为探索前的 1.000 fps；输入或调整是否提交、持久保持或对播放生效仍未确认。
+    约束：
+      速度：
+        说明：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000 和 0.800 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、再从 1.200 到 1.000 的两次特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。完整可接受范围、一般增减步进规律及提交或播放效果未确认。当前显示 0.800 fps，尚未恢复探索前的 1.000 fps。
+
+## 本步的补充依据与限制
+### 身份引用
+ref使用已提供的区块或控件编号；name只表示名称。
+
+### 可更新功能的区块
+1：
+  名称：Synchronization 页面内容区
+  ref：Synchronization 页面内容区
+
+### 已有功能轮廓
+1：
+  功能：设置同步参数
+  引用：Synchronization 页面内容区/设置同步参数
+  用途：根据界面标签设置音轨同步、字幕轨道同步、字幕速度和字幕持续时间因子。当前知识支持设置这些参数，但实际播放效果尚未验证。
+  支持对象：
+    Audio track synchronization 数值框；Subtitle track synchronization 数值框；Subtitle speed 数值框；Subtitle duration factor 数值框
+  参数知识引用：
+    Audio track synchronization 数值框/同步值：
+      说明：用于设置音轨同步数值，单位为秒（s）；可直接输入或使用增减按钮。已观察到增量按钮单次增加 0.100 s。输入 999999 后曾显示 99 s，输入 -999999 后曾显示 -99 s；输入 100、101、102、103、104、105 和 200 后分别观察到对应数值可显示。输入 1000 后曾观察到仍显示 100 s，也曾从 104 s 变为 100 s；输入 999 曾显示“99,000 s”，其处理方式仍不明确。本次从 0,000 s 全选输入 999 后，动作后画面显示“99,000 s”，并出现“(Delayed)”提示；不能据此确定该显示代表的实际数值或输入处理方式。输入 0 后曾观察到显示零值；本次之前画面显示 0,000 s，确认输入前为零值，但本次未恢复该值。精确可接受范围、输入 999 和 1000 的处理机制、播放效果及保存后的持久状态仍未验证。 参数规则：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+      名称：同步值
+      来源：
+        依据类别：object_knowledge
+        source_call：0207
+        observation：update:0207
+      sources：
+        1：
+          依据类别：object_knowledge
+          source_call：0176
+          observation：update:0176
+        2：
+          依据类别：object_knowledge
+          source_call：0188
+          observation：update:0188
+        3：
+          依据类别：object_knowledge
+          source_call：0194
+          observation：update:0194
+        4：
+          依据类别：object_knowledge
+          source_call：0196
+          observation：update:0196
+        5：
+          依据类别：object_knowledge
+          source_call：0200
+          observation：update:0200
+        6：
+          区块：Synchronization 页面内容区
+          依据类别：discovery
+          source_call：0204
+          observation：update:0204
+        7：
+          依据类别：object_knowledge
+          source_call：0207
+          observation：update:0207
+      observations：
+        1：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            依据类别：object_knowledge
+            source_call：0176
+            observation：update:0176
+        2：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            依据类别：object_knowledge
+            source_call：0188
+            observation：update:0188
+        3：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            依据类别：object_knowledge
+            source_call：0194
+            observation：update:0194
+        4：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            依据类别：object_knowledge
+            source_call：0196
+            observation：update:0196
+        5：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            依据类别：object_knowledge
+            source_call：0200
+            observation：update:0200
+        6：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            区块：Synchronization 页面内容区
+            依据类别：discovery
+            source_call：0204
+            observation：update:0204
+        7：
+          说明：填写或调整音轨同步数值，单位为秒（s），可直接输入或使用增减按钮；已观察到增量按钮单次增加 0.100 s。输入 999999、-999999、100、101、102、103、104 和 0 后分别观察到显示 99 s、-99 s、100 s、101 s、102 s、103 s、104 s 和 0 s；输入 1000 后曾观察到显示仍为 100 s，也曾在本次从 104 s 变为 100 s。不能据此判定 1000 的处理方式或精确可接受范围。
+          来源：
+            依据类别：object_knowledge
+            source_call：0207
+            observation：update:0207
+      support：Audio track synchronization 数值框
+      区块：Synchronization 页面内容区
+      控件：Audio track synchronization 数值框
+    Subtitle track synchronization 数值框/同步值：
+      说明：用于设置字幕轨道同步数值。当前显示 0.000 s；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。
+      名称：同步值
+      来源：
+        区块：Synchronization 页面内容区
+        依据类别：discovery
+        source_call：0152
+        observation：update:0152
+      sources：
+        1：
+          区块：Synchronization 页面内容区
+          依据类别：discovery
+          source_call：0152
+          observation：update:0152
+      observations：
+        1：
+          说明：填写或调整字幕轨道同步数值；界面显示单位为秒（s）。允许范围及步进值未确认。
+          来源：
+            区块：Synchronization 页面内容区
+            依据类别：discovery
+            source_call：0152
+            observation：update:0152
+      support：Subtitle track synchronization 数值框
+      区块：Synchronization 页面内容区
+      控件：Subtitle track synchronization 数值框
+    Subtitle speed 数值框/速度：
+      说明：用于设置字幕速度，界面显示单位为 fps；控件提供数值输入及增减按钮。全选输入 2.000、1.000 后曾分别观察到显示对应数值；全选输入 0.800 后观察到显示 0.800 fps。输入 1000.000 后曾观察到显示 100.000 fps，无法据此判断是否被钳制或采用了其他输入处理。在数值框显示 1.000 fps 且聚焦时按一次上方向键，显示值变为 1.200 fps；在显示 1.200 fps 时按一次下方向键，显示值变为 1.000 fps；本次在显示 0.800 fps 时按一次上方向键，显示值变为 1.000 fps。这些特定操作显示值各变化 0.200 fps。在显示 1.000 fps 时按下方向键曾观察到数值仍为 1.000 fps；尚不能判断这是下限、按键未生效或其他输入状态导致。完整可接受范围及一般步进规律仍未确认。当前显示值已恢复为探索前的 1.000 fps；输入或调整是否提交、持久保持或对播放生效仍未确认。 参数规则：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000 和 0.800 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、再从 1.200 到 1.000 的两次特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。完整可接受范围、一般增减步进规律及提交或播放效果未确认。当前显示 0.800 fps，尚未恢复探索前的 1.000 fps。
+      名称：速度
+      来源：
+        依据类别：object_knowledge
+        source_call：0250
+        observation：update:0250
+      sources：
+        1：
+          依据类别：object_knowledge
+          source_call：0248
+          observation：update:0248
+        2：
+          依据类别：object_knowledge
+          source_call：0250
+          observation：update:0250
+      observations：
+        1：
+          说明：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000 和 0.800 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、再从 1.200 到 1.000 的两次特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。完整可接受范围、一般增减步进规律及提交或播放效果未确认。当前显示 0.800 fps，尚未恢复探索前的 1.000 fps。
+          来源：
+            依据类别：object_knowledge
+            source_call：0248
+            observation：update:0248
+        2：
+          说明：填写或调整字幕速度，界面显示单位为 fps。全选输入 2.000、1.000 和 0.800 后分别观察到数值框显示对应数值；输入 1000.000 后曾观察到显示 100.000 fps。曾观察到从 1.000 到 1.200、再从 1.200 到 1.000 的两次特定方向键操作各变化 0.200 fps；在 1.000 时按 DOWN 后显示仍为 1.000。完整可接受范围、一般增减步进规律及提交或播放效果未确认。当前显示 0.800 fps，尚未恢复探索前的 1.000 fps。
+          来源：
+            依据类别：object_knowledge
+            source_call：0250
+            observation：update:0250
+      support：Subtitle speed 数值框
+      区块：Synchronization 页面内容区
+      控件：Subtitle speed 数值框
+    Subtitle duration factor 数值框/持续时间因子：
+      说明：用于设置字幕持续时间因子。当前显示 0.000；控件提供数值输入及增减按钮。本次未调整，取值范围及效果未验证。 参数规则：填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。
+      名称：持续时间因子
+      来源：
+        区块：Synchronization 页面内容区
+        依据类别：discovery
+        source_call：0152
+        observation：update:0152
+      sources：
+        1：
+          区块：Synchronization 页面内容区
+          依据类别：discovery
+          source_call：0152
+          observation：update:0152
+      observations：
+        1：
+          说明：填写或调整字幕持续时间因子；界面未显示单位。允许范围及步进值未确认。
+          来源：
+            区块：Synchronization 页面内容区
+            依据类别：discovery
+            source_call：0152
+            observation：update:0152
+      support：Subtitle duration factor 数值框
+      区块：Synchronization 页面内容区
+      控件：Subtitle duration factor 数值框
+
+图1：实际动作前图；核对原操作对象；原图 1280×800 像素。
+图2：原动作后图；原图 1280×800 像素。
+
+请按上述字段与输出要求返回一个JSON对象。

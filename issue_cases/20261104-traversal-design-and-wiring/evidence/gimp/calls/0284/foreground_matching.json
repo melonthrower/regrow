@@ -1,0 +1,364 @@
+{
+  "identified_regions": [],
+  "template_rejections": [],
+  "source_call": "0284",
+  "frame_sha256": "dc4c42e73bf3cb5280210960a25499282c373bb83d34e9a5af6455e2b0e01802",
+  "scope": {},
+  "ranking": [
+    {
+      "region": "r0003",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [
+        {
+          "control": "c0018",
+          "score": 1.0,
+          "box": [
+            98,
+            482,
+            236,
+            513
+          ],
+          "scale": 1,
+          "gap": 0.546281486749649,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                98,
+                482,
+                236,
+                513
+              ],
+              "score": 1.0,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 98,
+              "top": 482,
+              "right": 236,
+              "bottom": 513
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0018.png",
+            "evidence": {
+              "source_field": "/controls/17",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0022",
+          "score": 0.9999998211860657,
+          "box": [
+            77,
+            687,
+            236,
+            738
+          ],
+          "scale": 1,
+          "gap": 0.6285190284252167,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                687,
+                236,
+                738
+              ],
+              "score": 0.9999998211860657,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 77,
+              "top": 687,
+              "right": 236,
+              "bottom": 738
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0022.png",
+            "evidence": {
+              "source_field": "/controls/21",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0023",
+          "score": 0.9999997615814209,
+          "box": [
+            76,
+            745,
+            236,
+            769
+          ],
+          "scale": 1,
+          "gap": 0.5762546360492706,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                76,
+                745,
+                236,
+                769
+              ],
+              "score": 0.9999997615814209,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": true,
+            "needs_exploration": true,
+            "bbox": {
+              "left": 76,
+              "top": 745,
+              "right": 236,
+              "bottom": 769
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0023.png",
+            "evidence": {
+              "source_field": "/controls/22",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0015",
+          "score": 0.9999995231628418,
+          "box": [
+            77,
+            407,
+            236,
+            428
+          ],
+          "scale": 1,
+          "gap": 0.4433174133300781,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                407,
+                236,
+                428
+              ],
+              "score": 0.9999995231628418,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 407,
+              "right": 236,
+              "bottom": 428
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0015.png",
+            "evidence": {
+              "source_field": "/controls/14",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0016",
+          "score": 0.9999992847442627,
+          "box": [
+            77,
+            433,
+            190,
+            454
+          ],
+          "scale": 1,
+          "gap": 0.4807444214820862,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                433,
+                190,
+                454
+              ],
+              "score": 0.9999992847442627,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 433,
+              "right": 190,
+              "bottom": 454
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0016.png",
+            "evidence": {
+              "source_field": "/controls/15",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0014",
+          "score": 0.9999987483024597,
+          "box": [
+            77,
+            382,
+            229,
+            403
+          ],
+          "scale": 1,
+          "gap": 0.4888334274291992,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                382,
+                229,
+                403
+              ],
+              "score": 0.9999987483024597,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 382,
+              "right": 229,
+              "bottom": 403
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0014.png",
+            "evidence": {
+              "source_field": "/controls/13",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        },
+        {
+          "control": "c0017",
+          "score": 0.9999986290931702,
+          "box": [
+            77,
+            459,
+            213,
+            480
+          ],
+          "scale": 1,
+          "gap": 0.42307960987091064,
+          "accepted": true,
+          "candidates": [
+            {
+              "box": [
+                77,
+                459,
+                213,
+                480
+              ],
+              "score": 0.9999986290931702,
+              "scale": 1
+            }
+          ],
+          "candidates_truncated": false,
+          "reason": "matched",
+          "matched_appearance": {
+            "may_open_content": false,
+            "needs_exploration": false,
+            "bbox": {
+              "left": 77,
+              "top": 459,
+              "right": 213,
+              "bottom": 480
+            },
+            "image": "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/gimp/run/knowledge_snapshots/discovery-0001-a027f91f5f4b/regions/r0003/images/0001/c0017.png",
+            "evidence": {
+              "source_field": "/controls/16",
+              "region": "r0003",
+              "source_call": "0001",
+              "observation": "discovery:0001"
+            },
+            "image_conditions": [],
+            "source_image": "../../screenshots/initial.png"
+          }
+        }
+      ],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 7,
+      "eligible_controls": 10,
+      "total_controls": 10,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    },
+    {
+      "region": "r0004",
+      "whole": {
+        "accepted": false,
+        "reason": "control_votes_only"
+      },
+      "anchors": [],
+      "bounds": null,
+      "strong": false,
+      "matched_controls": 0,
+      "eligible_controls": 1,
+      "total_controls": 1,
+      "shared_controls": 0,
+      "foreground_confirmed": false
+    }
+  ],
+  "basis": "same-call semantic foreground; image matches are identity candidates only",
+  "limitation": "geometry checks do not prove the model selected the correct foreground"
+}

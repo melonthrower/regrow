@@ -1,0 +1,4753 @@
+{
+  "regions": {
+    "r0005": {
+      "id": "r0005",
+      "name": "LibreOffice Writer 文档窗口",
+      "description": "显示并编辑当前打开的 Writer 文档；本次可见文档标题为“recommend sheet.docx”。",
+      "parent_region": null,
+      "functions": {
+        "通过 Edit 菜单访问编辑与导航命令": {
+          "description": "在 Writer 文档窗口打开 Edit 菜单，可查看剪贴板与选择、查找和页面导航、修订与批注、引用及对象等相关命令；部分命令可能灰显或提供子菜单。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0013",
+              "name": "Edit 菜单",
+              "source": {
+                "source_call": "0036",
+                "observation": "update:0036",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0036",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0013"
+            }
+          ]
+        },
+        "通过 View 菜单访问视图与显示选项": {
+          "description": "通过 View 菜单查看文档视图模式、界面布局、显示切换、导航及缩放相关入口；当前已确认菜单中可见的命令类别，单项效果仍需按需探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0005",
+              "control": "c0014",
+              "name": "View 菜单",
+              "source": {
+                "source_call": "0120",
+                "observation": "update:0120",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0005",
+          "source_call": "0120",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0005",
+              "control": "c0014"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0013",
+          "target_region": "r0006",
+          "attempt": "a0008",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0014",
+          "target_region": "r0010",
+          "attempt": "a0029",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0152-e177682c31ff/regions/r0005/images/0152/region.png",
+      "local_knowledge": {
+        "k0002": "窗口显示当前打开的“recommend sheet.docx”，包含菜单栏、工具栏、文档编辑区、右侧侧边栏和状态栏。编辑区可见中文专家推荐书表格的第一页上部；状态栏显示 Page 1 of 2、207 words、220 characters 和 100% 缩放。"
+      },
+      "list_groups": {
+        "菜单栏菜单项": [
+          "c0012",
+          "c0013",
+          "c0014",
+          "c0015",
+          "c0016",
+          "c0017",
+          "c0018",
+          "c0019",
+          "c0020",
+          "c0021",
+          "c0022"
+        ],
+        "右侧侧边栏图标按钮": [
+          "c0023",
+          "c0024",
+          "c0025",
+          "c0026",
+          "c0027",
+          "c0028"
+        ]
+      },
+      "controls": [
+        "c0012",
+        "c0013",
+        "c0014",
+        "c0015",
+        "c0016",
+        "c0017",
+        "c0018",
+        "c0019",
+        "c0020",
+        "c0021",
+        "c0022",
+        "c0023",
+        "c0024",
+        "c0025",
+        "c0026",
+        "c0027",
+        "c0028"
+      ]
+    },
+    "r0006": {
+      "id": "r0006",
+      "name": "Edit 菜单命令列表",
+      "description": "Writer 文档窗口中展开的 Edit 菜单及其可见命令。",
+      "parent_region": "r0005",
+      "functions": {
+        "撤销、重做与重复编辑操作": {
+          "description": "通过 Undo 撤销、Redo 重做或 Repeat 重复上一操作。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0029",
+              "name": "Undo 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0030",
+              "name": "Redo 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0031",
+              "name": "Repeat 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0029"
+            },
+            {
+              "region": "r0006",
+              "control": "c0030"
+            },
+            {
+              "region": "r0006",
+              "control": "c0031"
+            }
+          ]
+        },
+        "剪切、复制与粘贴内容": {
+          "description": "使用 Cut、Copy、Paste 或 Paste Special 处理剪贴板内容。文档文本被选中并点击 Copy 后，Paste Special 子菜单中的 Paste Unformatted Text 与 Paste Special... 显示为未灰显；这表明它们在该观察到的上下文下可用，但剪贴板内容及实际粘贴效果未直接确认。子菜单还显示嵌套表格、上方行和前方列选项，本次这些选项呈灰色。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0032",
+              "name": "Cut 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0033",
+              "name": "Copy 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0034",
+              "name": "Paste 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0035",
+              "name": "Paste Special 命令",
+              "source": {
+                "source_call": "0043",
+                "observation": "update:0043",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0069",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0032"
+            },
+            {
+              "region": "r0006",
+              "control": "c0033"
+            },
+            {
+              "region": "r0006",
+              "control": "c0034"
+            },
+            {
+              "region": "r0006",
+              "control": "c0035"
+            }
+          ]
+        },
+        "选择文档内容": {
+          "description": "使用 Select All 全选，或通过 Selection Mode、Select Text 进入相关选择操作。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0036",
+              "name": "Select All 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0037",
+              "name": "Selection Mode 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0038",
+              "name": "Select Text 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0036"
+            },
+            {
+              "region": "r0006",
+              "control": "c0037"
+            },
+            {
+              "region": "r0006",
+              "control": "c0038"
+            }
+          ]
+        },
+        "查找、替换与页导航": {
+          "description": "使用 Find 查找内容、Find and Replace 查找并替换内容，或 Go to Page 按页导航。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0039",
+              "name": "Find 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0040",
+              "name": "Find and Replace 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0041",
+              "name": "Go to Page 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0039"
+            },
+            {
+              "region": "r0006",
+              "control": "c0040"
+            },
+            {
+              "region": "r0006",
+              "control": "c0041"
+            }
+          ]
+        },
+        "修订跟踪与批注": {
+          "description": "通过 Track Changes 使用修订跟踪相关操作，通过 Comment 使用批注相关操作。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0042",
+              "name": "Track Changes 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0043",
+              "name": "Comment 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0042"
+            },
+            {
+              "region": "r0006",
+              "control": "c0043"
+            }
+          ]
+        },
+        "处理超链接、引用、字段与外部链接": {
+          "description": "使用相关命令处理超链接、引用、字段或指向外部文件的链接；部分命令当前显示为灰色。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0044",
+              "name": "Hyperlink 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0045",
+              "name": "Reference 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0046",
+              "name": "Fields 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0047",
+              "name": "Links to External Files 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0044"
+            },
+            {
+              "region": "r0006",
+              "control": "c0045"
+            },
+            {
+              "region": "r0006",
+              "control": "c0046"
+            },
+            {
+              "region": "r0006",
+              "control": "c0047"
+            }
+          ]
+        },
+        "处理对象与数据库": {
+          "description": "通过 Object 访问对象相关操作，或使用 Exchange Database 命令。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0048",
+              "name": "Object 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0049",
+              "name": "Exchange Database 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0048"
+            },
+            {
+              "region": "r0006",
+              "control": "c0049"
+            }
+          ]
+        },
+        "设置光标与编辑模式": {
+          "description": "使用 Direct Cursor Mode 或 Edit Mode 命令访问相应模式设置。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0050",
+              "name": "Direct Cursor Mode 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0006",
+              "control": "c0051",
+              "name": "Edit Mode 命令",
+              "source": {
+                "region": "r0006",
+                "basis": "discovery",
+                "source_call": "0036",
+                "observation": "update:0036"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0006",
+          "source_call": "0038",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0006",
+              "control": "c0050"
+            },
+            {
+              "region": "r0006",
+              "control": "c0051"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0035",
+          "target_region": "r0007",
+          "attempt": "a0009",
+          "relation": "observed_interactive_candidate"
+        },
+        {
+          "source_control": "c0036",
+          "target_region": "r0005",
+          "attempt": "a0012",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        },
+        {
+          "source_control": "c0033",
+          "target_region": "r0005",
+          "attempt": "a0016",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        }
+      ],
+      "local_knowledge": {
+        "k0003": "命令按编辑与剪贴板操作（Undo、Redo、Repeat、Cut、Copy、Paste、Paste Special）、选择（Select All、Selection Mode、Select Text）、查找与导航（Find、Find and Replace、Go to Page）、修订与批注（Track Changes、Comment）、链接与引用（Hyperlink、Reference、Fields、Links to External Files）、对象及数据库（Object、Exchange Database）和编辑模式（Direct Cursor Mode、Edit Mode）等用途组织。带子菜单指示的命令可继续展开；本次展开 Paste Special 后看到五个特殊粘贴选项。命令的可用状态以菜单显示为准，实际效果未验证。",
+        "k0004": "在文档文本处于选中状态时，展开的 Edit 菜单中 Copy 命令可见且未灰显；仅凭菜单显示不能确认剪贴板已更新。",
+        "k0005": "在文档文本处于选中状态时点击 Copy 命令，菜单列表关闭并返回文档编辑区；仅凭本次动作后的画面不能确认剪贴板内容是否已更新。"
+      },
+      "image": "../discovery-0081-46ed97f7d377/regions/r0006/images/0081/region.png",
+      "controls": [
+        "c0029",
+        "c0030",
+        "c0031",
+        "c0032",
+        "c0033",
+        "c0034",
+        "c0035",
+        "c0036",
+        "c0037",
+        "c0038",
+        "c0039",
+        "c0040",
+        "c0041",
+        "c0042",
+        "c0043",
+        "c0044",
+        "c0045",
+        "c0046",
+        "c0047",
+        "c0048",
+        "c0049",
+        "c0050",
+        "c0051"
+      ]
+    },
+    "r0007": {
+      "id": "r0007",
+      "name": "Paste Special 子菜单",
+      "description": "Edit 菜单中由 Paste Special 命令展开的特殊粘贴选项列表。",
+      "parent_region": "r0006",
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0081-46ed97f7d377/regions/r0007/images/0081/region.png",
+      "local_knowledge": {
+        "k0006": "子菜单选项的可用状态会随当前界面情境变化；本图中前两项显示为可用、后三项显示为不可用。仅凭菜单外观不能确认粘贴操作能否成功或其实际结果。"
+      },
+      "controls": [
+        "c0052",
+        "c0053",
+        "c0054",
+        "c0055",
+        "c0056"
+      ]
+    },
+    "r0008": {
+      "id": "r0008",
+      "name": "文档编辑区",
+      "description": "Writer 文档页面的显示与编辑区域；当前可见推荐书表格及其单元格内容。",
+      "parent_region": "r0005",
+      "functions": {},
+      "transitions": [],
+      "image": "../discovery-0081-46ed97f7d377/regions/r0008/images/0081/region.png",
+      "controls": []
+    },
+    "r0010": {
+      "id": "r0010",
+      "name": "View 菜单命令列表",
+      "description": "Writer 文档窗口中展开的 View 菜单及其视图、界面和显示相关命令。",
+      "parent_region": "r0005",
+      "functions": {
+        "选择文档视图模式": {
+          "description": "通过 Normal 或 Web 命令选择文档视图模式；具体显示差异未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0066",
+              "name": "Normal 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0067",
+              "name": "Web 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0066"
+            },
+            {
+              "region": "r0010",
+              "control": "c0067"
+            }
+          ]
+        },
+        "配置界面布局和显示": {
+          "description": "通过用户界面、工具栏、状态栏、标尺和滚动条相关命令访问或控制 Writer 界面布局与组成部分；各入口的具体候选项仍需查看。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0068",
+              "name": "User Interface... 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0069",
+              "name": "Toolbars 命令",
+              "source": {
+                "source_call": "0133",
+                "observation": "update:0133",
+                "region": "r0010",
+                "basis": "discovery"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0070",
+              "name": "Status Bar 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0071",
+              "name": "Rulers 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0072",
+              "name": "Scrollbars 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0133",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0068"
+            },
+            {
+              "region": "r0010",
+              "control": "c0069"
+            },
+            {
+              "region": "r0010",
+              "control": "c0070"
+            },
+            {
+              "region": "r0010",
+              "control": "c0071"
+            },
+            {
+              "region": "r0010",
+              "control": "c0072"
+            }
+          ]
+        },
+        "控制文档显示辅助元素": {
+          "description": "使用菜单命令控制文档中网格与辅助线、格式标记、文本与表格边界、图像与图表、空白、修订、注释及字段相关显示；命令的已知状态或显示含义以各控件知识为准，实际切换效果尚未普遍验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0073",
+              "name": "Grid and Helplines 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0074",
+              "name": "Formatting Marks 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0075",
+              "name": "Text Boundaries 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0076",
+              "name": "Table Boundaries 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0077",
+              "name": "Images and Charts 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0078",
+              "name": "Show Whitespace 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0079",
+              "name": "Show Tracked Changes 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0080",
+              "name": "Comments 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0081",
+              "name": "Resolved Comments 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0082",
+              "name": "Field Shadings 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0083",
+              "name": "Field Names 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0084",
+              "name": "Field Hidden Paragraphs 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0073"
+            },
+            {
+              "region": "r0010",
+              "control": "c0074"
+            },
+            {
+              "region": "r0010",
+              "control": "c0075"
+            },
+            {
+              "region": "r0010",
+              "control": "c0076"
+            },
+            {
+              "region": "r0010",
+              "control": "c0077"
+            },
+            {
+              "region": "r0010",
+              "control": "c0078"
+            },
+            {
+              "region": "r0010",
+              "control": "c0079"
+            },
+            {
+              "region": "r0010",
+              "control": "c0080"
+            },
+            {
+              "region": "r0010",
+              "control": "c0081"
+            },
+            {
+              "region": "r0010",
+              "control": "c0082"
+            },
+            {
+              "region": "r0010",
+              "control": "c0083"
+            },
+            {
+              "region": "r0010",
+              "control": "c0084"
+            }
+          ]
+        },
+        "调整文档缩放": {
+          "description": "通过 Zoom 命令进入缩放相关选项；具体候选项尚未查看。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0090",
+              "name": "Zoom 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0090"
+            }
+          ]
+        },
+        "访问文档辅助面板": {
+          "description": "通过 Styles、Gallery 或 Navigator 命令访问相应的辅助内容；各入口对应内容需打开后确认。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0086",
+              "name": "Styles 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0087",
+              "name": "Gallery 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0088",
+              "name": "Navigator 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0086"
+            },
+            {
+              "region": "r0010",
+              "control": "c0087"
+            },
+            {
+              "region": "r0010",
+              "control": "c0088"
+            }
+          ]
+        },
+        "按状态显示注释": {
+          "description": "使用 Comments 与 Resolved Comments 命令控制注释相关显示；它们在当前菜单中灰显，适用条件尚待查明。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0080",
+              "name": "Comments 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0081",
+              "name": "Resolved Comments 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0080"
+            },
+            {
+              "region": "r0010",
+              "control": "c0081"
+            }
+          ]
+        },
+        "切换全屏显示": {
+          "description": "通过 Full Screen 命令调用全屏显示相关操作；实际显示效果未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0089",
+              "name": "Full Screen 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0089"
+            }
+          ]
+        },
+        "显示或隐藏侧边栏": {
+          "description": "通过 Sidebar 命令控制侧边栏显示；当前菜单中该命令带勾选标记，实际切换效果未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0010",
+              "control": "c0085",
+              "name": "Sidebar 命令",
+              "source": {
+                "region": "r0010",
+                "basis": "discovery",
+                "source_call": "0120",
+                "observation": "update:0120"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0010",
+          "source_call": "0122",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0010",
+              "control": "c0085"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0069",
+          "target_region": "r0011",
+          "attempt": "a0032",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "local_knowledge": {
+        "k0007": "View 菜单集中提供视图模式、界面布局和文档元素显示相关命令；带子菜单箭头的项目可继续展开选择，带勾选标记的项目在当前画面中处于启用或选中状态。看到菜单项不代表本次已更改设置或验证效果。"
+      },
+      "image": "../a0029-0120-907148680ad8/regions/r0010/images/0120/region.png",
+      "controls": [
+        "c0066",
+        "c0067",
+        "c0068",
+        "c0069",
+        "c0070",
+        "c0071",
+        "c0072",
+        "c0073",
+        "c0074",
+        "c0075",
+        "c0076",
+        "c0077",
+        "c0078",
+        "c0079",
+        "c0080",
+        "c0081",
+        "c0082",
+        "c0083",
+        "c0084",
+        "c0085",
+        "c0086",
+        "c0087",
+        "c0088",
+        "c0089",
+        "c0090"
+      ]
+    },
+    "r0011": {
+      "id": "r0011",
+      "name": "Toolbars 子菜单",
+      "description": "由 View 菜单的 Toolbars 命令展开，列出工具栏项目及相关命令。",
+      "parent_region": "r0010",
+      "functions": {
+        "显示 Insert 工具栏": {
+          "description": "选择当前未勾选的 Insert 工具栏选项后，文档窗口中出现浮动的 Insert 工具栏。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0011",
+              "control": "c0106",
+              "name": "Insert 工具栏选项",
+              "source": {
+                "source_call": "0141",
+                "observation": "update:0141",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0011",
+          "source_call": "0141",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0011",
+              "control": "c0106"
+            }
+          ]
+        },
+        "打开 Writer 自定义对话框": {
+          "description": "点击 Customize... 命令可打开 Writer 的 Customize 对话框；本次确认对话框提供多个界面自定义类别，但未验证实际修改配置的流程或结果。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0011",
+              "control": "c0118",
+              "name": "Customize... 命令",
+              "source": {
+                "source_call": "0162",
+                "observation": "update:0162",
+                "basis": "object_knowledge"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0011",
+          "source_call": "0162",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0011",
+              "control": "c0118"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0106",
+          "target_region": "r0012",
+          "attempt": "a0033",
+          "relation": "observed_interactive_candidate",
+          "destination_behavior": "history_dependent"
+        },
+        {
+          "source_control": "c0118",
+          "target_region": "r0013",
+          "attempt": "a0039",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "list_groups": {
+        "Toolbars 子菜单项目": [
+          "c0091",
+          "c0092",
+          "c0093",
+          "c0094",
+          "c0095",
+          "c0096",
+          "c0097",
+          "c0098",
+          "c0099",
+          "c0100",
+          "c0101",
+          "c0102",
+          "c0103",
+          "c0104",
+          "c0105",
+          "c0106",
+          "c0107",
+          "c0108",
+          "c0109",
+          "c0110",
+          "c0111",
+          "c0112",
+          "c0113",
+          "c0114",
+          "c0115",
+          "c0116",
+          "c0117"
+        ]
+      },
+      "image": "../a0032-0133-748fb539915c/regions/r0011/images/0133/region.png",
+      "controls": [
+        "c0091",
+        "c0092",
+        "c0093",
+        "c0094",
+        "c0095",
+        "c0096",
+        "c0097",
+        "c0098",
+        "c0099",
+        "c0100",
+        "c0101",
+        "c0102",
+        "c0103",
+        "c0104",
+        "c0105",
+        "c0106",
+        "c0107",
+        "c0108",
+        "c0109",
+        "c0110",
+        "c0111",
+        "c0112",
+        "c0113",
+        "c0114",
+        "c0115",
+        "c0116",
+        "c0117",
+        "c0118",
+        "c0119",
+        "c0120"
+      ]
+    },
+    "r0012": {
+      "id": "r0012",
+      "name": "Insert 工具栏",
+      "description": "Writer 文档窗口中的浮动工具栏，标题栏显示“Insert”。",
+      "parent_region": "r0005",
+      "functions": {},
+      "transitions": [],
+      "image": "../a0033-0141-f1a4c2ba8ecd/regions/r0012/images/0141/region.png",
+      "controls": []
+    },
+    "r0013": {
+      "id": "r0013",
+      "name": "Customize 对话框",
+      "description": "用于查看和配置 LibreOffice Writer 的菜单、工具栏、Notebookbar、上下文菜单、键盘快捷键及事件的自定义对话框。",
+      "parent_region": null,
+      "functions": {
+        "自定义菜单": {
+          "description": "通过 Menus 区域查看和配置菜单内容；命令编辑与提交的具体效果仍需验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0121",
+              "name": "Menus 标签",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0127",
+              "name": "Search 输入框",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0128",
+              "name": "Category 下拉框",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0129",
+              "name": "Available Commands 列表",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0130",
+              "name": "Scope 下拉框",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0131",
+              "name": "Target 下拉框",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0132",
+              "name": "Assigned Commands 列表",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0133",
+              "name": "命令移入按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0134",
+              "name": "命令移出按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0135",
+              "name": "Assigned Commands 上移按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0136",
+              "name": "Assigned Commands 下移按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0137",
+              "name": "Insert 按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0138",
+              "name": "Modify 按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0139",
+              "name": "Defaults 按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0140",
+              "name": "Reset 按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0142",
+              "name": "OK 按钮",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0164",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0121"
+            },
+            {
+              "region": "r0013",
+              "control": "c0127"
+            },
+            {
+              "region": "r0013",
+              "control": "c0128"
+            },
+            {
+              "region": "r0013",
+              "control": "c0129"
+            },
+            {
+              "region": "r0013",
+              "control": "c0130"
+            },
+            {
+              "region": "r0013",
+              "control": "c0131"
+            },
+            {
+              "region": "r0013",
+              "control": "c0132"
+            },
+            {
+              "region": "r0013",
+              "control": "c0133"
+            },
+            {
+              "region": "r0013",
+              "control": "c0134"
+            },
+            {
+              "region": "r0013",
+              "control": "c0135"
+            },
+            {
+              "region": "r0013",
+              "control": "c0136"
+            },
+            {
+              "region": "r0013",
+              "control": "c0137"
+            },
+            {
+              "region": "r0013",
+              "control": "c0138"
+            },
+            {
+              "region": "r0013",
+              "control": "c0139"
+            },
+            {
+              "region": "r0013",
+              "control": "c0140"
+            },
+            {
+              "region": "r0013",
+              "control": "c0142"
+            }
+          ]
+        },
+        "自定义工具栏": {
+          "description": "通过 Toolbars 标签进入工具栏配置区域，选择目标工具栏并查看其命令及勾选状态；可用命令列表、移入移出及排序等控件参与配置。具体操作效果和提交后的生效情况尚未验证。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0122",
+              "name": "Toolbars 标签",
+              "source": {
+                "source_call": "0167",
+                "observation": "update:0167",
+                "region": "r0013",
+                "basis": "discovery"
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0131",
+              "name": "Target 下拉框",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0129",
+              "name": "Available Commands 列表",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0132",
+              "name": "Assigned Commands 列表",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0133",
+              "name": "命令移入按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0134",
+              "name": "命令移出按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0135",
+              "name": "Assigned Commands 上移按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0136",
+              "name": "Assigned Commands 下移按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0142",
+              "name": "OK 按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "source_call": "0167",
+                    "observation": "update:0167",
+                    "region": "r0014",
+                    "basis": "discovery"
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0167",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0122"
+            },
+            {
+              "region": "r0013",
+              "control": "c0131"
+            },
+            {
+              "region": "r0013",
+              "control": "c0129"
+            },
+            {
+              "region": "r0013",
+              "control": "c0132"
+            },
+            {
+              "region": "r0013",
+              "control": "c0133"
+            },
+            {
+              "region": "r0013",
+              "control": "c0134"
+            },
+            {
+              "region": "r0013",
+              "control": "c0135"
+            },
+            {
+              "region": "r0013",
+              "control": "c0136"
+            },
+            {
+              "region": "r0013",
+              "control": "c0142"
+            }
+          ]
+        },
+        "自定义 Notebookbar": {
+          "description": "进入 Notebookbar 自定义内容进行查看或配置；具体配置方式仍需探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0123",
+              "name": "Notebookbar 标签",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0164",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0123"
+            }
+          ]
+        },
+        "自定义上下文菜单": {
+          "description": "进入上下文菜单自定义内容进行查看或配置；具体配置方式仍需探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0124",
+              "name": "Context Menus 标签",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0164",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0124"
+            }
+          ]
+        },
+        "自定义键盘快捷键": {
+          "description": "进入键盘快捷键自定义内容进行查看或配置；具体配置方式仍需探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0125",
+              "name": "Keyboard 标签",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0164",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0125"
+            }
+          ]
+        },
+        "自定义事件": {
+          "description": "进入事件自定义内容进行查看或配置；具体配置方式仍需探索。",
+          "support_controls": [
+            {
+              "kind": "control",
+              "region": "r0013",
+              "control": "c0126",
+              "name": "Events 标签",
+              "source": {
+                "region": "r0013",
+                "basis": "discovery",
+                "source_call": "0162",
+                "observation": "update:0162"
+              }
+            }
+          ],
+          "constraints": {},
+          "region": "r0013",
+          "source_call": "0164",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0013",
+              "control": "c0126"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "source_control": "c0122",
+          "target_region": "r0014",
+          "attempt": "a0040",
+          "relation": "observed_interactive_candidate"
+        }
+      ],
+      "image": "../discovery-0177-f77d80ef5351/regions/r0013/images/0177/region.png",
+      "controls": [
+        "c0121",
+        "c0122",
+        "c0123",
+        "c0124",
+        "c0125",
+        "c0126",
+        "c0127",
+        "c0128",
+        "c0129",
+        "c0130",
+        "c0131",
+        "c0132",
+        "c0133",
+        "c0134",
+        "c0135",
+        "c0136",
+        "c0137",
+        "c0138",
+        "c0139",
+        "c0140",
+        "c0141",
+        "c0142"
+      ]
+    },
+    "r0014": {
+      "id": "r0014",
+      "name": "Toolbars 自定义配置区",
+      "description": "Customize 对话框中用于查看和配置所选工具栏命令的区域。",
+      "parent_region": "r0013",
+      "functions": {
+        "查看和配置工具栏命令": {
+          "description": "选择作用范围和目标工具栏，查看可用命令及已分配命令，并通过配置区入口调整目标工具栏。具体的勾选、插入、移除、排序及提交效果仍需验证。",
+          "support_controls": [
+            {
+              "kind": "region",
+              "region": "r0014",
+              "control": null,
+              "name": "Toolbars 自定义配置区"
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0130",
+              "name": "Scope 下拉框",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0131",
+              "name": "Target 下拉框",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0129",
+              "name": "Available Commands 列表",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0132",
+              "name": "Assigned Commands 列表",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0133",
+              "name": "命令移入按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0134",
+              "name": "命令移出按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0135",
+              "name": "Assigned Commands 上移按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0136",
+              "name": "Assigned Commands 下移按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0137",
+              "name": "Insert 按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0138",
+              "name": "Modify 按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "control",
+              "region": "r0014",
+              "control": "c0142",
+              "name": "OK 按钮",
+              "source": {
+                "basis": "identity_merge",
+                "sources": [
+                  {
+                    "region": "r0013",
+                    "basis": "discovery",
+                    "source_call": "0162",
+                    "observation": "update:0162"
+                  },
+                  {
+                    "region": "r0014",
+                    "basis": "discovery",
+                    "source_call": "0167",
+                    "observation": "update:0167"
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": {
+            "c0131/工具栏目标": {
+              "ref": "c0131/工具栏目标",
+              "region": "r0014",
+              "control": "c0131"
+            }
+          },
+          "region": "r0014",
+          "source_call": "0170",
+          "support_tasks": [],
+          "task_refs": [],
+          "locations": [
+            {
+              "region": "r0014",
+              "control": null
+            },
+            {
+              "region": "r0014",
+              "control": "c0130"
+            },
+            {
+              "region": "r0014",
+              "control": "c0131"
+            },
+            {
+              "region": "r0014",
+              "control": "c0129"
+            },
+            {
+              "region": "r0014",
+              "control": "c0132"
+            },
+            {
+              "region": "r0014",
+              "control": "c0133"
+            },
+            {
+              "region": "r0014",
+              "control": "c0134"
+            },
+            {
+              "region": "r0014",
+              "control": "c0135"
+            },
+            {
+              "region": "r0014",
+              "control": "c0136"
+            },
+            {
+              "region": "r0014",
+              "control": "c0137"
+            },
+            {
+              "region": "r0014",
+              "control": "c0138"
+            },
+            {
+              "region": "r0014",
+              "control": "c0142"
+            }
+          ]
+        }
+      },
+      "transitions": [],
+      "image": "../discovery-0177-f77d80ef5351/regions/r0014/images/0177/region.png",
+      "local_knowledge": {
+        "k0008": "该区块位于 Customize 对话框的 Toolbars 标签中，用于查看和配置所选工具栏的命令。可见控件包括作用范围与目标工具栏下拉框、可用命令和已分配命令列表，以及用于调整配置的按钮；当前可见作用范围为 LibreOffice Writer，目标工具栏为 Standard。"
+      },
+      "controls": [
+        "c0130",
+        "c0131",
+        "c0129",
+        "c0132",
+        "c0133",
+        "c0134",
+        "c0135",
+        "c0136",
+        "c0137",
+        "c0138",
+        "c0139",
+        "c0140",
+        "c0141",
+        "c0142",
+        "c0143"
+      ]
+    }
+  },
+  "controls": {
+    "c0012": {
+      "name": "File 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 File 菜单；菜单内的具体命令及其用法尚未核实。"
+        },
+        {
+          "description": "点击可打开 File 菜单。展开时可见 New、Open、Open Remote、Recent Documents、Close、Wizards、Templates、Reload、Versions、Save、Save As、Save Remote、Save a Copy、Save All、Export、Export As、Send、Preview in Web Browser、Print Preview、Print、Printer Settings、Properties、Digital Signatures 和 Exit LibreOffice 等条目；带箭头的条目显示有子菜单入口。Versions 和 Save All 当前呈灰色。这里只确认了菜单项和可见状态，尚未验证各命令执行后的结果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0012.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0013": {
+      "name": "Edit 菜单",
+      "knowledge": [
+        {
+          "description": "点击可展开 Edit 菜单。菜单可见 Undo、Redo、Repeat、Cut、Copy、Paste、Paste Special、Select All、Selection Mode、Select Text、Find、Find and Replace、Go to Page、Track Changes、Comment、Hyperlink、Reference、Fields、Links to External Files、Object、Exchange Database、Direct Cursor Mode 和 Edit Mode；其中 Undo、Redo、Repeat、Cut、Copy、Select Text、Hyperlink、Fields、Links to External Files 在本次画面中为灰色，Edit Mode 为勾选状态。各命令的实际效果未在本次验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0013.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0006",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0014": {
+      "name": "View 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 View 菜单命令列表。菜单包含视图模式、界面与工具栏、状态栏、标尺、滚动条、网格与辅助线、格式标记、文本及表格边界、图像和图表、空白、修订、注释和字段显示、侧边栏、样式、图库、导航器、全屏与缩放等入口；部分入口有子菜单或快捷键。当前菜单的具体命令及状态见 View 菜单命令列表。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0014.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0010",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0015": {
+      "name": "Insert 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Insert 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0015.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0016": {
+      "name": "Format 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Format 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0016.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0017": {
+      "name": "Styles 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Styles 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0017.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0018": {
+      "name": "Table 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Table 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0018.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0019": {
+      "name": "Form 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Form 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0019.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0020": {
+      "name": "Tools 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Tools 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0020.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0021": {
+      "name": "Window 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Window 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0021.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0022": {
+      "name": "Help 菜单",
+      "knowledge": [
+        {
+          "description": "点击可打开 Help 菜单；菜单内的具体命令及其用法尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0022.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0023": {
+      "name": "侧边栏顶部滑块图标",
+      "description": "右侧竖排侧边栏图标中的顶部按钮，图标呈橙色滑块且当前有高亮背景。",
+      "knowledge": [
+        {
+          "description": "这是可见的侧边栏图标按钮；具体对应的侧栏内容和操作用途尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0023.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    },
+    "c0024": {
+      "name": "侧边栏画笔与字母图标",
+      "knowledge": [
+        {
+          "description": "这是可见的侧边栏图标按钮；具体对应的侧栏内容和操作用途尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0024.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0025": {
+      "name": "侧边栏图片图标",
+      "knowledge": [
+        {
+          "description": "这是可见的侧边栏图标按钮；具体对应的侧栏内容和操作用途尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0025.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0026": {
+      "name": "侧边栏指南针图标",
+      "knowledge": [
+        {
+          "description": "这是可见的侧边栏图标按钮；具体对应的侧栏内容和操作用途尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0026.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0027": {
+      "name": "侧边栏页面图标",
+      "knowledge": [
+        {
+          "description": "这是可见的侧边栏图标按钮；具体对应的侧栏内容和操作用途尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0027.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0028": {
+      "name": "侧边栏放大镜与字母图标",
+      "knowledge": [
+        {
+          "description": "这是可见的侧边栏图标按钮；具体对应的侧栏内容和操作用途尚未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0024-83709b06843d/regions/r0005/images/0024/c0028.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0029": {
+      "name": "Undo 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供撤销命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0029.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0030": {
+      "name": "Redo 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供重做命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0030.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0031": {
+      "name": "Repeat 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供重复上一操作的命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0031.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0032": {
+      "name": "Cut 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供剪切命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0032.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0033": {
+      "name": "Copy 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供复制命令；本次显示为灰色，未执行。"
+        },
+        {
+          "description": "Edit 菜单展开时可查看此命令；本次文档文本处于选中状态，Copy 命令显示为可用，但尚未执行复制，剪贴板结果未确认。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0033.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0005",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0034": {
+      "name": "Paste 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供粘贴命令；本次显示为可用，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0034.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0035": {
+      "name": "Paste Special 命令",
+      "knowledge": [
+        {
+          "description": "Edit 菜单中的特殊粘贴入口，带有子菜单指示。点击后可展开特殊粘贴选项；本次看到 Paste Unformatted Text、Paste Special...、Paste as Nested Table、Paste as Rows Above 和 Paste as Columns Before 五项。子菜单选项在本次画面中呈灰色，未执行粘贴，实际可用条件和效果未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0035.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0007",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0036": {
+      "name": "Select All 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供全选命令，快捷键显示为 Ctrl+A；本次未执行。"
+        },
+        {
+          "description": "在 Edit 菜单中点击此命令可选中当前文档内容。本次点击后菜单关闭，文档编辑区显示内容已选中，状态栏报告选中 207 个单词、220 个字符；本次未复制内容。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0036.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0005",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0037": {
+      "name": "Selection Mode 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供选择模式入口，并显示子菜单指示；本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0037.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0038": {
+      "name": "Select Text 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供 Select Text 命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0038.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0039": {
+      "name": "Find 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供查找入口，快捷键显示为 Ctrl+F；本次未打开查找界面。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0039.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0040": {
+      "name": "Find and Replace 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供查找与替换入口，快捷键显示为 Ctrl+H；本次未打开其界面。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0040.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0041": {
+      "name": "Go to Page 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供按页导航入口，快捷键显示为 Ctrl+G；本次未打开其界面。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0041.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0042": {
+      "name": "Track Changes 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供修订跟踪相关入口，并显示子菜单指示；本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0042.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0043": {
+      "name": "Comment 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供批注相关入口，并显示子菜单指示；本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0043.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0044": {
+      "name": "Hyperlink 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供超链接命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0044.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0045": {
+      "name": "Reference 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供引用相关入口，并显示子菜单指示；本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0045.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0046": {
+      "name": "Fields 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供 Fields 命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0046.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0047": {
+      "name": "Links to External Files 命令",
+      "knowledge": [
+        {
+          "description": "菜单中提供 Links to External Files 命令；本次显示为灰色，未执行。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0047.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0048": {
+      "name": "Object 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供对象相关入口，并显示子菜单指示；本次未展开。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0048.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0049": {
+      "name": "Exchange Database 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供 Exchange Database 命令；本次未执行，具体操作界面和效果未核实。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0049.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0050": {
+      "name": "Direct Cursor Mode 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供 Direct Cursor Mode 命令；本次未执行，其当前启用状态及切换效果未核实。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0050.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0051": {
+      "name": "Edit Mode 命令",
+      "knowledge": [
+        {
+          "description": "菜单提供 Edit Mode 命令，快捷键显示为 Shift+Ctrl+M；本次画面中该项带勾选标记，表示当前显示为启用状态，未执行切换。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0008-0036-5f1721290409/regions/r0006/images/0036/c0051.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0052": {
+      "name": "Paste Unformatted Text 选项",
+      "knowledge": [
+        {
+          "description": "选项名称表明可将剪贴板内容作为未格式化文本粘贴；本次仅看到该选项，未执行，实际效果和可用条件未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0009-0043-b3158c3c45b8/regions/r0007/images/0043/c0052.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前以深色文字显示，为可用状态。"
+    },
+    "c0053": {
+      "name": "Paste Special... 选项",
+      "knowledge": [
+        {
+          "description": "选项名称表明可进一步打开特殊粘贴界面；本次未选择，后续界面及其中的格式选项未知。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0009-0043-b3158c3c45b8/regions/r0007/images/0043/c0053.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前以深色文字显示，为可用状态。"
+    },
+    "c0054": {
+      "name": "Paste as Nested Table 选项",
+      "knowledge": [
+        {
+          "description": "选项名称表明可将内容作为嵌套表格粘贴；本次仅看到该选项，未执行，实际效果和可用条件未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0009-0043-b3158c3c45b8/regions/r0007/images/0043/c0054.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前以灰色文字显示，为不可用状态。"
+    },
+    "c0055": {
+      "name": "Paste as Rows Above 选项",
+      "knowledge": [
+        {
+          "description": "选项名称表明可将内容作为上方的行粘贴；本次仅看到该选项，未执行，实际效果和可用条件未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0009-0043-b3158c3c45b8/regions/r0007/images/0043/c0055.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前以灰色文字显示，为不可用状态。"
+    },
+    "c0056": {
+      "name": "Paste as Columns Before 选项",
+      "knowledge": [
+        {
+          "description": "选项名称表明可将内容作为前方的列粘贴；本次仅看到该选项，未执行，实际效果和可用条件未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0009-0043-b3158c3c45b8/regions/r0007/images/0043/c0056.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": "当前以灰色文字显示，为不可用状态。"
+    },
+    "c0066": {
+      "name": "Normal 命令",
+      "knowledge": [
+        {
+          "description": "选择 Normal 文档视图模式；当前菜单中该项带有选择标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0066.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0067": {
+      "name": "Web 命令",
+      "knowledge": [
+        {
+          "description": "选择 Web 文档视图模式；具体显示效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0067.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0068": {
+      "name": "User Interface... 命令",
+      "knowledge": [
+        {
+          "description": "打开用于调整用户界面的入口；本步未打开，具体可配置内容未知。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0068.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0069": {
+      "name": "Toolbars 命令",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的工具栏相关入口；点击可展开工具栏项目列表。列表中可见多个工具栏项目及 Customize...、Reset 和 Lock Toolbars；本次未选择项目，也未验证其实际效果。"
+        },
+        {
+          "description": "在 View 菜单命令列表中，将指针悬停于 Toolbars 命令可展开 Toolbars 子菜单；子菜单列出工具栏选项及 Customize...、Reset、Lock Toolbars。本次实际验证的是悬停展开；点击展开方式已有记录，但本次未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0069.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0011",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0070": {
+      "name": "Status Bar 命令",
+      "knowledge": [
+        {
+          "description": "控制状态栏的显示；当前菜单中该项带勾选标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0070.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0071": {
+      "name": "Rulers 命令",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的标尺相关入口；具体候选项未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0071.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0072": {
+      "name": "Scrollbars 命令",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的滚动条相关入口；具体候选项未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0072.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0073": {
+      "name": "Grid and Helplines 命令",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的网格与辅助线显示相关入口；具体候选项未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0073.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0074": {
+      "name": "Formatting Marks 命令",
+      "knowledge": [
+        {
+          "description": "切换格式标记的显示；菜单显示快捷键 Ctrl+F10。当前未验证其切换效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0074.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0075": {
+      "name": "Text Boundaries 命令",
+      "knowledge": [
+        {
+          "description": "控制文本边界的显示；当前菜单中该项带勾选标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0075.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0076": {
+      "name": "Table Boundaries 命令",
+      "knowledge": [
+        {
+          "description": "控制表格边界的显示；当前菜单中该项带勾选标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0076.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0077": {
+      "name": "Images and Charts 命令",
+      "knowledge": [
+        {
+          "description": "控制图像和图表的显示；当前菜单中该项带勾选标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0077.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0078": {
+      "name": "Show Whitespace 命令",
+      "knowledge": [
+        {
+          "description": "控制空白区域的显示；当前菜单中该项带勾选标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0078.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0079": {
+      "name": "Show Tracked Changes 命令",
+      "knowledge": [
+        {
+          "description": "控制修订内容的显示；当前菜单中该项带勾选标记。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0079.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0080": {
+      "name": "Comments 命令",
+      "knowledge": [
+        {
+          "description": "注释相关显示命令；当前菜单中呈灰色，无法据此确认可用条件或操作效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0080.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0081": {
+      "name": "Resolved Comments 命令",
+      "knowledge": [
+        {
+          "description": "已解决注释相关显示命令；当前菜单中呈灰色，无法据此确认可用条件或操作效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0081.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0082": {
+      "name": "Field Shadings 命令",
+      "knowledge": [
+        {
+          "description": "控制字段底纹的显示；当前菜单中该项带勾选标记，并显示快捷键 Ctrl+F8。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0082.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0083": {
+      "name": "Field Names 命令",
+      "knowledge": [
+        {
+          "description": "字段名称相关显示命令；菜单显示快捷键 Ctrl+F9。实际效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0083.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0084": {
+      "name": "Field Hidden Paragraphs 命令",
+      "knowledge": [
+        {
+          "description": "字段隐藏段落相关显示命令；本步未执行，具体效果未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0084.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0085": {
+      "name": "Sidebar 命令",
+      "knowledge": [
+        {
+          "description": "控制侧边栏的显示；当前菜单中该项带勾选标记，并显示快捷键 Ctrl+F5。实际切换效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0085.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0086": {
+      "name": "Styles 命令",
+      "knowledge": [
+        {
+          "description": "访问样式相关内容；菜单显示快捷键 F11。本步未打开该内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0086.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0087": {
+      "name": "Gallery 命令",
+      "knowledge": [
+        {
+          "description": "访问图库相关内容；当前菜单中该项带勾选标记。本步未验证其显示状态或打开效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0087.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0088": {
+      "name": "Navigator 命令",
+      "knowledge": [
+        {
+          "description": "访问导航器相关内容；菜单显示快捷键 F5。本步未打开该内容。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0088.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0089": {
+      "name": "Full Screen 命令",
+      "knowledge": [
+        {
+          "description": "全屏显示相关命令；菜单显示快捷键 Shift+Ctrl+J。实际显示效果未在本步验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0089.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0090": {
+      "name": "Zoom 命令",
+      "knowledge": [
+        {
+          "description": "带子菜单箭头的缩放相关入口；具体候选项未查看。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0029-0120-907148680ad8/regions/r0010/images/0120/c0090.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0091": {
+      "name": "3D-Settings 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0091.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0092": {
+      "name": "Align Objects 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0092.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0093": {
+      "name": "Bullets and Numbering 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0093.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0094": {
+      "name": "Drawing 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0094.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0095": {
+      "name": "Drawing Object Properties 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0095.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0096": {
+      "name": "Edit Points 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0096.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0097": {
+      "name": "Find 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0097.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0098": {
+      "name": "Fontwork 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0098.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0099": {
+      "name": "Form Controls 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0099.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0100": {
+      "name": "Form Design 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0100.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0101": {
+      "name": "Form Navigation 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0101.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0102": {
+      "name": "Formatting 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次可见勾选标记，未选择或验证其实际效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0102.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0103": {
+      "name": "Formatting (Styles) 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0103.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0104": {
+      "name": "Frame 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0104.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0105": {
+      "name": "Image 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0105.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0106": {
+      "name": "Insert 工具栏选项",
+      "knowledge": [
+        {
+          "description": "在 Toolbars 子菜单中选择当前未勾选的此选项后，Toolbars 子菜单和 View 菜单关闭，Writer 文档窗口中出现标题为“Insert”的浮动工具栏；它位于格式工具栏下方、文档窗口上方区域，并覆盖部分文档工作区。之后再次打开子菜单时，此选项显示为已勾选，且浮动工具栏仍可见。再次选择能否隐藏该工具栏尚未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0106.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0012",
+          "conditions": [
+            "在 Toolbars 子菜单中选择当前未勾选的 Insert 工具栏选项"
+          ]
+        }
+      ],
+      "description": ""
+    },
+    "c0107": {
+      "name": "Mail Merge 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0107.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0108": {
+      "name": "Media Playback 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0108.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0109": {
+      "name": "Navigation 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0109.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0110": {
+      "name": "OLE-Object 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0110.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0111": {
+      "name": "Standard 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次可见勾选标记，未选择或验证其实际效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0111.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0112": {
+      "name": "Standard (Single Mode) 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0112.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0113": {
+      "name": "Table 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0113.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0114": {
+      "name": "Text Object 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0114.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0115": {
+      "name": "Tools 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0115.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0116": {
+      "name": "Track Changes 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0116.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0117": {
+      "name": "TSCP Classification 工具栏选项",
+      "knowledge": [
+        {
+          "description": "此工具栏项目可在子菜单中选择；本次仅确认其列出，未选择或验证效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0117.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0118": {
+      "name": "Customize... 命令",
+      "knowledge": [
+        {
+          "description": "此命令列于工具栏子菜单；点击后打开标题为 Customize 的 Writer 自定义对话框。对话框提供 Menus、Toolbars、Notebookbar、Context Menus、Keyboard、Events 标签。本次只确认对话框打开，未验证配置编辑或保存效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0118.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0013",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0119": {
+      "name": "Reset 命令",
+      "knowledge": [
+        {
+          "description": "此命令列于工具栏子菜单，本次显示为灰色；能否及何时可用尚未验证。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0119.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0120": {
+      "name": "Lock Toolbars 选项",
+      "knowledge": [
+        {
+          "description": "此选项列于工具栏子菜单；本次可见勾选标记，未选择或验证其实际效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0032-0133-748fb539915c/regions/r0011/images/0133/c0120.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0121": {
+      "name": "Menus 标签",
+      "knowledge": [
+        {
+          "description": "显示菜单自定义内容；本次已看到该标签下的命令列表和目标菜单，但尚未验证其编辑操作。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0121.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0122": {
+      "name": "Toolbars 标签",
+      "knowledge": [
+        {
+          "description": "用于进入工具栏自定义内容；选中后显示工具栏目标选择及该目标的 Assigned Commands 配置区域。本次看到 Target 为 Standard，并看到带勾选框的命令列表；尚未验证切换命令勾选状态或提交配置的效果。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0122.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [
+        {
+          "region": "r0014",
+          "conditions": []
+        }
+      ],
+      "description": ""
+    },
+    "c0123": {
+      "name": "Notebookbar 标签",
+      "knowledge": [
+        {
+          "description": "用于进入 Notebookbar 自定义内容；本次仅看到标签，未选择或验证其中的控件。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0123.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0124": {
+      "name": "Context Menus 标签",
+      "knowledge": [
+        {
+          "description": "用于进入上下文菜单自定义内容；本次仅看到标签，未选择或验证其中的控件。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0124.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0125": {
+      "name": "Keyboard 标签",
+      "knowledge": [
+        {
+          "description": "用于进入键盘快捷键自定义内容；本次仅看到标签，未选择或验证其中的控件。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0125.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0126": {
+      "name": "Events 标签",
+      "knowledge": [
+        {
+          "description": "用于进入事件自定义内容；本次仅看到标签，未选择或验证其中的控件。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0126.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0127": {
+      "name": "Search 输入框",
+      "knowledge": [
+        {
+          "description": "可输入文本以搜索可用命令；本次未输入或验证筛选结果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0127.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0128": {
+      "name": "Category 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择可用命令的类别；当前显示 All commands。本次未展开候选项。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0128.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0129": {
+      "name": "Available Commands 列表",
+      "knowledge": [
+        {
+          "description": "显示可供自定义使用的命令；当前可见列表选中 100%，下方 Description 区显示该项的标签、命令标识和提示文本。本次未执行插入或其他编辑。"
+        },
+        {
+          "description": "显示可供工具栏配置使用的命令；本次可见列表中选中了 100%。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0129.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0130": {
+      "name": "Scope 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择自定义配置的作用范围；当前显示 LibreOffice Writer。本次未展开或更改。"
+        },
+        {
+          "description": "显示当前自定义配置范围；本次显示 LibreOffice Writer。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0130.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0131": {
+      "name": "Target 下拉框",
+      "knowledge": [
+        {
+          "description": "用于选择要查看或配置的目标；当前显示 File。本次未展开或更改。"
+        },
+        {
+          "description": "用于选择要查看或配置的目标工具栏。展开后可见候选包括 Frame、Full Screen、Image、Image Filter、Insert、Lines and Arrows、Mail Merge、Media Playback、Navigation、Notebookbar shortcuts、OLE-Object、Optimize Size、Print Preview、Standard、Standard (Single Mode)、Standard (Viewing Mode)、Stars and Banners、Symbol Shapes、TSCP Classification、Table、Text Box Formatting、Text Object、Tools 和 Track Changes。列表带滚动条，因此这些是本次可见的候选，不代表已确认完整列表；本次未选择其他目标。",
+          "constraints": {
+            "工具栏目标": {
+              "description": "选择要配置的工具栏。本次展开时确认除 Standard 外还有多个可选目标；可见项包括 Frame、Full Screen、Image、Image Filter、Insert、Lines and Arrows、Mail Merge、Media Playback、Navigation、Notebookbar shortcuts、OLE-Object、Optimize Size、Print Preview、Standard (Single Mode)、Standard (Viewing Mode)、Stars and Banners、Symbol Shapes、TSCP Classification、Table、Text Box Formatting、Text Object、Tools 和 Track Changes。候选列表可滚动，完整候选范围尚未确认。",
+              "name": "工具栏目标"
+            }
+          }
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0131.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0132": {
+      "name": "Assigned Commands 列表",
+      "knowledge": [
+        {
+          "description": "显示当前 Target 对应的已分配命令；当前 Target 为 File，列表可见 New、Open、Close、Save 等条目。本次未更改列表。"
+        },
+        {
+          "description": "显示当前目标工具栏的命令条目及勾选状态；本次目标为 Standard。列表中可见 Load URL、New、Templates、Open、Open Remote、Save、Save As、Email、Edit Mode、Read Only Mode、Export Directly as PDF 和 EPUB。尚未操作勾选框或验证配置提交后的效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0132.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0133": {
+      "name": "命令移入按钮",
+      "knowledge": [
+        {
+          "description": "位于 Available Commands 与 Assigned Commands 之间，呈向右箭头；本次未点击验证其操作效果。"
+        },
+        {
+          "description": "位于 Available Commands 与 Assigned Commands 列表之间，可用于将可用命令移入目标工具栏配置；本次未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0133.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0134": {
+      "name": "命令移出按钮",
+      "knowledge": [
+        {
+          "description": "位于 Available Commands 与 Assigned Commands 之间，呈向左箭头；本次未点击验证其操作效果。"
+        },
+        {
+          "description": "位于 Available Commands 与 Assigned Commands 列表之间，可用于从目标工具栏配置移出命令；本次未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0134.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0135": {
+      "name": "Assigned Commands 上移按钮",
+      "knowledge": [
+        {
+          "description": "位于 Assigned Commands 列表右侧，呈向上箭头；本次未点击验证其对列表顺序的影响。"
+        },
+        {
+          "description": "用于调整目标工具栏命令列表中所选条目的顺序；本次未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0135.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0136": {
+      "name": "Assigned Commands 下移按钮",
+      "knowledge": [
+        {
+          "description": "位于 Assigned Commands 列表右侧，呈向下箭头；本次未点击验证其对列表顺序的影响。"
+        },
+        {
+          "description": "用于调整目标工具栏命令列表中所选条目的顺序；本次未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0136.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0137": {
+      "name": "Insert 按钮",
+      "knowledge": [
+        {
+          "description": "对话框底部的下拉按钮；本次未展开或执行插入操作。"
+        },
+        {
+          "description": "提供向工具栏配置插入内容的入口；本次未操作，具体选项和效果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0137.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0138": {
+      "name": "Modify 按钮",
+      "knowledge": [
+        {
+          "description": "对话框底部显示为灰色禁用状态；本次未验证其可用条件或操作效果。"
+        },
+        {
+          "description": "提供修改所选工具栏配置条目的入口；本次未操作，具体可修改内容尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0138.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0139": {
+      "name": "Defaults 按钮",
+      "knowledge": [
+        {
+          "description": "对话框底部可见 Defaults 按钮；本次未点击或验证其效果。"
+        },
+        {
+          "description": "提供工具栏默认配置相关操作入口；本次未操作，具体效果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0139.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0140": {
+      "name": "Reset 按钮",
+      "knowledge": [
+        {
+          "description": "对话框底部可见 Reset 按钮；本次未点击或验证其效果。"
+        },
+        {
+          "description": "提供重置配置的入口；本次未操作，重置范围和效果尚未验证。"
+        }
+      ],
+      "may_open_content": true,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0140.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0141": {
+      "name": "Cancel 按钮",
+      "knowledge": [
+        {
+          "description": "对话框底部可见 Cancel 按钮；本次未点击。"
+        },
+        {
+          "description": "用于取消并关闭 Customize 对话框；本次未操作。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": false,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0141.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0142": {
+      "name": "OK 按钮",
+      "knowledge": [
+        {
+          "description": "对话框底部可见 OK 按钮；本次未点击，尚未验证其提交或关闭效果。"
+        },
+        {
+          "description": "用于确认并关闭 Customize 对话框；本次未操作，未验证其提交配置的效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../a0039-0162-7f6328664315/regions/r0013/images/0162/c0142.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": [],
+      "description": ""
+    },
+    "c0143": {
+      "name": "Target 下拉框中的 Standard 选项",
+      "description": "Target 下拉列表中的一项，当前以橙色高亮；Target 字段显示 Standard。",
+      "knowledge": [
+        {
+          "description": "这是 Target 下拉列表中标为 Standard 的选项；当前可见且高亮。本轮仅核对其身份，未选择或验证选择后的效果。"
+        }
+      ],
+      "may_open_content": false,
+      "needs_exploration": true,
+      "image": [
+        {
+          "path": "../discovery-0177-f77d80ef5351/regions/r0014/images/0177/c0143.png",
+          "conditions": []
+        }
+      ],
+      "jump_to": []
+    }
+  },
+  "next_ids": {
+    "region": 15,
+    "control": 144,
+    "knowledge": 9
+  }
+}

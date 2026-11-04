@@ -1,0 +1,411 @@
+{
+  "public_base_commit": "12da7a88b783ef9b9299f173fdb4dccd47b5e88d",
+  "runtime": "approved-source-v8 + two experimental A1/A2 patches",
+  "runtime_patch_files": [
+    "src/regrow/recognition/named_references.py",
+    "src/regrow/recognition/action_target_review.py"
+  ],
+  "runtime_acceptance": "limited experiment; A1 still fails some shared-control cases; A2 not a full point-guard acceptance",
+  "active_source_modified": false,
+  "prompt_modified": false,
+  "new_model_calls": 0,
+  "new_GUI_actions": 0,
+  "originals_preserved": true,
+  "calls": [
+    {
+      "app": "gimp",
+      "call": "0283",
+      "stage": "action_selection",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0283",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "gimp",
+      "call": "0284",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0284",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "gimp",
+      "call": "0336",
+      "stage": "action_selection",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0336",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "gimp",
+      "call": "0337",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0337",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "gimp",
+      "call": "0338",
+      "stage": "step_correction",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0338",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "gimp",
+      "call": "0339",
+      "stage": "step_correction",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0339",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "gimp",
+      "call": "0340",
+      "stage": "discovery",
+      "format_original_call": null,
+      "folder": "evidence/gimp/calls/0340",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0205",
+      "stage": "action_selection",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0205",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0206",
+      "stage": "action_target_review",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0206",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0207",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0207",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0251",
+      "stage": "action_selection",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0251",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0252",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0252",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0253",
+      "stage": "action_selection",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0253",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0254",
+      "stage": "step_correction",
+      "format_original_call": null,
+      "folder": "evidence/vlc/calls/0254",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vlc",
+      "call": "0255",
+      "stage": "step_correction",
+      "format_original_call": "0254",
+      "folder": "evidence/vlc/calls/0255",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0171",
+      "stage": "action_selection",
+      "format_original_call": null,
+      "folder": "evidence/libreoffice-writer/calls/0171",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0172",
+      "stage": "action_selection",
+      "format_original_call": "0171",
+      "folder": "evidence/libreoffice-writer/calls/0172",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0173",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/libreoffice-writer/calls/0173",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0180",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/libreoffice-writer/calls/0180",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0181",
+      "stage": "observation_update",
+      "format_original_call": "0180",
+      "folder": "evidence/libreoffice-writer/calls/0181",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0182",
+      "stage": "object_registration",
+      "format_original_call": null,
+      "folder": "evidence/libreoffice-writer/calls/0182",
+      "input_images": 1,
+      "response_present": false
+    },
+    {
+      "app": "libreoffice-writer",
+      "call": "0183",
+      "stage": "object_registration",
+      "format_original_call": null,
+      "folder": "evidence/libreoffice-writer/calls/0183",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0156",
+      "stage": "task_proposal",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0156",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0164",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0164",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0165",
+      "stage": "task_proposal",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0165",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0169",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0169",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0194",
+      "stage": "action_target_review",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0194",
+      "input_images": 1,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0196",
+      "stage": "observation_update",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0196",
+      "input_images": 2,
+      "response_present": true
+    },
+    {
+      "app": "vs-code",
+      "call": "0198",
+      "stage": "step_correction",
+      "format_original_call": null,
+      "folder": "evidence/vs-code/calls/0198",
+      "input_images": 2,
+      "response_present": true
+    }
+  ],
+  "graphs": [
+    {
+      "app": "gimp",
+      "snapshot": "knowledge_snapshots/a0130-0362-6b35f3d75fdc",
+      "status": "unrepaired research evidence, not accepted graph",
+      "note": "Object image pointers retain native paths; only selected screenshots/call inputs are exported."
+    },
+    {
+      "app": "vlc",
+      "snapshot": "knowledge_snapshots/task-review-0275-3cabe6e49e09",
+      "status": "unrepaired research evidence, not accepted graph",
+      "note": "Object image pointers retain native paths; only selected screenshots/call inputs are exported."
+    },
+    {
+      "app": "libreoffice-writer",
+      "snapshot": "knowledge_snapshots/target-registered-0177-fb6cc992b068",
+      "status": "unrepaired research evidence, not accepted graph",
+      "note": "Object image pointers retain native paths; only selected screenshots/call inputs are exported."
+    },
+    {
+      "app": "vs-code",
+      "snapshot": "knowledge_snapshots/a0037-0190-0a9200005d7c",
+      "status": "unrepaired research evidence, not accepted graph",
+      "note": "Object image pointers retain native paths; only selected screenshots/call inputs are exported."
+    }
+  ],
+  "source_files": [
+    {
+      "runtime_path": "runtime-source/src/regrow/recognition/named_references.py",
+      "workspace_path": "src/regrow/recognition/named_references.py",
+      "same_as_public_base": false
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/recognition/action_target_review.py",
+      "workspace_path": "src/regrow/recognition/action_target_review.py",
+      "same_as_public_base": false
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/runtime/action_executor.py",
+      "workspace_path": "src/regrow/runtime/action_executor.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/register_update.py",
+      "workspace_path": "src/regrow/traversal/register_update.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/result_updater.py",
+      "workspace_path": "src/regrow/traversal/result_updater.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/step_repair.py",
+      "workspace_path": "src/regrow/traversal/step_repair.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/attempt_guard.py",
+      "workspace_path": "src/regrow/traversal/attempt_guard.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/region_tasks.py",
+      "workspace_path": "src/regrow/traversal/region_tasks.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/task_proposer.py",
+      "workspace_path": "src/regrow/traversal/task_proposer.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/traversal_scheduler.py",
+      "workspace_path": "src/regrow/traversal/traversal_scheduler.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/action_proposer.py",
+      "workspace_path": "src/regrow/traversal/action_proposer.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/observation.py",
+      "workspace_path": "src/regrow/traversal/observation.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/traversal/inventory_scroll.py",
+      "workspace_path": "src/regrow/traversal/inventory_scroll.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/function_updates.py",
+      "workspace_path": "src/regrow/records/function_updates.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/task_updates.py",
+      "workspace_path": "src/regrow/records/task_updates.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/task_settlement.py",
+      "workspace_path": "src/regrow/records/task_settlement.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/control_knowledge.py",
+      "workspace_path": "src/regrow/records/control_knowledge.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/shared_tasks.py",
+      "workspace_path": "src/regrow/records/shared_tasks.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/object_store.py",
+      "workspace_path": "src/regrow/records/object_store.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/snapshots.py",
+      "workspace_path": "src/regrow/records/snapshots.py",
+      "same_as_public_base": true
+    },
+    {
+      "runtime_path": "runtime-source/src/regrow/records/tasks.py",
+      "workspace_path": "src/regrow/records/tasks.py",
+      "same_as_public_base": true
+    }
+  ],
+  "redaction": "Credential values, model/private endpoints and workspace prefix replaced in text copies. Images unedited. No encrypted reasoning, transport headers, whole-run dumps or test/review logs published."
+}

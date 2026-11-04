@@ -1,0 +1,28 @@
+{
+  "region_ref": "r0014",
+  "observation_ref": "update:0204",
+  "control_ref": "c0117",
+  "working_region": "r0014",
+  "task_name": "参数探索",
+  "task_region": "r0014",
+  "task_type": "parameter",
+  "status": "matched",
+  "model_grounded": true,
+  "basis": "explicit recorded control selection; coordinates do not verify identity or outcome",
+  "preparatory_action": false,
+  "target_confirmation": {
+    "action": {
+      "action": "input_text",
+      "target": "c0117",
+      "x": 365,
+      "y": 332,
+      "text": "9999",
+      "end_x": null,
+      "end_y": null
+    },
+    "frames": [
+      "<WORKSPACE>/artifacts/runs/desktop_parallel8_20261104_01/batches/vlc/session-01/round-0014/current.png"
+    ],
+    "call": "0206"
+  }
+}

@@ -1,3 +1,5 @@
+> 公开源码说明：测试、验证日志和审阅原件维护在本地开发工作区，不包含在本仓库当前文件中。下文历史验证位置用于说明来源，不是运行依赖。
+
 # regrow 当前开发入口
 
 当前逐步框架唯一维护源码是 [src/regrow](src/regrow)。先读 [当前框架](design/CURRENT_FRAMEWORK.md)，再按 [识别、遍历、记录](design/modules/stepwise/README.md) 找代码。

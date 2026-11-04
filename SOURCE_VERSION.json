@@ -2,37 +2,25 @@
   "date": "2026-11-04",
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
-  "parent_commit": "e519f28cdcb7ddae25766d801f5ae8f057e3cba1",
-  "kind": "current_development_snapshot",
-  "acceptance": "NOT a verified framework release; draft Prompt content is preserved for review, not approved by this sync",
+  "visibility": "public",
+  "kind": "current_development_source",
+  "previous_source_commit": "4965b62ade5e9aa7284e7e7cc62322f3d7d87296",
+  "runtime_source_changed_in_this_cleanup": false,
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "source_roots": [
-    "src",
-    "gui_rewalk"
+  "draft_status": "Five Prompt drafts remain unapproved; see KNOWN_ISSUES.md",
+  "verification_scope": "This cleanup removes publication-only files. It does not validate new model or GUI behavior. Existing tests and logs remain local.",
+  "local_only_material": [
+    "tests",
+    "validation logs",
+    "review reports",
+    "daily notes",
+    "old export bundles"
   ],
-  "copied_file_counts": {
-    "src": 272,
-    "gui_rewalk": 190,
-    "tools": 141,
-    "tests": 8
-  },
-  "unapproved_prompt_drafts": [
-    "src/regrow/prompts/共享/探索角色.prompt",
-    "src/regrow/prompts/发现手册/列表代表项.prompt",
-    "src/regrow/prompts/对象/任务.prompt",
-    "src/regrow/prompts/对象/控件.prompt",
-    "src/regrow/prompts/调用/提出探索任务.prompt"
-  ],
-  "pending_design_not_implemented": [
-    "remove persistent Region parent/child relations",
-    "shared-control correction presentation fix",
-    "additional action point conflict review"
-  ],
-  "export_redactions": [
+  "legacy_debug_redactions": [
     {
       "path": "gui_rewalk/tools/_debug_parse.py",
       "kind": "private_endpoint_only"
@@ -41,22 +29,5 @@
       "path": "gui_rewalk/tools/_find_duplicates.py",
       "kind": "private_endpoint_only"
     }
-  ],
-  "new_model_calls": 0,
-  "new_GUI_actions": 0,
-  "verification": {
-    "python_ast_files": 352,
-    "entry_point_help_checks": 3,
-    "focused_offline_tests_passed": 25,
-    "new_model_calls": 0,
-    "new_GUI_actions": 0,
-    "full_framework_gate": false,
-    "meaning": "Export coherence and focused offline checks only; not semantic acceptance of draft changes"
-  },
-  "previous_version": "reviews/source-sync-20261104/PREVIOUS_SOURCE_VERSION.json",
-  "legacy_manifest_notice": "Root SOURCE_MANIFEST.json and SHA256SUMS describe older historical exports, not this development snapshot; use this Git commit and SOURCE_VERSION.json.",
-  "test_scope": "Only six directly verified modules and their two support files; unrelated local tests are not part of this source synchronization",
-  "repository_visibility": "public, explicitly confirmed by user on 2026-11-04",
-  "verification_evidence": "reviews/source-sync-20261104/CHECKS.md",
-  "branch_policy": "Update the existing default branch; no new repository or development branch. Earlier validated snapshots remain in Git history."
+  ]
 }

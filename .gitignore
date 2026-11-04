@@ -169,3 +169,11 @@ _*.js
 !/tools/stepwise_dashboard.html
 !/design/ROOT_MIGRATION_20261025.md
 !/design/THREE_PART_FRAMEWORK.md
+
+# Public source export: development verification stays local.
+/tests/
+/reviews/
+/devlog/
+/snapshots/
+/patches/
+/rollback_patches/

@@ -1,3 +1,7 @@
+2026-11-01最终任务定义逐字采用用户四条原则，未加入本批应用特定示例；最终原文版尚待模型验收。
+
+2026-11-01任务目标边界由任务正文统一维护：completion_condition围绕一个明确目标，可包含必要多步与跨对象操作；独立新问题不自动追加。task_type/schema及稳定归属不变。原图11个Calc菜单条件按用户授权由操作员修订，原值进入revisions；状态、真实障碍及原始模型答复保留，模型不代改这些旧任务。
+
 # 四个业务对象的字段约定
 
 2026-10-30累计合并：当前唯一字段语义来源为四份对象 Prompt，实际输出权限/必填由本次 schema 决定，17 类配方选入所需语义。区块不等于单一功能；控件是实际操作对象，具体身份与共同用法分组分开。completion_condition 按“足以使用，同流程选代表”，knowledge 保存用途和必要条件；同类数据不必逐项登记。下文较早带日期说明保留历史含义，现行组合与验证状态以 CURRENT_FRAMEWORK 为准。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。
@@ -164,7 +168,7 @@ behavior_context为行为上下文，distinct_regions为确认不同的区块，
 | operations | 按建议探索次序列本轮新增任务，考虑依赖和离页影响，不是预排GUI动作。范围为给定当前区块及其控件；无新任务为[]，不借此重排已有任务。 |
 | operations[].control | 给定完整控件名；仅区块自身问题可为空字符串，不能用空值代指未知控件。 |
 | task_type | function调查用途、直接效果或去向；parameter了解可用输入、取值及必要条件。按原问题而非控件外观分类。 |
-| completion_condition | 新operations必填的固定结算条件：得到什么直接观察或已有证据即可结束本问题。随task保存；后续只判断是否满足，不以remaining_question改写。缺字段的旧task不补写。 |
+| completion_condition | 新operations必填。Luna结合对象、已有知识及后续操作/导航需要，自行确定具体未知弄清到什么程度即可结算；不是预测结果或动作步骤，不按控件类型套模板。随task保存，后续只判断是否满足，不以remaining_question改写；旧task不补写。 |
 | task_update（本步规定的对象/列表） | 对允许更新的已有原任务及实际操作控件相关任务作判断。引用与层级遵循本步格式，不借此改目标、类型或条件。 |
 | task | 本轮提供的任务引用；只有程序明确绑定唯一目标时才按该步格式省略。 |
 | decision | continue仍有必要问题且无明确推进障碍；defer未回答且有实际障碍；answered原问题已有足够证据。 |
@@ -262,3 +266,8 @@ runtime_work.json 以区块 ID 保存下列本轮字段（与区块功能知识�
 runtime_state.json 保存当前区块、活动任务、观察等调度状态。object_history/action_log/task_history 及原调用保存程序来源与历史；不作为普通提示全文展开，也不新增一套平行事实。
 
 2026-10-29：动作结果的description同时承载必要依据，不再分填evidence；foreground不再分填evidence/uncertainty。task_update.reason按需；previous_regions.evidence仅歧义时补充。当前交接从已有结果/前景读取，旧独有交接继续可读，新输出不填handoff_summary。截图与实际投递证据由程序保存。
+
+
+## 2026-11-01 具名对象与嵌套控件（候选，验收进行中）
+模型边界统一由 `recognition/named_references.py` 将本次披露对象显示为可读名称；同名按所属区块限定，规范化/唯一末尾区字变体仅解析引用，不推断历史身份。发现和动作后更新将控件置于所属 `regions[].controls`；更新以 `regions[].current=true` 明确当前前景，历史知识行不自动入前景；跳转及物理父级用名称引用。内部依然沿用稳定ID、既有扁平登记合同和已接受的任务/操作边界。旧调用按其保存合同读取。
+原始请求/回复与 `interpreted_request.json`、`interpreted_response.json` 分别保存；Runner及记录消费者复用统一内部解释，不重写原答。具名局部纠错沿用对象修订合并，省略对象/字段保留，明确撤回与关系核对仍有效。功能名称与对象名称按字段区分，复合功能/参数引用恢复其内部前缀，知识内容不改写。此为协议接线候选，不表示100次遍历已通过。验证与失败见 `artifacts/runs/named_nested_20261101_01/` 与本月日志。

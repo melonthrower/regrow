@@ -1,0 +1,26 @@
+usage: run_visual_collection.py [-h] --instruction INSTRUCTION
+                                [--initial-app INITIAL_APP]
+                                [--output-root OUTPUT_ROOT] [--validate-only]
+                                [--max-turns MAX_TURNS]
+                                [--vm-provider {vmware,android}]
+                                [--path-to-vm PATH_TO_VM]
+                                [--android-console-port ANDROID_CONSOLE_PORT]
+                                [--android-grpc-port ANDROID_GRPC_PORT]
+                                [--avd-name AVD_NAME]
+                                [--android-snapshot-name ANDROID_SNAPSHOT_NAME]
+
+Collect a task using Region guidance and fresh GUI observations.
+
+options:
+  -h, --help            show this help message and exit
+  --instruction INSTRUCTION
+  --initial-app INITIAL_APP
+  --output-root OUTPUT_ROOT
+  --validate-only
+  --max-turns MAX_TURNS
+  --vm-provider {vmware,android}
+  --path-to-vm PATH_TO_VM
+  --android-console-port ANDROID_CONSOLE_PORT
+  --android-grpc-port ANDROID_GRPC_PORT
+  --avd-name AVD_NAME
+  --android-snapshot-name ANDROID_SNAPSHOT_NAME

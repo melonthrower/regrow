@@ -84,22 +84,26 @@ class CollectionVisualGuard:
         return result
 
 
-def snapshot_controls(snapshot):
-    """Load the latest usable dual-box observation without changing the graph."""
+def snapshot_controls(snapshot, *, records=None):
+    """Read admitted identity crops; an absent click area remains unknown."""
+    from .collection_graph import read_stepwise_records
+    from regrow.recognition.identity_templates import usable
+    if records is None:
+        records, _ = read_stepwise_records(snapshot)
     controls = {}
-    for path in sorted(Path(snapshot).glob('regions/*/region.json')):
-        region = json.loads(path.read_text())
+    for rid, region in records.items():
         for ref, control in region.get('controls', {}).items():
             observations = [o for o in control.get('observations', [])
-                            if o.get('image') and o.get('bbox') and o.get('click_bbox')]
+                            if usable(o) and o.get('bbox')]
             if not observations:
                 continue
             observation = observations[-1]
-            image = (path.parent / observation['image']).resolve()
+            image = (Path(snapshot) / observation['image']).resolve()
             if not image.is_file():
                 raise ValueError(f'Collection identity image is missing: {image}')
-            controls[f'{path.parent.name}.{ref}'] = {
-                **observation, 'name': control['name'], 'image': str(image)}
+            controls[f'{rid}.{ref}'] = {
+                **observation, 'click_bbox': observation.get('click_bbox'),
+                'name': control['name'], 'image': str(image)}
     return controls
 
 
@@ -135,10 +139,15 @@ def build_visual_guard(graph, output_root):
     frozen = Path(output_root) / 'matcher'
     frozen.mkdir(parents=True, exist_ok=False)
     hashes = {}
-    for name in ('identity_templates.py', 'image_match.py', 'visual_choices.py'):
-        shutil.copyfile(source / name, frozen / name)
+    from .collection_graph import REGROW_SOURCE
+    sources = {name: source / name for name in ('image_match.py', 'visual_choices.py')}
+    sources['identity_templates.py'] = (REGROW_SOURCE / 'regrow/recognition/identity_templates.py'
+                                      if (graph.snapshot / 'objects.json').exists()
+                                      else source / 'identity_templates.py')
+    for name, implementation in sources.items():
+        shutil.copyfile(implementation, frozen / name)
         hashes[name] = hashlib.sha256((frozen / name).read_bytes()).hexdigest()
-    (frozen / 'source.json').write_text(json.dumps({'source': str(source), 'files': hashes}, indent=2)+'\n')
+    (frozen / 'source.json').write_text(json.dumps({'sources': {k: str(v) for k, v in sources.items()}, 'files': hashes}, indent=2)+'\n')
     def load(name):
         spec = importlib.util.spec_from_file_location('collection_'+name, frozen / (name+'.py'))
         module = importlib.util.module_from_spec(spec)

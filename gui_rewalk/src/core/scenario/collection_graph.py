@@ -9,6 +9,100 @@ import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
+import sys
+
+# Both ordinary CLIs enter through gui_rewalk; the maintained record reader is
+# a sibling package. Import it here once, without a second snapshot decoder.
+REGROW_SOURCE = Path(__file__).resolve().parents[4] / 'src'
+if str(REGROW_SOURCE) not in sys.path:
+    sys.path.insert(0, str(REGROW_SOURCE))
+from regrow.records import object_store, control_knowledge, function_updates
+
+
+def read_stepwise_records(snapshot):
+    """Use the framework reader and retain the files it consumes in the digest."""
+    snapshot = Path(snapshot)
+    if (snapshot / 'objects.json').exists():
+        store = object_store.load(snapshot)
+        records = {rid: object_store.region_state(r) for rid, r in store.items()}
+        paths = [snapshot / name for name in ('objects.json', 'runtime_work.json',
+                 'tasks.json', 'object_history.json', 'action_log.json', 'task_history.json')
+                 if (snapshot / name).exists()]
+        run = snapshot.parent.parent
+        for name in ('object_history.json', 'action_log.json', 'task_history.json'):
+            path = snapshot / name
+            if not path.exists():
+                continue
+            index = json.loads(path.read_text())
+            refs = (index['events'] if name == 'object_history.json' else
+                    list(index.values()) if name == 'action_log.json' else
+                    [ref for fields in index.values() for ref in fields.values()])
+            paths.extend(run / ref for ref in refs)
+    else:
+        paths = sorted(snapshot.glob('regions/*/region.json'))
+        # Preserve the existing legacy task/record meanings; only normalize the
+        # image base so the shared visual reader can consume either layout.
+        records = {p.parent.name: object_store.rebase(json.loads(p.read_text()), p.parent, snapshot) for p in paths}
+    if not records:
+        raise ValueError('Stepwise snapshot has no registered Regions')
+    return records, paths
+
+
+def region_material(rid, region):
+    """The collector's full Region memory; generation selects its own material."""
+    controls = []
+    for cid, control in region.get('controls', {}).items():
+        controls.append({'ref': cid, 'name': control['name'],
+                         'knowledge': [{k: v for k, v in row.items() if k != 'constraints'}
+                                       for row in control_knowledge.card(control) if row.get('description')],
+                         'parameters': control_knowledge.parameter_facts(control),
+                         'knowledge_source': control_knowledge.evidence(control),
+                         **{key: deepcopy(control[key]) for key in ('description', 'may_open_content', 'needs_exploration', 'jump_to') if key in control}})
+    functions = deepcopy(region.get('functions', {}))
+    for function in functions.values():
+        if function.get('constraints'):
+            function['constraints'] = function_updates.resolved_constraints(region, function)
+    return {'region_ref': rid, 'name': region['name'], 'description': region.get('description', ''),
+            'functions': functions, 'local_knowledge': deepcopy(region.get('local_knowledge', {})),
+            'parameters': control_knowledge.parameter_facts(region), 'controls': controls,
+            'list_groups': deepcopy(region.get('list_groups', {})),
+            'tasks': deepcopy(region.get('tasks', {})), 'region_role': region.get('region_role'),
+            'out_of_scope_reason': region.get('out_of_scope_reason')}
+
+
+def generation_material(rid, region):
+    """Select usage knowledge, without exploration work or recording metadata."""
+    def parameters(facts):
+        result = deepcopy(facts)
+        for fact in result.values():
+            for key in ('source', 'sources'):
+                fact.pop(key, None)
+            for observation in fact.get('observations', []):
+                observation.pop('source', None)
+        return result
+
+    controls = [
+        {'ref': cid, 'source_ref': rid + '.' + cid, 'name': control['name'],
+         'description': control.get('description', ''),
+         'knowledge': [{'description': row['description']}
+                       for row in control_knowledge.items(control.get('knowledge'))
+                       if row.get('description')],
+         'parameters': parameters(control_knowledge.parameter_facts(control))}
+        for cid, control in region.get('controls', {}).items()]
+    functions = {}
+    for name, function in region.get('functions', {}).items():
+        functions[name] = {
+            'source_ref': function_updates.reference(rid, name),
+            'description': function_updates.description(function),
+            'support_controls': [{key: deepcopy(support[key])
+                                  for key in ('kind', 'region', 'control', 'name') if key in support}
+                                 for support in function.get('support_controls', [])],
+            'constraints': parameters(function_updates.resolved_constraints(region, function))}
+    return {'region_ref': rid, 'name': region['name'],
+            'description': region.get('description', ''), 'functions': functions,
+            'local_knowledge': deepcopy(region.get('local_knowledge', {})),
+            'parameters': parameters(control_knowledge.parameter_facts(region)),
+            'controls': controls}
 
 
 @dataclass
@@ -22,10 +116,9 @@ class StepwiseCollectionGraph:
     dependencies: dict
 
     def inventory(self):
-        return [{'region_ref': rid, 'name': r['name'], 'description': r.get('description', ''),
-                 'functions': deepcopy(r.get('functions', {})), 'tasks': deepcopy(r.get('tasks', {})),
-                 'region_role': r.get('region_role'), 'out_of_scope_reason': r.get('out_of_scope_reason')}
-                for rid, r in self.records.items() if r.get('functions') and not r.get('out_of_scope_reason')]
+        material = [generation_material(rid, r) for rid, r in self.records.items() if not r.get('out_of_scope_reason')]
+        return [row for row in material if row['functions'] or row['local_knowledge'] or row['parameters']
+                or any(c['knowledge'] or c['parameters'] for c in row['controls'])]
 
 
 def load_collection_graph(source):
@@ -38,14 +131,11 @@ def load_collection_graph(source):
         return ExplorationLedger.load(source), hashlib.sha256(raw).hexdigest()
     snapshot = (source.parent / pointer['snapshot']).resolve()
     snapshot.relative_to(source.parent / 'knowledge_snapshots')
-    paths = sorted((snapshot / 'regions').glob('*/region.json'))
-    if not paths:
-        raise ValueError('Stepwise snapshot has no registered Regions')
-    records = {p.parent.name: json.loads(p.read_text(encoding='utf-8')) for p in paths}
+    records, paths = read_stepwise_records(snapshot)
     if any(r.get('id') != rid or not r.get('name') for rid, r in records.items()):
         raise ValueError('Stepwise Region identity does not match its record path')
     from .collection_visual_guard import snapshot_controls
-    controls = snapshot_controls(snapshot)
+    controls = snapshot_controls(snapshot, records=records)
     dependencies = [source, *paths, *(Path(c['image']) for c in controls.values())]
     hashes = []
     for path in sorted(set(dependencies)):
@@ -53,10 +143,8 @@ def load_collection_graph(source):
         relative = str(path.relative_to(source.parent))
         hashes.append((relative, hashlib.sha256(path.read_bytes()).hexdigest()))
     digest = hashlib.sha256(json.dumps(hashes, ensure_ascii=False).encode()).hexdigest()
-    regions = {rid: SimpleNamespace(region_id=rid, name=r['name'], memory=json.dumps({
-        'description': r.get('description', ''), 'functions': r.get('functions', {}),
-        'tasks': r.get('tasks', {}), 'controls': [{'ref': cid, 'name': c['name']}
-        for cid, c in r.get('controls', {}).items()]}, ensure_ascii=False)) for rid, r in records.items()}
+    regions = {rid: SimpleNamespace(region_id=rid, name=r['name'],
+                memory=json.dumps(region_material(rid, r), ensure_ascii=False)) for rid, r in records.items()}
     return StepwiseCollectionGraph(source, snapshot, records, controls, regions, digest, dict(hashes)), digest
 
 

@@ -5,18 +5,32 @@ import json
 from typing import Mapping
 
 import networkx as nx
+from .collection_seed import SETUP_SCHEMA, SETUP_CAPABILITIES, validate_setup
 
 # The live Region consumer shares the existing model transport and episode writer.
 _REGION_GOAL = {"type": "object", "properties": {
-    "region_ref": {"type": "string"}, "goal": {"type": "string"}},
-    "required": ["region_ref", "goal"], "additionalProperties": False}
+    "region_ref": {"type": "string"}, "goal": {"type": "string"},
+    "source_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1}},
+    "required": ["region_ref", "goal", "source_refs"], "additionalProperties": False}
 REGION_INSTRUCTION_SCHEMA = {"type": "object", "properties": {
     "instruction": {"type": "string"},
+    "setup": SETUP_SCHEMA,
     "condition": {"anyOf": [_REGION_GOAL, {"type": "null"}]},
     **{key: {"type": "array", "items": _REGION_GOAL}
        for key in ("before", "if_true", "if_false", "after")}},
-    "required": ["instruction", "before", "condition", "if_true", "if_false", "after"],
+    "required": ["instruction", "setup", "before", "condition", "if_true", "if_false", "after"],
     "additionalProperties": False}
+
+
+def instruction_source_refs(ledger):
+    from .region_function_research import region_function_inventory
+    refs = set(ledger.regions)
+    for row in region_function_inventory(ledger):
+        rid = row['region_ref']
+        refs.update(rid + '.' + c['ref'] for c in row.get('controls', []))
+        refs.update(rid + '/' + name for name in row.get('functions', {}))
+        refs.update(op['operation_ref'] for op in row.get('operations', []))
+    return refs
 
 
 def validate_region_instruction(task, ledger):
@@ -33,10 +47,20 @@ def validate_region_instruction(task, ledger):
         raise ValueError("Branch goals require a condition")
     if not goals:
         raise ValueError("Region task has no goals")
+    if 'setup' in task:
+        validate_setup(task['setup'])
+    available_refs = instruction_source_refs(ledger) if any('source_refs' in g for g in goals if isinstance(g, Mapping)) else set()
     for goal in goals:
         if (not isinstance(goal, Mapping) or goal.get("region_ref") not in ledger.regions
                 or not str(goal.get("goal") or "").strip()):
             raise ValueError("Every goal needs a known Region ref and a nonempty goal")
+        if 'source_refs' in goal:
+            refs = goal['source_refs']
+            if (not isinstance(refs, list) or not refs or
+                    any(not isinstance(ref, str) or ref not in available_refs for ref in refs)):
+                raise ValueError('Goal source_refs must refer to supplied graph knowledge')
+        elif 'setup' in task:
+            raise ValueError('New instructions with setup need source_refs for every goal')
     return dict(task)
 
 
@@ -44,18 +68,29 @@ def design_region_instruction(ledger, agent, request=""):
     from .region_function_research import region_function_inventory
     inventory = region_function_inventory(ledger)
     if not inventory:
-        raise ValueError("No discovered Region functions")
+        raise ValueError("No recorded Region or control usage")
     task = agent._call(
         role="region_instruction", response_schema=REGION_INSTRUCTION_SCHEMA, screenshots=[],
         system_prompt=("根据已发现功能设计一个有共同目的的用户任务。无需历史成功或完整点击配方。"
-                       "只使用目录中的功能、参数依据和Region引用，不把推测写成已验证。"
+                       "使用目录中的区块功能、控件知识、参数和必要条件；没有功能总结不表示控件用法不可用。"
+                       "已有明确用法即使没有执行记录也可用于设计任务，保留其中的不确定性，不把认识写成实际操作成功。"
+                       "任务写清操作对象、期望结果、已知参数和需要保持的内容，不编造未提供的选项或对象已存在。"
+                       "正例：已有用法说明可调整选中对象的尺寸，可据此设计指定尺寸并保留其他对象的任务。"
+                       "反例：因为functions为空就忽略这项用法，或把观察过的一个示例值当作全部参数范围。"
                        "before是条件前的目标，condition是执行时要看图判断的问题和所在Region；"
                        "if_true/if_false互斥，after是共同后续。普通任务condition=null且分支为空。"
                        "每个goal写该区块要实现的结果与必要对象/参数，不写历史坐标。"
                        "不枚举导航目标不等于禁止导航；不要添加请求中没有的起始页面或导航限制。"
                        "instruction用自然用户目标表达，必要导航和输入实现细节由实时执行处理。"
-                       "如要求3至5个子操作，按逻辑目标组织，不枚举导航点击；不生成无授权的危险任务。"),
-        user_prompt=json.dumps({"request": request, "regions": inventory}, ensure_ascii=False),
+                       "如要求3至5个子操作，按逻辑目标组织，不枚举导航点击；不生成无授权的危险任务。"
+                       "每个goal用source_refs保存支撑它的source_ref或区块引用；引用不是点击顺序。"
+                       "setup描述采集初态：assets列出所需初始文件的name、kind、content，open_file指定其中要在目标应用打开的文件或null，"
+                       "initial_state说明开始正式任务前应看到什么。只使用给定setup_capabilities；无需素材时assets=[]。"
+                       "遍历图中的当前文件、选中项和数值是历史观察，不代表采集初态。"
+                       "需要特定初态时由setup准备；保持不变的内容以实际采集初态为基准。"
+                       "Seed只建立任务需要的初始对象，不预先完成用户要求的创建、选择、修改或导出。"),
+        user_prompt=json.dumps({"request": request, "regions": inventory,
+                                "setup_capabilities": SETUP_CAPABILITIES}, ensure_ascii=False),
     )
     return validate_region_instruction(task, ledger)
 
@@ -89,7 +124,7 @@ class RegionGuidedCollector:
         return [edge for source, dest in zip(path, path[1:]) for edge in relations
                 if edge["source_region_ref"] == source and dest in edge["revealed_region_refs"]]
 
-    def execute(self, instruction, initial_observation=None):
+    def execute(self, instruction, initial_observation=None, *, environment_context=None):
         from copy import deepcopy
         from ..explore.actions import action_dict, execute_action, validate_for_platform
         from ..explore.contracts import _parse_action
@@ -145,6 +180,8 @@ class RegionGuidedCollector:
                            "historical_guidance": self._guidance(visible, goal["region_ref"]),
                            "recent_actions": [{"action": x["action_spec"], "verification": x.get("verification")}
                                               for x in trajectory[-3:]]}
+                if environment_context is not None:
+                    context['collection_environment'] = environment_context
                 if self.visual_guard is not None:
                     context["known_visual_controls"] = self.visual_guard.catalog()
                     context["grounding_feedback"] = grounding_feedback

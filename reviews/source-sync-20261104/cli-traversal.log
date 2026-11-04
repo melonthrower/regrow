@@ -1,0 +1,8 @@
+usage: src [-h] run output
+
+positional arguments:
+  run
+  output
+
+options:
+  -h, --help  show this help message and exit

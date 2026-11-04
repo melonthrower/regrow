@@ -101,3 +101,30 @@ function_updates.py统一应用功能add/update/remove，先对象知识、再�
 
 ## 2026-10-30 固定任务终点
 completion_condition作为Task自身事实随原对象存储保存，不另建条件清单或答案副本。活跃共享任务通过来源引用读取同一条件；解除共享时将该时点来源条件保留为本地任务条件，有本地尝试而存活的任务不会因移除共享引用丢失终点。普通task_update只判断进度，不修改原条件。旧记录不补写推断条件。
+
+
+2026-10-31 按对象隔离阻塞（工作稿，未整体验收）：发现的行级问题与依赖子树可留缺口；旧归属断点按原生截图恢复独立目标登记；更新的非目标补框/外观负答可保留，实际来源和访问目标仍须确认；共享观察来源映射只做一次。规划让出保留已选任务及其归属，同区/跨区均有聚焦检查；新共享复核按当前调用对象筛选。没有改变任务终点或新增图片哈希。11项聚焦检查通过；原Settings停点副本0HTTP/0GUI恢复通过；4次真实Luna保存帧完成1区块2控件及原入口结算，0GUI。错位jump_to仍被既有过滤丢弃；此次模型未触发非目标bbox=null分支，历史pending共享复核及部分全回复检查仍未隔离。当前仅工作稿，不称所有17类调用或完整遍历已验收。证据artifacts/runs/object_scoped_progress_20261031_01；Astra审阅包to_astra/object_scoped_progress_20261031_01_review_v1。
+
+
+2026-11-01模型wire记录和内部解释分存：response.json保留模型原答，interpreted_response.json是名称/嵌套归属解析后的内部候选，interpreted_request.json保留相应内部schema。registration/effective候选仍沿原保存位置优先读取；稳定ID、任务/动作归属及历史原件不迁移。具名功能ref按功能命名空间解析，不能因与区块同名转成区块ID。
+
+2026-11-01既有跳转目标：模型可引用本次已披露、未重复声明的旧控件；decode复用内部ref+空knowledge行，register_destinations按目标区块核对已有归属。该引用不新增视觉观察/图片/身份，空knowledge仍沿现有物化路径留下知识事件。未知/歧义不猜测；真实动作、当前到达区块与结果证据仍由原register_entry检查。原0039不改原答完整Runner恢复、2HTTP新保存帧均通过有限验收，详见本月日志。
+
+2026-11-01功能支持具名接线：新对象在物化后才有ID。function_updates.support_rows仍优先接受稳定ID，名称只在本区块具有当前source_call接受事件的对象中唯一解析；当前新对象或已参与本次的旧对象可以匹配，未参与本次旧对象/跨区/歧义不放行。仍需用途知识，最终support_controls保存ID。所有apply调用共用本实现，constraints与功能修订语义不变。原0110完整原答登记通过；2HTTP新保存帧覆盖相邻路径而未触发supports字段，边界见月志。
+
+2026-11-01任务知识接线：task_goal在原已选动作范围内，补未作废、executed_receipt_zero动作所绑定控件当前knowledge和既有evidence；对象去重，与原动作结果分开，不把其他任务认识当作本动作效果。三消费者复用本入口；不扫描整个到达区块，不自动完成任务。 证据与边界见当月日志。
+
+### 2026-11-01 局部任务状态与判断审计
+
+environment_context.render 仅为 task_proposal 的当前区块附任务状态；global forest 结构保持，local_progress 仍供独立图展示调用。task_inventory_context 不重复已覆盖控件的旧 needs_exploration 和第二份任务状态。task_assessments 负责已知任务行的公共验收边界、拒绝审计与简短反馈；统一 task_updates.decide 消解已被正常判断的审计。无法确定原任务的引用不能作为孤立拒绝项放行。
+
+result_registration_pending 不再无条件阻止任务判断：目标对象在失败调用之后另有独立已接受知识时可供 Luna 复核；身份、必要前提和异常阻碍保持。判断完成不补造原失败动作登记；原 blocker/deferral 进入已有审计历史。实际知识仍在对象记录中。
+
+### 2026-11-01 任务进度不再受独立旧登记缺口二次约束
+
+coverage保留首次任务提出、显式清点review、新控件未考虑和任务提出失败的既有判断；discovery.pending与suspended_branch不再单独阻止inventory_complete/complete。旧记录和错误仍存在；有效pending/blocked任务继续阻止complete。所有调度和展示读取同一结果。清点调用operations可为空，object_knowledge.apply仍在同一事务直接登记知识与function_updates，不需要先新增探索任务。
+
+
+## 2026-11-01 当前知识修订与直接目标材料
+
+区块local_knowledge保持当前整体用法；新证据补全/推翻所提供段落时，正常回复用update/delete同次修订，历史原件保留。具体控件参数留在控件知识，不复制成平行区块答案。history_context.identity_candidates只为动作来源/工作/任务归属区块附旧段落；task_result_review补所属区块段落。现有字段和事务登记不变。task_inventory_context.destination_knowledge读取一跳已登记/已观察目标的当前知识和已回答问题；同目标去重，控件目标不扩到兄弟，仅读不扩写范围。旧图不会被批量改写。保存帧Screen k0024实际修订、c0139参数done、新菜单及代表项裁剪通过；具体限制见2026-11月志。

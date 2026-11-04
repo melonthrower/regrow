@@ -31,6 +31,7 @@ ref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_constraints" requires="" -->
 knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。
+若条目表示同一操作允许选择的取值，例如符号、颜色或字体，应完整收集实际观察的候选、分类及适用条件，归到该选择部件的参数知识。未显示的候选继续观察后补充，不把部分列表写成完整范围。同质业务对象的实例列表不因此成为必须枚举的参数值域；各功能独有条件仍分别保留。
 正例："搜索词": {"description": "填写要查找的关键词。"}；"导出格式": {"description": "可选择 PDF 或纯文本。"}
 <!-- END_PROMPT_BLOCK id="control.knowledge_constraints" -->
 
@@ -64,6 +65,7 @@ knowledge 的每项 description 说明这个控件能做什么、怎样使用；
 <!-- BEGIN_PROMPT_BLOCK id="control.registration" requires="control.definition,control.identity,control.references" -->
 # 登记控件：controls
 报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。
+尽量覆盖视野内的功能区块和稳定操作部件。用于给同一操作选择参数值的网格或列表，按选择部件登记，取值完整写入它的 knowledge.constraints；其中独立的搜索、滚动或确认部件按实际职责保留。不同业务命令仍分别登记，不将整个菜单合成一个选择部件，也不为每个参数值复制控件树节点。
 大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。
 正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。
 <!-- END_PROMPT_BLOCK id="control.registration" -->

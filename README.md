@@ -1,21 +1,29 @@
-# 2026-11-02 当前源码与实机验证
+# ReGROW 当前开发源码（三阶段）
 
-正式 `src/` 已同步为本轮实际运行的完整冻结源码，摘要 `bd3ea9a16951091332ab5317b4e86a263f7f15dbce6e0b83f4b2a96dcf43c8b5`；不再需要从旧 reviews/tested-source 手工挑选补丁。
+本分支同步 2026-11-04 的当前开发目录，包含遍历、指令生成、轨迹采集及其共享依赖。它是研究开发快照，不是已验收发布；同步不会使未确认 Prompt 草稿获得批准，也不代表应用遍历或完整业务采集已通过。直接更新现有默认分支 `codex/regrow-initial`，旧有限验证版本保留在 Git 提交历史中。
 
-Settings/Gedit 原设备、原图实机小试新增15次模型调用、4次GUI操作，4次均有真实回执、后图和登记。Settings 的 Night Light 入口任务完成；Gedit 正文目标恢复关联并继续原业务任务，该业务任务仍 pending。Gedit 对已有缩进证据判断偏保守而重复准备文本，作为未解决质量问题保留。未新增模型角色，未重放旧动作。
+|阶段|入口|职责|
+|---|---|---|
+|遍历|`src/__main__.py`，`python src step --help`|发现与复认区块/控件、探索任务、执行及结果登记|
+|指令生成|`gui_rewalk/run_capability_task_synthesis.py`|只读已冻结图中的功能、控件知识、参数及条件，生成指令|
+|轨迹采集|`gui_rewalk/run_visual_collection.py`|读取指令及其冻结图，准备必要素材，依据实时界面执行并记录轨迹|
 
-这是限定研究源码同步：此前4次保存帧模型验证及9项辅助检查另计；失败补充/暂挂/恢复分支仍主要由辅助检查覆盖，非全框架发布或全应用验收。运行记录、截图、请求回复、凭据及机器配置不在本提交中。
+生成、采集复用 `gui_rewalk/src/core/scenario/collection_graph.py` 读取图；该读取器又依赖本仓库 `src/regrow/records`。因此应克隆整个仓库，不能仅复制 `gui_rewalk/`。生成材料与采集记忆的选择职责分开，必要图片素材准备位于 `collection_seed.py`。这些入口及默认行为以当前源码为准。
 
-[本轮设计和验证范围](reviews/target-registration-live-20261102/DESIGN.md) · [正式源码变更图](reviews/target-registration-live-20261102/CHANGE_MAP.md) · [版本元数据](SOURCE_VERSION.json)
+```bash
+python src step --help
+python gui_rewalk/run_capability_task_synthesis.py --help
+python gui_rewalk/run_visual_collection.py --help
+```
 
-# regrow
+## 状态与边界
 
-当前 GUI 遍历研究代码快照。保留主框架、逐步遍历器、独立 prompt、测试及当前设计文档；不含运行截图/账本、模型凭据或虚拟机镜像。
+- 当前开发目录含尚未批准的 Prompt 草稿，具体路径见 [版本说明](SOURCE_VERSION.json)。本分支原样保存它们供审阅；实际运行仍使用各自冻结源码，没有将本分支部署到活动运行。
+- 取消 Region 父子关系仍是设计候选，未实施；不要把前面的讨论当成代码现状。动作点位核对与共享控件纠错另有已知问题。
+- 当前图读取、知识生成材料和素材准备已有局部验证，完整新图实机采集、任意任务可执行性及全框架质量均未由本同步认证。
+- 不含 API Key、其他凭据、私有端点、运行图/截图/账本、虚拟机或外部依赖副本。少量旧调试工具的私有端点沿既有导出规则保留占位值，真实配置仍仅在本地。
+- 本次准确版本以本分支 Git commit 和 `SOURCE_VERSION.json` 为准。根目录 `SOURCE_MANIFEST.json`、`SHA256SUMS` 为历史导出文件，不代表此次快照。
 
-- [开发入口：按问题找代码、设计与测试](DEVELOPMENT.md)
-- [逐步遍历器](experiments/clock_manual_20260919/README.md)
-- [当前框架与模块索引](design/CURRENT_FRAMEWORK.md)
-- [原项目说明](README.upstream.md)
-- [本次快照说明](SNAPSHOT.md)
+[开发导航](DEVELOPMENT.md) · [当前框架](design/CURRENT_FRAMEWORK.md) · [生成与采集现状](design/modules/visual_collection.md) · [本次同步说明](reviews/source-sync-20261104/SYNC.md)
 
-这是研究中的工作区快照，不是经过全框架回归的发布版本。外部 OSWorld/Android 环境和模型认证需自行配置，不在代码包内。
+本仓库此前的根说明保存在 [原说明](reviews/source-sync-20261104/PREVIOUS_README.md)。模型、Android/OSWorld 与系统依赖须自行配置，凭据使用本地环境或受忽略的配置文件提供。

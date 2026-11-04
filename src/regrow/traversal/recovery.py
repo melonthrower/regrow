@@ -49,18 +49,26 @@ def resolve(reply, platform='android'):
         result['action'] = _action_commands.normalize(result['action'])
     return result
 
-def interrupted_tasks(records, state):
+def interrupted_tasks(records, state, refs=None):
     """Recover task ownership from the triggering attempt after active_task clears."""
-    attempt = state.get('attempt')
-    if not attempt:
-        return []
-    return [{'区块': region['name'], '任务': name, '任务依据与范围': task.get('reason', ''), '状态': task.get('status'), '结果依据': task_value(task, 'result_evidence', ''), '触发动作': attempt} for region in records.values() for (name, task) in owned_tasks(region).items() if attempt in task_value(task, 'attempts', [])]
+    from regrow.traversal.recovery_tasks import interrupted
+    refs = interrupted(records, state) if refs is None else refs
+    rows = []
+    for ref in refs:
+        region = records.get(ref['region'], {})
+        task = owned_tasks(region).get(ref['name'])
+        if task is not None:
+            rows.append({'区块': region['name'], '任务': ref['name'],
+                         '任务依据与范围': task.get('completion_condition') or task.get('reason', ''),
+                         '状态': task.get('status'), '结果依据': task_value(task, 'result_evidence', ''),
+                         '触发动作': state.get('attempt')})
+    return rows
 
-def build_request(root, episode, app, region_name, trigger_result, screenshot):
+def build_request(root, episode, app, region_name, trigger_result, screenshot, *, platform='android'):
     from regrow.prompts.compose import parts as rule_parts
     parts = rule_parts(root, 'recovery')
     text = '\n\n'.join((p['text'] for p in parts))
-    dynamic = {'目标应用': app, '平台': 'Android触屏，不支持hover', '中断的工作区块': region_name, '触发异常的结果': trigger_result, '异常交接': episode.get('handoff', ''), '重启工具状态': '本次已使用；不要再次请求，结合截图和启动回执选择其他恢复动作' if any((a.get('framework_tool') == 'restart_app' for a in episode['actions'])) else '尚未使用；仅目标应用退出或应用外时可请求', '框架反馈': episode.get('framework_feedback', ''), '本次恢复历史': episode['actions']}
+    dynamic = {'目标应用': app, '平台': '桌面鼠标与键盘' if platform == 'desktop' else 'Android触屏，不支持hover', '中断的工作区块': region_name, '触发异常的结果': trigger_result, '异常交接': episode.get('handoff', ''), '重启工具状态': '本次已使用；不要再次请求，结合截图和启动回执选择其他恢复动作' if any((a.get('framework_tool') == 'restart_app' for a in episode['actions'])) else '尚未使用；仅目标应用退出或应用外时可请求', '框架反馈': episode.get('framework_feedback', ''), '本次恢复历史': episode['actions']}
     if episode.get('interrupted_tasks'):
         dynamic['中断任务（原记录，不代表新增授权）'] = deepcopy(episode['interrupted_tasks'])
     request = {'role': 'recovery', 'stage': 'recovery_action', 'system_prompt': text, 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [screenshot], 'response_schema': schema(), 'fixed_parts': parts}

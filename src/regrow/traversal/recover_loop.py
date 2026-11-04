@@ -4,7 +4,6 @@ from regrow.records.snapshots import read as _record_read
 from regrow.records.snapshots import write_json as _record_write_json
 from regrow.records.snapshots import publish as _record_publish
 'Bounded recovery without business Region identification between actions.'
-from regrow.records.object_store import owned_tasks
 import hashlib
 from pathlib import Path
 import time
@@ -28,6 +27,7 @@ def run(root, transport, out, call, repair=None):
     from regrow.traversal import register_update as _register_update
     from regrow.traversal import discovery_step as _discovery_step
     from regrow.traversal import recovery as _recovery
+    from regrow.traversal import recovery_tasks
     from regrow.runtime import action_commands as _action_commands
     from regrow.traversal import recovery_stall as _recovery_stall
     from regrow.recognition import visual_backtrack as _visual_backtrack
@@ -43,7 +43,9 @@ def run(root, transport, out, call, repair=None):
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / 'episode.json'
     episode = _record_read(path) if path.exists() else {'actions': [], 'status': 'running', 'handoff': state.get('recovery_handoff', ''), 'source_call': state.get('source_call'), 'exception': state.get('exception')}
-    episode['interrupted_tasks'] = policy.interrupted_tasks(records, state)
+    episode.setdefault('task_refs', recovery_tasks.interrupted(records, state))
+    episode.setdefault('trigger_attempt', state.get('attempt'))
+    episode['interrupted_tasks'] = policy.interrupted_tasks(records, state, episode['task_refs'])
 
     def save():
         _record_write_json(path, episode)
@@ -78,7 +80,7 @@ def run(root, transport, out, call, repair=None):
             episode['observations'] = episode.get('observations', 0) + 1
             save()
             transport.screenshot(observations / 'current.png')
-            q = policy.build_request(root, episode, transport.package, work, trigger, str((observations / 'current.png').resolve()))
+            q = policy.build_request(root, episode, transport.package, work, trigger, str((observations / 'current.png').resolve()), platform=getattr(transport, 'platform', 'android'))
             episode.update(pending_request=q, pending_observation=str(observations))
             save()
         repeated_surface = stalled(episode, observations / 'current.png')
@@ -108,23 +110,16 @@ def run(root, transport, out, call, repair=None):
         episode['handoff'] = reply['handoff']
         episode['exception'] = reply['exception']
         save()
-        if reply['exception'] == 'unexpected_exit' and state.get('active_task'):
-            active = state['active_task']
-
-            def suspend(records, current, snapshot, temp):
-                task = owned_tasks(records[active['region']])[active['name']]
-                if task['status'] == 'pending':
-                    from regrow.records.tasks import audit
-                    audit(task)['result_evidence'] = reply['reason']
-                    task.update(status='blocked', blocker={'condition': 'review_required', 'exception': 'unexpected_exit', 'source_call': ref, 'reason': reply['reason']}, deferral={'reason': reply['reason'], 'retry_when': 'explicit_crash_cause_resolved', 'source_call': ref})
-                current.pop('active_task', None)
-            _record_publish(transport.run, 'exit-suspend-' + ref, suspend)
+        if reply['exception'] == 'unexpected_exit':
+            recovery_tasks.suspend(transport.run, episode['task_refs'], ref, reply['reason'])
             state.pop('active_task', None)
         if reply['decision'] == 'resume_exploration':
             discovery.await_discovery(transport.run, str((observations / 'current.png').resolve()), 'recovery-' + ref, reply['handoff'])
             episode['status'] = 'awaiting_discovery'
             save()
             _owner_run_stage(root, transport.run, call, repair=repair)
+            current = _record_load(transport.run)[2]
+            episode['resumed_tasks'] = recovery_tasks.resume(transport.run, episode, current.get('source_call'))
             episode['status'] = 'discovery_complete'
             save()
             return {'status': 'paused_after_recovery_discovery', 'gui_actions': transport.account['gui_started'] - initial, 'episode': str(path), 'reason': episode.get('reason')}

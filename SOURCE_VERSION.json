@@ -1,26 +1,62 @@
 {
-  "date": "2026-11-02",
-  "source_hash": "bd3ea9a16951091332ab5317b4e86a263f7f15dbce6e0b83f4b2a96dcf43c8b5",
-  "source_tree_sha": "702631b8810ebb1b81ec637b67a4f639e4d1d1b8",
-  "source_file_count": 269,
-  "implementation_review_commit": "e8b8610db4fe848a72910fd81ab9cf34fcfc255d",
-  "previous_default_head": "f18f2f404c342da5ed4ed17e269d03596cf1a90e",
-  "live": {
-    "model_requests": 15,
-    "gui_actions": 4,
-    "registered_actions": 4,
-    "applications": [
-      "Settings",
-      "Gedit"
-    ],
-    "pending_execution": 0
+  "date": "2026-11-04",
+  "repository": "melonthrower/regrow",
+  "branch": "codex/regrow-initial",
+  "parent_commit": "e519f28cdcb7ddae25766d801f5ae8f057e3cba1",
+  "kind": "current_development_snapshot",
+  "acceptance": "NOT a verified framework release; draft Prompt content is preserved for review, not approved by this sync",
+  "components": {
+    "traversal": "src/regrow/",
+    "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
+    "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "saved_frame": {
-    "model_requests": 4,
-    "gui_actions": 0
+  "source_roots": [
+    "src",
+    "gui_rewalk"
+  ],
+  "copied_file_counts": {
+    "src": 272,
+    "gui_rewalk": 190,
+    "tools": 141,
+    "tests": 8
   },
-  "focused_checks": 9,
-  "scope": "limited research snapshot; no full-framework release certification",
-  "known_limit": "Gedit indentation-business task unfinished; redundant preparation observation recorded",
-  "preserved_repository_document": "src/README.md (unchanged; not part of runtime source hash)"
+  "unapproved_prompt_drafts": [
+    "src/regrow/prompts/共享/探索角色.prompt",
+    "src/regrow/prompts/发现手册/列表代表项.prompt",
+    "src/regrow/prompts/对象/任务.prompt",
+    "src/regrow/prompts/对象/控件.prompt",
+    "src/regrow/prompts/调用/提出探索任务.prompt"
+  ],
+  "pending_design_not_implemented": [
+    "remove persistent Region parent/child relations",
+    "shared-control correction presentation fix",
+    "additional action point conflict review"
+  ],
+  "export_redactions": [
+    {
+      "path": "gui_rewalk/tools/_debug_parse.py",
+      "kind": "private_endpoint_only"
+    },
+    {
+      "path": "gui_rewalk/tools/_find_duplicates.py",
+      "kind": "private_endpoint_only"
+    }
+  ],
+  "new_model_calls": 0,
+  "new_GUI_actions": 0,
+  "verification": {
+    "python_ast_files": 352,
+    "entry_point_help_checks": 3,
+    "focused_offline_tests_passed": 25,
+    "new_model_calls": 0,
+    "new_GUI_actions": 0,
+    "full_framework_gate": false,
+    "meaning": "Export coherence and focused offline checks only; not semantic acceptance of draft changes"
+  },
+  "previous_version": "reviews/source-sync-20261104/PREVIOUS_SOURCE_VERSION.json",
+  "legacy_manifest_notice": "Root SOURCE_MANIFEST.json and SHA256SUMS describe older historical exports, not this development snapshot; use this Git commit and SOURCE_VERSION.json.",
+  "test_scope": "Only six directly verified modules and their two support files; unrelated local tests are not part of this source synchronization",
+  "repository_visibility": "public, explicitly confirmed by user on 2026-11-04",
+  "verification_evidence": "reviews/source-sync-20261104/CHECKS.md",
+  "branch_policy": "Update the existing default branch; no new repository or development branch. Earlier validated snapshots remain in Git history."
 }

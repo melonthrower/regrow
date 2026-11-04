@@ -42,8 +42,13 @@ def test_projects_function_boundaries_and_observed_routes_read_only(tmp_path):
     before={str(p):p.read_bytes() for p in source.parent.rglob('*') if p.is_file()}
     graph,digest=load_collection_graph(source)
     inventory=region_function_inventory(graph)
-    assert inventory[0]['functions']['Edit title']==record['functions']['Edit title']
-    assert inventory[0]['tasks']['inspect']['status']=='record_only'
+    function = inventory[0]['functions']['Edit title']
+    assert 'Current object' in function['description']
+    assert 'Title shows entered text' in function['description']
+    assert 'Persistence after restart not observed' in function['description']
+    assert function['constraints'] == record['functions']['Edit title']['constraints']
+    assert 'task_refs' not in function and 'tasks' not in inventory[0]
+    assert json.loads(graph.regions['r1'].memory)['tasks']['inspect']['status']=='record_only'
     assert graph.regions['r1'].name=='Editor'
     edges=collection_relations(graph)
     assert edges[0]['revealed_region_refs']==['r2'] and edges[0]['attempt_ref']=='a1'
@@ -78,7 +83,10 @@ def test_ordinary_generator_passes_stepwise_functions_and_pins_source(tmp_path,m
             return instruction()
     monkeypatch.setattr(f,'build_region_model_agent',lambda *args:Agent())
     assert cli.main([str(source),'--request','Set title to Draft','--output',str(output)])==0
-    assert seen[0]['regions'][0]['functions']==record['functions']
+    function = seen[0]['regions'][0]['functions']['Edit title']
+    assert 'Persistence after restart not observed' in function['description']
+    assert function['constraints'] == record['functions']['Edit title']['constraints']
+    assert 'tasks' not in seen[0]['regions'][0]
     saved=json.loads(output.read_text())
     assert saved['source_ledger_digest']
     from gui_rewalk.run_visual_collection import main

@@ -83,17 +83,28 @@ def run_region_collection(args):
                               action_space="gen_data", headless=True,
                               cache_dir=str(Path(args.output_root) / "_environment_cache"), os_type="Ubuntu")
     try:
-        from gui_rewalk.src.core.app_lifecycle import DesktopWindowOwner, launch_app, wait_for_app
+        from gui_rewalk.src.core.app_lifecycle import DesktopWindowOwner
         from gui_rewalk.src.core.explore.scope import ScopeGuard
         from gui_rewalk.src.core.scenario.collection_writer import CollectionWriter
         owner = None if mobile else DesktopWindowOwner(env)
-        launch_app(env, args.initial_app, desktop_window_owner=owner)
-        if not wait_for_app(env, args.initial_app, desktop_window_owner=owner):
-            raise RuntimeError("Target application did not appear")
         platform = "android" if mobile else "desktop"
         scope = ScopeGuard(env=env, app_name=args.initial_app, platform=platform, desktop_window_owner=owner)
+        from gui_rewalk.src.core.scenario.collection_seed import initialize_collection_environment
+        seed, initial_observation = initialize_collection_environment(
+            instruction, env, agent, args.initial_app, run_output / 'environment',
+            platform=platform, desktop_window_owner=owner)
+        environment_context = None if seed is None else {
+            'initial_state': seed['initial_state'],
+            'files': [{'name': item['name'], 'path': item['device_path']} for item in seed['files']]}
         result = RegionGuidedCollector(ledger, agent, env, scope, platform=platform,
-                                      max_turns=args.max_turns, visual_guard=guard).execute(instruction)
+                                      max_turns=args.max_turns, visual_guard=guard).execute(
+                                          instruction, initial_observation=initial_observation,
+                                          environment_context=environment_context)
+        if seed is not None:
+            result['scenario_setup'] = {'report': str(run_output / 'environment/report.json'),
+                                        'ready': seed['ready'], 'model_calls': seed['model_calls']}
+            result['data_bindings'] = {item['name']: item['device_path'] for item in seed['files']}
+            result['model_calls'] += seed['model_calls']
         result["graph_provenance"] = [{"source_ledger": str(source_path), "source_ledger_digest": digest}]
         app = re.sub(r"[^0-9A-Za-z._-]+", "_", args.initial_app).strip("._") or "app"
         writer = CollectionWriter(str(run_output), platform, stamp.strftime("%Y%m%d"), app)

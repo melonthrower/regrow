@@ -181,10 +181,43 @@ Runner通过上下文借出既有剩余repairs额度；格式尝试在发送前�
 
 
 ## 2026-10-30 结算条件的说明与显示
-任务提出主模板在operations及其局部JSON例之前显式引用对象/任务.prompt中的task.completion_condition定义，集中解释遍历用途、终点与证据、正反例；不恢复旧全量对象块自动拼装。实际schema字段说明和例子由task_proposer与原输出生成器产生。动作/结果/复核提示说明如何读取同一条件，纯导航仍按本轮none合同，不跨越输出权限。该字段不作为模型回复中的第二份任务答案。
+任务提出主模板在operations及其局部JSON例之前显式引用对象/任务.prompt中的task.completion_condition定义，集中引导从已有认识找到影响操作/导航的缺口，再自行确定足够回答的程度；以同对象不同知识背景说明判断过程，退役控件类型到条件的固定例表。相邻JSON例注明虚构前提，不让例句成为实际任务答案。历史未确认关系仅作线索，是否纳入条件以它是否影响当前问题所需的使用/导航认识判断，不作为必须清零的要求。task_proposer在这项非空材料内就近说明观察来源与用途，并完整保留观察原文，不过滤或改写历史；不恢复旧全量对象块自动拼装。实际schema字段说明和例子由task_proposer与原输出生成器产生。动作/结果/复核提示说明如何读取同一条件，纯导航仍按本轮none合同，不跨越输出权限。该字段不作为模型回复中的第二份任务答案。
 
 
 2026-10-31 保存帧测试工具：tools/prompt_review_trace.py回退历史调用时，将来源episode确已归档为未来记录的ownership活动指针一起归档；不删除原复查证据，dependency续接不走该清理。动作选择沿frame_context.primary读取原截图，支持正常next-request仅有image_refs的情况。模型题目和业务上下文不因这两处修复而缩减；保存帧提案不等于GUI执行。限定验证与边界见当月日志。
+
+
+2026-11-01具名边界候选：prepare_request在正常组成前选择名称/嵌套wire schema，正常组成后转换模型可见材料；reply_correction先在本字段允许值内规范化名称，再验证wire及生成内部派生回复。schema错误仍走现有计数，原答不改。records.calls及Runner读取同一内部合同。具体对象字段见object_fields.md；验收记录见本月日志。
+
+2026-11-01检查策略更新：用户取消本轮总调用上限，要求约每50次检查重大循环。batch配置允许total_call_limit=null，review_interval_calls=50及last_reviewed_call；检查确认后才推进下一窗口。普通动作尾段需保留选择/结果两次额度时可提前报告review_checkpoint，不反复困在只剩1次额度。有限总预算仍优先，descriptor保留检查字段；原业务冻结源码未改。两项聚焦测试pytest-checkpoint-02与独立复核通过，实际35次轮末切换后向50次检查点续跑。一般登记缺口记录保留，重大循环及时停止；不等于完整探索已验收。
+
+2026-11-01具名协议恢复：39调用的字符串索引异常已修复并限定验收；已披露旧目标统一解引用，纠错呈现保留无法解析的值供原校验处理。恢复原任务时同时重建interpreted_request/response与job候选，保留原答、旧派生稿、repairs=2，正常Runner清除pending并登记，不重放已执行输入。新保存帧2HTTP、完整副本0HTTP/0GUI恢复通过，source-v2已部署；后续进展与边界见本月日志。
+
+### 2026-11-01 未修复限制：未知投递后的缺帧与只读边界
+
+Settings a0087的执行请求ReadTimeout，receipt.exit_code=null/steps空不能证明未执行。defer_delivery保留delivery_unconfirmed，但切换discover时没有pending_frame；run_task_step的补帧分支未覆盖delivery_deferred，后续locator触发KeyError，服务已退出。此路径尚未修复，不能把错误退出当安全拦截。当前只读提示没有阻止删除连接提案进入投递；现场Wired条目消失、控制器重置，持久配置影响未核定。禁止自动恢复/重放，保留后续QEMU只读截帧和原始执行记录；详情见SERVER_HANDOFF。
+
+
+## 2026-11-01 每次运行范围与未知投递恢复
+
+run_context保留旧运行的明确只读文本，平台提示服从exploration_scope；正常CRUD只在获得该范围授权时允许，当前控制通道/环境的具体例外仍保留。ops/scopes/settings_crud_experiment.txt为显式采用的样例，不自动覆盖原清单；提示规则不等于执行端识别和拦截。
+run_task_step在delivery_deferred/discover下检查控制可用性并重新取有效截图，DesktopRun仅该分支最多两次截图尝试；失败/缺图暂停execution_unconfirmed。普通截图路径未改，历史投递未知和原证据保留；未实机恢复stop352。真实stop352完整副本、模拟不可用控制响应的离线检查通过，原知识指针和清单保持；不称实机恢复已验证。
+
+
+## 2026-11-01 批次首轮启动核对
+batch_runtime在新建/已有零调用run完成原环境准备后，调用tools/startup_readiness.capture保存实际首屏，结束为startup_review，不启动native session。根操作员查看该次截图，确认目标业务界面与必要样本可用后调用confirm(run, reason)；确认仅绑定该run/app/device/container与本次截图，使用单独decision留证，旧初始截图不覆盖。确认以新快照将pending_frame指向核对图，之后沿原batch resume执行。capture不会自动确认；重新capture撤销旧轮次的放行效力。已执行过模型调用的run沿原续接/预算/恢复优先级，不用新首屏覆盖实际动作证据。直接session入口不在本次门槛覆盖范围。
+并行实验队列把startup_review单独停审、不占活跃槽；仅检测到root确认后重新排队，不自动把截图或窗口尺寸当合格。无新CLI开关、无Luna输出变更、无每步额外模型调用。
+
+
+2026-11-02名称展示接线有限验收：history_disclosure.replace_presentation只在原展示/内部源关联有效时维护既有展示校验；named_references.render对user_prompt复用它，显示文本转换不变，人工编辑失配仍保留。GIMP正常原任务保存帧1模型/0GUI及原设备7模型/1GUI，File操作/结果登记/原任务结算通过。不是已挂纠错分支或完整遍历认证；Characters另有补充请求schema缺失。实际源与记录见all_apps_latest_20261102_01及本月日志。
+
+
+## 2026-11-02 恢复构造与验证范围
+
+recovery.build_request按transport实际平台构造说明；桌面发送入口此前已有平台覆盖，本批不把构造器旧Android文字误称所有桌面HTTP错误。仍用现有restart_app及一次重启/未知投递停审限制。恢复后的原问题交接由recovery_tasks完成，业务结果与恢复应用分开。两项聚焦及2HTTP/0GUI真实保存帧限定通过，不是新GUI重启或VM/控制通道恢复验收。证据recovery_resume_20261102_01。
+
+
+2026-11-03纠错边界：correction_feedback保留结构化纠错材料，由named_references统一投影具名嵌套草稿与关系错误；格式重答已有模型格式不重复编码。pending_format_reply接受与保存original精确等价的internal_request视图，仍使用原next/合同/计数，不接受不同请求。Settings完整原记录2HTTP/0GUI补登记a0014通过，原投递/截图不变；其余验证见11月日志。
 
 ## 2026-11-03 应用材料的正常发送接点
 model_transport在原运行范围之后调用application_judgement.prepare，仅对五类当前界面调用替换/补齐目标应用材料。名称来自manifest.app_name或app，保留其他材料和JSON后的帧说明。没有新增模型调用。已发送原格式纠错保持原合同；历史任务清点不读取当前应用归属。动作材料就近显示目标应用，输出定义仍来自对象词项与实际schema。

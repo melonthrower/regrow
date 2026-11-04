@@ -11,3 +11,5 @@
 尚未确认的五份 Prompt 草稿：`共享/探索角色.prompt`、`发现手册/列表代表项.prompt`、`对象/任务.prompt`、`对象/控件.prompt`、`调用/提出探索任务.prompt`（均在 `src/regrow/prompts/`）。源码公开不表示这些草稿已批准，也未因此切换实际运行的冻结源码。
 
 [本次问题的真实截图、当时应用树与46次历史调用](issue_cases/20261104-regions-and-actions/README.md)。这是用户明确要求的精选问题证据，非整批运行日志。
+
+[最新遍历讨论：六类问题的设计/接线边界、真实截图与调用流程](issue_cases/20261104-traversal-design-and-wiring/README.md)。来自独立8应用实验的精选证据；不表示已修复，实验冻结源码与根源码版本分别说明。

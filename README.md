@@ -17,3 +17,5 @@
 [区块与动作问题案例：截图、应用树、逐次调用](issue_cases/20261104-regions-and-actions/README.md)。仅公开用户指定的相关证据，验证原件仍在本地维护。
 
 [设计思路入口：字段目的、各环节、源码定位与待实施方案](design/DESIGN_INTENT.md)。
+
+[最新遍历讨论：六类问题的设计/接线边界、真实截图与调用流程](issue_cases/20261104-traversal-design-and-wiring/README.md)。来自独立8应用实验的精选证据；不表示已修复，实验冻结源码与根源码版本分别说明。

@@ -1,3 +1,5 @@
+> 设计意图与阅读入口：[设计导读](DESIGN_INTENT.md) · [字段动机](modules/stepwise/object_fields.md) · [各环节与源码地图](modules/stepwise/CODE_MAP.md)。这组说明区分设计、实现、有限验证与候选，不替代本页当前合同。
+
 2026-11-03应用归属接线：五类当前界面调用复用目标应用材料；任务提出/动作选择新增exception及recovery_handoff，异常先交恢复、不登记外部业务；操作目标核对继承同合同并可无动作交回异常。历史清点和已发纠错保留原合同。保存帧六例7HTTP/0GUI限定通过，初版更新6HTTP失败保留；实机/图清理/当前续跑状态见external_app_judgement_20261103_02及SERVER_HANDOFF。判断仍由Luna完成，不是窗口类硬门禁或全应用认证。
 
 2026-11-02首批实机监督：简单材料已有限验证；续跑Settings/Gedit出现目标关联→识别→再选目标的未投递循环，System Monitor清除搜索3次投递未见效果。58模型调用后均监督停止，未扩展到全部应用；a0027仅准备未投递，须保留核对。不限总预算不等于无检查。证据region_material_resume_20261102_01，详细停点见SERVER_HANDOFF。

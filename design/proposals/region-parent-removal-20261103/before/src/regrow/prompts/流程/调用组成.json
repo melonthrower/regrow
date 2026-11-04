@@ -1,0 +1,2454 @@
+{
+  "说明": "实际运行读取的调用组成；四对象统一分块，字段与含义来自对象目录，同一块不按调用改写。",
+  "shared_context": {
+    "role": "共享/探索角色.prompt",
+    "environment": "平台/遍历环境只读.prompt"
+  },
+  "calls": {
+    "action_selection": {
+      "groups": [],
+      "title": "选择下一步",
+      "builder": "action_proposer.ActionProposer.propose",
+      "render": "action_material",
+      "materials": {
+        "work": "本轮工作",
+        "task": "当前任务",
+        "history": "登记页面组成与访问来路",
+        "recent": "最近观察",
+        "controls": "相关控件"
+      },
+      "sections": [
+        {
+          "key": "task",
+          "title": "当前任务"
+        },
+        {
+          "key": "history",
+          "title": "页面与相关历史"
+        },
+        {
+          "key": "controls",
+          "title": "相关控件"
+        },
+        {
+          "key": "remaining",
+          "title": ""
+        },
+        {
+          "key": "question",
+          "title": "下一步"
+        }
+      ],
+      "question": "根据当前截图和上述记录，下一步怎样推进这个探索任务？需要操作时给出动作及必要参数，已有答案时提交结论。",
+      "template": "调用/选择下一步.prompt",
+      "schema": "输出格式/选择探索入口.schema",
+      "supplement_paths": [
+        "动作/探索导航路线.prompt",
+        "动作/目标观察阅读.prompt"
+      ],
+      "stage": "action_selection",
+      "field_sections": {
+        "purpose_by_work_kind": {
+          "navigate": "调用/导航到目标.prompt"
+        },
+        "concepts": [
+          {
+            "block": "region.common"
+          },
+          {
+            "block": "task.definition",
+            "work_kinds": [
+              "action"
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "block": "region.application_exception",
+            "fields": [
+              "exception",
+              "recovery_handoff"
+            ],
+            "details": []
+          },
+          {
+            "block": "action.proposal",
+            "fields": [],
+            "format": "platform",
+            "details": []
+          },
+          {
+            "block": "action.complete",
+            "fields": [
+              "action",
+              "reason"
+            ],
+            "actions": [
+              "complete"
+            ],
+            "details": []
+          },
+          {
+            "block": "action.none",
+            "fields": [
+              "action",
+              "reason",
+              "retry_when"
+            ],
+            "actions": [
+              "none"
+            ],
+            "block_by_work_kind": {
+              "navigate": "action.none_navigation"
+            },
+            "details": [
+              {
+                "block": "task.retry_when",
+                "when_paths": [
+                  "retry_when"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "control.knowledge_revision",
+            "fields": [
+              "controls"
+            ],
+            "details": [
+              {
+                "block": "control.knowledge_description",
+                "when_any_paths": [
+                  "controls.knowledge"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_any_paths": [
+                  "controls.knowledge.index"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_any_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ],
+            "when_paths": [
+              "controls.knowledge"
+            ],
+            "actions": [
+              "complete",
+              "none"
+            ]
+          },
+          {
+            "block": "region.knowledge_edit",
+            "fields": [
+              "regions"
+            ],
+            "details": [
+              {
+                "block": "region.local_knowledge",
+                "when_any_paths": [
+                  "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              }
+            ],
+            "when_paths": [
+              "regions.local_knowledge"
+            ],
+            "actions": [
+              "complete",
+              "none"
+            ]
+          },
+          {
+            "block": "region.function_updates",
+            "fields": [
+              "function_updates"
+            ],
+            "details": [
+              {
+                "block": "region.function_constraints",
+                "when_any_paths": [
+                  "function_updates.add.constraints",
+                  "function_updates.update.changes.constraints"
+                ]
+              },
+              {
+                "block": "region.function_new_constraints",
+                "when_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ],
+            "actions": [
+              "complete",
+              "none"
+            ]
+          }
+        ]
+      }
+    },
+    "control_identity_selection": {
+      "groups": [
+        {
+          "question": "当前对象与哪一个历史候选值得进一步比较？",
+          "materials": [
+            "核对对象",
+            "当前任务与本次操作",
+            "相关历史与已登记认识",
+            "同区块的已接受状态依据",
+            "仍需注意",
+            "先前身份判断（本次待复核）",
+            "补充观察",
+            "平台"
+          ]
+        }
+      ],
+      "direct_question": true,
+      "declared_materials_only": true,
+      "render": "identity_material",
+      "template": "调用/控件身份候选选择.prompt",
+      "supplement_paths": [],
+      "stage": "control_identity_selection",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "control.identity_selection",
+            "fields": [
+              "candidate",
+              "reason"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "control_identity_comparison": {
+      "groups": [
+        {
+          "question": "给定历史控件在图1能否对应到同一对象，还是不同或仍无法确认？",
+          "materials": [
+            "核对对象",
+            "当前任务与本次操作",
+            "相关历史与已登记认识",
+            "同区块的已接受状态依据",
+            "仍需注意",
+            "先前身份判断（本次待复核）",
+            "补充观察",
+            "平台"
+          ]
+        }
+      ],
+      "direct_question": true,
+      "declared_materials_only": true,
+      "render": "identity_material",
+      "template": "调用/控件身份比较.prompt",
+      "supplement_paths": [],
+      "stage": "control_identity_comparison",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "control.identity_comparison",
+            "fields": [
+              "control_identity",
+              "reason"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "ownership_review": {
+      "groups": [
+        {
+          "question": "哪些旧控件的归属已有依据，是否还需调查？",
+          "materials": [
+            "原区块",
+            "待核对历史控件",
+            "待核对的划分建议",
+            "已观察归属",
+            "归属冲突",
+            "本次复查动作",
+            "说明",
+            "平台"
+          ]
+        }
+      ],
+      "direct_question": null,
+      "template": "调用/区块归属复查.prompt",
+      "supplement_paths": [],
+      "stage": "ownership_review",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "region.ownership_status",
+            "fields": [
+              "status",
+              "reason"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.observed_assignments",
+            "fields": [
+              "observed_assignments"
+            ],
+            "details": []
+          },
+          {
+            "block": "action.execution",
+            "fields": [
+              "action"
+            ],
+            "details": [
+              {
+                "block": "action.operation_fields"
+              }
+            ],
+            "format": "nested_platform"
+          }
+        ]
+      }
+    },
+    "branch_correction": {
+      "groups": [
+        {
+          "question": "原问题还可怎样推进，或应转到哪里？",
+          "materials": [
+            "当前问题",
+            "暂挂区块",
+            "工作任务",
+            "原任务累计证据",
+            "累计证据用途",
+            "可继续的独立区块",
+            "继续原分支",
+            "当前截图",
+            "平台"
+          ]
+        }
+      ],
+      "direct_question": null,
+      "template": "调用/暂挂分支与继续策略.prompt",
+      "supplement_paths": [],
+      "stage": "branch_correction",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "task.branch_strategy",
+            "fields": [
+              "decision",
+              "next_region",
+              "reason"
+            ],
+            "details": [
+              {
+                "block": "task.branch_resume",
+                "when_values": {
+                  "decision": [
+                    "resume"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "environment": false
+      }
+    },
+    "shared_control_review": {
+      "groups": [
+        {
+          "question": "已有证据支持保留共享还是解除这一成员的共享？",
+          "materials": [
+            "待核对共享关系",
+            "原共享理由",
+            "关联成员",
+            "实际动作证据",
+            "框架发现的问题",
+            "证据边界",
+            "上次修订被拒原因",
+            "上次修订回复",
+            "平台"
+          ]
+        }
+      ],
+      "direct_question": null,
+      "template": "调用/共享控件行为核对.prompt",
+      "supplement_paths": [],
+      "stage": "shared_control_review",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "region.shared_review",
+            "fields": [
+              "blocked_by",
+              "reason",
+              "resolution",
+              "proposal"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.shared_edit",
+            "fields": [
+              "record_edit"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "observation": {
+      "groups": [
+        {
+          "question": "本次需要辨认哪里？",
+          "materials": [
+            "待继续的工作区块",
+            "本轮定位区块",
+            "本轮观察范围",
+            "未检查范围",
+            "目标应用",
+            "平台",
+            "上轮纠正或复查说明"
+          ]
+        },
+        {
+          "question": "看见的对象对应哪些已有身份？",
+          "materials": [
+            "本次身份候选",
+            "本轮局部控件",
+            "身份候选范围",
+            "登记页面组成与访问来路",
+            "相关历史候选",
+            "本区块控件身份候选",
+            "检索边界",
+            "同帧已确认区块划分",
+            "本区块待补登记"
+          ]
+        }
+      ],
+      "title": "发现与识别",
+      "builder": "locator.prepare",
+      "variants": {
+        "completion": {
+          "question": "旧缺口怎样处理，是否还有遗漏？",
+          "materials": [
+            "已实际登记",
+            "待补事项"
+          ]
+        }
+      },
+      "purposes": {
+        "global": "识别当前前景区块及能确认的控件，为区块探索建立对象记录。",
+        "relocate_focus": "识别当前前景区块及能确认的控件，确认原工作区块是否在其中。",
+        "local": "识别本轮定位区块中的控件及其身份。"
+      },
+      "template": "调用/界面识别.prompt",
+      "supplement_paths": [
+        "发现手册/补登记.prompt",
+        "发现手册/增量补全.prompt",
+        "任务/工作区块定位.prompt",
+        "任务/当前区块重定位.prompt"
+      ],
+      "stage": "observation",
+      "mode_parts": {
+        "local": [
+          "任务/工作区块定位.prompt"
+        ],
+        "default": [
+          "任务/当前区块重定位.prompt"
+        ]
+      },
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "region.foreground",
+            "fields": [
+              "foreground"
+            ],
+            "details": [
+              {
+                "block": "region.exception_values",
+                "when_any_paths": [
+                  "foreground.exception"
+                ]
+              },
+              {
+                "block": "region.recovery_handoff",
+                "when_paths": [
+                  "foreground.recovery_handoff"
+                ]
+              },
+              {
+                "block": "region.exception_registration",
+                "when_paths": [
+                  "foreground.exception",
+                  "controls",
+                  "regions"
+                ]
+              },
+              {
+                "block": "region.exception_uncertain",
+                "when_values": {
+                  "foreground.exception": [
+                    "uncertain"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "block": "region.focus_presence",
+            "fields": [
+              "focus_presence"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.registration",
+            "fields": [
+              "regions"
+            ],
+            "details": [
+              {
+                "block": "region.local_registration",
+                "discovery_modes": [
+                  "local"
+                ]
+              },
+              {
+                "block": "region.registration_identity",
+                "when_any_paths": [
+                  "regions.identity"
+                ]
+              },
+              {
+                "block": "region.parent_index",
+                "when_any_paths": [
+                  "regions.parent_index"
+                ]
+              },
+              {
+                "block": "region.state_description",
+                "when_any_paths": [
+                  "regions.state_description"
+                ]
+              },
+              {
+                "block": "region.context_matches",
+                "when_any_paths": [
+                  "regions.context_matches"
+                ]
+              },
+              {
+                "block": "region.scope_reason",
+                "when_any_paths": [
+                  "regions.out_of_scope_reason"
+                ]
+              },
+              {
+                "block": "region.task_review_reason",
+                "when_any_paths": [
+                  "regions.task_review_reason"
+                ]
+              },
+              {
+                "block": "region.local_knowledge",
+                "when_any_paths": [
+                  "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "control.box_coordinates",
+                "when_any_paths": [
+                  "regions.bbox"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "control.registration",
+            "fields": [
+              "controls"
+            ],
+            "details": [
+              {
+                "block": "control.registration_ref",
+                "when_any_paths": [
+                  "controls.ref"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_any_paths": [
+                  "controls.name",
+                  "controls.description"
+                ]
+              },
+              {
+                "block": "control.association",
+                "when_any_paths": [
+                  "controls.region_index"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_any_paths": [
+                  "controls.knowledge"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_any_paths": [
+                  "controls.knowledge.index"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_any_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_any_paths": [
+                  "controls.may_open_content",
+                  "controls.needs_exploration"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_any_paths": [
+                  "controls.list_group"
+                ]
+              },
+              {
+                "block": "control.box_coordinates",
+                "when_any_paths": [
+                  "controls.bbox"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_any_paths": [
+                  "controls.add_image",
+                  "controls.image_conditions"
+                ]
+              },
+              {
+                "block": "control.new_knowledge",
+                "when_paths": [
+                  "controls.name",
+                  "controls.knowledge"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "region.uncertainties",
+            "fields": [
+              "uncertainties"
+            ],
+            "details": []
+          },
+          {
+            "block": "task.completion_updates",
+            "fields": [
+              "completion_updates"
+            ],
+            "details": []
+          },
+          {
+            "block": "task.dependency_updates",
+            "fields": [
+              "dependency_updates"
+            ],
+            "details": []
+          }
+        ]
+      }
+    },
+    "task_proposal": {
+      "groups": [
+        {
+          "question": "本区块已有材料支持哪些功能，还需要探索哪些具体问题？",
+          "materials": [
+            "目标应用",
+            "区块",
+            "描述",
+            "描述来源",
+            "已有区块知识",
+            "控件",
+            "历史控件身份索引",
+            "已有任务",
+            "可引用同类实例",
+            "当前可关联的入口目标区块",
+            "可更新功能的区块",
+            "已有功能轮廓"
+          ]
+        },
+        {
+          "question": "独立功能与共同操作方式是否已有代表？还缺少哪些必要对象或归属依据？",
+          "materials": [
+            "补充清点原因",
+            "上步观察交接",
+            "上次清点缺口",
+            "发现中尚未确认的事项",
+            "发现缺口说明",
+            "登记页面组成与访问来路",
+            "材料范围",
+            "说明",
+            "环境位置"
+          ]
+        }
+      ],
+      "title": "提出探索任务",
+      "builder": "task_proposer.TaskProposer.request",
+      "variants": {
+        "new_tasks": {
+          "question": "当前控件还有哪些值得调查的具体未知？",
+          "materials": [
+            "目标应用",
+            "区块",
+            "描述",
+            "描述来源",
+            "已有区块知识",
+            "控件",
+            "历史控件身份索引",
+            "其他任务背景",
+            "可引用同类实例",
+            "当前可关联的入口目标区块"
+          ]
+        },
+        "old_tasks": {
+          "question": "本轮可判断的旧问题，已有证据支持什么结论？",
+          "materials": [
+            "本轮可判断旧任务",
+            "待补参数事实的原任务证据",
+            "补充清点原因",
+            "上步观察交接",
+            "登记页面组成与访问来路"
+          ]
+        }
+      },
+      "template": "调用/提出探索任务.prompt",
+      "supplement_paths": [
+        "任务/旧任务范围复核.prompt"
+      ],
+      "stage": "task_proposal",
+      "field_sections": {
+        "concepts": [
+          {
+            "block": "region.common"
+          },
+          {
+            "block": "control.definition"
+          }
+        ],
+        "outputs": [
+          {
+            "block": "region.application_exception",
+            "fields": [
+              "exception",
+              "recovery_handoff"
+            ],
+            "details": []
+          },
+          {
+            "block": "control.knowledge_revision",
+            "fields": [
+              "controls"
+            ],
+            "details": [
+              {
+                "block": "control.knowledge_description",
+                "when_any_paths": [
+                  "controls.knowledge"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_any_paths": [
+                  "controls.knowledge.index"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_any_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ],
+            "when_paths": [
+              "controls.knowledge"
+            ]
+          },
+          {
+            "block": "region.knowledge_edit",
+            "fields": [
+              "regions"
+            ],
+            "details": [
+              {
+                "block": "region.local_knowledge",
+                "when_any_paths": [
+                  "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              }
+            ],
+            "when_paths": [
+              "regions.local_knowledge"
+            ]
+          },
+          {
+            "block": "region.function_updates",
+            "fields": [
+              "function_updates"
+            ],
+            "details": [
+              {
+                "block": "region.function_constraints",
+                "when_any_paths": [
+                  "function_updates.add.constraints",
+                  "function_updates.update.changes.constraints"
+                ]
+              },
+              {
+                "block": "region.function_new_constraints",
+                "when_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "task.operations",
+            "fields": [
+              "operations"
+            ],
+            "details": [
+              {
+                "block": "task.type"
+              },
+              {
+                "block": "task.completion_condition"
+              },
+              {
+                "block": "task.function_refs",
+                "when_paths": [
+                  "operations.function_refs"
+                ]
+              },
+              {
+                "block": "task.new_function_refs",
+                "when_paths": [
+                  "operations.function_refs",
+                  "function_updates.add"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "task.update",
+            "fields": [
+              "task_update"
+            ],
+            "details": [
+              {
+                "block": "task.update_ref",
+                "when_any_paths": [
+                  "task_update.task"
+                ]
+              },
+              {
+                "block": "task.next_action",
+                "when_paths": [
+                  "task_update.next_action"
+                ]
+              },
+              {
+                "block": "task.scope_review",
+                "work_kinds": [
+                  "scope_review"
+                ]
+              },
+              {
+                "block": "task.batch_update_example"
+              }
+            ]
+          },
+          {
+            "block": "task.scope",
+            "fields": [
+              "inventory",
+              "evidence"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.shared_instances",
+            "fields": [
+              "shared_instances"
+            ],
+            "details": []
+          }
+        ]
+      }
+    },
+    "observation_update": {
+      "groups": [
+        {
+          "question": "刚才实际做了什么，页面发生了什么变化？",
+          "materials": [
+            "实际来源区块",
+            "实际入口",
+            "实际动作",
+            "动作意图",
+            "动作前对象观察",
+            "回执",
+            "动作后前台应用证据",
+            "目标应用",
+            "登记页面组成与访问来路",
+            "登记说明",
+            "实际对象已有跳转"
+          ]
+        },
+        {
+          "question": "出现的对象如何对应已有区块和控件？",
+          "materials": [
+            "已知区块",
+            "历史身份参考",
+            "当前截图视觉匹配到的既有区块",
+            "本次入口历史落点",
+            "区块名称使用",
+            "区块历史文字对照",
+            "历史匹配对照",
+            "来源区块历史行为比较"
+          ]
+        },
+        {
+          "question": "这些观察是否回答了原探索问题？",
+          "materials": [
+            "当前任务",
+            "其他可登记任务",
+            "任务目标",
+            "本轮探索任务",
+            "当前任务引用",
+            "任务与实际对象核对",
+            "来源区块已有任务",
+            "准备动作说明"
+          ]
+        }
+      ],
+      "title": "实际结果更新",
+      "builder": "result_updater.build_update_request",
+      "template": "调用/动作后结果更新.prompt",
+      "schema": "输出格式/动作后更新.schema",
+      "supplement_paths": [],
+      "stage": "observation_update",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "action.result",
+            "fields": [
+              "action_result"
+            ],
+            "details": [
+              {
+                "block": "region.exception_values",
+                "when_any_paths": [
+                  "action_result.exception"
+                ]
+              },
+              {
+                "block": "action.returns_to_previous",
+                "when_any_paths": [
+                  "action_result.returns_to_previous"
+                ]
+              },
+              {
+                "block": "region.recovery_handoff",
+                "when_paths": [
+                  "action_result.recovery_handoff"
+                ]
+              },
+              {
+                "block": "region.exception_registration",
+                "when_paths": [
+                  "action_result.exception"
+                ]
+              },
+              {
+                "block": "region.exception_uncertain",
+                "when_values": {
+                  "action_result.exception": [
+                    "uncertain"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "block": "region.foreground",
+            "fields": [
+              "foreground"
+            ],
+            "details": [
+              {
+                "block": "region.exception_values",
+                "when_any_paths": [
+                  "foreground.exception"
+                ]
+              },
+              {
+                "block": "region.recovery_handoff",
+                "when_paths": [
+                  "foreground.recovery_handoff"
+                ]
+              },
+              {
+                "block": "region.exception_registration",
+                "when_paths": [
+                  "action_result.exception"
+                ]
+              },
+              {
+                "block": "region.exception_uncertain",
+                "when_values": {
+                  "foreground.exception": [
+                    "uncertain"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "block": "region.current_regions",
+            "fields": [
+              "current_regions"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.previous_regions",
+            "fields": [
+              "previous_regions"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.registration",
+            "fields": [
+              "regions"
+            ],
+            "details": [
+              {
+                "block": "region.update_registration",
+                "when_paths": [
+                  "current_regions"
+                ]
+              },
+              {
+                "block": "region.registration_identity",
+                "when_any_paths": [
+                  "regions.identity"
+                ]
+              },
+              {
+                "block": "region.parent_index",
+                "when_any_paths": [
+                  "regions.parent_index"
+                ]
+              },
+              {
+                "block": "region.state_description",
+                "when_any_paths": [
+                  "regions.state_description"
+                ]
+              },
+              {
+                "block": "region.context_matches",
+                "when_any_paths": [
+                  "regions.context_matches"
+                ]
+              },
+              {
+                "block": "region.scope_reason",
+                "when_any_paths": [
+                  "regions.out_of_scope_reason"
+                ]
+              },
+              {
+                "block": "region.task_review_reason",
+                "when_any_paths": [
+                  "regions.task_review_reason"
+                ]
+              },
+              {
+                "block": "region.local_knowledge",
+                "when_any_paths": [
+                  "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "control.box_coordinates",
+                "when_any_paths": [
+                  "regions.bbox"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "control.registration",
+            "fields": [
+              "controls"
+            ],
+            "details": [
+              {
+                "block": "control.registration_ref",
+                "when_any_paths": [
+                  "controls.ref"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_any_paths": [
+                  "controls.name",
+                  "controls.description"
+                ]
+              },
+              {
+                "block": "control.association",
+                "when_any_paths": [
+                  "controls.region_index"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_any_paths": [
+                  "controls.knowledge"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_any_paths": [
+                  "controls.knowledge.index"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_any_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_any_paths": [
+                  "controls.may_open_content",
+                  "controls.needs_exploration"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_any_paths": [
+                  "controls.list_group"
+                ]
+              },
+              {
+                "block": "control.box_coordinates",
+                "when_any_paths": [
+                  "controls.bbox"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_any_paths": [
+                  "controls.add_image",
+                  "controls.image_conditions"
+                ]
+              },
+              {
+                "block": "control.new_knowledge",
+                "when_paths": [
+                  "controls.name",
+                  "controls.knowledge"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "action.jump_to",
+            "fields": [
+              "jump_to"
+            ],
+            "details": []
+          },
+          {
+            "block": "region.function_updates",
+            "fields": [
+              "function_updates"
+            ],
+            "details": [
+              {
+                "block": "region.function_constraints",
+                "when_any_paths": [
+                  "function_updates.add.constraints",
+                  "function_updates.update.changes.constraints"
+                ]
+              },
+              {
+                "block": "region.function_new_constraints",
+                "when_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "task.update",
+            "fields": [
+              "task_update"
+            ],
+            "details": [
+              {
+                "block": "task.update_ref",
+                "when_any_paths": [
+                  "task_update.task"
+                ]
+              },
+              {
+                "block": "task.next_action",
+                "when_any_paths": [
+                  "task_update.next_action"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "region.uncertainties",
+            "fields": [
+              "uncertainties"
+            ],
+            "details": []
+          },
+          {
+            "block": "task.dependency_updates",
+            "fields": [
+              "dependency_updates"
+            ],
+            "details": []
+          }
+        ]
+      }
+    },
+    "function_registration": {
+      "groups": [
+        {
+          "question": "本区块自身提供哪些用途？",
+          "materials": [
+            "区块",
+            "描述",
+            "已登记操作",
+            "控件用途标注",
+            "同区块已执行动作结果",
+            "动作证据覆盖",
+            "进入本区块的已观察结果",
+            "已有功能轮廓",
+            "区块引用"
+          ]
+        },
+        {
+          "question": "这些功能依赖什么参数、条件和其他区块？",
+          "materials": [
+            "应用操作树",
+            "共享控件知识",
+            "入口与目标一级摘要",
+            "按本地参数任务披露的支持",
+            "支持知识引用目录",
+            "可引用参数事实",
+            "要求"
+          ]
+        }
+      ],
+      "title": "区块功能总结",
+      "builder": "region_functions.request",
+      "template": "调用/区块功能总结.prompt",
+      "supplement_paths": [],
+      "stage": "function_registration",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "region.function_updates",
+            "fields": [
+              "function_updates"
+            ],
+            "details": [
+              {
+                "block": "region.function_constraints",
+                "when_any_paths": [
+                  "function_updates.add.constraints",
+                  "function_updates.update.changes.constraints"
+                ]
+              },
+              {
+                "block": "region.function_new_constraints",
+                "when_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "region.knowledge_root",
+            "fields": [
+              "local_knowledge"
+            ],
+            "details": [
+              {
+                "block": "region.local_knowledge"
+              }
+            ]
+          },
+          {
+            "block": "region.function_evidence",
+            "fields": [
+              "evidence"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "recovery": {
+      "groups": [
+        {
+          "question": "原工作因为什么被中断？",
+          "materials": [
+            "目标应用",
+            "平台",
+            "中断的工作区块",
+            "中断任务（原记录，不代表新增授权）",
+            "触发异常的结果",
+            "异常交接"
+          ]
+        },
+        {
+          "question": "现在怎样恢复，或是否可以交还探索？",
+          "materials": [
+            "重启工具状态",
+            "框架反馈",
+            "本次恢复历史"
+          ]
+        }
+      ],
+      "title": "异常恢复",
+      "builder": "recovery.build_request",
+      "template": "调用/异常恢复.prompt",
+      "supplement_paths": [],
+      "stage": "recovery",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "action.recovery_decision",
+            "fields": [
+              "exception",
+              "decision",
+              "framework_tool",
+              "reason",
+              "handoff"
+            ],
+            "details": [
+              {
+                "block": "region.exception_values",
+                "when_any_paths": [
+                  "exception"
+                ]
+              },
+              {
+                "block": "action.recovery_tool",
+                "when_any_paths": [
+                  "framework_tool"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "action.execution",
+            "fields": [
+              "action"
+            ],
+            "details": [
+              {
+                "block": "action.operation_fields"
+              }
+            ],
+            "format": "nested_platform"
+          }
+        ]
+      }
+    },
+    "step_observation": {
+      "groups": [
+        {
+          "question": "原步骤还缺什么观察？",
+          "materials": [
+            "待核对问题",
+            "原任务",
+            "原实际动作",
+            "相关历史记录",
+            "原步骤",
+            "原任务目标"
+          ]
+        }
+      ],
+      "template": "调用/结果登记补充观察.prompt",
+      "supplement_paths": [],
+      "stage": "step_observation",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "task.supplement_evidence",
+            "fields": [
+              "evidence"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "task_result_review": {
+      "groups": [
+        {
+          "question": "本轮判断和具体依据是什么？",
+          "materials": [
+            "原任务引用",
+            "任务目标与累计证据",
+            "任务结束条件",
+            "直接相关恢复过程",
+            "原暂挂依据",
+            "历史原图对照"
+          ]
+        }
+      ],
+      "variants": {
+        "coverage": {
+          "question": "其他已验证入口能覆盖原用途吗，条件和缺口是什么？",
+          "materials": [
+            "原控件",
+            "当前定位",
+            "覆盖候选（不是等价结论）"
+          ]
+        }
+      },
+      "question": "原问题已获回答、仍要继续，还是应暂挂？",
+      "template": "调用/任务结果复核.prompt",
+      "supplement_paths": [],
+      "stage": "task_result_review",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "task.update",
+            "fields": [
+              "task_update"
+            ],
+            "details": [
+              {
+                "block": "task.update_ref",
+                "when_any_paths": [
+                  "task_update.task"
+                ]
+              },
+              {
+                "block": "task.next_action",
+                "when_any_paths": [
+                  "task_update.next_action"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "control.knowledge_revision",
+            "fields": [
+              "controls"
+            ],
+            "details": [
+              {
+                "block": "control.knowledge_description",
+                "when_any_paths": [
+                  "controls.knowledge"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_any_paths": [
+                  "controls.knowledge.index"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_any_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ],
+            "when_paths": [
+              "controls.knowledge"
+            ]
+          },
+          {
+            "block": "region.knowledge_edit",
+            "fields": [
+              "regions"
+            ],
+            "details": [
+              {
+                "block": "region.local_knowledge",
+                "when_any_paths": [
+                  "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              }
+            ],
+            "when_paths": [
+              "regions.local_knowledge"
+            ]
+          },
+          {
+            "block": "action.result",
+            "fields": [
+              "action_result"
+            ],
+            "details": [
+              {
+                "block": "region.exception_values",
+                "when_any_paths": [
+                  "action_result.exception"
+                ]
+              },
+              {
+                "block": "action.returns_to_previous",
+                "when_any_paths": [
+                  "action_result.returns_to_previous"
+                ]
+              },
+              {
+                "block": "region.recovery_handoff",
+                "when_paths": [
+                  "action_result.recovery_handoff"
+                ]
+              },
+              {
+                "block": "region.exception_uncertain",
+                "when_values": {
+                  "action_result.exception": [
+                    "uncertain"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "block": "task.coverage",
+            "fields": [
+              "coverage"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "step_correction": {
+      "title": "原步骤纠错",
+      "inherit": "original_request",
+      "question": "原步骤的回复哪里与证据或输出要求不符，应该如何修正？保留原探索目标，不重放已执行动作。",
+      "builder": "step_repair.request",
+      "parts_note": "业务纠错按具体语义选择专用说明；所有调用的格式错误由模型接收入口使用纠错/原格式重答.prompt处理。",
+      "template": "调用/原步骤纠错.prompt",
+      "supplement_paths": [],
+      "stage": "step_correction",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "action.correction_decision",
+            "fields": [
+              "blocked_by",
+              "reason",
+              "resolution"
+            ],
+            "details": [
+              {
+                "block": "action.correction_revise",
+                "when_values": {
+                  "resolution": [
+                    "revise"
+                  ]
+                }
+              },
+              {
+                "block": "action.correction_observe",
+                "when_values": {
+                  "resolution": [
+                    "observe"
+                  ]
+                }
+              },
+              {
+                "block": "action.correction_edit",
+                "when_values": {
+                  "resolution": [
+                    "edit_record"
+                  ]
+                }
+              },
+              {
+                "block": "action.correction_defer",
+                "when_values": {
+                  "resolution": [
+                    "defer",
+                    "blocked"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "block": "action.correction_proposal",
+            "fields": [
+              "proposal"
+            ],
+            "details": [
+              {
+                "block": "action.correction_partial",
+                "when_request": [
+                  "proposal_base"
+                ]
+              },
+              {
+                "block": "action.correction_full",
+                "unless_request": [
+                  "proposal_base"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "action.record_edit",
+            "fields": [
+              "record_edit"
+            ],
+            "details": [
+              {
+                "block": "action.record_edit_basic",
+                "when_any_paths": [
+                  "record_edit.control"
+                ]
+              },
+              {
+                "block": "action.record_edit_task",
+                "when_any_paths": [
+                  "record_edit.task"
+                ]
+              },
+              {
+                "block": "action.record_edit_owner",
+                "when_any_paths": [
+                  "record_edit.attempt"
+                ]
+              },
+              {
+                "block": "action.record_edit_observation",
+                "when_any_paths": [
+                  "record_edit.observations"
+                ]
+              }
+            ]
+          }
+        ],
+        "source_field_requirements": {
+          "纠错/登记修订.prompt": "record_edit.field",
+          "纠错/任务归属.prompt": "record_edit.task",
+          "纠错/区块归属.prompt": "record_edit.field",
+          "纠错/动作归属.prompt": "record_edit.attempt"
+        }
+      }
+    },
+    "object_registration": {
+      "groups": [
+        {
+          "question": "为本批对象补齐识别外观范围。",
+          "materials": [
+            "待补齐对象",
+            "所属区块"
+          ]
+        }
+      ],
+      "direct_question": null,
+      "template": "调用/对象外观补登记.prompt",
+      "supplement_paths": [],
+      "stage": "object_registration",
+      "field_sections": {
+        "environment": false,
+        "concepts": [],
+        "outputs": [
+          {
+            "block": "control.bbox",
+            "fields": [
+              "objects"
+            ],
+            "details": [
+              {
+                "block": "control.box_coordinates"
+              },
+              {
+                "block": "control.bbox_grounding",
+                "when_required_paths": [
+                  "objects.reason"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "appearance_comparison": {
+      "groups": [
+        {
+          "question": "这些控件的历史外观和当前外观是否相同，各是什么可见状态？",
+          "materials": [
+            "原步骤",
+            "比较对象"
+          ]
+        }
+      ],
+      "direct_question": null,
+      "template": "调用/控件外观状态比较.prompt",
+      "supplement_paths": [],
+      "stage": "appearance_comparison",
+      "field_sections": {
+        "outputs": [
+          {
+            "block": "control.appearance_comparison",
+            "fields": [
+              "comparisons"
+            ],
+            "details": []
+          }
+        ],
+        "environment": false
+      }
+    },
+    "action_target_review": {
+      "template": "调用/操作目标核对.prompt",
+      "stage": "action_target_review",
+      "question": "本次实际应操作哪个对象？直接输出核对后的动作。",
+      "groups": [
+        {
+          "question": "核对动作对象与当前点位",
+          "materials": [
+            "原动作上下文",
+            "原拟执行动作",
+            "定位疑点",
+            "上次回复问题",
+            "上次回复"
+          ]
+        }
+      ],
+      "direct_question": true,
+      "declared_materials_only": true,
+      "field_sections": {
+        "concepts": [
+          {
+            "block": "region.common"
+          },
+          {
+            "block": "task.definition",
+            "work_kinds": [
+              "action"
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "block": "region.application_exception",
+            "fields": [
+              "exception",
+              "recovery_handoff"
+            ],
+            "details": []
+          },
+          {
+            "block": "action.proposal",
+            "fields": [],
+            "format": "platform",
+            "details": []
+          },
+          {
+            "block": "action.complete",
+            "fields": [
+              "action",
+              "reason"
+            ],
+            "actions": [
+              "complete"
+            ],
+            "details": []
+          },
+          {
+            "block": "action.none",
+            "fields": [
+              "action",
+              "reason",
+              "retry_when"
+            ],
+            "actions": [
+              "none"
+            ],
+            "block_by_work_kind": {
+              "navigate": "action.none_navigation"
+            },
+            "details": [
+              {
+                "block": "task.retry_when",
+                "when_paths": [
+                  "retry_when"
+                ]
+              }
+            ]
+          },
+          {
+            "block": "control.knowledge_revision",
+            "fields": [
+              "controls"
+            ],
+            "details": [
+              {
+                "block": "control.knowledge_description",
+                "when_any_paths": [
+                  "controls.knowledge"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_any_paths": [
+                  "controls.knowledge.index"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_any_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ],
+            "when_paths": [
+              "controls.knowledge"
+            ],
+            "actions": [
+              "complete",
+              "none"
+            ]
+          },
+          {
+            "block": "region.knowledge_edit",
+            "fields": [
+              "regions"
+            ],
+            "details": [
+              {
+                "block": "region.local_knowledge",
+                "when_any_paths": [
+                  "regions.local_knowledge"
+                ]
+              },
+              {
+                "block": "region.nested",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "region.current",
+                "when_paths": [
+                  "regions.current"
+                ]
+              },
+              {
+                "block": "region.parent",
+                "when_paths": [
+                  "regions.parent"
+                ]
+              },
+              {
+                "block": "control.registration",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_ref",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.registration_name",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_description",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_constraints",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.knowledge_index",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.list_group",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.exploration_flags",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              },
+              {
+                "block": "control.add_image",
+                "when_paths": [
+                  "regions.controls"
+                ]
+              }
+            ],
+            "when_paths": [
+              "regions.local_knowledge"
+            ],
+            "actions": [
+              "complete",
+              "none"
+            ]
+          },
+          {
+            "block": "region.function_updates",
+            "fields": [
+              "function_updates"
+            ],
+            "details": [
+              {
+                "block": "region.function_constraints",
+                "when_any_paths": [
+                  "function_updates.add.constraints",
+                  "function_updates.update.changes.constraints"
+                ]
+              },
+              {
+                "block": "region.function_new_constraints",
+                "when_paths": [
+                  "controls.knowledge.constraints"
+                ]
+              }
+            ],
+            "actions": [
+              "complete",
+              "none"
+            ]
+          }
+        ]
+      },
+      "supplement_paths": []
+    }
+  },
+  "work": {
+    "locate": {
+      "question": "当前前景有哪些操作区或展示区，其中有哪些控件？哪些对应已有身份，哪些还需要辨认？",
+      "label": "发现或定位",
+      "guidance": "识别当前前景与指定对象；定位服务于原任务，不代表原问题已回答。"
+    },
+    "task_proposal": {
+      "question": "本区块哪些功能已经了解，哪些仍有值得探索的具体问题？",
+      "label": "区块任务清点",
+      "guidance": "按当前观察补充本区块的未知或本轮指定的旧问题；沿用已有任务。未展开的旧任务仍保留覆盖义务。"
+    },
+    "scope_review": {
+      "question": "这些既有问题是否已有答案，仍需继续调查，还是受阻？",
+      "label": "既有任务范围复核",
+      "guidance": "复核本区块全部需复核的未完成任务，保留原绑定；不能只回报新增项。"
+    },
+    "action": {
+      "label": "推进探索任务",
+      "guidance": "围绕原问题选择下一动作；必要准备不替换原目标。",
+      "question_from": "action_selection"
+    },
+    "navigate": {
+      "label": "到达工作区块",
+      "guidance": "根据当前界面推进到目标区块；实际导航与原探索任务分别保留归属。",
+      "question_from": "action_selection"
+    },
+    "update": {
+      "question": "刚才的实际操作改变了什么？这些观察回答了原探索问题的哪一部分？",
+      "label": "登记实际动作结果",
+      "guidance": "登记本次真实动作及观察，判断它回答了原问题的哪一部分；不以准备代替目标执行。"
+    },
+    "function_registration": {
+      "question": "已有探索材料说明本区块能做什么，以及需要哪些参数和条件？",
+      "label": "整理区块功能",
+      "guidance": "整理已有任务知识和明确支持，不重新执行已知功能。"
+    },
+    "recover": {
+      "question": "什么阻碍了当前探索？怎样解除阻碍并交还原任务？",
+      "label": "恢复探索现场",
+      "guidance": "处理当前异常并保留原工作目标；恢复不等于任务完成。"
+    },
+    "step_observation": {
+      "question": "补充截图能否回答原步骤尚未看清的问题？",
+      "label": "补充原步骤的观察",
+      "guidance": "仅回答原步骤的核对问题；后补截图不是重新执行动作的结果，观察回复不直接登记动作或完成任务。"
+    },
+    "task_result_review": {
+      "label": "复核原任务已有证据",
+      "guidance": "本轮没有执行新动作；按原任务结束条件复核已有登记、历史原图与当前观察。",
+      "question_from": "task_result_review"
+    }
+  },
+  "aliases": {
+    "discovery": "observation",
+    "action": "action_selection",
+    "update": "observation_update"
+  },
+  "platforms": {
+    "desktop": {
+      "path": "平台/桌面执行.prompt",
+      "actions_heading": "### 动作与参数",
+      "action_roles": [
+        "action_selection",
+        "recovery",
+        "ownership_review",
+        "action_target_review"
+      ]
+    },
+    "android": {
+      "path": "平台/Android执行.prompt",
+      "action_roles": [
+        "action_selection",
+        "recovery",
+        "ownership_review",
+        "action_target_review"
+      ]
+    },
+    "common_fields": "动作/动作空间与字段.prompt"
+  },
+  "supplements": {
+    "navigation": "动作/探索导航路线.prompt",
+    "preconditions": "任务/前置条件与恢复.prompt",
+    "inventory_gap": "发现手册/补登记.prompt"
+  },
+  "output": {
+    "action_text": {
+      "merged_table_header": "| action | 需要填写的字段 | 操作含义 |"
+    }
+  },
+  "messages": {
+    "location_target": "当前截图中的「{target}」在哪里，是否属于原登记对象？",
+    "discovery_global": "当前前景有哪些操作区或展示区，其中能确认哪些控件及其归属和身份？",
+    "discovery_focus": "原工作区块是否在其中？",
+    "discovery_repair_purpose": "定位当前前景区块，为后续核对原问题提供区块身份。",
+    "discovery_local": "指定区块是否仍对应当前表面？有哪些未登记或确有变化的对象需要补充？",
+    "task_focused": "指定旧问题已有怎样的答案或缺口？本轮新发现还需登记什么？",
+    "discovery_completion": "同一截图原观察范围内，哪些必要对象或操作代表仍需补充，哪些待补事项已由现有代表覆盖？",
+    "discovery_completion_purpose": "补齐原观察范围内尚缺的必要对象或操作代表",
+    "entry_answer": "原入口直接对应哪个内容区块、该区块的一级用途是什么，有什么证据支持此关联？目标区块各控件的后续操作由其自身任务回答。",
+    "discovery_objects_question": "当前区块和控件分别是什么，如何对应已有身份？",
+    "discovery_objects_output": "regions / controls：登记本图能确认的区块、控件及归属；未确认项保留具体缺口。",
+    "inventory_review": "对照原问题和已提供观察补充事实，明确继续、已回答或暂挂；不执行新动作。"
+  },
+  "object_modules": {
+    "files": [
+      "对象/控件.prompt",
+      "对象/区块.prompt",
+      "对象/任务.prompt",
+      "对象/动作.prompt"
+    ]
+  }
+}

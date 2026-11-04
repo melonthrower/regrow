@@ -2,6 +2,8 @@
 
 # regrow 当前开发入口
 
+设计先读[设计导读](design/DESIGN_INTENT.md)，字段目的和逐环节调用见其中的对象说明及流程地图。
+
 当前逐步框架唯一维护源码是 [src/regrow](src/regrow)。先读 [当前框架](design/CURRENT_FRAMEWORK.md)，再按 [识别、遍历、记录](design/modules/stepwise/README.md) 找代码。
 
 查当前逐步框架时，先在 `src/regrow/`、`tools/`、`tests/` 内搜索。根目录 `.ignore` 排除旧实验、工作树、运行证据和审阅副本；不要用 `rg --no-ignore` 或递归扫描整个仓库来定位当前实现。只有核对指定历史运行时才显式打开其旧路径。`gui_rewalk/` 是独立研究/采集管线，不能当作 regrow 的另一份实现，也不能按废弃副本删除。

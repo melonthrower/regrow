@@ -1,5 +1,36 @@
 # 当前 Region 图指导采集
 
+## 指令与采集字段为什么这样组织（2026-11-04）
+
+此节解释现有接口，不改生成/采集Prompt或字段合同。[遍历对象字段](stepwise/object_fields.md)归原对象说明；这里仅说明下游任务和执行字段。遍历task是待解决的探索问题，生成的instruction是用户业务目标，不能把遍历待办原样当用户指令。
+
+|字段/材料|设计目的|生产与消费|
+|---|---|---|
+|source_ledger；source_ledger_digest|把指令绑定到实际消费的冻结图及依赖，防止指令与后来另一图混用|生成CLI写来源；采集CLI校验版本。摘要一致仅证明输入版本一致，不证明图语义或业务成功|
+|instruction|以有意义的用户目标组织能力，而非随机拼接已出现按钮|region_instruction生成，后续Collector围绕目标执行|
+|region_ref；goal；source_refs|为每个目标指出承载区块、预期业务结果和支撑材料，避免无来源能力|生成使用给定目录；validator核对引用；有效引用不是可执行性证明|
+|before；condition；if_true/if_false；after|表达条件前目标、需要现场判断的问题、互斥分支及共同后续|Collector按实时观察选分支；不是截图before/after文件，也不是固定点击轨迹|
+|setup.assets[].name/kind/content|把必要素材准备与正式任务分开，避免应用缺少对象时功能禁用|当前实现只支持image/text；image为标准1080×1440 PNG加文字标签，text为UTF-8文本，不是任意文档/图层生成|
+|setup.open_file；setup.initial_state|指定准备后打开哪个素材、正式业务开始前应看到什么|准备模块生成/投放/打开并用collection_seed_check观察；文件存在不等于应用已准备好，也不提前执行目标修改|
+|visible_region_refs；region_visible；condition_value|让执行依赖当前场景，而非复现所有历史State|执行模型看当前图判断；图提供关系和记忆，不能把历史可见当当前可操作|
+|action.kind/target/owner_ref/point_1000/text等|把目标推进转成当前表面的一个实际操作|按采集schema输出；point_1000是整屏归一化点位，与遍历常用像素坐标区分，投递前转换/核对|
+|previous_action_outcome；previous_action_observation；previous_action_matches_intent|把上一步实际结果回填，防止只有提议动作却声称已执行|下一观察/真实回执与模型说明配合保存；不补造未发生步骤|
+|complete；region_collection_final|区分单步看起来完成和最终业务目标的观察核对|终验使用目标前后证据；不是schema通过、成功提交或入口打开就算任务完成|
+|graph_images、matcher、grounding与轨迹记录|保留后续执行用到的身份材料、点位核对及真实操作过程|复制只读匹配实现及身份图用于本次采集；不回写遍历图，也不修改遍历代码来修采集|
+
+生成目录由collection_graph.generation_material选择用途、参数、条件和支撑引用；采集记忆region_material目前仍较完整，包含任务材料。二者职责不同，不能因为方便共用整块JSON就宣称上下文已经按目标收窄。
+
+|模型调用|负责的问题|当前实现|
+|---|---|---|
+|region_instruction|根据图材料提出业务指令、目标引用和必要初态|function_collection_research.design_region_instruction|
+|collection_seed_check|正式任务前初态是否满足|collection_seed.prepare_collection_seed；有初态要求时调用|
+|region_collection|当前一步如何推进目标/条件及解释上一动作|RegionGuidedCollector.execute|
+|collection_grounding|点位/目标证据不足时当前图确认|CollectionVisualGuard.check；不是每步固定额外调用|
+|region_collection_final|完整业务结果是否满足|RegionGuidedCollector.execute的最终核对|
+
+当前素材准备主要支持桌面，Android及复杂业务样本不能从schema字段存在推断已支持。图的访问关系是建议：当前已有可操作后续目标时允许直接使用，但不跳过业务前置或条件观察。max_turns只限制决策回合，当前普通CLI的model_calls也不完整包含HTTP重试；不能将其宣传为已统一执行的HTTP/GUI硬额度。已有局部验证见下文，不能外推成完整新图业务采集通过。源码锚点统一见[流程地图](stepwise/CODE_MAP.md)。
+
+
 维护入口是 `gui_rewalk/run_capability_task_synthesis.py` 与 `gui_rewalk/run_visual_collection.py`，共用 `src/core/scenario/collection_graph.py`。旧 M13 参数、recipe 执行器、scenario delta/SeedPlan 与多模型开关不是这两个入口的当前合同；旧说明保存在 [归档](../archive/2026-10-02-framework-wiring-fix/visual_collection_before_wiring.md)。
 
 ## 输入与执行

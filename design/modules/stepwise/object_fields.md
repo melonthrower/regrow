@@ -4,6 +4,46 @@
 
 # 四个业务对象的字段约定
 
+## 字段的设计动机与责任（2026-11-04）
+
+本节补充“为什么需要、谁判断和保存、后续怎样使用”，不修改字段定义、schema或Prompt。完整含义仍维护在本页原有对象章节及其链接的对象Prompt；本节不是第二套术语表。运行内部所有键不都属于业务字段。
+
+**读法：内部稳定身份、当次模型呈现、持久记录是三层。** 当前调用可通过名称或给定编号引用，框架沿本次name_contract等映射解析为稳定ID；旧controls.index、当前ref、知识条目index和本次数组位置不能混用。下文保留的日期记录并不都代表最新外部格式，每次必填/可写字段以正常builder生成的实际schema为准。
+
+|字段或字段组|设计目的|判断、写入与主要消费|
+|---|---|---|
+|name；控件description|让人和模型辨认对象，避免把一次输入值当身份；用途单独保存|Luna观察；框架存对象；发现、动作与纠错读取|
+|id/ref；本次index、candidate_index、region_index、control_index|把跨调用稳定身份与本次材料位置分开，修订不会因列表重排串对象|框架分配稳定ID、解析当次引用；Luna使用给定引用；旧合同原样解码|
+|controls；shared_instances；list_group/list_groups|组织成员与复用同一物理身份；共同用法分组不合并不同对象|Luna判断关系；records保存身份及引用；任务提出和两树复用|
+|identity、identity_evidence、context_matches|表达新旧对象与适用上下文的依据，避免同名/相似外观自动合并|Luna判断语义；识别与记录检查引用和观察；疑点不自动变新身份|
+|bbox、image、add_image、image_conditions；已有click_bbox|保留辨认外观及状态，不把裁剪当完整点击区域；已有点击区域供采集投影|模型给当前图定位/条件；框架裁图存来源；匹配是证据，不证明可操作或成功|
+|knowledge[].description|保存已有用途、操作方式、适用条件与不确定性，减少重复探索|Luna观察/解释；框架按对象和来源保存；任务、功能整理、生成读取|
+|knowledge[].constraints|把已知参数、候选及限制归到对应用途，避免大量取值变成独立控件|Luna按证据说明；框架保存；生成和执行取所需参数；部分候选不冒充完整范围|
+|local_knowledge.add/update/delete|表达区块整体配合方式；修订被推翻内容而非留下互相矛盾的段落|Luna给有据增量；框架保留未涉及条目和来源；任务/生成复用|
+|functions.name/description/supports/constraints；parameter_definitions|把对象认识整理成可复用业务目的，并保留支持与参数来源|Luna在允许更新的调用中整理；框架检查引用；functions为空不等于控件知识为空|
+|jump_to及region/control/conditions；transitions|保存真实操作支持的访问关系，供后续找入口；不是物理包含或自动双向返回|框架固定实际来源；Luna判断动作后可访问目标与条件；导航/目录/采集读取|
+|parent、parent_index、parent_region|现代码表达/保存包含关系，并非访问来路|旧设计与现实现仍在；取消方向已有讨论，完整候选待确认及实施，不能写成已删|
+|may_open_content；needs_exploration|分开“是否通向有价值内容”和“控件自身还有具体未知”|Luna结合界面与知识判断；任务提出复用；入口用途已知不代表目标内容已知|
+|operations、control、task_type、completion_condition|保存单个待解决问题及终点，而非事先枚举GUI动作|Luna提出；框架保留归属和目标。当前有function/parameter/region_content，准备不是新task_type|
+|task_update；decision/reason/remaining_question/retry_when|表达原问题进展、缺口和实际障碍，防止准备或新问题替换原目标|Luna判断；records结合真实阻塞登记pending/done/blocked；blocked不妨碍其他可推进任务|
+|action=complete/none；next_action|部分动作调用用complete/none承载已知答案或暂挂；建议不是已执行事实|action_commands.for_request等转入正常任务登记；不要求每个角色都输出同样task_update包装|
+|dependency_updates.ready/evidence；preparatory_action；task_region/source_region|区分原问题归属、实际操作来源与准备是否满足；恢复不虚构业务成功|Luna给准备观察；框架保留原任务及真实动作，准备完成只使原问题可继续|
+|inventory/evidence；controls_complete等范围材料|说明本次范围是否考虑过，不再另造一套必须清零的未知清单|设计约定由tasks承载未知；当前coverage仍有inventory、缺口和已考虑控件检查，本批不删除这些实现|
+|foreground、current_regions/current、focus_presence；interactive_regions|区分当前表面、指定区块位置、原任务及历史候选，供本步理解|Luna观察；框架维护观察状态。目标语义不是操作白名单，但当前调度/候选仍有名单限制|
+|exception/recovery_handoff|让被中断的步骤把真实异常交恢复，避免继续登记外部业务|模型报告异常，框架先恢复。必要系统选择器如何界定仍有已知问题，不靠新白名单掩盖|
+|action/target及平台点位、文本、按键等参数|让语义意图落到当前界面的一个真实操作；坐标不是旧身份记录的固定位置|Luna选动作；绑定/投递代码核实并执行；参数以当次桌面/Android schema为准|
+|action_result、returns_to_previous；回执semantic_result|区分执行回执、看到的变化、返回事实和原问题是否回答|平台记实际投递；Luna解释前后观察；exit_code=0、无异常、登记均不自动等于业务成功|
+|source_call、attempt、evidence；latest_update/history/revisions|保留事实来源与修订过程，给后续调用选择必要材料|框架写来源/历史；Luna只判断披露证据。目标是一份事实源多种投影；历史选材仍有待收口路径|
+
+### 同名字段不能跨层理解
+
+knowledge.constraints是用途下的参数说明；区块constraints是参数目录；functions.constraints是已有参数引用。动作建议的target、实际绑定的control_ref、任务归属task_region和来源source_region也不是同一件事。具体定义继续看下面原有字段表，不把本节当作可直接发送的统一JSON。
+
+### 哪些不是已经完成的设计
+
+候选值完整收集与同质实例复用的尺度仍需落到登记和读取；当前代表项提示尚有未确认草稿。取消父子关系及共享控件纠错/点位核对的候选见[方案入口](../../DESIGN_INTENT.md#待实施方案)。本节只澄清职责与缺口，不借文档补充更改字段语义或扩大任务完成门槛。
+
+
 2026-10-30累计合并：当前唯一字段语义来源为四份对象 Prompt，实际输出权限/必填由本次 schema 决定，17 类配方选入所需语义。区块不等于单一功能；控件是实际操作对象，具体身份与共同用法分组分开。completion_condition 按“足以使用，同流程选代表”，knowledge 保存用途和必要条件；同类数据不必逐项登记。下文较早带日期说明保留历史含义，现行组合与验证状态以 CURRENT_FRAMEWORK 为准。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。
 
 本页是控件、区块、任务、动作及其附属字段的统一讨论入口。2026-10-24按当前工作树四份对象 Prompt 补齐字段含义；这是现有正文的整理，不是一次新的语义批准，也不代表工作树候选已经实现验收。只有控件六项明确标为本轮已确认。代码、Prompt、Schema及历史记录均未因本次文档整理而改变。

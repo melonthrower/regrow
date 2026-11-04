@@ -15,3 +15,5 @@
 [开发入口](DEVELOPMENT.md) · [本地部署](DEPLOY_LOCAL.md) · [当前问题](KNOWN_ISSUES.md) · [源码状态](SOURCE_VERSION.json)
 
 [区块与动作问题案例：截图、应用树、逐次调用](issue_cases/20261104-regions-and-actions/README.md)。仅公开用户指定的相关证据，验证原件仍在本地维护。
+
+[设计思路入口：字段目的、各环节、源码定位与待实施方案](design/DESIGN_INTENT.md)。

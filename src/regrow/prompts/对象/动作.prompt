@@ -12,8 +12,11 @@
 
 <!-- BEGIN_PROMPT_BLOCK id="action.result" requires="" -->
 # 已执行动作的结果：action_result
-description 写有依据的直接变化及对应观察，也可以说明无相关变化或无法判断。按实际提供的动作记录和图片判断，投递回执、像素变化本身不证明功能成功。缺少动作后图时保留未核对结果。
-正例：“点击后出现格式列表，可见 PDF、图片两项；尚未选择格式或执行导出。”
+description 写动作后可见的直接变化、反馈、失败或无法确认的部分。实际操作对象、投递参数和回执以所给执行记录为准，不根据显示结果改写投递内容，也不必重新抄写整段执行过程。
+结合实际动作与前后图判断变化是否由本次操作引起；只有时间相邻而缺少关联的变化保留未知。投递成功不证明应用已接受、保存或业务生效；缺少动作后观察时保留未核对结果。
+
+正例：投递值为 A，界面显示 B，就记录显示 B 及尚不清楚的处理方式，保持投递 A 的事实；不能倒推实际输入也是 B。
+反例：把拟执行提案写成已经执行，或仅凭回执成功就说所设数值已经保存。
 <!-- END_PROMPT_BLOCK id="action.result" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.complete" requires="task.definition" -->
@@ -123,9 +126,12 @@ region、control 复制本轮给定的区块 ID、控件 ID；区块级修订的
 <!-- END_PROMPT_BLOCK id="action.record_edit_basic" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.record_edit_task" requires="" -->
-任务修订使用 region、task、field、before、after、evidence；region 是区块 ID，task 是原任务名，before 是原控件 ID。
-task_control：尚未执行、没有历史或依赖的 pending 任务可改绑，after 为已给出的正确控件 ID。suspend_task：保留已有归属和历史，暂挂后重新清点，after=""。reopen_task：仅重新审查依观察结束、尚未实际尝试或共享的任务，after 写具体未答问题。
-正例：从未执行且无依赖的任务初次绑错控件，可改为给定的正确控件 ID。
+任务修订使用 region、task、field、before、after、evidence；region 是给定区块引用，task 是原任务名，before 是原控件引用。
+task_control：尚未执行、没有历史或依赖的 pending 任务可改绑，after 为给定的正确控件引用。suspend_task：保留归属和历史暂挂，after=""。
+reopen_task：仅复核本次明确提供的原任务、旧完成判断和实际证据。evidence 指出旧判断为何未回答原完成条件，after 写原题仍未回答的部分；保留原题及实际尝试，已有真实阻塞继续保留。共享任务须回到其规范来源复核，不把新的独立问题写入旧题。
+
+正例：旧题要求确认必要使用条件，原证据只显示一次现象且明确缺少该条件时，复核这份旧完成判断。
+反例：旧题已正确回答，后来出现不同条件下的新问题，却据此重开旧题或改写原条件。
 <!-- END_PROMPT_BLOCK id="action.record_edit_task" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.record_edit_owner" requires="" -->

@@ -246,7 +246,8 @@ def scope_review_pending(region):
 
 
 def inventory_evidence_changed(region):
-    gap = region_work(region).get('registration_gaps', {}).get('task_proposal')
+    from regrow.records.tasks import proposal_gap, new_scope_controls
+    gap = proposal_gap(region)
     if not gap:
         return True
     if gap.get('recheck_after'):
@@ -260,7 +261,7 @@ def inventory_evidence_changed(region):
         return any(str(row.get('evidence', {}).get('source_call') or '') > str(gap.get('source_call') or '')
                    and row.get('evidence', {}).get('observation') != gap.get('observation')
                    for row in observation_history(region))
-    if set(owned_controls(region)) - set(inventory.get('controls', [])):
+    if new_scope_controls(region):
         return True
     review = inventory.get('review') or {}
     source = str(gap.get('source_call') or '')
@@ -282,7 +283,6 @@ def runnable(region, records=None):
     progress = _record_coverage(region, records)
     if progress['inventory_complete']:
         return False
-    gap = region_work(region).get('registration_gaps', {}).get('task_proposal')
     return inventory_evidence_changed(region)
 
 def choose_unfinished(records, state):

@@ -180,6 +180,9 @@ def accept_candidate(root, run, job):
             from regrow.records.object_knowledge import apply as apply_knowledge
             from regrow.recognition.control_references import decode
             apply_knowledge(preview, decode(q, proposal), {**(evidence or {'basis':'observation_only'}), 'source_call': ref})
+            from regrow.records.function_updates import apply_for_request
+            apply_for_request(preview, q, decode(q, proposal),
+                              {**(evidence or {'basis': 'observation_only'}), 'source_call': ref})
             store_increment(owner, task, source['task_name'], proposal['task_update'], preview, state, {**(evidence or {'basis':'observation_only'}), 'source_call': ref}, observed=bool(evidence))
         if binding['status'] == 'matched':
             current_state = _record_load(run)[2]
@@ -203,6 +206,14 @@ def related(run, job):
     from regrow.traversal import action_binding as _action_binding
     (_, records, state) = _record_load(run)
     q = job['request']
+    review = q.get('done_task_review')
+    if review:
+        rid = review['region']
+        region = records[rid]
+        return {rid: {**deepcopy(dict(region)),
+            'controls': deepcopy(dict(owned_controls(region))),
+            'tasks': {review['task']: deepcopy(owned_tasks(region)[review['task']])},
+            'actions': deepcopy(dict(owned_actions(region)))}}
     refs = set(q.get('discovery_context', {}).get('region_names', {}).values())
     if job['stage'] == 'update':
         refs.update(q.get('region_names', {}).values())
@@ -263,6 +274,8 @@ def record_capabilities(stage=None, request=None):
     request = request or {}
     if not request.get('screenshots'):
         return []
+    if request.get('done_task_review'):
+        return ['record_edit：reopen_task（给定原题）']
     result = []
     if stage != 'action':
         if request.get('control_observation_candidates'):
@@ -270,7 +283,7 @@ def record_capabilities(stage=None, request=None):
         if request.get('action_owner_candidates'):
             result.append('record_edit：指定单笔动作的对象归属修订')
     if stage in ('discovery', 'task_proposal'):
-        result.append('record_edit：task_control、suspend_task、reopen_task')
+        result.append('record_edit：task_control、suspend_task')
     result.append('record_edit：name、description、list_group、region、merge_into、remove')
     return result
 
@@ -446,6 +459,15 @@ def refresh(root, run, job):
 
 def edit_record(root, run, job, edit):
     from regrow.traversal import discovery_step as _discovery_step
+    if job['request'].get('done_task_review'):
+        from regrow.traversal.task_record_repair import validate_review
+        current, records, _ = _record_load(run)
+        saved = current / 'record_revision.json'
+        if saved.is_file() and _record_read(current / 'source.json').get('stage') == 'record-revision-' + job['call']:
+            if _record_read(saved) != {'source_call': job['call'], 'edit': edit}:
+                raise ValueError('该复核调用已保存另一份修订，不能改写')
+            return _record_read(Path(run) / 'knowledge_current.json')
+        validate_review(run, job, edit, records)
     if job['stage'] == 'shared_control_review':
         if isinstance(edit, list):
             raise ValueError('共享核对每次处理一个成员')
@@ -503,6 +525,8 @@ def edit_record(root, run, job, edit):
                 continue
             matches = [item['region']] if item['region'] in scope else []
             if 'task' in item:
+                if item['field'] == 'reopen_task' and not job['request'].get('done_task_review'):
+                    raise ValueError('重开任务须明确提供原题、旧完成判断和实际证据；不能凭清点摘要修订')
                 if len(matches) != 1 or item['task'] not in owned_tasks(scope[matches[0]]):
                     raise ValueError('任务不在本轮修订范围')
                 rid = matches[0]

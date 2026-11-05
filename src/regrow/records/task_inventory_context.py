@@ -232,9 +232,6 @@ def project(records, state, rid):
         known = '；'.join(
             '知识条目 ' + str(row['index']) + '：' + knowledge_text([row]) for row in card(control))
         sentences = [known] if known else ['描述：' + control.get('description', ''), '尚未登记用途知识']
-        decision = control.get('needs_exploration')
-        if decision is not None and not any(t.get('control') == cid for t in owned_tasks(region).values()):
-            sentences.append('此前判断：' + ('仍有使用疑问' if decision else '控件自身用法已清楚'))
         if parameter_text(control):
             sentences.append(parameter_text(control))
         from regrow.prompts.target_observation import describe

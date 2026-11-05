@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from regrow.recognition import identity_templates as templates
 
-def schema(root, mode, focus_present=True):
+def schema(root, mode, focus_present=True, *, task_contract=None):
     from regrow.recognition import foreground_scope as _foreground_scope
     from regrow.recognition import region_identity as _region_identity
     from regrow.records import control_records as _control_records
@@ -34,6 +34,9 @@ def schema(root, mode, focus_present=True):
     _region_identity.extend_schema(value, required=True)
     if mode == 'local':
         value['properties']['regions']['description'] = '仅登记指定区块及其直接所属控件；不在本步展开其他同屏区块。'
+    if task_contract is not None:
+        value['properties'].update(deepcopy(task_contract['properties']))
+        value['required'] += [key for key in task_contract['required'] if key not in value['required']]
     return _discovery_delta.schema(value)
 
 def validate_identity(reply):
@@ -160,10 +163,24 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     resolved = state.get('foreground_resolution')
     if resolved and plan['mode'] == 'local' and (resolved.get('focus') == focus) and (resolved.get('frame_path') == str(Path(frame).resolve())) and (resolved.get('frame_sha256') == hashlib.sha256(Path(frame).read_bytes()).hexdigest()):
         dynamic['已解决的前景核对'] = resolved['conclusion']
-    response_schema = schema(root, plan['mode'], focus is not None)
+    task_contract = None
+    if plan['mode'] == 'local' and focus in records:
+        from regrow.records.task_plans import context as task_context
+        task_contract, task_material = task_context(records, state, focus, observed_new=True)
+        dynamic.update({
+            '本轮任务提出范围': records[focus]['name'],
+            '本区块已登记用途': task_material.get('控件'),
+            '本轮允许更新的任务': task_material.get('本轮可判断旧任务'),
+            '相关已完成问题': task_material.get('相关已完成问题'),
+            '已登记直接目标知识': task_material.get('已登记直接目标知识'),
+            '未接受的任务条目': task_material.get('未接受的任务条目')})
+        dynamic = {key: value for key, value in dynamic.items() if value not in (None, '', [], {})}
+    response_schema = schema(root, plan['mode'], focus in records, task_contract=task_contract)
     response_schema['properties']['foreground']['required'] += ['exception', 'recovery_handoff']
     response_schema['properties']['foreground']['properties']['exception']['enum'] = ['none', 'blocking_popup', 'system_error', 'unexpected_exit', 'external_app', 'unclassified', 'region_ownership_review']
     request = {'pipeline_step': 'discovery', 'role': 'observation', 'stage': 'discovery', 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [frame], 'response_schema': response_schema, 'fixed_parts': parts, 'discovery_context': {'mode': plan['mode'], 'focus': focus, 'region_names': names, 'control_names': cnames, 'visual_plan': plan, 'partition_context': plan.get('partition_context')}}
+    if task_contract is not None:
+        request['source'] = {'region': focus, 'controls': list(owned_controls(records[focus]))}
     _frame_context.label(request, frame, '本次发现观察图')
     _work_context.attach(request, records, state, work)
     from regrow.records.context_scope import for_request

@@ -72,8 +72,15 @@ def unresolved(request, proposal):
         # identity. A similar crop must not override that semantic judgment.
         return None
     rows, candidates = at_point(request, proposal)
-    if len(candidates) == 1:
-        selected = candidates[0]
+    selected = candidates[0] if len(candidates) == 1 else None
+    if len({row['target'] for row in candidates}) == 1 and selected is None:
+        source = request.get('source', {})
+        for rid in (source.get('working_region'), source.get('region')):
+            local = [row for row in candidates if row['region_ref'] == rid]
+            if len(local) == 1:
+                selected = local[0]
+                break
+    if selected:
         rid, cid = selected['region_ref'], selected['target']
         return {'region_ref': rid, 'control_ref': cid,
                 'basis': 'unique current-frame appearance at proposed coordinates',
@@ -97,14 +104,24 @@ def conflict(request, proposal, binding):
         return None
     rows, candidates = at_point(request, proposal)
     target = binding['control_ref']
-    original = next((row for row in rows if row['target'] == target), None)
-    if any(row['target'] == target for row in candidates) and (not proof or len(candidates) == 1):
+    originals = [row for row in rows if row['target'] == target]
+    original = next((row for row in originals if row['region_ref'] == binding.get('region_ref')),
+                    originals[0] if originals else None)
+    candidate_ids = {row['target'] for row in candidates}
+    if target in candidate_ids and (not proof or len(candidate_ids) == 1):
         return None
     if proof:
         return {'原选择': original or {'target': target},
                 '点击位置': [proposal['x'], proposal['y']],
                 '位置处其他候选': candidates,
                 '说明': '投递前图中，先前按坐标关联的控件不再有唯一可靠对应；请核对当前对象与原动作。'}
+    if not candidates and original and original['定位可靠'] and original['定位']:
+        left, top, right, bottom = original['定位']
+        return {'原选择': original,
+                '点击位置': [proposal['x'], proposal['y']], '位置处其他候选': [],
+                '说明': f'图像匹配得到目标控件的位置（{(left + right) // 2}, {(top + bottom) // 2}）'
+                        f'和范围 bbox {original["定位"]}，但拟点击点（{proposal["x"]}, {proposal["y"]}）在框外。'
+                        '请结合完整截图，核对这个位置是否能点中目标控件。'}
     if not candidates:
         return None
     return {'原选择': original or {'target': proposal['target']},
@@ -143,6 +160,9 @@ def request(root, job):
             q[key] = deepcopy(original[key])
     if original.get('frame_context'):
         q['frame_context'] = deepcopy(original['frame_context'])
+    if len(q['screenshots']) == 1:
+        from regrow.prompts.frame_context import label
+        label(q, q['screenshots'][0], '本次动作选点依据图；尚未执行所选动作')
     return q
 
 

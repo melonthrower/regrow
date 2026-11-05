@@ -60,6 +60,8 @@ def handoff_no_action(run, request, proposal, call, frame):
             from regrow.recognition.control_references import decode
             from regrow.records.object_knowledge import apply
             apply(records, decode(request, proposal), basis)
+            from regrow.records.function_updates import apply_for_request
+            apply_for_request(records, request, decode(request, proposal), basis)
             updates.store_increment(owner, task, task_ref['name'], proposal['task_update'], records, state, basis, observed=observed)
             if task['status'] != 'pending' and state.get('active_task') == task_ref:
                 state.pop('active_task', None)
@@ -179,7 +181,6 @@ def select_work(records, state, working=None):
             if reviews_task(records[owner], active):
                 return choice('task_proposal', owner, reason='register evidence for the current task')
             return choice('action', rid, task=dict(active), source_regions=list(allowed), reason='continue the existing task on its current surface')
-        gap = region_work(region).get('registration_gaps', {}).get('task_proposal', {})
         if not progress['inventory_complete'] and (not progress['pending']) and _task_deferral.inventory_evidence_changed(region):
             return choice('task_proposal', rid, reason='prepare tasks for observed controls')
         pending = [name for name in progress['pending'] if not owned_tasks(region)[name].get('equivalent_to')]

@@ -172,7 +172,7 @@ recovery_handoff 简要说明当前是什么界面，以及恢复原工作需要
 <!-- END_PROMPT_BLOCK id="region.recovery_handoff" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.exception_registration" requires="" -->
-exception 非 none 时，报告实际异常，regions、controls 填 []，本步允许的 function_updates 也填 []，不登记应用外的功能。原任务受异常影响的进展仍按本步字段要求填写，保留未解决的问题，不将应用外功能当作任务成果。其余字段按本步格式填写。
+exception 非 none 时，报告实际异常，regions、controls 填 []，不登记应用外的功能。原任务受异常影响的进展仍按本步字段要求填写，保留未解决的问题，不将应用外功能当作任务成果。其余字段按本步格式填写。
 <!-- END_PROMPT_BLOCK id="region.exception_registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.function_new_constraints" requires="" -->

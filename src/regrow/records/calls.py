@@ -17,6 +17,11 @@ def submission(run, ref):
     folder = Path(run) / 'calls' / ref
     q = read(folder / 'interpreted_request.json') if (folder / 'interpreted_request.json').exists() else business_request(run, read(folder / 'request.json'))
     reply = read(folder / 'interpreted_response.json') if (folder / 'interpreted_response.json').exists() else read(folder / 'response.json')
+    if not q.get('display_regions') and (folder / 'response.json').exists():
+        from regrow.recognition.named_references import display_regions
+        hints = display_regions(read(folder / 'request.json'), read(folder / 'response.json'))
+        if hints:
+            q = {**q, 'display_regions': hints}
     if (folder / 'registration_candidate.json').exists():
         return read(folder / 'registration_request.json'), read(folder / 'registration_candidate.json')
     if (q.get('role') in ('step_correction', 'control_identity_comparison', 'action_target_review')

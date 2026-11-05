@@ -157,7 +157,7 @@ def commit_update(root, run, call_ref, attempt_ref):
         r = records[_region_candidate_names.resolve(records, item['ref'], request.get('region_names'))]
         region_changes.append({'region': r['id'], 'state': item['state'], **({'evidence': item['evidence']} if item.get('evidence') else {})})
         if item.get('task_review_reason', '').strip() and region_work(r).get('task_inventory'):
-            region_work(r)['task_inventory']['review'] = {'reason': item['task_review_reason'], 'source_call': call_ref}
+            region_work(r)['task_inventory']['review'] = {'kind': 'task_proposal', 'reason': item['task_review_reason'], 'source_call': call_ref}
     delta_refs = _owner_materialize_regions(records, reply, call_ref, edge['after_observation'], request.get('region_names'), frame=run / edge['after_image'] if edge.get('after_image') else None)
     _registration_diagnostics.check_visibility(reply, delta_refs, region_changes, request.get('region_names'))
     visibility = _update_visibility
@@ -207,11 +207,13 @@ def commit_update(root, run, call_ref, attempt_ref):
     original_task_ref = _task_updates.reference(binding.get('task_region', source), binding.get('task_name', ''))
     effective_binding = {**binding, 'region_ref': source, 'control_ref': control, 'task_update_ref': original_task_ref}
     _task_prerequisites.apply(records, reply, call_ref, request.get('dependency_candidates', []))
-    from regrow.records.function_updates import apply as apply_functions
-    apply_functions(records, reply.get('function_updates', []), {'source_call':call_ref, 'attempt':attempt_ref}, request.get('function_update_regions'))
+    from regrow.records.function_updates import apply_for_request
+    apply_for_request(records, request, reply, {'source_call':call_ref, 'attempt':attempt_ref})
     settlement_reply = reply
     if request.get('task_update_candidates') == [] and 'task_update' not in request['response_schema'].get('properties', {}):
         settlement_reply = {**reply, 'task_update': []}
+    if historical:
+        suspended.release_result_block(records, historical, call_ref, attempt_ref)
     _record_settle_task(records[binding.get('task_region', source)], effective_binding, settlement_reply, attempt_ref, records, receipt=receipt, labels=request.get('region_names'), candidates=request.get('task_update_candidates'))
     register_destinations(reply.get('jump_to'), records, delta_refs, reply['controls'], owner, attempt_ref, call_ref)
     for target in a.get('observed_destinations', []):

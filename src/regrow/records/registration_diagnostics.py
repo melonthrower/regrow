@@ -205,7 +205,9 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
     if schema:
         if stage == 'update' and 'working_context' not in schema.get('properties', {}):
             p = {k: v for (k, v) in p.items() if k != 'working_context'}
-        errors.extend(reply_errors({**q, 'response_schema': schema}, p, defer_objects=stage in ('reply', 'task_proposal')))
+        schema_errors_now = reply_errors({**q, 'response_schema': schema}, p, defer_objects=stage in ('reply', 'task_proposal'))
+        from regrow.records.task_assessments import row_error
+        errors.extend(error for error in schema_errors_now if not (stage == 'discovery' and row_error(q, p, error)))
         if errors:
             errors.extend(task_reference_errors(stage, q, p, records))
             return {'errors': errors, 'unchecked': ['所有结构字段已检查；任务提出时还检查了可读取的控件名称引用。依赖未通过字段的身份、归属和结果校验尚未执行。']}

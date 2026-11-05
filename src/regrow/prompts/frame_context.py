@@ -21,6 +21,9 @@ def primary(request):
     if len(frames) == 1 or request.get('role') in ('control_identity_comparison', 'appearance_comparison'):
         return frames[0]
     original = request.get('original_request', request)
+    review = original.get('done_task_review')
+    if review and review.get('primary') in frames:
+        return review['primary']
     if original.get('role') == 'observation_update' or original.get('pipeline_step') == 'update':
         return original['screenshots'][1]
     raise ValueError('多图请求缺少明确的阶段选图合同')

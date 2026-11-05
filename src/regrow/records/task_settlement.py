@@ -38,6 +38,9 @@ def completion_condition(task):
 
 
 def exploration_goal(task):
+    condition = completion_condition(task)
+    if condition and not task.get('prepares'):
+        return condition + ('\n本次理由：' + task['reason'] if registration_kind(task) == 'region_content' and task.get('reason') else '')
     if task.get('prepares'):
         goal = task.get('reason') or task.get('name', '')
     else:
@@ -45,7 +48,6 @@ def exploration_goal(task):
         goal = definition['region_goal'] if region_task(task) and registration_kind(task) == 'function' else definition['goal']
         if registration_kind(task) == 'region_content' and task.get('reason'):
             goal += '\n本次理由：' + task['reason']
-    condition = completion_condition(task)
     return goal + ('\n本任务结算条件：' + condition if condition else '')
 
 def store_action_entry(task, entry, action, attempt, evidence):

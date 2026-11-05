@@ -164,6 +164,12 @@ def supplement(root, records, state, frame, *, items=None):
     if str(Path(frame).resolve()) != batch['frame'] or fingerprint(frame) != batch['sha256']:
         raise ValueError('补全截图已变化，不能复用旧登记回执')
     q = deepcopy(batch['request'])
+    # A same-frame object supplement keeps its established object-only job.
+    # Rejected task rows are repaired from the published task assessment gap.
+    from regrow.records.task_plans import FIELDS
+    for field in FIELDS:
+        q['response_schema']['properties'].pop(field, None)
+        q['response_schema']['required'] = [key for key in q['response_schema'].get('required', []) if key != field]
     ctx = q['discovery_context']
     if items is not None:
         batch = {**batch, 'pending': [g for g in batch['pending'] if g['item'] in items]}

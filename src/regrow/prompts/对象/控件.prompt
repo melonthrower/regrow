@@ -58,7 +58,7 @@ knowledge[].index：修订旧知识时复制该条知识的序号，description 
 <!-- END_PROMPT_BLOCK id="control.bbox_grounding" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_description" requires="control.knowledge_base" -->
-knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法及适用的对象类型。已有知识没有变化时省略更新。
+knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法、适用的对象类型和实际观察到的代表；可结合对象结构和语义采用共同用法，不要求逐个实测才能复用；同时保留实际观察的代表，不声称其他实例已经操作。已有知识没有变化时省略更新。
 正例：“选中条目后，点击此按钮可删除选中的条目。”
 <!-- END_PROMPT_BLOCK id="control.knowledge_description" -->
 
@@ -80,7 +80,7 @@ name 写稳定、简短的名称；description 只补充名称不足以表达的
 <!-- END_PROMPT_BLOCK id="control.registration_name" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.exploration_flags" requires="" -->
-may_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身用法是否还有影响后续使用的具体未知：true 有，false 没有，null 尚不能判断。
+may_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身是否还有值得在遍历阶段解决的具体未知：true 有，false 没有，null 尚不能判断；未亲点或流程尚未走完本身不是未知。
 正例：入口已知会打开设置面板，但面板内部尚未探索，可以是 may_open_content=true、needs_exploration=false。
 <!-- END_PROMPT_BLOCK id="control.exploration_flags" -->
 

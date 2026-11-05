@@ -58,6 +58,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
     run = Path(run).resolve()
     call = run / 'calls' / call_ref
     (request, reply) = _owner_submission(run, call_ref)
+    raw_task_controls = deepcopy(reply.get('controls', []))
     ctx = request['discovery_context']
     completion = _discovery_completion
     locator = _locator
@@ -298,6 +299,11 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         state.pop('handoff_summary', None)
         if state['next_action_mode'] != 'discover':
             state.pop('pending_frame', None)
+        if (ctx['mode'] == 'local' and not ctx.get('completion')
+                and ctx['focus'] in refs and 'operations' in contract.get('properties', {})):
+            from regrow.records.task_plans import apply_observation
+            assessment = apply_observation(records, state, request, reply, call_ref, raw_task_controls)
+            _record_write_json(temp / 'task_assessments.json', assessment)
     pointer = _record_publish(run, 'discovery-' + call_ref, mutate)
     if current.get('action_target_registration', {}).get('status') == 'pending':
         from regrow.traversal.target_registration import advance

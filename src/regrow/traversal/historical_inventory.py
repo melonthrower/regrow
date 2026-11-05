@@ -12,12 +12,10 @@ def digest(region):
     return hashlib.sha256(json.dumps(region_state(region), sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 def request(root, snapshot, records, state, current_request=None):
-    from regrow.traversal import region_functions as _region_functions
     from regrow.records import shared_control_review as _shared_control_review
     from regrow.traversal import inventory_scroll as _inventory_scroll
     from regrow.traversal import task_proposer as _task_proposer
     from regrow.records import page_context as _page_context
-    functions = _region_functions
     pending = _shared_control_review.inventory_request(root, snapshot, records, state)
     if pending:
         return pending
@@ -56,9 +54,6 @@ def request(root, snapshot, records, state, current_request=None):
             return None
         if current.get('stage') == 'action_selection' and current.get('action_ready') and current.get('navigation_advice') and (source.get('region') in visible) and (source.get('return_to') == rid) and (source.get('working_region') == rid):
             return None
-    ready = functions.next_ready(records, state)
-    if ready:
-        return functions.request(root, records[ready], state, records)
     rid = state.get('working_region')
     region = records.get(rid, {})
     if rid in state.get('interactive_regions', []) or not region or region_work(region).get('out_of_scope_reason'):

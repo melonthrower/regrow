@@ -207,22 +207,17 @@ def view(records, rid, refs=None):
     return rows
 
 
-def attach(request, records, region_ids, task=None, *, refs=None):
-    """Expose only the selected Region directory or the current task's linked purposes."""
-    from regrow.prompts.prompt_material import assign
-    ids=list(dict.fromkeys(rid for rid in region_ids if rid in records))
-    request['function_update_regions']=ids
-    request['response_schema']['properties']['function_updates']=schema(ids)
-    rows=[]
-    for rid in ids:
-        rows.extend(view(records, rid, refs))
-    values={'可更新功能的区块':[{'名称':records[rid]['name'],'ref':rid} for rid in ids]}
-    if rows:values['已有功能轮廓']=rows
-    if refs is not None:
-        directory = [{'功能': name, '引用': reference(rid, name)}
-                     for rid in ids for name in records[rid].get('functions', {})
-                     if reference(rid, name) not in refs]
-        if directory:
-            values['其他已有功能（仅目录）'] = directory
-    assign(request,values,remove=('已有功能轮廓', '其他已有功能（仅目录）'))
-    return request
+def apply_for_request(records, request, reply, source):
+    """Only a saved contract offering catalog edits retains the old write path.
+
+    Ordinary new contracts do not call apply(), including its historical task
+    reference scan. Saved legacy replies keep their full original obligations.
+    """
+    def offered(node):
+        if isinstance(node, dict):
+            return ('function_updates' in node.get('properties', {}) or
+                    any(offered(child) for child in node.values()))
+        return isinstance(node, list) and any(offered(child) for child in node)
+    if offered(request.get('response_schema', {})):
+        apply(records, reply.get('function_updates', []), source,
+              request.get('function_update_regions'))

@@ -60,6 +60,7 @@ def labels(run, request):
         for cid,c in owned_controls(r).items():
             if cid in ids:
                 names[cid] = c['name']; owners.setdefault(cid, []).append(rid)
+                names.setdefault(rid, r['name'])
     counts = Counter(normalized(n) for n in names.values())
     for ref,name in list(names.items()):
         if counts[normalized(name)] > 1:
@@ -72,7 +73,34 @@ def labels(run, request):
     # both unresolved; never silently map a shared label to the last object.
     counts = Counter(names.values())
     names = {ref:name for ref,name in names.items() if counts[name] == 1}
-    return names, {cid:rids[0] for cid,rids in owners.items() if len(rids)==1}
+    return names, _display_owners(run, request, owners)
+
+
+def _display_owners(run, request, memberships):
+    """Keep all display locations; a knowledge edit has no unique owner claim."""
+    original = request.get('original_request', request)
+    hints = original.get('display_regions', {})
+    return {cid: ([hints[cid]] + [rid for rid in rids if rid != hints[cid]]
+                  if hints.get(cid) in rids else list(rids))
+            for cid, rids in memberships.items()}
+
+def display_regions(request, reply):
+    """Retain the original outer Region solely in the interpreted call context."""
+    contract = request.get('name_contract')
+    if not contract or not contract.get('nested') or not isinstance(reply, dict):
+        return {}
+    value = _decode_references(reply, contract['aliases'])
+    if isinstance(value.get('proposal'), dict):
+        value = value['proposal']
+    from regrow.records.object_knowledge import control_only
+    result = {}
+    for row in value.get('regions', []):
+        if not isinstance(row, dict) or row.get('ref') not in contract['names']:
+            continue
+        for control in row.get('controls', []):
+            if isinstance(control, dict) and control_only(control):
+                result.setdefault(control['ref'], row['ref'])
+    return result
 
 
 def _drop(schema, keys):
@@ -163,7 +191,13 @@ def encode_objects(value, names, owners, *, current=False):
     for c in v.pop('controls'):
         c.pop('candidate_index',None);i=c.pop('region_index',None)
         if i is None:
-            rid=owners.get(c.get('ref'))
+            locations = owners.get(c.get('ref'), [])
+            locations = [locations] if isinstance(locations, str) else locations
+            # The retained outer Region is preferred. Otherwise use a
+            # display-only reference to a known member.
+            # decode still strips this container for pure knowledge; it never
+            # writes membership, visibility, observation or task ownership.
+            rid = locations[0] if locations else None
             matches=[j for j,r in enumerate(regions) if r.get('ref')==rid]
             if not matches and rid:
                 regions.append({'ref':rid});matches=[len(regions)-1]
@@ -289,11 +323,15 @@ def render(request):
     return q
 
 
-def internal_request(request):
+def internal_request(request, reply=None):
     q=deepcopy(request);c=q.pop('name_contract',None)
     if c:
         q['response_schema']=c['schema']
         q['named_nested']=c['nested']
+        if reply is not None:
+            hints = display_regions(request, reply)
+            if hints:
+                q['display_regions'] = hints
     return q
 
 
@@ -316,13 +354,32 @@ def decode(request, reply):
     if not contract:return deepcopy(reply)
     from regrow.records.object_knowledge import control_only
     value=_decode_references(deepcopy(reply),contract['aliases'])
+    original = request.get('original_request', request)
+    edit = value.get('record_edit')
+    if original.get('done_task_review') and isinstance(edit, dict) and edit.get('field') == 'reopen_task':
+        edit['before'] = resolve(edit.get('before'), contract['aliases'])
+        task_name = original['done_task_review']['task']
+        if reply['record_edit'].get('task') == text(task_name, contract['names']):
+            edit['task'] = task_name
     if not contract['nested']:return value
+    new_names = {control.get('name') for region in reply.get('regions', [])
+                 for control in region.get('controls', [])
+                 if isinstance(control, dict) and control.get('name') and not control.get('ref')}
+    for raw, operation in zip(reply.get('operations', []), value.get('operations', [])):
+        if isinstance(raw, dict) and isinstance(operation, dict) and raw.get('control') in new_names:
+            operation['control'] = raw['control']
     rows=value.get('regions',[]);base=contract.get('base')
     regions=[];controls=[];indexes=[]
     for row in rows:
         if not isinstance(row,dict):raise ValueError('区块列表中的每项须为对象')
         if not isinstance(row.get('controls',[]),list):raise ValueError('区块「'+str(_key(row))+'」的controls须为列表，不能为null或其他类型')
         region={k:v for k,v in row.items() if k not in ('controls','current','parent')}
+        if (contract['current'] and row.get('ref') and set(row) <= {'ref', 'controls', 'current'}
+                and row.get('current') is not True and row.get('controls')
+                and all(control_only(c) for c in row['controls'])):
+            # A container used only to show global knowledge is itself a
+            # no-op knowledge reference, not a newly observed Region.
+            region['local_knowledge'] = {}
         match=None
         if base:
             matches=[i for i,r in enumerate(base.get('regions',[])) if

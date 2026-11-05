@@ -9,7 +9,6 @@ from regrow.records.tasks import coverage
 def render_work(root, records, state, decision):
     """Build the selected request; no fallback selection or stop decisions here."""
     from regrow.traversal import work_context as _work_context
-    from regrow.traversal import region_functions as _region_functions
     from regrow.records import task_settlement as _task_settlement
     from regrow.records import history_context as _task_action_context
     from regrow.traversal import inventory_scroll as _inventory_scroll
@@ -23,10 +22,6 @@ def render_work(root, records, state, decision):
     state = _work_context.reading_state(state, work)
     if kind in ('task_proposal', 'scope_review'):
         return TaskProposer.request(root, records, state, rid, scope_review=kind == 'scope_review', work=work)
-    if kind == 'function_registration':
-        q = _region_functions.request(root, records[rid], state, records)
-        _work_context.attach(q, records, state, work)
-        return q
     if kind == 'navigate':
         q = assemble_context(root, records, state, rid)
         _work_context.attach(q, records, state, work)
@@ -121,7 +116,7 @@ def request_from_run(root, run, region_ref=None, task_ref=None, *, decision=None
     result['source']['snapshot'] = pointer['snapshot']
     if result.get('stage') != 'task_proposal':
         _page_context.attach(result, records, state, run=run)
-    if frame is not None and result['stage'] != 'function_registration':
+    if frame is not None:
         frames = [str(Path(frame).resolve())]
         result.update(screenshots=frames, image_refs=list(frames))
         _frame_context.label(result, frames[0], '本轮重新截取的当前图；供本步判断，历史观察与动作证据仍以各自来源为准')
@@ -147,15 +142,6 @@ def request_from_run(root, run, region_ref=None, task_ref=None, *, decision=None
     if result.get('action_ready') and result['source'].get('task_name'):
         from regrow.records.object_knowledge import fields
         edits = fields(records, [result['source']['task_region']])
-        from regrow.records.function_updates import schema as function_schema, view
-        from regrow.prompts.prompt_material import assign
-        owner = result['source']['task_region']
-        edits['function_updates'] = function_schema([owner])
-        task = owned_tasks(records[owner])[result['source']['task_name']]
-        refs = task.get('function_refs')
-        rows = view(records, owner, refs)
-        if rows:
-            assign(result, {'当前任务相关功能': rows})
         for branch in result['response_schema'].get('anyOf', []):
             if set(branch.get('properties', {}).get('action', {}).get('enum', [])) & {'complete', 'none'}:
                 branch['properties'].update(edits)

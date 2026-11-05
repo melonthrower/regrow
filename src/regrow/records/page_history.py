@@ -18,7 +18,7 @@ TITLE = '相关任务过程'
 def _order(ref):
     return (0, int(ref[1:])) if ref.startswith('a') and ref[1:].isdigit() else (1, ref)
 
-def _execution(action, aid, run):
+def execution(action, aid, run):
     detail = {}
     if action.get('text_delivered') is False:
         detail['文字投递'] = '未发送'
@@ -29,13 +29,13 @@ def _execution(action, aid, run):
         receipt = json.loads((folder / 'receipt.json').read_text())
         steps = receipt.get('executed_steps', [])
         if steps:
-            detail['实际执行'] = [{k: v for (k, v) in step.items() if k in ('action', 'target', 'text', 'text_delivered', 'key', 'keys', 'direction', 'amount', 'button', 'duration')} for step in steps]
+            detail['实际执行'] = [{k: v for (k, v) in step.items() if k in ('action', 'target', 'text', 'text_delivered', 'key', 'keys', 'direction', 'amount', 'button', 'duration', 'x', 'y', 'end_x', 'end_y')} for step in steps]
         elif receipt.get('exit_code') == 0 and (folder / 'dispatch.json').is_file():
             dispatch = json.loads((folder / 'dispatch.json').read_text()).get('action', {})
             if dispatch.get('action') == action.get('operation'):
-                detail['实际投递'] = {k: dispatch[k] for k in ('action', 'target', 'text', 'key', 'keys', 'direction', 'amount', 'button', 'duration') if k in dispatch}
+                detail['实际投递'] = {k: dispatch[k] for k in ('action', 'target', 'text', 'key', 'keys', 'direction', 'amount', 'button', 'duration', 'x', 'y', 'end_x', 'end_y') if k in dispatch}
     elif action.get('executed_steps'):
-        detail['实际执行'] = [{k: v for (k, v) in step.items() if k in ('action', 'target', 'text', 'text_delivered', 'key', 'keys', 'direction', 'amount', 'button', 'duration')} for step in action['executed_steps']]
+        detail['实际执行'] = [{k: v for (k, v) in step.items() if k in ('action', 'target', 'text', 'text_delivered', 'key', 'keys', 'direction', 'amount', 'button', 'duration', 'x', 'y', 'end_x', 'end_y')} for step in action['executed_steps']]
     return detail
 
 def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=False, extra_attempts=(), planning_region=None, displayed_findings=()):
@@ -133,7 +133,7 @@ def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=F
                 event['已记录参数事实'] = row['已记录参数事实']
             if row['异常'] not in ('', 'none', None):
                 event['区块变化'] = deepcopy(action.get('region_changes', []))
-        event.update(_execution(action, aid, run))
+        event.update(execution(action, aid, run))
         prior = goal_events.get(aid)
         if prior:
             for key in ('参数观察', '缺口', '关联', '来源', '来源对象', '执行明细缺口'):

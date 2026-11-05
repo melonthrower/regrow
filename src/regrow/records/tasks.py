@@ -393,7 +393,39 @@ def inventory_review(region):
     """
     from regrow.records.object_store import region_work
     review = region_work(region).get('task_inventory', {}).get('review') or {}
-    return {} if review.get('questions') is not None and not review.get('kind') else review
+    return review if review.get('kind') in ('scope_change', 'parameter_facts', 'entry_observation', 'task_proposal') else {}
+
+def proposal_gap(region):
+    """Only an actual rejected/failed proposal is a task-registration gap."""
+    from regrow.records.object_store import region_work
+    gap = region_work(region).get('registration_gaps', {}).get('task_proposal') or {}
+    if gap.get('rejected'):
+        from regrow.records.task_plans import proposal_rejections
+        gap = {**gap, 'rejected': proposal_rejections(region)}
+    return gap if gap.get('rejected') or gap.get('episode') or gap.get('stage') == 'task_proposal' else {}
+
+def new_scope_controls(region):
+    """Newly recorded scope, not every old control absent from an inventory."""
+    from regrow.records.object_store import region_work, owned_controls, observation_history
+    plan = region_work(region).get('task_inventory') or {}
+    source = str(plan.get('source_call') or '')
+    result = []
+    if not source:
+        return result
+    for cid, control in owned_controls(region).items():
+        if cid in plan.get('controls', []):
+            continue
+        first = next((row.get('evidence', {}) for row in observation_history(control)
+                      if '/controls/' in row.get('evidence', {}).get('source_field', '')
+                      and row.get('evidence', {}).get('region') in (None, region['id'])), {})
+        if first.get('source_call') and str(first['source_call']) > source:
+            result.append(cid)
+    return result
+
+def inventory_required(region):
+    from regrow.records.object_store import region_work
+    return bool(not region_work(region).get('task_inventory') or inventory_review(region)
+                or new_scope_controls(region) or proposal_gap(region))
 
 def coverage(region, records=None):
     from regrow.records.object_store import region_work, owned_controls, owned_tasks
@@ -402,11 +434,10 @@ def coverage(region, records=None):
         return {'inventory_complete': True, 'complete': False, 'excluded': True, 'pending': [], 'blocked': [], 'done': [], 'record_only': []}
     plan = region_work(region).get('task_inventory')
     tasks = owned_tasks(region)
-    missing = set(owned_controls(region)) - set((plan or {}).get('controls', []))
     # Independent object/archived-result gaps stay in their original records.
     # Any gap that still prevents answering a question is represented by its
     # pending/blocked task, not a second Region-wide completion requirement.
-    complete = bool(plan and plan['inventory'] == 'complete' and (not inventory_review(region)) and (not missing) and (not region_work(region).get('registration_gaps', {}).get('task_proposal')))
+    complete = bool(plan and not inventory_required(region))
     pending = []
     blocked = []
     done = []

@@ -72,9 +72,20 @@ def advance(records, previous, state, source, binding, attempt):
             dest = destination_work(records, candidates)
             if dest is not None:
                 task_audit(task).setdefault('completion_basis', {}).update(destination_region=dest, destination_regions=list(candidates))
-                state['working_region'] = dest
-                state['region_path'] = path[:path.index(dest) + 1] if dest in path else path + [dest]
-                state.pop('deferred_routing_target', None)
+                from regrow.traversal.task_deferral import pending_tasks
+                # Finish already selected work at the source before giving a
+                # newly exposed child its own turn. The observed destination
+                # remains recorded even when another question is chosen next.
+                if pending_tasks(owner, records):
+                    state['working_region'] = source
+                    if source not in refs:
+                        state['deferred_routing_target'] = source
+                    else:
+                        state.pop('deferred_routing_target', None)
+                else:
+                    state['working_region'] = dest
+                    state['region_path'] = path[:path.index(dest) + 1] if dest in path else path + [dest]
+                    state.pop('deferred_routing_target', None)
                 state.pop('active_task', None)
     active = previous.get('active_task')
     if binding.get('task_name'):

@@ -1,18 +1,17 @@
 {
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "current_development_source",
-  "previous_source_commit": "4965b62ade5e9aa7284e7e7cc62322f3d7d87296",
-  "runtime_source_changed_in_this_cleanup": false,
+  "kind": "unaccepted_current_development_snapshot",
+  "previous_source_commit": "364bbe8866ce9ad2d3cf571bcadeaaec70d936b0",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Five Prompt drafts remain unapproved; see KNOWN_ISSUES.md",
-  "verification_scope": "This cleanup removes publication-only files. It does not validate new model or GUI behavior. Existing tests and logs remain local.",
+  "draft_status": "Current local traversal/Prompt candidates are explicitly published as unaccepted drafts. See SNAPSHOT_STATUS.md.",
+  "verification_scope": "Export consistency, Python syntax, JSON parsing and publication scope only; no new Luna calls, no GUI execution, no full regression. Prior tests covered separate frozen candidates.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,5 +28,8 @@
       "path": "gui_rewalk/tools/_find_duplicates.py",
       "kind": "private_endpoint_only"
     }
-  ]
+  ],
+  "snapshot_parent_commit": "364bbe8866ce9ad2d3cf571bcadeaaec70d936b0",
+  "live_runtime_changed": false,
+  "published_source_changed": true
 }

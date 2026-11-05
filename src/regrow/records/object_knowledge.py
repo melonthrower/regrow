@@ -49,9 +49,6 @@ def apply(records, reply, source):
             raise ValueError('区块知识修订须引用已提供区块及local_knowledge')
         region_knowledge.validate(records[row['ref']], row['local_knowledge'])
         region_knowledge.apply(records[row['ref']], row['local_knowledge'], records)
-    if reply.get('function_updates'):
-        from regrow.records.function_updates import apply as apply_functions
-        apply_functions(records, reply['function_updates'], source)
 
 
 def observed_refs(reply, refs):

@@ -234,6 +234,7 @@ def partition_request(original, candidate, failed, errors=()):
 def isolate_schema(request, candidate):
     """Only readable independent observation rows may be withheld before decoding."""
     from regrow.records.registration_diagnostics import reply_errors, object_schema_error, Rejected
+    from regrow.records.task_assessments import row_error
     errors = reply_errors(request, candidate)
     if not errors:
         return request, candidate
@@ -241,10 +242,14 @@ def isolate_schema(request, candidate):
         raise Rejected({'errors': errors, 'unchecked': []})
     failed = {}
     for error in errors:
+        if row_error(request, candidate, error):
+            continue
         path = '/' + '/'.join(error['path'].strip('/').split('/')[:2])
         failed[path] = error['expected']
+    if not failed:
+        return request, candidate
     q, accepted = partition_request(request, candidate, failed, errors)
-    remaining = reply_errors(q, accepted)
+    remaining = [error for error in reply_errors(q, accepted) if not row_error(q, accepted, error)]
     if remaining:
         raise Rejected({'errors': remaining, 'unchecked': []})
     return q, accepted

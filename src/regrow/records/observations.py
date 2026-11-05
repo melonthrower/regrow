@@ -50,7 +50,7 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
             validate(r, p['local_knowledge'])
             apply(r, p['local_knowledge'], records)
         if p.get('task_review_reason', '').strip() and region_work(r).get('task_inventory'):
-            region_work(r)['task_inventory']['review'] = {'reason': p['task_review_reason'], 'source_call': call_ref}
+            region_work(r)['task_inventory']['review'] = {'kind': 'task_proposal', 'reason': p['task_review_reason'], 'source_call': call_ref}
         from regrow.records.object_knowledge import region_only
         if region_only(p) or i not in current:
             region_refs.append(ref)

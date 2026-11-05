@@ -61,7 +61,7 @@ def ready(region, records=None):
     return bool(support_catalog(region, records) or region.get('functions') or region_work(region).get('function_inventory')) and gap.get('evidence_digest') != signature(region, records)
 
 def next_ready(records, state):
-    """Only the explicit/global-idle finalizer calls this selector."""
+    """Only the explicit catalog finalizer calls this selector."""
     for rid in sorted(records, key=lambda r: r != state.get('working_region')):
         region = records[rid]
         if region_work(region).get('out_of_scope_reason'):
@@ -69,6 +69,10 @@ def next_ready(records, state):
         if ready(region, records) and not review_current(region, records):
             return rid
     return None
+
+def next_request(root, snapshot, records, state):
+    rid = next_ready(records, state)
+    return request(root, records[rid], state, records) if rid else None
 
 
 def schema(root):

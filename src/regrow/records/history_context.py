@@ -234,7 +234,7 @@ def task_goal(task, records, run=None, *, attempt_refs=()):
             if outcome.get('exception') not in (None, 'none'):
                 row['异常'] = outcome['exception']
             from regrow.records import page_history as page_history
-            row.update(page_history._execution(action, ref, run))
+            row.update(page_history.execution(action, ref, run))
             if not row.get('实际执行'):
                 row['执行明细缺口'] = '未提供保存的执行步骤，不能仅从动作意图推断具体投递'
         if observations.get(ref):
@@ -282,11 +282,17 @@ def question(region, name, task, *, detailed=True):
     row = {'task': reference(region['id'], name), 'control': task.get('control'), 'task_type': registration_kind(task), 'status': task.get('status', 'pending')}
     if task.get('conditions'):
         row['conditions'] = deepcopy_value(task['conditions'])
+    row.update(registration_requirement(task))
+    from regrow.records.task_settlement import completion_condition
+    condition = completion_condition(task)
+    if condition:
+        row['completion_condition'] = condition
+    elif not detailed:
+        row['原完成条件说明'] = '旧记录未保存完成条件'
     if not detailed:
         return row
     from regrow.records.task_settlement import exploration_goal
     row['探索内容'] = exploration_goal(task)
-    row.update(registration_requirement(task))
     if decision(task):
         row['最新判断'] = decision(task)
     prerequisite = describe(task.get('prerequisite'))
@@ -333,8 +339,10 @@ def action_context(records, state, task_region, name, task):
     control = find_control(records[target['region']], target.get('control')) if target.get('control') else None
     label = control['name'] if control else records[target['region']]['name']
     question = '可指定的候选、取值或输入依据及必要设置方式' if registration_kind(task) == 'parameter' else '功能及直接操作效果'
-    card['任务'] = ('查看「' + label + '」尚未显示的内容' if registration_kind(task) == 'region_content'
-                  else '了解「' + label + '」的' + question)
+    from regrow.records.task_settlement import completion_condition
+    if not completion_condition(task):
+        card['任务'] = ('查看「' + label + '」尚未显示的内容' if registration_kind(task) == 'region_content'
+                      else '了解「' + label + '」的' + question)
     from regrow.records.task_settlement import exploration_goal
     card['探索内容'] = exploration_goal(task)
     from regrow.records.control_history_context import access_routes

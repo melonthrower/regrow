@@ -81,7 +81,9 @@ def describe(work, records):
         else:
             from regrow.records.task_settlement import registration_kind, exploration_goal, task_definition
             value['关联任务'] = {'区块': owner.get('name', ref.get('region')), '类型': task_definition(task)['label'], '控件': owned_controls(owner).get(task.get('control'), {}).get('name', '区块本身')}
-            value['所需信息'] = {'function': '控件可重复使用的功能及必要条件', 'parameter': '参数、选项与适用条件', 'region_content': '当前区块尚未显示的内容'}[registration_kind(task)]
+            from regrow.records.task_settlement import completion_condition
+            if not completion_condition(task):
+                value['所需信息'] = {'function': '控件可重复使用的功能及必要条件', 'parameter': '参数、选项与适用条件', 'region_content': '当前区块尚未显示的内容'}[registration_kind(task)]
             if kind in ('locate', 'navigate', 'recover', 'step_observation', 'update', 'task_result_review'):
                 value['原问题'] = exploration_goal(task)
     if work.get('control'):

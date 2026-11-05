@@ -42,7 +42,11 @@ def defer_result(run, job, reason):
     name = binding.get('task_name')
     if rid not in records:
         return None
-    archive = archive_pending(run, 'result-' + Path(job['path']).parent.name)
+    archive_name = 'result-' + Path(job['path']).parent.name
+    if (run / 'suspended_steps' / archive_name).exists():
+        from uuid import uuid4
+        archive_name += '-' + uuid4().hex
+    archive = archive_pending(run, archive_name)
     evidence = {'episode': job['path'], 'attempt': attempt, 'failed_call': job.get('call'),
                 'reason': reason, 'status': 'unresolved', 'archive': str(archive.relative_to(run))}
     def mutate(records, state, *_):
@@ -173,6 +177,21 @@ def validate_commit(run, attempt, reply, request, binding, snapshot, records):
             raise repair.Paused('historical_update_conflict', '历史补登记相关区块已有后续变化：' + rid + '；不能用旧结果覆盖')
     settled = [[binding.get('task_region') or binding.get('region_ref'), binding.get('task_name')]]
     return {**marker, 'settled_tasks': settled}
+
+def release_result_block(records, marker, call, attempt):
+    """The matching result is being published; task judgment still owns status."""
+    for rid, name in marker.get('settled_tasks', []):
+        task = owned_tasks(records.get(rid, {})).get(name)
+        if task is None or task.get('blocker') != {'condition': 'result_registration_pending'}:
+            continue
+        waiting = task.get('deferral', {})
+        if (waiting.get('episode'), waiting.get('archive'), waiting.get('attempt')) != (
+                marker['episode'], marker['archive'], attempt):
+            continue
+        for field in ('blocker', 'deferral'):
+            task_audit(task).setdefault(field + '_history', []).append(
+                {**task.pop(field), 'resolved_by': call})
+
 
 def complete(records, previous, state, marker, call, attempt):
     """Called inside the normal immutable snapshot publication, never after it."""

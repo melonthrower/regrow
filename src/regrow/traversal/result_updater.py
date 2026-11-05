@@ -141,7 +141,9 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     recalled = source_candidates.recall(records, binding, proposal['action'], folder.name)
     region_bound = recalled['region_action']
     actual_object = owner if region_bound else owned_controls(owner).get(binding.get('control_ref'), {}) if recalled['confirmed'] else {}
-    dynamic = {'动作后前台应用证据': after_window, '目标应用': transport.package, '工作区块': work['name'], '实际来源区块': owner['name'], '实际入口': '系统返回' if proposal['action'] == 'back' else actual_object.get('name') or proposal['target'], '动作意图': proposal, '实际动作': receipt.get('executed_steps', [proposal]), '回执': receipt}
+    from regrow.records.page_history import execution
+    executed = execution({'operation': proposal['action']}, folder.name, run)
+    dynamic = {'动作后前台应用证据': after_window, '目标应用': transport.package, '工作区块': work['name'], '实际来源区块': owner['name'], '实际入口': '系统返回' if proposal['action'] == 'back' else actual_object.get('name') or proposal['target'], '动作意图': proposal.get('reason', ''), '实际动作': executed.get('实际执行', executed.get('实际投递', [])), '回执': {k: v for k, v in receipt.items() if k != 'executed_steps'}}
     if owner.get('behavior_context'):
         dynamic['来源区块历史行为比较'] = {'适用上下文': owner['behavior_context']}
     if not recalled['confirmed']:
@@ -213,22 +215,6 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     u = history_matching.attach(u, records, ranking, region_names, snapshot)
     u['region_names'] = region_names
     _page_context.attach(u, records, state, usage='before_action', run=run, extra_regions=[binding['region_ref'], binding['working_region'], binding.get('task_region')])
-    from regrow.records.function_updates import attach, reference as function_reference
-    function_regions = list(dict.fromkeys(rid for rid in
-        [binding['region_ref'], binding.get('task_region')] if rid in records))
-    targets = {(binding['region_ref'], binding.get('control_ref')),
-               (binding['region_ref'], None)}
-    function_refs = set()
-    for row in task_candidates:
-        targets.add((row['region'], row.get('control')))
-        task = owned_tasks(records[row['region']])[row['name']]
-        function_refs.update(task.get('function_refs', []))
-    for rid in function_regions:
-        for name, function in records[rid].get('functions', {}).items():
-            if any((support.get('region'), support.get('control')) in targets
-                   for support in function.get('support_controls', [])):
-                function_refs.add(function_reference(rid, name))
-    attach(u, records, function_regions, refs=function_refs)
     write_json(folder / 'update_request.json', u)
     return u
 

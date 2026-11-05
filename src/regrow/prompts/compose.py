@@ -282,12 +282,15 @@ def render(value, request, readable):
         if head.get('本轮目的') == remaining.get('上轮纠正或复查说明'):
             head['本轮目的'] = definition['messages']['discovery_repair_purpose']
     elif role == 'observation' and request.get('discovery_context', {}).get('mode') == 'local' and (not card.get('定位对象')):
-        head['本步问题'] = definition['messages']['discovery_local']
+        operation = request.get('response_schema', {}).get('properties', {}).get('operations')
+        question_key = 'discovery_local_with_tasks' if operation and operation.get('maxItems') != 0 else 'discovery_local'
+        head['本步问题'] = definition['messages'][question_key]
     groups = groups_by_role[role]
     if role == 'task_proposal' and '本轮可判断旧任务' in remaining:
-        groups = (group_tuple(definition['calls']['task_proposal']['variants']['new_tasks']),)
+        groups = ()
         if remaining['本轮可判断旧任务']:
             groups += (group_tuple(definition['calls']['task_proposal']['variants']['old_tasks']),)
+        groups += (group_tuple(definition['calls']['task_proposal']['variants']['new_tasks']),)
         groups += (groups_by_role[role][1],)
         if work.get('kind') == 'task_proposal' and work.get('task'):
             head['本步问题'] = definition['messages']['task_focused']

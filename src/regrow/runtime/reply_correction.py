@@ -116,7 +116,7 @@ def call(transport, incoming):
                 else:
                     pointer.unlink(missing_ok=True)
                     if q.get('name_contract'):
-                        write_json(transport.run / 'calls' / ref / 'interpreted_request.json', internal_request(state['original']))
+                        write_json(transport.run / 'calls' / ref / 'interpreted_request.json', internal_request(state['original'], reply))
                         write_json(transport.run / 'calls' / ref / 'interpreted_response.json', derived)
                     return ref, derived
             report = {'errors': errors, 'unchecked': ['格式尚未通过，业务语义检查尚未执行。']}

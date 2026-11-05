@@ -17,6 +17,8 @@ def task_key(task):
     return (task.get('control'), registration_kind(task), task.get('name'), conditions(task))
 
 def registration_kind(task):
+    if 'target' in task:
+        return None
     kind = task.get('registration_kind') or task.get('task_type')
     return kind if kind in ('parameter', 'region_content') else 'function'
 
@@ -24,8 +26,10 @@ def region_task(task):
     return bool(task) and task.get('control') is None
 
 def task_definition(task):
-    from regrow.prompts.object_blocks import task_definition as definition
-    return definition(registration_kind(task), SOURCE_ROOT)
+    if 'target' in task:
+        return {'label': task['target'], 'goal': task['target'], 'region_goal': task['target']}
+    from regrow.records.task_goals import legacy_definition
+    return legacy_definition(registration_kind(task))
 
 def completion_condition(task):
     """Read the task's fixed endpoint; active shared projections use its source."""
@@ -33,12 +37,14 @@ def completion_condition(task):
     if shared and task.get('shared_task_active', True) and hasattr(task, 'store'):
         source = owned_tasks(task.store.get(shared['region'], {})).get(shared['task'])
         if source is not None:
-            return source.get('completion_condition', '')
-    return task.get('completion_condition', '')
+            return source.get('target', source.get('completion_condition', ''))
+    return task.get('target', task.get('completion_condition', ''))
 
 
 def exploration_goal(task):
     condition = completion_condition(task)
+    if 'target' in task:
+        return condition
     if condition and not task.get('prepares'):
         return condition + ('\n本次理由：' + task['reason'] if registration_kind(task) == 'region_content' and task.get('reason') else '')
     if task.get('prepares'):
@@ -73,6 +79,8 @@ def has_source_call(source):
 
 
 def missing_product_fields(task):
+    if 'target' in task:
+        return []
     kind = registration_kind(task)
     if kind == 'region_content':
         # The model's explicit task decision and reason record the coverage
@@ -89,7 +97,7 @@ def registration_requirement(task):
     if task.get('status') not in ('pending', 'blocked') or task.get('prepares'):
         return {}
     missing = missing_product_fields(task)
-    return {'若判断answered，尚需登记': missing} if missing else {}
+    return {'若判断done，尚需登记': missing} if missing else {}
 
 def entry_schema():
     from regrow.records.task_updates import object_schema
@@ -201,6 +209,8 @@ def registered_result(task, action, attempt):
     if not same_use(task, action):
         return False
     kind = registration_kind(task)
+    if 'target' in task:
+        return bool(action.get('result', {}).get('description'))
     if kind == 'parameter':
         return not missing_product_fields(task)
     return bool(task_value(task, 'knowledge') and action.get('result', {}).get('description'))
@@ -230,7 +240,7 @@ def task_object_context(records, binding):
     task = owned_tasks(owner)[binding['task_name']]
     target = completion_target(owner, task)
     region = records[target['region']]
-    return {'任务区块': owner['name'], '待执行区块': region['name'], '待执行控件': owned_controls(region).get(target['control'], {}).get('name', '区块本身'), '所需登记': registration_kind(task), '适用条件': task.get('conditions', []), '说明': ('这是前置准备，按已知准备目标推进；条件是否满足由本次观察的dependency_updates登记，不因入口点击而结束。' if task.get('prepares') else '') + '明确提交continue/answered/defer和本轮依据；框架核验实际绑定、执行或观察来源及所需产物，再登记判断。answered回答探索问题，不等于业务操作成功。'}
+    return {'任务区块': owner['name'], '待执行区块': region['name'], '待执行控件': owned_controls(region).get(target['control'], {}).get('name', '区块本身'), '所需登记': registration_kind(task), '适用条件': task.get('conditions', []), '说明': ('这是前置准备，按已知准备目标推进；条件是否满足由本次观察的dependency_updates登记，不因入口点击而结束。' if task.get('prepares') else '') + '明确提交pending/done/blocked；框架核验实际绑定、执行或观察来源及所需产物，再登记判断。done回答探索问题，不等于业务操作成功。'}
 
 def recorded_match(region, aid, action, target, receipt=None):
     """A dispatch intention or an unresolved visual candidate is not execution."""
@@ -279,12 +289,8 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
         product = updates.preparation_product(task, row, records, source)
     else:
         product = task_product(task)
-    suggestion = (task_value(task, 'latest_update') or {}).get('next_action')
-    consumed = bool(owns_action and suggestion
-                    and action_name(suggestion['action']) == action_name(action.get('operation'))
-                    and recorded_match(actual, attempt, action, suggestion, receipt))
     updates.decide(task, row, source, product_complete=product, records=records,
-                   labels=labels, consumed_suggestion=consumed)
+                   labels=labels)
 
 def reconcile(records):
     """Retain unresolved real action ownership without guessing completion."""
@@ -302,7 +308,7 @@ def reconcile(records):
                 action = attempts[0]
                 association = action.get('association', {})
                 from regrow.records.action_evidence import assessments
-                claimed_answer = any((row.get('decision') == 'answered' for row in assessments(task, aid)))
+                claimed_answer = any((row.get('state') == 'done' for row in assessments(task, aid)))
                 if aid in target.get('excluded_attempts', []) or action.get('delivery') != 'executed_receipt_zero' or action.get('result', {}).get('exception') != 'none' or (not action.get('result', {}).get('description')) or (association.get('status') != 'unconfirmed') or (not (claimed_answer or any((c.get('region') == target['region'] and c.get('control') == target['control'] for c in association.get('candidates', []))))):
                     continue
                 reason = '已有实际投递及观察，但目标控件归属未确认；保留原尝试，需显式核对关联后再推进原任务'

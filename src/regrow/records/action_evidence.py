@@ -141,12 +141,13 @@ def attach_execution(records, run):
                         a['operation'] = 'click'
                         a['purpose'] += '；文字尚未发送，只执行了点击'
 
-def action_source_observation(run, selection_call, observation, region, control=None):
+def action_source_observation(run, selection_call, observation, region, control=None, *, source_field=None):
     """Resolve the immutable source through the dispatched selection request."""
     run = Path(run)
     if not selection_call or not (run / 'calls' / selection_call / 'request.json').exists():
         raise ValueError('dispatched action source request is missing')
-    (request, _) = _owner_submission(run, selection_call)
+    from regrow.records.calls import action_submission
+    (request, _) = action_submission(run, selection_call, source_field)
     source = request.get('source', {})
     snapshot = source.get('snapshot')
     if not snapshot:
@@ -167,4 +168,5 @@ def action_source_observation(run, selection_call, observation, region, control=
                     source.get('completion_region') or source.get('task_region'), source.get('task_control')):
                 raise ValueError('historical task target does not match the dispatched original task')
         extra = {'region': region, 'control': control, 'scope': candidates[0]['candidate_scope']}
-    return {'id': observation, 'region_refs': state['interactive_regions'], 'snapshot': snapshot, 'selection_call': selection_call, **({'related_control': extra} if extra else {})}
+    return {'id': observation, 'region_refs': state['interactive_regions'], 'snapshot': snapshot, 'selection_call': selection_call,
+            **({'source_field': source_field} if source_field else {}), **({'related_control': extra} if extra else {})}

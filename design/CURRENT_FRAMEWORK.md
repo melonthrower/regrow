@@ -1,3 +1,5 @@
+> 2026-11-06：new_tasks/control/target、task_update/state与调用级完整next_action已配套接入。后图候选在正常恢复/调度后进入原动作链，只消费一次；主结果登记与坏候选独立。两份完整保存帧及提案接收有限通过，0新GUI，未部署或整体验收。见[快照状态](../SNAPSHOT_STATUS.md)和[实施说明](proposals/action-continuation-20261106/README.md)。
+
 > 设计意图与阅读入口：[设计导读](DESIGN_INTENT.md) · [字段动机](modules/stepwise/object_fields.md) · [各环节与源码地图](modules/stepwise/CODE_MAP.md)。这组说明区分设计、实现、有限验证与候选，不替代本页当前合同。
 
 2026-11-03应用归属接线：五类当前界面调用复用目标应用材料；任务提出/动作选择新增exception及recovery_handoff，异常先交恢复、不登记外部业务；操作目标核对继承同合同并可无动作交回异常。历史清点和已发纠错保留原合同。保存帧六例7HTTP/0GUI限定通过，初版更新6HTTP失败保留；实机/图清理/当前续跑状态见external_app_judgement_20261103_02及SERVER_HANDOFF。判断仍由Luna完成，不是窗口类硬门禁或全应用认证。

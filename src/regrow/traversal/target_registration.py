@@ -28,6 +28,9 @@ def context(records, state, request, proposal, call, frame, episode=None):
             'target': proposal.get('target'), 'controls': controls,
             'regions': list(dict.fromkeys(r for r in regions if r in records)),
             'frame': frame, 'supplements': 0, 'status': 'pending'}
+    origin = request.get('action_source', {})
+    if origin.get('call') == call:
+        result['source_field'] = origin['field']
     previous = state.get('action_target_registration') or {}
     if (previous.get('task') == task and previous.get('target') == result['target']
             and previous.get('controls') == controls and previous.get('regions') == result['regions']
@@ -80,12 +83,12 @@ def registered(records, target, call, *, run=None, snapshot=None):
         return False
     # A new object's accepted name can differ from the old unexecuted proposal.
     # Reuse normal binding with only this call's accepted visual identities.
-    from regrow.records.calls import submission
+    from regrow.records.calls import action_submission
     from regrow.records.action_candidates import candidate
     from regrow.runtime.action_commands import normalize
     from regrow.traversal.action_binding import bind_action_target
     from regrow.recognition.action_target_review import Conflict
-    request, proposal = submission(run, target['call'])
+    request, proposal = action_submission(run, target['call'], target.get('source_field'))
     original_frame = (Path(run) / request['screenshots'][0]).resolve()
     if original_frame != Path(target['frame']).resolve():
         # A fresh observation can confirm a known identity, but the old click
@@ -128,10 +131,10 @@ def related_gaps(records, target, pending):
 
 def defer(run, target):
     """Use the original action episode and the existing task/scheduler deferral."""
-    from regrow.records.calls import submission
+    from regrow.records.calls import action_submission
     from regrow.records.snapshots import read, publish
     from regrow.traversal import task_deferral
-    request, _ = submission(run, target['call'])
+    request, _ = action_submission(run, target['call'], target.get('source_field'))
     episode = target.get('episode')
     if not episode:
         for path in (Path(run) / 'repair_episodes').glob('*/episode.json'):
@@ -190,10 +193,10 @@ def advance(run, call, request):
 
 def retry_evidence(run, records, task, call, frame, snapshot):
     """Unrelated re-registration on the same surface cannot release this task."""
-    from regrow.records.calls import submission
+    from regrow.records.calls import action_submission
     from regrow.runtime.action_commands import normalize
     from regrow.recognition.visual_backtrack import same_surface
-    request, proposal = submission(run, task['deferral']['source_call'])
+    request, proposal = action_submission(run, task['deferral']['source_call'], task['deferral'].get('source_field'))
     proposal = normalize(proposal)
     target = context(records, {}, request, proposal, task['deferral']['source_call'], frame)
     if registered(records, target, call, run=run, snapshot=snapshot):

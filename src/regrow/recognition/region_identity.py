@@ -42,7 +42,9 @@ def prepare(run, request, reply):
     request = deepcopy(request)
     if 'control_refs' in request and request.get('response_schema'):
         import jsonschema
-        jsonschema.validate(reply, request['response_schema'])
+        from regrow.runtime.update_reply import main_pair
+        spec, main = main_pair(request['response_schema'], reply)
+        jsonschema.validate(main, spec)
         request.pop('response_schema')  # Subsequent checks inspect resolved identities, not the wire reply.
     (normalized, audit) = for_request(run, request, reply)
     return (request, normalized, audit)

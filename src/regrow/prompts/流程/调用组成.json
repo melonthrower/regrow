@@ -481,7 +481,7 @@
           ]
         },
         {
-          "question": "本次辨认出的主要功能和参数，哪些可直接记录，哪些未知需要任务？",
+          "question": "本区块有哪些相关知识与任务？",
           "materials": [
             "本轮任务提出范围",
             "本轮允许更新的任务",
@@ -506,7 +506,7 @@
       "purposes": {
         "global": "识别当前前景区块及能确认的控件，为区块探索建立对象记录。",
         "relocate_focus": "识别当前前景区块及能确认的控件，确认原工作区块是否在其中。",
-        "local": "识别本轮定位区块中的控件及其身份，直接记录已有认识，并为给定范围内的具体未知提出任务。"
+        "local": "识别并登记本轮定位区块及其直接所属控件，补充当前截图能确认的知识。"
       },
       "template": "调用/界面识别.prompt",
       "supplement_paths": [
@@ -815,40 +815,21 @@
                 ]
               },
               {
-                "block": "task.next_action",
-                "when_paths": [
-                  "task_update.next_action"
-                ]
-              },
-              {
                 "block": "task.scope_review",
                 "work_kinds": [
                   "scope_review"
                 ]
-              },
-              {
-                "block": "task.batch_update_example"
               }
             ]
           },
           {
-            "block": "task.operations",
+            "block": "task.propose",
             "fields": [
-              "operations"
+              "new_tasks"
             ],
-            "details": [
-              {
-                "block": "task.type"
-              },
-              {
-                "block": "task.goal_template",
-                "when_paths": [
-                  "operations.template"
-                ]
-              },
-              {
-                "block": "task.completion_condition"
-              }
+            "details": [],
+            "discovery_modes": [
+              "local"
             ]
           },
           {
@@ -860,23 +841,13 @@
             "details": []
           }
         ],
-        "concepts": [
-          {
-            "block": "task.local_planning",
-            "discovery_modes": [
-              "local"
-            ],
-            "when_paths": [
-              "operations"
-            ]
-          }
-        ]
+        "concepts": []
       }
     },
     "task_proposal": {
       "groups": [
         {
-          "question": "本区块是否有应用主要功能或必要参数值得探索？哪些可以记录或略过？",
+          "question": "本区块有哪些对象、已有认识和相关任务？",
           "materials": [
             "目标应用",
             "区块",
@@ -910,7 +881,7 @@
       "builder": "task_proposer.TaskProposer.request",
       "variants": {
         "new_tasks": {
-          "question": "本区块是否有主要功能或必要参数值得探索？哪些可以直接记录或略过？",
+          "question": "本区块还有哪些值得进一步查明的问题？",
           "materials": [
             "目标应用",
             "区块",
@@ -1089,41 +1060,19 @@
                 ]
               },
               {
-                "block": "task.next_action",
-                "when_paths": [
-                  "task_update.next_action"
-                ]
-              },
-              {
                 "block": "task.scope_review",
                 "work_kinds": [
                   "scope_review"
                 ]
-              },
-              {
-                "block": "task.batch_update_example"
               }
             ]
           },
           {
-            "block": "task.operations",
+            "block": "task.propose",
             "fields": [
-              "operations"
+              "new_tasks"
             ],
-            "details": [
-              {
-                "block": "task.type"
-              },
-              {
-                "block": "task.goal_template",
-                "when_paths": [
-                  "operations.template"
-                ]
-              },
-              {
-                "block": "task.completion_condition"
-              }
-            ]
+            "details": []
           },
           {
             "block": "task.scope",
@@ -1514,12 +1463,6 @@
                 "when_any_paths": [
                   "task_update.task"
                 ]
-              },
-              {
-                "block": "task.next_action",
-                "when_any_paths": [
-                  "task_update.next_action"
-                ]
               }
             ]
           },
@@ -1536,6 +1479,21 @@
               "dependency_updates"
             ],
             "details": []
+          },
+          {
+            "block": "action.next_action",
+            "fields": [
+              "next_action"
+            ],
+            "when_paths": [
+              "next_action"
+            ],
+            "format": "nested_platform",
+            "details": [
+              {
+                "block": "action.proposal"
+              }
+            ]
           }
         ]
       }
@@ -1757,12 +1715,6 @@
                 "block": "task.update_ref",
                 "when_any_paths": [
                   "task_update.task"
-                ]
-              },
-              {
-                "block": "task.next_action",
-                "when_any_paths": [
-                  "task_update.next_action"
                 ]
               }
             ]
@@ -2384,7 +2336,8 @@
         "action_selection",
         "recovery",
         "ownership_review",
-        "action_target_review"
+        "action_target_review",
+        "observation_update"
       ]
     },
     "android": {
@@ -2393,7 +2346,8 @@
         "action_selection",
         "recovery",
         "ownership_review",
-        "action_target_review"
+        "action_target_review",
+        "observation_update"
       ]
     },
     "common_fields": "动作/动作空间与字段.prompt"
@@ -2421,7 +2375,7 @@
     "discovery_objects_question": "当前区块和控件分别是什么，如何对应已有身份？",
     "discovery_objects_output": "regions / controls：登记本图能确认的区块、控件及归属；未确认项保留具体缺口。",
     "inventory_review": "对照原问题和已提供观察补充事实，明确继续、已回答或暂挂；不执行新动作。",
-    "discovery_local_with_tasks": "指定区块是否仍对应当前表面？补充必要对象，并判断主要功能与参数中哪些可直接记录、哪些需要探索任务。"
+    "discovery_local_with_tasks": "依据当前截图与已有记录，识别并登记“{区块名}”及其直接所属控件，记录能够直接确认的知识，并结合已有任务提出需要进一步探索的独立问题。"
   },
   "object_modules": {
     "files": [

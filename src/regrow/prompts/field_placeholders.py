@@ -53,8 +53,12 @@ def fill_missing(root, reply, report, schema=None):
         if isinstance(node, dict):
             for field in error.get('fields', []):
                 if field not in node:
-                    node[field] = fit_template(deepcopy(placeholders.get(field, '<填写' + field + '>')),
-                                               field_schema(contract, field))
+                    spec = field_schema(contract, field)
+                    if field == 'next_action':
+                        from regrow.prompts.response_example import sample
+                        node[field] = sample(spec)
+                    else:
+                        node[field] = fit_template(deepcopy(placeholders.get(field, '<填写' + field + '>')), spec)
     return result
 
 

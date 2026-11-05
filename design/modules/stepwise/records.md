@@ -1,3 +1,5 @@
+> 2026-11-06：新任务原文target、state及旧判断只读映射统一接线；旧建议不再作为可执行任务字段。更新登记原事务保存后图Action来源，实际来源读取复用calls.action_submission；对象知识与真实阻塞合同保留。验收边界见根目录SNAPSHOT_STATUS.md。
+
 # 记录
 
 2026-10-30累计合并：control_history_context 与 task_inventory_context 展示全部当前用途和知识序号，不因缺少 task_ref 自动添加“推测用途/未探索”；正文不确定性与实际动作历史仍保留。未修改 confirmed 的历史来源资格、撤销逻辑或功能支持准入。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。

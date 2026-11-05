@@ -7,10 +7,24 @@ import time
 ANDROID_ACTIONS = ('click', 'double_click', 'long_press', 'input_text', 'scroll', 'back', 'wait', 'none', 'key_press')
 ACTIONS = ANDROID_ACTIONS + ('hotkey', 'hover', 'right_click', 'drag')
 
+def executable_operation_schema():
+    """Complete action parameters, independent of task/update contracts."""
+    value = json.loads((SOURCE_ROOT / 'regrow/prompts/输出格式/选择探索入口.schema').read_text())
+    result = value['properties']['operation']
+    result['anyOf'] = [branch for branch in result['anyOf']
+                       if not set(branch['properties']['action']['enum']) & {'none', 'complete'}]
+    for branch in result['anyOf']:
+        if set(branch['properties']['action']['enum']) <= {'back', 'wait', 'key_press', 'hotkey'}:
+            branch['required'] = [key for key in branch['required'] if key != 'target']
+    return result
+
 def schema():
     from regrow.records.task_updates import schema as update_schema
     from regrow.records.task_updates import object_schema
     result = json.loads((SOURCE_ROOT / 'regrow/prompts/输出格式/选择探索入口.schema').read_text())
+    endings = [branch for branch in result['properties']['operation']['anyOf']
+               if 'none' in branch['properties']['action']['enum']]
+    result['properties']['operation']['anyOf'] = executable_operation_schema()['anyOf'] + endings
     result['properties']['operation']['anyOf'].append(object_schema({'action': {'type': 'string', 'enum': ['none']}, 'task_update': update_schema()}))
     return result
 
@@ -30,12 +44,11 @@ def selection_schema(value):
             update = branch.get('properties', {}).get('task_update')
             if not update:
                 continue
-            choices = update['properties']['decision']['enum']
-            if 'answered' not in choices:
+            choices = update['properties']['state']['enum']
+            if 'done' not in choices:
                 continue
             products = {name: deepcopy(value) for (name, value) in update['properties'].items() if name in ('controls', 'regions', 'function_updates')}
-            result['anyOf'].append({'type': 'object', 'properties': {'action': {'type': 'string', 'enum': ['complete']}, 'reason': deepcopy(update['properties']['reason']), **products}, 'required': ['action', 'reason'] + [name for name in products if name in update.get('required', [])], 'additionalProperties': False})
-            update['properties']['decision']['enum'] = [c for c in choices if c != 'answered']
+            result['anyOf'].append({'type': 'object', 'properties': {'action': {'type': 'string', 'enum': ['complete']}, 'reason': {'type': 'string', 'minLength': 1}, **products}, 'required': ['action', 'reason'] + [name for name in products if name in update.get('required', [])], 'additionalProperties': False})
             break
     # Keep partial answers and explicit deferral in the same flat reply.
     completion = next((b['properties'] for b in result.get('anyOf', []) if 'complete' in b.get('properties', {}).get('action', {}).get('enum', [])), None)
@@ -63,18 +76,17 @@ def for_request(proposal, request):
     name = source.get('task_name')
     if not owner or not name:
         raise ValueError('答案或暂挂判断需要本次请求绑定的原探索任务')
-    update = {'task': owner + '/' + name, 'decision': 'answered' if completed else 'defer' if proposal.get('retry_when') else 'continue', 'reason': proposal['reason']}
+    update = {'task': owner + '/' + name, 'state': 'done' if completed else 'blocked' if proposal.get('retry_when') else 'pending'}
     if not completed:
         update['remaining_question'] = proposal['reason']
     if proposal.get('retry_when'):
         update['retry_when'] = proposal['retry_when']
-    return {'action': 'none', 'task_update': update, **{key: deepcopy(proposal[key]) for key in ('controls', 'regions', 'function_updates') if key in proposal}}
+    return {'action': 'none', 'reason': proposal['reason'], 'task_update': update, **{key: deepcopy(proposal[key]) for key in ('controls', 'regions', 'function_updates') if key in proposal}}
 
 def execution_schema():
     """Recovery and ownership review can propose actions, not task settlement."""
-    result = schema()
-    result['properties']['operation']['anyOf'] = [b for b in result['properties']['operation']['anyOf'] if 'none' not in b['properties']['action']['enum']]
-    return result
+    return {'type': 'object', 'properties': {'operation': executable_operation_schema()},
+            'required': ['operation'], 'additionalProperties': False}
 
 def platform_request(request, platform):
     from copy import deepcopy

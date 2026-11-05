@@ -40,7 +40,9 @@ def submission(run, ref):
         if planning(q):
             envelope(reply, q['response_schema'])
         else:
-            jsonschema.validate(reply, q['response_schema'])
+            from regrow.runtime.update_reply import main_pair
+            spec, main = main_pair(q['response_schema'], reply)
+            jsonschema.validate(main, spec)
         if q.get('correction_format') == 'original':
             from regrow.traversal.proposal_revision import merge
             if (folder / 'effective_request.json').exists() and (folder / 'effective_candidate.json').exists():
@@ -57,3 +59,12 @@ def submission(run, ref):
         from regrow.traversal.proposal_revision import merge
         return (read(effective) if effective.exists() else deepcopy(q['original_request']), merge(q, reply['proposal']))
     return (q, reply)
+
+
+def action_submission(run, ref, field=None):
+    """Read either a selection reply or the Action subtree of a real update."""
+    if field != 'next_action':
+        return submission(run, ref)
+    request = read(Path(run) / 'calls' / ref / 'next_action_context.json')
+    reply = read(Path(run) / 'calls' / ref / 'next_action_candidate.json')
+    return request, reply

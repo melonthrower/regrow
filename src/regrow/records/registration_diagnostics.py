@@ -116,8 +116,10 @@ def object_schema_error(request, reply, error):
 
 
 def reply_errors(request, reply, *, defer_objects=False):
+    from regrow.runtime.update_reply import main_pair
+    schema, reply = main_pair(request.get('response_schema', {}), reply)
     errors = []
-    for failure in jsonschema.Draft202012Validator(request.get('response_schema', {})).iter_errors(reply):
+    for failure in jsonschema.Draft202012Validator(schema).iter_errors(reply):
         for error in schema_errors(failure):
             if error not in errors and not (defer_objects and object_schema_error(request, reply, error)):
                 errors.append(error)
@@ -361,20 +363,20 @@ def task_reference_errors(stage, q, p, records):
         return []
     controls = owned_controls(records.get(q.get('source', {}).get('region'), {}))
     errors = []
-    for key in ('operations', 'shared_instances'):
+    for key in ('new_tasks', 'shared_instances'):
         rows = p.get(key, [])
         if not isinstance(rows, list):
             continue
         for i, row in enumerate(rows):
             if not isinstance(row, dict) or not isinstance(row.get('control'), str):
                 continue
-            if key == 'operations' and ('task' in row or not row['control']):
+            if key == 'new_tasks' and ('task' in row or not row['control']):
                 continue
             ids = [row['control']] if row['control'] in controls else []
             if len(ids) != 1:
                 errors.append(dict(code='task_owner', path=f'/{key}/{i}/control',
                     object=row['control'], actual=row['control'], expected={'matches': ids},
-                    repair='使用当前区块已登记控件的ID；未知对象先发现登记。' if key == 'operations' else '共享成员必须是本区块已登记控件；源身份由登记器核对。'))
+                    repair='使用当前区块已登记控件的ID；未知对象先发现登记。' if key == 'new_tasks' else '共享成员必须是本区块已登记控件；源身份由登记器核对。'))
     return errors
 
 

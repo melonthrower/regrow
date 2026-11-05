@@ -100,6 +100,8 @@ def attach(request, records, state, work=None):
     """Keep one structured work card through ordinary, corrected and resumed reads."""
     work = deepcopy(work) if work is not None else from_request(request, records, state)
     request['work_context'] = work
+    if work.get('region') in records:
+        request['focus_region_name'] = records[work['region']]['name']
     from regrow.prompts.prompt_material import assign
     assign(request, {TITLE: describe(work, records)})
     request.pop('_work_context_text', None)

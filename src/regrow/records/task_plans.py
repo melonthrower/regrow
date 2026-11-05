@@ -14,7 +14,7 @@ from regrow.records.tasks import read as task_value, equivalent_source
 from regrow.records.control_records import aliases
 
 
-FIELDS = ('operations', 'task_update', 'inventory', 'evidence')
+FIELDS = ('new_tasks', 'task_update', 'inventory', 'evidence')
 
 
 def schema():
@@ -22,7 +22,7 @@ def schema():
     string = {'type': 'string', 'minLength': 1}
     value = updates.object_schema({'inventory': {'type': 'string', 'enum': ['complete', 'partial', 'uncertain']},
         'evidence': string, 'task_update': {'type': 'array', 'items': updates.schema()},
-        'operations': {'type': 'array', 'items': operation_schema()}})
+        'new_tasks': {'type': 'array', 'items': operation_schema()}})
     value['required'].remove('task_update')
     return value
 
@@ -38,15 +38,15 @@ def matching_question(tasks, operation):
     """An exact existing question is redundant, regardless of its status."""
     return next((name for name, task in tasks.items()
                  if task.get('control') == (operation.get('control') or None)
-                 and settlement.registration_kind(task) == settlement.registration_kind(operation)
-                 and task.get('completion_condition', '').strip() == operation.get('completion_condition', '').strip()), None)
+                 and bool(settlement.completion_condition(task).strip())
+                 and settlement.completion_condition(task).strip() == settlement.completion_condition(operation).strip()), None)
 
 
 def proposal_rejections(region):
     """Read old exact-duplicate refusals without making them new repair work."""
     rows = region_work(region).get('registration_gaps', {}).get('task_proposal', {}).get('rejected', [])
     return [row for row in rows if not (
-        row.get('field') == 'operations'
+        row.get('field') in ('operations', 'new_tasks')
         and row.get('reason') == '已有相同对象及完成条件的问题，请继续或复用原问题'
         and matching_question(owned_tasks(region), row.get('proposed_update', {})) is not None)]
 
@@ -58,11 +58,11 @@ def context(records, state, rid, *, scope_review=False, observed_new=False):
     region = records[rid]
     value = schema()
     if not observed_new:
-        value['properties']['operations']['items']['properties']['control']['enum'] = list(owned_controls(region)) + ['']
+        value['properties']['new_tasks']['items']['properties']['control']['enum'] = list(owned_controls(region)) + ['']
     refs = [updates.reference(rid, name) for name in update_names(region, scope_review=scope_review)]
     rejected = proposal_rejections(region)
     if rejected and not scope_review:
-        allowed = {row.get('task') for row in rejected if row.get('field') != 'operations'}
+        allowed = {row.get('task') for row in rejected if row.get('field') != 'new_tasks'}
         refs = [ref for ref in refs if ref in allowed]
     if refs:
         value['properties']['task_update']['items']['properties']['task']['enum'] = refs
@@ -94,7 +94,7 @@ def context(records, state, rid, *, scope_review=False, observed_new=False):
     if rejected:
         material['未接受的任务条目'] = [
             {'对象': row.get('proposed_update', {}).get('control') or row.get('task') or '原任务',
-             '原问题': row.get('proposed_update', {}).get('question') or row.get('proposed_update', {}).get('completion_condition', ''),
+             '原问题': row.get('proposed_update', {}).get('target') or row.get('proposed_update', {}).get('completion_condition', ''),
              '问题': row['reason']} for row in rejected]
     return value, material
 
@@ -136,7 +136,7 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
                 raise ValueError('同一任务不能重复提交判断')
             previous = task_value(current, 'latest_update', {})
             if previous.get('source', {}).get('source_call') == call:
-                assessment['accepted'].append({'task': row['task'], 'decision': previous.get('decision'), 'already_accepted': True})
+                assessment['accepted'].append({'task': row['task'], 'state': previous.get('state'), 'already_accepted': True})
                 seen.add(name)
                 continue
             if name not in update_names(region, scope_review=bool(scope_review)):
@@ -152,12 +152,12 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
             updates.store_increment(region, task, name, row, records, state or {}, basis, observed=observed)
             tasks[name] = task
             seen.add(name)
-            assessment['accepted'].append({'task': row['task'], 'decision': row['decision']})
+            assessment['accepted'].append({'task': row['task'], 'state': row['state']})
         except (ValueError, jsonschema.ValidationError) as error:
             assessment['rejected'].append(task_assessments.rejected(current, row, call, error, index))
-    for index, submitted in enumerate(payload['operations']):
+    for index, submitted in enumerate(payload['new_tasks']):
         try:
-            jsonschema.validate(submitted, spec['properties']['operations']['items'])
+            jsonschema.validate(submitted, spec['properties']['new_tasks']['items'])
             cid = (bindings or {}).get(submitted['control'], submitted['control'])
             if submitted['control'] and cid is None:
                 raise ValueError('该控件名称重名或对应对象未被本次登记接受，请引用明确对象')
@@ -165,9 +165,6 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
             if cid is not None and cid not in owned_controls(region):
                 raise ValueError('新问题的控件未在本次成功登记或存在明确身份歧义')
             definition = submitted
-            if 'template' in spec['properties']['operations']['items'].get('properties', {}):
-                from regrow.records.task_goals import normalize
-                definition = normalize(submitted, owned_controls(region).get(cid, {}).get('name'), region['name'])
             task = {**deepcopy(definition), 'control': cid, 'status': 'pending', 'source_call': call, 'attempts': []}
             if 'function_refs' in task:
                 from regrow.records.function_updates import task_refs
@@ -193,7 +190,7 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
             if not local:
                 raise
             detail = task_assessments.rejected(None, submitted, call, error, index)
-            detail['field'] = 'operations'
+            detail['field'] = 'new_tasks'
             assessment['rejected'].append(detail)
     if scope_review:
         for name in sorted(set(update_names(region, scope_review=True)) - seen):
@@ -206,7 +203,7 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
             canonical = equivalent_source(tasks, task)
             if not canonical or settlement.registration_kind(canonical) != settlement.registration_kind(task) or name == task['equivalent_to']:
                 raise ValueError('等价任务须引用同类问题的直接代表')
-    if assessment['rejected'] and not assessment['accepted'] and not payload['operations'] and not local:
+    if assessment['rejected'] and not assessment['accepted'] and not payload['new_tasks'] and not local:
         raise ValueError('；'.join(str(row.get('task')) + '：' + row['reason'] for row in assessment['rejected']))
     replace_owned_tasks(region, tasks)
     prior = region_work(region).get('task_inventory', {})

@@ -214,9 +214,9 @@ def sample(schema, name='', reuse=True):
                 if key in value and ('const' in field or 'enum' in field):
                     value[key] = sample(field, key)
         # Task decisions have an existing semantic contract beyond schema.required.
-        if 'remaining_question' in props and value.get('decision') in ('continue', 'defer'):
+        if 'remaining_question' in props and value.get('state') in ('pending', 'blocked'):
             value.setdefault('remaining_question', sample(props['remaining_question'], 'remaining_question', reuse))
-            if value['decision'] == 'defer' and 'retry_when' in props:
+            if value['state'] == 'blocked' and 'retry_when' in props:
                 value.setdefault('retry_when', sample(props['retry_when'], 'retry_when', reuse))
         if name == 'bbox' and {'left', 'top', 'right', 'bottom'} <= set(value):
             value['right'] = max(value['right'], value['left'] + 1)

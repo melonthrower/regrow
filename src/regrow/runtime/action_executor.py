@@ -56,7 +56,9 @@ class ActionExecutor:
         if register_action_target(run, q, proposal, binding, ref, episode=accepted.get('path')):
             raise step_repair.Paused('ready_next_round', '拟操作控件尚未关联身份，已转正常识别登记；提案未执行，原任务保留。')
         from regrow.records.action_evidence import action_source_observation
-        action_source_observation(run, ref, binding['observation_ref'], binding['region_ref'], binding['control_ref'])
+        source_field = 'next_action' if q.get('action_source', {}).get('call') == ref else None
+        action_source_observation(run, ref, binding['observation_ref'], binding['region_ref'], binding['control_ref'],
+                                  source_field=source_field)
         (snapshot, records, state) = _record_load(run)
         attempt = 'a' + str(max([int(p.name[1:]) for p in (run / 'action_attempts').iterdir() if p.name[1:].isdigit()] + [0]) + 1).zfill(4)
         folder = run / 'action_attempts' / attempt
@@ -97,7 +99,9 @@ class ActionExecutor:
             if transport.account['gui_started']:
                 raise ValueError('single action already dispatched')
             write_json(run / 'execution_pending.json', {'attempt': attempt})
-            write_json(folder / 'dispatch.json', {'source_call': ref, 'source_region': binding['region_ref'], 'source_control': binding['control_ref'], 'working_region': binding['working_region'], 'action': p, 'status': 'dispatching'})
+            write_json(folder / 'dispatch.json', {'source_call': ref,
+                **({'source_field': source_field} if source_field else {}),
+                'source_region': binding['region_ref'], 'source_control': binding['control_ref'], 'working_region': binding['working_region'], 'action': p, 'status': 'dispatching'})
             input_context = None
             if p['action'] == 'input_text':
                 from regrow.runtime.input_target import context

@@ -300,7 +300,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         if state['next_action_mode'] != 'discover':
             state.pop('pending_frame', None)
         if (ctx['mode'] == 'local' and not ctx.get('completion')
-                and ctx['focus'] in refs and 'operations' in contract.get('properties', {})):
+                and ctx['focus'] in refs and 'new_tasks' in contract.get('properties', {})):
             from regrow.records.task_plans import apply_observation
             assessment = apply_observation(records, state, request, reply, call_ref, raw_task_controls)
             _record_write_json(temp / 'task_assessments.json', assessment)

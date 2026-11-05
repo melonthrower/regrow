@@ -1,3 +1,5 @@
+> 2026-11-06：new_tasks.target按原文保存，不作对象解引用；new_tasks.control仍沿同答对象绑定。next_action名称在主更新对象接受后解释，目标补登记/暂挂恢复保留source_field并复用同一动作来源读取。验证与限制见根目录SNAPSHOT_STATUS.md。
+
 # 识别
 
 2026-10-30累计合并：区块定义允许多个功能及纯展示内容，身份依实际延续判断。控件登记、discovery_inventory 与同图 discovery_completion 按必要功能/操作方式选代表，已有代表覆盖的同类待补项可据实 excluded；不合并不同物理对象，也不要求穷尽同类数据。control_references 无旧控件 ID 时去掉无效空 allOf，字段和有效约束保持。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。

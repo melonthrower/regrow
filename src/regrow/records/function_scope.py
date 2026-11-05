@@ -94,7 +94,7 @@ def parameter_support(region, records):
 
 def task_product(name, task):
     """One copy of each registered product; original records remain the audit source."""
-    fields = ('control', 'status', 'task_type', 'remaining_question', 'finding_gaps', 'prepares', 'blocker', 'conditions')
+    fields = ('control', 'status', 'target', 'task_type', 'remaining_question', 'finding_gaps', 'prepares', 'blocker', 'conditions')
     from regrow.records.tasks import target_control
     from regrow.records.tasks import describe
     return {'任务': name, **({'prerequisite': describe(task['prerequisite'])} if task.get('prerequisite') else {}), **{k: deepcopy(task_value(task, k)) for k in fields if task_value(task, k) is not None}, 'control': target_control(task), **({'区块内容观察': task_value(task, 'knowledge')} if task.get('control') is None and task_value(task, 'knowledge') else {}), '依据': task_value(task, 'result_evidence', task.get('reason', '')), '结果动作记录': list(task_value(task, 'attempts', []))}

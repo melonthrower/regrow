@@ -662,7 +662,7 @@ def identity_view(value, request):
     operation = identity_fields(original, {'实际来源区块': '实际来源区块', '实际入口': '实际对象',
                                           '准备动作说明': '准备操作的目的'})
     card = identity_fields(task, {'control': '任务对象', 'control_name': '任务对象', '原控件': '任务对象', 'task_type': 'task_type',
-        '说明': '原问题', 'reason': '原问题', 'status': 'status', '未答部分': '未答部分', 'remaining_question': '未答部分',
+        '说明': '原问题', 'target': '原问题', 'reason': '原问题', 'status': 'status', '未答部分': '未答部分', 'remaining_question': '未答部分',
         '原有用途条件': '适用条件', 'conditions': '适用条件'})
     if task.get('task_type') in ('function', 'parameter', 'region_content'):
         from regrow.prompts.object_blocks import task_definition

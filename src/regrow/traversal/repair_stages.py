@@ -157,48 +157,61 @@ def accept_candidate(root, run, job):
     if stage == 'update':
         return _register_update.commit_update(root, run, ref, job['attempt'])
     if stage == 'action':
-        (q, proposal) = _owner_submission(run, ref)
-        manifest = Path(run) / 'run_manifest.json'
-        platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'
-        jsonschema.validate(proposal, q['response_schema'])
-        proposal = _action_commands.for_request(proposal, q)
-        _action_commands.validate(proposal, platform)
-        proposal = _action_commands.normalize(proposal)
-        binding = _action_binding.bind_action_target(q, proposal)
-        if binding['status'] not in ('matched', 'no_action'):
-            raise BindingConflict('动作绑定失败：' + binding.get('reason', binding['status']))
-        if binding['status'] == 'no_action' and proposal.get('task_update'):
-            from copy import deepcopy as copy_records
-            from regrow.records.task_updates import store_increment
-            from regrow.records.task_updates import answer_evidence
-            (_, original_records, state) = _record_load(run)
-            preview = copy_records(original_records)
-            source = q['source']
-            owner = preview[source['task_region']]
-            task = owned_tasks(owner)[source['task_name']]
-            evidence = answer_evidence(run, q, owner, task, state)
-            from regrow.records.object_knowledge import apply as apply_knowledge
-            from regrow.recognition.control_references import decode
-            apply_knowledge(preview, decode(q, proposal), {**(evidence or {'basis':'observation_only'}), 'source_call': ref})
-            from regrow.records.function_updates import apply_for_request
-            apply_for_request(preview, q, decode(q, proposal),
-                              {**(evidence or {'basis': 'observation_only'}), 'source_call': ref})
-            store_increment(owner, task, source['task_name'], proposal['task_update'], preview, state, {**(evidence or {'basis':'observation_only'}), 'source_call': ref}, observed=bool(evidence))
-        if binding['status'] == 'matched':
-            current_state = _record_load(run)[2]
-            if binding.get('observation_ref') != (current_state.get('observation') or {}).get('id'):
-                raise StaleActionSource('动作来源观察已过期；请按原任务刷新当前观察上下文，旧截图来源不能继续投递')
-            _ownership_review.check_action(run, binding)
-            _action_commands.commands(proposal, platform)
-            from regrow.recognition import action_target_review
-            doubt = action_target_review.conflict(q, proposal, binding)
-            if doubt:
-                raise action_target_review.Conflict(doubt)
-            if action_target_review.confirmed(q, proposal):
-                binding['target_confirmation'] = deepcopy(q['action_target_confirmation'])
-            _operation_blocking.check_action(records, binding, proposal)
-        return {'binding': binding, 'proposal': proposal, 'request': q, 'call': ref}
+        from regrow.records.calls import action_submission
+        source = q.get('action_source', {})
+        q, proposal = action_submission(run, ref, source.get('field') if source.get('call') == ref else None)
+        return accept_action(run, q, proposal, ref, records)
     raise RuntimeError('Unknown acceptance stage: ' + stage)
+
+def accept_action(run, q, proposal, ref, records):
+    # Both action origins use the same acceptance and target checks.
+    from regrow.runtime import action_commands as _action_commands
+    from regrow.recognition import ownership_review as _ownership_review
+    from regrow.traversal import operation_blocking as _operation_blocking
+    manifest = Path(run) / 'run_manifest.json'
+    platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'
+    jsonschema.validate(proposal, q['response_schema'])
+    proposal = _action_commands.for_request(proposal, q)
+    _action_commands.validate(proposal, platform)
+    proposal = _action_commands.normalize(proposal)
+    binding = _action_binding.bind_action_target(q, proposal)
+    if binding['status'] not in ('matched', 'no_action'):
+        raise BindingConflict('动作绑定失败：' + binding.get('reason', binding['status']))
+    if binding['status'] == 'no_action' and proposal.get('task_update'):
+        from copy import deepcopy as copy_records
+        from regrow.records.task_updates import store_increment
+        from regrow.records.task_updates import answer_evidence
+        (_, original_records, state) = _record_load(run)
+        preview = copy_records(original_records)
+        source = q['source']
+        owner = preview[source['task_region']]
+        task = owned_tasks(owner)[source['task_name']]
+        evidence = answer_evidence(run, q, owner, task, state)
+        from regrow.records.object_knowledge import apply as apply_knowledge
+        from regrow.recognition.control_references import decode
+        apply_knowledge(preview, decode(q, proposal), {**(evidence or {'basis':'observation_only'}), 'source_call': ref})
+        from regrow.records.function_updates import apply_for_request
+        apply_for_request(preview, q, decode(q, proposal),
+                          {**(evidence or {'basis': 'observation_only'}), 'source_call': ref})
+        store_increment(owner, task, source['task_name'], proposal['task_update'], preview, state, {**(evidence or {'basis':'observation_only'}), 'source_call': ref}, observed=bool(evidence))
+    if binding['status'] == 'matched':
+        current_state = _record_load(run)[2]
+        if q.get('action_source'):
+            from regrow.traversal.pending_action import applicable
+            if not applicable(q['action_source'], records, current_state, q):
+                raise StaleActionSource('接续动作的原任务或动作后观察已不可继续；按正常调度重新选择')
+        if binding.get('observation_ref') != (current_state.get('observation') or {}).get('id'):
+            raise StaleActionSource('动作来源观察已过期；请按原任务刷新当前观察上下文，旧截图来源不能继续投递')
+        _ownership_review.check_action(run, binding)
+        _action_commands.commands(proposal, platform)
+        from regrow.recognition import action_target_review
+        doubt = action_target_review.conflict(q, proposal, binding)
+        if doubt:
+            raise action_target_review.Conflict(doubt)
+        if action_target_review.confirmed(q, proposal):
+            binding['target_confirmation'] = deepcopy(q['action_target_confirmation'])
+        _operation_blocking.check_action(records, binding, proposal)
+    return {'binding': binding, 'proposal': proposal, 'request': q, 'call': ref}
 
 def related(run, job):
     from regrow.traversal import discovery_step as _discovery_step

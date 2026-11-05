@@ -24,7 +24,7 @@ def rule_selection(request, *, tasks=MISSING, binding=None):
     from regrow.records.task_settlement import registration_kind
     from regrow.prompts.output import effective_role
     work = original.get('work_context', {})
-    kinds = None if tasks is MISSING else sorted({registration_kind(t) for t in tasks})
+    kinds = None if tasks is MISSING else sorted({registration_kind(t) for t in tasks} - {None})
     return {'role': effective_role(original), 'mode': original.get('discovery_context', {}).get('mode'), 'work_kind': work.get('kind'), 'source': deepcopy(original.get('source', {})), 'task_types': kinds, 'preparatory_action': bool((binding or {}).get('preparatory_action'))}
 
 def task_refs(records, state, work=None):

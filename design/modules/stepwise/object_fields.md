@@ -203,48 +203,35 @@ behavior_context为行为上下文，distinct_regions为确认不同的区块，
 
 ### 提出与更新字段
 
-| 字段 | 当前正文含义 |
+| 字段 | 当前合同 |
 |---|---|
-| operations | 按建议探索次序列本轮新增任务，考虑依赖和离页影响，不是预排GUI动作。范围为给定当前区块及其控件；无新任务为[]，不借此重排已有任务。 |
-| operations[].control | 给定完整控件名；仅区块自身问题可为空字符串，不能用空值代指未知控件。 |
-| task_type | function调查用途、直接效果或去向；parameter了解可用输入、取值及必要条件。按原问题而非控件外观分类。 |
-| completion_condition | 新operations必填。Luna结合对象、已有知识及后续操作/导航需要，自行确定具体未知弄清到什么程度即可结算；不是预测结果或动作步骤，不按控件类型套模板。随task保存，后续只判断是否满足，不以remaining_question改写；旧task不补写。 |
-| task_update（本步规定的对象/列表） | 对允许更新的已有原任务及实际操作控件相关任务作判断。引用与层级遵循本步格式，不借此改目标、类型或条件。 |
-| task | 本轮提供的任务引用；只有程序明确绑定唯一目标时才按该步格式省略。 |
-| decision | continue仍有必要问题且无明确推进障碍；defer未回答且有实际障碍；answered原问题已有足够证据。 |
-| reason | 判断依据与证据，说明失败、相反观察、障碍或限制对原问题的影响；不重复抄缺口和恢复条件。 |
-| remaining_question | continue/defer时尚缺的具体原问题答案。不是下一动作、准备控件用途或“参数未穷尽”。answered不带活动缺口。 |
-| retry_when | defer后可重新考虑的、对应实际障碍的可判断条件；不是“下次再试”或操作序列。continue/answered不带活动恢复条件。 |
-| next_action | 本步允许时的可选建议，服务原问题；不是执行事实，缺建议不单独构成defer。defer/answered不附非空建议。 |
+| new_tasks | 本轮为给定区块新增的独立问题，按探索次序排列；没有新问题填[]。 |
+| new_tasks[].control | 本轮给定控件引用；同答新控件须先被对象登记接受。空字符串表示区块自身。 |
+| new_tasks[].target | 固定原问题及涉及对象/范围，按原文保存；后续剩余问题不能替换它。 |
+| task_update | 本轮允许判断的已有任务；普通更新/提出为数组，单任务复核保持单对象。 |
+| task_update.task | 使用本轮给定任务引用，不新建或改绑任务。 |
+| task_update.state | done原问题已有明确答案；pending仍可继续；blocked受到具体条件限制。 |
+| remaining_question | pending/blocked必填的剩余问题；done省略。 |
+| retry_when | blocked必填的恢复条件；pending/done省略。 |
 
-`blocked`是框架保存的状态，不只来自Luna的`defer`；框架也会因结果待登记、执行未确认等原因设置blocked，这类情况下Luna输出continue也不能直接解除。
+新任务不生成task_type、模板、reason或completion_condition；同所属区块、同control、完整target相同才确定为冗余。语义重复由Luna结合已有任务判断。知识归控件knowledge或区块local_knowledge，不复制任务答案。
 
-任务复用同控件同类型的已有记录；记录复用不预设状态。用途和目标相关内容已知时不因未点击而新建证明任务；入口用途已知但目标内容未知且无任务覆盖时，仍需提出访问目标的任务。同一设置的普通候选不逐项建同类任务，新分支或独立功能另判。
+旧任务仍读取原completion_condition及历史类型目标，不批量改题。旧answered/continue/defer只读映射为done/pending/blocked，原调用、原答及审计原件保留。新target任务不套旧function的用途知识产物门槛；真实执行、身份、未结登记和准备阻塞继续由task_updates.decide核验，不能直接将模型state写成任务状态。
 
-function控件任务：已有对象知识足以回答可直接收口；仍需操作时，必要准备后一次适用操作及直接结果即可，不顺带穷尽目标内部功能。parameter以知道如何使用、获得有据实例及直接结果为界，不自动研究全部字符、取值或整项业务。原问题明确要求仍须回答。准备证据可支持原问题，但准备完成不自动完成原任务；当前所属区块不可见也不单独构成暂挂。
+### 下一动作与准备判断
 
-### 后续建议与准备判断
+`next_action` 属于动作后更新的调用根，与task_update并列；它不是Task字段。它直接采用公共可执行Action，包含实际动作所需target、坐标、文本、终点及reason；不包含complete/none。省略表示本次没有接续候选，不继承旧建议。
 
-| 字段 | 含义与边界 |
+只为当前原任务提供一步动作，依据本次动作后图。主结果、对象知识和任务判断先独立登记；坏动作单独进入正常动作纠错。登记成功后，runtime.pending_action仅保存真实更新call/next_action、已接受后图的observation/snapshot和原任务引用。
+
+下个小步先恢复与调度，再核验任务仍pending、无真实阻塞、任务未切换、观察仍适用；消费指针后交原action job及执行账本接管。暂停作业也在正常调度后恢复并重查；投递前仍使用当前新图核对，不把原坐标改称来自新图。历史复核、历史补登记、任务提出与对象补登记不开放next_action。旧任务建议仅保留历史阅读，不再执行。
+
+| 准备字段 | 含义 |
 |---|---|
-| next_action.region / control | 建议动作实际作用的给定区块和控件，希望到达的地方写reason。可引用本轮允许的其他区块；未知对象不编引用。 |
-| next_action.action / reason | 本步合法动作名及具体操作内容、补足的缺口；输入意图按本步协议表达，不自加字段。非空建议须同时具备四项，不输出{}。 |
-| next_action=null / 省略 | null明确撤销；省略无新建议。框架消耗已确认执行的旧建议，未执行建议仍须按当前图和原问题核对，不因保留而重复执行。 |
-| next_action.control="" | 仅用于本步允许的区块滚动、返回、等待、按键/快捷键等，不代指未知控件。 |
-| dependency_updates | 仅更新本轮允许处理的原目标准备条件；不是批量重置不可见目标。 |
-| dependency_updates[].region / task | 被准备的原目标引用，不是当前执行准备动作的区块/准备任务。唯一程序绑定时按本步结构省略。 |
-| dependency_updates[].ready | true有当前有效证据确认全部必要前提；false尚未确认全部满足，含确实未满足或证据不足，不一律表示已证实不可用。 |
-| dependency_updates[].evidence | 原目标前提的实际观察，区分条件未满足与无法核实。投递回执或打开入口不足以证明准备完成。 |
+| dependency_updates[].region / task | 本轮给定的被准备原任务；不是准备动作自身。 |
+| dependency_updates[].ready / evidence | 有新观察依据才更新是否满足原前提；ready=true不表示原问题完成。 |
 
-ready=true只表示可以开展原任务，不代表原问题已答；前提变化后旧true也不能直接沿用。准备任务是否answered按其准备目标，原任务独立判断。
-
-### 答案归属与内部状态
-
-当前工作树正文把用途/参数统一写入实际控件knowledge（参数在constraints），区块事实写local_knowledge；task_update只作问题判断，不再要求重复提交knowledge/findings。continue/defer也可记录部分知识；已有适用知识可直接使用。历史findings及旧任务答案仍作为兼容来源保留，不是当前新输出字段。
-
-[task_updates.decide](../../../src/regrow/records/task_updates.py)中，decision在无硬阻塞时映射为pending/done/blocked；answered还核验答案及已有真实执行、身份或前提阻塞，不能把模型字符串当必然完成。pending和blocked均未解决；暂挂不等于取消其他可推进任务。
-
-长期tasks.json按“区块ID/任务名”引用；control绑定全局控件。latest_update保存最近判断、建议与source，update_history保留前次判断，completion_basis保存结算依据；这些经[任务记录接口](../../../src/regrow/records/tasks.py)保留在历史，不另存一套答案。prepares/prerequisite记录准备归属与前提，blocker/deferral记录阻塞与恢复条件；这些是框架记录，不要求Luna自行补字段。
+prepares/prerequisite保留准备归属；blocker/deferral保留真实阻塞与恢复条件。tasks.json及审计接口仍为唯一任务来源，latest_update只保存判断和source，update_history保留前次原判断。
 
 ## 动作
 
@@ -276,7 +263,7 @@ ready=true只表示可以开展原任务，不代表原问题已答；前提变�
 | text_delivered（回执输入） | 提供的文字投递事实，不从截图反推。false只说文字未发送，不代表点击/聚焦也没发生；true或回显不证明保存成功。 |
 | action_result.returns_to_previous | 本次真实关闭/退出并返回对应进入记录的来源表面才true；身份/落点符合，不要求值和滚动位置完全相同。false是未确认该返回，不一定证明绝无返回。 |
 | action="complete"及reason | 原探索问题已充分回答；按本轮要求同层补缺少答案，已有充分答案不无谓重报。不代表业务一定成功。 |
-| action="none"及reason位置 | 本步不操作。无task_update时理由在外层reason；通过task_update作判断时在task_update.reason，外层不重复。 |
+| action="none"及reason位置 | 本步不操作，reason保留在动作层；complete同样使用动作层reason。task_update只提交state及对应的remaining_question/retry_when，不提交reason。 |
 
 点击“设置”后“常规”标签已选中，可记录当前内容关系，但实际动作归“设置”，不能编成已点击“常规”。回到曾访问页面、看见下层或仅知道可返回，不足以returns_to_previous=true。
 
@@ -305,7 +292,7 @@ runtime_work.json 以区块 ID 保存下列本轮字段（与区块功能知识�
 
 runtime_state.json 保存当前区块、活动任务、观察等调度状态。object_history/action_log/task_history 及原调用保存程序来源与历史；不作为普通提示全文展开，也不新增一套平行事实。
 
-2026-10-29：动作结果的description同时承载必要依据，不再分填evidence；foreground不再分填evidence/uncertainty。task_update.reason按需；previous_regions.evidence仅歧义时补充。当前交接从已有结果/前景读取，旧独有交接继续可读，新输出不填handoff_summary。截图与实际投递证据由程序保存。
+2026-10-29：动作结果的description同时承载必要依据，不再分填evidence；foreground不再分填evidence/uncertainty。当时task_update.reason按需；现已由2026-11-06的state合同替代，旧原答只读；previous_regions.evidence仅歧义时补充。当前交接从已有结果/前景读取，旧独有交接继续可读，新输出不填handoff_summary。截图与实际投递证据由程序保存。
 
 
 ## 2026-11-01 具名对象与嵌套控件（候选，验收进行中）

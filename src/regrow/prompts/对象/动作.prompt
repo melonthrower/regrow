@@ -10,6 +10,13 @@
 正例：点击当前图中的搜索按钮，reason 写“展开搜索输入框”。
 <!-- END_PROMPT_BLOCK id="action.proposal" -->
 
+<!-- BEGIN_PROMPT_BLOCK id="action.next_action" requires="task.definition" -->
+# 接下来执行的一步操作：next_action
+next_action 填写接下来要执行的一步操作，采用与普通动作选择相同的动作格式，并完整填写该动作所需的参数。
+
+当前任务仍需继续探索且本轮可以操作时，根据本轮动作后截图选择下一步。每次最多提供一条动作；暂时无法确定下一步时不填写。
+<!-- END_PROMPT_BLOCK id="action.next_action" -->
+
 <!-- BEGIN_PROMPT_BLOCK id="action.result" requires="" -->
 # 已执行动作的结果：action_result
 description 写动作后可见的直接变化、反馈、失败或无法确认的部分。实际操作对象、投递参数和回执以所给执行记录为准，不根据显示结果改写投递内容，也不必重新抄写整段执行过程。
@@ -21,7 +28,7 @@ description 写动作后可见的直接变化、反馈、失败或无法确认�
 
 <!-- BEGIN_PROMPT_BLOCK id="action.complete" requires="task.definition" -->
 # 原问题已有答案：complete
-对照原问题和完成条件，reason 写明现有证据如何回答了问题，并保留仍影响结论的限制。
+对照任务的 target，reason 写明现有证据如何回答了问题，并保留仍影响结论的限制。
 
 正例：原问题是“这个入口打开什么”，已有观察显示它打开导出面板，可以据此完成入口问题；面板内尚未了解的设置属于后续问题。
 <!-- END_PROMPT_BLOCK id="action.complete" -->

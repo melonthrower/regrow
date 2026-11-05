@@ -1,3 +1,5 @@
+> 2026-11-06：公共executable_operation_schema独立于Task schema，普通动作、恢复及next_action复用；update_reply.main_pair仅在本地接收拆开主更新与可选Action。双图更新的next_action使用后图坐标，主体仍不输出几何；旧调用沿保存合同读取。验证与限制见根目录SNAPSHOT_STATUS.md。
+
 # 提示、模型和执行支撑
 
 2026-10-30累计合并：17 类调用统一由 output.prepare → field_sections.render 按最终合同组合。对象块维护含义、正例；配方按完整字段路径/工作模式/发现模式选择，局部格式来自 schema。纠错保留原合同；关闭字段不加载相关教学。旧模板及旧对象 rules/sections 路径退出。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。

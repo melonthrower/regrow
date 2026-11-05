@@ -118,7 +118,7 @@ def next_deferred(root, run, frame, *, task=None, allow_other=False):
                 continue
             if not _record_in_scope(region, task, records):
                 continue
-            ready = bool(task.get('prepares') and task.get('status') == 'pending' and _task_updates.preparation_product(task, {'decision': 'answered'}, records, {}))
+            ready = bool(task.get('prepares') and task.get('status') == 'pending' and _task_updates.preparation_product(task, {'state': 'done'}, records, {}))
             if reviewable(task, observation) or ready or repeated_entry_attempts(run, region, task):
                 return request(root, run, {'task_region': rid, 'task_name': name}, [str(frame)])
     return None
@@ -216,7 +216,7 @@ def request(root, run, source, frames):
     if records[rid].get('local_knowledge'):
         dynamic['已有区块知识'] = records[rid]['local_knowledge']
     if later:
-        dynamic['独立入口历史'] = [{'动作记录': aid, '直接效果': _history_context.task_goal({'task_type': task['task_type'], 'reason': task.get('reason') or task.get('name', ''), 'attempts': [aid]}, records, run)} for aid in history]
+        dynamic['独立入口历史'] = [{'动作记录': aid, '直接效果': _history_context.task_goal({**dict(task), 'attempts': [aid]}, records, run)} for aid in history]
         dynamic['历史间隔'] = '这些是独立尝试的直接前后效果，不是连续操作链；未提供期间全部操作，不能推断状态持续或跨尝试因果。'
         dynamic['本次核对原因'] = '旧任务暂挂后，同一控件另有已执行记录。比较已登记实际结果与原结束条件；历史清单可能不完整，不能仅凭区块集合变化判完成。旧失败不抹去，新的历史也不代表当前界面可操作。'
     if history:
@@ -325,7 +325,7 @@ def commit(root, run, call):
             raise ValueError('历史复用的原始证据缺失')
         if reply.get('coverage') is not None:
             assessment = reply.get('task_update', {})
-            if assessment.get('task', _task_updates.reference(source['task_region'], source['task_name'])) != _task_updates.reference(source['task_region'], source['task_name']) or assessment.get('decision') != 'continue':
+            if assessment.get('task', _task_updates.reference(source['task_region'], source['task_name'])) != _task_updates.reference(source['task_region'], source['task_name']) or _task_updates.assessment(assessment).get('state') != 'pending':
                 raise ValueError('覆盖豁免保留原任务未实测，不用answered伪造执行')
             refs = source.get('coverage_candidates', [])
             for ref in refs:

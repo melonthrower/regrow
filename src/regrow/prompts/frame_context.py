@@ -42,6 +42,8 @@ def validate(request):
         raise ValueError('比较最多使用两张原图，由步骤明确选择')
     if count == 2:
         from regrow.prompts.output import fields
+        from regrow.runtime.update_reply import main_pair
         geometry = {'bbox', 'icon_bbox', 'click_bbox', 'click_area', 'x', 'y', 'end_x', 'end_y', 'left', 'top', 'right', 'bottom'}
-        if 'response_schema' not in request or geometry.intersection(fields(request['response_schema'])):
+        schema, _ = main_pair(request.get('response_schema', {}), {})
+        if 'response_schema' not in request or geometry.intersection(fields(schema)):
             raise ValueError('两图比较不能要求输出坐标或bbox；定位与几何登记使用单图')

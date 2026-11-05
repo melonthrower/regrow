@@ -37,7 +37,7 @@ def synchronize_tasks(records):
                         label = name if name not in tasks else name + '（共享：' + owned_controls(region)[cid]['name'] + '）'
                         if label in tasks:
                             continue
-                        t = {k: deepcopy(definition[k]) for k in ('task_type', 'reason', 'conditions') if k in definition}
+                        t = {k: deepcopy(definition[k]) for k in ('target', 'completion_condition', 'task_type', 'reason', 'conditions') if k in definition}
                         t.update(name=label, control=cid, status='pending', equivalent_to='', shared_task_ref={'region': rr, 'task': name, 'control': cc})
                         if definition.get('prerequisite'):
                             t['prerequisite'] = {k: deepcopy(v) for (k, v) in definition['prerequisite'].items() if k not in ('scheduled', 'satisfied', 'last_check', 'recheck_requested')}
@@ -48,7 +48,11 @@ def synchronize_tasks(records):
                         local[1]['conditions'] = deepcopy(definition.get('conditions', []))
                     local[1]['shared_task_active'] = True
                     from regrow.records.task_settlement import registration_kind
-                    local[1]['task_type'] = registration_kind(definition)
+                    if 'target' in definition:
+                        local[1]['target'] = definition['target']
+                        local[1].pop('task_type', None)
+                    else:
+                        local[1]['task_type'] = registration_kind(definition)
                     members.append((rid, *local))
                 winner = None
                 from regrow.records.task_settlement import registered_result
@@ -60,7 +64,7 @@ def synchronize_tasks(records):
                     if evidence:
                         winner = {'region': rid, 'task': n, 'attempts': evidence}
                         break
-                    if not t.get('shared_result') and task_value(t, 'latest_update', {}).get('decision') == 'answered' and task_product(t) and (task_value(t, 'completion_basis', {}).get('basis') == 'observation_only') and (not t.get('blocker')) and (not t.get('prepares')):
+                    if not t.get('shared_result') and task_value(t, 'latest_update', {}).get('state') == 'done' and task_product(t) and (task_value(t, 'completion_basis', {}).get('basis') == 'observation_only') and (not t.get('blocker')) and (not t.get('prepares')):
                         winner = {'region': rid, 'task': n, 'observation_only': True}
                         break
                 for (rid, n, t) in members:

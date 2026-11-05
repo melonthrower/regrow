@@ -109,7 +109,9 @@ def route_update(root, reply, receipt, *, schema=None):
     if 'exploration_update' not in schema.get('properties', {}):
         reply = {k: v for (k, v) in reply.items() if k != 'exploration_update'}
     try:
-        jsonschema.validate(reply, schema)
+        from regrow.runtime.update_reply import main_pair
+        main_schema, main_reply = main_pair(schema, reply)
+        jsonschema.validate(main_reply, main_schema)
     except jsonschema.ValidationError as exc:
         raise ValueError('invalid update: ' + exc.message) from exc
     if reply.get('source_region_split') or reply.get('entry_identity'):
@@ -159,7 +161,7 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
             dynamic['准备动作说明'] = '实际操作对象与原任务目标不同。根据后图登记已获答案与尚未解决的问题。'
         task = owned_tasks(records[binding.get('task_region', binding['region_ref'])])[binding['task_name']]
         from regrow.records.task_settlement import registration_kind, exploration_goal
-        dynamic['任务目标'] = {'说明': exploration_goal(task), 'task_type': registration_kind(task), '原控件': (object_store.find_control(records[binding.get('task_region', binding['region_ref'])], task.get('control')) or {}).get('name', '区块本身')}
+        dynamic['任务目标'] = {'target': exploration_goal(task), '原控件': (object_store.find_control(records[binding.get('task_region', binding['region_ref'])], task.get('control')) or {}).get('name', '区块本身')}
         from regrow.records.task_settlement import task_object_context
         dynamic['任务与实际对象核对'] = task_object_context(records, binding)
     from regrow.records.tasks import coverage
@@ -212,6 +214,13 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     u = build_update_request(root, dynamic, [str((folder / n).relative_to(run)) for n in ['before.png', 'after.png']], selection=selection)
     u['source'] = source
     u['task_update_candidates'] = task_candidates
+    from regrow.traversal.suspended_updates import context as suspended_context
+    if (binding.get('task_name') and receipt.get('exit_code') == 0 and (folder / 'after.png').is_file()
+            and not suspended_context(run, folder.name)):
+        from regrow.records.task_updates import hard_block
+        if task.get('status') == 'pending' and not hard_block(task):
+            from regrow.runtime.action_commands import executable_operation_schema
+            u['response_schema']['properties']['next_action'] = executable_operation_schema()
     u = history_matching.attach(u, records, ranking, region_names, snapshot)
     u['region_names'] = region_names
     _page_context.attach(u, records, state, usage='before_action', run=run, extra_regions=[binding['region_ref'], binding['working_region'], binding.get('task_region')])

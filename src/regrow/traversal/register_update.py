@@ -104,7 +104,8 @@ def commit_update(root, run, call_ref, attempt_ref):
     edge = {'attempt': attempt_ref, 'source_region': binding['region_ref'], 'source_control': binding['control_ref'], 'before_observation': binding['observation_ref'], 'after_observation': f'update:{call_ref}', 'before_image': images[0], 'after_image': images[1], 'selection_call': dispatch['source_call'], 'result_call': call_ref, 'delivery': 'executed_receipt_zero'}
     (source, control) = (edge['source_region'], edge['source_control'])
     working_ref = binding.get('working_region', source)
-    pinned = _record_action_source_observation(run, dispatch.get('source_call'), edge['before_observation'], source, control)
+    pinned = _record_action_source_observation(run, dispatch.get('source_call'), edge['before_observation'], source, control,
+                                              source_field=dispatch.get('source_field'))
     if pinned:
         before = pinned
         _record_write_json(run / f'calls/{call_ref}/source_observation.json', pinned)
@@ -250,6 +251,8 @@ def commit_update(root, run, call_ref, attempt_ref):
     state['recovery_handoff'] = reply['action_result'].get('recovery_handoff', '')
     if historical:
         suspended.complete(records, previous_state, state, historical, call_ref, attempt_ref)
+    from regrow.traversal.pending_action import retain
+    retain(state, records, request, reply, binding, call_ref, snapshot_ref, historical=bool(historical))
     snapshot.parent.mkdir(parents=True, exist_ok=True)
     temp = Path(tempfile.mkdtemp(prefix='.pending-', dir=snapshot.parent))
     try:

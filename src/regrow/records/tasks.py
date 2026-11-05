@@ -150,6 +150,9 @@ def read(task, field, default=None):
         value = task.audit.get(field, default) if isinstance(task, Task) and field in AUDIT else task.get(field, default)
         def current(row):
             if isinstance(row, dict):
+                if 'decision' in row and row['decision'] in ('answered', 'continue', 'defer'):
+                    row = {**row, 'state': {'answered': 'done', 'continue': 'pending', 'defer': 'blocked'}[row['decision']]}
+                    row.pop('decision')
                 return {('remaining_question' if k == 'registration_gap' else k): current(v) for k, v in row.items()}
             if isinstance(row, list):
                 return [current(v) for v in row]

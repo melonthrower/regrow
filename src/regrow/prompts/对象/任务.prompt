@@ -1,10 +1,5 @@
 # 任务
 
-<!-- BEGIN_PROMPT_BLOCK id="task.local_planning" requires="task.definition" -->
-本轮同时识别对象并提出必要任务。对本次确认的主要功能入口和参数部件，分别判断哪些认识可直接记录、哪些功能内容或候选尚未看见而需要任务。没有探索价值的普通数据直接略过。
-未辨认清楚的图标可以保留具体疑点，不妨碍为已辨认的主要菜单、面板入口和参数选择器提出任务；不要只补对象身份而漏掉这些任务判断。
-<!-- END_PROMPT_BLOCK id="task.local_planning" -->
-
 <!-- BEGIN_PROMPT_BLOCK id="task.scope" requires="" -->
 # 本次范围是否考虑完整：inventory、evidence
 inventory=complete 表示本次给定范围的独立功能和共同操作方式已考虑，必要未知已有任务承接；任务可以尚未解决。
@@ -16,79 +11,57 @@ partial 或 uncertain 时，evidence 写出本次尚未考虑的具体范围、�
 <!-- END_PROMPT_BLOCK id="task.scope" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="task.definition" requires="" -->
-探索任务用于补充应用主要功能、其入口及必要参数的认识。先判断是否有这类探索价值，再决定是否立题；仅仅还有未知、没有亲测或没有代表操作记录，不足以提出任务。
-普通目录、文件、列表数据项之间的跳转不作为独立探索目标；为到达未知功能内容或推进原问题所需的导航仍可执行。普通确认、取消和收尾细节交给执行时处理，不要求遍历走完整条业务流程。
-有必要探索时，每题只问一个具体未知，立题时确定终点。允许必要准备和多步操作；其他独立未知另行处理，原题未答部分继续原 task。
+探索任务是遍历过程中，围绕某个区块或控件提出的具体问题，用于补充后续生成指令、定位和使用应用功能所需的认识。每项任务以查清所问内容为目标。
 <!-- END_PROMPT_BLOCK id="task.definition" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="task.goal_template" requires="" -->
-template 选择本题的默认问法，框架据此生成并保存 completion_condition：
-- entry：进入尚不了解的功能或参数内容，看清直接内容后结束；不为普通数据逐项建立打开任务，不追加内部功能调查。若实际观察明确推翻入口假设，记录真实直接作用和依据即可回答这个问题。
-- choices：question 写要收齐的有限候选范围；范围内候选完整登记后结束，不逐值应用。
-- input：question 写尚不清楚的填写规则；所问规则明确并登记后结束，不穷举输入，不主动测试未问的边界。
-- effect：含义不明的应用功能控件，其直接作用明确并登记后结束；不为普通业务数据逐项建立功能验证题。
-- content：question 写本区块尚未看见的内容范围，reason 给出实际线索；该范围已查看，发现的信息按所属对象登记；同类业务实例复用共同用法。
-- custom：默认问法不适用时，question 写一个同样具体的未知，completion_condition 写确认什么事实即可结束；仍遵守本轮探索范围。
-entry、effect 不填 question；只有 custom 自拟 completion_condition。默认问法若只适用于某个必要条件，用 condition 限定，框架把它写入原题；不把每次实例变化当成新条件。模板不规定动作次数和打开方式，也不预填观察结论。
-正例：一个入口已经打开、直接内容已看清，内部另有未知，不延长原入口题；有限候选仍有未见部分，继续原范围。
-反例：将“收齐当前选择器的候选”改成“找到另一候选”，或把“全面了解功能及后续流程”作为 custom 终点。
-<!-- END_PROMPT_BLOCK id="task.goal_template" -->
+<!-- BEGIN_PROMPT_BLOCK id="task.propose" requires="task.definition,control.definition,control.references" -->
+# 新增探索任务：new_tasks
+new_tasks 列出本轮为“{区块名}”新增的探索任务。根据当前截图和已有记录，只为仍有疑问、且已有任务没有覆盖到的问题提出任务。每项填写 control 和 target。
 
-<!-- BEGIN_PROMPT_BLOCK id="task.completion_condition" requires="" -->
-completion_condition：写明确认什么事实即可结束，不预编操作步骤。采用 template 的新题只有 custom 自拟此字段，其他终点由框架生成。
-后续判断只读保存的原条件；remaining_question 不改题。旧请求直接要求填写此字段时，按其实际格式提供具体未知和终点，不另填未开放的字段。
-<!-- END_PROMPT_BLOCK id="task.completion_condition" -->
+重点关注功能入口的直接去向、操作或设置中可指定的参数与必要使用条件，以及区块尚未显示的内容。其他问题应针对本区块或其中的控件，补充有助于后续指令生成、操作理解或采集导航的认识。
 
-<!-- BEGIN_PROMPT_BLOCK id="task.type" requires="" -->
-task_type 沿用问题的登记归属：
-function：了解控件尚不明确的直接作用或入口内容。
-parameter：弄清选择部件尚未知的有限候选或所问填写规则。
-region_content：查看本区块尚未显示的内容。
-entry、effect 对应 function，choices、input 对应 parameter，content 对应 region_content；custom 按其具体问题选择原类型。region_content 的 control 填空字符串，其他任务引用所属控件。分类不按控件外形决定。
-<!-- END_PROMPT_BLOCK id="task.type" -->
+control 填写探索对象对应的控件引用；同轮新登记的控件按本步格式引用名称。探索对象为区块自身时，填空字符串。
 
-<!-- BEGIN_PROMPT_BLOCK id="task.operations" requires="task.definition,control.definition,control.references" -->
-# 新增探索问题：operations
-先判断本轮允许更新的旧任务；其未答部分继续原 task，再考虑独立新问题。
-先判断本题会补充哪项主要功能、功能入口或必要参数的认识。清楚的功能直接登记；只有普通业务数据、没有这类探索价值时，可以略过整个区块。
-确定有必要调查后，才选择对应问法；模板不是要求每个对象验证一遍。普通数据项在当前选中、展开或路径层级下怎样响应，留给执行时结合界面处理，不逐实例预先调查。
-用途清楚不表示内容或参数已知。主要功能的选择器仅显示当前值、候选尚未查看时，仍应提出有价值的参数候选或填写规则问题，不因用途明显而跳过；这些任务可排在主要功能入口之后。
-同类业务数据已有代表用法时，直接复用，不要求先逐个实测才能采用共同用法。“该实例的效果尚未亲测”不再单独构成未知；仅名称、位置、层级或组名不同不表示功能差异。
-当前材料显示独立功能、不同操作结构或必要条件差异时，只调查那项差异。继续展开只会得到更多同类数据、且没有上述差异线索时，略过这部分。参数候选仍按原范围收集，不能当普通数据实例省掉。
-reason 写明本题帮助了解哪项主要功能或必要参数，以及增加什么认识；已有相关问题或同类用法时，指出它们没有覆盖的具体功能或条件差异。
-control 引用本轮给定对象，新控件按本步格式引用名称；没有独立新问题填 []。整个区块没有新增认识价值时，也可直接结束本次清点。
-新增问题按探索顺序排列：优先主要导航、页面切换和主工作区中的必要未知，再处理次级功能；不因新出现了一个数据实例就优先调查它。
-定位、选取、聚焦等可以服务当前问题；不另立研究某个具体实例的定位技巧或准备业务素材的题，也不为积累经验而验证整个业务流程。
-正例：用途已知但选择器内的候选未知，提出候选题；只是不曾亲自操作且已有适用答案，直接登记。
-反例：原入口题仍在继续，同时换一种措辞再建同题；或已有条目的共同展开方式，只因另一条目没点过，就再问其点击后是否展开。
-<!-- END_PROMPT_BLOCK id="task.operations" -->
+target 写清这项任务要查明什么，以及涉及的对象或范围。后续以这一探索目标为依据判断任务进展。
+
+按计划探索的顺序排列；没有新任务时，填写空数组。
+
+示例：本轮区块为“声音设置”，区块截图中有 c001“更多设置”和 c002“提示音”。c001 可能打开新的窗口或面板，具体去向尚未确认；c002 看起来可以展开提示音选择列表，目前只看到当前值，还不知道有哪些可选提示音。区块下方还有尚未显示的内容。
+
+```json
+{
+  "new_tasks": [
+    {"control": "c001", "target": "查明“更多设置”入口打开的直接目标区块。"},
+    {"control": "c002", "target": "查明“提示音”选择器提供哪些可选值。"},
+    {"control": "", "target": "查看“声音设置”区块当前截图下缘以下尚未显示的内容，补充其中的设置与功能入口。"}
+  ]
+}
+```
+<!-- END_PROMPT_BLOCK id="task.propose" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="task.update" requires="task.definition" -->
-# 判断已有任务：task_update
-对照保存的原问题、completion_condition 和实际证据判断：answered 已回答；continue 原题仍有未知，写 remaining_question；defer 有实际障碍，写 remaining_question 和可判断的 retry_when。reason 说明满足终点的依据或具体缺口。
-remaining_question 只记录原题尚缺的部分，不替换终点。入口直接内容已看清，不因内部独立未知继续原题；原范围候选未收齐，不因发现一个候选提前结束。原题中已规定观察推翻假设的回答方式时，按实际证据回答，不强造预期页面。
-已有适用知识可以直接采用，不要求重复点击；已执行但效果未明就保留实际观察，不冒充成功。原地变化按真实效果登记，没有访问效果不强填关系。
-旧任务继续按其原条件；原条件错误或超出本轮范围，在 reason 指明冲突并保留未完成，不用新模板降低旧标准。answered 不保留活动缺口或重试条件，只更新本轮允许的任务。
-正例：原题仅问是否出现确认内容，已有清楚观察即可回答，不继续执行后续流程；原题要求的实际业务结果仍须有对应证据。
-反例：只因最后一步有反应就判整题完成，或用内部新问题扩大已达到终点的入口题。
-<!-- END_PROMPT_BLOCK id="task.update" -->
+# 更新已有任务：task_update
+对照给定任务的 target，判断本轮提供的截图和相关动作信息回答了哪些内容，并结合此前已查明的部分更新任务的 state。
 
-<!-- BEGIN_PROMPT_BLOCK id="task.batch_update_example" requires="" -->
-### 同一批任务分别判断的例子
-以下是虚构情境，实际任务引用与结论按本轮材料填写：本轮允许更新导出设置区的三个任务，已有知识确认格式候选为 PDF、PNG，保存位置入口会打开目录选择器；预览按钮仍被弹窗遮挡，预览内容未知。
-对“查看格式候选”和“查看保存位置入口去向”分别填写 answered，不必再次操作或重复提交已有知识；对“查看预览内容”填写 defer，remaining_question 写“预览会显示哪些内容”，retry_when 写“遮挡预览按钮的弹窗关闭后”。把三项判断放在本次 task_update 数组中。
-第三项未解决不表示前两项也未回答。每项仍须有适用于原问题的依据；任务身份或必要前提尚未明确时，不能仅因想结束本批就填写 answered。
-<!-- END_PROMPT_BLOCK id="task.batch_update_example" -->
+done：目标中要查明的内容已有明确答案，任务完成。省略 remaining_question 和 retry_when。
+
+pending：还有未查清的部分，可以继续探索。remaining_question 写剩下要查明什么，省略 retry_when。
+
+blocked：当前受到具体条件限制，暂时无法继续。remaining_question 写剩下的问题，retry_when 写什么条件满足后可以继续。
+
+示例：
+
+任务目标是查明“更多设置”入口的直接去向。本次点击“更多设置”后，动作后截图中出现了“高级声音设置”面板，该入口的直接去向已经查明。本项填写 state=done。
+
+任务目标是查明本地提示音的可选值。区块截图中已经显示“清脆”“柔和”，列表下方还有候选尚未查看。本项填写 state=pending，remaining_question 为“本地提示音列表下方尚未查看的候选有哪些”。
+
+任务目标是查明在线提示音的可选值，但列表需要登录才能访问，本轮没有可用账号。本项填写 state=blocked，remaining_question 为“在线提示音列表提供哪些可选值”，retry_when 为“已登录且能够访问在线提示音列表时”。
+<!-- END_PROMPT_BLOCK id="task.update" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="task.retry_when" requires="" -->
 retry_when：确有障碍需要暂挂时，写可判断的恢复条件。
 正例：“已有可供选择的文件后继续。”
 <!-- END_PROMPT_BLOCK id="task.retry_when" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="task.next_action" requires="" -->
-next_action：continue 时可给出后续建议，完整填写 region、control、action、reason，引用本轮给定的实际操作对象。省略会保留尚未使用的旧建议；明确填 null 撤销旧建议。answered、defer 不附非空建议。
-正例：原建议已不再适用且暂无新办法，填写 "next_action": null。
-<!-- END_PROMPT_BLOCK id="task.next_action" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="task.dependency_updates" requires="" -->
 # 复核准备条件：dependency_updates
@@ -101,7 +74,7 @@ next_action：continue 时可给出后续建议，完整填写 region、control�
 <!-- END_PROMPT_BLOCK id="task.scope_review" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="task.update_ref" requires="" -->
-task 复制本轮给定的任务引用，分别判断允许处理的任务。
+task 填写这条判断对应的已有任务引用，直接使用本轮材料中提供的值。
 <!-- END_PROMPT_BLOCK id="task.update_ref" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="task.completion_updates" requires="" -->
@@ -113,8 +86,8 @@ evidence 说明登记、排除或仍不能确认的依据。
 
 <!-- BEGIN_PROMPT_BLOCK id="task.coverage" requires="" -->
 # 免除重复入口调查：coverage
-当原单步入口当前确实未显示、给定候选的实际结果已覆盖它的直接去向、且没有其他重要未知时，可填写 coverage；否则填 null。candidate 填给定候选序号，evidence 解释已覆盖的问题，condition 写成立的界面条件，unverified 写原入口及仍未验证的效果。采用 coverage 时 task_update.decision 保持 continue。
-这里的 continue 保留原入口尚无直接验证的事实，coverage 表示免除重复调查。remaining_question 写原入口本身尚未验证的效果，next_action 填 null。
+当原单步入口当前确实未显示、给定候选的实际结果已覆盖它的直接去向、且没有其他重要未知时，可填写 coverage；否则填 null。candidate 填给定候选序号，evidence 解释已覆盖的问题，condition 写成立的界面条件，unverified 写原入口及仍未验证的效果。采用 coverage 时 task_update.state 保持 pending。
+这里的 pending 保留原入口尚无直接验证的事实，coverage 表示免除重复调查。remaining_question 写原入口本身尚未验证的效果。
 正例：列表已有项目，空列表中央的新增入口不再显示；顶部入口已有打开新增窗口的实际记录。原任务只问直接去向，可免重复调查，同时注明中央入口尚未点击。
 <!-- END_PROMPT_BLOCK id="task.coverage" -->
 

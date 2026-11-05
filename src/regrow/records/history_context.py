@@ -257,7 +257,7 @@ def task_goal(task, records, run=None, *, attempt_refs=()):
 def decision(task):
     """Keep the meaningful assessment; audit identifiers remain queryable."""
     latest = task_value(task, 'latest_update', {})
-    return {k: deepcopy_value(latest[k]) for k in ('decision', 'reason', 'remaining_question', 'retry_when') if latest.get(k)}
+    return {k: deepcopy_value(latest[k]) for k in ('state', 'remaining_question', 'retry_when') if latest.get(k)}
 
 def deepcopy_value(value):
     from copy import deepcopy
@@ -282,11 +282,13 @@ def question(region, name, task, *, detailed=True):
     row = {'task': reference(region['id'], name), 'control': task.get('control'), 'task_type': registration_kind(task), 'status': task.get('status', 'pending')}
     if task.get('conditions'):
         row['conditions'] = deepcopy_value(task['conditions'])
+    if 'target' in task:
+        row.pop('task_type', None)
     row.update(registration_requirement(task))
     from regrow.records.task_settlement import completion_condition
     condition = completion_condition(task)
     if condition:
-        row['completion_condition'] = condition
+        row['target' if 'target' in task else 'completion_condition'] = condition
     elif not detailed:
         row['原完成条件说明'] = '旧记录未保存完成条件'
     if not detailed:
@@ -329,7 +331,6 @@ def question_state(task):
 
 def action_context(records, state, task_region, name, task):
     from copy import deepcopy
-    from regrow.records.task_updates import latest_suggestion
     from regrow.records.task_settlement import completion_target
     from regrow.records.task_updates import reference
     target = completion_target(records[task_region], task)
@@ -366,9 +367,6 @@ def action_context(records, state, task_region, name, task):
     recent = owned_actions(records.get(ref.get('region'), {})).get(ref.get('action'))
     evidence = {'task': {'region': task_region, 'name': name}, 'recent_action': dict(ref) if recent else None, 'resolved_blockers': resolved, 'definition': {k: task.get(k) for k in ('control', 'reason', 'task_type', 'equivalent_to')}}
     (_, evidence['known_findings']) = findings(records, state, task_region, name, task)
-    suggestion = latest_suggestion(records, task)
-    if suggestion:
-        material['后续建议（尚未执行）'] = suggestion
     if task.get('prepares'):
         parent = task['prepares']
         material['原探索问题'] = parent['task']

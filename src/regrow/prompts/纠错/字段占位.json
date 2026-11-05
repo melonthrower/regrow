@@ -84,12 +84,6 @@
   "may_open_content": "<填写是否打开新内容>",
   "name": "<填写名称>",
   "needs_exploration": "<填写是否还需探索>",
-  "next_action": {
-    "region": "<填写区块引用>",
-    "control": "<填写控件引用>",
-    "action": "<填写动作类型>",
-    "reason": "<填写理由>"
-  },
   "next_region": "<填写下一步区块>",
   "objects": "<填写对象列表>",
   "observed_assignments": "<填写本次观察到的控件归属>",
@@ -132,9 +126,9 @@
   "task_update": [
     {
       "task": "<填写本次需要更新的任务引用>",
-      "decision": "<填写 answered、continue 或 defer>",
-      "remaining_question": "<continue 或 defer 时填写尚未解决的问题；answered 时省略>",
-      "retry_when": "<defer 时填写恢复条件；其他情况省略>"
+      "state": "<填写 done、pending 或 blocked>",
+      "remaining_question": "<pending 或 blocked 时填写剩下的问题；done 时省略>",
+      "retry_when": "<blocked 时填写可以继续的条件；其他情况省略>"
     }
   ],
   "text": "<填写文本内容>",
@@ -149,6 +143,12 @@
   "current_regions": [
     {
       "ref": "<填写本图中确认处于前景的既有区块编号>"
+    }
+  ],
+  "new_tasks": [
+    {
+      "control": "<填写探索对象的控件引用；探索区块自身时填空字符串>",
+      "target": "<填写要查明的问题及对象或范围>"
     }
   ]
 }

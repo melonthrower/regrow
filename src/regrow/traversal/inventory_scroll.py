@@ -12,17 +12,17 @@ def select(region, reply):
     from regrow.records.task_settlement import registration_kind
     if reply.get('inventory') == 'complete':
         return None
-    for row in reply.get('operations', []):
+    for row in reply.get('new_tasks', []):
         if 'task' in row:
             from regrow.records.task_updates import reference
             for (name, task) in owned_tasks(region).items():
-                if row['task'] == reference(region['id'], name) and row.get('decision') == 'continue' and eligible(region, task):
+                if row['task'] == reference(region['id'], name) and row.get('state') == 'pending' and eligible(region, task):
                     return name
             continue
         if row.get('control'):
             continue
         for (name, task) in owned_tasks(region).items():
-            if eligible(region, task) and registration_kind(task) == registration_kind(row):
+            if eligible(region, task) and task.get('target') == row.get('target'):
                 return name
     return None
 

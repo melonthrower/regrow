@@ -146,13 +146,13 @@ def desktop_parts(root, request):
         return
     path = config['path']
     text = (directory / path).read_text()
-    if role not in config['action_roles']:
+    if role not in config['action_roles'] or role == 'observation_update' and action_schema(request['response_schema']) is None:
         text = text.partition(config['actions_heading'])[0].rstrip()
     yield {'path': path, 'text': text}
 
 def android_part(root, request):
     config = catalog(root)['platforms']['android']
-    if effective_role(request, root) not in config['action_roles']:
+    if effective_role(request, root) not in config['action_roles'] or effective_role(request, root) == 'observation_update' and action_schema(request['response_schema']) is None:
         return None
     path = config['path']
     return {'path': path, 'text': (Path(root) / 'regrow/prompts' / path).read_text()}
@@ -164,7 +164,7 @@ def action_contract(root, request, parts):
     keeps the exact contract it previously saw. Old archived bullet manuals are
     left intact instead of silently replacing their instructions.
     """
-    if effective_role(request, root) not in ('action_selection', 'action_target_review', 'recovery', 'ownership_review'):
+    if effective_role(request, root) not in ('action_selection', 'action_target_review', 'recovery', 'ownership_review', 'observation_update'):
         return None
     selected = action_schema(request['response_schema'])
     if selected is None:

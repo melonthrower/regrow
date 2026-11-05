@@ -1,17 +1,17 @@
 {
-  "date": "2026-11-05",
+  "date": "2026-11-06",
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "unaccepted_current_development_snapshot",
-  "previous_source_commit": "364bbe8866ce9ad2d3cf571bcadeaaec70d936b0",
+  "kind": "research_snapshot_with_limited_saved_frame_validation",
+  "previous_source_commit": "a27c434d0427ea9192a55d7b220ea1c3a733ed44",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Current local traversal/Prompt candidates are explicitly published as unaccepted drafts. See SNAPSHOT_STATUS.md.",
-  "verification_scope": "Export consistency, Python syntax, JSON parsing and publication scope only; no new Luna calls, no GUI execution, no full regression. Prior tests covered separate frozen candidates.",
+  "draft_status": "Task contract and next_action wiring implement the approved patch; other pre-existing candidates retain their unaccepted status. See SNAPSHOT_STATUS.md.",
+  "verification_scope": "Three focused checks and two full native saved-frame cases; actual continuation accepted through normal scheduler/Runner with no extra selection call; duplicate registration did not requeue it. No new GUI, no full regression, no live deployment. The pre-existing public shared-role prompt differs from the saved-frame source and is preserved; no new model validation of that combined public prompt.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,11 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "364bbe8866ce9ad2d3cf571bcadeaaec70d936b0",
+  "snapshot_parent_commit": "a27c434d0427ea9192a55d7b220ea1c3a733ed44",
   "live_runtime_changed": false,
-  "published_source_changed": true
+  "published_source_changed": true,
+  "preserved_public_prompt_difference": {
+    "path": "src/regrow/prompts/共享/探索角色.prompt",
+    "handling": "Preserve existing public branch text. Saved-frame evidence used the local shared-role text; the full public prompt combination has not been revalidated."
+  }
 }

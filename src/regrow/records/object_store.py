@@ -150,7 +150,8 @@ class RegionTasks(MutableMapping):
     def __setitem__(self, name, value):
         task = Task(value, self.store, self.region + '/' + name)
         from regrow.records.task_settlement import registration_kind
-        task['task_type'] = registration_kind(task)
+        if 'target' not in task:
+            task['task_type'] = registration_kind(task)
         task.setdefault('name', name)
         task.pop('registration_kind', None)
         task.pop('action', None)

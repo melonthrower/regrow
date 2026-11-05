@@ -23,9 +23,9 @@ from regrow.runtime.action_executor import ActionExecutor
 from regrow.runtime.action_executor import foreground_window
 from regrow.traversal.result_updater import ResultUpdater
 
-def action_capacity_status(account):
+def action_capacity_status(account, *, selection_needed=True):
     """Reserve selection+result; local progress can resume in the next small step."""
-    if account['max_http'] - account['http_started'] >= 2:
+    if account['max_http'] - account['http_started'] >= (2 if selection_needed else 1):
         return None
     return 'ready_next_round' if account['http_started'] else 'budget_limit'
 
@@ -113,8 +113,17 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
             transport.account['status'] = result['status']
             transport.save()
             return
+    def refresh_dispatch_review(pending):
+        if pending.get('pre_dispatch_review') and pending['stage'] == 'action':
+            frame = str(out / 'current.png')
+            pending['pre_dispatch_review'].update(current=frame, window=selection_window)
+            pending['request'].update(screenshots=[frame], image_refs=[frame])
+            pending['history'].append({'observation': frame, 'reason': '投递前重新确认使用本轮新截图；原提案仍未执行'})
+            repair.save(pending)
     resumed = None
     _suspended_updates.restore_next(run, out / 'current.png')
+    from regrow.traversal import pending_action
+    pending_action.discard_changed_work(run)
     work = pending_work(run)
     if work and work['kind'] == 'resume':
         from regrow.traversal.task_deferral import yield_pending
@@ -128,14 +137,9 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         transport.account['status'] = 'paused_after_update'
         transport.save()
         return
-    if work:
+    if work and not (work['pending']['stage'] == 'action' and work['pending']['request'].get('action_source')):
         pending = work['pending']
-        if pending.get('pre_dispatch_review') and pending['stage'] == 'action':
-            frame = str(out / 'current.png')
-            pending['pre_dispatch_review'].update(current=frame, window=selection_window)
-            pending['request'].update(screenshots=[frame], image_refs=[frame])
-            pending['history'].append({'observation': frame, 'reason': '投递前重新确认使用本轮新截图；原提案仍未执行'})
-            repair.save(pending)
+        refresh_dispatch_review(pending)
         resumed = repair.perform(pending['stage'])
         if resumed['stage'] in ('task_result_review', 'shared_control_review'):
             write_json(out / 'result.json', {'status': 'ready_next_round', 'calls': calls, 'gui_actions': 0, 'task_result_review': resumed['result']})
@@ -169,6 +173,7 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         if route_recovery():
             return
     q = current()
+    pending_action.discard_changed_work(run, q)
     if q['stage'] == 'task_proposal':
         TaskProposer.run(repair, q)
         if route_recovery():
@@ -195,10 +200,21 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         transport.account['status'] = 'paused_' + q['stage']
         transport.save()
         return
-    capacity = action_capacity_status(transport.account)
+    resumed_action = bool(resumed and resumed['stage'] == 'action')
+    continuation = pending_action.peek(run, q) if not resumed_action else None
+    pending = step_repair.pending(run)
+    retained = bool(pending and pending['stage'] == 'action' and pending['request'].get('action_source'))
+    capacity = action_capacity_status(transport.account, selection_needed=not bool(continuation or resumed_action or retained))
     if capacity:
         raise step_repair.Paused(capacity, '当前小步HTTP额度不足以选择动作并登记结果；未执行，保留原任务。已推进的小步可续接；无推进的尾段结束本批。')
-    accepted = proposer.propose(q, resumed)
+    supplied = pending_action.take(run, q) if not resumed_action else None
+    if retained:
+        refresh_dispatch_review(pending)
+    if supplied:
+        action_request, candidate, source_call = supplied
+        accepted = repair.perform('action', action_request, candidate=candidate, source_call=source_call)
+    else:
+        accepted = proposer.propose(q, resumed)
     if route_recovery():
         return
     result = accepted['result']

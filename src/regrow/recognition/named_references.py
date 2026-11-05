@@ -336,6 +336,8 @@ def internal_request(request, reply=None):
 
 
 def _decode_references(value, aliases, key=None, path=()):
+    if key == 'target' and 'new_tasks' in path:
+        return deepcopy(value)
     if isinstance(value,str) and (key in REFERENCE_FIELDS or key=='function_refs'):
         function_ref=(key=='function_refs' or ('function_updates' in path and key in ('ref','replace_with')))
         resolved=value if function_ref else resolve(value,aliases)
@@ -353,7 +355,16 @@ def decode(request, reply):
     contract=request.get('name_contract')
     if not contract:return deepcopy(reply)
     from regrow.records.object_knowledge import control_only
-    value=_decode_references(deepcopy(reply),contract['aliases'])
+    # A next Action is interpreted after this update's objects are accepted.
+    # Its malformed subtree cannot prevent the main observation from decoding.
+    from regrow.runtime.update_reply import main_pair
+    _, main = main_pair(request['response_schema'], reply)
+    value=_decode_references(deepcopy(main),contract['aliases'])
+    if main is not reply and 'next_action' in reply:
+        value['next_action'] = deepcopy(reply['next_action'])
+    if (isinstance(reply.get('proposal'), dict) and isinstance(main.get('proposal'), dict)
+            and 'next_action' in reply['proposal'] and 'next_action' not in main['proposal']):
+        value['proposal']['next_action'] = deepcopy(reply['proposal']['next_action'])
     original = request.get('original_request', request)
     edit = value.get('record_edit')
     if original.get('done_task_review') and isinstance(edit, dict) and edit.get('field') == 'reopen_task':
@@ -365,7 +376,7 @@ def decode(request, reply):
     new_names = {control.get('name') for region in reply.get('regions', [])
                  for control in region.get('controls', [])
                  if isinstance(control, dict) and control.get('name') and not control.get('ref')}
-    for raw, operation in zip(reply.get('operations', []), value.get('operations', [])):
+    for raw, operation in zip(reply.get('new_tasks', []), value.get('new_tasks', [])):
         if isinstance(raw, dict) and isinstance(operation, dict) and raw.get('control') in new_names:
             operation['control'] = raw['control']
     rows=value.get('regions',[]);base=contract.get('base')

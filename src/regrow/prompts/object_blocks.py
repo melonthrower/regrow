@@ -42,12 +42,8 @@ def expand(blocks, ids):
 
 
 def task_definition(kind, root=None):
-    from regrow.paths import SOURCE_ROOT
-    _, blocks = catalog(root or SOURCE_ROOT)
-    body = blocks['task.type']['text']
-    goal = next(line.split('：', 1)[1] for line in body.splitlines() if line.startswith(kind + '：'))
-    return {'label': {'function': '功能探索', 'parameter': '参数探索', 'region_content': '区块内容探索'}[kind],
-            'goal': goal, 'region_goal': goal}
+    from regrow.records.task_goals import legacy_definition
+    return legacy_definition(kind)
 
 
 def enabled_fields(value, path=()):

@@ -139,6 +139,9 @@ def defer(run, job, reason, *, selected_task=None, retry_when=None):
     def mutate(records, state, snapshot, temp):
         region = records[rid]
         evidence = {'reason': reason, 'episode': episode, 'observation': obs.get('id'), 'source_call': job.get('call'), 'stage': stage}
+        origin = q.get('action_source', {})
+        if origin.get('call') == job.get('call'):
+            evidence['source_field'] = origin['field']
         failure = job.get('service_failure')
         if failure:
             evidence.update(source_call=failure['call'], trigger={'kind': 'model_service_error', **deepcopy(failure)})

@@ -15,55 +15,32 @@ def object_schema(fields):
     return {'type': 'object', 'properties': {k: deepcopy(v) for (k, v) in fields.items()}, 'required': list(fields), 'additionalProperties': False}
 
 def schema(kinds=None, refs=None):
-    """Optional increments stay optional; local semantics validate decisions."""
-    from regrow.records.task_settlement import entry_schema
-    string = {'type': 'string', 'minLength': 1}
-    fields = {'task': {'type': 'string', **({'enum': list(refs)} if refs else {})}, 'decision': {'type': 'string', 'enum': ['continue', 'answered', 'defer']}, 'reason': string, 'remaining_question': string, 'retry_when': string, 'next_action': {'anyOf': [{'type': 'null'}, object_schema({'region': string, 'control': {'type': 'string'}, 'action': {'type': 'string', 'enum': ['click', 'double_click', 'long_press', 'input_text', 'scroll', 'key_press', 'hotkey', 'hover', 'right_click', 'drag', 'back', 'wait']}, 'reason': string})]}}
-    result = object_schema(fields)
-    result['required'] = ['task', 'decision']
-    result['properties']['reason']['description'] = '按需补充判断理由；不重复动作结果或已有知识。'
-    result['properties']['remaining_question']['description'] = 'decision为continue或defer时必填：原问题尚未回答的具体部分；answered时不填写。'
-    result['properties']['retry_when']['description'] = 'decision为defer时必填：何种条件满足后可重新推进；其他decision不填写。'
+    string = {'type': 'string', 'minLength': 1, 'pattern': r'\S'}
+    result = object_schema({'task': {'type': 'string', **({'enum': list(refs)} if refs else {})},
+                            'state': {'type': 'string', 'enum': ['done', 'pending', 'blocked']}})
+    result['properties'].update(remaining_question=deepcopy(string), retry_when=deepcopy(string))
     result['allOf'] = [
-        {'if': {'properties': {'decision': {'enum': ['continue', 'defer']}}, 'required': ['decision']},
-         'then': {'required': ['remaining_question']}},
-        {'if': {'properties': {'decision': {'const': 'defer'}}, 'required': ['decision']},
-         'then': {'required': ['retry_when']}},
-    ]
+        {'if': {'properties': {'state': {'enum': ['pending', 'blocked']}}, 'required': ['state']},
+         'then': {'required': ['remaining_question']},
+         'else': {'properties': {'remaining_question': False}}},
+        {'if': {'properties': {'state': {'const': 'blocked'}}, 'required': ['state']},
+         'then': {'required': ['retry_when']},
+         'else': {'properties': {'retry_when': False}}}]
     return result
+
+
+def assessment(row):
+    """Read a saved old judgement without enabling the old output contract."""
+    if 'state' in row or 'decision' not in row:
+        return row
+    return {**{k: v for k, v in row.items() if k not in ('decision', 'reason', 'next_action')},
+            'state': {'answered': 'done', 'continue': 'pending', 'defer': 'blocked'}[row['decision']]}
+
 
 def validate(row, task, ref=None):
     import jsonschema
-    from regrow.records.task_settlement import registration_kind
-    jsonschema.validate(row, schema([registration_kind(task)], [ref] if ref else None))
-    if 'reason' in row and not row['reason'].strip():
-        raise ValueError('任务判断需要具体依据')
-    needed = (['remaining_question'] if row['decision'] != 'answered' else [])
-    if row['decision'] == 'defer':
-        needed.append('retry_when')
-    missing = [key for key in needed if not row.get(key, '').strip()]
-    if missing:
-        raise ValueError('任务 ' + str(row.get('task', ref)) + ' 的字段不能为空：' + '、'.join(missing))
-    if row['decision'] == 'answered' and any((k in row for k in ('remaining_question', 'retry_when'))):
-        raise ValueError('answered不提交活动缺口、重试条件或下一步建议')
-    if row['decision'] != 'defer' and 'retry_when' in row:
-        raise ValueError('retry_when只属于defer判断')
-    if row['decision'] != 'continue' and row.get('next_action') is not None:
-        raise ValueError('next_action只属于continue判断')
+    jsonschema.validate(assessment(row), schema(refs=[ref] if ref else None))
 
-def resolve_suggestion(records, value, labels=None):
-    if value is None:
-        return None
-    refs = [value['region']] if value['region'] in records else []
-    if len(refs) != 1:
-        raise ValueError('后续建议需引用本轮唯一已登记区块')
-    owner = records[refs[0]]
-    cids = [value['control']] if value['control'] in owned_controls(owner) else []
-    if not value['control'] and value['action'] in ('scroll', 'back', 'wait', 'key_press', 'hotkey'):
-        cids = [None]
-    if len(cids) != 1:
-        raise ValueError('后续建议目标未登记或不唯一；可不填建议，保留具体定位问题')
-    return {**deepcopy(value), 'region': refs[0], 'control': cids[0]}
 
 def registration_review_sources(task):
     """An old unpublished attempt does not invalidate later accepted knowledge."""
@@ -94,45 +71,34 @@ def hard_block(task):
     pending_result = condition == 'result_registration_pending' and registration_review_sources(task)
     return bool(blocker.get('exception') or (condition not in (None, 'review_required') and not pending_result) or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or (task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review'))
 
-def decide(task, row, basis, *, product_complete, records, labels=None, consumed_suggestion=False):
-    """Publish an explicit assessment; facts and real execution blockers survive."""
+def decide(task, row, basis, *, product_complete, records, labels=None):
+    """Publish Luna's assessment while retaining real execution blockers."""
+    row = assessment(row)
     validate(row, task)
-    decision = row['decision']
+    state = row['state']
     blocked = hard_block(task)
     review_sources = registration_review_sources(task)
     if review_sources:
         basis = {**basis, 'registration_gap_evidence': review_sources}
-    if decision == 'answered' and blocked:
-        raise ValueError('任务 ' + row['task'] + ' 仍有已记录的真实执行、身份或前提阻塞；保留已有事实并明确继续/暂挂')
-    if decision == 'answered' and (not product_complete):
+    if state == 'done' and blocked:
+        raise ValueError('任务 ' + row['task'] + ' 仍有已记录的真实执行、身份或前提阻塞；保留已有事实并明确继续或受阻')
+    if state == 'done' and not product_complete:
         from regrow.records.task_settlement import missing_product_fields
-        missing = '准备目标的dependency_updates确认' if task.get('prepares') else '、'.join(missing_product_fields(task)) or '目标对象的适用知识'
-        raise ValueError('任务 ' + row['task'] + ' 尚不能结算，缺少：' + missing + '。请依据已提供的观察登记所需答案；reason中的说明不会自动写入这些产物。')
-    previous = task_value(task, 'latest_update')
-    if decision != 'continue':
-        suggestion = None
-    elif 'next_action' in row:
-        suggestion = resolve_suggestion(records, row['next_action'], labels)
-    elif consumed_suggestion:
-        suggestion = None
-    else:
-        suggestion = deepcopy((previous or {}).get('next_action'))
+        missing = '准备目标的dependency_updates确认' if task.get('prepares') else '、'.join(missing_product_fields(task))
+        raise ValueError('任务 ' + row['task'] + ' 尚不能结算，缺少：' + missing)
+    previous = task_audit(task).get('latest_update')
     if previous:
         task_audit(task).setdefault('update_history', []).append(deepcopy(previous))
-    task_audit(task)['latest_update'] = {**{k: deepcopy(row[k]) for k in ('decision', 'reason', 'remaining_question', 'retry_when') if k in row}, 'next_action': suggestion, 'source': deepcopy(basis)}
-    if row.get('reason'):
-        task_audit(task)['result_evidence'] = row['reason']
-    else:
-        task_audit(task).pop('result_evidence', None)
+    task_audit(task)['latest_update'] = {**deepcopy(row), 'source': deepcopy(basis)}
+    task_audit(task).pop('result_evidence', None)
     if not blocked:
         for key in ('blocker', 'deferral'):
             if task.get(key):
                 task_audit(task).setdefault(key + '_history', []).append({**task.pop(key), 'resolved_by': deepcopy(basis)})
-        task['status'] = {'continue': 'pending', 'answered': 'done', 'defer': 'blocked'}[decision]
-    if decision == 'defer' and (not blocked):
-        task['status'] = 'blocked'
-        task['deferral'] = {**({'reason': row['reason']} if row.get('reason') else {}), 'retry_when': row['retry_when'], 'remaining_question': row['remaining_question'], **deepcopy(basis)}
-    if decision == 'answered':
+        task['status'] = state
+    if state == 'blocked' and not blocked:
+        task['deferral'] = {'retry_when': row['retry_when'], 'remaining_question': row['remaining_question'], **deepcopy(basis)}
+    if state == 'done':
         task_audit(task)['completion_basis'] = {'rule': 'explicit_question_answer_registered', **deepcopy(basis)}
     from regrow.records.task_assessments import resolved
     resolved(task, basis.get('source_call'))
@@ -229,7 +195,7 @@ def preparation_product(task, row, records, basis):
     goal = task.get('prepares', {})
     parent = owned_tasks(records.get(goal.get('region'), {})).get(goal.get('task'), {})
     ready = parent.get('prerequisite', {}).get('satisfied') or {}
-    if ready.get('source_call') == basis.get('source_call') and ready and (row['decision'] != 'answered'):
+    if ready.get('source_call') == basis.get('source_call') and ready and (assessment(row)['state'] != 'done'):
         raise ValueError('准备任务判断与本次ready=true前提观察冲突')
     return bool(ready.get('source_call') and ready.get('evidence'))
 
@@ -271,6 +237,9 @@ def catalog(records, binding):
             if not current and (not related) and (not preparation):
                 continue
             row = {'task': reference(rid, name), 'region': rid, 'name': name, 'control': task.get('control'), 'control_name': (find_control(region, task.get('control')) or {}).get('name', '区块本身'), 'status': task.get('status'), 'task_type': registration_kind(task), 'conditions': task.get('conditions', [])}
+            if 'target' in task:
+                row.pop('task_type', None)
+                row['target'] = task['target']
             if current:
                 from regrow.records.history_context import question_state
                 row.update(question_state(task))
@@ -328,7 +297,7 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
             target = completion_target(region, task)
             if not related_to_action(task, region['id'], binding):
                 raise ValueError('相关任务必须属于本次实际操作控件，且没有尚未解决的前提或执行阻塞')
-            if row.get('entry') or row.get('next_action') is not None:
+            if row.get('entry'):
                 raise ValueError('相关任务本步只登记判断和已得知识，不另排后续动作或改写访问关系')
             if target.get('control') is None or not recorded_match(actual, attempt, action, target, receipt) or action.get('result', {}).get('exception') != 'none':
                 raise ValueError('旧问题答案必须来自同一已确认实际控件的成功投递与观察')
@@ -345,9 +314,3 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
             raise ValueError('本次动作没有确认旧问题所需适用条件，不能借用其他条件用途的结果')
         related = {**binding, 'task_region': region['id'], 'task_name': allowed[ref]['name'], 'related_assessment': True, 'task_update_ref': ref}
         settle(region, related, {**reply, 'task_update': row}, attempt, records, receipt=receipt, labels=labels, explicit=True)
-
-def latest_suggestion(records, task):
-    value = task_value(task, 'latest_update', {})
-    if value.get('decision') != 'continue':
-        return None
-    return deepcopy(value.get('next_action'))

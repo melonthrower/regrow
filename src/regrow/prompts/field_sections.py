@@ -192,7 +192,7 @@ def render(root, request, config, contract, *, display_schema=None, reference_pa
     emitted = set()
     def emit(key):
         if key not in emitted:
-            parts.append({'path': blocks[key]['path'], 'text': blocks[key]['text']})
+            parts.append({'path': blocks[key]['path'], 'text': blocks[key]['text'].replace('{区块名}', request.get('focus_region_name', '本轮区块'))})
             emitted.add(key)
     if concepts:
         parts.append({'path': '输出格式/必要概念', 'text': '# 本步用到的概念'})
@@ -219,8 +219,11 @@ def render(root, request, config, contract, *, display_schema=None, reference_pa
                           'text': '下方平台动作表描述 `' + path + '` 对象内的字段。'})
             parts.append(deepcopy(contract))
             from regrow.prompts.response_example import complete
+            example_schema = deepcopy(subtree)
+            if 'next_action' in example_schema.get('properties', {}):
+                example_schema['required'] = list(dict.fromkeys(example_schema.get('required', []) + ['next_action']))
             parts.append({'path': '输出格式/嵌套动作示例',
-                          'text': complete(subtree).replace('## 完整输出示例', '## 嵌套动作格式示例', 1)
+                          'text': complete(example_schema).replace('## 完整输出示例', '## 嵌套动作格式示例', 1)
                                                    .replace('本步JSON格式', '本节JSON结构', 1)})
         else:
             parts.append({'path': '输出格式/字段组-' + rule['block'], 'text': _format(subtree)})

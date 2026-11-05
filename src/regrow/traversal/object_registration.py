@@ -25,7 +25,7 @@ def semantic_schema(schema):
             return [strip(v) for v in value]
         if not isinstance(value, dict):
             return value
-        result = {k: strip(v) for k, v in value.items()}
+        result = {k: deepcopy(v) if k == 'next_action' else strip(v) for k, v in value.items()}
         if 'properties' in result:
             result['properties'] = {k: v for k, v in result['properties'].items() if k not in GEOMETRY}
         if 'required' in result:

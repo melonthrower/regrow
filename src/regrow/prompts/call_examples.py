@@ -61,7 +61,7 @@ def local_sections(schema, request, wanted):
     result = {}
     slots = {'controls': '控件知识正例', 'regions': '区块知识正例',
              'local_knowledge': '本区块知识正例', 'function_updates': '功能更新正例',
-             'task_update': '任务判断正例', 'operations': '探索任务正例'}
+             'task_update': '任务判断正例', 'new_tasks': '探索任务正例'}
     for field, slot in slots.items():
         if slot not in wanted:
             continue
@@ -91,7 +91,7 @@ def local_sections(schema, request, wanted):
             value = [{'region': rid, 'add': [{'name': '按关键词查找条目',
                 'description': '输入关键词查看匹配条目；选择后的目标内容尚未验证。', 'supports': [rid]}]}]
         else:
-            if field == 'operations' and fields.get('control', {}).get('enum') in ([], ['']):
+            if field == 'new_tasks' and fields.get('control', {}).get('enum') in ([], ['']):
                 value = []
             else:
                 shaped = deepcopy(spec)

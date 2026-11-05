@@ -51,7 +51,9 @@ def refresh_retained_identity_candidate(run, job):
     if not rebuilt or any((row.get('framework') == 'refresh_incompatible_retained_candidate' for row in history[rebuilt[-1]:])):
         return False
     try:
-        jsonschema.validate(job.get('candidate'), job['request']['response_schema'])
+        from regrow.runtime.update_reply import main_pair
+        spec, main = main_pair(job['request']['response_schema'], job.get('candidate'))
+        jsonschema.validate(main, spec)
     except jsonschema.ValidationError as error:
         digest = hashlib.sha256(json.dumps(job, sort_keys=True).encode()).hexdigest()[:12]
         archive = Path(job['path']).with_name('episode-before-candidate-refresh-' + digest + '.json')
@@ -267,7 +269,7 @@ def request(root, job, context):
             if obj.get('properties', {}).get(key, {}).get('type') == 'boolean':
                 obj['required'] = list(dict.fromkeys(obj.get('required', []) + [key]))
     if job['stage'] == 'task_proposal':
-        fields['proposal']['anyOf'][0]['properties']['operations']['items']['properties']['control'].pop('enum', None)
+        fields['proposal']['anyOf'][0]['properties']['new_tasks']['items']['properties']['control'].pop('enum', None)
     from regrow.traversal.proposal_revision import prepare as prepare_revision, guidance, display, examples, MODE
     review = original.get('done_task_review')
     if review:
@@ -461,7 +463,7 @@ class Runner:
             raise Paused('ready_next_round' if decision.get('resumed') else 'task_deferred', '纠错已解决本次循环判断；重新发现后按新办法继续' if decision.get('resumed') else '纠错已暂挂当前分支；重新发现后继续独立区块')
         raise Paused('correction_blocked', '当前分支未切换；保留未完成记录')
 
-    def perform(self, stage, q=None, attempt=None):
+    def perform(self, stage, q=None, attempt=None, *, candidate=None, source_call=None):
         from regrow.records import shared_control_review as _shared_control_review
         from regrow.prompts import history_disclosure as _history_disclosure
         from regrow.traversal import result_updater as _result_updater
@@ -478,6 +480,8 @@ class Runner:
                 _shared_control_review.run_pending(self, q)
             key = uuid.uuid4().hex
             job = {'path': f'repair_episodes/{key}/episode.json', 'stage': stage, 'request': deepcopy(q), 'attempt': attempt, 'status': 'initial', 'repairs': 0, 'observations': 0, 'history': [], 'seen': [], 'supplements': []}
+            if source_call is not None:
+                job.update(status='accept', candidate=deepcopy(candidate), call=source_call)
             if stage == 'shared_control_review':
                 job.update(status='repair', blocked_by='shared_control_conflict', error='共享关系有实际结果冲突，请核对共享范围')
             self.save(job)
@@ -486,6 +490,7 @@ class Runner:
             raise Paused('correction_blocked', '必须先处理尚未完成的步骤：' + job['stage'])
         if (stage == 'update' and job['status'] not in ('complete', 'deferred', 'blocked')
                 and (_result_updater.has_source_revision(job['request'])
+                     or job.get('suspended_recovery') and 'next_action' in job['request'].get('response_schema', {}).get('properties', {})
                      or any(job.get(key) for key in ('control_identity_pair',
                          'control_identity_candidates', 'identity_recheck_request')))):
             archive = Path(job['path']).with_name('episode-before-fixed-source.json')

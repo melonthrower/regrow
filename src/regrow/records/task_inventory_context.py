@@ -184,7 +184,7 @@ def destination_knowledge(records, region, edges):
                         and not (selection['whole_region'] and binding.get('control') is None))):
                 continue
             item = {k: deepcopy(row[k]) for k in ('task', 'control', 'control_name', 'task_type', 'status', 'conditions') if k in row}
-            item['completion_condition'] = completion_condition(task)
+            item['target' if 'target' in task else 'completion_condition'] = completion_condition(task)
             if task.get('prerequisite'):
                 from regrow.records.tasks import describe
                 item['前置条件'] = describe(task['prerequisite'])

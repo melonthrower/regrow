@@ -35,7 +35,7 @@ def enroll(records, rid, call):
             continue
         (rr, cid) = targets[0]
         prep_name = '满足前置条件：' + dep['preparation'] + '（' + records[rid]['name'] + ' / ' + name + '）'
-        prep = {'name': prep_name, 'control': cid, 'task_type': 'function', 'status': 'pending', 'equivalent_to': '', 'reason': dep['preparation'] + '；返回目标观察是否满足：' + dep['condition'], 'source_call': call, 'attempts': [], 'prepares': {'region': rid, 'task': name}}
+        prep = {'name': prep_name, 'control': cid, 'target': dep['preparation'] + '；确认：' + dep['condition'], 'status': 'pending', 'equivalent_to': '', 'reason': dep['preparation'] + '；返回目标观察是否满足：' + dep['condition'], 'source_call': call, 'attempts': [], 'prepares': {'region': rid, 'task': name}}
         owned_tasks(records[rr], create=True).setdefault(prep_name, prep)
         dep['scheduled'] = {'region': rr, 'task': prep_name, 'source_call': call}
 

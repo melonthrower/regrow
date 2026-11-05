@@ -282,9 +282,9 @@ def render(value, request, readable):
         if head.get('本轮目的') == remaining.get('上轮纠正或复查说明'):
             head['本轮目的'] = definition['messages']['discovery_repair_purpose']
     elif role == 'observation' and request.get('discovery_context', {}).get('mode') == 'local' and (not card.get('定位对象')):
-        operation = request.get('response_schema', {}).get('properties', {}).get('operations')
+        operation = request.get('response_schema', {}).get('properties', {}).get('new_tasks')
         question_key = 'discovery_local_with_tasks' if operation and operation.get('maxItems') != 0 else 'discovery_local'
-        head['本步问题'] = definition['messages'][question_key]
+        head['本步问题'] = definition['messages'][question_key].replace('{区块名}', request.get('focus_region_name', '本轮区块'))
     groups = groups_by_role[role]
     if role == 'task_proposal' and '本轮可判断旧任务' in remaining:
         groups = ()

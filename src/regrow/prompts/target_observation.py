@@ -60,8 +60,8 @@ def render_handoff(request):
     if not context:
         return request
     history = request.get('page_context', {}).get('history', {})
-    supplied = {event.get('观察') for event in history.get('events', {}).values()}
-    supplied.update((event.get('该次更新交接') for event in history.get('events', {}).values()))
+    supplied = [event.get('观察') for event in history.get('events', {}).values()]
+    supplied.extend(event.get('该次更新交接') for event in history.get('events', {}).values())
     from regrow.prompts.prompt_material import assign
     value = {}
     if context.get('交接说明') and context['交接说明'] not in supplied:

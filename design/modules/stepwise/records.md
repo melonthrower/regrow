@@ -1,3 +1,5 @@
+> 2026-11-07 接线：没有旧description的历史观察可保留结果调用/后图的来源对象；最近观察交接用列表成员比较去重，沿用原事实与旧短文本相等规则，不要求来源对象可哈希。
+
 > 2026-11-07 当前记录：action_evidence.has_observed_result以成功投递、结果调用与真实后图来源供结算/函数历史读取，不再要求模型description。task_updates允许同帧多对象原题各自更新，未被实际操作的问题不获得该动作归属。action后新对象沿已有task_proposal/task_plans登记新题，不写虚构动作或全区已审范围。navigation.bind_return只绑定实际进入attempt及已报告真实落点；无变化Back不生返回边。旧coverage_exemption一律撤回代理，旧prepares归档并保留原尝试、原问题恢复普通调度；迁移在副本读取/正常新发布发生，不覆盖旧快照。
 
 > 2026-11-06：新任务原文target、state及旧判断只读映射统一接线；旧建议不再作为可执行任务字段。更新登记原事务保存后图Action来源，实际来源读取复用calls.action_submission；对象知识与真实阻塞合同保留。验收边界见根目录SNAPSHOT_STATUS.md。

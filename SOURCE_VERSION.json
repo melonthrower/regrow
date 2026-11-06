@@ -4,14 +4,14 @@
   "branch": "codex/regrow-initial",
   "visibility": "public",
   "kind": "research_snapshot_limited_native_saved_frame_validation",
-  "previous_source_commit": "5ab9fbd203bee5d972121d74d2a4f6a389f615f2",
+  "previous_source_commit": "bb8c1ca1cac711ebb7c6fb948346d54c64cfe98f",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
   "draft_status": "Call consolidation implemented; direct new_tasks ownership in action updates remains unresolved. No prompt redesign.",
-  "verification_scope": "Prior 11 focused checks and 3 Clock saved-frame replies; Action contract reentry fix: 1 focused check and 1 full real Settings saved-frame reply accepted by the normal Runner, 0 new GUI. Prior live window: 9 replies, 0 GUI, stopped for diagnosed schema wiring error. Post-fix live continuation pending.",
+  "verification_scope": "Prior scoped checks/Clock replies and Action reentry fix retained. Structured-history handoff fix: 1 focused check and 2 full real stopped-Settings saved-frame replies, normal correction/binding accepted, 0 new GUI. Live pilot stopped at 33 requests/7 GUI, 6 results committed and 1 unresolved; not stable or a full-framework gate.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,12 +29,13 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "5ab9fbd203bee5d972121d74d2a4f6a389f615f2",
+  "snapshot_parent_commit": "bb8c1ca1cac711ebb7c6fb948346d54c64cfe98f",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {
     "source": "current working source; previously frozen object/call blocks retained, with the already implemented mechanical field retirements",
     "new_prompt_body_edits_in_live_followup": false,
     "preexisting_candidates": "Earlier shared-role and other candidates retain their unaccepted status; source synchronization is not blanket prompt approval."
-  }
+  },
+  "source_export_cleanup": "Remove 11 already-retired prompt/schema files accidentally left in the previous public source tree; current active source files now match the workspace inventory. No new prompt body edits or design changes."
 }

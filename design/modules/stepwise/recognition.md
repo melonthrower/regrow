@@ -1,3 +1,5 @@
+> 2026-11-07 新观察接线：await_discovery明确设置已有relocate标记，恢复或未执行提案的重观察不再沿用旧local范围。原Task、回复、纠错次数及保留目标语义不变。2聚焦与完整真实0085副本的1条Luna重新定位回复正常登记通过，0GUI；pilot仍85请求/14GUI、6任务blocked，未稳定；Prompt正文和设计不改。
+
 > 2026-11-07 接线：matching.refine两处外观框读取统一使用已导入的templates别名，修复重复视觉候选路径的NameError；原匹配算法、阈值和身份/点击区域含义不变。
 
 > 2026-11-07 当前观察：新合同无focus_presence或uncertainties，局部发现不再按旧三态丢弃可见Region/Control；纯展示与空列表仍可登记。前景、异常、对象身份及同图completion_updates仍走原校验。已退休专用调用不再构造新请求；历史截图/原答与旧字段读取保留。

@@ -45,7 +45,7 @@ def await_discovery(run, frame, evidence, handoff='', *, retain_target=False):
         retained = retain_target and reobserve(records, state, frame)
         if not retained and state.get('action_target_registration', {}).get('status') == 'pending':
             state['action_target_registration']['status'] = 'superseded'
-        state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=frame, discovery_trigger=evidence, reason='recovery_finished_discovery_required', recovery_handoff=handoff)
+        state.update(next_action_mode='discover', phase='awaiting_discovery', discovery_mode='relocate', interactive_regions=[], observation=None, pending_frame=frame, discovery_trigger=evidence, reason='recovery_finished_discovery_required', recovery_handoff=handoff)
     return _record_publish(run, 'await-discovery-' + evidence, mutate)
 
 def commit(root, run, call_ref, *, ownership_episode=None):

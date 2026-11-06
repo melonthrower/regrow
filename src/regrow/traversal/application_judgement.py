@@ -18,6 +18,10 @@ def extend_schema(schema, role):
             'then': {'required': required},
             'else': {'not': {'anyOf': [{'required': [key]} for key in business]}}})
     elif role == 'action_selection':
+        # Re-entering the normal Action path replaces its handoff branch; it
+        # must not turn a previous exception-only reply into a normal action.
+        schema['anyOf'] = [branch for branch in schema['anyOf']
+                           if 'action' in branch.get('properties', {})]
         for branch in schema['anyOf']:
             branch['properties'].update(deepcopy(fields))
             branch['properties']['exception'] = {'type': 'string', 'enum': ['none']}

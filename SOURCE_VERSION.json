@@ -4,14 +4,14 @@
   "branch": "codex/regrow-initial",
   "visibility": "public",
   "kind": "research_snapshot_limited_native_saved_frame_validation",
-  "previous_source_commit": "e624ca92114c3f98b65ee19a8edbd03d8a882cc8",
+  "previous_source_commit": "5ab9fbd203bee5d972121d74d2a4f6a389f615f2",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
   "draft_status": "Call consolidation implemented; direct new_tasks ownership in action updates remains unresolved. No prompt redesign.",
-  "verification_scope": "11 distinct focused checks; 13 roles / 32 composed contracts; two full historical contexts, 3 Luna replies registered, 0 new GUI. Long traversal not yet validated.",
+  "verification_scope": "Prior 11 focused checks and 3 Clock saved-frame replies; Action contract reentry fix: 1 focused check and 1 full real Settings saved-frame reply accepted by the normal Runner, 0 new GUI. Prior live window: 9 replies, 0 GUI, stopped for diagnosed schema wiring error. Post-fix live continuation pending.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,7 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "e624ca92114c3f98b65ee19a8edbd03d8a882cc8",
+  "snapshot_parent_commit": "5ab9fbd203bee5d972121d74d2a4f6a389f615f2",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {

@@ -1,3 +1,5 @@
+> 2026-11-07 动作请求与正式ActionProposer共用selection_schema，重复处理仅保留原业务动作分支和唯一非none异常交回，避免生成无动作的none异常分支。首窗9回复/0GUI的格式循环原件保留；一处聚焦检查及完整真实保存帧1回复/0GUI接受正常绑定，修复后现场效果另记。Prompt正文、Task含义和执行合同未改。
+
 > 2026-11-07 当前调用：正常任务提出与动作更新负责function_updates及task_update[]；new_tasks仍由有明确区块范围的正常task_proposal登记；已知准备由当前原Task选择真实GUI动作，原target/owner保持。关联旧题按实际后图目标分别结算，旁观答案为observation_only；新证据进入普通task_proposal，一份观察已评估后不反复复查。无独立功能总结/结果复核/依赖准备Task。branch_correction.next_region可达时优先，否则按正常候选选择；纠错错误类别仅输入，defer统一让出。历史原答与待登记动作保留。限定验证见SNAPSHOT_STATUS.md。
 
 > 2026-11-06：动作后更新可提供调用级完整next_action，成功登记后挂一次性后图来源；正常恢复/调度/action_ready后进入原action job、纠错、绑定和执行。任务/观察失效撤销候选，暂停作业亦重查；不在updater执行GUI。验证与限制见根目录SNAPSHOT_STATUS.md。

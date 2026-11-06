@@ -249,8 +249,6 @@ def render(value, request, readable):
     groups_by_role = {role: tuple((group_tuple(g) for g in row['groups'])) for (role, row) in definition['calls'].items() if 'groups' in row}
     work = request.get('work_context', {})
     role = request.get('role')
-    if role == 'step_correction' and request.get('original_request', {}).get('stage') == 'shared_control_review':
-        role = 'shared_control_review'
     if definition['calls'].get(role, {}).get('render') == 'action_material':
         return action_material(value, request, readable, definition)
     if definition['calls'].get(role, {}).get('render') == 'identity_material' and '核对对象' in value:
@@ -298,17 +296,6 @@ def render(value, request, readable):
         head['本步问题'] = definition['messages']['discovery_completion']
         head['本轮目的'] = remaining.pop('用途', head.get('本轮目的', definition['messages']['discovery_completion_purpose']))
         groups += (group_tuple(definition['calls']['observation']['variants']['completion']),)
-    if role == 'task_result_review':
-        for key in ('本轮探索任务', '来源区块', '说明', '本次核对原因'):
-            if key in remaining:
-                head[key] = remaining.pop(key)
-        if '复核目的' in remaining:
-            head['本轮目的'] = remaining.pop('复核目的')
-        if '原问题' in head and '任务结束条件' in remaining and (head['原问题'] == remaining['任务结束条件']):
-            remaining.pop('任务结束条件')
-        head['本步问题'] = definition['calls']['task_result_review']['question']
-        if 'coverage' in request.get('response_schema', {}).get('properties', {}):
-            groups += (group_tuple(definition['calls']['task_result_review']['variants']['coverage']),)
     task = remaining.get('当前任务')
     if role == 'step_observation' and head.get('本轮目的') == remaining.get('待核对问题'):
         head.pop('本轮目的')

@@ -24,13 +24,13 @@ def extend_schema(schema, required=False):
     from regrow.records.object_knowledge import region_schema
     item['properties']['local_knowledge'] = region_schema()
     item['properties']['state_description'] = {'type': 'string', 'minLength': 1, 'description': '本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。'}
-    item['properties']['task_review_reason'] = {'type': 'string', 'description': '仅有尚未被现有任务覆盖的新问题或旧结论失效时说明具体对象和问题；其他知识更新省略。'}
-    item['required'] = [k for k in item.get('required', []) if k not in ('context_matches', 'task_review_reason', 'controls_complete', 'out_of_scope_reason')]
-    schema['properties']['regions']['items']['properties']['context_matches'] = {'type': ['boolean', 'null'], 'description': '仅复用有行为适用上下文的历史区块时判断：当前截图满足该上下文填true，不满足填false，无法判断或无此限定填null。身份未定时用identity_evidence说明具体缺口。'}
-    previous = schema.get('properties', {}).get('previous_regions', {}).get('items')
-    if previous:
-        previous['properties']['context_matches'] = {'type': ['boolean', 'null'], 'description': '保留有行为适用上下文的旧区块在当前前景时，必须依据动作后图确认上下文符合才填true；不符合填false并报告not_visible或真实背景状态。无此限定或不再处于前景时null。前景中的展示区不要求有控件；此字段不表示操作许可。'}
-        previous['required'] = [k for k in previous.get('required', []) if k not in ('context_matches', 'task_review_reason')]
+    item['required'] = [k for k in item.get('required', []) if k not in ('context_matches', 'controls_complete', 'out_of_scope_reason')]
+    item['properties'].pop('context_matches', None)
+    # The wire uses optional parent references; the retained internal field
+    # accepts either a same-reply position or an already registered Region ID.
+    item['properties'].pop('parent', None)
+    item['properties']['parent_index'] = {'type': ['integer', 'string', 'null']}
+    item['required'] = [key for key in item['required'] if key != 'parent_index']
     schema['properties']['regions']['description'] = '本次识别或更新的区块；划分与复用依据实际观察。'
     schema['properties']['regions']['items']['properties']['ref']['description'] = '确认是同一区块时填写给定的区块ID；新对象按本轮格式填写。'
     item = schema['properties']['regions']['items']

@@ -21,14 +21,9 @@ def schema(root, mode, focus_present=True, *, task_contract=None):
         item = value['properties'][key]['items']
         item['properties'].update(ref={'type': ['string', 'null']}, identity={'type': 'string', 'enum': ['same', 'new', 'uncertain']}, identity_evidence={'type': 'string'})
         item['required'] += ['ref', 'identity', 'identity_evidence']
-    value['properties']['focus_presence'] = {'type': 'string', 'enum': ['interactive', 'not_interactive', 'uncertain'], 'description': '指定区块的前景归属：interactive表示处于当前前景，可继续观察或导航，不要求有控件；not_interactive表示不在当前前景或被其他表面接管；uncertain表示归属未确认。'} if focus_present else {'type': 'null', 'description': '本轮没有指定定位区块'}
-    if focus_present:
-        value['required'].append('focus_presence')
-    else:
-        value['properties'].pop('focus_presence')
     value['properties']['controls'].pop('maxItems', None)
-    if mode == 'local':
-        value['properties']['regions']['maxItems'] = 1
+    # Local observations still cover only the focus. Related historical Regions
+    # may accompany them solely for knowledge edits; commit checks that boundary.
     _region_identity.extend_schema(value)
     _control_records.extend_schema(value, required=True)
     _region_identity.extend_schema(value, required=True)
@@ -102,8 +97,14 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         historical = r.get('description')
         if historical:
             candidates[-1]['最近登记描述'] = historical
+        from regrow.records.history_context import region_states
+        states = region_states(r)
+        if states:
+            candidates[-1]['历史状态观察'] = states
         if r.get('behavior_context'):
             candidates[-1]['行为适用上下文'] = r['behavior_context']
+        if r.get('distinct_regions'):
+            candidates[-1]['已确认不同身份的区块'] = [records[x['region']]['name'] for x in r['distinct_regions'] if x.get('region') in records]
     controls = []
     historical_controls = []
     if plan['mode'] != 'local':
@@ -124,17 +125,6 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     from regrow.records.context_scope import rule_selection
     selection = rule_selection({'role': 'observation', 'discovery_context': plan, 'work_context': work or {}})
     parts = rule_parts(root, 'observation', selection=selection)
-    if plan['mode'] != 'local' and focus is not None:
-        for part in parts:
-            if part['path'] == '任务/当前区块重定位.prompt':
-                import re
-
-                def focused_example(match):
-                    example = json.loads(match.group(1))
-                    example['focus_presence'] = 'interactive'
-                    return '```json\n' + json.dumps(example, ensure_ascii=False, indent=2) + '\n```'
-                part['text'] = re.sub('```json\\n(.*?)\\n```', focused_example, part['text'], flags=re.S)
-                part['text'] = part['text'].replace('本例未指定定位区块。', '本例指定定位文件编辑区。')
     dynamic = {}
     if state.get('working_region') in records:
         dynamic['待继续的工作区块'] = records[state['working_region']]['name']
@@ -177,7 +167,6 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         dynamic = {key: value for key, value in dynamic.items() if value not in (None, '', [], {})}
     response_schema = schema(root, plan['mode'], focus in records, task_contract=task_contract)
     response_schema['properties']['foreground']['required'] += ['exception', 'recovery_handoff']
-    response_schema['properties']['foreground']['properties']['exception']['enum'] = ['none', 'blocking_popup', 'system_error', 'unexpected_exit', 'external_app', 'unclassified', 'region_ownership_review']
     request = {'pipeline_step': 'discovery', 'role': 'observation', 'stage': 'discovery', 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [frame], 'response_schema': response_schema, 'fixed_parts': parts, 'discovery_context': {'mode': plan['mode'], 'focus': focus, 'region_names': names, 'control_names': cnames, 'visual_plan': plan, 'partition_context': plan.get('partition_context')}}
     if task_contract is not None:
         request['source'] = {'region': focus, 'controls': list(owned_controls(records[focus]))}

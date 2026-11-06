@@ -1,3 +1,5 @@
+> 2026-11-07 新输出合同：Task仅state与必要remaining_question，不再输出retry_when；action_result只保留exception/recovery_handoff，真实动作/回执/后图仍在；focus_presence、uncertainties、dependency_updates及returns_to_previous退出。已知准备动作服务原Task，旧准备/共享/coverage代理不再提供完成效力。functions的唯一写入仍为function_updates，现只接正常任务提出与动作更新。旧字段在历史只读材料出现不等于新输出要求。
+
 2026-11-01最终任务定义逐字采用用户四条原则，未加入本批应用特定示例；最终原文版尚待模型验收。
 
 2026-11-01任务目标边界由任务正文统一维护：completion_condition围绕一个明确目标，可包含必要多步与跨对象操作；独立新问题不自动追加。task_type/schema及稳定归属不变。原图11个Calc菜单条件按用户授权由操作员修订，原值进入revisions；状态、真实障碍及原始模型答复保留，模型不代改这些旧任务。

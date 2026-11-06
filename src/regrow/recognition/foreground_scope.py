@@ -51,17 +51,9 @@ def audit(run, job):
         active.update(row.get('_matched_id') or names.get(row.get('ref'), row.get('ref'))
                       for index, row in enumerate(reply.get('regions', [])) if index in selected)
         excluded.update(set(records) - active)
-    for previous in reply.get('previous_regions', []):
-        if previous.get('state') not in ('not_visible', 'visible_background_blocked', 'uncertain'):
-            continue
-        label = previous.get('ref') or previous.get('name')
-        rid = names.get(label, label if label in records else None)
-        if rid is None:
-            matches = [key for (key, r) in records.items() if r['name'] == label]
-            if len(matches) == 1:
-                rid = matches[0]
-        if rid is not None:
-            excluded.add(rid)
+    from regrow.recognition.update_visibility import historical_changes
+    excluded.update(row['region'] for row in historical_changes(reply, records, names)
+                    if row['state'] in ('not_visible', 'visible_background_blocked', 'uncertain'))
     identified = []
     issues = []
     for (index, region) in enumerate(reply.get('regions', [])):

@@ -18,14 +18,11 @@ def schema(kinds=None, refs=None):
     string = {'type': 'string', 'minLength': 1, 'pattern': r'\S'}
     result = object_schema({'task': {'type': 'string', **({'enum': list(refs)} if refs else {})},
                             'state': {'type': 'string', 'enum': ['done', 'pending', 'blocked']}})
-    result['properties'].update(remaining_question=deepcopy(string), retry_when=deepcopy(string))
+    result['properties']['remaining_question'] = deepcopy(string)
     result['allOf'] = [
         {'if': {'properties': {'state': {'enum': ['pending', 'blocked']}}, 'required': ['state']},
          'then': {'required': ['remaining_question']},
-         'else': {'properties': {'remaining_question': False}}},
-        {'if': {'properties': {'state': {'const': 'blocked'}}, 'required': ['state']},
-         'then': {'required': ['retry_when']},
-         'else': {'properties': {'retry_when': False}}}]
+         'else': {'properties': {'remaining_question': False}}}]
     return result
 
 
@@ -39,7 +36,9 @@ def assessment(row):
 
 def validate(row, task, ref=None):
     import jsonschema
-    jsonschema.validate(assessment(row), schema(refs=[ref] if ref else None))
+    # Saved replies may still contain the retired field; new requests never do.
+    value = {k: v for k, v in assessment(row).items() if k != 'retry_when'}
+    jsonschema.validate(value, schema(refs=[ref] if ref else None))
 
 
 def registration_review_sources(task):
@@ -69,7 +68,7 @@ def hard_block(task):
     blocker = task.get('blocker', {})
     condition = blocker.get('condition')
     pending_result = condition == 'result_registration_pending' and registration_review_sources(task)
-    return bool(blocker.get('exception') or (condition not in (None, 'review_required') and not pending_result) or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or (task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review'))
+    return bool(blocker.get('exception') or (condition not in (None, 'review_required', 'prerequisite') and not pending_result) or (task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review'))
 
 def decide(task, row, basis, *, product_complete, records, labels=None):
     """Publish Luna's assessment while retaining real execution blockers."""
@@ -84,7 +83,7 @@ def decide(task, row, basis, *, product_complete, records, labels=None):
         raise ValueError('任务 ' + row['task'] + ' 仍有已记录的真实执行、身份或前提阻塞；保留已有事实并明确继续或受阻')
     if state == 'done' and not product_complete:
         from regrow.records.task_settlement import missing_product_fields
-        missing = '准备目标的dependency_updates确认' if task.get('prepares') else '、'.join(missing_product_fields(task))
+        missing = '、'.join(missing_product_fields(task))
         raise ValueError('任务 ' + row['task'] + ' 尚不能结算，缺少：' + missing)
     previous = task_audit(task).get('latest_update')
     if previous:
@@ -97,7 +96,9 @@ def decide(task, row, basis, *, product_complete, records, labels=None):
                 task_audit(task).setdefault(key + '_history', []).append({**task.pop(key), 'resolved_by': deepcopy(basis)})
         task['status'] = state
     if state == 'blocked' and not blocked:
-        task['deferral'] = {'retry_when': row['retry_when'], 'remaining_question': row['remaining_question'], **deepcopy(basis)}
+        task['deferral'] = {'remaining_question': row['remaining_question'],
+                            'trigger': {'kind': 'observation', 'observation': basis.get('observation')},
+                            **deepcopy(basis)}
     if state == 'done':
         task_audit(task)['completion_basis'] = {'rule': 'explicit_question_answer_registered', **deepcopy(basis)}
     from regrow.records.task_assessments import resolved
@@ -110,8 +111,6 @@ def store_increment(owner, task, name, row, records, state, basis, *, observed=F
     validate(row, task, reference(owner['id'], name))
     from regrow.records.task_settlement import task_product
     product = task_product(task)
-    if task.get('prepares'):
-        product = preparation_product(task, row, records, basis)
     return decide(task, row, basis, product_complete=product, records=records, labels=labels)
 
 def store_knowledge(task, knowledge, basis):
@@ -145,8 +144,6 @@ def answer_evidence(run, request, owner, task, state):
     from regrow.records.snapshots import load, read
     from regrow.records.task_settlement import completion_target
     # Retain admitted history alongside the current image, not as its replacement.
-    if task.get('prepares'):
-        return current
     history=request.get('page_context', {}).get('history', {})
     if not history.get('events'):
         return current
@@ -161,9 +158,10 @@ def answer_evidence(run, request, owner, task, state):
         region=records.get(event.get('region'),{})
         action=owned_actions(region).get(aid,{})
         description=(action.get('result') or {}).get('description')
-        if aid in invalid or event.get('缺口') or event.get('归属纠正') or not description:
+        from regrow.records.action_evidence import has_observed_result
+        if aid in invalid or event.get('缺口') or event.get('归属纠正') or not has_observed_result(action):
             continue
-        if aid+'：' not in supplied or description not in supplied or event.get('观察') != description:
+        if aid not in supplied:
             continue
         if event.get('control') != action.get('control') or not find_control(region, action.get('control')):
             continue
@@ -191,14 +189,6 @@ def answer_evidence(run, request, owner, task, state):
     return {**(current or {'basis':'observation_only'}),'sources':sources} if direct else current
 
 
-def preparation_product(task, row, records, basis):
-    goal = task.get('prepares', {})
-    parent = owned_tasks(records.get(goal.get('region'), {})).get(goal.get('task'), {})
-    ready = parent.get('prerequisite', {}).get('satisfied') or {}
-    if ready.get('source_call') == basis.get('source_call') and ready and (assessment(row)['state'] != 'done'):
-        raise ValueError('准备任务判断与本次ready=true前提观察冲突')
-    return bool(ready.get('source_call') and ready.get('evidence'))
-
 def observed_control(owner, task, state):
     from regrow.records.task_settlement import completion_target
     from regrow.records.observations import frame_observation
@@ -207,20 +197,56 @@ def observed_control(owner, task, state):
     control = (owner if target['control'] is None else find_control(owner, target['control'])) or {}
     return bool(observation.get('id') and target['region'] in state.get('interactive_regions', []) and (observation.get('foreground', {}).get('exception', 'none') == 'none') and frame_observation(control, observation=observation['id']))
 
+def new_evidence(task, observation):
+    """Reconsider a deferred question once for each newly accepted observation."""
+    if not observation or task.get('status') != 'blocked' or hard_block(task):
+        return False
+    latest = task_value(task, 'latest_update', {}) or {}
+    previous = latest.get('source', {}).get('observation') or task.get('deferral', {}).get('observation')
+    return bool(previous != observation)
+
+def needs_evidence_review(region, observation):
+    from regrow.records.object_store import region_work
+    inventory = region_work(region).get('task_inventory', {})
+    return bool(observation and inventory.get('observation') != observation and any(
+        new_evidence(task, observation) for task in owned_tasks(region).values()))
+
+
+def retire_preparations(records, state=None):
+    """Keep legacy preparation records as history; continue the original question."""
+    from regrow.records.object_store import region_work
+    from regrow.records.tasks import detached
+    for rid, region in records.items():
+        for name, task in list(owned_tasks(region).items()):
+            if task.get('prepares'):
+                region_work(region).setdefault('preparation_history', []).append({
+                    'name': name, 'record': detached(task)})
+                del owned_tasks(region)[name]
+            elif task.get('prerequisite'):
+                task_audit(task).setdefault('prerequisite_history', []).append(task.pop('prerequisite'))
+                if task.get('blocker', {}).get('condition') == 'prerequisite':
+                    for key in ('blocker', 'deferral'):
+                        value = task.pop(key, None)
+                        if value:
+                            task_audit(task).setdefault(key + '_history', []).append(value)
+                    task['status'] = 'pending'
+    if state is not None:
+        active = state.get('active_task') or {}
+        if active and active.get('name') not in owned_tasks(records.get(active.get('region'), {})):
+            state.pop('active_task', None)
+
 def reference(region, name):
     return region + '/' + name
 
-def related_to_action(task, region, binding):
-    """Only unfinished local questions on the actual operated control."""
-    return (region == binding['region_ref'] and binding.get('control_ref') is not None
-            and task.get('control') == binding['control_ref']
-            and task.get('status') in ('pending', 'blocked')
-            and not any(task.get(key) for key in ('prepares', 'prerequisite', 'equivalent_to',
-                                                 'shared_task_ref', 'coverage_exemption'))
-            and not hard_block(task))
+def related_to_action(task, region, binding, observed_regions=()):
+    """Offer local questions from the action, original goal and observed surfaces."""
+    scope = {binding['region_ref'], binding.get('task_region'), binding.get('working_region'),
+             *observed_regions}
+    return (region in scope and task.get('status') in ('pending', 'blocked')
+            and not task.get('equivalent_to') and not hard_block(task))
 
 
-def catalog(records, binding):
+def catalog(records, binding, observed_regions=()):
     from regrow.records.tasks import describe
     'Keep task ownership; disclose local goals, not another pending ledger.'
     from regrow.records.task_settlement import registration_kind, exploration_goal
@@ -231,18 +257,15 @@ def catalog(records, binding):
         region = records[rid]
         for (name, task) in owned_tasks(region).items():
             current = rid == binding.get('task_region', binding['region_ref']) and name == binding.get('task_name')
-            related = related_to_action(task, rid, binding)
-            goal = task.get('prepares', {})
-            preparation = bool(goal.get('region') in scope and task.get('status') in ('pending', 'blocked'))
-            if not current and (not related) and (not preparation):
+            related = related_to_action(task, rid, binding, observed_regions)
+            if not current and not related:
                 continue
             row = {'task': reference(rid, name), 'region': rid, 'name': name, 'control': task.get('control'), 'control_name': (find_control(region, task.get('control')) or {}).get('name', '区块本身'), 'status': task.get('status'), 'task_type': registration_kind(task), 'conditions': task.get('conditions', [])}
             if 'target' in task:
                 row.pop('task_type', None)
                 row['target'] = task['target']
-            if current:
-                from regrow.records.history_context import question_state
-                row.update(question_state(task))
+            from regrow.records.history_context import question_state
+            row.update(question_state(task))
             identity = task.get('control') or ('region', rid)
             if identity not in provided_knowledge:
                 from regrow.records.control_knowledge import card
@@ -255,10 +278,6 @@ def catalog(records, binding):
                 row.update(reason=exploration_goal(task), blocker=task.get('blocker', {}), prerequisite=describe(task.get('prerequisite')))
                 from regrow.records.task_settlement import registration_requirement
                 row.update(registration_requirement(task))
-            if task.get('prepares'):
-                goal = task['prepares']
-                row['prepares'] = goal
-                row['prerequisite_observation'] = describe(owned_tasks(records.get(goal['region'], {})).get(goal['task'], {}).get('prerequisite'))
             rows.append(row)
     return rows
 
@@ -288,19 +307,17 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
         task = owned_tasks(region).get(candidate['name'])
         if task is None:
             raise ValueError('任务已迁移或不再存在，不能沿旧候选结算其他任务')
-        if task.get('status') not in ('pending', 'blocked') or task.get('equivalent_to') or task.get('shared_task_ref') or task.get('coverage_exemption'):
+        if task.get('status') not in ('pending', 'blocked') or task.get('equivalent_to'):
             raise ValueError('只能更新本次未结束的本地探索任务')
         migrated = ref == active and any((h.get('region') == candidate['region'] and h.get('control') == candidate['control'] and (h.get('attempt') == attempt) for h in task_value(task, 'ownership_history', [])))
         if candidate['control'] != task.get('control') and (not migrated) or candidate['conditions'] != task.get('conditions', []):
             raise ValueError('任务身份或适用条件已变化，需重新核对本次候选')
-        if ref != active and (not task.get('prepares')):
+        if ref != active:
             target = completion_target(region, task)
-            if not related_to_action(task, region['id'], binding):
-                raise ValueError('相关任务必须属于本次实际操作控件，且没有尚未解决的前提或执行阻塞')
-            if row.get('entry'):
-                raise ValueError('相关任务本步只登记判断和已得知识，不另排后续动作或改写访问关系')
-            if target.get('control') is None or not recorded_match(actual, attempt, action, target, receipt) or action.get('result', {}).get('exception') != 'none':
-                raise ValueError('旧问题答案必须来自同一已确认实际控件的成功投递与观察')
+            from regrow.records.action_evidence import has_observed_result
+            visible = target['region'] in action.get('interactive_regions', [])
+            if row['state'] == 'done' and (hard_block(task) or not has_observed_result(action) or not visible or action['result']['exception'] != 'none'):
+                raise ValueError('相关问题须有本次实际后图中的目标观察，且没有未解决的真实执行或归属阻塞')
         selected[ref] = (region, task, row)
     if binding.get('task_name') and active not in selected:
         raise ValueError('更新需保留本轮当前任务的进展，即使本次只是准备动作')
@@ -310,7 +327,34 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
     for (ref, (region, task, row)) in selected.items():
         if ref == active:
             continue
-        if not set(task.get('conditions', [])).issubset(set(action.get('conditions', []))):
-            raise ValueError('本次动作没有确认旧问题所需适用条件，不能借用其他条件用途的结果')
         related = {**binding, 'task_region': region['id'], 'task_name': allowed[ref]['name'], 'related_assessment': True, 'task_update_ref': ref}
         settle(region, related, {**reply, 'task_update': row}, attempt, records, receipt=receipt, labels=labels, explicit=True)
+
+
+def recovery_evidence(run, task):
+    """Read episodes linked by real interrupted attempts; no name-based linkage."""
+    rows = []
+    frames = []
+    attempts = set(task_value(task, 'attempts', []))
+    for path in sorted((Path(run) / 'recovery_episodes').glob('*/episode.json')):
+        episode = json.loads(path.read_text())
+        if not any((row.get('触发动作') in attempts for row in episode.get('interrupted_tasks', []))):
+            continue
+        if episode.get('exception') != 'none' or not episode.get('actions'):
+            continue
+        actions = episode['actions']
+        if not all((a.get('delivery') == 'executed_receipt_zero' for a in actions)):
+            continue
+        if actions[-1].get('observed_result', {}).get('exception') != 'none':
+            continue
+        calls = list(dict.fromkeys((c for row in actions for c in (row.get('source_call'), row.get('observed_result', {}).get('source_call')) if c)))
+        if not all(((Path(run) / 'calls' / c / 'request.json').is_file() for c in calls)):
+            continue
+        for call in calls:
+            request = json.loads((Path(run) / 'calls' / call / 'request.json').read_text())
+            for f in request.get('screenshots', []):
+                fp = Path(run) / f
+                if fp.is_file() and str(fp.resolve()) not in frames:
+                    frames.append(str(fp.resolve()))
+        rows.append({'episode': str(path.relative_to(run)), 'source_call': episode.get('source_call'), 'actions': actions, 'handoff': episode.get('handoff'), 'recovery_calls': calls})
+    return (rows, frames)

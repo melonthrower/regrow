@@ -28,7 +28,7 @@ def register(owner, task, value, knowledge, records, visible, observation, sourc
     current_owner = completion_target(owner, task)['region']
     from regrow.records.observations import frame_observation
     observed = bool(frame_observation(control, kind='controls', observation=observation))
-    if registration_kind(task) != 'entry' or task.get('equivalent_to') or task.get('prepares') or task.get('shared_task_ref') or task.get('coverage_exemption') or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or task.get('blocker', {}).get('exception'):
+    if registration_kind(task) != 'entry' or task.get('equivalent_to') or task.get('prepares') or task.get('coverage_exemption') or (task.get('prerequisite') and (not task['prerequisite'].get('satisfied'))) or task.get('blocker', {}).get('exception'):
         raise ValueError('当前入口观察不能替代参数、前置或异常任务的义务')
     if not observation or not observed or current_owner not in visible or (target not in visible):
         raise ValueError('入口去向必须有本帧入口控件的语义观察及可交互目标区块，历史或纯图片匹配不足')
@@ -59,7 +59,7 @@ def request_review(records, state, request, proposal):
     observed = any((row.get('evidence', {}).get('observation') == observation.get('id') and (not row.get('visual_only')) for row in observation_history(owned_controls(owner).get(task.get('control'), {}))))
     if registration_kind(task) != 'entry' or proposal.get('action') != 'none' or source.get('observation') != observation.get('id') or (rid not in state.get('interactive_regions', [])) or (task.get('control') not in observation.get('control_refs', [])) or (not observed):
         return False
-    region_work(owner).setdefault('task_inventory', {'inventory': 'partial', 'controls': []})['review'] = {'kind': 'entry_observation', 'task': source['task_name'], 'reason': proposal['reason']}
+    region_work(owner).setdefault('task_inventory', {})['review'] = {'kind': 'entry_observation', 'task': source['task_name'], 'reason': proposal['reason']}
     state['working_region'] = rid
     return True
 

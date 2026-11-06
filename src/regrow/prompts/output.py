@@ -43,11 +43,6 @@ def action_schema(schema):
 def template_role(request, root=None):
     """Select the call being answered, not its parent task's business role."""
     role = request.get('role') or request.get('stage')
-    if (role == 'shared_control_review'
-            or request.get('original_request', {}).get('stage') == 'shared_control_review'
-            or any(p['path'].split('/片段-', 1)[0] == '纠错/共享行为核对.prompt'
-                   for p in request.get('fixed_parts', []))):
-        return 'shared_control_review'
     return catalog(root)['aliases'].get(role, role)
 
 
@@ -133,7 +128,7 @@ def _assembled(request, root, config, parts, original_parts):
 
 
 def effective_role(request, root=None):
-    if request.get('role') in ('step_correction', 'control_identity_selection') or request.get('stage') == 'correction':
+    if request.get('role') in ('step_correction',) or request.get('stage') == 'correction':
         return effective_role(request.get('original_request', {}), root)
     role = request.get('role') or request.get('stage')
     return catalog(root)['aliases'].get(role, role)
@@ -142,7 +137,7 @@ def desktop_parts(root, request):
     role = effective_role(request, root)
     directory = Path(root) / 'regrow/prompts'
     config = catalog(root)['platforms']['desktop']
-    if request.get('role') in ('control_identity_selection', 'control_identity_comparison', 'appearance_comparison'):
+    if request.get('role') in ('control_identity_comparison', 'appearance_comparison'):
         return
     path = config['path']
     text = (directory / path).read_text()

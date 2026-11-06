@@ -1,3 +1,4 @@
+from regrow.recognition.identity_templates import appearance_box
 from regrow.records import region_evidence as _region_evidence
 from regrow.records.snapshots import load as _record_load
 from regrow.records.snapshots import publish as _record_publish
@@ -85,9 +86,10 @@ def check_action(run, binding):
             disputed = gap.get('controls', scope['disputed_controls'] if scope else [])
             if cid not in disputed:
                 continue
-            if (episode and episode.get('status') == 'resolved'
-                    and cid in episode.get('assignments', {}) and cid not in episode.get('conflicts', {})):
-                continue
+            if episode and cid in episode.get('assignments', {}) and cid not in episode.get('conflicts', {}):
+                target = assignment_target(episode['assignments'][cid], records, {source['name']: source['id']})
+                if episode.get('status') == 'resolved' or target.get('ref') == source['id']:
+                    continue
             dispute_call = gap.get('source_call')
             if not dispute_call and episode and episode.get('source_episode'):
                 source_job = run / episode['source_episode']
@@ -286,16 +288,48 @@ def request(root, run, episode, frame):
     if scope is None:
         raise ValueError('原归属复查未保留具体争议对象，不能扩大为全部控件复查')
     refs = scope['disputed_controls']
-    assignment = {'type': 'object', 'properties': {k: {'type': 'string'} for k in ('control', 'region', 'description', 'evidence')}, 'required': ['control', 'region', 'description', 'evidence'], 'additionalProperties': False}
-    assignment['properties']['control']['enum'] = refs
+    string = {'type': 'string', 'minLength': 1}
+    common = {'control': {'type': 'string', 'enum': refs}, 'evidence': string}
+    assignment = {'oneOf': [
+        {'type': 'object', 'properties': {**common, 'ref': {'type': 'string', 'enum': list(records)}},
+         'required': ['control', 'ref', 'evidence'], 'additionalProperties': False},
+        {'type': 'object', 'properties': {**common, 'name': string, 'description': string},
+         'required': ['control', 'name', 'description', 'evidence'], 'additionalProperties': False}]}
     action = _action_commands.execution_schema()
     schema = {'type': 'object', 'properties': {'status': {'type': 'string', 'enum': ['continue', 'resolved', 'defer']}, 'reason': {'type': 'string'}, 'observed_assignments': {'type': 'array', 'items': assignment}, 'action': {'anyOf': [action, {'type': 'null'}]}}, 'required': ['status', 'reason', 'observed_assignments', 'action'], 'additionalProperties': False}
+    schema['allOf'] = [{'if': {'properties': {'status': {'const': 'continue'}}},
+                        'then': {'properties': {'action': deepcopy(action)}},
+                        'else': {'properties': {'action': {'type': 'null'}}}}]
     path = '纠错/区块归属复查.prompt'
     text = (Path(root) / 'regrow/prompts' / path).read_text()
+    from regrow.prompts.object_blocks import catalog
+    _, blocks = catalog(root)
+    parts = [{'path': path, 'text': text}]
+    parts.extend({k: blocks[name][k] for k in ('path', 'text')}
+                 for name in ('region.ownership_status', 'region.observed_assignments'))
     dynamic = {'原区块': {'ref': source['id'], '名称': source['name'], '描述': source['description']}, '待核对历史控件': [{'ref': cid, '名称': c['name'], '最近登记观察': {k: next((row[k] for row in reversed(observation_history(c)) if k in row and not row.get('visual_only')), '') for k in ('icon_description', 'knowledge', 'possible_operation', 'uncertainty')}} for cid, c in owned_controls(source).items() if cid in refs], '待核对的划分建议': episode['proposed_regions'], '已观察归属': {cid: item for cid, item in episode['assignments'].items() if cid in refs}, '归属冲突': {cid: item for cid, item in episode['conflicts'].items() if cid in refs}, '本次复查动作': episode['actions'][-6:], '说明': '核对列出对象的归属；无法确认的对象保留疑点，不要求补齐其他控件。'}
-    request = {'pipeline_step': 'recovery', 'stage': 'ownership_review', 'role': 'ownership_review', 'system_prompt': text, 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [str(frame)], 'fixed_parts': [{'path': path, 'text': text}], 'response_schema': schema}
+    from regrow.records.environment_context import forest
+    dynamic['控件树'] = forest(records, view='controls', focus=source['id'])
+    request = {'pipeline_step': 'recovery', 'stage': 'ownership_review', 'role': 'ownership_review', 'system_prompt': '\n\n'.join(part['text'] for part in parts), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [str(frame)], 'fixed_parts': parts, 'response_schema': schema}
     from regrow.prompts.frame_context import label
-    return label(request, request['screenshots'][0], '本次区块归属复查观察图')
+    from regrow.recognition.named_references import prepare
+    return prepare(run, label(request, request['screenshots'][0], '本次区块归属复查观察图'))
+
+def assignment_target(item, records, existing_targets=None):
+    """One canonical target; only archived callers may still provide region."""
+    if 'ref' in item:
+        if item['ref'] not in records:
+            raise ValueError('归属目标区块已不存在，请重新核对引用')
+        return {'ref': item['ref']}
+    if 'name' in item:
+        return {'name': item['name'], 'description': item['description']}
+    old = item['region']
+    matches = [old] if old in records else []
+    if (existing_targets or {}).get(old):
+        matches = [existing_targets[old]]
+    if len(matches) > 1:
+        raise ValueError('旧归属目标同名，需明确已有区块ID')
+    return {'ref': matches[0]} if matches else {'name': old, 'description': item['description']}
 
 def record_observation(episode, reply, call, frame, records):
     source = records[episode['source_region']]
@@ -310,17 +344,23 @@ def record_observation(episode, reply, call, frame, records):
         if cid not in refs:
             # A saved older request may have asked about the whole Region.
             # Its raw reply remains in calls; unrelated rows do not move owners.
-            continue
-        if cid in seen or not all((row[k].strip() for k in ('region', 'description', 'evidence'))):
+            if 'region' in row:
+                continue
+            raise ValueError('控件不在本次明确待复查范围')
+        target = assignment_target(row, records, {source['name']: source['id']})
+        if cid in seen or not all(value.strip() for value in [row['evidence'], *target.values()]):
             raise ValueError('duplicate or empty ownership evidence')
         seen.add(cid)
-        item = {**row, 'call': call, 'frame': str(frame)}
+        item = {'control': cid, **target, 'evidence': row['evidence'], 'call': call, 'frame': str(frame)}
         old = episode['assignments'].get(cid)
-        if old and old['region'] != row['region']:
+        if cid in episode['conflicts']:
+            episode['conflicts'][cid].append(item)
+        elif old and assignment_target(old, records, {source['name']: source['id']}) != target:
             episode['conflicts'][cid] = [old, item]
-        elif cid not in episode['conflicts']:
+        else:
             episode['assignments'][cid] = item
-    episode['observations'].append({'call': call, 'frame': str(frame), 'status': reply['status'], 'reason': reply['reason']})
+    episode['observations'].append({'call': call, 'frame': str(frame), 'status': reply['status'],
+                                    'reason': reply['reason'], 'observed_assignments': deepcopy(reply['observed_assignments'])})
 
 def repartition(records, state, episode, snapshot, *, existing_targets=None, merge_controls=()):
     """Move confirmed identities and owned tasks/actions; retain unresolved old scope."""
@@ -339,20 +379,27 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
     moved = {}
     task_moves = {}
     action_moves = {}
+    created_targets = set()
+    source_plan = deepcopy(region_work(source).get('task_inventory', {}))
     for (cid, item) in episode['assignments'].items():
         if cid not in refs or cid in episode['conflicts']:
             continue
-        name = item['region']
-        if name in (source_id, source['name']):
+        if item.get('region') == source['name']:
+            continue  # Archived replies may still name their original owner.
+        target = assignment_target(item, records, existing_targets)
+        if target.get('ref') == source_id:
             continue
+        name = target.get('ref') or target['name']
         if name not in targets:
-            existing = [name] if name in records else []
-            if existing and (len(existing) != 1 or (existing[0] not in source.get('partition_children', []) and (existing_targets or {}).get(name) != existing[0])):
-                raise ValueError('partition name collides with existing Region')
-            rid = existing[0] if existing else records.allocate('region') if isinstance(records, object_store.Records) else 'r' + str(max([int(r[1:]) for r in records] + [0]) + 1).zfill(4)
+            if 'name' in target and (name in records or any(r['name'] == name for r in records.values())):
+                raise ValueError('partition name collides with existing Region; use its ref')
+            rid = target.get('ref') or (records.allocate('region') if isinstance(records, object_store.Records) else 'r' + str(max([int(r[1:]) for r in records] + [0]) + 1).zfill(4))
             if rid not in records:
-                records[rid] = _region_evidence.new_region(rid, name, item['description'])
+                records[rid] = _region_evidence.new_region(rid, name, target['description'])
+                created_targets.add(rid)
             targets[name] = rid
+        elif 'name' in target and records[targets[name]]['description'] != target['description']:
+            raise ValueError('同一新区块的职责描述不一致，请核对归属')
         rid = targets[name]
         dest = records[rid]
         owned_tasks(dest, create=True)
@@ -367,6 +414,15 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
             set_group(dest, cid, list_group)
         owned_controls(dest)[cid]['ownership_evidence'] = {'previous_region': source_id, **item}
         moved[cid] = rid
+        # Task coverage belongs to the reviewed identities, not their old owner.
+        plan = region_work(dest).get('task_inventory')
+        if plan is None and source_plan.get('source_call'):
+            plan = {'evidence': source_plan.get('evidence', ''), 'controls': []}
+            if rid in created_targets:
+                plan['source_call'] = source_plan['source_call']
+            region_work(dest)['task_inventory'] = plan
+        if plan is not None and cid in source_plan.get('controls', []):
+            plan['controls'] = list(dict.fromkeys([*plan.get('controls', []), cid]))
         for (name, task) in list(owned_tasks(source).items()):
             if task.get('control') != cid:
                 continue
@@ -416,11 +472,7 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
         r = records[rid]
         if r.get('functions'):
             region_work(r).setdefault('prior_partition_functions', []).append(deepcopy(r['functions']))
-        if r.get('local_knowledge'):
-            region_work(r).setdefault('prior_local_knowledge', []).append(r.pop('local_knowledge'))
-        r.pop('constraints', None)
         # A moved control invalidates only functions which depended on it.
-        # Region-wide support is withdrawn with local_knowledge above.
         removed = [name for name, function in r.get('functions', {}).items()
                    if not function.get('support_controls') or any(
                        support.get('region') != rid or
@@ -430,8 +482,8 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
             invalid_functions.append({'region': rid, 'remove': [
                 {'ref': rid + '/' + name, 'reason': '区块归属调整后原功能支持不再属于本区块'}
                 for name in removed]})
-        region_work(r).pop('function_inventory', None)
-        region_work(r).pop('task_inventory', None)
+        if removed:
+            region_work(r).pop('function_inventory', None)
         for task in owned_tasks(r).values():
             if task.get('equivalent_to') and task.get('equivalent_to') not in owned_tasks(r):
                 task.update(status='blocked', equivalent_to='', blocker={'condition': 'review_required', 'reason': '区块细分后等价任务需要复核'})
@@ -440,7 +492,9 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
     source['partition_children'] = list(dict.fromkeys(source.get('partition_children', []) + list(targets.values())))
     unresolved = [cid for cid in refs if cid not in episode['assignments'] or cid in episode['conflicts']]
     region_work(source)['partition_review'] = {'status': 'partial' if unresolved else 'assigned', 'unassigned_controls': unresolved, 'conflicts': {cid: deepcopy(item) for cid, item in episode['conflicts'].items() if cid in refs}}
-    state.pop('active_task', None)
+    active = state.get('active_task') or {}
+    if active.get('region') == source_id and active.get('name') in task_moves:
+        active['region'] = task_moves[active['name']]
     return moved
 
 def run(root, transport, out, call):
@@ -493,7 +547,8 @@ def run(root, transport, out, call):
         atomic(path, episode)
         return {'status': 'correction_blocked', 'reason': str(error)}
     episode.pop('pending_request', None)
-    jsonschema.validate(reply, q['response_schema'])
+    from regrow.recognition.named_references import internal_request
+    jsonschema.validate(reply, internal_request(q)['response_schema'])
     if not reply['reason'].strip():
         raise ValueError('ownership review needs reason')
     (_, records, _) = _record_load(run)
@@ -508,8 +563,18 @@ def run(root, transport, out, call):
         def mutate(records, state, snapshot, temp):
             if reply['status'] == 'resolved':
                 repartition(records, state, episode, snapshot)
+                unresolved = [cid for cid in scope['disputed_controls']
+                              if cid not in episode['assignments'] or cid in episode['conflicts']]
+                gaps = region_work(records[episode['source_region']]).setdefault('registration_gaps', {})
+                if unresolved:
+                    gaps['ownership_review'] = {'reason': reply['reason'], 'episode': pointer['episode'], 'controls': unresolved}
+                elif gaps.get('ownership_review', {}).get('episode') == pointer['episode']:
+                    gaps.pop('ownership_review')
             else:
-                region_work(records[episode['source_region']]).setdefault('registration_gaps', {})['ownership_review'] = {'reason': reply['reason'], 'episode': pointer['episode']}
+                unresolved = [cid for cid in scope['disputed_controls']
+                              if cid not in episode['assignments'] or cid in episode['conflicts']
+                              or assignment_target(episode['assignments'][cid], records).get('ref') != episode['source_region']]
+                region_work(records[episode['source_region']]).setdefault('registration_gaps', {})['ownership_review'] = {'reason': reply['reason'], 'episode': pointer['episode'], 'controls': unresolved}
             state.update(next_action_mode='discover', phase='awaiting_discovery', interactive_regions=[], observation=None, pending_frame=str(frame), discovery_mode='relocate')
             state['correction_context'] = {'复查状态': reply['status'], '结论': reply['reason'], '本轮确认归属': reply['observed_assignments'], '依据截图': str(frame), '边界': '这是刚完成的复查结论；结合当前截图使用，不代表其他页面或未来观察永久成立。'}
         _record_publish(run, 'ownership-' + ref, mutate)
@@ -594,16 +659,16 @@ def independent_target(run, q, p, pending, report):
         disputed.add(int(path[2]))
         if proposal.get('target') == error['actual']['control_id']:
             return None
-    targets = [i for i, control in enumerate(p['controls']) if control.get('bbox')
-               and control['bbox']['left'] <= x < control['bbox']['right']
-               and control['bbox']['top'] <= y < control['bbox']['bottom']]
+    targets = [i for i, control in enumerate(p['controls']) if appearance_box(control)
+               and appearance_box(control)['left'] <= x < appearance_box(control)['right']
+               and appearance_box(control)['top'] <= y < appearance_box(control)['bottom']]
     if len(targets) != 1 or targets[0] in disputed:
         return None
     target = p['controls'][targets[0]]
     from PIL import Image
     with Image.open(frame) as image:
         width, height = image.size
-    b = target['bbox']
+    b = appearance_box(target)
     if not (0 <= b['left'] < b['right'] <= width and 0 <= b['top'] < b['bottom'] <= height):
         return None
     ri = target.get('region_index')
@@ -611,6 +676,8 @@ def independent_target(run, q, p, pending, report):
         return None
     seen = set()
     while ri is not None:
+        if isinstance(ri, str) and ri in _record_load(run)[1]:
+            break  # An existing physical parent is not another proposal row.
         if type(ri) is not int or ri in seen or not 0 <= ri < len(p['regions']):
             return None
         seen.add(ri)

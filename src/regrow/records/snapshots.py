@@ -42,12 +42,14 @@ import hashlib, os, shutil, tempfile
 def commit(run, temporary, snapshot, records, state, source, pointer):
     from regrow.records import object_store
     'One publication path for observations, action results and corrections.'
-    from regrow.records import shared_controls
+    from regrow.records.shared_tasks import normalize as retire_shared_tasks
     from regrow.records import coverage_exemption
     from regrow.records import task_knowledge
     from regrow.records.snapshots import pointer as transaction_pointer
     (run, temporary, snapshot) = (Path(run), Path(temporary), Path(snapshot))
-    shared_controls.refresh(records)
+    retire_shared_tasks(records, state)
+    from regrow.records.task_updates import retire_preparations
+    retire_preparations(records, state)
     coverage_exemption.reconcile(records, state)
     task_knowledge.refresh(records, state)
     object_store.save(records, temporary, write_json)
@@ -66,7 +68,12 @@ def load(run, snapshot=None):
     snapshot = run / (snapshot or read(run / 'knowledge_current.json')['snapshot'])
     records = object_store.load(snapshot)
     action_evidence.resolve_operations(records, run)
-    return (snapshot, records, read(snapshot / 'runtime_state.json'))
+    state = read(snapshot / 'runtime_state.json')
+    from regrow.records.shared_tasks import normalize as retire_shared_tasks
+    retire_shared_tasks(records, state)
+    from regrow.records.task_updates import retire_preparations
+    retire_preparations(records, state)
+    return (snapshot, records, state)
 
 def publish(run, tag, mutate):
     from regrow.records import object_store

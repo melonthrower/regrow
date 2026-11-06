@@ -66,8 +66,6 @@ def commit(root, run, call_ref, *, ownership_episode=None):
     contract = deepcopy(request.get('response_schema') or locator.schema(root, ctx['mode'], ctx.get('focus') is not None))
     if ctx.get('completion'):
         completion.extend_schema(contract)
-    if request.get('dependency_candidates'):
-        contract['properties']['dependency_updates'] = request['response_schema']['properties']['dependency_updates']
     (prior, known, current) = _record_load(run)
     if _record_read(prior / 'source.json').get('stage') == 'discovery-' + call_ref:
         if current.get('action_target_registration', {}).get('status') == 'pending':
@@ -114,7 +112,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         batch = {}
     exception = reply['foreground'].get('exception', 'none')
     if ownership_episode and (exception != 'none' or ctx.get('completion')
-            or ctx['mode'] == 'local' and reply.get('focus_presence') != 'interactive'):
+           ):
         raise ValueError('当前复查不能独立登记操作目标')
     if exception != 'none':
         if reply['regions'] or reply['controls']:
@@ -122,17 +120,8 @@ def commit(root, run, call_ref, *, ownership_episode=None):
 
         def recover(records, state, snapshot, temp):
             state.pop('handoff_summary', None)
-            state.update(source_call=call_ref, next_action_mode='recover', exception=exception, recovery_handoff=reply['foreground'].get('recovery_handoff', ''), interactive_regions=[], observation={'id': 'discovery:' + call_ref, 'image': frame, 'control_refs': [], 'foreground': reply['foreground'], 'uncertainties': reply['uncertainties']})
+            state.update(source_call=call_ref, next_action_mode='recover', exception=exception, recovery_handoff=reply['foreground'].get('recovery_handoff', ''), interactive_regions=[], observation={'id': 'discovery:' + call_ref, 'image': frame, 'control_refs': [], 'foreground': reply['foreground']})
         return _record_publish(run, 'exception-' + call_ref, recover)
-    if batch and ctx['mode'] == 'local' and (reply.get('focus_presence') != 'interactive'):
-        raise ValueError('局部补全不能静默改变原观察范围；需重新定位')
-    if ctx['mode'] == 'local' and reply.get('focus_presence') != 'interactive':
-
-        def expand(records, state, snapshot, temp):
-            if scheduler.offer_foreground_navigation(records, state, ctx['focus'], reply):
-                return
-            state.update(discovery_mode='relocate', reason='local_position_unconfirmed', interactive_regions=[], observation=None)
-        return _record_publish(run, 'expand-discovery-' + call_ref, expand)
     continuation_request = {**deepcopy(request), 'response_schema': deepcopy(contract)}
     (request, reply, audit) = _region_identity.prepare(run, request, reply)
     original_region_sources = schema_indices.get('regions', list(range(len(reply['regions']))))
@@ -179,7 +168,9 @@ def commit(root, run, call_ref, *, ownership_episode=None):
             if rid not in known:
                 raise ValueError('unknown candidate Region')
             r['_matched_id'] = rid
-    if ctx['mode'] == 'local' and (not (batch and (not reply['regions']))) and (len(reply['regions']) != 1 or reply['regions'][0].get('_matched_id') != ctx['focus']):
+    from regrow.records.object_knowledge import region_only
+    observed_regions = [row for row in reply['regions'] if not region_only(row)]
+    if ctx['mode'] == 'local' and (not (batch and (not observed_regions))) and (len(observed_regions) != 1 or observed_regions[0].get('_matched_id') != ctx['focus']):
         raise ValueError('local discovery changed focus; relocate first')
     for c in reply['controls']:
         from regrow.records.object_knowledge import control_only
@@ -198,7 +189,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
     def mutate(records, state, snapshot, temp):
         from regrow.recognition import visual_region_locator as _visual_region_locator
         from regrow.traversal import task_deferral as _task_deferral
-        from regrow.traversal import task_prerequisites as _task_prerequisites
+
         for rid, controls in deferred_controls.items():
             work = region_work(records[rid])
             gap = {'reason': '其他控件的归属争议保留在原复查记录中', 'episode': ownership_episode,
@@ -216,7 +207,7 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         from regrow.records.object_knowledge import observed_refs
         all_refs = refs
         refs = observed_refs(reply, refs)
-        resolved = _visual_region_locator.resolve_foreground_check(ctx['visual_plan'], run / frame, refs, reply.get('focus_presence'), call_ref, previous=state.get('foreground_resolution'))
+        resolved = _visual_region_locator.resolve_foreground_check(ctx['visual_plan'], run / frame, refs, call_ref, previous=state.get('foreground_resolution'))
         if resolved:
             state['foreground_resolution'] = resolved
         _owner_save_region_images(records, refs, reply, call_ref, run, frame, snapshot, temp)
@@ -270,8 +261,8 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         partition = ctx.get('partition_context') or {}
         if ctx['mode'] == 'local' and partition.get('sha256') and (partition['sha256'] == completion.fingerprint(run / frame)):
             interactive = list(dict.fromkeys(interactive + [r['region'] for r in partition.get('regions', []) if r['region'] in records]))
-        state.update(source_call=call_ref, interactive_regions=interactive, next_action_mode='explore' if refs else 'review_result', phase='ready_for_next_action', observation={'id': obs, 'image': frame, 'control_refs': all_controls, 'foreground': reply['foreground'], 'uncertainties': reply['uncertainties']})
-        _task_prerequisites.apply(records, reply, call_ref, request.get('dependency_candidates', []))
+        state.update(source_call=call_ref, interactive_regions=interactive, next_action_mode='explore' if refs else 'review_result', phase='ready_for_next_action', observation={'id': obs, 'image': frame, 'control_refs': all_controls, 'foreground': reply['foreground']})
+
         state['observation']['scope'] = ctx['mode']
         state.pop('discovery_mode', None)
         state.pop('correction_context', None)

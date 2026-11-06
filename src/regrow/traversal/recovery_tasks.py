@@ -82,19 +82,7 @@ def resume(run, episode, call):
                         **deepcopy(previous), 'resolved_by': call,
                         'observation': observation['id'],
                         'evidence': '恢复后的新截图已正常识别登记；原问题仍需继续判断。'})
-            prerequisite = task.get('prerequisite') or {}
-            satisfied = prerequisite.pop('satisfied', None)
-            if satisfied:
-                history.setdefault('prerequisite_history', []).append({
-                    'satisfied': satisfied, 'source_call': call,
-                    'reason': '应用恢复后重新核对原业务前提。'})
             task['status'] = 'pending'
-            if prerequisite:
-                prerequisite.pop('recheck_requested', None)
-                reason = prerequisite['condition']
-                task.update(status='blocked',
-                            blocker={'condition': 'prerequisite', 'reason': reason, 'source_call': call},
-                            deferral={'reason': reason, 'retry_when': 'observed_prerequisite_satisfied'})
         if not state.get('active_task'):
             ready = [ref for ref in selected
                      if owned_tasks(records[ref['region']])[ref['name']]['status'] == 'pending']

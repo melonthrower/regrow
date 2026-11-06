@@ -1,12 +1,12 @@
 # 调用组成
 
-`调用组成.json` 的 `calls` 保存 **17 类调用**。每类的 `template` 只说明本步目的，`field_sections` 选择实际输出需要的含义、概念及局部格式。
+`调用组成.json` 的 `calls` 保存 **13 类调用**。每类的 `template` 只说明本步目的，`field_sections` 选择实际输出需要的含义、概念及局部格式。
 
 | 要改什么 | 维护位置 |
 |---|---|
 | 全局遍历目标 | `shared_context.role` 指向的共享角色 |
 | 本步要做什么 | `calls.<role>.template`；导航用 `purpose_by_work_kind` |
-| 字段含义、正例 | 四个 `对象/*.prompt` 文件的稳定块 ID |
+| 字段含义、正例 | 五个 `对象/*.prompt` 文件的稳定块 ID |
 | 需要哪些概念 | `concepts` 与语义块的 `requires`；只引用必要定义 |
 | 字段组与相邻格式 | `outputs` 的 `block/fields/details`；格式从实际 schema 对应子树生成 |
 | 是否加载细节 | `when_paths/when_any_paths/when_required_paths/when_values`；使用完整字段路径 |

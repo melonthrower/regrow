@@ -53,7 +53,7 @@
         },
         "concepts": [
           {
-            "block": "region.common"
+            "block": "region.definition"
           },
           {
             "block": "task.definition",
@@ -92,8 +92,7 @@
             "block": "action.none",
             "fields": [
               "action",
-              "reason",
-              "retry_when"
+              "reason"
             ],
             "actions": [
               "none"
@@ -101,14 +100,7 @@
             "block_by_work_kind": {
               "navigate": "action.none_navigation"
             },
-            "details": [
-              {
-                "block": "task.retry_when",
-                "when_paths": [
-                  "retry_when"
-                ]
-              }
-            ]
+            "details": []
           },
           {
             "block": "control.knowledge_revision",
@@ -144,17 +136,11 @@
             ]
           },
           {
-            "block": "region.knowledge_edit",
+            "block": "region.local_knowledge",
             "fields": [
               "regions"
             ],
             "details": [
-              {
-                "block": "region.local_knowledge",
-                "when_any_paths": [
-                  "regions.local_knowledge"
-                ]
-              },
               {
                 "block": "region.nested",
                 "when_paths": [
@@ -216,12 +202,6 @@
                 ]
               },
               {
-                "block": "control.exploration_flags",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
                 "block": "control.add_image",
                 "when_paths": [
                   "regions.controls"
@@ -237,42 +217,6 @@
             ]
           }
         ]
-      }
-    },
-    "control_identity_selection": {
-      "groups": [
-        {
-          "question": "当前对象与哪一个历史候选值得进一步比较？",
-          "materials": [
-            "核对对象",
-            "当前任务与本次操作",
-            "相关历史与已登记认识",
-            "同区块的已接受状态依据",
-            "仍需注意",
-            "先前身份判断（本次待复核）",
-            "补充观察",
-            "平台"
-          ]
-        }
-      ],
-      "direct_question": true,
-      "declared_materials_only": true,
-      "render": "identity_material",
-      "template": "调用/控件身份候选选择.prompt",
-      "supplement_paths": [],
-      "stage": "control_identity_selection",
-      "field_sections": {
-        "outputs": [
-          {
-            "block": "control.identity_selection",
-            "fields": [
-              "candidate",
-              "reason"
-            ],
-            "details": []
-          }
-        ],
-        "environment": false
       }
     },
     "control_identity_comparison": {
@@ -322,6 +266,7 @@
             "已观察归属",
             "归属冲突",
             "本次复查动作",
+            "控件树",
             "说明",
             "平台"
           ]
@@ -329,7 +274,9 @@
       ],
       "direct_question": null,
       "template": "调用/区块归属复查.prompt",
-      "supplement_paths": [],
+      "supplement_paths": [
+        "纠错/区块归属复查.prompt"
+      ],
       "stage": "ownership_review",
       "field_sections": {
         "outputs": [
@@ -408,50 +355,6 @@
         "environment": false
       }
     },
-    "shared_control_review": {
-      "groups": [
-        {
-          "question": "已有证据支持保留共享还是解除这一成员的共享？",
-          "materials": [
-            "待核对共享关系",
-            "原共享理由",
-            "关联成员",
-            "实际动作证据",
-            "框架发现的问题",
-            "证据边界",
-            "上次修订被拒原因",
-            "上次修订回复",
-            "平台"
-          ]
-        }
-      ],
-      "direct_question": null,
-      "template": "调用/共享控件行为核对.prompt",
-      "supplement_paths": [],
-      "stage": "shared_control_review",
-      "field_sections": {
-        "outputs": [
-          {
-            "block": "region.shared_review",
-            "fields": [
-              "blocked_by",
-              "reason",
-              "resolution",
-              "proposal"
-            ],
-            "details": []
-          },
-          {
-            "block": "region.shared_edit",
-            "fields": [
-              "record_edit"
-            ],
-            "details": []
-          }
-        ],
-        "environment": false
-      }
-    },
     "observation": {
       "groups": [
         {
@@ -488,7 +391,8 @@
             "相关已完成问题",
             "本区块已登记用途",
             "已登记直接目标知识",
-            "未接受的任务条目"
+            "未接受的任务条目",
+            "可修订区块知识"
           ]
         }
       ],
@@ -533,7 +437,7 @@
             ],
             "details": [
               {
-                "block": "region.exception_values",
+                "block": "traversal.exception",
                 "when_any_paths": [
                   "foreground.exception"
                 ]
@@ -563,13 +467,6 @@
             ]
           },
           {
-            "block": "region.focus_presence",
-            "fields": [
-              "focus_presence"
-            ],
-            "details": []
-          },
-          {
             "block": "region.registration",
             "fields": [
               "regions"
@@ -582,27 +479,9 @@
                 ]
               },
               {
-                "block": "region.registration_identity",
-                "when_any_paths": [
-                  "regions.identity"
-                ]
-              },
-              {
-                "block": "region.parent_index",
-                "when_any_paths": [
-                  "regions.parent_index"
-                ]
-              },
-              {
                 "block": "region.state_description",
                 "when_any_paths": [
                   "regions.state_description"
-                ]
-              },
-              {
-                "block": "region.context_matches",
-                "when_any_paths": [
-                  "regions.context_matches"
                 ]
               },
               {
@@ -612,21 +491,9 @@
                 ]
               },
               {
-                "block": "region.task_review_reason",
-                "when_any_paths": [
-                  "regions.task_review_reason"
-                ]
-              },
-              {
                 "block": "region.local_knowledge",
                 "when_any_paths": [
                   "regions.local_knowledge"
-                ]
-              },
-              {
-                "block": "control.box_coordinates",
-                "when_any_paths": [
-                  "regions.bbox"
                 ]
               },
               {
@@ -645,6 +512,12 @@
                 "block": "region.parent",
                 "when_paths": [
                   "regions.parent"
+                ]
+              },
+              {
+                "block": "control.box_coordinates",
+                "when_any_paths": [
+                  "regions.controls.appearance_bbox"
                 ]
               },
               {
@@ -685,12 +558,6 @@
               },
               {
                 "block": "control.list_group",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.exploration_flags",
                 "when_paths": [
                   "regions.controls"
                 ]
@@ -747,13 +614,6 @@
                 ]
               },
               {
-                "block": "control.exploration_flags",
-                "when_any_paths": [
-                  "controls.may_open_content",
-                  "controls.needs_exploration"
-                ]
-              },
-              {
                 "block": "control.list_group",
                 "when_any_paths": [
                   "controls.list_group"
@@ -762,7 +622,7 @@
               {
                 "block": "control.box_coordinates",
                 "when_any_paths": [
-                  "controls.bbox"
+                  "controls.appearance_bbox"
                 ]
               },
               {
@@ -771,34 +631,13 @@
                   "controls.add_image",
                   "controls.image_conditions"
                 ]
-              },
-              {
-                "block": "control.new_knowledge",
-                "when_paths": [
-                  "controls.name",
-                  "controls.knowledge"
-                ]
               }
             ]
-          },
-          {
-            "block": "region.uncertainties",
-            "fields": [
-              "uncertainties"
-            ],
-            "details": []
           },
           {
             "block": "task.completion_updates",
             "fields": [
               "completion_updates"
-            ],
-            "details": []
-          },
-          {
-            "block": "task.dependency_updates",
-            "fields": [
-              "dependency_updates"
             ],
             "details": []
           },
@@ -813,32 +652,19 @@
                 "when_any_paths": [
                   "task_update.task"
                 ]
-              },
-              {
-                "block": "task.scope_review",
-                "work_kinds": [
-                  "scope_review"
-                ]
               }
             ]
           },
           {
             "block": "task.propose",
             "fields": [
-              "new_tasks"
+              "new_tasks",
+              "evidence"
             ],
             "details": [],
             "discovery_modes": [
               "local"
             ]
-          },
-          {
-            "block": "task.scope",
-            "fields": [
-              "inventory",
-              "evidence"
-            ],
-            "details": []
           }
         ],
         "concepts": []
@@ -859,7 +685,9 @@
             "已有任务",
             "可引用同类实例",
             "当前可关联的入口目标区块",
-            "未接受的任务条目"
+            "未接受的任务条目",
+            "已有功能",
+            "候选访问关系"
           ]
         },
         {
@@ -873,7 +701,8 @@
             "登记页面组成与访问来路",
             "材料范围",
             "说明",
-            "环境位置"
+            "环境位置",
+            "可修订区块知识"
           ]
         }
       ],
@@ -892,7 +721,10 @@
             "历史控件身份索引",
             "其他任务背景",
             "可引用同类实例",
-            "当前可关联的入口目标区块"
+            "当前可关联的入口目标区块",
+            "可修订区块知识",
+            "已有功能",
+            "候选访问关系"
           ]
         },
         "old_tasks": {
@@ -914,7 +746,7 @@
       "field_sections": {
         "concepts": [
           {
-            "block": "region.common"
+            "block": "region.definition"
           },
           {
             "block": "control.definition"
@@ -959,17 +791,11 @@
             ]
           },
           {
-            "block": "region.knowledge_edit",
+            "block": "region.local_knowledge",
             "fields": [
               "regions"
             ],
             "details": [
-              {
-                "block": "region.local_knowledge",
-                "when_any_paths": [
-                  "regions.local_knowledge"
-                ]
-              },
               {
                 "block": "region.nested",
                 "when_paths": [
@@ -1031,12 +857,6 @@
                 ]
               },
               {
-                "block": "control.exploration_flags",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
                 "block": "control.add_image",
                 "when_paths": [
                   "regions.controls"
@@ -1058,36 +878,26 @@
                 "when_any_paths": [
                   "task_update.task"
                 ]
-              },
-              {
-                "block": "task.scope_review",
-                "work_kinds": [
-                  "scope_review"
-                ]
               }
             ]
           },
           {
             "block": "task.propose",
             "fields": [
-              "new_tasks"
-            ],
-            "details": []
-          },
-          {
-            "block": "task.scope",
-            "fields": [
-              "inventory",
+              "new_tasks",
               "evidence"
             ],
             "details": []
           },
           {
-            "block": "region.shared_instances",
+            "block": "region.function_updates",
             "fields": [
-              "shared_instances"
+              "function_updates"
             ],
-            "details": []
+            "details": [],
+            "when_paths": [
+              "function_updates"
+            ]
           }
         ]
       }
@@ -1107,7 +917,9 @@
             "目标应用",
             "登记页面组成与访问来路",
             "登记说明",
-            "实际对象已有跳转"
+            "实际对象已有跳转",
+            "已有功能",
+            "候选访问关系"
           ]
         },
         {
@@ -1133,7 +945,8 @@
             "当前任务引用",
             "任务与实际对象核对",
             "来源区块已有任务",
-            "准备动作说明"
+            "准备动作说明",
+            "可修订区块知识"
           ]
         }
       ],
@@ -1152,15 +965,9 @@
             ],
             "details": [
               {
-                "block": "region.exception_values",
+                "block": "traversal.exception",
                 "when_any_paths": [
                   "action_result.exception"
-                ]
-              },
-              {
-                "block": "action.returns_to_previous",
-                "when_any_paths": [
-                  "action_result.returns_to_previous"
                 ]
               },
               {
@@ -1192,7 +999,7 @@
             ],
             "details": [
               {
-                "block": "region.exception_values",
+                "block": "traversal.exception",
                 "when_any_paths": [
                   "foreground.exception"
                 ]
@@ -1227,13 +1034,6 @@
             "details": []
           },
           {
-            "block": "region.previous_regions",
-            "fields": [
-              "previous_regions"
-            ],
-            "details": []
-          },
-          {
             "block": "region.registration",
             "fields": [
               "regions"
@@ -1241,20 +1041,9 @@
             "details": [
               {
                 "block": "region.update_registration",
-                "when_paths": [
-                  "current_regions"
-                ]
-              },
-              {
-                "block": "region.registration_identity",
                 "when_any_paths": [
-                  "regions.identity"
-                ]
-              },
-              {
-                "block": "region.parent_index",
-                "when_any_paths": [
-                  "regions.parent_index"
+                  "current_regions",
+                  "regions.current"
                 ]
               },
               {
@@ -1264,33 +1053,15 @@
                 ]
               },
               {
-                "block": "region.context_matches",
-                "when_any_paths": [
-                  "regions.context_matches"
-                ]
-              },
-              {
                 "block": "region.scope_reason",
                 "when_any_paths": [
                   "regions.out_of_scope_reason"
                 ]
               },
               {
-                "block": "region.task_review_reason",
-                "when_any_paths": [
-                  "regions.task_review_reason"
-                ]
-              },
-              {
                 "block": "region.local_knowledge",
                 "when_any_paths": [
                   "regions.local_knowledge"
-                ]
-              },
-              {
-                "block": "control.box_coordinates",
-                "when_any_paths": [
-                  "regions.bbox"
                 ]
               },
               {
@@ -1309,6 +1080,12 @@
                 "block": "region.parent",
                 "when_paths": [
                   "regions.parent"
+                ]
+              },
+              {
+                "block": "control.box_coordinates",
+                "when_any_paths": [
+                  "regions.controls.appearance_bbox"
                 ]
               },
               {
@@ -1349,12 +1126,6 @@
               },
               {
                 "block": "control.list_group",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.exploration_flags",
                 "when_paths": [
                   "regions.controls"
                 ]
@@ -1411,13 +1182,6 @@
                 ]
               },
               {
-                "block": "control.exploration_flags",
-                "when_any_paths": [
-                  "controls.may_open_content",
-                  "controls.needs_exploration"
-                ]
-              },
-              {
                 "block": "control.list_group",
                 "when_any_paths": [
                   "controls.list_group"
@@ -1426,7 +1190,7 @@
               {
                 "block": "control.box_coordinates",
                 "when_any_paths": [
-                  "controls.bbox"
+                  "controls.appearance_bbox"
                 ]
               },
               {
@@ -1434,13 +1198,6 @@
                 "when_any_paths": [
                   "controls.add_image",
                   "controls.image_conditions"
-                ]
-              },
-              {
-                "block": "control.new_knowledge",
-                "when_paths": [
-                  "controls.name",
-                  "controls.knowledge"
                 ]
               }
             ]
@@ -1467,20 +1224,6 @@
             ]
           },
           {
-            "block": "region.uncertainties",
-            "fields": [
-              "uncertainties"
-            ],
-            "details": []
-          },
-          {
-            "block": "task.dependency_updates",
-            "fields": [
-              "dependency_updates"
-            ],
-            "details": []
-          },
-          {
             "block": "action.next_action",
             "fields": [
               "next_action"
@@ -1494,87 +1237,18 @@
                 "block": "action.proposal"
               }
             ]
-          }
-        ]
-      }
-    },
-    "function_registration": {
-      "groups": [
-        {
-          "question": "本区块自身提供哪些用途？",
-          "materials": [
-            "区块",
-            "描述",
-            "已登记操作",
-            "控件用途标注",
-            "同区块已执行动作结果",
-            "动作证据覆盖",
-            "进入本区块的已观察结果",
-            "已有功能轮廓",
-            "区块引用"
-          ]
-        },
-        {
-          "question": "这些功能依赖什么参数、条件和其他区块？",
-          "materials": [
-            "应用操作树",
-            "共享控件知识",
-            "入口与目标一级摘要",
-            "按本地参数任务披露的支持",
-            "支持知识引用目录",
-            "可引用参数事实",
-            "要求"
-          ]
-        }
-      ],
-      "title": "区块功能总结",
-      "builder": "region_functions.request",
-      "template": "调用/区块功能总结.prompt",
-      "supplement_paths": [],
-      "stage": "function_registration",
-      "field_sections": {
-        "outputs": [
+          },
           {
             "block": "region.function_updates",
             "fields": [
               "function_updates"
             ],
-            "details": [
-              {
-                "block": "region.function_constraints",
-                "when_any_paths": [
-                  "function_updates.add.constraints",
-                  "function_updates.update.changes.constraints"
-                ]
-              },
-              {
-                "block": "region.function_new_constraints",
-                "when_paths": [
-                  "controls.knowledge.constraints"
-                ]
-              }
+            "details": [],
+            "when_paths": [
+              "function_updates"
             ]
-          },
-          {
-            "block": "region.knowledge_root",
-            "fields": [
-              "local_knowledge"
-            ],
-            "details": [
-              {
-                "block": "region.local_knowledge"
-              }
-            ]
-          },
-          {
-            "block": "region.function_evidence",
-            "fields": [
-              "evidence"
-            ],
-            "details": []
           }
-        ],
-        "environment": false
+        ]
       }
     },
     "recovery": {
@@ -1617,7 +1291,7 @@
             ],
             "details": [
               {
-                "block": "region.exception_values",
+                "block": "traversal.exception",
                 "when_any_paths": [
                   "exception"
                 ]
@@ -1675,213 +1349,6 @@
         "environment": false
       }
     },
-    "task_result_review": {
-      "groups": [
-        {
-          "question": "本轮判断和具体依据是什么？",
-          "materials": [
-            "原任务引用",
-            "任务目标与累计证据",
-            "任务结束条件",
-            "直接相关恢复过程",
-            "原暂挂依据",
-            "历史原图对照"
-          ]
-        }
-      ],
-      "variants": {
-        "coverage": {
-          "question": "其他已验证入口能覆盖原用途吗，条件和缺口是什么？",
-          "materials": [
-            "原控件",
-            "当前定位",
-            "覆盖候选（不是等价结论）"
-          ]
-        }
-      },
-      "question": "原问题已获回答、仍要继续，还是应暂挂？",
-      "template": "调用/任务结果复核.prompt",
-      "supplement_paths": [],
-      "stage": "task_result_review",
-      "field_sections": {
-        "outputs": [
-          {
-            "block": "task.update",
-            "fields": [
-              "task_update"
-            ],
-            "details": [
-              {
-                "block": "task.update_ref",
-                "when_any_paths": [
-                  "task_update.task"
-                ]
-              }
-            ]
-          },
-          {
-            "block": "control.knowledge_revision",
-            "fields": [
-              "controls"
-            ],
-            "details": [
-              {
-                "block": "control.knowledge_description",
-                "when_any_paths": [
-                  "controls.knowledge"
-                ]
-              },
-              {
-                "block": "control.knowledge_index",
-                "when_any_paths": [
-                  "controls.knowledge.index"
-                ]
-              },
-              {
-                "block": "control.knowledge_constraints",
-                "when_any_paths": [
-                  "controls.knowledge.constraints"
-                ]
-              }
-            ],
-            "when_paths": [
-              "controls.knowledge"
-            ]
-          },
-          {
-            "block": "region.knowledge_edit",
-            "fields": [
-              "regions"
-            ],
-            "details": [
-              {
-                "block": "region.local_knowledge",
-                "when_any_paths": [
-                  "regions.local_knowledge"
-                ]
-              },
-              {
-                "block": "region.nested",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "region.current",
-                "when_paths": [
-                  "regions.current"
-                ]
-              },
-              {
-                "block": "region.parent",
-                "when_paths": [
-                  "regions.parent"
-                ]
-              },
-              {
-                "block": "control.registration",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.registration_ref",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.registration_name",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.knowledge_description",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.knowledge_constraints",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.knowledge_index",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.list_group",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.exploration_flags",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.add_image",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              }
-            ],
-            "when_paths": [
-              "regions.local_knowledge"
-            ]
-          },
-          {
-            "block": "action.result",
-            "fields": [
-              "action_result"
-            ],
-            "details": [
-              {
-                "block": "region.exception_values",
-                "when_any_paths": [
-                  "action_result.exception"
-                ]
-              },
-              {
-                "block": "action.returns_to_previous",
-                "when_any_paths": [
-                  "action_result.returns_to_previous"
-                ]
-              },
-              {
-                "block": "region.recovery_handoff",
-                "when_paths": [
-                  "action_result.recovery_handoff"
-                ]
-              },
-              {
-                "block": "region.exception_uncertain",
-                "when_values": {
-                  "action_result.exception": [
-                    "uncertain"
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "block": "task.coverage",
-            "fields": [
-              "coverage"
-            ],
-            "details": []
-          }
-        ],
-        "environment": false
-      }
-    },
     "step_correction": {
       "title": "原步骤纠错",
       "inherit": "original_request",
@@ -1896,7 +1363,6 @@
           {
             "block": "action.correction_decision",
             "fields": [
-              "blocked_by",
               "reason",
               "resolution"
             ],
@@ -2016,21 +1482,11 @@
         "concepts": [],
         "outputs": [
           {
-            "block": "control.bbox",
+            "block": "control.box_coordinates",
             "fields": [
               "objects"
             ],
-            "details": [
-              {
-                "block": "control.box_coordinates"
-              },
-              {
-                "block": "control.bbox_grounding",
-                "when_required_paths": [
-                  "objects.reason"
-                ]
-              }
-            ]
+            "details": []
           }
         ]
       }
@@ -2083,7 +1539,7 @@
       "field_sections": {
         "concepts": [
           {
-            "block": "region.common"
+            "block": "region.definition"
           },
           {
             "block": "task.definition",
@@ -2122,8 +1578,7 @@
             "block": "action.none",
             "fields": [
               "action",
-              "reason",
-              "retry_when"
+              "reason"
             ],
             "actions": [
               "none"
@@ -2131,14 +1586,7 @@
             "block_by_work_kind": {
               "navigate": "action.none_navigation"
             },
-            "details": [
-              {
-                "block": "task.retry_when",
-                "when_paths": [
-                  "retry_when"
-                ]
-              }
-            ]
+            "details": []
           },
           {
             "block": "control.knowledge_revision",
@@ -2174,17 +1622,11 @@
             ]
           },
           {
-            "block": "region.knowledge_edit",
+            "block": "region.local_knowledge",
             "fields": [
               "regions"
             ],
             "details": [
-              {
-                "block": "region.local_knowledge",
-                "when_any_paths": [
-                  "regions.local_knowledge"
-                ]
-              },
               {
                 "block": "region.nested",
                 "when_paths": [
@@ -2246,12 +1688,6 @@
                 ]
               },
               {
-                "block": "control.exploration_flags",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
                 "block": "control.add_image",
                 "when_paths": [
                   "regions.controls"
@@ -2302,11 +1738,6 @@
       "label": "登记实际动作结果",
       "guidance": "登记本次真实动作及观察，判断它回答了原问题的哪一部分；不以准备代替目标执行。"
     },
-    "function_registration": {
-      "question": "已有探索材料说明本区块能做什么，以及需要哪些参数和条件？",
-      "label": "整理区块功能",
-      "guidance": "整理已有任务知识和明确支持，不重新执行已知功能。"
-    },
     "recover": {
       "question": "什么阻碍了当前探索？怎样解除阻碍并交还原任务？",
       "label": "恢复探索现场",
@@ -2316,11 +1747,6 @@
       "question": "补充截图能否回答原步骤尚未看清的问题？",
       "label": "补充原步骤的观察",
       "guidance": "仅回答原步骤的核对问题；后补截图不是重新执行动作的结果，观察回复不直接登记动作或完成任务。"
-    },
-    "task_result_review": {
-      "label": "复核原任务已有证据",
-      "guidance": "本轮没有执行新动作；按原任务结束条件复核已有登记、历史原图与当前观察。",
-      "question_from": "task_result_review"
     }
   },
   "aliases": {
@@ -2354,7 +1780,6 @@
   },
   "supplements": {
     "navigation": "动作/探索导航路线.prompt",
-    "preconditions": "任务/前置条件与恢复.prompt",
     "inventory_gap": "发现手册/补登记.prompt"
   },
   "output": {
@@ -2382,7 +1807,8 @@
       "对象/控件.prompt",
       "对象/区块.prompt",
       "对象/任务.prompt",
-      "对象/动作.prompt"
+      "对象/动作.prompt",
+      "对象/遍历.prompt"
     ]
   }
 }

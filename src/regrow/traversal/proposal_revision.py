@@ -22,6 +22,9 @@ def prepare(job, original, schema):
     if not isinstance(base, dict) or not base:
         return None
     _, base = semantic_revision(job['request'], base)
+    refs = [row['ref'] for row in base.get('regions', []) if row.get('ref')]
+    if len(refs) != len(set(refs)):
+        return None  # Duplicate names cannot address a partial object edit.
     expanded = expand_schema(schema)
     allowed = expanded.get('properties', {})
     if not allowed or set(base) - set(allowed):
@@ -147,6 +150,8 @@ def _references(result, indexes):
         if key not in row or row[key] is None:
             return
         value = row[key]
+        if key == 'parent_index' and isinstance(value, str):
+            return  # A known Region ID does not move when reply rows change.
         if type(value) is not int or value not in indexes[kind]:
             _error(path + '/' + key,
                    f'按原稿编号，{path}/{key}={value}指向已撤回或不存在的对象；请同时修正这条关系')

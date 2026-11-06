@@ -2,7 +2,7 @@
 
 ## 当前实现：按本次目的与实际字段组合
 
-17 类调用均经过 `runtime/model_transport.prepare_request` → `prompts/output.prepare` → `field_sections.render`。当前调用的目的、可输出字段及必要概念决定正文；不会先加载全部对象说明再裁剪章节。
+13 类活动调用均经过 `runtime/model_transport.prepare_request` → `prompts/output.prepare` → `field_sections.render`。当前调用的目的、可输出字段及必要概念决定正文；不会先加载全部对象说明再裁剪章节。
 
 - `共享/探索角色.prompt`：全局遍历目标；运行范围另从运行清单取得。
 - `调用/*.prompt`：本步要做什么。导航是动作选择的工作模式。

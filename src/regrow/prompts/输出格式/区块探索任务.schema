@@ -1,14 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "inventory": {
-      "type": "string",
-      "enum": [
-        "complete",
-        "partial",
-        "uncertain"
-      ]
-    },
     "evidence": {
       "type": "string",
       "minLength": 1
@@ -96,37 +88,6 @@
         ]
       }
     },
-    "shared_instances": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "control": {
-            "type": "string",
-            "minLength": 1
-          },
-          "source_region": {
-            "type": "string",
-            "minLength": 1
-          },
-          "source_control": {
-            "type": "string",
-            "minLength": 1
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "control",
-          "source_region",
-          "source_control",
-          "reason"
-        ],
-        "additionalProperties": false
-      }
-    },
     "new_tasks": {
       "type": "array",
       "items": {
@@ -150,10 +111,8 @@
     }
   },
   "required": [
-    "inventory",
     "evidence",
-    "new_tasks",
-    "shared_instances"
+    "new_tasks"
   ],
   "additionalProperties": false
 }

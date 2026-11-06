@@ -12,13 +12,9 @@ def digest(region):
     return hashlib.sha256(json.dumps(region_state(region), sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 def request(root, snapshot, records, state, current_request=None):
-    from regrow.records import shared_control_review as _shared_control_review
     from regrow.traversal import inventory_scroll as _inventory_scroll
     from regrow.traversal import task_proposer as _task_proposer
     from regrow.records import page_context as _page_context
-    pending = _shared_control_review.inventory_request(root, snapshot, records, state)
-    if pending:
-        return pending
     active = state.get('active_task') or {}
     if _inventory_scroll.active(records, state, active.get('region')):
         return None

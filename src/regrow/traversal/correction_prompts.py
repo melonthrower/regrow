@@ -96,7 +96,7 @@ def select(job, context):
         modules.append('身份名称')
     if stage in ('discovery', 'task_proposal') and q.get('screenshots'):
         modules.append('任务归属')
-    if stage in ('update', 'task_result_review', 'function_registration'):
+    if stage in ('update',):
         modules.append('结果证据')
     if q.get('screenshots') and (codes & RECORD_CODES or (not codes and stage != 'action')):
         modules.append('登记修订')
@@ -115,6 +115,6 @@ def parts(root, job, context):
     result = load(root, ['纠错/' + name + '.prompt' for name in names])
     for part in result:
         if part['path'] == '纠错/结果证据.prompt':
-            conditions = {'## 原任务判断 → task_update': {'task_update'}, '## 已执行动作的结果与前景': {'action_result', 'current_regions', 'previous_regions'}, '## 修正功能和区块用法': {'function_updates', 'local_knowledge'}}
+            conditions = {'## 原任务判断 → task_update': {'task_update'}, '## 已执行动作的结果与前景': {'action_result', 'current_regions'}, '## 修正功能和区块用法': {'function_updates', 'local_knowledge'}}
             part['text'] = sections(part['text'], {heading for (heading, needed) in conditions.items() if not keys.intersection(needed)})
     return [part for part in result if part['text'].strip()]

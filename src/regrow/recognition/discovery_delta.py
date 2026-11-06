@@ -13,7 +13,7 @@ def schema(value):
         item = value['properties'][kind]['items']
         props = item['properties']
         props.update(ref={'type': ['string', 'null'], 'description': '已有对象填写材料中的稳定编号；新对象可省略并明确identity=new。'}, identity={'type': 'string', 'enum': ['same', 'new', 'uncertain']}, identity_evidence={'type': 'string', 'description': '身份未定或存在歧义时说明具体依据和缺口。'})
-        full = [field for field in item.get('required', []) if field not in ('ref', 'identity_evidence', 'reason', 'text', 'state', 'list_group', 'context_matches', 'out_of_scope_reason', 'controls_complete', 'task_review_reason', 'parent_index')]
+        full = [field for field in item.get('required', []) if field not in ('ref', 'identity_evidence', 'reason', 'text', 'state', 'list_group', 'context_matches', 'out_of_scope_reason', 'controls_complete', 'parent_index')]
         full = list(dict.fromkeys(full + ['identity', 'name'] + (['region_index'] if kind == 'controls' else [])))
         item['required'] = []
         item['allOf'] = [branch for branch in item.get('allOf', []) if 'ref' not in branch.get('if', {}).get('properties', {})]
@@ -40,6 +40,8 @@ def resolve(records, request, reply, snapshot=None, frame=None, run=None):
     """Return a derived proposal plus audit; the saved model answer stays intact."""
     from regrow.recognition.control_references import decode
     result = decode(request, reply)
+    from regrow.recognition.region_references import decode as decode_regions
+    result = decode_regions(request, result)
     ctx = request.get('discovery_context') or {'region_names': request.get('region_names', {}), 'control_names': {cid: cid for r in records.values() for cid in owned_controls(r)}}
     owners = []
     audit = []

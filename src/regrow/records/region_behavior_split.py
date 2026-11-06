@@ -18,7 +18,7 @@ def before_objects(region, binding, snapshot, frame):
             original = (Path(snapshot) / row.get('source_image', '')).resolve()
             if not original.is_file() or hashlib.sha256(original.read_bytes()).digest() != digest:
                 continue
-            return {'name': obj['name'], **{k: row[k] for k in ('description', 'knowledge', 'icon_description', 'possible_operation', 'uncertainty', 'bbox', 'click_bbox', 'icon_bbox', 'evidence') if k in row}}
+            return {'name': obj['name'], **{k: row[k] for k in ('description', 'knowledge', 'icon_description', 'possible_operation', 'uncertainty', 'appearance_bbox', 'bbox', 'click_bbox', 'icon_bbox', 'evidence') if k in row}}
         return None
     control = owned_controls(region).get(binding.get('control_ref'))
     prior = observed(region)
@@ -31,7 +31,7 @@ def bind_geometry(split, basis):
     if not basis:
         raise ValueError('来源拆分缺少与原动作前图一致的已登记几何；保留未确认事项')
     result = deepcopy(split)
-    fields = ('bbox', 'click_bbox', 'icon_bbox')
+    fields = ('appearance_bbox', 'bbox', 'click_bbox', 'icon_bbox')
 
     def bind(row, source):
         for key in fields:

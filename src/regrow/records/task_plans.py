@@ -14,14 +14,13 @@ from regrow.records.tasks import read as task_value, equivalent_source
 from regrow.records.control_records import aliases
 
 
-FIELDS = ('new_tasks', 'task_update', 'inventory', 'evidence')
+FIELDS = ('new_tasks', 'task_update', 'evidence')
 
 
 def schema():
     from regrow.records.task_goals import operation_schema
     string = {'type': 'string', 'minLength': 1}
-    value = updates.object_schema({'inventory': {'type': 'string', 'enum': ['complete', 'partial', 'uncertain']},
-        'evidence': string, 'task_update': {'type': 'array', 'items': updates.schema()},
+    value = updates.object_schema({'evidence': string, 'task_update': {'type': 'array', 'items': updates.schema()},
         'new_tasks': {'type': 'array', 'items': operation_schema()}})
     value['required'].remove('task_update')
     return value
@@ -30,8 +29,7 @@ def schema():
 def update_names(region, *, scope_review=False):
     focus = None if scope_review else region_work(region).get('task_inventory', {}).get('review', {}).get('task')
     return [name for name, task in owned_tasks(region).items()
-            if (focus is None or name == focus) and task.get('status') in ('pending', 'blocked')
-            and not task.get('shared_task_ref')]
+            if (focus is None or name == focus) and task.get('status') in ('pending', 'blocked')]
 
 
 def matching_question(tasks, operation):
@@ -208,8 +206,9 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
     replace_owned_tasks(region, tasks)
     prior = region_work(region).get('task_inventory', {})
     considered.update(cid for cid in prior.get('controls', []) if cid in owned_controls(region))
-    region_work(region)['task_inventory'] = {'inventory': payload['inventory'], 'evidence': payload['evidence'],
-        'controls': sorted(considered), 'source_call': call}
+    region_work(region)['task_inventory'] = {'evidence': payload['evidence'],
+        'controls': sorted(considered), 'source_call': call,
+        'observation': ((state or {}).get('observation') or {}).get('id')}
     gaps = region_work(region).setdefault('registration_gaps', {})
     if assessment['rejected']:
         gaps['task_proposal'] = {'source_call': call, 'reason': '本次任务提出有未接受的条目',

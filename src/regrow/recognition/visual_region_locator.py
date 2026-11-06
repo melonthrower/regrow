@@ -31,11 +31,11 @@ def matcher():
 def image(item):
     return templates.image(item)
 
-def resolve_foreground_check(plan, frame, interactive_regions, focus_presence, call, previous=None):
+def resolve_foreground_check(plan, frame, interactive_regions, call, previous=None):
     """Consume an answered containment suspicion, never infer coexistence from pixels."""
     check = plan.get('foreground_check')
     focus = plan.get('focus')
-    if not check or focus_presence != 'interactive' or (not {focus, check['region']} <= set(interactive_regions)):
+    if not check or (not {focus, check['region']} <= set(interactive_regions)):
         return None
     fingerprint = hashlib.sha256(Path(frame).read_bytes()).hexdigest()
     frame_path = str(Path(frame).resolve())

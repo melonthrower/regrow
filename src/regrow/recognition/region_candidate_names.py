@@ -26,6 +26,10 @@ def candidates(records, rows):
         row['ref'] = rid
         if r.get('description'):
             row['历史描述'] = r['description']
+        from regrow.records.history_context import region_states
+        states = region_states(r)
+        if states:
+            row['历史状态观察'] = states
         if provided_controls is not None:
             from regrow.records.context_scope import identity
             row['controls'] = provided_controls if provided_controls is not None else [identity(r, cid, records=records) for cid in owned_controls(r)]

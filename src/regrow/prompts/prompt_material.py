@@ -586,7 +586,8 @@ def identity_supplement(row):
             if key == 'regions':
                 visible['名称'] = labels[i]
                 if item.get('parent_index') is not None:
-                    visible['包含它的区块'] = owner(item['parent_index'])
+                    parent = item['parent_index']
+                    visible['包含它的区块'] = owner(parent) if type(parent) is int else identity_name(parent, {})
             else:
                 if 'region_index' in item:
                     visible['所属区块'] = owner(item['region_index'])
@@ -607,9 +608,8 @@ def identity_supplement(row):
 
 
 def identity_view(value, request):
-    """The single disclosure exit for comparison, selection and their rechecks."""
-    selection = request.get('role') == 'control_identity_selection'
-    pairs = request.get('control_identity_candidates', []) if selection else [request['control_identity_pair']]
+    """The disclosure exit for a pairwise comparison and its rechecks."""
+    pairs = [request['control_identity_pair']]
     needs = request.get('material_needs', {})
     subjects = needs.get('control_history', [{'region': p['region'], 'control': p['control']} for p in pairs])
     wanted = {(row['region'], row['control']) for row in subjects}
@@ -627,7 +627,7 @@ def identity_view(value, request):
         context = deepcopy(pair.get('context', {}))
         context.get('实际尝试与来源', {}).pop(current_attempt, None)
         history = identity_history(context, extra, names)
-        histories.append({'对象': pair['old_name'], **({'candidate': pair['ref']} if selection else {}), **history})
+        histories.append({'对象': pair['old_name'], **history})
     pair = pairs[0]
     from regrow.prompts.frame_context import purpose
     current = {'图片': 1, '图像时点': purpose(request, pair['current_frame'])}
@@ -651,10 +651,10 @@ def identity_view(value, request):
     historical = [{'名称': p['old_name'], '所属区块': p['region_name'],
                    **identity_fields(p.get('context', {}), {'description': '历史描述'}),
                    **identity_fields(p, {'historical_description': '历史外观'}),
-                   **({'candidate': p['ref']} if selection else {'图片': 2, '图像时点': '给定控件的历史外观；不保证与下面每条历史记录同一时点',
+                   **({'图片': 2, '图像时点': '给定控件的历史外观；不保证与下面每条历史记录同一时点',
                        '身份框（左、上、右、下；原图像素）': p['historical_box']})}
                   for p in pairs]
-    result = {'核对对象': {'历史对象': historical if selection else historical[0], '当前对象': current}}
+    result = {'核对对象': {'历史对象': historical[0], '当前对象': current}}
     original = value.get('原任务与实际操作', {})
     task = original.get('当前任务') or original.get('任务目标') or {}
     if task.get('control') and task.get('control_name'):
@@ -741,7 +741,7 @@ def identity_view(value, request):
             operation[key] = identity_notes(original[key])
     if operation:
         result['当前任务与本次操作'] = operation
-    result['相关历史与已登记认识'] = histories if selection else histories[0]
+    result['相关历史与已登记认识'] = histories[0]
     owner = value.get('区块状态的已接受依据', {})
     if owner:
         result['同区块的已接受状态依据'] = [identity_event(row, names=names) for row in owner.values()]
@@ -773,20 +773,20 @@ def identity_view(value, request):
 def view(value, request):
     """Read-only presentation, shared by normal and corrected requests."""
     role = request.get('role')
-    if role in ('control_identity_comparison', 'control_identity_selection') and (
-            request.get('control_identity_pair') or request.get('control_identity_candidates')):
+    if role in ('control_identity_comparison',) and (
+            request.get('control_identity_pair')):
         return identity_view(value, request)
     material = deepcopy(value)
     if role == 'observation_update':
         update_task(material)
-    if role in ('step_correction', 'control_identity_selection'):
+    if role in ('step_correction',):
         from regrow.prompts.correction_feedback import present
         present(material, request)
         nested = material.get('原动态上下文')
         if isinstance(nested, dict) and isinstance(nested.get('上下文'), dict):
             nested['上下文'] = view(nested['上下文'], request.get('original_request', {}))
     result = clean(material)
-    if role in ('step_correction', 'control_identity_selection'):
+    if role in ('step_correction',):
         nested = result.get('原动态上下文')
         if isinstance(nested, dict) and isinstance(nested.get('上下文'), dict):
             slot = '登记页面组成与访问来路'
@@ -803,8 +803,6 @@ def view(value, request):
         result = {**{k: result[k] for k in first if k in result}, **{k: v for (k, v) in result.items() if k not in first}}
     if role in ('observation', 'observation_update'):
         matching(result)
-    if role == 'function_registration':
-        summary(result, request)
     if role == 'observation_update' and '已知区块' in result:
         result['历史身份参考'] = result.pop('已知区块')
     return result

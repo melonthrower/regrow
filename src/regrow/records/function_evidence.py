@@ -9,8 +9,9 @@ from copy import deepcopy
 def omitted_reason(action):
     if action.get('delivery') != 'executed_receipt_zero':
         return '没有已执行回执，不能作为实际结果'
-    if not action.get('result', {}).get('description'):
-        return '已执行但没有已登记结果描述，效果仍未知'
+    from regrow.records.action_evidence import has_observed_result
+    if not has_observed_result(action):
+        return '缺少已登记的动作后图与结果来源，效果仍未知'
     return None
 
 def region_context(rid, records):
@@ -31,7 +32,7 @@ def action_row(region, aid, action, records=None):
     evidence = action.get('evidence', {})
     result = action['result']
     related = {name: task for (name, task) in owned_tasks(region).items() if aid in task_value(task, 'attempts', [])}
-    row = {'动作记录': aid, '结果调用': action.get('result_call') or evidence.get('result_call'), '选择调用': evidence.get('selection_call'), '动作目的': action.get('purpose', ''), '动作前观察': evidence.get('before_observation'), '动作后观察': evidence.get('after_observation'), '关联任务': list(related), '关联任务状态': {name: task.get('status') for (name, task) in related.items()}, '控件': control['name'] if control else '', '控件关联': '已登记' if control else '未确认', '动作': action.get('operation', ''), '结果': result['description'], '依据': result.get('evidence', ''), '异常': result.get('exception', ''), '动作前区块': [region_context(rid, records) for rid in evidence.get('before_regions', [])], '动作后可交互区块': [region_context(rid, records) for rid in action.get('interactive_regions', [])], '区块变化': deepcopy(action.get('region_changes', [])), '观察到的区块连接': [deepcopy(edge) for edge in region.get('transitions', []) if edge.get('attempt') == aid]}
+    row = {'动作记录': aid, '结果调用': action.get('result_call') or evidence.get('result_call'), '选择调用': evidence.get('selection_call'), '动作目的': action.get('purpose', ''), '动作前观察': evidence.get('before_observation'), '动作后观察': evidence.get('after_observation'), '关联任务': list(related), '关联任务状态': {name: task.get('status') for (name, task) in related.items()}, '控件': control['name'] if control else '', '控件关联': '已登记' if control else '未确认', '动作': action.get('operation', ''), '结果': result.get('description', {k: evidence[k] for k in ('result_call', 'after_observation', 'after_image') if k in evidence}), '依据': result.get('evidence', ''), '异常': result.get('exception', ''), '动作前区块': [region_context(rid, records) for rid in evidence.get('before_regions', [])], '动作后可交互区块': [region_context(rid, records) for rid in action.get('interactive_regions', [])], '区块变化': deepcopy(action.get('region_changes', [])), '观察到的区块连接': [deepcopy(edge) for edge in region.get('transitions', []) if edge.get('attempt') == aid]}
     if region_action(action):
         row.update(控件关联='不适用（区块操作）', 归属边界='实际操作对象是区块「' + region.get('name', region.get('id', '')) + '」。')
     elif not control:

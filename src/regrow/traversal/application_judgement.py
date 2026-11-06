@@ -67,8 +67,7 @@ def accept(run, job):
                      reason=reply['exception'], interactive_regions=[],
                      observation={'id': 'application-check:' + job['call'], 'image': frame,
                          'control_refs': [], 'foreground': {'description': reason,
-                             'exception': reply['exception'], 'recovery_handoff': reason},
-                         'uncertainties': []})
+                             'exception': reply['exception'], 'recovery_handoff': reason}})
     pointer = publish(run, 'application-check-' + job['call'], mutate)
     if job['stage'] == 'action':
         return {'request': q, 'proposal': reply, 'call': job['call'],

@@ -1,6 +1,30 @@
 """Stable control references at the model boundary; names are display text."""
 from copy import deepcopy
 import re
+import unicodedata
+
+
+def label(control, name):
+    return control + '/' + name
+
+
+def resolve_label(value, labels, *, allow_path=False, prefix='c'):
+    """Resolve a disclosed ID/name string; never repair it by another name."""
+    if not isinstance(value, str):
+        return None
+    control, _, _ = value.partition('/')
+    supplied = re.sub(r'\s+', '', unicodedata.normalize('NFKC', value).partition('/')[0])
+    if not re.fullmatch(prefix + r'\d+', supplied, re.I):
+        return None
+    title = '控件' if prefix == 'c' else '区块'
+    expected = labels.get(control)
+    if expected is None:
+        raise ValueError(title + '引用“' + value + '”的ID未在本轮材料中提供；请使用本轮给出的' + title + '引用。')
+    if value == expected:
+        return control
+    if allow_path and value.startswith(expected + '/'):
+        return control + value[len(expected):]
+    raise ValueError(title + '引用“' + value + '”与本轮给出的“' + expected + '”不一致；请按给定引用修正。')
 
 
 def mapping(request):
@@ -9,7 +33,7 @@ def mapping(request):
         original.get('control_refs', original.get('control_indexes', []))))
 
 
-def _schemas(schema):
+def _schemas(schema, group='controls'):
     def branches(item):
         # Object-field revisions already use the retained candidate's contract.
         # Do not turn a partial edit or explicit removal into a full new object.
@@ -21,18 +45,20 @@ def _schemas(schema):
             for child in item.get(key, []):
                 yield from branches(child)
     if isinstance(schema, dict):
-        controls = schema.get('properties', {}).get('controls')
+        controls = schema.get('properties', {}).get(group)
         if isinstance(controls, dict) and 'items' in controls:
             yield from branches(controls['items'])
         for value in schema.values():
-            yield from _schemas(value)
+            yield from _schemas(value, group)
     elif isinstance(schema, list):
         for value in schema:
-            yield from _schemas(value)
+            yield from _schemas(value, group)
 
 
 def prepare(request):
     q = deepcopy(request)
+    if q.get('name_contract'):
+        return q  # An already bound wire contract retains its actual references.
     from regrow.runtime.model_transport import expand_schema
     q['response_schema'] = expand_schema(q.get('response_schema', {}))
     items = list(_schemas(q['response_schema']))
@@ -51,20 +77,20 @@ def prepare(request):
         allowed = props.get('ref', {}).get('enum', ids)
         if known_edits:
             props['ref'] = {'type': 'string', 'enum': allowed,
-                            'description': '控件树中的控件ID，例如c0008。'}
+                            'description': '使用本轮材料提供的控件ID/名称。'}
             continue
         full = [k for k in item.get('required', []) if k not in ('ref','identity','identity_evidence')]
         for branch in item.get('allOf', []):
             full += [k for k in branch.get('else', {}).get('required', []) if k not in ('ref','identity','identity_evidence')]
         for key in ('identity','identity_evidence'): props.pop(key, None)
-        props['ref'] = {'type': 'string', 'enum': ids, 'description': '已有控件填写控件树中的ID；新控件省略。'}
+        props['ref'] = {'type': 'string', 'enum': allowed, 'description': '已有控件填写本轮提供的ID/名称；新控件省略。'}
         item['required'] = []
         item['allOf'] = [b for b in item.get('allOf', []) if not any(k in b.get('if', {}).get('properties', {}) or k in b.get('if', {}).get('required', []) for k in ('ref','identity'))]
         item['allOf'].append({'if': {'required': ['ref']}, 'then': {},
             'else': {'required': list(dict.fromkeys(full + ['name','region_index']))}})
         item['description'] = '已有控件用ref及变化信息；新控件省略ref并填写新对象资料。'
-        if not ids:
-            props.pop('ref')
+        if not allowed:
+            # Keep the explicit empty scope in saved/correction contracts.
             item['required'] = list(dict.fromkeys(full + ['name','region_index']))
             item['allOf'] = [b for b in item['allOf'] if 'ref' not in b.get('if', {}).get('required', [])]
             if not item['allOf']:

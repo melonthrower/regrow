@@ -36,13 +36,6 @@
           "name": {
             "type": "string"
           },
-          "parent_index": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "本轮regions数组0起始父行号；无父级为null。不是跨图身份ID。"
-          },
           "description": {
             "type": "string"
           },
@@ -77,11 +70,17 @@
               }
             ],
             "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
           }
         },
         "required": [
           "name",
-          "parent_index",
           "description"
         ],
         "additionalProperties": false
@@ -96,7 +95,11 @@
             "type": "integer",
             "description": "唯一直接所属Region的0起始行号"
           },
-          "bbox": {
+          "description": {
+            "type": "string",
+            "description": "控件的稳定外观和作用对象描述。"
+          },
+          "appearance_bbox": {
             "anyOf": [
               {
                 "type": "object",
@@ -128,9 +131,41 @@
             ],
             "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
           },
-          "description": {
+          "click_bbox": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "integer"
+                  },
+                  "top": {
+                    "type": "integer"
+                  },
+                  "right": {
+                    "type": "integer"
+                  },
+                  "bottom": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "left",
+                  "top",
+                  "right",
+                  "bottom"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "实际操作目标范围；与用于辨认的appearance_bbox分别填写，可省略。"
+          },
+          "icon_description": {
             "type": "string",
-            "description": "控件的稳定外观和作用对象描述。"
+            "description": "图标外观，用于历史辨认；没有图标时可省略。"
           }
         },
         "required": [
@@ -138,19 +173,12 @@
         ],
         "additionalProperties": false
       }
-    },
-    "uncertainties": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
     }
   },
   "required": [
     "foreground",
     "regions",
-    "controls",
-    "uncertainties"
+    "controls"
   ],
   "additionalProperties": false
 }

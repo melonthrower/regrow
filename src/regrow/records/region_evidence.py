@@ -34,8 +34,11 @@ def region_observation(proposal, evidence, image=None):
     return {**{key: deepcopy(proposal[key]) for key in ('description', 'bbox', 'state_description') if key in proposal}, 'image': image, **templates.assessment(proposal), 'evidence': deepcopy(evidence)}
 
 def control_observation(proposal, evidence, image=None, icon_image=None):
-    fields = {'description': 'description', 'may_open_content':'may_open_content', 'needs_exploration':'needs_exploration', 'bbox': 'bbox', 'click_bbox': 'click_bbox'}
-    return {**{dest: deepcopy(proposal[source]) for (dest, source) in fields.items() if source in proposal}, **templates.assessment(proposal), 'image': image, 'evidence': deepcopy(evidence)}
+    fields = {'description': 'description', 'icon_description': 'icon_description', 'click_bbox': 'click_bbox'}
+    result = {**{dest: deepcopy(proposal[source]) for (dest, source) in fields.items() if source in proposal}, **templates.assessment(proposal), 'image': image, 'evidence': deepcopy(evidence)}
+    if 'appearance_bbox' in proposal or 'bbox' in proposal:
+        result['appearance_bbox'] = deepcopy(templates.appearance_box(proposal))
+    return result
 
 def control_name(proposal):
     return proposal.get('name') or proposal.get('text') or proposal.get('description') or '未命名控件'
@@ -130,4 +133,4 @@ def region_records(graph, observation_ref=None):
 def graph_state(graph, observation_ref=None):
     observations = graph['observations']
     obs = next((o for o in observations if o['id'] == observation_ref)) if observation_ref else observations[-1]
-    return {'interactive_regions': obs.get('region_refs', []), 'next_action_mode': 'explore', 'observation': {'id': obs['id'], 'image': obs.get('frame'), 'control_refs': obs.get('control_refs', []), 'foreground': obs.get('foreground', {}), 'uncertainties': obs.get('uncertainties', [])}, 'action_history_supplied': graph.get('action_edges') is not None}
+    return {'interactive_regions': obs.get('region_refs', []), 'next_action_mode': 'explore', 'observation': {'id': obs['id'], 'image': obs.get('frame'), 'control_refs': obs.get('control_refs', []), 'foreground': obs.get('foreground', {})}, 'action_history_supplied': graph.get('action_edges') is not None}

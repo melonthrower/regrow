@@ -84,7 +84,7 @@ def accept_with_edits(root, run, job):
                 refreshed = refresh(root, run, job)
                 job = {**job, 'request': refreshed}
                 _record_write_json(Path(run) / 'calls' / job['call'] / 'effective_request.json', refreshed)
-            if job['stage'] in ('discovery', 'task_result_review'):
+            if job['stage'] in ('discovery',):
                 refreshed = refresh(root, run, job)
                 (_, records, _) = _record_load(run)
                 if job['stage'] == 'discovery':
@@ -105,8 +105,8 @@ def accept_candidate(root, run, job):
     from regrow.records import registration_diagnostics as _registration_diagnostics
     from regrow.prompts import frame_context as _frame_context
     from regrow.traversal import region_tasks as _region_tasks
-    from regrow.traversal import region_functions as _region_functions
-    from regrow.traversal import task_result_review as _task_result_review
+
+
     from regrow.traversal import step_repair as _step_repair
     from regrow.runtime import action_commands as _action_commands
     from regrow.traversal import action_context as _stepwise_flow
@@ -140,20 +140,16 @@ def accept_candidate(root, run, job):
         _registration_diagnostics.check(job['stage'], q, job['candidate'], records, binding, frame=frame)
     stage = job['stage']
     ref = job['call']
-    if stage in ('discovery', 'task_proposal', 'function_registration', 'task_result_review'):
+    if stage in ('discovery', 'task_proposal'):
         (snapshot, _, _) = _record_load(run)
         source = _record_read(snapshot / 'source.json')
-        tag = {'discovery': 'discovery-', 'task_proposal': 'task-plan-', 'function_registration': 'functions-', 'task_result_review': 'task-review-'}[stage] + ref
+        tag = {'discovery': 'discovery-', 'task_proposal': 'task-plan-'}[stage] + ref
         if source.get('stage') == tag:
             return _record_read(Path(run) / 'knowledge_current.json')
     if stage == 'discovery':
         return _discovery_step.commit(root, run, ref)
     if stage == 'task_proposal':
         return _region_tasks.commit_plan(root, run, ref)
-    if stage == 'function_registration':
-        return _region_functions.commit(root, run, ref)
-    if stage == 'task_result_review':
-        return _task_result_review.commit(root, run, ref)
     if stage == 'update':
         return _register_update.commit_update(root, run, ref, job['attempt'])
     if stage == 'action':
@@ -168,6 +164,11 @@ def accept_action(run, q, proposal, ref, records):
     from regrow.runtime import action_commands as _action_commands
     from regrow.recognition import ownership_review as _ownership_review
     from regrow.traversal import operation_blocking as _operation_blocking
+    if q.get('action_source', {}).get('call') == ref and 'received_control_labels' in q:
+        from regrow.recognition.named_references import _decode_references
+        labels = q['received_control_labels']
+        proposal = _decode_references(proposal, {name: cid for cid, name in labels.items()},
+                                     control_labels=labels)
     manifest = Path(run) / 'run_manifest.json'
     platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'
     jsonschema.validate(proposal, q['response_schema'])
@@ -236,7 +237,7 @@ def related(run, job):
         refs.update((binding.get(k) for k in ('region_ref', 'working_region', 'task_region')))
     if not refs:
         refs.add(state.get('working_region'))
-    if job['stage'] in ('action', 'task_proposal', 'function_registration'):
+    if job['stage'] in ('action', 'task_proposal') and not q.get('action_owner_candidates'):
         source = q.get('source', {})
         selected = {source.get('region'), source.get('task_region')}
         if any((r in records for r in selected)):
@@ -289,6 +290,8 @@ def record_capabilities(stage=None, request=None):
         return []
     if request.get('done_task_review'):
         return ['record_edit：reopen_task（给定原题）']
+    if request.get('action_owner_review'):
+        return ['record_edit：指定单笔动作的对象归属修订']
     result = []
     if stage != 'action':
         if request.get('control_observation_candidates'):
@@ -312,8 +315,6 @@ def context(run, job):
     from regrow.prompts import target_observation as _target_observation
     from regrow.prompts import map_prompt as _map_prompt
     from regrow.traversal import action_binding as _action_binding
-    if job['stage'] == 'shared_control_review':
-        return {'开放能力': ['edit_record/shared_behavior：核对已披露共享成员，解除该成员共享或依据证据保留共享；原动作不变']}
     records = related(run, job)
     (_, history_records, history_state) = _record_load(run)
     scope = _context_scope.for_request(job['request'], history_records, history_state)
@@ -343,9 +344,6 @@ def context(run, job):
         view = {'名称': name, '入口': owned_controls(region).get(task.get('control'), {}).get('name', region['name']), '状态': effective['status'], '覆盖任务': covered, '说明': task.get('reason') or task.get('name', ''), '类型': task.get('task_type'), '尝试事实': describe(effective, history_records)}
         return _map_prompt.task_view(job['request'], owner.get('id'), name, task, view)
     value = {'区块': [{'ref': r['id'], '名称': r['name'], '描述': r['description'], '控件': [{'ref': cid, '名称': c['name'], '说明': c.get('description', ''), '列表分组': group_name(r, cid), '视觉描述': c.get('icon_description') or next((row['icon_description'] for row in reversed(observation_history(c)) if row.get('icon_description') and not row.get('visual_only')), ''), '目标观察': target(c, observation), '已登记动作数': len(control_actions(r, cid))} for (cid, c) in owned_controls(r).items()], '任务': [task_view(r, n, t) for (n, t) in owned_tasks(r).items()]} for r in records.values()], '开放能力': ['修正本轮提案，提交范围见 proposal 要求', '补充一次观察，之后回原步骤', 'defer：提议暂挂当前局部问题，框架确认后选择其他已登记独立任务', *record_capabilities(job['stage'], job['request'])]}
-    if job['stage'] == 'function_registration':
-        for region in value['区块']:
-            region['历史登记描述（非当前状态）'] = region.pop('描述')
 
     if job['stage'] == 'task_proposal':
         value['区块'] = [{'ref': r['id'], '名称': r['name'], '控件可修订原值': [{'ref': cid, '名称': c['name'], 'description': c.get('description', ''), 'list_group': group_name(r, cid)} for cid, c in owned_controls(r).items()], '记录': '控件身份、完整任务目录和相关知识见原动态上下文；本次拒绝原因与被拒绝回复单独保留。'} for r in records.values()]
@@ -411,9 +409,9 @@ def context(run, job):
 def refresh(root, run, job):
     from regrow.traversal import discovery_step as _discovery_step
     from regrow.prompts import history_disclosure as _history_disclosure
-    from regrow.traversal import task_result_review as _task_result_review
+
     from regrow.recognition import locator as _locator
-    from regrow.traversal import region_functions as _region_functions
+
     from regrow.traversal import work_context as _work_context
     from regrow.traversal import task_proposer as _task_proposer
     from regrow.traversal import historical_inventory as _historical_inventory
@@ -425,19 +423,10 @@ def refresh(root, run, job):
     (_, records, state) = _record_load(run)
     stage = job['stage']
     old = _history_disclosure.restore(job['request'])
-    if stage == 'task_result_review':
-        current = (state.get('observation') or {}).get('image')
-        if not current:
-            raise ValueError('任务复核缺少当前已登记观察图')
-        return _task_result_review.request(root, run, old['source'], [str((Path(run) / current).resolve())])
     if stage == 'discovery':
         return _locator.request_from_run(root, run, work=old.get('work_context'))
-    if stage in ('task_proposal', 'function_registration'):
+    if stage in ('task_proposal',):
         rid = old['source']['region']
-        if stage == 'function_registration':
-            q = _region_functions.request(root, records[rid], state, records)
-            _work_context.attach(q, records, state, old.get('work_context'))
-            return q
         if stage == 'task_proposal' and old.get('historical_inventory'):
             saved = deepcopy(state)
             saved['observation'] = {'id': old['source']['observation'], 'image': old['screenshots'][0], 'control_refs': []}
@@ -481,15 +470,6 @@ def edit_record(root, run, job, edit):
                 raise ValueError('该复核调用已保存另一份修订，不能改写')
             return _record_read(Path(run) / 'knowledge_current.json')
         validate_review(run, job, edit, records)
-    if job['stage'] == 'shared_control_review':
-        if isinstance(edit, list):
-            raise ValueError('共享核对每次处理一个成员')
-        case = job['request']['shared_control_conflict']
-
-        def revise(records, state, snapshot, temp):
-            from regrow.records import shared_control_review as _shared_control_review
-            _shared_control_review.apply(records, state, case, edit, job['call'])
-        return _record_publish(run, 'shared-review-' + job['call'], revise)
     edits = edit if isinstance(edit, list) else [edit]
     if not edits:
         raise ValueError('empty record edits')
@@ -587,7 +567,7 @@ def edit_record(root, run, job, edit):
                 episode = migrations.setdefault(rid, {'source_region': rid, 'conflicts': {}, 'assignments': {}, 'targets': {}})
                 if names[0] in episode['assignments']:
                     raise ValueError('同一批次控件归属重复修订')
-                episode['assignments'][names[0]] = {'region': item['after'], 'description': records[targets[0]]['description'], 'evidence': item['evidence'], 'call': job['call']}
+                episode['assignments'][names[0]] = {'ref': targets[0], 'evidence': item['evidence'], 'call': job['call']}
                 episode['targets'][item['after']] = targets[0]
             elif field == 'merge_into':
                 targets = [item['after']] if item['after'] in owned_controls(r) else []
@@ -628,7 +608,7 @@ def edit_record(root, run, job, edit):
         merge_controls = set()
         for (source, episode) in migrations.items():
             for (cid, item) in episode['assignments'].items():
-                target = episode['targets'][item['region']]
+                target = item['ref']
                 name = owned_controls(records[source])[cid]['name']
                 collisions = {key for (key, c) in owned_controls(records[target]).items() if c['name'] == name}
                 matching = [m for m in merges if m['region'] == target and m['name'] == name and (owned_controls(records[target])[m['target']]['name'] == name) and (collisions <= m['sources'])]
@@ -698,7 +678,7 @@ def observe(runner, job):
     from regrow.traversal import step_repair as _step_repair
     discovery = _discovery_step
     reg = _register_update
-    if job['stage'] in ('action', 'task_proposal', 'function_registration', 'task_result_review'):
+    if job['stage'] in ('action', 'task_proposal'):
         return observe_registered(runner, job)
     if job['observations'] >= 1 and not job.get('observation_request'):
         raise ValueError('补观察已尝试；使用已保存证据，不重复调用')

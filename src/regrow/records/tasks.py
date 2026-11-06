@@ -166,15 +166,6 @@ def read(task, field, default=None):
         return task.audit.get(field, default)
     if field not in PRODUCTS:
         return task.get(field, default)
-    shared = task.get('shared_result')
-    if shared:
-        ref = shared['region'] + '/' + shared['task']
-        origin = task.store.tasks.get(ref)
-        if origin is not None and ref != task.ref and (not origin.get('shared_result')):
-            value = read(origin, field, default)
-            if field == 'knowledge_source' and value:
-                value = {**value, 'shared': True, 'local_execution': False}
-            return value
     record = target(task)
     if record is None:
         return default
@@ -288,13 +279,6 @@ def entry_value(entry):
 def merge_products(target, source):
     """A confirmed identity merge preserves both records' accepted information."""
     from regrow.records.object_store import observation_history
-    for field in ('may_open_content', 'needs_exploration'):
-        if field not in source:
-            continue
-        if field not in target:
-            target[field] = deepcopy(source[field])
-        elif source[field] != target[field]:
-            target[field] = None
     from regrow.records.control_knowledge import merge
     merge(target, source)
     values = parameters(target)
@@ -381,6 +365,10 @@ def equivalent_source(tasks, task):
     return canonical if canonical and (not canonical.get('equivalent_to')) and (kind(canonical) == kind(task)) and _control_context.same_use(canonical, task) else None
 
 def effective_task(tasks, task):
+    from regrow.records.shared_tasks import local_state
+    task = local_state(task)
+    if task is None:
+        return {'status': 'retired'}
     if not task.get('equivalent_to') or task.get('deferral', {}).get('retry_when') == 'explicit_task_ownership_review':
         return task
     canonical = equivalent_source(tasks, task)
@@ -414,25 +402,33 @@ def new_scope_controls(region):
     source = str(plan.get('source_call') or '')
     result = []
     if not source:
-        return result
+        # Ownership repair may bring reviewed controls into a Region which has
+        # never proposed tasks. Those controls do not cover its earlier scope.
+        return [cid for cid in owned_controls(region) if cid not in plan['controls']] if 'controls' in plan and 'inventory' not in plan else []
     for cid, control in owned_controls(region).items():
         if cid in plan.get('controls', []):
             continue
         first = next((row.get('evidence', {}) for row in observation_history(control)
                       if '/controls/' in row.get('evidence', {}).get('source_field', '')
                       and row.get('evidence', {}).get('region') in (None, region['id'])), {})
+        ownership = control.get('ownership_evidence', {})
+        if ownership.get('previous_region') and ownership.get('call'):
+            first = {'source_call': ownership['call']}
         if first.get('source_call') and str(first['source_call']) > source:
             result.append(cid)
     return result
 
 def inventory_required(region):
     from regrow.records.object_store import region_work
-    return bool(not region_work(region).get('task_inventory') or inventory_review(region)
+    plan = region_work(region).get('task_inventory') or {}
+    # Old plans used a tri-state value; its presence is only a historical
+    # proposal source, never a second completion decision.
+    checked = bool(plan.get('source_call')) or 'inventory' in plan
+    return bool(not checked or inventory_review(region)
                 or new_scope_controls(region) or proposal_gap(region))
 
 def coverage(region, records=None):
     from regrow.records.object_store import region_work, owned_controls, owned_tasks
-    from regrow.records import coverage_exemption as _coverage_exemption
     if region_work(region).get('out_of_scope_reason'):
         return {'inventory_complete': True, 'complete': False, 'excluded': True, 'pending': [], 'blocked': [], 'done': [], 'record_only': []}
     plan = region_work(region).get('task_inventory')
@@ -451,10 +447,12 @@ def coverage(region, records=None):
         if t.get('status') == 'blocked' and t.get('blocker', {}).get('condition') == 'prerequisite':
             blocked.append(name)
             continue
-        if t.get('coverage_exemption') and (not _coverage_exemption.valid(records or {region['id']: region}, t)):
+        if t.get('coverage_exemption'):
             pending.append(name)
             continue
         status = effective_task(tasks, t).get('status')
+        if status == 'retired':
+            continue
         if status == 'done':
             done.append(name)
         elif status == 'blocked':

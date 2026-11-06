@@ -21,7 +21,7 @@ class CandidateConflict(ValueError):
 
     def __init__(self, candidates):
         self.control_identity_candidates = candidates
-        super().__init__('同一当前对象与本区块多个历史身份相似；先按场景选择一个候选，再核对该对象的历史记录，不能按外观强行新建或合并')
+        super().__init__('当前控件“' + candidates[0]['current_name'] + '”与历史控件“' + '、'.join(p['old_name'] for p in candidates) + '”仍未区分；保留该对象未决，不自动合并或新建重复对象')
 
 def box(value):
     if not isinstance(value, dict):
@@ -44,21 +44,24 @@ def owner(records, request, proposal):
     labels = request.get('discovery_context', {}).get('region_names', request.get('region_names', {}))
     rid = labels.get(proposal['ref'], proposal['ref'])
     if rid in records:
-        return rid if not records[rid].get('behavior_context') or proposal.get('context_matches') is True else None
+        return rid
     matches = [rid for (rid, r) in records.items() if r['name'] == proposal['ref']]
     if len(matches) != 1:
         return None
     rid = matches[0]
-    return rid if not records[rid].get('behavior_context') or proposal.get('context_matches') is True else None
+    return rid
 
 def candidate_groups(controls, hits):
     """Separate one current position/multiple histories from repeated positions."""
-    associations = {i: [cid for (cid, hit) in hits.items() if any((same_position(box(c.get('bbox')), h['box']) for h in hit.get('candidates', [])))] for (i, c) in controls}
+    associations = {i: [cid for (cid, hit) in hits.items() if any((same_position(box(identity_templates.appearance_box(c)), h['box']) for h in hit.get('candidates', [])))] for (i, c) in controls}
     for (i, c) in controls:
         if c.get('ref') or c.get('identity') == 'uncertain':
             continue
         ids = associations[i]
         if not ids:
+            continue
+        if len(ids) > 1:
+            yield (i, ids)
             continue
         if any((not hits[cid].get('accepted') or hits[cid].get('candidates_truncated') or len(hits[cid].get('candidates', [])) != 1 or (sum((cid in row for row in associations.values())) != 1) for cid in ids)):
             continue
@@ -84,7 +87,10 @@ def candidates(records, snapshot, frame, request, reply):
             continue
         hits = {}
         observations = {}
+        labels = request.get('discovery_context', {}).get('control_names', {})
         for (cid, old) in owned_controls(records[rid]).items():
+            if any(c.get('ref') and labels.get(c['ref'], c['ref']) == cid for _, c in controls):
+                continue
             observed = identity_templates.latest(old)
             if not observed:
                 continue
@@ -100,25 +106,28 @@ def candidates(records, snapshot, frame, request, reply):
             hits[cid] = hit
             observations[cid] = observed
         for (ci, ids) in candidate_groups(controls, hits):
+            if len(ids) > 1:
+                yield [{'region': rid, 'control': cid, 'control_index': ci,
+                        'current_name': reply['controls'][ci].get('name', ''),
+                        'old_name': owned_controls(records[rid])[cid]['name']}
+                       for cid in ids]
+                continue
             group = []
             for cid in ids:
                 c = reply['controls'][ci]
                 old = owned_controls(records[rid])[cid]
                 observed = observations[cid]
                 source = observed.get('source_image')
-                old_box = box(observed.get('bbox'))
+                old_box = box(identity_templates.appearance_box(observed))
                 if not source or not old_box:
                     continue
                 source = (snapshot / source).resolve()
                 if not source.is_file():
                     continue
-                labels = request.get('discovery_context', {}).get('control_names', {})
-                if any((other.get('ref') and (labels.get(other['ref']) == cid or other['ref'] == cid) for (_, other) in controls)):
-                    continue
                 label = cid
                 if any((ref != cid and name == label for (name, ref) in labels.items())):
                     continue
-                pair = {'region': rid, 'control': cid, 'region_index': ri, 'control_index': ci, 'region_name': region['name'], 'region_ref': region['ref'], 'old_name': old['name'], 'ref': label, 'current_name': c.get('name', c.get('text', '')), 'current_box': box(c.get('bbox')), 'historical_box': old_box, 'historical_frame': str(source), 'current_frame': str(Path(frame).resolve()), 'historical_evidence': deepcopy(observed.get('evidence', {})), 'historical_description': observed.get('description', observed.get('icon_description', '')), 'snapshot': str(snapshot.resolve()), 'current_image': 1}
+                pair = {'region': rid, 'control': cid, 'region_index': ri, 'control_index': ci, 'region_name': region['name'], 'region_ref': region['ref'], 'old_name': old['name'], 'ref': label, 'current_name': c.get('name', c.get('text', '')), 'current_box': box(identity_templates.appearance_box(c)), 'historical_box': old_box, 'historical_frame': str(source), 'current_frame': str(Path(frame).resolve()), 'historical_evidence': deepcopy(observed.get('evidence', {})), 'historical_description': observed.get('description', observed.get('icon_description', '')), 'snapshot': str(snapshot.resolve()), 'current_image': 1}
                 identity = {k: pair[k] for k in ('region', 'control', 'current_box', 'historical_box', 'historical_frame', 'current_frame', 'snapshot')}
                 pair['key'] = hashlib.sha256(json.dumps(identity, sort_keys=True).encode() + source.read_bytes() + Path(frame).read_bytes()).hexdigest()
                 from regrow.records import control_history_context as control_history_context
@@ -159,7 +168,7 @@ def reused_candidates(records, snapshot, frame, request, reply):
             continue
         region = reply['regions'][ri]
         observed = identity_templates.latest(old)
-        if not observed or not observed.get('source_image') or (not box(observed.get('bbox'))):
+        if not observed or not observed.get('source_image') or (not box(identity_templates.appearance_box(observed))):
             continue
         source = (snapshot / observed['source_image']).resolve()
         template = (snapshot / observed['image']).resolve()
@@ -170,7 +179,7 @@ def reused_candidates(records, snapshot, frame, request, reply):
         hit = image_match.match_appearances(appearances, lambda path: image_match.locate(path, frame))
         if hit.get('accepted'):
             continue
-        pair = {'kind': 'reuse', 'region': rid, 'control': cid, 'region_index': ri, 'control_index': ci, 'region_name': records[rid]['name'], 'region_ref': region.get('ref'), 'old_name': old['name'], 'ref': cid, 'submitted_ref': ref, 'current_name': row.get('name', old['name']), 'current_box': box(row.get('bbox')), 'historical_box': box(observed['bbox']), 'historical_frame': str(source), 'current_frame': str(Path(frame).resolve()), 'historical_evidence': deepcopy(observed.get('evidence', {})), 'historical_description': observed.get('icon_description', ''), 'snapshot': str(snapshot.resolve()), 'current_image': 1}
+        pair = {'kind': 'reuse', 'region': rid, 'control': cid, 'region_index': ri, 'control_index': ci, 'region_name': records[rid]['name'], 'region_ref': region.get('ref'), 'old_name': old['name'], 'ref': cid, 'submitted_ref': ref, 'current_name': row.get('name', old['name']), 'current_box': box(identity_templates.appearance_box(row)), 'historical_box': box(identity_templates.appearance_box(observed)), 'historical_frame': str(source), 'current_frame': str(Path(frame).resolve()), 'historical_evidence': deepcopy(observed.get('evidence', {})), 'historical_description': observed.get('icon_description', ''), 'snapshot': str(snapshot.resolve()), 'current_image': 1}
         pair['current_candidates'] = [list(p['box']) for p in hit.get('candidates', []) if p.get('box')]
         pair['region_description'] = records[rid].get('description', '')
         identity = {k: pair[k] for k in ('kind', 'region', 'control', 'current_box', 'historical_frame', 'current_frame', 'snapshot')}
@@ -180,14 +189,11 @@ def reused_candidates(records, snapshot, frame, request, reply):
         yield pair
 
 def check(records, snapshot, frame, request, reply):
-    # Discovery and normal action updates already ask Luna to associate objects.
-    # Their registration paths still validate IDs, ownership and materialization;
-    # absence of a pixel match is not a second mandatory identity decision.
-    if (request.get('role') == 'observation' and request.get('discovery_context')
-            or request.get('role') == 'observation_update'):
-        return
+    normal = (request.get('role') == 'observation' and request.get('discovery_context')
+              or request.get('role') == 'observation_update')
     reviewed = {r['key']: r for r in request.get('control_identity_reviews', [])}
-    for pair in reused_candidates(records, snapshot, frame, request, reply):
+    # A valid normal reference is Luna's choice, not a pixel-match decision.
+    for pair in (() if normal else reused_candidates(records, snapshot, frame, request, reply)):
         if reviewed.get(pair['key'], {}).get('decision') == 'same':
             continue
         if reviewed.get(pair['key'], {}).get('decision') == 'different':
@@ -243,7 +249,7 @@ def review_material(job, original, pairs, *, candidate=None):
     return value
 
 def recorded_history(pair):
-    """Use the same frozen identity evidence in selection and comparison."""
+    """Use the frozen identity evidence in a comparison."""
     snapshot = pair.get('snapshot')
     if snapshot and (Path(snapshot) / 'runtime_state.json').is_file():
         from regrow.traversal import discovery_step as discovery_step
@@ -252,50 +258,8 @@ def recorded_history(pair):
         return control_history_context.comparison(records, pair['region'], pair['control'])
     return deepcopy(pair['context'])
 
-def selection_request(root, job, request):
-    """Choose one identity from its original task, scene and candidate history."""
-    group = deepcopy(job['control_identity_candidates'])
-    for pair in group:
-        pair['current_image'] = 1
-        pair['context'] = recorded_history(pair)
-    q = request
-    q['identity_candidate'] = deepcopy(job.get('candidate'))
-    if len({pair['current_frame'] for pair in group}) != 1:
-        raise ValueError('同一当前对象的候选必须来自同一原场景')
-    from regrow.prompts.frame_context import select
-    select(q, group[0]['current_frame'],
-           '原动作后图（身份候选选择）' if job['stage'] == 'update' else '原发现图（身份候选选择）')
-    q['control_identity_candidates'] = deepcopy(group)
-    q.update(role='control_identity_selection', stage='control_identity_selection')
-    from regrow.prompts.prompt_material import identity_needs
-    identity_needs(q, group, job.get('attempt'))
-    path = '纠错/控件身份候选选择.prompt'
-    part = {'path': path, 'text': (Path(root) / 'regrow/prompts' / path).read_text()}
-    q['fixed_parts'] = [part]
-    q['system_prompt'] = part['text']
-    q['response_schema'] = {'type': 'object', 'additionalProperties': False, 'properties': {'candidate': {'type': ['string', 'null'], 'enum': [p['ref'] for p in group] + [None]}, 'reason': {'type': 'string', 'minLength': 1}}, 'required': ['candidate', 'reason']}
-    dynamic = review_material(job, q['original_request'], group, candidate=q['identity_candidate'])
-    dynamic['本次目的'] = '为同一当前对象选择一个有依据的历史候选；本步不修提案或记录。'
-    dynamic['本区块同一当前对象的历史候选'] = {'区块': group[0]['region_name'], '当前对象': group[0]['current_name'], '当前图': group[0]['current_image'], '当前身份框': group[0]['current_box'], '候选': [{'candidate': p['ref'], '历史上下文': p['context']} for p in group]}
-    q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
-    return q
-
-def selected_pair(request, reply):
-    import jsonschema
-    jsonschema.validate(reply, request['response_schema'])
-    if not reply['reason'].strip():
-        raise ValueError('候选选择须说明当前场景依据')
-    if reply['candidate'] is None:
-        return None
-    selected = [p for p in request['control_identity_candidates'] if p['ref'] == reply['candidate']]
-    if len(selected) != 1:
-        raise ValueError('候选选择没有唯一对应本次本区块历史控件')
-    return {**deepcopy(selected[0]), 'candidate_count': len(request['control_identity_candidates']), 'selection_reason': reply['reason']}
-
 def attach(root, job, request):
     """Keep full native task/history/context; disclose only one historical object."""
-    if job.get('control_identity_candidates'):
-        return selection_request(root, job, request)
     pair = job.get('control_identity_pair')
     if not pair:
         return request
@@ -336,10 +300,6 @@ def attach(root, job, request):
         dynamic['本次目的'] = '确认本帧能否复用历史控件 ' + pair['ref'] + '。same表示该历史对象在当前前景中可确认；different表示本次引用了其他对象或历史对象不在当前前景；uncertain表示仍不能判断。different只撤回这条本帧引用，旧身份与历史保留。'
     if pair.get('kind') == 'reuse' and not pair.get('current_box'):
         dynamic['本次只核对这一对控件']['当前对象'] = {'图片': 1, '待复核的历史引用':pair['ref'], '所属区块':pair['region_name'], '该区块最近登记描述':pair.get('region_description',''), '本图外观位置候选':pair.get('current_candidates',[]), '说明':'本次没有已绑定的当前框；先在图1确认这个历史控件是否仍可辨认。候选位置只是找对象的线索，不是自动对应。不能自行改为旁边另一个控件进行比较。'}
-    if pair.get('selection_reason'):
-        if not any((row.get('identity_candidate') == pair['ref'] and same(row.get('reason'), pair['selection_reason']) for row in job.get('history', []))):
-            dynamic['候选选择依据'] = pair['selection_reason']
-        dynamic['复核边界'] = '这只是按场景选出的候选，仍须核对当前场景和历史依据；若发现不是同一对象，其他候选尚未排除，应保留uncertain，不轮换逐对试或直接新建。'
     q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     return q
 
@@ -360,7 +320,7 @@ def compared_candidate(request, reply):
         raise ValueError('身份比较缺少原单图候选')
     row = proposal['controls'][pair['control_index']]
     ri = row.get('region_index', pair['region_index'])
-    if box(row.get('bbox')) != pair['current_box'] or proposal['regions'][ri].get('ref') != pair['region_ref']:
+    if box(identity_templates.appearance_box(row)) != pair['current_box'] or proposal['regions'][ri].get('ref') != pair['region_ref']:
         raise ValueError('身份比较必须绑定原单图对象和所属区块')
     if pair.get('kind') == 'reuse':
         if row.get('ref') != pair.get('submitted_ref', pair['ref']):

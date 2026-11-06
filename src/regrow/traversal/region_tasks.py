@@ -10,7 +10,7 @@ from regrow.records.object_store import owned_controls
 
 def apply_plan(region, reply, call, scope_review=False, records=None, state=None, reviewed_controls=None, request=None):
     from regrow.traversal.task_proposer import proposal_schema
-    from regrow.records import task_assessments, task_plans, shared_controls
+    from regrow.records import task_assessments, task_plans
     from regrow.records.object_knowledge import apply as apply_knowledge
     from regrow.records.function_updates import apply_for_request
     from regrow.recognition.control_references import decode
@@ -21,10 +21,8 @@ def apply_plan(region, reply, call, scope_review=False, records=None, state=None
     basis = {'source_call': call, 'basis': 'observation_only', 'observation': (state or {}).get('observation', {}).get('id')}
     apply_knowledge(records, reply, basis)
     apply_for_request(records, request, reply, basis)
-    renamed = shared_controls.propose_instances(records, region['id'], reply.get('shared_instances', []), call, state=state)
     assessment = task_plans.apply(region, reply, call, records=records, state=state,
-        request=request, reviewed_controls=reviewed_controls, scope_review=scope_review, bindings=renamed)
-    shared_controls.refresh(records)
+        request=request, reviewed_controls=reviewed_controls, scope_review=scope_review)
     return assessment
 
 def commit_plan(root, run, call):
@@ -41,7 +39,7 @@ def commit_plan(root, run, call):
     def mutate(records, state, snapshot, temp):
         from regrow.traversal import historical_inventory as _historical_inventory
         from regrow.records import task_updates as _task_updates
-        from regrow.traversal import task_prerequisites as _task_prerequisites
+
         from regrow.records import tasks as _task_records
         from regrow.records import entry_observation as _entry_observation
         from regrow.traversal import inventory_scroll as _inventory_scroll
@@ -57,7 +55,7 @@ def commit_plan(root, run, call):
             raise ValueError('task inventory belongs to an old observation')
         from regrow.traversal import task_deferral
         assessments.update(apply_plan(records[rid], reply, call, scope_review='task_scope_review' if q.get('task_scope_review') else q.get('external_scope_review', False), records=records, state=None if q.get('historical_inventory') else state, reviewed_controls=q['source'].get('controls'), request=q))
-        _task_prerequisites.enroll(records, rid, call)
+
         active = state.get('active_task') or {}
         if active.get('region') == rid and owned_tasks(records[rid]).get(active.get('name'), {}).get('status') == 'done':
             state.pop('active_task', None)

@@ -1,3 +1,4 @@
+from regrow.recognition.identity_templates import appearance_box
 from regrow.records.object_store import region_work
 from regrow.records import object_store as object_store
 'Explicit duplicate-Region consolidation, preserving evidence and graph links.'
@@ -67,9 +68,14 @@ def merge(records, state, sources, target, *, snapshot, rebase, evidence):
                 raise ValueError('行为上下文不同，不能在合并时丢弃已记录差异')
             dst['behavior_context'] = src['behavior_context']
         dst.setdefault('merged_records', []).extend(src.get('merged_records', []))
-        dst['merged_records'].append({'id': source, 'name': src['name'], 'evidence': evidence, 'task_inventory': region_work(src).get('task_inventory')})
-        if src.get('local_knowledge'):
-            region_work(dst).setdefault('prior_local_knowledge', []).append(deepcopy(src['local_knowledge']))
+        dst['merged_records'].append({'id': source, 'name': src['name'], 'evidence': evidence,
+                                      'knowledge_ids': list(src.get('local_knowledge', {})),
+                                      'task_inventory': region_work(src).get('task_inventory')})
+        knowledge = dst.setdefault('local_knowledge', {})
+        for kid, paragraph in src.get('local_knowledge', {}).items():
+            if kid in knowledge and knowledge[kid] != paragraph:
+                raise ValueError('知识段落' + kid + '存在不同内容，需先核对后合并区块')
+            knowledge[kid] = paragraph
         del rs[source]
     from PIL import Image
     from regrow.records import control_records as controls
@@ -88,7 +94,7 @@ def merge(records, state, sources, target, *, snapshot, rebase, evidence):
                 break
             with Image.open(path) as im:
                 im = im.convert('RGB')
-                signatures.append((im.size, im.tobytes(), str((snapshot / observed['source_image']).resolve()) if observed.get('source_image') else cid, repr(observed['bbox']) if observed.get('bbox') else cid))
+                signatures.append((im.size, im.tobytes(), str((snapshot / observed['source_image']).resolve()) if observed.get('source_image') else cid, repr(appearance_box(observed)) if appearance_box(observed) else cid))
         if len(signatures) == len(ids) and len(set(signatures)) == 1:
             controls.merge(rs, st, target, ids[1:], ids[0])
         else:
@@ -96,11 +102,9 @@ def merge(records, state, sources, target, *, snapshot, rebase, evidence):
     rs = rewrite(rs, aliases)
     st = rewrite(st, aliases)
     dst = rs[target]
-    if dst.get('local_knowledge'):
-        region_work(dst).setdefault('prior_local_knowledge', []).append(dst.pop('local_knowledge'))
+    from regrow.records.region_knowledge import retarget
+    retarget(rs)
     region_work(dst).pop('function_inventory', None)
-    if 'task_inventory' in region_work(dst) and set(region_work(dst)['task_inventory'].get('controls', [])) != set(owned_controls(dst)):
-        region_work(dst)['task_inventory']['inventory'] = 'partial'
     st.pop('visual_navigation', None)
     records.clear()
     records.update(rs)

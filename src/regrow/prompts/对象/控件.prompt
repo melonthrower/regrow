@@ -1,17 +1,17 @@
 # 控件
 
 <!-- BEGIN_PROMPT_BLOCK id="control.definition" requires="" -->
-控件是承载操作的界面对象，例如按钮、输入框和可操作的列表项。能独立操作的部分分别识别，辅助标签与图标随对象保留；单纯的信息展示归所在区块。
-不同功能、操作目标或直接去向的独立入口分别保留身份，即使外观、布局和点击方式相同。
-正例：可点击的列表行是一个控件；行内另有独立的“更多”按钮时，它是另一个控件。
+控件是界面中能够独立操作的对象，例如按钮、输入框和可操作的列表项。识别时按照实际可操作的部分划分控件；辅助文字和图标随控件保留，仅用于展示的信息归所在区块。
+
+例如，一条列表记录可以整体点击，其中的“更多”按钮也可以独立操作，因此它们是两个控件。
 <!-- END_PROMPT_BLOCK id="control.definition" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.references" requires="" -->
-引用本次材料中的已有对象时使用给出的可读名称；同名对象按材料中的所属区块限定名称。名称只用于本次引用，不替代身份判断。
+引用已有控件时，使用本轮材料提供的“ID/名称”字符串，例如 `c001/提示音`。框架根据 ID 定位对象，并通过名称核对引用是否一致。本轮新登记的控件尚无 ID 时，使用其登记名称。
 <!-- END_PROMPT_BLOCK id="control.references" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.association" requires="" -->
-region_index：填写该控件所属区块在本次 regions 数组中的位置，从 0 开始。只修订已有控件知识时可仅给 ref、knowledge；对象已转入背景时也可这样更新。
+region_index 填写控件所属区块在本轮 regions 数组中的索引，从 0 开始。只更新已有控件知识时，使用 ref 引用对应控件即可。
 <!-- END_PROMPT_BLOCK id="control.association" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.identity" requires="control.definition" -->
@@ -21,28 +21,30 @@ region_index：填写该控件所属区块在本次 regions 数组中的位置�
 <!-- END_PROMPT_BLOCK id="control.identity" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_base" requires="" -->
-知识说明后续怎样使用对象完成操作，包括用途、操作方式、可选参数和必要条件。这些认识可以来自清楚的界面信息，也可以来自实际操作；保留适用范围和仍存在的具体疑问。
+控件知识记录已经了解的操作和用法，包括控件能完成什么功能、如何操作、可以指定哪些参数，以及使用时需要满足的条件。
+
+能够从界面直接确认的知识可以直接登记，实际操作也可以补充新的认识。尚需查明的问题交由探索任务管理。
 <!-- END_PROMPT_BLOCK id="control.knowledge_base" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_revision" requires="control.definition,control.references,control.knowledge_base" -->
-# 更新控件用法：controls
-ref 选择本轮提供的控件，knowledge 记录新增认识或对已有用法的修订。
+本轮获得新认识时，通过 ref 引用原控件，在 knowledge 中提交新增或需要修订的知识。新知识省略 index；修订已有知识用原条目的 index（从 0 开始），填写完整的新 description。其他知识保持不变，修订时省略 constraints 保留原参数说明。
+
+例如，已有知识 0 为“调整选中文字的字号。”，后续打开列表并完整看到 12、14、16，修订同一知识：
+```json
+{"controls":[{"ref":"c001/字体大小","knowledge":[{"index":0,"description":"调整选中文字的字号。","constraints":{"字号":{"description":"字号可选12、14、16。"}}}]}]}
+```
+不同的操作知识省略 index 追加；补充同一字号的候选仍修订 index:0。没有变化的知识无需重复输出。
 <!-- END_PROMPT_BLOCK id="control.knowledge_revision" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_constraints" requires="" -->
-knowledge[].constraints：用参数名作为键，description 说明后续任务可以指定什么、如何填写或选择，以及已知候选和必要条件。界面已给出的格式要求可以记录，描述以能够使用为准。修订知识时省略 constraints 会保留原参数说明。
-若条目表示同一操作允许选择的取值，例如符号、颜色或字体，应完整收集实际观察的候选、分类及适用条件，归到该选择部件的参数知识。未显示的候选继续观察后补充，不把部分列表写成完整范围。同质业务对象的实例列表不因此成为必须枚举的参数值域；各功能独有条件仍分别保留。
-正例："搜索词": {"description": "填写要查找的关键词。"}；"导出格式": {"description": "可选择 PDF 或纯文本。"}
+knowledge[].constraints 记录操作中可供指定的参数，供后续生成具有具体目标的指令。以参数名作为键，description 说明参数的设置方式、可指定的取值及必要条件。
+
+对于自由输入的参数，说明输入格式和范围；对于从候选项中选择的参数，记录已知选项及其适用条件。后续发现新选项时，补充到同一参数知识中。
+
+更新知识时，省略 constraints 表示保留原有参数说明。
 <!-- END_PROMPT_BLOCK id="control.knowledge_constraints" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.action_availability" requires="" -->
-当前可操作的对象应在当前界面中可见、可用，并且没有被其他界面遮挡。使用按键或返回时，同时考虑焦点所在位置。
-<!-- END_PROMPT_BLOCK id="control.action_availability" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.bbox" requires="control.definition,region.common" -->
-# 补充对象外观：objects
-每个指定对象返回一次，path 直接复制待补对象的名称；reason 说明无法可靠定位时缺少的依据。
-<!-- END_PROMPT_BLOCK id="control.bbox" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.add_image" requires="" -->
 add_image：已有控件出现值得保存的新外观或状态时填 true；image_conditions 描述这份外观适用的可见状态。只是位置、窗口大小或输入值变化时复用已有外观。
@@ -50,71 +52,59 @@ add_image：已有控件出现值得保存的新外观或状态时填 true；ima
 <!-- END_PROMPT_BLOCK id="control.add_image" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_index" requires="" -->
-knowledge[].index：修订旧知识时复制该条知识的序号，description 写修订后的完整内容，保留仍成立的用法；新增知识省略 index。未提交的旧知识保留。
+knowledge[].index 用于指定要修改的已有知识条目，填写材料中该条知识的序号，从 0 开始。修改时填写更新后的完整 description；新增知识时省略 index。其他未提交的知识保持不变。
 <!-- END_PROMPT_BLOCK id="control.knowledge_index" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.bbox_grounding" requires="" -->
-本次每个对象都填写 reason，说明原图中哪些文字、图标、所属界面或相邻对象支持这个定位；不确定时写明具体缺口。
-<!-- END_PROMPT_BLOCK id="control.bbox_grounding" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_description" requires="control.knowledge_base" -->
-knowledge 的每项 description 说明这个控件能做什么、怎样使用；用法只在特定情况下成立时，把适用情况写清。代表条目的说明写共同用法、适用的对象类型和实际观察到的代表；可结合对象结构和语义采用共同用法，不要求逐个实测才能复用；同时保留实际观察的代表，不声称其他实例已经操作。已有知识没有变化时省略更新。
-正例：“选中条目后，点击此按钮可删除选中的条目。”
+knowledge[].description 描述控件能够完成的操作，以及如何使用。操作需要特定对象或条件时，一并说明。
+
+对于同类控件可以复用的操作，说明共同用法及其适用对象。能够从界面确认的用法可以直接登记，不要求逐个实际操作；已有知识没有变化时无需重复更新。
 <!-- END_PROMPT_BLOCK id="control.knowledge_description" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.registration" requires="control.definition,control.identity,control.references" -->
+<!-- BEGIN_PROMPT_BLOCK id="control.registration" requires="control.definition,control.references" -->
 # 登记控件：controls
 报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。
 尽量覆盖视野内的功能区块和稳定操作部件。用于给同一操作选择参数值的网格或列表，按选择部件登记，取值完整写入它的 knowledge.constraints；其中独立的搜索、滚动或确认部件按实际职责保留。不同业务命令仍分别登记，不将整个菜单合成一个选择部件，也不为每个参数值复制控件树节点。
-大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。暂时无法确认身份时，在 uncertainties 说明具体对象和疑点。
+大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。用途明确时可直接登记知识；暂时无法确认时，knowledge 可以为空，后续再补充。
 正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。
 <!-- END_PROMPT_BLOCK id="control.registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration_ref" requires="" -->
-ref：已确认是材料中的旧控件时填写其名称；确认是新对象时省略。
+已登记的控件填写 ref；新发现的控件省略 ref。
 <!-- END_PROMPT_BLOCK id="control.registration_ref" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration_name" requires="" -->
-name 写稳定、简短的名称；description 只补充名称不足以表达的辨认特征。用途和操作规则写入 knowledge。
-正例：文件条目的 name 可写可见文件名，description 补充同名文件所在目录；命令按其自身标签命名，不把多个不同命令命名为一个代表项。
+name 填写界面中能够辨认控件的简短名称。需要区分同名控件时，在 description 中补充其所在位置或服务对象。控件的用途、操作方式和使用条件记录在 knowledge 中。icon_description 描述图标外观，辅助辨认历史控件。
 <!-- END_PROMPT_BLOCK id="control.registration_name" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.exploration_flags" requires="" -->
-may_open_content 表示这个控件能否打开或展开值得了解的应用内容。needs_exploration 表示控件自身是否还有值得在遍历阶段解决的具体未知：true 有，false 没有，null 尚不能判断；未亲点或流程尚未走完本身不是未知。
-正例：入口已知会打开设置面板，但面板内部尚未探索，可以是 may_open_content=true、needs_exploration=false。
-<!-- END_PROMPT_BLOCK id="control.exploration_flags" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.list_group" requires="" -->
-list_group：同一区块中可以共享交互认识的同类成员组，不表示身份相同。同组成员分别保留身份、图片和观察记录；是否选择代表探索，由任务提出结合已有知识和具体未知判断。
-不同业务命令不因点击方式、布局或控件类型相同而归为一组，普通独立命令可省略此字段。
-正例：两个文件条目可同属“文件结果”，各自的菜单按钮可同属“文件菜单按钮”；条目与菜单按钮仍是独立控件，某个文件的操作结果不代表另一个文件已执行。
+list_group 表示同一区块中具有共同操作方式、可以复用操作知识的一组同类控件。
+
+同组控件仍然是不同的实际对象，各自保留身份。已经了解的共同用法可以在适用条件下复用，不必为每个成员重复探索。
+
+例如，“工作表1”和“工作表2”都是工作表标签，具有共同的切换操作方式，可以属于“工作表标签”组；“新增工作表”按钮负责另一项独立功能，不属于该组。
+分组依据是成员的共同用途和操作方式，不是仅凭外观、位置或点击动作相同。组内成员保留各自身份；成员名称、当前数据和可见内容可以作为同一操作的不同目标。
+
+正例：多个普通文档条目都可以按相同方式打开，可登记为“文档条目”组；已知共同用法时不必逐个试验，但需要定位的文档仍保留具体控件。反例：导入、导出、打印虽然都是菜单中的可点击命令，却产生不同业务结果，不属于一个可互换的命令组。
 <!-- END_PROMPT_BLOCK id="control.list_group" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.box_coordinates" requires="" -->
-bbox 用原图整数 left、top、right、bottom 框住可供辨认的完整外观和必要标签。右、下边界不含在范围内，框须位于图内且有正面积。无法可靠辨认时填 null，并说明缺少的依据。
+appearance_bbox 用原图整数 left、top、right、bottom 框住供外观裁图和身份辨认的完整对象及必要标签。右、下边界不含在范围内，框须位于图内且有正面积。click_bbox 表示实际操作目标范围，不能代替外观裁图范围。无法可靠辨认时 appearance_bbox 填 null。
 正例：搜索框的范围包括输入区域和帮助辨认的标签。
 <!-- END_PROMPT_BLOCK id="control.box_coordinates" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.identity_selection" requires="control.identity" -->
-# 选择历史候选
-candidate 复制最有依据的候选值；无法选定时填 null。reason 写所比较的界面、服务对象与外观依据。
-正例：“该候选位于同一编辑表单，服务同一字段，值得进一步比较。”
-<!-- END_PROMPT_BLOCK id="control.identity_selection" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.identity_comparison" requires="control.identity" -->
-# 判断身份能否确认
-control_identity 是本轮身份结论：same 表示可以沿用给定历史身份；different 在本轮只有这一历史候选且有依据排除它时填写；uncertain 表示身份仍有未决部分。
-从多个历史候选中选出的一项被排除时，仍填 uncertain，reason 写清已排除的候选及剩余缺口。没有当前指认框时，围绕给定历史对象说明图1中的辨认依据。
-正例：“图1仍是同一播放器的同一按钮，只从播放切换为暂停，因此为 same。”
+# 比较当前与历史控件
+结合当前图与给定历史原图，返回 control_identity：same 表示同一控件，different 表示有依据确认不是同一控件，uncertain 表示仍不能确认。reason 简述两图中支持判断的依据。
+多个历史候选尚未排除时保留 uncertain，不自动选一个合并，也不据此新建重复对象。
 <!-- END_PROMPT_BLOCK id="control.identity_comparison" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.appearance_comparison" requires="control.identity,control.references" -->
+<!-- BEGIN_PROMPT_BLOCK id="control.appearance_comparison" requires="control.references" -->
 # 比较外观：comparisons
 每个给定 ref 返回一次。relation 选择 same_appearance（同一控件、相同外观）、new_appearance（同一控件的新状态外观）、different_control（不同控件）或 uncertain（无法确认）。
 historical_state、current_state 分别写两图可见状态；same/new 时均写清楚，new 的两条说明应能区分状态。reason 写图像依据或具体缺口。
 正例：historical_state 为“未选中，浅色背景”，current_state 为“已选中，背景高亮”，relation 为 new_appearance。
 <!-- END_PROMPT_BLOCK id="control.appearance_comparison" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="control.new_knowledge" requires="" -->
-新登记控件尚无用途依据时，knowledge 可以填 []，待实际观察或操作后补充。
-<!-- END_PROMPT_BLOCK id="control.new_knowledge" -->

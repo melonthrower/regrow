@@ -273,6 +273,12 @@ class Records(dict):
                 self.tasks[ref].audit.update(deepcopy(value))
         if any((cid not in self.controls for region in self.values() for cid in region['controls'])):
             raise ValueError('区块引用了不存在的控件')
+        from regrow.records.shared_tasks import normalize as retire_shared_tasks
+        retire_shared_tasks(self)
+        from regrow.records.task_updates import retire_preparations
+        retire_preparations(self)
+        from regrow.records.coverage_exemption import reconcile as retire_coverage
+        retire_coverage(self, {})
         from regrow.records.tasks import import_products
         import_products(self)
         from regrow.records.control_records import normalize

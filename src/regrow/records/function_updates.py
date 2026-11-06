@@ -12,15 +12,19 @@ def schema(regions=None):
     fields = {k: deepcopy(string) for k in ('name', 'description')}
     fields.update(supports={'type': 'array', 'minItems': 1, 'uniqueItems': True,
                            'items': string},
-                  constraints=deepcopy(strings))
+                  constraints=deepcopy(strings),
+                  target_role=deepcopy(string), access_entry=deepcopy(string))
+    changes = deepcopy(fields)
+    for key in ('target_role', 'access_entry'):
+        changes[key] = {'anyOf': [deepcopy(string), {'type': 'null'}]}
     region = deepcopy(string)
     if regions is not None:
         region['enum'] = list(regions)
     return {'type': 'array', 'items': obj({
         'region': region,
         'add': {'type': 'array', 'items': obj(fields, ('name','description','supports'))},
-        'update': {'type': 'array', 'items': obj({'ref': string, 'changes': obj(fields)}, ('ref','changes'))},
-        'remove': {'type': 'array', 'items': obj({'ref': string, 'reason': string, 'replace_with': string}, ('ref','reason'))},
+        'update': {'type': 'array', 'items': obj({'ref': string, 'changes': obj(changes)}, ('ref','changes'))},
+        'remove': {'type': 'array', 'items': obj({'ref': string, 'replace_with': string}, ('ref',))},
     }, ('region',))}
 
 
@@ -91,6 +95,10 @@ def _rewrite_refs(records, old, new):
 def apply(records, updates, source, allowed_regions=None):
     """Called in the normal publication transaction, after object knowledge edits."""
     import jsonschema
+    updates = deepcopy(updates)
+    for group in updates:
+        for row in group.get('remove', []):
+            row.pop('reason', None)  # Old accepted requests may still carry it.
     jsonschema.validate(updates, schema(allowed_regions))
     for group in updates:
         rid = group['region']
@@ -173,6 +181,17 @@ def _store(region, name, fields, source, previous=None):
         row['support_controls'] = support_rows(region,fields['supports'],source)
     elif not row.get('support_controls'):
         raise ValueError('首次更新旧功能时请明确它的对象知识支持')
+    for key in ('target_role', 'access_entry'):
+        if key in fields:
+            if fields[key] is None:
+                row.pop(key, None)
+            else:
+                row[key] = fields[key]
+    if row.get('access_entry'):
+        entry = support_rows(region, [row['access_entry']], source)[0].get('control')
+        if entry is None or entry not in {s.get('control') for s in row['support_controls']}:
+            raise ValueError('功能「' + name + '」的独立入口必须是本功能支持对象中的实际控件；配合输入、选择或确认不等于独立入口。')
+        row['access_entry'] = entry
     facts = catalog(region)
     constraints = parameter_references(region, fields.get('constraints', row.get('constraints', {})), row['support_controls'], source)
     controls = {s.get('control') for s in row['support_controls']}
@@ -203,21 +222,19 @@ def view(records, rid, refs=None):
         item['支持对象']=[s.get('name',s.get('control') or rid) for s in f.get('support_controls',[])]
         constraints=resolved_constraints(region, f)
         if constraints:item['参数知识引用']=constraints
+        if f.get('target_role'):item['预期目标职责']=f['target_role']
+        if f.get('access_entry'):item['独立入口']=f['access_entry']
         rows.append(item)
     return rows
 
 
 def apply_for_request(records, request, reply, source):
-    """Only a saved contract offering catalog edits retains the old write path.
-
-    Ordinary new contracts do not call apply(), including its historical task
-    reference scan. Saved legacy replies keep their full original obligations.
-    """
+    """Apply offered edits; an omitted/empty increment does not inspect old refs."""
     def offered(node):
         if isinstance(node, dict):
             return ('function_updates' in node.get('properties', {}) or
                     any(offered(child) for child in node.values()))
         return isinstance(node, list) and any(offered(child) for child in node)
-    if offered(request.get('response_schema', {})):
+    if reply.get('function_updates') and offered(request.get('response_schema', {})):
         apply(records, reply.get('function_updates', []), source,
               request.get('function_update_regions'))

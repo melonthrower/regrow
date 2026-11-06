@@ -1,7 +1,7 @@
 from regrow.records.snapshots import load as _record_load
 from regrow.records.snapshots import publish as _record_publish
 from regrow.records.object_store import region_work
-'Continue Region questions while retaining an incomplete task inventory.'
+'Continue explicit pending Region questions through observations.'
 from regrow.records.object_store import owned_tasks
 
 def eligible(region, task):
@@ -10,9 +10,7 @@ def eligible(region, task):
 
 def select(region, reply):
     from regrow.records.task_settlement import registration_kind
-    if reply.get('inventory') == 'complete':
-        return None
-    for row in reply.get('new_tasks', []):
+    for row in [*reply.get('task_update', []), *reply.get('new_tasks', [])]:
         if 'task' in row:
             from regrow.records.task_updates import reference
             for (name, task) in owned_tasks(region).items():
@@ -29,7 +27,7 @@ def select(region, reply):
 def target(records, state):
     chosen = state.get('active_task') or {}
     region = records.get(chosen.get('region'), {})
-    if region_work(region).get('task_inventory', {}).get('inventory') == 'partial' and eligible(region, owned_tasks(region).get(chosen.get('name'), {})):
+    if eligible(region, owned_tasks(region).get(chosen.get('name'), {})):
         return chosen['region']
     return None
 

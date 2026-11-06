@@ -295,7 +295,7 @@ def separate_map(request):
 def refresh(request):
     # Identity questions disclose their frozen subjects at the send boundary.
     # Keep the inherited page context for validation; do not append its raw view.
-    if request.get('role') in ('control_identity_selection', 'control_identity_comparison'):
+    if request.get('role') in ('control_identity_comparison',):
         return request
     from regrow.prompts.history_disclosure import structured_text
     request['user_prompt'] = structured_text(request)

@@ -1,10 +1,10 @@
 from regrow.records.object_store import region_work
-'Build task proposals from Region observations, history and shared tasks.'
+'Build task proposals and reusable functions from Region observations and history.'
 from regrow.records.object_store import owned_tasks
 from regrow.records.object_store import owned_controls
 import json
 
-def proposal_schema():
+def proposal_schema(regions=None):
     from regrow.records.task_plans import schema
     from regrow.records.task_updates import object_schema
     from regrow.records.object_knowledge import region_schema
@@ -12,10 +12,10 @@ def proposal_schema():
     string = {'type': 'string', 'minLength': 1}
     result = schema()
     result['properties'].update({
-        'shared_instances': {'type': 'array', 'items': object_schema({k: string for k in ('control', 'source_region', 'source_control', 'reason')})},
         'controls': {'type': 'array', 'items': object_schema({'ref': string, 'knowledge': control_schema()})},
         'regions': {'type': 'array', 'items': object_schema({'ref': string, 'local_knowledge': region_schema()})}})
-    result['required'].append('shared_instances')
+    from regrow.records.function_updates import schema as function_schema
+    result['properties']['function_updates'] = function_schema(regions)
     return result
 
 def plan_request(root, records, state, rid, *, work=None, current_scene=True):
@@ -31,36 +31,32 @@ def plan_request(root, records, state, rid, *, work=None, current_scene=True):
     work = work if work is not None else context.select(records, state, 'task_proposal', rid)
     state = context.reading_state(state, work)
     region = records[rid]
-    schema = proposal_schema()
+    from regrow.records.tasks import new_scope_controls, inventory_review, proposal_gap
+    prior = region_work(region).get('task_inventory', {})
+    scoped = not inventory_review(region) and not proposal_gap(region)
+    partial_scope = bool(scoped and prior and 'controls' in prior and not prior.get('source_call') and 'inventory' not in prior)
+    additional = new_scope_controls(region) if scoped else []
+    considered = additional if additional or partial_scope else list(owned_controls(region))
+    from regrow.records.region_knowledge import related
+    function_regions = list(related(records, [rid]))
+    schema = proposal_schema(function_regions)
     task_schema, material = task_context(records, state, rid, scope_review=work.get('kind') == 'scope_review')
     schema['properties'].update(task_schema['properties'])
     if 'task_update' not in task_schema['properties']:
         schema['properties'].pop('task_update', None)
+    if additional or partial_scope:
+        schema['properties']['new_tasks']['items']['properties']['control']['enum'] = additional or ['']
     from regrow.records.object_knowledge import fields as knowledge_fields
     schema['properties'].update(knowledge_fields(records, [rid]))
-    sharing = schema['properties']['shared_instances']['items']['properties']
-    if material.get('本次观察的未确认事项'):
-        material['本次观察的未确认事项'] = {
-            '来源与用途': '以下是观察时留下、尚未判断是否值得调查的候选线索，不是用户要求或已有任务。由你结合当前对象、已有知识及后续使用需要决定是否提出任务；不因原文写了尚未验证，就把它纳入结算条件。',
-            '观察原文': material['本次观察的未确认事项'],
-        }
-    sources = [(rid, cid) for cid in owned_controls(region)] + [(row['region'], row['control']) for row in material['可引用同类实例']]
-    if sources:
-        sharing['source_region'].update(enum=sorted({rr for rr, cid in sources}), description='来源区块ID。')
-        sharing['source_control'].update(enum=sorted({cid for rr, cid in sources}), description='来源控件ID。')
-        sharing['control'].update(enum=list(owned_controls(region)), description='当前区块中的控件ID。')
-    else:
-        schema['properties'].pop('shared_instances')
-        schema['required'].remove('shared_instances')
     dynamic = {'区块': region['name'], '描述': region['description'], '补充清点原因': context.inventory_reason(region_work(region).get('task_inventory', {}).get('review', {})), **material}
+    if additional:
+        dynamic['本次补充提出任务的控件'] = additional
     dynamic = {k: v for (k, v) in dynamic.items() if v not in (None, '', [], {})}
     if region.get('local_knowledge'):
         dynamic['已有区块知识'] = region['local_knowledge']
-    inventory = region_work(region).get('task_inventory', {})
-    if inventory.get('inventory') in ('partial', 'uncertain'):
-        dynamic['上次清点缺口'] = {key: inventory.get(key) for key in ('inventory', 'evidence')}
     parts = _prompt_rules.parts(root, 'task_proposal')
-    request = {'pipeline_step': 'discovery', 'stage': 'task_proposal', 'role': 'task_proposal', 'action_ready': False, 'system_prompt': '\n\n'.join((part['text'] for part in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'dynamic_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [state['observation']['image']], 'image_refs': [state['observation']['image']], 'response_schema': schema, 'fixed_parts': parts, 'source': {'region': rid, 'observation': state['observation']['id'], 'controls': list(owned_controls(region))}}
+    request = {'pipeline_step': 'discovery', 'stage': 'task_proposal', 'role': 'task_proposal', 'action_ready': False, 'system_prompt': '\n\n'.join((part['text'] for part in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'dynamic_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [state['observation']['image']], 'image_refs': [state['observation']['image']], 'response_schema': schema, 'fixed_parts': parts, 'source': {'region': rid, 'observation': state['observation']['id'], 'controls': considered}}
+    request['function_update_regions'] = function_regions
     _frame_context.label(request, state['observation']['image'], '本轮任务清点依据图')
     context.attach(request, records, state, work)
     _context_scope.for_request(request, records, state)

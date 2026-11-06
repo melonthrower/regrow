@@ -1,0 +1,38 @@
+# 遍历
+
+<!-- BEGIN_PROMPT_BLOCK id="traversal.exception" requires="" -->
+# 本轮遍历异常：exception
+exception 表示当前观察或动作是否遇到妨碍正常遍历的异常，由遍历流程用于决定继续登记还是进入恢复；它不是某个区块永久具有的状态。
+
+none：没有妨碍当前工作的异常。
+blocking_popup：系统提示、无关弹窗等妨碍必要观察或交互。
+system_error：系统或目标进程异常。
+unexpected_exit：目标应用意外退出。
+external_app：当前实际进入的内容不属于本次目标应用。
+unclassified：确定存在阻碍，但暂时无法归入以上类别。
+uncertain：尚不能确认所见现象是否构成异常，需要保留疑点。
+
+正常的业务菜单、参数选择列表、编辑对话框属于应用自身的界面变化，不因出现浮层就当成异常。
+
+正例：应用内的排序选项菜单正常展开，仍可继续认识选项：
+
+```json
+{
+  "foreground": {
+    "exception": "none"
+  }
+}
+```
+
+正例：系统更新提示遮住当前要操作的表单，需要先恢复：
+
+```json
+{
+  "action_result": {
+    "exception": "blocking_popup"
+  }
+}
+```
+
+以上仅展示 exception 所在的局部字段，其他必填字段仍按实际调用 Schema 输出。
+<!-- END_PROMPT_BLOCK id="traversal.exception" -->

@@ -65,7 +65,7 @@ def refine(controls, hits, frame, matcher):
     for c in controls:
         hit = hits.get(c['id'], {})
         source = c.get('source_image')
-        if hit.get('accepted') or hit.get('candidates_truncated') or len(hit.get('candidates', [])) < 2 or (not source) or (not Path(source).is_file()) or (not c.get('bbox')):
+        if hit.get('accepted') or hit.get('candidates_truncated') or len(hit.get('candidates', [])) < 2 or (not source) or (not Path(source).is_file()) or (not identity_templates.appearance_box(c)):
             continue
         groups.setdefault((c.get('region_ref'), str(Path(source).resolve())), []).append(c)
     result = dict(hits)
@@ -84,7 +84,7 @@ def refine(controls, hits, frame, matcher):
             if len(group) > 1:
                 components.append(group)
         for group in components:
-            boxes = [[c['bbox'][k] for k in ('left', 'top', 'right', 'bottom')] for c in group]
+            boxes = [[identity_templates.appearance_box(c)[k] for k in ('left', 'top', 'right', 'bottom')] for c in group]
             if any((overlap(a, b) > 0 for (i, a) in enumerate(boxes) for b in boxes[i + 1:])):
                 continue
             with Image.open(source) as im:

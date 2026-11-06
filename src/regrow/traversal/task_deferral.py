@@ -45,14 +45,9 @@ def choose(records, state):
 def yield_pending(run, job):
     """Keep unrelated unexecuted work without occupying the next task."""
     stage = job.get('stage')
-    if (stage not in ('action', 'task_proposal', 'function_registration',
-                      'task_result_review', 'shared_control_review')
+    if (stage not in ('action', 'task_proposal')
             or job.get('attempt') or (Path(run) / 'execution_pending.json').exists()
             or job.get('status') in ('complete', 'deferred')):
-        return False
-    if (stage == 'task_result_review' and job.get('status') == 'initial'
-            and not job.get('service_failure') and job.get('service_resume_history')
-            and job['service_resume_history'][-1].get('explicit_retry')):
         return False
     from regrow.traversal.traversal_scheduler import select_work, reviews_task
     _, records, state = _record_load(run)
@@ -65,7 +60,7 @@ def yield_pending(run, job):
     q = job['request']
     if q.get('task_scope_review') or q.get('external_scope_review'):
         return False
-    if stage in ('action', 'task_result_review'):
+    if stage in ('action',):
         source = q.get('source', {})
         reviewed = {'region': source.get('task_region') or source.get('region'),
                     'name': source.get('task_name')}
@@ -77,14 +72,6 @@ def yield_pending(run, job):
         if (reviewed == task or reviewed == {'region': dependency.get('region'), 'name': dependency.get('task')}
                 or reviewed == {'region': preparation.get('region'), 'name': preparation.get('task')}
                 or task == {'region': supports.get('region'), 'name': supports.get('task')}):
-            return False
-    elif stage == 'shared_control_review':
-        from regrow.records.shared_control_review import relevant
-        case = q.get('shared_control_conflict', {})
-        group = records.get(case.get('owner'), {}).get('shared_controls', {}).get(case.get('name'))
-        scope = {'role': 'action_selection', 'source': {
-            'region': decision['region'], 'task_region': task['region'], 'task_name': task['name']}}
-        if group and relevant(group, scope, records):
             return False
     from regrow.traversal.step_repair import atomic
     from regrow.runtime.reply_correction import abandon
@@ -110,23 +97,20 @@ def defer(run, job, reason, *, selected_task=None, retry_when=None):
     if job.get('attempt') or (Path(run) / 'execution_pending.json').exists():
         return None
     stage = job['stage']
-    if stage not in ('action', 'task_proposal', 'function_registration', 'task_result_review', 'shared_control_review'):
-        return None
-    if stage == 'shared_control_review' and selected_task is None:
+    if stage not in ('action', 'task_proposal'):
         return None
     discovery = _discovery_step
     (_, records, state) = _record_load(run)
     q = job['request']
     source = q.get('source', {})
-    rid = (q.get('shared_control_conflict', {}).get('owner') if stage == 'shared_control_review'
-           else source.get('task_region') or source.get('region'))
+    rid = source.get('task_region') or source.get('region')
     obs = state.get('observation') or {}
     visible = state.get('interactive_regions', [])
     if rid not in records:
         return None
     name = source.get('task_name')
-    if stage in ('action', 'task_result_review'):
-        statuses = ('pending', 'blocked') if stage == 'task_result_review' or selected_task or retry_when else ('pending',)
+    if stage in ('action',):
+        statuses = ('pending', 'blocked') if selected_task or retry_when else ('pending',)
         if name not in owned_tasks(records[rid]) or owned_tasks(records[rid])[name].get('status') not in statuses:
             return None
     episode = job['path']
@@ -145,10 +129,10 @@ def defer(run, job, reason, *, selected_task=None, retry_when=None):
         failure = job.get('service_failure')
         if failure:
             evidence.update(source_call=failure['call'], trigger={'kind': 'model_service_error', **deepcopy(failure)})
-        if stage in ('action', 'task_result_review'):
+        if stage in ('action',):
             task = owned_tasks(region)[name]
             retained_blocker = None
-            if stage == 'task_result_review' or task.get('status') == 'blocked':
+            if task.get('status') == 'blocked':
                 if task.get('blocker', {}).get('condition') not in (None, 'review_required'):
                     retained_blocker = deepcopy(task['blocker'])
                 for field in ('blocker', 'deferral'):
@@ -159,10 +143,7 @@ def defer(run, job, reason, *, selected_task=None, retry_when=None):
                 task['blocker'] = retained_blocker
             if state.get('active_task') == {'region': rid, 'name': name}:
                 state.pop('active_task', None)
-        elif stage != 'shared_control_review':
-            if stage == 'function_registration':
-                from regrow.traversal.region_functions import signature
-                evidence['evidence_digest'] = signature(region, records)
+        else:
             if stage == 'task_proposal' and scope_review_pending(region):
                 evidence['scope_change'] = region_work(region)['task_inventory']['review']['change']
                 evidence['controls'] = list(owned_controls(region))
@@ -288,7 +269,7 @@ def runnable(region, records=None):
         return False
     return inventory_evidence_changed(region)
 
-def choose_unfinished(records, state):
+def choose_unfinished(records, state, *, regions=None):
     """Select known unfinished Regions, including those without task inventories."""
     from regrow.traversal import action_context as _stepwise_flow
     if state.get('next_action_mode') not in ('explore', 'discover'):
@@ -298,6 +279,8 @@ def choose_unfinished(records, state):
     current = state.get('working_region')
     choices = []
     for (rid, region) in records.items():
+        if regions is not None and rid not in regions:
+            continue
         if rid == current or not runnable(region, records):
             continue
         visible = rid in state.get('interactive_regions', [])

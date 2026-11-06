@@ -37,7 +37,11 @@ def attempts(task, records):
         (region, action) = matches[0]
         target = owned_controls(region).get(action.get('control'), {}).get('name', region.get('name', ''))
         delivery = '已执行' if action.get('delivery') == 'executed_receipt_zero' else '执行情况未确认'
-        result = action.get('result', {}).get('description') or '尚无已登记的观察结果'
+        result = action.get('result', {}).get('description')
+        if not result:
+            from regrow.records.action_evidence import has_observed_result
+            result = ('已登记动作后观察：' + action['evidence']['after_observation']
+                      if has_observed_result(action) else '尚无已登记的观察结果')
         if action.get('text_delivered') is False:
             result = '文字尚未发送；' + result
         lines.append(f"{delivery} {action.get('operation') or '动作类型未登记'}「{target}」；观察：{result}")
@@ -61,6 +65,22 @@ def findings(records, state, task_region, name, task):
             lines.append(f"- {records[rid]['name']} / {n} / {key}：" + json.dumps(detail, ensure_ascii=False))
             refs.append({'region': rid, 'task': n, 'finding': key, 'displayed': {f: fact[f] for f in fields if f in fact}, 'source': fact.get('source', {})})
     return (lines, refs)
+
+def region_states(region, limit=3):
+    """Recall recent distinct observed states with their existing provenance."""
+    rows = []
+    seen = set()
+    for event in reversed(observation_history(region)):
+        text = event.get('state_description', '').strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        rows.append({'说明': text, '来源': deepcopy(event.get('evidence', {})),
+                     **({'来源图': event['source_image']} if event.get('source_image') else {})})
+        if len(rows) == limit:
+            break
+    return list(reversed(rows))
+
 
 def identity_candidates(records, state, binding, visual_hits, source_destinations=None):
     """Disclose local identity context; backend matching still sees all records."""
@@ -117,9 +137,9 @@ def identity_candidates(records, state, binding, visual_hits, source_destination
         knowledge_owners = {binding.get('region_ref'), binding.get('working_region'), binding.get('task_region')}
         if rid in knowledge_owners and region.get('local_knowledge'):
             row['local_knowledge'] = deepcopy(region['local_knowledge'])
-        state_row = next((v for v in reversed(observation_history(region)) if v.get('state_description')), None)
-        if state_row:
-            row['历史状态观察'] = {'说明': state_row['state_description'], '来源': state_row.get('evidence', {}).get('observation')}
+        states = region_states(region)
+        if states:
+            row['历史状态观察'] = states
         if region.get('behavior_context'):
             row['行为适用上下文'] = region['behavior_context']
         if region.get('distinct_regions'):
@@ -130,9 +150,8 @@ def identity_candidates(records, state, binding, visual_hits, source_destination
 
 def disclose(region, control, records):
     from regrow.records import navigation as _entry_evidence
-    from regrow.records import shared_controls as shared
     hits = _entry_evidence.known_entries(region, control, 'click')
-    return [{'已观察结果': h['description'], '已知目的区块': records.get(h['destination_region'], {}).get('name', h['destination_region']), '适用条件': h['conditions'], '用途': '当前截图满足适用条件才复用此入口；不同条件的用途不互相覆盖。条件符合时无需重新验证。'} for h in hits[-2:]] + shared.disclose(records, region['id'], control)
+    return [{'已观察结果': h['description'], '已知目的区块': records.get(h['destination_region'], {}).get('name', h['destination_region']), '适用条件': h['conditions'], '用途': '当前截图满足适用条件才复用此入口；不同条件的用途不互相覆盖。条件符合时无需重新验证。'} for h in hits[-2:]]
 
 def related(region, control, records):
     """Recall same-name entry evidence for interpretation, never transfer status."""
@@ -313,8 +332,6 @@ def question(region, name, task, *, detailed=True):
     if task.get('equivalent_to'):
         row['equivalent_to'] = task['equivalent_to']
     row.update(assessment_context(task))
-    if task.get('shared_result') or task.get('shared_task_ref'):
-        row['共享知识来源'] = deepcopy_value(task.get('shared_result') or task['shared_task_ref'])
     return row
 
 def question_state(task):

@@ -17,9 +17,6 @@ def supported(region, records=None):
                 continue
             if completion_target(owner, task)['region'] != region['id']:
                 continue
-            ref = task.get('shared_result')
-            if ref and (not completed(owned_tasks(records.get(ref['region'], {})).get(ref['task'], {}))):
-                continue
             result[name if rid == region['id'] else rid + '/' + name] = task
     return result
 
@@ -51,9 +48,7 @@ def entries(region, records):
 def card(region, records):
     knowledge = region.get('local_knowledge', {})
     from regrow.records.region_knowledge import text
-    from regrow.traversal.region_functions import review_current
-    current = review_current(region, records)
-    return {'region': region['id'], 'name': region['name'], 'summary': text(region), 'status': 'summarized' if current else 'needs_review' if knowledge or region.get('functions') else 'not_summarized'}
+    return {'region': region['id'], 'name': region['name'], 'summary': text(region), 'status': 'registered' if knowledge or region.get('functions') else 'not_registered'}
 
 def disclose(records, rid):
     """Read this Region in detail, but only each direct destination's own summary."""
@@ -63,7 +58,11 @@ def disclose(records, rid):
     from regrow.records.function_updates import resolved_constraints
     functions = {name: {**deepcopy(value), 'constraints': resolved_constraints(region, value)}
                  for name, value in region.get('functions', {}).items()}
-    return {'self': own, 'knowledge': deepcopy(region.get('local_knowledge', {})) if current else {}, 'constraints': deepcopy(region.get('constraints', {})), 'functions': functions, 'entries': [{**edge, 'destination': card(records[edge['region']], records)} for edge in entries(region, records)]}
+    from regrow.records.region_knowledge import context
+    return {'self': own, 'knowledge': deepcopy(region.get('local_knowledge', {})) if current else {},
+            'related_knowledge': [row for row in context(records, [rid]) if row['ref'] != rid],
+            'constraints': deepcopy(region.get('constraints', {})), 'functions': functions,
+            'entries': [{**edge, 'destination': card(records[edge['region']], records)} for edge in entries(region, records)]}
 
 def parameter_support(region, records):
     """Only explicit local parameter needs disclose foreign facts, never graph closure."""

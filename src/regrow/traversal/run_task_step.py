@@ -52,7 +52,6 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
     from regrow.recognition import ownership_review as _ownership_review
     from regrow.traversal import suspended_updates as _suspended_updates
     from regrow.records import task_settlement as _task_settlement
-    from regrow.records import shared_control_review as _shared_control_review
     (root, run, out) = (Path(root).resolve(), Path(run).resolve(), Path(out).resolve())
     out.mkdir(parents=True, exist_ok=False)
     manifest = read(run / 'run_manifest.json')
@@ -141,11 +140,6 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         pending = work['pending']
         refresh_dispatch_review(pending)
         resumed = repair.perform(pending['stage'])
-        if resumed['stage'] in ('task_result_review', 'shared_control_review'):
-            write_json(out / 'result.json', {'status': 'ready_next_round', 'calls': calls, 'gui_actions': 0, 'task_result_review': resumed['result']})
-            transport.account['status'] = 'ready_next_round'
-            transport.save()
-            return
     state = _record_load(run)[2]
     if state.get('reason') in ('historical_update_registered', 'result_registration_deferred', 'delivery_deferred') and state.get('next_action_mode') == 'discover':
         trigger = 'delivery-resume-' if state.get('reason') == 'delivery_deferred' else 'historical-update-'
@@ -188,12 +182,6 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
             transport.account['status'] = 'paused_after_rediscovery'
             transport.save()
             return
-    if q.get('stage') == 'task_result_review':
-        reviewed = repair.perform('task_result_review', q)
-        write_json(out / 'result.json', {'status': 'ready_next_round', 'calls': calls, 'gui_actions': 0, 'task_result_review': reviewed['result']})
-        transport.account['status'] = 'ready_next_round'
-        transport.save()
-        return
     write_json(out / 'action_request.json', q)
     if not q['action_ready']:
         write_json(out / 'result.json', {'status': q['stage'], 'calls': calls, 'gui_actions': 0})
@@ -275,10 +263,6 @@ def finalize_knowledge(root, run, out, *, max_http=6):
     from regrow.traversal import historical_inventory as _historical_inventory
     return _finalize_records(root, run, out, _historical_inventory.request, max_http=max_http)
 
-def finalize_functions(root, run, out, *, max_http=6):
-    """Explicit catalog phase; never selected by ordinary traversal/session idle."""
-    from regrow.traversal.region_functions import next_request
-    return _finalize_records(root, run, out, next_request, max_http=max_http)
 
 def _finalize_records(root, run, out, select_request, *, max_http):
     """Shared zero-GUI execution/accounting for explicit record phases."""

@@ -5,6 +5,13 @@ from regrow.records.object_store import owned_tasks
 import json
 from pathlib import Path
 
+def has_observed_result(action):
+    """Accepted result tied to an actual delivery and its original after-frame."""
+    evidence = action.get('evidence', {})
+    return bool(action.get('delivery') == 'executed_receipt_zero'
+                and evidence.get('result_call') and evidence.get('after_observation')
+                and evidence.get('after_image') and 'exception' in action.get('result', {}))
+
 def resolve_operations(records, run):
     for (rid, region) in records.items():
         for (aid, action) in owned_actions(region).items():

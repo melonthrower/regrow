@@ -1,3 +1,4 @@
+from regrow.recognition.identity_templates import appearance_box
 from regrow.paths import SOURCE_ROOT
 'Read-only acceptance diagnostics. Report independent errors before publication.'
 from regrow.records.object_store import owned_tasks
@@ -138,13 +139,7 @@ def visibility_errors(reply, region_refs, changes, names=None):
                 for i, control in enumerate(reply.get('controls', []))
                 if not control_only(control) and type(control.get('region_index')) is int
                 and 0 <= control['region_index'] < len(region_refs) and control['region_index'] not in selected]
-    current = {region_refs[c['region_index']] for c in reply.get('controls', []) if isinstance(c.get('region_index'), int) and 0 <= c['region_index'] < len(region_refs)} - {None}
-    errors = []
-    for (i, change) in enumerate(changes):
-        if change.get('region') not in current or change.get('state') not in ('not_visible', 'visible_background_blocked', 'uncertain'):
-            continue
-        errors.append(dict(code='region_visibility_conflict', path=f'/previous_regions/{i}/state', object=reply['previous_regions'][i]['ref'], actual=change['state'], expected='本轮登记当前控件的同一区块与其可交互状态一致', repair='按当前图核对复用身份、可交互状态及控件观察；不能同时登记该区块当前控件又称其不可见、被接管或状态未知。修正有误字段或撤回无依据观察，不为通过校验直接改成可交互。仅归属引用且无本轮直接控件的父区块可保留原状态。'))
-    return errors
+    return []
 
 def check_visibility(reply, region_refs, changes, names=None):
     errors = visibility_errors(reply, region_refs, changes, names)
@@ -175,9 +170,9 @@ def parent_cycles(records, rows, refs):
         if 'parent_index' not in row:
             continue
         parent = row['parent_index']
-        if parent is not None and (not isinstance(parent, int) or not 0 <= parent < len(nodes)):
+        if parent is not None and not (type(parent) is int and 0 <= parent < len(nodes) or isinstance(parent, str) and parent in records):
             continue
-        target = nodes[parent] if parent is not None else None
+        target = nodes[parent] if type(parent) is int else parent
         if target != edges.get(nodes[i]):
             changed.add(nodes[i])
         edges[nodes[i]] = target
@@ -228,8 +223,8 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             previous = r.get('ref')
             rid = None
             parent = r.get('parent_index')
-            if parent is not None and (not isinstance(parent, int) or not 0 <= parent < len(p['regions']) or parent == i):
-                add('parent_region', f'/regions/{i}/parent_index', r['name'], parent, '其他已提交区块索引或null', '只登记实际容器关系，不虚构父区块。')
+            if parent is not None and not (type(parent) is int and 0 <= parent < len(p['regions']) and parent != i or isinstance(parent, str) and parent in records):
+                add('parent_region', f'/regions/{i}/parent_index', r.get('name', previous), parent, '已有区块或本次唯一父区块引用', '只登记实际容器关系，不虚构父区块。')
             if stage == 'discovery':
                 if r.get('identity') == 'same':
                     rid = ctx.get('region_names', {}).get(previous)
@@ -244,9 +239,10 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if previous and rid not in records:
                 add('unknown_region', f'/regions/{i}/ref', r['name'], previous, list(ctx.get('region_names', {})) if stage == 'discovery' else list(q.get('region_names') or [v['name'] for v in records.values()]), '使用本轮提供的区块ID。')
             rids.append(rid)
-            from regrow.records.object_knowledge import region_only
-            if i in selected and not region_only(r) and rid in records and records[rid].get('behavior_context') and (r.get('context_matches') is not True):
-                add('region_context', f'/regions/{i}/context_matches', r['name'], r.get('context_matches'), records[rid]['behavior_context'], '根据当前截图核对历史适用上下文。匹配才复用；不同则选择正确候选或登记有依据的新区块；不清楚则补观察，不因外观相似填写true。')
+        for index, rid in enumerate(rids):
+            if rid is not None and rid in rids[:index]:
+                add('duplicate_region', f'/regions/{index}/ref', records[rid]['name'], rid,
+                    '同一区块只登记一次', '将该区块的状态、控件和知识合在同一条区块记录中，不另建相同区块。')
         for i, member in enumerate(p.get('current_regions', [])):
             path = f'/current_regions/{i}'
             if 'region_index' in member:
@@ -263,19 +259,8 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                     add('current_region', path + '/ref', ref, ref, list(q.get('region_names') or records),
                         '已有区块使用给定ref；新区块先填入regions，再用region_index引用。')
                     continue
-            if rid in records and records[rid].get('behavior_context'):
-                observations = [j for j, old in enumerate(rids) if old == rid and not region_only(p['regions'][j])]
-                if not observations:
-                    add('region_context', path, rid, member, records[rid]['behavior_context'],
-                        '在regions中引用该区块并核对context_matches，再将该行列入current_regions。')
-        changes = []
-        for (i, previous) in enumerate(p.get('previous_regions', [])):
-            ids = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [previous['ref']] if previous['ref'] in records else []
-            changes.append({'region': ids[0] if len(ids) == 1 and ids[0] in records else None, 'state': previous.get('state')})
-            if len(ids) == 1 and records[ids[0]].get('behavior_context') and (previous.get('state') in ('retained_interactive', 'changed_interactive')) and (previous.get('context_matches') is not True):
-                add('region_context', f'/previous_regions/{i}/context_matches', previous['ref'], previous.get('context_matches'), records[ids[0]]['behavior_context'], '保留旧区块在当前前景也必须核对适用上下文；不匹配不要恢复旧控件，按动作后图报告实际区块。背景或不可见状态无需此确认；前景展示区不要求有控件。')
         if stage == 'update':
-            errors.extend(visibility_errors(p, rids, changes, q.get('region_names')))
+            errors.extend(visibility_errors(p, rids, [], q.get('region_names')))
         for (index, names) in parent_cycles(records, p.get('regions', []), rids):
             add('parent_cycle', f'/regions/{index}/parent_index', p['regions'][index]['name'], names, '合并已保留关系后无父子环', '依据实际容器关系修正父级；省略会保留旧关系，无父容器时使用null。')
         seen = {}
@@ -297,10 +282,10 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             region = records.get(rid, {})
             controls = owned_controls(region)
             obj = (region.get('name') or p['regions'][idx]['name']) + ' → ' + name
-            cb = c.get('bbox')
+            cb = appearance_box(c)
             for (j, other) in enumerate(p.get('controls', [])[:i]):
                 oi = other.get('region_index')
-                ob = other.get('bbox')
+                ob = appearance_box(other)
                 same_control = bool(previous and previous == other.get('ref'))
                 if not same_control and oi != idx and isinstance(oi, int) and (0 <= oi < len(rids)) and cb and (cb == ob) and (name == (other.get('name') or other.get('text', ''))) and (p['regions'][idx].get('parent_index') == oi or p['regions'][oi].get('parent_index') == idx):
                     add('duplicate_control_owner', path, obj, {'other': f'/controls/{j}', 'box': cb}, '父子区块同一物理控件只保留一个归属', '核对后只提交实际所属区块中的一份控件；已有重复记录通过现有移动/合并接口保留历史。不同物理对象不可合并。')
@@ -348,13 +333,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if conflicts:
                 add('existing_control_conflict', path + '/name', obj, name, {'matching_records': conflicts}, '核对旧对象后复用；已重复登记用merge_into保留历史；不同对象用可区分名称。')
     errors.extend(task_reference_errors(stage, q, p, records))
-    if stage == 'update' and binding:
-        owner = records.get(binding.get('task_region', binding.get('region_ref')), {})
-        task = owned_tasks(owner).get(binding.get('task_name'), {})
-        for (i, previous) in enumerate(p.get('previous_regions', [])):
-            matches = [q['region_names'][previous['ref']]] if previous['ref'] in q.get('region_names', {}) else [previous['ref']] if previous['ref'] in records else []
-            if len(matches) != 1 or matches[0] not in records:
-                add('previous_region', f'/previous_regions/{i}/ref', previous['ref'], previous['ref'], list(q.get('region_names') or [v['name'] for v in records.values()]), '按本轮候选区块编号报告可见性。')
     return {'errors': errors, 'unchecked': unchecked}
 
 def task_reference_errors(stage, q, p, records):
@@ -363,20 +341,20 @@ def task_reference_errors(stage, q, p, records):
         return []
     controls = owned_controls(records.get(q.get('source', {}).get('region'), {}))
     errors = []
-    for key in ('new_tasks', 'shared_instances'):
+    for key in ('new_tasks',):
         rows = p.get(key, [])
         if not isinstance(rows, list):
             continue
         for i, row in enumerate(rows):
             if not isinstance(row, dict) or not isinstance(row.get('control'), str):
                 continue
-            if key == 'new_tasks' and ('task' in row or not row['control']):
+            if 'task' in row or not row['control']:
                 continue
             ids = [row['control']] if row['control'] in controls else []
             if len(ids) != 1:
                 errors.append(dict(code='task_owner', path=f'/{key}/{i}/control',
                     object=row['control'], actual=row['control'], expected={'matches': ids},
-                    repair='使用当前区块已登记控件的ID；未知对象先发现登记。' if key == 'new_tasks' else '共享成员必须是本区块已登记控件；源身份由登记器核对。'))
+                    repair='使用当前区块已登记控件的ID；未知对象先发现登记。'))
     return errors
 
 

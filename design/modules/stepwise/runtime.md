@@ -1,3 +1,5 @@
+> 2026-11-07 提示出口：调用组成及实际动态schema同步清退独立功能总结/结果复核，当前13类。冻结存活正文/正反例保持，仅机械删除退役字段条款；六段参数化增量与归属两块保留。新动作/恢复/next_action继续共享同一平台动作空间；Android key_press枚举直接取实际执行键表。旧专用步骤保留episode并撤销指针，不再发送旧合同，工作台原历史仍可读。
+
 > 2026-11-06：公共executable_operation_schema独立于Task schema，普通动作、恢复及next_action复用；update_reply.main_pair仅在本地接收拆开主更新与可选Action。双图更新的next_action使用后图坐标，主体仍不输出几何；旧调用沿保存合同读取。验证与限制见根目录SNAPSHOT_STATUS.md。
 
 # 提示、模型和执行支撑

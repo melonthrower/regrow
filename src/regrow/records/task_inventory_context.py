@@ -60,15 +60,11 @@ def task_catalog(region, state, records=None, *, sharing=False):
     return rows
 
 def external_sources(records, state, rid, reasons):
-    """Local visual scope plus explicit sharing links, never a whole-app scan."""
-    from regrow.records import shared_controls as _shared_controls
+    """Other appearances of the same actual identity, never behavior-group peers."""
     result = set()
     for cid in reasons:
         result.update((rr, cid) for rr, owner in records.items()
                       if rr != rid and cid in owned_controls(owner))
-        group = _shared_controls.view(records, rid, cid)
-        if group:
-            result.update(((m['region'], m['control']) for m in group['members'] if m['region'] != rid))
     return sorted(result)
 
 def control_progress(region, cid):
@@ -105,8 +101,6 @@ def control_progress(region, cid):
             row['适用条件'] = deepcopy(task['conditions'])
         if task.get('prerequisite'):
             row['前置条件'] = deepcopy(task['prerequisite'])
-        if task.get('shared_result') or task.get('shared_task_ref'):
-            row['共享结论来源'] = deepcopy(task.get('shared_result') or task['shared_task_ref'])
         if task.get('prepares'):
             row['准备目标'] = task.get('reason') or task.get('name', '')
         latest = task_value(task, 'latest_update', {}) or {}
@@ -275,6 +269,11 @@ def project(records, state, rid):
         if any(t.get('control') == cid for t in owned_tasks(source).values()):
             external.append({'region':rr, 'control':cid, '区块':source['name'], '名称':owned_controls(source)[cid]['name'], '用途与依据':known_information(owned_controls(source)[cid]), '参数说明':parameter_text(owned_controls(source)[cid]), '任务条件':['；'.join(t.get('conditions', [])) for t in owned_tasks(source).values() if t.get('control') == cid and t.get('conditions')]})
     from regrow.records.environment_context import render
+    from regrow.records.function_updates import view
+    from regrow.records.region_knowledge import related
+    from regrow.records.candidate_access import candidate_access_entries
     return {'控件': control_directory(cards, region.get('list_groups', {})), '环境位置':render(records,state,rid,kind='task_proposal'),
+            '已有功能': [row for owner in related(records, [rid]) for row in view(records, owner)],
+            '候选访问关系': candidate_access_entries(records, rid),
             '已登记直接目标知识': destination_knowledge(records, region, edges),
-            '本次观察的未确认事项':'；'.join((state.get('observation') or {}).get('uncertainties', [])), '已有任务': task_catalog(region, state, records), '可引用同类实例': external}
+            '已有任务': task_catalog(region, state, records), '可引用同类实例': external}

@@ -16,13 +16,7 @@ def match_region(rid, region, match, frame, snapshot=None, scope=None):
     """One eligible template per control, one vote per distinct current position."""
     hits = []
     eligible = 0
-    shared = 0
     for (cid, control) in owned_controls(region).items():
-        records = getattr(region, 'store', {rid: region})
-        from regrow.records.shared_controls import view
-        if view(records, rid, cid):
-            shared += 1
-            continue
         appearances = [{**row, 'image': str((Path(snapshot) / row['image']).resolve()) if snapshot is not None else row['image']}
                        for row in templates.variants(control)]
         if not appearances:
@@ -38,7 +32,7 @@ def match_region(rid, region, match, frame, snapshot=None, scope=None):
         (x, y) = ((l + r) / 2, (t + b) / 2)
         if not any((abs(x - (h['box'][0] + h['box'][2]) / 2) < 8 and abs(y - (h['box'][1] + h['box'][3]) / 2) < 8 for h in unique)):
             unique.append(hit)
-    return {'region': rid, 'whole': {'accepted': False, 'reason': 'control_votes_only'}, 'anchors': unique, 'bounds': None, 'strong': False, 'matched_controls': len(unique), 'eligible_controls': eligible, 'total_controls': len(owned_controls(region)), 'shared_controls': shared, 'foreground_confirmed': False}
+    return {'region': rid, 'whole': {'accepted': False, 'reason': 'control_votes_only'}, 'anchors': unique, 'bounds': None, 'strong': False, 'matched_controls': len(unique), 'eligible_controls': eligible, 'total_controls': len(owned_controls(region)), 'foreground_confirmed': False}
 
 def rank(rows):
     return sorted(rows, key=lambda r: (-r['matched_controls'], r['region']))

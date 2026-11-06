@@ -96,7 +96,7 @@ def readable(value, depth=0):
         else:
             lines.append(label + '：' + readable(item, depth + 1))
     return '\n\n'.join(lines) if depth == 0 else '\n'.join(lines)
-ROLES = {'appearance_comparison', 'task_result_review', 'observation', 'task_proposal', 'action_selection', 'observation_update', 'function_registration', 'step_correction', 'control_identity_selection', 'control_identity_comparison', 'ownership_review', 'recovery', 'branch_correction', 'step_observation'}
+ROLES = {'appearance_comparison', 'observation', 'task_proposal', 'action_selection', 'observation_update', 'step_correction', 'control_identity_comparison', 'ownership_review', 'recovery', 'branch_correction', 'step_observation'}
 
 def render(value, depth=0):
     compact = lambda item: json.dumps(item, ensure_ascii=False, separators=(',', ':'))
@@ -155,7 +155,7 @@ def project(request):
                      **{k: v for k, v in displayed.items() if k not in first and k != '被拒绝回复'},
                      **({'被拒绝回复': displayed['被拒绝回复']} if '被拒绝回复' in displayed else {})}
     from regrow.prompts.compose import render as question_render
-    if role == 'step_correction' and request.get('original_request') and (request['original_request'].get('stage') != 'shared_control_review'):
+    if role == 'step_correction' and request.get('original_request'):
         nested = displayed.get('原动态上下文')
         if isinstance(nested, dict) and isinstance(nested.get('上下文'), dict):
             displayed['原动态上下文'] = question_render(nested['上下文'], request['original_request'], readable) + nested.get('附加说明', '')

@@ -71,7 +71,7 @@ def commit_update(root, run, call_ref, attempt_ref):
     from regrow.recognition import update_visibility as _update_visibility
     from regrow.recognition import matching as _image_match
     from regrow.records import task_updates as _task_updates
-    from regrow.traversal import task_prerequisites as _task_prerequisites
+
     from regrow.traversal import task_routing as _task_routing
     (root, run) = (Path(root), Path(run).resolve())
     graph = {'action_edges': [], 'observations': []}
@@ -153,12 +153,7 @@ def commit_update(root, run, call_ref, attempt_ref):
     elif ordinary_back:
         if control is not None:
             raise ValueError('invalid region-owned return')
-    region_changes = []
-    for item in reply.get('previous_regions', []):
-        r = records[_region_candidate_names.resolve(records, item['ref'], request.get('region_names'))]
-        region_changes.append({'region': r['id'], 'state': item['state'], **({'evidence': item['evidence']} if item.get('evidence') else {})})
-        if item.get('task_review_reason', '').strip() and region_work(r).get('task_inventory'):
-            region_work(r)['task_inventory']['review'] = {'kind': 'task_proposal', 'reason': item['task_review_reason'], 'source_call': call_ref}
+    region_changes = _update_visibility.historical_changes(reply, records, request.get('region_names'))
     delta_refs = _owner_materialize_regions(records, reply, call_ref, edge['after_observation'], request.get('region_names'), frame=run / edge['after_image'] if edge.get('after_image') else None)
     _registration_diagnostics.check_visibility(reply, delta_refs, region_changes, request.get('region_names'))
     visibility = _update_visibility
@@ -207,7 +202,7 @@ def commit_update(root, run, call_ref, attempt_ref):
     _record_attach_execution(records, run)
     original_task_ref = _task_updates.reference(binding.get('task_region', source), binding.get('task_name', ''))
     effective_binding = {**binding, 'region_ref': source, 'control_ref': control, 'task_update_ref': original_task_ref}
-    _task_prerequisites.apply(records, reply, call_ref, request.get('dependency_candidates', []))
+
     from regrow.records.function_updates import apply_for_request
     apply_for_request(records, request, reply, {'source_call':call_ref, 'attempt':attempt_ref})
     settlement_reply = reply
@@ -217,6 +212,7 @@ def commit_update(root, run, call_ref, attempt_ref):
         suspended.release_result_block(records, historical, call_ref, attempt_ref)
     _record_settle_task(records[binding.get('task_region', source)], effective_binding, settlement_reply, attempt_ref, records, receipt=receipt, labels=request.get('region_names'), candidates=request.get('task_update_candidates'))
     register_destinations(reply.get('jump_to'), records, delta_refs, reply['controls'], owner, attempt_ref, call_ref)
+    navigation.bind_return(records, source, attempt_ref)
     for target in a.get('observed_destinations', []):
         if target != source:
             owner['transitions'].append({'source_control': control, 'target_region': target,
@@ -230,7 +226,7 @@ def commit_update(root, run, call_ref, attempt_ref):
         for transition in region['transitions']:
             if navigation.contextual_return(owned_actions(region).get(transition['attempt'], {})):
                 transition['destination_behavior'] = 'history_dependent'
-    state = {'update_status': 'committed', 'update_digest': digest, 'source_call': call_ref, 'attempt': attempt_ref, 'working_region': working_ref, 'interactive_regions': region_refs, 'last_action_result': {'region': source, 'action': attempt_ref}, 'next_action_mode': branch['next_action_mode'], 'reason': branch['reason'], 'phase': 'ready_for_next_action', 'execution_status': 'not_started', 'observation': {'id': edge['after_observation'], 'image': edge.get('after_image'), 'control_refs': [cid for ref in region_refs for (cid, c) in owned_controls(records[ref]).items() if frame_observation(c, kind='controls', call=call_ref, observation=edge['after_observation'])] + old_control_refs, 'foreground': reply['foreground'], 'uncertainties': reply['uncertainties']}}
+    state = {'update_status': 'committed', 'update_digest': digest, 'source_call': call_ref, 'attempt': attempt_ref, 'working_region': working_ref, 'interactive_regions': region_refs, 'last_action_result': {'region': source, 'action': attempt_ref}, 'next_action_mode': branch['next_action_mode'], 'reason': branch['reason'], 'phase': 'ready_for_next_action', 'execution_status': 'not_started', 'observation': {'id': edge['after_observation'], 'image': edge.get('after_image'), 'control_refs': [cid for ref in region_refs for (cid, c) in owned_controls(records[ref]).items() if frame_observation(c, kind='controls', call=call_ref, observation=edge['after_observation'])] + old_control_refs, 'foreground': reply['foreground']}}
     if old_control_refs:
         state['visual_navigation'] = {'observation': edge['after_observation'], 'controls': {cid: rid for rid in region_refs for cid in old_control_refs if cid in owned_controls(records[rid])}, 'evidence': 'retained controls matched against current after-image'}
     previous_state = _record_read(prior / 'runtime_state.json') if current.exists() else {}

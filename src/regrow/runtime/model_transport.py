@@ -114,6 +114,10 @@ def prepare_request(root, run, request, platform='android'):
         request = desktop_context(root, request)
     from regrow.prompts.history_disclosure import restore
     request = restore(request)
+    if (Path(run) / 'knowledge_current.json').exists():
+        from regrow.records.snapshots import load
+        from regrow.records.region_knowledge import for_request
+        request = for_request(request, load(run)[1])
     from regrow.runtime.action_commands import platform_request
     request = platform_request(request, platform)
     if request['platform'] == 'android':
@@ -123,8 +127,6 @@ def prepare_request(root, run, request, platform='android'):
         if part and (not contains(request['fixed_parts'], part['path'])):
             request['fixed_parts'].append(part)
             request['system_prompt'] += '\n\n' + part['text']
-    from regrow.traversal.task_prerequisites import augment
-    request = augment(root, run, request)
     request = with_run_scope(request, run)
     from regrow.traversal.application_judgement import prepare as application_context
     request = application_context(root, run, request)
@@ -132,21 +134,11 @@ def prepare_request(root, run, request, platform='android'):
     validate(request)
     request = with_frame_context(request, run)
 
-    def strict_fields(schema):
-        if isinstance(schema, list):
-            for child in schema:
-                strict_fields(child)
-        elif isinstance(schema, dict):
-            for key in ('returns_to_previous',):
-                conditional = {field for branch in schema.get('allOf', []) for field in branch.get('then', {}).get('required', [])}
-                if key in schema.get('properties', {}) and key not in schema.get('required', []) and (key not in conditional):
-                    schema.setdefault('required', []).append(key)
-            for child in schema.values():
-                strict_fields(child)
-    strict_fields(request['response_schema'])
     from regrow.recognition import control_references
     if request.get('role') != 'action_target_review':
         request = control_references.prepare(request)
+    from regrow.recognition import region_references
+    request = region_references.prepare(request)
     from regrow.prompts.output import effective_role
     action_references = (request.get('role') in ('action_selection', 'step_correction')
                          and effective_role(request, root) == 'action_selection')

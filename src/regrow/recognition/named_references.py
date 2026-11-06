@@ -11,7 +11,7 @@ import unicodedata
 
 TOKEN = re.compile(r'(?<![A-Za-z0-9_])[rc]\d+(?![A-Za-z0-9_])')
 REFERENCE_FIELDS = {'ref','target','control','region','source_region','source_control',
-                    'task','supports','constraints','replace_with','candidate','path'}
+                    'task','supports','constraints','access_entry','replace_with','candidate','path','parent'}
 
 
 def normalized(value):
@@ -36,15 +36,21 @@ def resolve(value, aliases):
 
 def text(value, names):
     if isinstance(value, str):
-        return TOKEN.sub(lambda m: names.get(m[0], m[0]), value)
+        def display(match):
+            name = names.get(match[0], match[0])
+            if name.startswith(match[0] + '/') and value[match.end():].startswith('/'):
+                return match[0]
+            return name
+        return TOKEN.sub(display, value)
     if isinstance(value, list):
         return [text(v, names) for v in value]
     if isinstance(value, dict):
-        return {k: text(v, names) for k, v in value.items()}
+        # The function directory has its own ID and parameter-reference fields.
+        return {k: deepcopy(v) if k == 'function_updates' else text(v, names) for k, v in value.items()}
     return value
 
 
-def labels(run, request):
+def labels(run, request, *, id_name=True):
     from regrow.records.snapshots import load
     from regrow.records.object_store import owned_controls
     try:
@@ -54,13 +60,15 @@ def labels(run, request):
     material = json.dumps({k: request.get(k) for k in ('user_prompt','response_schema','control_refs',
                           'region_names','discovery_context','backend_candidates')}, ensure_ascii=False)
     ids = set(TOKEN.findall(material))
-    names = {rid: r['name'] for rid,r in records.items() if rid in ids}
+    names = {rid: rid + '/' + r['name'] if id_name else r['name'] for rid,r in records.items() if rid in ids}
     owners = {}
+    from regrow.recognition.control_references import label
     for rid,r in records.items():
         for cid,c in owned_controls(r).items():
             if cid in ids:
-                names[cid] = c['name']; owners.setdefault(cid, []).append(rid)
-                names.setdefault(rid, r['name'])
+                names[cid] = label(cid, c['name']) if id_name else c['name']
+                owners.setdefault(cid, []).append(rid)
+                names.setdefault(rid, rid + '/' + r['name'] if id_name else r['name'])
     counts = Counter(normalized(n) for n in names.values())
     for ref,name in list(names.items()):
         if counts[normalized(name)] > 1:
@@ -123,7 +131,8 @@ def wire_schema(schema, nested):
         props.pop('candidate_index',None)
         if 'remove_fields' in props:
             values=props['remove_fields'].get('items',{}).get('enum',[])
-            props['remove_fields']['items']['enum']=[k for k in values if k not in ('region_index','parent_index','candidate_index')]
+            props['remove_fields']['items']['enum']=['parent' if k == 'parent_index' else k
+                for k in values if k not in ('region_index','candidate_index')]
         props['ref']={'type':'string','minLength':1}
         return {'type':'object','properties':props,'anyOf':[{'required':['ref']},{'required':['name']}],'additionalProperties':False}
     def visit(node):
@@ -138,15 +147,12 @@ def wire_schema(schema, nested):
             _drop(control, {'region_index','candidate_index'})
             _drop(region, {'candidate_index'})
             region['properties']['controls'] = {'type':'array','items':control}
-            if 'current_regions' in props:
-                region['properties']['current'] = {'type':'boolean'}
-                props.pop('current_regions')
             if 'parent_index' in region['properties']:
                 region['properties'].pop('parent_index')
-                region['properties']['parent'] = {'type':['string','null']}
+                region['properties']['parent'] = {'type':['string','null'], 'minLength': 1}
                 region['required'] = [k for k in region.get('required',[]) if k != 'parent_index']
             props.pop('controls')
-            node['required'] = [k for k in node.get('required',[]) if k not in ('controls','current_regions')]
+            node['required'] = [k for k in node.get('required',[]) if k != 'controls']
             if 'jump_to' in props:
                 def route(node):
                     if isinstance(node,list):
@@ -185,9 +191,8 @@ def encode_objects(value, names, owners, *, current=False):
     for i,row in enumerate(regions):
         row.pop('candidate_index',None)
         if current: row['current']=i in selected
-        if row.get('parent_index') is not None:
+        if 'parent_index' in row:
             row['parent']=reference(regions,row.pop('parent_index'))
-        else: row.pop('parent_index',None)
     for c in v.pop('controls'):
         c.pop('candidate_index',None);i=c.pop('region_index',None)
         if i is None:
@@ -198,11 +203,13 @@ def encode_objects(value, names, owners, *, current=False):
             # decode still strips this container for pure knowledge; it never
             # writes membership, visibility, observation or task ownership.
             rid = locations[0] if locations else None
-            matches=[j for j,r in enumerate(regions) if r.get('ref')==rid]
+            matches=[j for j,r in enumerate(regions) if rid and r.get('ref')==rid]
             if not matches and rid:
                 regions.append({'ref':rid});matches=[len(regions)-1]
-            if len(matches)!=1:
+            if not matches:
                 raise ValueError('无法确定知识修订控件的所属区块：'+str(c.get('ref')))
+            # Duplicate rows can occur in a rejected reply. They still name
+            # one owner; retain the rows for correction without rebinding it.
             i=matches[0]
         regions[i].setdefault('controls',[]).append(c)
     for row in v.get('jump_to',[]):
@@ -210,7 +217,8 @@ def encode_objects(value, names, owners, *, current=False):
             row['region']=reference(regions,row.pop('region_index'))
         if 'control_index' in row:
             row['control']=reference(value['controls'],row.pop('control_index'))
-    v.pop('current_regions',None)
+    if current:  # Retained only for already-sent inline-current contracts.
+        v.pop('current_regions',None)
     return text(v,names)
 
 
@@ -224,6 +232,13 @@ def prepare(run, request):
     nested=('regions' in props and 'controls' in props and
             ('region_index' in json.dumps(props['controls']) or q.get('original_request',{}).get('named_nested')))
     names,owners=labels(run,q)
+    if 'region_refs' in q:
+        from regrow.recognition.control_references import _schemas
+        q['region_refs'] = [ref for ref in q['region_refs'] if ref in names]
+        for item in _schemas(schema, 'regions'):
+            field = item.get('properties', {}).get('ref', {})
+            if 'enum' in field:
+                field['enum'] = [ref for ref in field['enum'] if ref in names]
     aliases={name:ref for ref,name in names.items()}
     # Task/function references are scoped compound names, also copied verbatim.
     def collect(node):
@@ -245,7 +260,8 @@ def prepare(run, request):
             paths={p:p for p in paths}  # ambiguity stays explicit, never chooses an object
         aliases.update({name:path for path,name in paths.items()})
     contract={'schema':schema,'names':names,'aliases':aliases,'owners':owners,'nested':nested,
-              'current':'current_regions' in props,'paths':paths}
+              'control_reference_style':'id_name', 'region_reference_style':'id_name',
+              'current':False,'paths':paths}
     q['name_contract']=contract
     q['response_schema']=text(wire_schema(schema,nested),names)
     if paths:
@@ -275,7 +291,7 @@ def prepare(run, request):
         from regrow.prompts.correction_feedback import organize
         base=encode_objects(q['proposal_base'],names,owners,current=contract['current'])
         original=q.get('original_request',{})
-        part={'path':'纠错/具名对象修订','text':'# 修订对象\n按原格式只提交要修订的对象；已有对象用ref，原稿新对象用其name。控件放在所属区块的controls内。未提到的对象和字段保留；撤回时填写ref或name、remove:true和reason。撤掉对象内误填字段时用remove_fields列出字段名，单纯省略仍会保留旧稿字段。current只有明确提交时改变；jump_to明确提交时整体替换。不要维护数组编号。'}
+        part={'path':'纠错/具名对象修订','text':'# 修订对象\n按原格式只提交要修订的对象；已有对象用ref，原稿新对象用其name。控件放在所属区块的controls内。未提到的对象和字段保留；撤回时填写ref或name、remove:true和reason。撤掉对象内误填字段时用remove_fields列出字段名，单纯省略仍会保留旧稿字段。current_regions和jump_to只有明确提交时整体替换。'}
         issue=q.get('named_issue') or re.split(r'# 本次补充材料|\n原任务与相关材料',q.get('user_prompt',''),maxsplit=1)[0]
         issue=issue.removeprefix('本次问题\n').removeprefix('# 本次问题\n').strip()
         if 'ref和knowledge' in issue or 'ref、knowledge' in issue:
@@ -310,16 +326,20 @@ def render(request):
     names=contract['names']
     def prose(value):
         value=_replace_paths(text(value,names),contract['paths'])
-        for old,new in [('控件ID','控件名称'),('区块ID','区块名称'),('控件 ID','控件名称'),('区块 ID','区块名称'),('稳定编号','引用名称'),('ref编号','ref名称')]:value=value.replace(old,new)
+        for old,new in [('控件ID','控件引用'),('区块ID','区块名称'),('控件 ID','控件引用'),('区块 ID','区块名称'),('稳定编号','引用名称'),('ref编号','ref名称')]:value=value.replace(old,new)
         return value
+    literal = contract.get('region_reference_style') == 'id_name'
     for field in ('system_prompt','user_prompt','dynamic_prompt'):
         if field in q:
+            if literal and field == 'system_prompt':
+                continue
             if field == 'user_prompt':
                 from regrow.prompts.history_disclosure import replace_presentation
                 replace_presentation(q, prose(q[field]))
             else:
                 q[field]=prose(q[field])
-    for part in q.get('fixed_parts',[]):part['text']=prose(part['text'])
+    if not literal:
+        for part in q.get('fixed_parts',[]):part['text']=prose(part['text'])
     return q
 
 
@@ -328,6 +348,14 @@ def internal_request(request, reply=None):
     if c:
         q['response_schema']=c['schema']
         q['named_nested']=c['nested']
+        if c.get('control_reference_style') == 'id_name':
+            q['control_reference_style'] = 'id_name'
+            q['control_reference_names'] = {ref: name for ref, name in c['names'].items()
+                                            if re.fullmatch(r'c\d+', ref)}
+        if c.get('region_reference_style') == 'id_name':
+            q['region_reference_style'] = 'id_name'
+            q['region_reference_names'] = {ref: name for ref, name in c['names'].items()
+                                           if re.fullmatch(r'r\d+', ref)}
         if reply is not None:
             hints = display_regions(request, reply)
             if hints:
@@ -335,19 +363,38 @@ def internal_request(request, reply=None):
     return q
 
 
-def _decode_references(value, aliases, key=None, path=()):
+def _decode_references(value, aliases, key=None, path=(), *, control_labels=None, region_labels=None, new_controls=()):
     if key == 'target' and 'new_tasks' in path:
         return deepcopy(value)
     if isinstance(value,str) and (key in REFERENCE_FIELDS or key=='function_refs'):
+        if 'function_updates' in path:
+            if key in ('region', 'supports', 'access_entry') and value in {**(control_labels or {}), **(region_labels or {})}:
+                return value
+            if key == 'constraints' and value.partition('/')[0] in (control_labels or {}):
+                return value
+        if key == 'control' and 'new_tasks' in path and value in new_controls:
+            return value
         function_ref=(key=='function_refs' or ('function_updates' in path and key in ('ref','replace_with')))
+        if (function_ref or key in ('constraints', 'task')) and value in aliases:
+            return aliases[value]
+        if control_labels is not None:
+            from regrow.recognition.control_references import resolve_label
+            resolved = resolve_label(value, control_labels, allow_path=function_ref or key == 'constraints')
+            if resolved is not None:
+                return resolved
+        if region_labels is not None and not function_ref and key not in ('constraints', 'task'):
+            from regrow.recognition.control_references import resolve_label
+            resolved = resolve_label(value, region_labels, prefix='r')
+            if resolved is not None:
+                return resolved
         resolved=value if function_ref else resolve(value,aliases)
         if resolved!=value:return resolved
         for pos in reversed([i for i,ch in enumerate(value) if ch=='/']):
             prefix=value[:pos]; bound=resolve(prefix,aliases)
             if bound!=prefix and isinstance(bound,str):return bound+value[pos:]
         return value
-    if isinstance(value,list):return [_decode_references(v,aliases,key,path) for v in value]
-    if isinstance(value,dict):return {k:_decode_references(v,aliases,k,(*path,k)) for k,v in value.items()}
+    if isinstance(value,list):return [_decode_references(v,aliases,key,path,control_labels=control_labels,region_labels=region_labels,new_controls=new_controls) for v in value]
+    if isinstance(value,dict):return {k:_decode_references(v,aliases,k,(*path,k),control_labels=control_labels,region_labels=region_labels,new_controls=new_controls) for k,v in value.items()}
     return value
 
 
@@ -359,7 +406,14 @@ def decode(request, reply):
     # Its malformed subtree cannot prevent the main observation from decoding.
     from regrow.runtime.update_reply import main_pair
     _, main = main_pair(request['response_schema'], reply)
-    value=_decode_references(deepcopy(main),contract['aliases'])
+    new_names = {control.get('name') for region in main.get('regions', [])
+                 for control in region.get('controls', [])
+                 if isinstance(control, dict) and control.get('name') and not control.get('ref')}
+    control_labels = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'c\d+', ref)}
+                      if contract.get('control_reference_style') == 'id_name' else None)
+    region_labels = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'r\d+', ref)}
+                     if contract.get('region_reference_style') == 'id_name' else None)
+    value=_decode_references(deepcopy(main),contract['aliases'],control_labels=control_labels,region_labels=region_labels,new_controls=new_names)
     if main is not reply and 'next_action' in reply:
         value['next_action'] = deepcopy(reply['next_action'])
     if (isinstance(reply.get('proposal'), dict) and isinstance(main.get('proposal'), dict)
@@ -381,12 +435,16 @@ def decode(request, reply):
             operation['control'] = raw['control']
     rows=value.get('regions',[]);base=contract.get('base')
     regions=[];controls=[];indexes=[]
-    for row in rows:
+    from regrow.recognition.update_visibility import selected_indices
+    selected = selected_indices(value)
+    for position, row in enumerate(rows):
         if not isinstance(row,dict):raise ValueError('区块列表中的每项须为对象')
         if not isinstance(row.get('controls',[]),list):raise ValueError('区块「'+str(_key(row))+'」的controls须为列表，不能为null或其他类型')
         region={k:v for k,v in row.items() if k not in ('controls','current','parent')}
-        if (contract['current'] and row.get('ref') and set(row) <= {'ref', 'controls', 'current'}
-                and row.get('current') is not True and row.get('controls')
+        if 'remove_fields' in region:
+            region['remove_fields'] = ['parent_index' if field == 'parent' else field for field in region['remove_fields']]
+        if ((contract['current'] or 'current_regions' in value) and row.get('ref') and set(row) <= {'ref', 'controls', 'current'}
+                and (row.get('current') is not True if contract['current'] else position not in selected) and row.get('controls')
                 and all(control_only(c) for c in row['controls'])):
             # A container used only to show global knowledge is itself a
             # no-op knowledge reference, not a newly observed Region.
@@ -417,10 +475,13 @@ def decode(request, reply):
                 if name and name not in references:references[name]=i
     for i,row in enumerate(rows):
         if 'parent' in row:
-            parent = resolve(row['parent'], references) if row['parent'] else None
+            raw_parent = row['parent']
+            parent = resolve(raw_parent, references) if raw_parent is not None else None
             if parent is not None and type(parent) is not int:
-                raise ValueError('区块「' + str(_key(row)) + '」的父区块「' + str(row['parent'])
-                    + '」未能对应本次回复或修订基准中的唯一对象；请补充父区块引用，或依据实际包含关系修正。')
+                if raw_parent not in contract['names'] or not re.fullmatch(r'r\d+', raw_parent):
+                    raise ValueError('区块「' + str(_key(row)) + '」的父区块「' + str(raw_parent)
+                        + '」未能对应已知区块或本次回复中的唯一对象；请核对实际包含关系。')
+                parent = raw_parent
             regions[i]['parent_index'] = parent
         for c in row.get('controls',[]):
             if not isinstance(c,dict):raise ValueError('区块「'+str(_key(row))+'」的控件列表中每项须为对象')
@@ -489,6 +550,8 @@ def normalize_reply(schema, reply):
     if not isinstance(schema,dict):return deepcopy(reply)
     if isinstance(reply,str) and schema.get('enum'):
         allowed={v:v for v in schema['enum'] if isinstance(v,str)}
+        if any(re.match(r'^[cr]\d+/', value) for value in allowed):
+            return reply
         return resolve(reply,allowed)
     if isinstance(reply,list):return [normalize_reply(schema.get('items',{}),v) for v in reply]
     if isinstance(reply,dict):

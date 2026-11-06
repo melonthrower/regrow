@@ -1,17 +1,17 @@
 {
-  "date": "2026-11-06",
+  "date": "2026-11-07",
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "research_snapshot_with_limited_saved_frame_validation",
-  "previous_source_commit": "a27c434d0427ea9192a55d7b220ea1c3a733ed44",
+  "kind": "research_snapshot_limited_native_saved_frame_validation",
+  "previous_source_commit": "e624ca92114c3f98b65ee19a8edbd03d8a882cc8",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Task contract and next_action wiring implement the approved patch; other pre-existing candidates retain their unaccepted status. See SNAPSHOT_STATUS.md.",
-  "verification_scope": "Three focused checks and two full native saved-frame cases; actual continuation accepted through normal scheduler/Runner with no extra selection call; duplicate registration did not requeue it. No new GUI, no full regression, no live deployment. The pre-existing public shared-role prompt differs from the saved-frame source and is preserved; no new model validation of that combined public prompt.",
+  "draft_status": "Call consolidation implemented; direct new_tasks ownership in action updates remains unresolved. No prompt redesign.",
+  "verification_scope": "11 distinct focused checks; 13 roles / 32 composed contracts; two full historical contexts, 3 Luna replies registered, 0 new GUI. Long traversal not yet validated.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,11 +29,12 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "a27c434d0427ea9192a55d7b220ea1c3a733ed44",
+  "snapshot_parent_commit": "e624ca92114c3f98b65ee19a8edbd03d8a882cc8",
   "live_runtime_changed": false,
   "published_source_changed": true,
-  "preserved_public_prompt_difference": {
-    "path": "src/regrow/prompts/共享/探索角色.prompt",
-    "handling": "Preserve existing public branch text. Saved-frame evidence used the local shared-role text; the full public prompt combination has not been revalidated."
+  "prompt_provenance": {
+    "source": "current working source; previously frozen object/call blocks retained, with the already implemented mechanical field retirements",
+    "new_prompt_body_edits_in_live_followup": false,
+    "preexisting_candidates": "Earlier shared-role and other candidates retain their unaccepted status; source synchronization is not blanket prompt approval."
   }
 }

@@ -6,6 +6,7 @@ import shlex
 import time
 ANDROID_ACTIONS = ('click', 'double_click', 'long_press', 'input_text', 'scroll', 'back', 'wait', 'none', 'key_press')
 ACTIONS = ANDROID_ACTIONS + ('hotkey', 'hover', 'right_click', 'drag')
+ANDROID_KEYS = {'ENTER': '66', 'TAB': '61', 'ESC': '111', 'BACKSPACE': '67'}
 
 def executable_operation_schema():
     """Complete action parameters, independent of task/update contracts."""
@@ -57,7 +58,6 @@ def selection_schema(value):
             props = branch.get('properties', {})
             if 'none' in props.get('action', {}).get('enum', []) and 'reason' in props:
                 props.update({k: deepcopy(v) for k, v in completion.items() if k in ('controls', 'regions', 'function_updates')})
-                props['retry_when'] = {'type':'string','minLength':1}
     result['anyOf'] = [branch for branch in result.get('anyOf', []) if 'task_update' not in branch.get('properties', {})]
     from regrow.traversal.application_judgement import extend_schema
     return extend_schema(result, 'action_selection')
@@ -67,7 +67,9 @@ def for_request(proposal, request):
     from regrow.traversal.application_judgement import action_payload
     proposal = action_payload(proposal)
     completed = proposal.get('action') == 'complete'
-    partial = proposal.get('action') == 'none' and any(k in proposal for k in ('controls','regions','function_updates','retry_when'))
+    partial = proposal.get('action') == 'none'
+    if partial and request.get('work_context', {}).get('kind') == 'navigate':
+        return proposal
     if not completed and not partial:
         return proposal
     from copy import deepcopy
@@ -75,12 +77,12 @@ def for_request(proposal, request):
     owner = source.get('task_region')
     name = source.get('task_name')
     if not owner or not name:
+        if not completed and not any(k in proposal for k in ('controls', 'regions', 'function_updates')):
+            return proposal
         raise ValueError('答案或暂挂判断需要本次请求绑定的原探索任务')
-    update = {'task': owner + '/' + name, 'state': 'done' if completed else 'blocked' if proposal.get('retry_when') else 'pending'}
+    update = {'task': owner + '/' + name, 'state': 'done' if completed else 'blocked'}
     if not completed:
         update['remaining_question'] = proposal['reason']
-    if proposal.get('retry_when'):
-        update['retry_when'] = proposal['retry_when']
     return {'action': 'none', 'reason': proposal['reason'], 'task_update': update, **{key: deepcopy(proposal[key]) for key in ('controls', 'regions', 'function_updates') if key in proposal}}
 
 def execution_schema():
@@ -100,6 +102,8 @@ def platform_request(request, platform):
                 action = node.get('properties', {}).get('action', {})
                 if 'enum' in action:
                     action['enum'] = [v for v in action['enum'] if v in allowed]
+                if action.get('enum') == ['key_press']:
+                    node['properties']['text']['enum'] = list(ANDROID_KEYS)
                 if 'anyOf' in node:
                     node['anyOf'] = [b for b in node['anyOf'] if not ('enum' in b.get('properties', {}).get('action', {}) and (not set(b['properties']['action']['enum']).intersection(allowed)))]
             for child in node.values():
@@ -148,10 +152,9 @@ def commands(proposal, platform='android'):
     if kind not in ANDROID_ACTIONS:
         raise ValueError('unsupported Android action: ' + kind)
     if kind == 'key_press':
-        keys = {'ENTER': '66', 'TAB': '61', 'ESC': '111', 'BACKSPACE': '67'}
-        if p.get('text') not in keys:
+        if p.get('text') not in ANDROID_KEYS:
             raise ValueError('key_press text must be ENTER, TAB, ESC or BACKSPACE')
-        return [['shell', 'input', 'keyevent', keys[p['text']]]]
+        return [['shell', 'input', 'keyevent', ANDROID_KEYS[p['text']]]]
     if kind == 'back':
         return [['shell', 'input', 'keyevent', '4']]
     if kind in ('wait', 'none'):

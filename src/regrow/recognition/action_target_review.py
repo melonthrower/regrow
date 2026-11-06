@@ -1,3 +1,4 @@
+from regrow.recognition.identity_templates import appearance_box
 """Current-frame target doubts; reuse visual recall and the normal action contract."""
 from copy import deepcopy
 from pathlib import Path
@@ -54,7 +55,7 @@ def at_point(request, proposal):
         hit = match_appearances(appearances, locate)
         row = {'target': item['id'], 'region_ref': rid, '名称': item['name'],
                '所属区块': item.get('region_name', rid),
-               '历史身份范围（非当前坐标）': item.get('bbox'),
+               '历史身份范围（非当前坐标）': appearance_box(item),
                '历史外观描述': item.get('icon_description', ''), '定位': hit.get('box') if hit.get('accepted') else None,
                '定位可靠': bool(hit.get('accepted'))}
         rows.append(row)

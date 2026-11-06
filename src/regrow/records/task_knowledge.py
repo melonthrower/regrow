@@ -1,5 +1,5 @@
 from regrow.records.control_knowledge import parameter_view as parameters
-"""Read current object knowledge and shared references; tasks contain questions."""
+"""Read current object knowledge; tasks contain questions."""
 from copy import deepcopy
 from regrow.records.object_store import owned_tasks
 from regrow.records.object_store import owned_controls
@@ -11,7 +11,10 @@ def has_information(task):
     return bool(task_value(task, 'knowledge') or (registration_kind(task) == 'parameter' and task_value(task, 'findings')))
 
 def completed(task):
-    return task.get('status') in ('done', 'record_only') and (not task.get('coverage_exemption')) and (not task.get('shared_result')) and (not task.get('equivalent_to'))
+    from regrow.records.shared_tasks import local_state
+    local = local_state(task)
+    return bool(local and local.get('status') in ('done', 'record_only')
+                and not local.get('coverage_exemption') and not local.get('equivalent_to'))
 
 def observed_purpose(control):
     from regrow.records.control_history_context import confirmed_information, last_reported
@@ -30,20 +33,6 @@ def control_knowledge(region, cid, records=None):
         evidence = purpose.get('evidence', {})
         source = {key: deepcopy(evidence[key]) for key in ('basis', 'shared', 'local_execution') if key in evidence}
         result['已知用途'] = {'description': purpose.get('knowledge', ''), 'constraints': deepcopy(parameters(control)), 'source': {'region': region['id'], 'control': cid, **source}}
-    if not records:
-        return result
-    from regrow.records.shared_controls import view
-    group = view(records, region['id'], cid) or {}
-    if group.get('status') != 'confirmed':
-        return result
-    for member in group.get('members', []):
-        if member == {'region': region['id'], 'control': cid}:
-            continue
-        origin = owned_controls(records.get(member['region'], {})).get(member['control'], {})
-        value = observed_purpose(origin)
-        if not value and (not parameters(origin)):
-            continue
-        result['共享知识 ' + member['control']] = {'description': value.get('knowledge', ''), 'constraints': deepcopy(parameters(origin)), 'source': {**member, 'shared': True, 'local_execution': False}}
     return result
 
 def refresh(records, state):

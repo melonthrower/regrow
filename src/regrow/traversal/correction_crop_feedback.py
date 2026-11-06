@@ -1,3 +1,4 @@
+from regrow.recognition.identity_templates import appearance_box
 """Show rejected identity bounds as derived evidence, never as a new observation."""
 import hashlib
 import json
@@ -22,7 +23,7 @@ def attach(run, job, request):
     panels = []
     for index in indices:
         control = job['candidate']['controls'][index]
-        box = control.get('bbox')
+        box = appearance_box(control)
         row = {'index': index, 'name': control.get('name'), 'bbox': box}
         rows.append(row)
         if not isinstance(box, dict) or any((type(box.get(k)) is not int for k in ('left', 'top', 'right', 'bottom'))):

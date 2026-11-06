@@ -147,7 +147,7 @@ def validate_commit(run, attempt, reply, request, binding, snapshot, records):
     for (rid, region) in records.items():
         names.setdefault(region['name'], rid)
         names.setdefault(rid, rid)
-    for row in reply.get('regions', []) + reply.get('previous_regions', []) + reply.get('current_regions', []):
+    for row in reply.get('regions', []) + reply.get('current_regions', []):
         name = row.get('ref') or row.get('name')
         if name in names:
             affected.add(names[name])

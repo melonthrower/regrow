@@ -15,7 +15,7 @@ def candidate(region, cid, observation):
     if not current and (not appearance):
         return None
     row = (current or rows)[-1]
-    return {'id': cid, 'name': control['name'], 'region_ref': region['id'], 'image': appearance.get('image'), 'appearances': templates.variants(control), 'source_image': appearance.get('source_image'), **templates.assessment(appearance), 'icon_description': control.get('description') or row.get('description') or row.get('icon_description', ''), 'region_image': templates.image(region), **{key: appearance[key] for key in ('bbox',) if key in appearance}}
+    return {'id': cid, 'name': control['name'], 'region_ref': region['id'], 'image': appearance.get('image'), 'appearances': templates.variants(control), 'source_image': appearance.get('source_image'), **templates.assessment(appearance), 'icon_description': control.get('description') or row.get('description') or row.get('icon_description', ''), 'region_image': templates.image(region), 'appearance_bbox': templates.appearance_box(appearance)}
 
 def attach_related(request, records, state):
     """Complete foreground controls; recall older triggers only when relevant."""

@@ -1,3 +1,4 @@
+from regrow.recognition.identity_templates import appearance_box
 """Same-frame partition context for local discovery and publication checks."""
 from regrow.records.object_store import owned_controls
 from pathlib import Path
@@ -29,8 +30,8 @@ def build(records, focus, frame, scope, ranking):
 
 def exit_guidance(completion=False):
     if completion:
-        return '本轮是固定同图补全，不能直接改变已登记划分或交回重定位。focus仍在当前前景时保持原范围；需重新核对划分的缺口用completion_updates.unresolved保留，两索引可为null，regions/controls可留空并在uncertainties说明。实图证明某缺口属于别区或重复时可excluded并说明，不凭匹配候选排除。区块确已离开前景时如实说明；没有控件不等于离开前景。'
-    return 'focus仍在当前前景时保持已确认范围，仅登记本区控件，纯展示区可以没有控件。需要核对划分写uncertainties；区块确已关闭或被另一表面接管时才报告not_interactive并留空。'
+        return '本轮是固定同图补全，不能直接改变已登记划分或交回重定位。focus仍在当前前景时保持原范围；需重新核对划分的缺口用completion_updates.unresolved保留，两索引可为null，regions/controls可留空。实图证明某缺口属于别区或重复时可excluded并说明，不凭匹配候选排除。区块确已离开前景时如实说明；没有控件不等于离开前景。'
+    return 'focus仍在当前前景时保持已确认范围，仅登记本区控件，纯展示区可以没有控件。'
 
 def prompt(context, completion=False):
     focus = next((r for r in context['regions'] if r['region'] == context['focus']))
@@ -48,7 +49,7 @@ def errors(request, reply):
     for (i, control) in enumerate(reply.get('controls', [])):
         if control.get('identity') != 'new':
             continue
-        identity = control.get('bbox')
+        identity = appearance_box(control)
         if not identity:
             continue
         for owner in context['regions']:

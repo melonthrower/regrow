@@ -4,7 +4,7 @@ from regrow.records.object_store import owned_tasks
 from copy import deepcopy
 import json
 import jsonschema
-EXCEPTIONS = ['none', 'blocking_popup', 'system_error', 'unexpected_exit', 'external_app', 'unclassified']
+EXCEPTIONS = ['none', 'blocking_popup', 'system_error', 'unexpected_exit', 'external_app', 'unclassified', 'uncertain']
 
 def schema():
     from regrow.runtime import action_commands as _action_commands

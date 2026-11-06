@@ -10,8 +10,9 @@ import json
 import jsonschema
 from regrow.records.snapshots import read, write_json
 from regrow.prompts.frame_context import primary, label, select
+from regrow.recognition.identity_templates import appearance_box
 
-GEOMETRY = {'bbox', 'icon_bbox', 'click_bbox', 'click_area', 'x', 'y', 'end_x', 'end_y',
+GEOMETRY = {'bbox', 'appearance_bbox', 'icon_bbox', 'click_bbox', 'click_area', 'x', 'y', 'end_x', 'end_y',
             'left', 'top', 'right', 'bottom'}
 BOX = {'type': 'object', 'properties': {k: {'type': 'integer', 'minimum': 0}
        for k in ('left', 'top', 'right', 'bottom')},
@@ -43,7 +44,7 @@ def missing(candidate):
             if kind == 'regions' and i not in current:
                 continue
             known = row.get('ref') or (kind == 'controls' and 'index' in row)
-            if (known and not (kind == 'controls' and row.get('add_image'))) or row.get('bbox'):
+            if (known and not (kind == 'controls' and row.get('add_image'))) or (appearance_box(row) if kind == 'controls' else row.get('bbox')):
                 continue
             rows.append({'path': f'/{kind}/{i}', **deepcopy(row)})
     return rows
@@ -86,8 +87,8 @@ def request(root, original, candidate, rows, *, grounding=None):
             row['当前外观'] = info['state']
     paths = [row['path'] for row in rows]
     item = {'type': 'object', 'properties': {
-        'path': {'type': 'string', 'enum': paths}, 'bbox': {'anyOf':[deepcopy(BOX), {'type':'null'}]}, 'reason': {'type':'string'}},
-        'required': ['path', 'bbox'], 'additionalProperties': False}
+        'path': {'type': 'string', 'enum': paths}, 'appearance_bbox': {'anyOf':[deepcopy(BOX), {'type':'null'}]}, 'reason': {'type':'string'}},
+        'required': ['path', 'appearance_bbox'], 'additionalProperties': False}
     q = {'role': 'object_registration', 'stage': 'object_registration',
          'system_prompt': text, 'fixed_parts': [{'path': '任务/对象识别资料.prompt', 'text': text}],
          'user_prompt': json.dumps({'待补齐对象': rows, '所属区块': candidate.get('regions', [])}, ensure_ascii=False),
@@ -98,13 +99,20 @@ def request(root, original, candidate, rows, *, grounding=None):
          'registration_paths': paths,
          'registration_required_paths': sorted(required_paths(original, candidate).intersection(paths))}
     if grounding:
-        q['response_schema']['properties']['objects']['items']['required'].append('reason')
         material = json.loads(q['user_prompt'])
-        material['定位要求'] = '给定旧控件已完成历史身份与状态比较。现在逐一确认当前图中的具体对象，并框出符合其名称和当前外观的控件；reason简述框内对象的辨认依据，不把旁边相似对象作为它。无法确认时bbox填null。'
+        material['定位要求'] = '给定旧控件已完成历史身份与状态比较。现在逐一确认当前图中的具体对象，并框出符合其名称和当前外观的控件；确需消歧时用reason说明辨认依据；无法确认时appearance_bbox填null并说明缺口。'
         q['user_prompt'] = json.dumps(material, ensure_ascii=False)
         q['appearance_grounding'] = deepcopy(grounding)
     label(q, primary(original), '原动作后图；仅补齐本批对象外观，不判断动作效果')
     return q
+
+
+def box_field(request, kind='objects'):
+    """A retained supplement keeps the field in its actual saved contract."""
+    from regrow.runtime.model_transport import expand_schema
+    item = expand_schema(request['response_schema'])['properties'][kind]['items']
+    fields = item['properties']
+    return 'bbox' if kind == 'regions' or 'bbox' in fields and 'appearance_bbox' not in fields else 'appearance_bbox'
 
 
 def validate(q, reply, run):
@@ -117,6 +125,7 @@ def validate(q, reply, run):
     with Image.open(Path(run) / primary(q)) as im:
         width, height = im.size
     result = []
+    field = box_field(q)
     for path in q['registration_paths']:
         matches = [(i, row) for i, row in enumerate(reply['objects']) if row.get('path') == path]
         reason = ''
@@ -129,17 +138,17 @@ def validate(q, reply, run):
             if details:
                 reason = '；'.join(details)
         if reason:
-            result.append({'path': path, 'bbox': None, 'reason': reason})
+            result.append({'path': path, field: None, 'reason': reason})
             continue
         row = deepcopy(matches[0][1])
-        b = row['bbox']
+        b = row[field]
         if b is None:
             if not row.get('reason', '').strip():
                 row['reason'] = '本次未定位该对象，也未给出辨认依据'
         elif not (0 <= b['left'] < b['right'] <= width and 0 <= b['top'] < b['bottom'] <= height):
-            row.update(bbox=None, reason='识别范围超出本张图片或没有正面积')
+            row.update({field: None, 'reason': '识别范围超出本张图片或没有正面积'})
         result.append(row)
-    blocked = [row for row in result if row['bbox'] is None and row['path'] in q.get('registration_required_paths', [])]
+    blocked = [row for row in result if row[field] is None and row['path'] in q.get('registration_required_paths', [])]
     if blocked:
         raise ValueError('本步必需对象尚未定位：' + '；'.join(row['path'] + '：' + row['reason'] for row in blocked))
     return {'objects': result}
@@ -323,9 +332,11 @@ def reused_boxes(saved, current):
     if not old_keys or not new_keys or set(old_keys) != set(new_keys):
         return None
     boxes = {r['path']: r for r in saved['candidate']['objects']}
-    if set(boxes) != set(old_keys.values()) or any(not r.get('bbox') for r in boxes.values()):
+    if set(boxes) != set(old_keys.values()) or any(not appearance_box(r) for r in boxes.values()):
         return None
-    return [{**deepcopy(boxes[old_keys[key]]), 'path': path} for key,path in new_keys.items()]
+    return [{'path': path, box_field(current): deepcopy(appearance_box(boxes[old_keys[key]])),
+             **({'reason': boxes[old_keys[key]]['reason']} if boxes[old_keys[key]].get('reason') else {})}
+            for key, path in new_keys.items()]
 
 
 def complete(runner, job):
@@ -412,13 +423,15 @@ def complete(runner, job):
         appearance_call = result['call']
         # Child acceptance may isolate malformed/missing rows. The original
         # model answer remains in candidate/response for correction and audit.
-        located = validate(current, result['candidate'], runner.run)
+        located_request = current if reused is not None else result['request']
+        located = validate(located_request, result['candidate'], runner.run)
         for row in located['objects']:
             _, kind, index = row['path'].split('/')
-            if row['bbox'] is None:
+            if row[box_field(located_request)] is None:
                 failed[row['path']] = row['reason']
             else:
-                enriched[kind][int(index)]['bbox'] = row['bbox']
+                field = box_field(job['request'], kind)
+                enriched[kind][int(index)][field] = row[box_field(located_request)]
     q, enriched = partition_request(job['request'], enriched, failed)
     q = deepcopy(q)
     gaps = q.get('registration_gaps', [])
@@ -426,7 +439,8 @@ def complete(runner, job):
     from regrow.runtime.model_transport import expand_schema
     q['response_schema'] = expand_schema(q['response_schema'])
     for kind in ('regions', 'controls'):
-        q['response_schema']['properties'][kind]['items']['properties']['bbox'] = deepcopy(BOX)
+        fields = q['response_schema']['properties'][kind]['items']['properties']
+        fields[box_field(q, kind)] = deepcopy(BOX)
     select(q, primary(job['request']), '原动作后图；识别范围由单图补登记取得')
     q['semantic_request'] = deepcopy(job['request'])
     q['semantic_request'].pop('control_identity_reviews', None)
@@ -452,13 +466,13 @@ def complete(runner, job):
                     'grounding_call': appearance_call if pair.get('current_box') else None})
     folder = runner.run / 'calls' / job['call']
     job['registration_submission'] = {
-        'objects': [{'path': '/' + kind + '/' + str(index), 'bbox': deepcopy(row['bbox'])}
+        'objects': [{'path': '/' + kind + '/' + str(index), 'appearance_bbox': deepcopy(appearance_box(row))}
                     for kind in ('regions', 'controls')
-                    for index, row in enumerate(enriched.get(kind, [])) if row.get('bbox')],
+                    for index, row in enumerate(enriched.get(kind, [])) if appearance_box(row)],
         'registration_sources': deepcopy(q['registration_sources']),
         'registration_gaps': deepcopy(gaps),
         'registration_source_indices': deepcopy(source_indices),
-        'schema_extension': {'bbox': deepcopy(BOX)}}
+        'schema_extension': {'appearance_bbox': deepcopy(BOX), 'bbox': deepcopy(BOX)}}
     save_candidate(runner, job, q, enriched)
 
 

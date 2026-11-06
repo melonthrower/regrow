@@ -13,7 +13,7 @@ def observable(owner, task, state):
     from regrow.records import task_settlement as _task_settlement
     from regrow.records import task_updates as _task_updates
     state = state or {}
-    return bool(task.get('status') == 'pending' and (not task.get('equivalent_to')) and (_task_settlement.registration_kind(task) == 'parameter') and (not any((task.get(k) for k in ('prepares', 'blocker', 'shared_task_ref', 'coverage_exemption')))) and (not task.get('prerequisite') or task['prerequisite'].get('satisfied')) and _task_updates.observed_control(owner, task, state))
+    return bool(task.get('status') == 'pending' and (not task.get('equivalent_to')) and (_task_settlement.registration_kind(task) == 'parameter') and (not any((task.get(k) for k in ('prepares', 'blocker', 'coverage_exemption')))) and (not task.get('prerequisite') or task['prerequisite'].get('satisfied')) and _task_updates.observed_control(owner, task, state))
 
 def from_no_action(run, records, state, request, proposal, call):
     """Use the existing fact author after a no-action proposal, preserving real history."""

@@ -34,7 +34,7 @@ def handoff(records, state, run=None):
     observation = state.get('observation') or {}
     from regrow.records.observations import current_description
     summary = current_description(records, state)
-    gaps = observation.get('uncertainties', [])
+    gaps = []
     if not summary and (not gaps):
         return {}
     return {'来源': observation.get('id', ''), '交接说明': summary, '未确认事项': gaps}

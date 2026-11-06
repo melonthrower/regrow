@@ -1,3 +1,5 @@
+> 2026-11-07 调用收束（当前实现，限定验证见SNAPSHOT_STATUS.md）：活动调用为13类；独立function_registration/task_result_review退出，功能增量及旧题结算由普通task_proposal/observation_update承担。新输出退出action_result.description/returns_to_previous、focus_presence、uncertainties、dependency_updates、retry_when及纠错blocked_by；blocked修复方式合入defer。返回按真实来源attempt和后图记录；旧共享完成、覆盖豁免及准备型任务仅兼容归档，不再成为任务完成代理或新增待办。current_regions、正常恢复、同图补登记及已执行动作防重投保持。
+
 > 2026-11-06：new_tasks/control/target、task_update/state与调用级完整next_action已配套接入。后图候选在正常恢复/调度后进入原动作链，只消费一次；主结果登记与坏候选独立。两份完整保存帧及提案接收有限通过，0新GUI，未部署或整体验收。见[快照状态](../SNAPSHOT_STATUS.md)和[实施说明](proposals/action-continuation-20261106/README.md)。
 
 > 设计意图与阅读入口：[设计导读](DESIGN_INTENT.md) · [字段动机](modules/stepwise/object_fields.md) · [各环节与源码地图](modules/stepwise/CODE_MAP.md)。这组说明区分设计、实现、有限验证与候选，不替代本页当前合同。

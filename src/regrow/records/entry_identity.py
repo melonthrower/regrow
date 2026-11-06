@@ -1,24 +1,27 @@
 """Use observed destination controls to recall entry identities after a real click."""
 from copy import deepcopy
-from regrow.records.object_store import owned_actions, owned_controls
+from regrow.records.object_store import owned_actions, owned_controls, owned_tasks
 
 
 def candidates(records, binding, ranking, operation, attempt):
+    from regrow.records.navigation import contextual_return
     rid, current = binding.get('region_ref'), binding.get('control_ref')
     owner = records.get(rid, {})
     controls = owned_controls(owner)
-    if operation not in ('click', 'tap') or not controls.get(current, {}).get('may_open_content'):
+    unresolved = any(task.get('control') == current and task.get('status') in ('pending', 'blocked')
+                     and not task.get('equivalent_to') and not task.get('coverage_exemption')
+                     for task in owned_tasks(owner).values())
+    if operation not in ('click', 'tap') or current not in controls or not unresolved:
         return []
     matched = {row['region']: row for row in ranking if row.get('anchors')}
     rows = {}
     for aid, action in sorted(owned_actions(owner).items()):
         cid = action.get('control')
         if (aid >= attempt or cid == current or cid not in controls or
-                not controls[cid].get('may_open_content') or
                 action.get('operation') not in ('click', 'tap') or
                 action.get('delivery') != 'executed_receipt_zero' or
                 action.get('result', {}).get('exception') != 'none' or
-                action.get('result', {}).get('returns_to_previous')):
+                contextual_return(action)):
             continue
         # A visible background is not an entry destination. Require a recorded
         # outgoing relation as well as the action's actual foreground result.

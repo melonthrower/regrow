@@ -8,16 +8,18 @@ from regrow.records.object_store import owned_controls
 
 def extend_schema(schema, required=False):
     item = schema['properties']['controls']['items']
+    if 'bbox' in item['properties']:
+        item['properties']['appearance_bbox'] = item['properties'].pop('bbox')
+        item['required'] = ['appearance_bbox' if key == 'bbox' else key for key in item['required']]
+    item['properties'].setdefault('icon_description', {'type': 'string'})
     item['properties'].update(name={'type': 'string'}, list_group={'type': 'string'})
     from regrow.records.control_knowledge import schema as knowledge_schema
-    for field in ('possible_purpose', 'icon_appearance', 'icon_bbox'):
+    for field in ('possible_purpose', 'icon_appearance', 'icon_bbox', 'may_open_content', 'needs_exploration'):
         item['properties'].pop(field, None)
     item['properties'].update(
         description={'type': 'string', 'description': '仅需补充辨认特征时填写；名称已足够时省略。用途写knowledge。'},
-        knowledge={**knowledge_schema(), 'minItems': 0},
-        may_open_content={'type':'boolean', 'description':'是否打开或展开与应用主要功能相关、具有探索价值的内容。'},
-        needs_exploration={'type':['boolean','null'], 'description':'控件自身用法是否还有影响后续使用的具体未知；不确定填null。'})
-    item['required'] = list(dict.fromkeys([k for k in item['required'] if k not in ('possible_purpose', 'icon_appearance', 'icon_bbox')] + ['knowledge','may_open_content','needs_exploration']))
+        knowledge={**knowledge_schema(), 'minItems': 0})
+    item['required'] = list(dict.fromkeys([k for k in item['required'] if k not in ('possible_purpose', 'icon_appearance', 'icon_bbox', 'may_open_content', 'needs_exploration')] + ['knowledge']))
 
     item['properties']['ref']['description'] = '复用控件填写本轮提供的稳定编号，例如c0002；name填写控件名称。新用途或当前状态变化仍沿用原身份。新对象明确identity=new；身份未定保留缺口。'
     if required:
@@ -31,7 +33,7 @@ def rewrite(value, old, new):
         rewrite(value.actions, old, new)
     if isinstance(value, dict):
         for (key, item) in value.items():
-            if key in ('control', 'source_control', 'control_ref', 'required_control') and item == old:
+            if key in ('control', 'source_control', 'control_ref', 'required_control', 'access_entry') and item == old:
                 value[key] = new
             elif key in ('control_refs', 'controls', 'supports') and isinstance(item, list) and all((isinstance(v, str) for v in item)):
                 value[key] = list(dict.fromkeys((new if v == old else v for v in item)))
@@ -162,5 +164,3 @@ def normalize(records):
             routes.append(entry_value(route))
         control['jump_to'] = routes
         control.setdefault('description', last_reported(control, 'description').get('description') or last_reported(control, 'icon_description').get('icon_description', ''))
-        control.setdefault('may_open_content', None)
-        control.setdefault('needs_exploration', None)

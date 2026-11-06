@@ -7,6 +7,7 @@ from regrow.records.tasks import read as task_value
 from regrow.records.object_store import owned_actions
 from regrow.records.object_store import owned_tasks
 from regrow.records.object_store import owned_controls
+from regrow.records.action_evidence import has_observed_result
 import json
 
 def action_name(value):
@@ -32,12 +33,7 @@ def task_definition(task):
     return legacy_definition(registration_kind(task))
 
 def completion_condition(task):
-    """Read the task's fixed endpoint; active shared projections use its source."""
-    shared = task.get('shared_task_ref')
-    if shared and task.get('shared_task_active', True) and hasattr(task, 'store'):
-        source = owned_tasks(task.store.get(shared['region'], {})).get(shared['task'])
-        if source is not None:
-            return source.get('target', source.get('completion_condition', ''))
+    """Read this task's fixed endpoint without following historical projections."""
     return task.get('target', task.get('completion_condition', ''))
 
 
@@ -125,8 +121,8 @@ def register_entry(value, records, actual, attempt, labels=None, *, knowledge, r
         raise ValueError('入口去向需要本次动作的到达依据，且目标属于动作后前景；仅同时可见不足以证明跳转')
     from regrow.records.control_knowledge import text
     knowledge = text(knowledge)
-    if not knowledge or not value['evidence'].strip():
-        raise ValueError('入口关联需要已登记用途和前后变化依据')
+    if not value['evidence'].strip():
+        raise ValueError('入口关联需要本次实际动作及后图来源')
     entry = {**value, 'region': target, 'attempt': attempt, 'meaning': knowledge, 'conditions': list(dict.fromkeys(action.get('conditions', []) + value.get('conditions', [])))}
     return entry
 
@@ -138,7 +134,7 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
     jsonschema.validate(values, destination_schema())
     from regrow.records.object_store import observation_history
     action = owned_actions(actual)[attempt]
-    if action.get('delivery') != 'executed_receipt_zero' or action.get('association', {}).get('status') == 'unconfirmed':
+    if not has_observed_result(action) or action.get('association', {}).get('status') == 'unconfirmed':
         raise ValueError('目标关联缺少已确认的实际动作来源')
     source_control = action.get('control')
     record = owned_controls(actual).get(source_control) if source_control else actual
@@ -154,10 +150,10 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
         if not 0 <= index < len(region_refs):
             raise ValueError('jump_to.region_index必须引用本次regions')
         target = region_refs[index]
-        entry = register_entry({'region': records[target]['name'], 'evidence': action.get('result', {}).get('description', ''),
+        entry = register_entry({'region': records[target]['name'], 'evidence': action['evidence']['after_observation'],
                                 'conditions': value.get('conditions', [])},
                                records, actual, attempt, {records[target]['name']: target},
-                               knowledge=action.get('result', {}).get('description', ''), reported_destination=True)
+                               knowledge='', reported_destination=True)
         if 'control_index' in value:
             ci = value['control_index']
             if type(ci) is not int or not 0 <= ci < len(controls):
@@ -210,10 +206,10 @@ def registered_result(task, action, attempt):
         return False
     kind = registration_kind(task)
     if 'target' in task:
-        return bool(action.get('result', {}).get('description'))
+        return has_observed_result(action)
     if kind == 'parameter':
         return not missing_product_fields(task)
-    return bool(task_value(task, 'knowledge') and action.get('result', {}).get('description'))
+    return bool(task_value(task, 'knowledge') and has_observed_result(action))
 
 def completion_target(owner, task):
     target = dict(task.get('completion_action') or {'region': owner['id'], 'control': task.get('control')})
@@ -240,11 +236,11 @@ def task_object_context(records, binding):
     task = owned_tasks(owner)[binding['task_name']]
     target = completion_target(owner, task)
     region = records[target['region']]
-    return {'任务区块': owner['name'], '待执行区块': region['name'], '待执行控件': owned_controls(region).get(target['control'], {}).get('name', '区块本身'), '所需登记': registration_kind(task), '适用条件': task.get('conditions', []), '说明': ('这是前置准备，按已知准备目标推进；条件是否满足由本次观察的dependency_updates登记，不因入口点击而结束。' if task.get('prepares') else '') + '明确提交pending/done/blocked；框架核验实际绑定、执行或观察来源及所需产物，再登记判断。done回答探索问题，不等于业务操作成功。'}
+    return {'任务区块': owner['name'], '待执行区块': region['name'], '待执行控件': owned_controls(region).get(target['control'], {}).get('name', '区块本身'), '所需登记': registration_kind(task), '适用条件': task.get('conditions', []), '说明': '明确提交pending/done/blocked；框架核验实际绑定、执行或观察来源及所需产物，再登记判断。done回答探索问题，不等于业务操作成功。'}
 
 def recorded_match(region, aid, action, target, receipt=None):
     """A dispatch intention or an unresolved visual candidate is not execution."""
-    if target['control'] is None and region['id'] != target['region'] or action.get('control') != target['control'] or aid in target.get('excluded_attempts', []) or (action.get('delivery') != 'executed_receipt_zero') or (action.get('association', {}).get('status') == 'unconfirmed') or (action.get('result', {}).get('exception') == 'unexpected_exit') or (not action.get('result', {}).get('description')):
+    if target['control'] is None and region['id'] != target['region'] or action.get('control') != target['control'] or aid in target.get('excluded_attempts', []) or not has_observed_result(action) or (action.get('association', {}).get('status') == 'unconfirmed') or (action.get('result', {}).get('exception') == 'unexpected_exit'):
         return False
     operation = action_name(action.get('operation'))
     if target['control'] is None and operation not in ('scroll', 'back', 'wait', 'key_press', 'hotkey'):
@@ -285,10 +281,7 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
         source.update(operation=action.get('operation'), registration_kind=registration_kind(task))
     if action.get('result', {}).get('exception') == 'unexpected_exit':
         task['blocker'] = {'condition': 'review_required', 'exception': 'unexpected_exit', 'attempt': attempt, 'reason': '实际应用异常退出尚未解决'}
-    if task.get('prepares'):
-        product = updates.preparation_product(task, row, records, source)
-    else:
-        product = task_product(task)
+    product = task_product(task)
     updates.decide(task, row, source, product_complete=product, records=records,
                    labels=labels)
 
@@ -309,7 +302,7 @@ def reconcile(records):
                 association = action.get('association', {})
                 from regrow.records.action_evidence import assessments
                 claimed_answer = any((row.get('state') == 'done' for row in assessments(task, aid)))
-                if aid in target.get('excluded_attempts', []) or action.get('delivery') != 'executed_receipt_zero' or action.get('result', {}).get('exception') != 'none' or (not action.get('result', {}).get('description')) or (association.get('status') != 'unconfirmed') or (not (claimed_answer or any((c.get('region') == target['region'] and c.get('control') == target['control'] for c in association.get('candidates', []))))):
+                if aid in target.get('excluded_attempts', []) or not has_observed_result(action) or action.get('result', {}).get('exception') != 'none' or (association.get('status') != 'unconfirmed') or (not (claimed_answer or any((c.get('region') == target['region'] and c.get('control') == target['control'] for c in association.get('candidates', []))))):
                     continue
                 reason = '已有实际投递及观察，但目标控件归属未确认；保留原尝试，需显式核对关联后再推进原任务'
                 task_audit(task)['result_evidence'] = action.get('result', {}).get('description', '')

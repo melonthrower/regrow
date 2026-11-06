@@ -37,6 +37,9 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
     from regrow.recognition import foreground_scope as foreground_scope
     foreground_scope.extend_schema(schema)
     refs = [r['ref'] for r in dynamic.get('已知区块', []) if r.get('ref')]
+    function_regions = list(refs)
+    from regrow.records.function_updates import schema as function_schema
+    schema['properties']['function_updates'] = function_schema(function_regions)
     if refs:
         field = schema['properties']['current_regions']['items']['oneOf'][0]['properties']['ref']
         field.update(enum=list(dict.fromkeys(refs)), description='使用本轮已知区块的ref编号。')
@@ -47,8 +50,9 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
     from regrow.recognition import region_identity as identity
     identity.extend_schema(schema, required=True)
     field = schema['properties']['action_result']
-    field['properties']['exception']['enum'] = ['none', 'blocking_popup', 'system_error', 'unexpected_exit', 'external_app', 'unclassified']
-    field['required'] = list(dict.fromkeys(field['required'] + ['recovery_handoff', 'returns_to_previous']))
+    from regrow.traversal.recovery import EXCEPTIONS
+    field['properties']['exception']['enum'] = list(EXCEPTIONS)
+    field['required'] = list(dict.fromkeys(field['required'] + ['recovery_handoff']))
     if '任务更新引用' in dynamic or dynamic.get('本轮探索任务') or dynamic.get('来源区块已有任务'):
         from regrow.records.task_updates import schema as task_update_schema
         refs = dynamic.pop('任务更新引用', None)
@@ -72,6 +76,7 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
         if part['path'] == '共享/行为差异分离.prompt':
             part['text'] = ''
     request = {'pipeline_step': 'update', 'role': 'observation_update', 'stage': stage['stage'], 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': list(screenshots), 'response_schema': schema, 'fixed_parts': parts, 'context_scope': {'selection': selection}}
+    request['function_update_regions'] = function_regions
     from regrow.traversal.object_registration import semantic_schema
     request['response_schema'] = semantic_schema(schema)
     from regrow.prompts.frame_context import label
@@ -168,14 +173,14 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     progress_now = coverage(owner, records)
     from regrow.records.task_updates import catalog
     from regrow.records.task_updates import reference
-    task_candidates = catalog(records, binding)
+    from regrow.recognition import history_matching as history_matching
+    ranking = history_matching.scan(records, snapshot, folder / 'after.png', scope=foreground_scope.load(run, folder / 'after.png'))
+    task_candidates = catalog(records, binding, [r['region'] for r in ranking if r['anchors']])
     dynamic['来源区块已有任务'] = [{k: v for (k, v) in row.items() if k != 'control'} for row in task_candidates]
     refs = [row['task'] for row in task_candidates if row['status'] in ('pending', 'blocked')]
     dynamic['任务更新引用'] = refs
     if binding.get('task_name'):
         dynamic['当前任务引用'] = reference(binding.get('task_region', binding['region_ref']), binding['task_name'])
-    from regrow.recognition import history_matching as history_matching
-    ranking = history_matching.scan(records, snapshot, folder / 'after.png', scope=foreground_scope.load(run, folder / 'after.png'))
     dynamic['当前截图视觉匹配到的既有区块'] = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'anchors': r['anchors']} for r in ranking if r['anchors']]
     dynamic['已知区块'] = identity_candidates(records, state, binding, dynamic['当前截图视觉匹配到的既有区块'], source_destinations=recalled['destinations'])
     from regrow.records.control_routes import card as route_card
@@ -200,6 +205,9 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     dynamic.pop('当前截图视觉匹配到的既有区块', None)
     if recalled['actions'] or recalled.get('incoming') or not recalled['confirmed']:
         dynamic['本次入口历史落点'] = source_candidates.describe(recalled, labels)
+    from regrow.records.function_updates import view as function_view
+    dynamic['已有功能'] = [row for item in dynamic['已知区块']
+                           for row in function_view(records, item['ref'])]
     dynamic['身份引用'] = 'ref使用已提供的区块或控件编号；name只表示名称。'
     source = {'region': binding['region_ref'], 'working_region': binding['working_region'], 'observation': binding['observation_ref'], 'attempt': folder.name, 'control_ref': binding.get('control_ref')}
     if binding.get('task_name'):

@@ -45,7 +45,7 @@ def atomic(path, value):
 def refresh_retained_identity_candidate(run, job):
     """An identity-only answer cannot migrate a retained stage's other fields."""
     history = job.get('history', [])
-    if not (job.get('control_identity_pair') or job.get('control_identity_candidates') or any((row.get('role') in ('control_identity_selection', 'control_identity_comparison') for row in history))):
+    if not (job.get('control_identity_pair') or job.get('control_identity_candidates') or any((row.get('role') in ('control_identity_comparison',) for row in history))):
         return False
     rebuilt = [i for (i, row) in enumerate(history) if row.get('framework') == 'rebuilt_stage_image_contract']
     if not rebuilt or any((row.get('framework') == 'refresh_incompatible_retained_candidate' for row in history[rebuilt[-1]:])):
@@ -123,10 +123,6 @@ def resume_service_failure(run, episode=None, frame=None):
     if frame is not None and job['stage'] == 'discovery':
         discovery.await_discovery(run, str(Path(frame).resolve()), 'service-retry-' + failure['call'])
         job['request'] = _locator.request_from_run(SOURCE_ROOT, run)
-    if job['stage'] == 'task_result_review':
-        from regrow.traversal.task_result_review import resume_service_request
-        job['request'] = resume_service_request(SOURCE_ROOT, run, job, frame)
-        job.pop('service_retry_request', None)
     job.setdefault('service_resume_history', []).append({'failure': failure, 'previous_status': job['status'], 'explicit_retry': True})
     job.pop('service_failure', None)
     for key in ('branch_switch_attempted', 'branch_review_signature', 'switch_trigger'):
@@ -150,6 +146,19 @@ def pending(run, pointer_name='pending_step.json'):
     job = read(Path(run) / read(pointer)['episode'])
     return job
 
+def retire_shared_review(run, pointer_name='pending_step.json'):
+    """Keep an old review episode, but never resume its retired model contract."""
+    run = Path(run)
+    job = pending(run, pointer_name)
+    if job is None or job.get('stage') not in ('shared_control_review', 'function_registration', 'task_result_review'):
+        return False
+    atomic((run / job['path']).with_name('retired_shared_review.json'),
+           {'episode': job['path'], 'reason': 'redundant_call_removed', 'stage': job['stage'], 'gui_actions': 0})
+    from regrow.runtime.reply_correction import abandon
+    abandon(run, '独立复查/总结已退出；保留原调用与回复，由普通任务和更新继续。')
+    (run / pointer_name).unlink()
+    return True
+
 def confirmed_dispatch_review(run, job, current_calls, window, current_frame):
     """One fresh correction for this specific, still undispatched frame change."""
     evidence = job.get('pre_dispatch_review')
@@ -169,7 +178,7 @@ def confirmed_dispatch_review(run, job, current_calls, window, current_frame):
         return False
     sent = read(folder / 'request.json')
     reply = read(folder / 'response.json')
-    if sent.get('role') != 'step_correction' or reply.get('resolution') != 'revise' or reply.get('blocked_by') != 'none':
+    if sent.get('role') != 'step_correction' or reply.get('resolution') != 'revise' or reply.get('blocked_by', 'none') != 'none':
         return False
     frames = sent.get('screenshots', [])
     current = evidence['current']
@@ -182,7 +191,7 @@ def reobservable_block(run):
         return None
     if job.get('service_failure') and content_rejection(job['service_failure']['error']):
         return None
-    if job['stage'] not in ('action', 'discovery', 'task_proposal', 'function_registration', 'task_result_review'):
+    if job['stage'] not in ('action', 'discovery', 'task_proposal'):
         return None
     if any(((Path(run) / p).exists() for p in ('execution_pending.json', 'visual_navigation_pending.json'))):
         return None
@@ -205,14 +214,13 @@ def reopen_blocked(run, frame):
 def task_review_images(value):
     """A review and its saved correction retain the same validated evidence pair."""
     original = value.get('original_request', value)
-    if not original.get('done_task_review') and original.get('role') not in ('task_result_review', 'observation_update', 'appearance_comparison'):
+    if not original.get('done_task_review') and original.get('role') not in ('observation_update', 'appearance_comparison'):
         return False
     from regrow.prompts.frame_context import validate
     validate(value)
     return True
 
 def request(root, job, context):
-    from regrow.records import shared_control_review as _shared_control_review
     from regrow.prompts import frame_context as _frame_context
     from regrow.runtime import model_transport as _model_transport
     from regrow.prompts import target_observation as _target_observation
@@ -222,13 +230,11 @@ def request(root, job, context):
     from regrow.records import page_context as _page_context
     from regrow.recognition import matching as _visual_choices
     from regrow.recognition import control_identity_review as _control_identity_review
-    if job['stage'] == 'shared_control_review':
-        return _shared_control_review.correction_request(root, job)
     if job['stage'] == 'action' and job.get('action_target_doubt'):
         from regrow.recognition import action_target_review
         return action_target_review.request(root, job)
     if not (job.get('control_identity_pair') or job.get('control_identity_candidates')
-            or job['request'].get('needs_task_inspection') or job.get('record_edit') or job['request'].get('done_task_review')
+            or job['request'].get('needs_task_inspection') or job.get('record_edit') or job['request'].get('done_task_review') or job['request'].get('action_owner_review')
             or job.get('pre_dispatch_review') or _correction_prompts.needs_record_repair(job)):
         return _correction_prompts.original_reply(root, job)
     original = deepcopy(job['request'])
@@ -256,18 +262,13 @@ def request(root, job, context):
         if original.get('control_observation_candidates'):
             edits.append(_control_observation_repair.schema())
     edit = {'anyOf': edits} if edits else {'type': 'null'}
-    fields = {'blocked_by': {'type': 'string', 'enum': ['none', 'blocking_popup', 'system_error', 'unexpected_exit', 'external_app', 'control_not_visible', 'binding_conflict', 'region_ownership_review', 'shared_control_conflict', 'model_response_parse_error', 'review_required']}, 'reason': {'type': 'string'}, 'resolution': {'type': 'string', 'enum': ['revise', 'observe', 'edit_record', 'defer', 'blocked']}, 'proposal': {'anyOf': [deepcopy(original['response_schema']), {'type': 'null'}]}, 'record_edit': {'anyOf': [edit, {'type': 'array', 'items': edit}, {'type': 'null'}]}}
+    fields = {'reason': {'type': 'string'}, 'resolution': {'type': 'string', 'enum': ['revise', 'observe', 'edit_record', 'defer']}, 'proposal': {'anyOf': [deepcopy(original['response_schema']), {'type': 'null'}]}, 'record_edit': {'anyOf': [edit, {'type': 'array', 'items': edit}, {'type': 'null'}]}}
     if not edits:
         fields['record_edit'] = {'type': 'null'}
         fields['resolution']['enum'].remove('edit_record')
     if job['stage'] in ('object_registration', 'appearance_comparison'):
-        fields['resolution']['enum'] = ['revise', 'defer', 'blocked']
+        fields['resolution']['enum'] = ['revise', 'defer']
         fields['record_edit'] = {'type':'null'}
-    if job['stage'] == 'update':
-        proposal = fields['proposal']['anyOf'][0]['properties']
-        for (obj, key) in [(proposal.get('action_result', {}), 'returns_to_previous')]:
-            if obj.get('properties', {}).get(key, {}).get('type') == 'boolean':
-                obj['required'] = list(dict.fromkeys(obj.get('required', []) + [key]))
     if job['stage'] == 'task_proposal':
         fields['proposal']['anyOf'][0]['properties']['new_tasks']['items']['properties']['control'].pop('enum', None)
     from regrow.traversal.proposal_revision import prepare as prepare_revision, guidance, display, examples, MODE
@@ -278,7 +279,15 @@ def request(root, job, context):
             'before': review['before'].get('control') or ''}.items()})
         fields['proposal'] = {'type': 'null'}
         fields['record_edit'] = {'anyOf': [task_edit, {'type': 'null'}]}
-        fields['resolution']['enum'] = ['edit_record', 'defer', 'blocked']
+        fields['resolution']['enum'] = ['edit_record', 'defer']
+        proposal_base = None
+    elif original.get('action_owner_review'):
+        owner_edit = _action_owner_correction.schema()
+        candidate = original['action_owner_candidates'][0]
+        owner_edit['properties'].update({key: {'const': value} for key, value in candidate.items()})
+        fields['proposal'] = {'type': 'null'}
+        fields['record_edit'] = {'anyOf': [owner_edit, {'type': 'null'}]}
+        fields['resolution']['enum'] = ['edit_record', 'defer']
         proposal_base = None
     else:
         proposal_base = prepare_revision(job, original, fields['proposal']['anyOf'][0])
@@ -353,6 +362,7 @@ class Runner:
         self.adapters = _repair_stages
         self.pointer_name = pointer_name
         self.review_update = review_update
+        retire_shared_review(self.run, pointer_name)
 
     def save(self, job):
         atomic(self.run / job['path'], job)
@@ -391,11 +401,6 @@ class Runner:
             (self.run / self.pointer_name).unlink(missing_ok=True)
             raise Paused('record_review_deferred', reason)
         decision = _task_deferral.defer(self.run, job, reason)
-        if job['stage'] == 'function_registration':
-            job.update(status='deferred', deferral=decision, error=reason)
-            self.save(job)
-            (self.run / self.pointer_name).unlink(missing_ok=True)
-            raise Paused('function_registration_deferred', reason)
         if decision is not None:
             job.update(status='deferred', deferral=decision, error=reason)
             self.save(job)
@@ -437,7 +442,7 @@ class Runner:
                 job['service_error_history'].append(failed)
             if job['status'] == 'blocked':
                 role = job['service_retry_request'].get('role')
-                job['status'] = 'repair' if role in ('step_correction', 'control_identity_selection', 'control_identity_comparison') else 'initial'
+                job['status'] = 'repair' if role in ('step_correction', 'control_identity_comparison') else 'initial'
             self.save(job)
             raise Paused('model_service_unavailable', '模型接口失败；保留原步骤和任务，修复服务或请求后继续，不据此切换业务区块。')
         if job.get('suspended_recovery'):
@@ -450,7 +455,7 @@ class Runner:
                 job.update(status='blocked', error=reason)
                 self.save(job)
                 raise Paused('correction_blocked', reason + '原GUI已执行，只能重试登记。')
-            if job['stage'] in ('action', 'task_proposal', 'function_registration', 'task_result_review'):
+            if job['stage'] in ('action', 'task_proposal'):
                 self.stop(job, reason)
         if self.available() < 1:
             raise Paused('repair_pending', '本轮调用额度已用完；下一轮继续原纠错请求')
@@ -464,11 +469,10 @@ class Runner:
         raise Paused('correction_blocked', '当前分支未切换；保留未完成记录')
 
     def perform(self, stage, q=None, attempt=None, *, candidate=None, source_call=None):
-        from regrow.records import shared_control_review as _shared_control_review
         from regrow.prompts import history_disclosure as _history_disclosure
         from regrow.traversal import result_updater as _result_updater
         from regrow.traversal import correction_crop_feedback as _correction_crop_feedback
-        from regrow.traversal import region_functions as _region_functions
+
         from regrow.records import update_semantic_review as _update_semantic_review
         from regrow.recognition import ownership_review as _ownership_review
         from regrow.runtime import model_transport as _model_transport
@@ -476,14 +480,10 @@ class Runner:
         from regrow.records import registration_diagnostics as _registration_diagnostics
         job = pending(self.run, self.pointer_name)
         if job is None:
-            if stage in ('action', 'task_proposal', 'function_registration', 'task_result_review'):
-                _shared_control_review.run_pending(self, q)
             key = uuid.uuid4().hex
             job = {'path': f'repair_episodes/{key}/episode.json', 'stage': stage, 'request': deepcopy(q), 'attempt': attempt, 'status': 'initial', 'repairs': 0, 'observations': 0, 'history': [], 'seen': [], 'supplements': []}
             if source_call is not None:
                 job.update(status='accept', candidate=deepcopy(candidate), call=source_call)
-            if stage == 'shared_control_review':
-                job.update(status='repair', blocked_by='shared_control_conflict', error='共享关系有实际结果冲突，请核对共享范围')
             self.save(job)
             atomic(self.run / self.pointer_name, {'episode': job['path']})
         elif stage != job['stage']:
@@ -529,6 +529,18 @@ class Runner:
                 job['history'].append({'framework': 'rebuilt_original_action_material', 'original_request': str(archive), 'original_episode': str(episode_archive), 'previous_call': job.get('call')})
                 job.update(request=fresh, status='initial', candidate=None, record_edit=None)
                 self.save(job)
+        if job.get('control_identity_candidates'):
+            from regrow.traversal.object_registration import partition_request, save_candidate
+            group = job['control_identity_candidates']
+            reason = str(_control_identity_review.CandidateConflict(group))
+            try:
+                revised, retained = partition_request(job['request'], job['candidate'],
+                    {'/controls/' + str(group[0]['control_index']): reason})
+            except ValueError as required_object:
+                self.stop(job, str(required_object))
+            job.pop('control_identity_candidates')
+            job.update(status='accept')
+            save_candidate(self, job, revised, retained)
         retry = job.get('service_retry_request', {})
         old_retry = len(retry.get('screenshots', [])) > 1 and retry.get('role') != 'control_identity_comparison' and not task_review_images(retry)
         if ((len(job['request'].get('screenshots', [])) > 1 and not task_review_images(job['request'])) or old_retry) and job['status'] != 'complete':
@@ -558,8 +570,6 @@ class Runner:
         if stage == 'update' and self.review_update is not None and (not job.get('requires_update_review')):
             job['requires_update_review'] = True
             self.save(job)
-        if job.get('service_failure') and job['stage'] == 'function_registration':
-            self.stop(job, '模型服务失败，仅暂挂本区块的功能整理；其他探索可继续，原请求与错误保留')
         if job.get('service_failure') and (not content_rejection(job['service_failure']['error'])):
             self.switch_branch(job)
         if job.get('service_failure') or job.get('switch_trigger'):
@@ -656,7 +666,18 @@ class Runner:
                     if getattr(error, 'control_identity_pair', None):
                         job['control_identity_pair'] = error.control_identity_pair
                     if getattr(error, 'control_identity_candidates', None):
-                        job['control_identity_candidates'] = error.control_identity_candidates
+                        from regrow.traversal.object_registration import partition_request, save_candidate
+                        group = error.control_identity_candidates
+                        failed = {'/controls/' + str(group[0]['control_index']): str(error)}
+                        try:
+                            q, retained = partition_request(job['request'], job['candidate'], failed)
+                        except ValueError as required_object:
+                            self.stop(job, str(required_object))
+                        job.pop('control_identity_candidates', None)
+                        job.pop('control_identity_pair', None)
+                        job['history'].append({'call': job['call'], 'unresolved_identity': group, 'reason': str(error)})
+                        save_candidate(self, job, q, retained)
+                        continue
                     if getattr(error, 'action_target_doubt', None):
                         job['action_target_doubt'] = error.action_target_doubt
                     job['error'] = diagnostic(error)
@@ -715,22 +736,16 @@ class Runner:
                     job['service_retry_request'] = deepcopy(q)
                     self.save(job)
                     continue
-                if job['stage'] == 'function_registration':
-                    job['service_failure'] = {'call': failed, 'error': failure}
-                    self.save(job)
-                    self.stop(job, '模型服务失败，仅暂挂功能整理，其他探索继续')
                 if not content_rejection(failure):
                     job['service_retry_request'] = deepcopy(q)
                     self.save(job)
                     raise Paused('model_service_unavailable', '模型接口或回复失败；原步骤、任务、失败和计数保留，修复后续接原请求。')
                 job['service_failure'] = {'call': failed, 'error': failure}
                 self.save(job)
-                if job['stage'] == 'function_registration':
-                    self.stop(job, '模型服务失败，仅暂挂功能整理，其他探索继续')
                 self.switch_branch(job)
             q = self.sent_request(job, q, ref, repairing)
             previous_call = job.get('call')
-            if q.get('role') not in ('control_identity_comparison', 'control_identity_selection'):
+            if q.get('role') not in ('control_identity_comparison',):
                 job.pop('registration_submission', None)
             job['call'] = ref
             job['history'].append({'call': ref, 'role': q.get('role')})
@@ -760,17 +775,6 @@ class Runner:
                         job.update(request=reviewed, candidate=candidate, status='accept')
                         self.save(job)
                         continue
-                    if q.get('role') == 'control_identity_selection':
-                        pair = _control_identity_review.selected_pair(q, reply)
-                        if pair is None:
-                            self.stop(job, '当前场景无法选定历史控件：' + reply['reason'])
-                        job['control_identity_pair'] = pair
-                        job.pop('control_identity_candidates', None)
-                        job['history'].append({'call': ref, 'identity_candidate': reply['candidate'], 'reason': reply['reason']})
-                        job['repairs'] = max(0, job['repairs'] - 1)
-                        job.update(status='repair', error='已按场景选定一个候选；现在仅核对这一对原场景，不直接登记身份')
-                        self.save(job)
-                        continue
                     if q.get('role') == 'control_identity_comparison':
                         (reviewed, candidate) = _control_identity_review.compared_candidate(q, reply)
                         if candidate is None:
@@ -797,11 +801,8 @@ class Runner:
                         check = hashlib.sha256(json.dumps([repeated, job['request'], job.get('supplements'), reply.get('record_edit')], sort_keys=True).encode()).hexdigest()
                         if check in job['seen']:
                             self.stop(job, '重复提交同一证据下已拒绝的提案')
-                    if job['stage'] == 'shared_control_review':
-                        job['last_shared_reply'] = deepcopy(reply)
                     _registration_diagnostics.check('correction', {'response_schema': q['response_schema'], 'original_stage': job['stage']}, reply, {})
-                    resolution = reply['resolution']
-                    job['blocked_by'] = reply['blocked_by']
+                    resolution = 'defer' if reply['resolution'] == 'blocked' else reply['resolution']
                     if not reply['reason'].strip():
                         raise ValueError('需要说明修复依据')
                     if resolution != 'revise' and reply['proposal'] is not None:
@@ -812,8 +813,7 @@ class Runner:
                         raise ValueError('resolution=edit_record需要record_edit说明具体修订。')
                     if resolution not in ('revise', 'edit_record') and reply.get('record_edit') is not None:
                         raise ValueError(f'resolution={resolution}要求record_edit=null；保留修复方式，不混入记录修订。')
-                    if resolution in ('blocked', 'defer'):
-                        job['blocked_by'] = reply['blocked_by']
+                    if resolution == 'defer':
                         self.stop(job, reply['reason'])
                     if resolution == 'observe':
                         if job.get('suspended_recovery'):
@@ -830,13 +830,14 @@ class Runner:
                             self.save(job)
                             continue
                         self.adapters.edit_record(self.root, self.run, job, reply.get('record_edit'))
+                        if job['request'].get('action_owner_review'):
+                            job.update(status='complete', result={'record_edit': reply.get('record_edit'),
+                                       'resolution': 'action_owner_corrected', 'new_gui_action': False})
+                            self.save(job)
+                            continue
                         if job['request'].get('done_task_review'):
                             job.update(status='complete', result={'record_edit': reply.get('record_edit'),
                                        'resolution': 'original_task_reopened', 'new_gui_action': False})
-                            self.save(job)
-                            continue
-                        if job['stage'] == 'shared_control_review':
-                            job.update(status='complete', result={'record_edit': reply.get('record_edit'), 'resolution': 'shared_relation_reviewed'})
                             self.save(job)
                             continue
                         job['request'] = self.adapters.refresh(self.root, self.run, job)

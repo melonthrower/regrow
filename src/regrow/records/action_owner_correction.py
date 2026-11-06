@@ -23,9 +23,10 @@ def effective_attempts(task):
 def control_history(region, task):
     """Candidate evidence for this exact control, never same-name inference."""
     from regrow.records.task_settlement import registration_kind
+    from regrow.records.action_evidence import has_observed_result
     if registration_kind(task) == 'parameter' or not task.get('control'):
         return []
-    return [aid for (aid, a) in control_actions(region, task['control']).items() if a.get('control') == task.get('control') and a.get('delivery') == 'executed_receipt_zero' and a.get('result', {}).get('description')]
+    return [aid for (aid, a) in control_actions(region, task['control']).items() if a.get('control') == task.get('control') and a.get('delivery') == 'executed_receipt_zero' and has_observed_result(a)]
 
 def apply(records, state, edit, call, snapshot=None):
 
@@ -95,20 +96,22 @@ def apply(records, state, edit, call, snapshot=None):
 
 def request(root, run, attempt, target_region, target_control, task_source, frame):
     """Build the existing correction call for a diagnosed historical owner conflict."""
-    from regrow.traversal import task_result_review as _task_result_review
+    from regrow.traversal.task_proposer import plan_request
     from regrow.prompts import frame_context as _frame_context
     from regrow.traversal import repair_stages as _repair_stages
     from regrow.traversal import step_repair as _step_repair
     from pathlib import Path
     import json
-    (snapshot, records, _) = _record_load(run)
+    (snapshot, records, state) = _record_load(run)
     owners = [(rid, a) for (rid, r) in records.items() for (aid, a) in owned_actions(r).items() if aid == attempt]
     if len(owners) != 1:
         raise ValueError('历史动作记录缺失或不唯一')
     (rid, action) = owners[0]
     source_control = action.get('control')
     target = owned_controls(records[target_region])[target_control]
-    q = _task_result_review.request(root, run, task_source, [str(frame)])
+    q = plan_request(root, records, state, task_source.get('task_region') or task_source['region'], current_scene=False)
+    q['action_owner_review'] = True
+    q['source']['snapshot'] = str(snapshot.relative_to(Path(run).resolve()))
     q['discovery_context'] = {'region_names': {k: k for k in (rid, target_region)}}
     q['action_owner_candidates'] = [{'attempt': attempt, 'from_region': rid, 'from_control': source_control, 'to_region': target_region, 'to_control': target_control}]
     images = [Path(run) / 'action_attempts' / attempt / (when + '.png') for when in ('before', 'after')]
@@ -122,7 +125,7 @@ def request(root, run, attempt, target_region, target_control, task_source, fram
     before = action.get('evidence', {}).get('before_observation')
     details = {'待核对动作': attempt, '原投递（不可改写）': dispatch, '当前有效归属': {'region': rid, 'control': source_control, '区块': records[rid]['name'], '控件': owned_controls(records[rid])[source_control]['name']}, '候选实际对象': {'region': target_region, 'control': target_control, '区块': records[target_region]['name'], '控件': target['name'], '当时观察': [o for o in observation_history(target) if o.get('evidence', {}).get('observation') == before]}, '已登记直接结果': action.get('result'), '说明': '目标仅为待核对候选，不是身份结论。本图为该动作原动作前图；结合实际坐标、卡片职责和已登记结果核对，不能只凭同名或相似按钮改挂。原始任务意图、投递和截图不改写。'}
     q['user_prompt'] += '\n\n历史归属核对材料：' + json.dumps(details, ensure_ascii=False, indent=2)
-    job = {'stage': 'task_result_review', 'request': q, 'candidate': None, 'error': '历史动作实际对象与登记归属可能冲突，请按原动作前图、实际投递及已登记结果核对；修正归属与原任务结果需一并经过正常校验。', 'blocked_by': 'binding_conflict', 'history': [], 'supplements': []}
+    job = {'stage': 'task_proposal', 'request': q, 'candidate': None, 'error': '历史动作实际对象与登记归属可能冲突，请按原动作前图、实际投递及已登记结果核对；修正归属与原任务结果需一并经过正常校验。', 'blocked_by': 'binding_conflict', 'history': [], 'supplements': []}
     context = _repair_stages.context(run, job)
     wire = _step_repair.request(root, job, context)
     dynamic = json.loads(wire['user_prompt'])

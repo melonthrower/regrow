@@ -5,6 +5,10 @@ from copy import deepcopy
 import hashlib
 from pathlib import Path
 
+def appearance_box(value):
+    """Read the identity appearance range, including preserved old observations."""
+    return value.get('appearance_bbox', value.get('bbox'))
+
 def usable(observation, field='image'):
     quality = 'icon_quality' if field == 'icon_image' else 'image_quality'
     return bool(observation.get(field) and observation.get(quality, 'clear') == 'clear' and (field not in observation.get('template_rejections', {})))
@@ -72,14 +76,14 @@ def extend_schema(schema):
             item['properties'].pop(field, None)
         item['required'] = [key for key in item['required'] if key not in fields]
         item['allOf'] = [branch for branch in item.get('allOf', []) if not set(branch.get('then', {}).get('required', [])).intersection(fields)]
-        item.setdefault('allOf', []).append({'if': {'properties': {'ref': {'enum': [None, '']}}, 'required': ['ref']}, 'then': {'required': ['bbox']}})
+        item.setdefault('allOf', []).append({'if': {'properties': {'ref': {'enum': [None, '']}}, 'required': ['ref']}, 'then': {'required': ['appearance_bbox' if kind == 'controls' else 'bbox']}})
     return schema
 
 def admitted_box(proposal, field='bbox'):
     quality = 'icon_quality' if field == 'icon_bbox' else 'image_quality'
     if quality in proposal and proposal[quality] != 'clear':
         return None
-    return proposal.get(field)
+    return appearance_box(proposal) if field == 'appearance_bbox' else proposal.get(field)
 
 
 def variants(item):

@@ -9,7 +9,17 @@ def has_interactive(reply):
     """Retained name: test whether a foreground Region was observed, not controls."""
     if 'current_regions' in reply:
         return bool(reply['current_regions'])
-    return bool(reply['regions'] or any((p['state'] in ('retained_interactive', 'changed_interactive') for p in reply['previous_regions'])))
+    return bool(reply.get('regions') or any(p['state'] in ('retained_interactive', 'changed_interactive')
+                                          for p in historical_changes(reply)))
+
+def historical_changes(reply, records=None, names=None):
+    """Read archived pre-current_regions replies; new replies never use this field."""
+    if 'current_regions' in reply:
+        return []
+    from regrow.recognition.region_candidate_names import resolve
+    return [{'region': resolve(records, row['ref'], names) if records is not None else row['ref'],
+             'state': row['state'], **({'evidence': row['evidence']} if row.get('evidence') else {})}
+            for row in reply.get('previous_regions', [])]
 
 def selected_indices(reply, names=None):
     """Rows explicitly selected as current, including rows selected by stable ref."""

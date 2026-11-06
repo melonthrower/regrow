@@ -51,17 +51,18 @@ def prepare(run, scope, regions=(), *, apply=False):
         raise ValueError('先按原流程处理未结步骤，不能由范围变更覆盖：' + '、'.join(pending))
     _, records, state = snapshots.load(run)
     counts = {}
+    reopened = {}
     for rid in regions:
         if rid not in records:
             raise ValueError('待复审区块不存在：' + rid)
         if region_work(records[rid]).get('out_of_scope_reason'):
-            raise ValueError('区块已有独立范围排除，不能由本工具清除：' + rid)
+            reopened[rid] = region_work(records[rid])['out_of_scope_reason']
         review = region_work(records[rid]).get('task_inventory', {}).get('review')
         if review and review.get('kind') != 'scope_change':
             raise ValueError('区块已有待办复核，不能覆盖：' + rid)
         counts[rid] = sum(t.get('status') in ('pending', 'blocked')
                           for t in owned_tasks(records[rid]).values())
-    plan.update(unfinished_tasks=counts, retained_runtime_reason=state.get('reason'),
+    plan.update(unfinished_tasks=counts, reopened_regions=reopened, retained_runtime_reason=state.get('reason'),
                 scope_sha256=hashlib.sha256(scope.encode('utf-8')).hexdigest())
     if not apply:
         return plan
@@ -81,12 +82,13 @@ def prepare(run, scope, regions=(), *, apply=False):
     manifest['exploration_scope'] = scope
     manifest.setdefault('scope_history', []).append({
         'change': change_id, 'time': datetime.now(timezone.utc).isoformat(),
-        'old_scope': old_scope, 'new_scope': scope, 'review_regions': regions})
+        'old_scope': old_scope, 'new_scope': scope, 'review_regions': regions,
+        'reopened_regions': reopened})
 
     def mark_review(records, state, *_):
         for rid in regions:
             inventory = region_work(records[rid]).setdefault('task_inventory', {})
-            inventory.setdefault('inventory', 'uncertain')
+            region_work(records[rid]).pop('out_of_scope_reason', None)
             inventory['review'] = {
                 'kind': 'scope_change', 'change': change_id,
                 'scope_sha256': plan['scope_sha256'],

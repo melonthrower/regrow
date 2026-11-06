@@ -28,8 +28,6 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
     next_c = max([int(k[1:]) for r in records.values() for k in owned_controls(r)] + [0]) + 1
     region_refs = []
     for (i, p) in enumerate(reply['regions']):
-        if p.get('parent_index') is not None and (not (0 <= p['parent_index'] < len(reply['regions']) and p['parent_index'] != i)):
-            raise ValueError('invalid parent Region index')
         if p['ref']:
             r = records[p['_matched_id']] if p.get('_matched_id') else records[_region_candidate_names.resolve(records, p['ref'], region_names)]
             ref = r['id']
@@ -49,8 +47,6 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
             from regrow.records.region_knowledge import validate, apply
             validate(r, p['local_knowledge'])
             apply(r, p['local_knowledge'], records)
-        if p.get('task_review_reason', '').strip() and region_work(r).get('task_inventory'):
-            region_work(r)['task_inventory']['review'] = {'kind': 'task_proposal', 'reason': p['task_review_reason'], 'source_call': call_ref}
         from regrow.records.object_knowledge import region_only
         if region_only(p) or i not in current:
             region_refs.append(ref)
@@ -61,7 +57,8 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
         raise ValueError('same Region reported twice')
     for (i, p) in enumerate(reply['regions']):
         if 'parent_index' in p:
-            records[region_refs[i]]['parent_region'] = region_refs[p['parent_index']] if p['parent_index'] is not None else None
+            parent = p['parent_index']
+            records[region_refs[i]]['parent_region'] = region_refs[parent] if type(parent) is int else parent
     for (i, p) in enumerate(reply['controls']):
         from regrow.records.object_knowledge import control_only, apply
         if control_only(p):
@@ -86,9 +83,6 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
         if 'knowledge' in p:
             from regrow.records.control_knowledge import update
             update(c, p['knowledge'], {'source_call': call_ref, 'observation': observation, 'region': r['id'], 'basis': 'discovery'})
-        for key in ('may_open_content','needs_exploration'):
-            if key in p:
-                c[key] = deepcopy(p[key])
     return region_refs
 
 def observe_current_regions(records, region_refs, call, observation):
@@ -186,15 +180,14 @@ def save_region_images(records, region_refs, reply, call_ref, run, image_ref, sn
                 proposal = reply['controls'][int(v['evidence']['source_field'].split('/')[-1])]
                 v['source_image'] = os.path.relpath(run / image_ref, snapshot)
                 previous = templates.latest(c)
-                if previous and (not update_images or not proposal.get('add_image') or cid == text_control):
-                    continue
-                owner = frame_observation(r, kind='regions', call=call_ref, observation=observation).get('bbox')
-                visual = crop(r, cid, templates.admitted_box(proposal), identity_field='image', observed=v, owner=owner)
-                v['image_conditions'] = list(proposal.get('image_conditions', []))
-                if visual:
-                    v.update(image=visual['image'], source_image=visual['source_image'])
-                from regrow.records.control_images import images
-                c['image'] = images(c)
+                if not previous or (update_images and proposal.get('add_image') and cid != text_control):
+                    owner = frame_observation(r, kind='regions', call=call_ref, observation=observation).get('bbox')
+                    visual = crop(r, cid, templates.admitted_box(proposal, 'appearance_bbox'), identity_field='image', observed=v, owner=owner)
+                    v['image_conditions'] = list(proposal.get('image_conditions', []))
+                    if visual:
+                        v.update(image=visual['image'], source_image=visual['source_image'])
+                    from regrow.records.control_images import images
+                    c['image'] = images(c)
                 if 'click_bbox' in proposal:
                     click = crop(r, cid + '_click', proposal['click_bbox'])
                     v.update(click_bbox=deepcopy(proposal['click_bbox']), click_image=click['image'] if click else None)

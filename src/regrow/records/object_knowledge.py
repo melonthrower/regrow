@@ -31,7 +31,7 @@ def fields(records, region_ids):
             'ref': {'type': 'string', 'enum': ids}, 'knowledge': control_knowledge.schema()},
             'required': ['ref', 'knowledge'], 'additionalProperties': False}},
         'regions': {'type': 'array', 'items': {'type': 'object', 'properties': {
-            'ref': {'type': 'string', 'enum': list(region_ids)}, 'local_knowledge': region_schema()},
+            'ref': {'type': 'string', 'enum': list(region_knowledge.related(records, region_ids))}, 'local_knowledge': region_schema()},
             'required': ['ref', 'local_knowledge'], 'additionalProperties': False}}}
 
 

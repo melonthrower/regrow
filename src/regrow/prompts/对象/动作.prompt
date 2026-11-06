@@ -1,6 +1,6 @@
 # 动作
 
-<!-- BEGIN_PROMPT_BLOCK id="action.proposal" requires="control.definition,control.references,control.action_availability" -->
+<!-- BEGIN_PROMPT_BLOCK id="action.proposal" requires="control.definition,control.references" -->
 # 提出一步操作
 根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。
 - target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。
@@ -19,7 +19,7 @@ next_action 填写接下来要执行的一步操作，采用与普通动作选�
 
 <!-- BEGIN_PROMPT_BLOCK id="action.result" requires="" -->
 # 已执行动作的结果：action_result
-description 写动作后可见的直接变化、反馈、失败或无法确认的部分。实际操作对象、投递参数和回执以所给执行记录为准，不根据显示结果改写投递内容，也不必重新抄写整段执行过程。
+实际操作对象、投递参数和回执以所给执行记录为准，不根据显示结果改写投递内容，也不必重新抄写整段执行过程。
 结合实际动作与前后图判断变化是否由本次操作引起；只有时间相邻而缺少关联的变化保留未知。投递成功不证明应用已接受、保存或业务生效；缺少动作后观察时保留未核对结果。
 
 正例：投递值为 A，界面显示 B，就记录显示 B 及尚不清楚的处理方式，保持投递 A 的事实；不能倒推实际输入也是 B。
@@ -47,7 +47,7 @@ reason 说明原问题尚缺什么信息，以及本步为何没有可推进的�
 正例：“目标设置面板已在前景，可以继续处理其中的任务。”
 <!-- END_PROMPT_BLOCK id="action.none_navigation" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="action.execution" requires="control.definition,control.references,control.action_availability" -->
+<!-- BEGIN_PROMPT_BLOCK id="action.execution" requires="control.definition,control.references" -->
 # 提出一步界面操作
 按当前图选择实际对象和位置；reason 说明这一步怎样补充当前调查所需信息。未执行的效果仍保留为预期。
 <!-- END_PROMPT_BLOCK id="action.execution" -->
@@ -57,17 +57,13 @@ target 填本步实际操作对象的已给名称；确实没有对应身份时�
 正例：点击关闭提示的按钮，reason 写“解除遮挡以继续观察原表单”。
 <!-- END_PROMPT_BLOCK id="action.operation_fields" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="action.returns_to_previous" requires="" -->
-returns_to_previous：本次实际退出当前表面，回到对应进入记录的来源时填 true。结合来路与目标身份判断，业务值或滚动位置变化不改变来源身份。
-正例：关闭刚打开的对话框，返回打开它的编辑区，可以为 true。
-<!-- END_PROMPT_BLOCK id="action.returns_to_previous" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="action.jump_to" requires="" -->
+<!-- BEGIN_PROMPT_BLOCK id="action.jump_to" requires="region.references,control.references" -->
 # 登记实际访问关系：jump_to
 来源是给定执行记录中的实际操作对象，可以是控件或区块。动作使新目标出现、切换、展开或可访问，且有前后证据支持时，登记尚缺的关系。目标可以是区块或独立控件。
-region 填本次 regions 中目标区块的名称；目标是独立控件时再用 control 填它的名称。conditions 写该路线确实需要的适用条件。
+region 填本次 regions 中的目标区块；已有对象复制本轮给出的 ID/名称，同轮新区块用登记名。目标是独立控件时，control 也按已有对象的 ID/名称或同轮新控件登记名填写。conditions 写该路线确实需要的适用条件。
 修订旧路线时用该来源已有 jump_to 的 index 和新的完整 conditions，保持原目标与访问证据。
-正例：点击附件标签后出现附件区，填写 {"region": "附件区"}。
+正例：点击附件标签后，新登记附件区时填写 {"region":"附件区"}；引用已有附件区时填写 {"region":"r0004/附件区"}。
+jump_to 只报告本次实际动作后，从截图和动作结果可以确认的访问关系。先前由同类操作推测出的目标只是候选；执行成功时记录本次源控件与实际到达的目标区块，执行不符合预期时如实记录并修正相关对象知识。不得把尚未点击的其它同组成员也登记为已执行跳转。
 <!-- END_PROMPT_BLOCK id="action.jump_to" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.recovery_decision" requires="region.foreground_concept" -->
@@ -84,7 +80,7 @@ framework_tool 仅可请求 restart_app，且只用于 external_app 或 unexpect
 
 <!-- BEGIN_PROMPT_BLOCK id="action.correction_decision" requires="" -->
 # 选择处理方式
-blocked_by 选择本次问题所属类别，reason 说明具体对象、依据和缺口。只采用下方实际开放的 resolution。原任务与已执行动作的事实保持。
+reason 说明具体对象、依据和缺口。只采用下方实际开放的 resolution。原任务与已执行动作的事实保持。
 正例：只是回复漏了字段时，修订原回复中相应内容。
 <!-- END_PROMPT_BLOCK id="action.correction_decision" -->
 
@@ -101,7 +97,7 @@ edit_record：已有证据明确支持修订旧记录时，使用本次开放的
 <!-- END_PROMPT_BLOCK id="action.correction_edit" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.correction_defer" requires="" -->
-defer 保留未解决问题并让出；blocked 说明本步无法处理的具体障碍。
+defer 保留未解决问题并让出。
 <!-- END_PROMPT_BLOCK id="action.correction_defer" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.correction_proposal" requires="" -->

@@ -8,6 +8,7 @@ from regrow.records.object_store import owned_controls, owned_actions, owned_tas
 def links(records, rid):
     """Use observed forward relations; retain conditions and shared destinations."""
     from regrow.records.control_routes import with_source
+    from regrow.records.navigation import contextual_return
     region = records[rid]
     candidates = []
     for cid, record in [(None, region), *owned_controls(region).items()]:
@@ -23,8 +24,7 @@ def links(records, rid):
         if (target not in records or not edge.get('attempt')
                 or action.get('delivery') != 'executed_receipt_zero'
                 or action.get('result', {}).get('exception', 'none') != 'none'
-                or action.get('returns_to_previous') or action.get('result', {}).get('returns_to_previous')
-                or action.get('operation') == 'back'):
+                or contextual_return(action)):
             continue
         if source != rid:
             edge['observed_source'] = source
@@ -105,6 +105,8 @@ def forest(records, *, view='controls', focus=None, task_region=None):
             mark += '（本次范围外）'
         out.append('  '*depth + ('└─ ' if depth else '') + prefix + region['name'] + ' [' + rid + ']' + mark)
         tasks(region, None, depth+1)
+        from regrow.records.candidate_access import candidate_access_entries, describe
+        candidates = candidate_access_entries(records, rid)
         if view == 'controls':
             for cid, control in owned_controls(region).items():
                 out.append('  '*(depth+1) + '├─ ' + control['name'] + ' [' + cid + ']')
@@ -112,6 +114,9 @@ def forest(records, *, view='controls', focus=None, task_region=None):
                 for edge in graph[rid]:
                     if edge.get('control') == cid:
                         target(edge, depth+2, rid)
+                for row in candidates:
+                    if row['entry_control'] == cid:
+                        out.append('  '*(depth+2) + describe(row, records))
             for edge in graph[rid]:
                 if edge.get('control') is None:
                     out.append('  '*(depth+1) + '├─ 已记录的区块操作')
@@ -129,6 +134,11 @@ def forest(records, *, view='controls', focus=None, task_region=None):
                 parameters = resolved_constraints(region, function)
                 if parameters:
                     out.append('  '*(depth+2) + '参数引用：' + '、'.join(parameters))
+                if function.get('target_role'):
+                    out.append('  '*(depth+2) + '预期目标职责：' + function['target_role'])
+                for row in candidates:
+                    if row['function_ref'] == rid + '/' + name:
+                        out.append('  '*(depth+2) + describe(row, records))
                 supports = {row.get('control') for row in function.get('support_controls', [])}
                 for index, edge in enumerate(graph[rid]):
                     if edge.get('control') is not None and edge.get('control') in supports:
@@ -173,7 +183,7 @@ def local_progress(records, focus):
 
 def render(records, state, focus, goal=None, kind='observation'):
     goal = goal or {}
-    view = 'operations' if kind == 'function_registration' else 'controls'
+    view = 'controls'
     out = [forest(records, view=view, focus=focus,
                   task_region=focus if kind == 'task_proposal' else None)]
     gr, cid = goal.get('region'), goal.get('control')

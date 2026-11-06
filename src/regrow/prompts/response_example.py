@@ -26,6 +26,8 @@ def _requirements(node):
         return '本步不可填写'
     if node is True:
         return '任意JSON值'
+    if node.get('enum') == []:
+        return '本步不可填写'
     if 'const' in node:
         return '固定为 ' + _value(node['const'])
     choices = node.get('enum')
@@ -199,7 +201,7 @@ def sample(schema, name='', reuse=True):
                 required.append(key)
         value = {key: sample(props[key], key, reuse) for key in required}
         if name in ('regions_item', 'controls_item'):
-            if 'ref' in props and reuse:
+            if 'ref' in props and props['ref'].get('enum') != [] and reuse:
                 value = {'ref': sample(props['ref'], 'ref', reuse)}
         for branch in schema.get('allOf', []):
             test = branch.get('if')
@@ -216,9 +218,7 @@ def sample(schema, name='', reuse=True):
         # Task decisions have an existing semantic contract beyond schema.required.
         if 'remaining_question' in props and value.get('state') in ('pending', 'blocked'):
             value.setdefault('remaining_question', sample(props['remaining_question'], 'remaining_question', reuse))
-            if value['state'] == 'blocked' and 'retry_when' in props:
-                value.setdefault('retry_when', sample(props['retry_when'], 'retry_when', reuse))
-        if name == 'bbox' and {'left', 'top', 'right', 'bottom'} <= set(value):
+        if name in ('bbox', 'appearance_bbox', 'click_bbox') and {'left', 'top', 'right', 'bottom'} <= set(value):
             value['right'] = max(value['right'], value['left'] + 1)
             value['bottom'] = max(value['bottom'], value['top'] + 1)
         if value.get('action') in ('click', 'double_click', 'long_press', 'right_click', 'hover', 'input_text', 'scroll', 'drag'):
@@ -228,7 +228,7 @@ def sample(schema, name='', reuse=True):
         return value
     if kind == 'array':
         count = schema.get('minItems', 0)
-        if name in ('regions', 'controls', 'current_regions', 'previous_regions') and schema.get('maxItems') != 0:
+        if name in ('regions', 'controls', 'current_regions') and schema.get('maxItems') != 0:
             count = max(1, count)
         values = [sample(schema['items'], name + '_item', reuse) for _ in range(count)]
         if name == 'objects':
@@ -247,7 +247,7 @@ def sample(schema, name='', reuse=True):
             return '弄清该入口的直接作用及实际去向，足以判断后续何时使用它；目标内部独立功能另行探索。'
         if name in ('uncertainty', 'recovery_handoff'):
             return ''
-        return {'remaining_question':'示例：原问题尚未确认的具体内容', 'retry_when':'示例：已有阻碍解除后可重试的条件', 'target':'c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
+        return {'remaining_question':'示例：原问题尚未确认的具体内容', 'target':'c0001', 'description':'示例界面的职责或当前状态', 'evidence':'示例：截图中可见的判断依据', 'reason':'示例：依据本步材料作出判断'}.get(name, '示例说明')
     raise ValueError('Unsupported example field: ' + name)
 
 

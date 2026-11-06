@@ -105,7 +105,7 @@ def request(root, run, job, frame, failure, failed_call):
     allow_resume = cause.get('kind') == 'exploration_loop' and (not job.get('attempt')) and (not (Path(run) / 'execution_pending.json').exists()) and (state.get('resolved_loop', {}).get('key') != loop_key)
     dynamic['继续原分支'] = '可以选择resume：指出一个具体可行的新办法，框架解除此次循环挂起并回到发现步，再由动作步执行。' if allow_resume else '不能再次以同一证据恢复原分支；选择独立区块或说明实际阻塞。'
     text = json.dumps(dynamic, ensure_ascii=False, indent=2)
-    schema = {'type': 'object', 'properties': {'decision': {'type': 'string', 'enum': ['switch', 'stop'] + (['resume'] if allow_resume else [])}, 'next_region': {'type': ['string', 'null'], 'enum': list(candidates) + [None]}, 'reason': {'type': 'string'}}, 'required': ['decision', 'next_region', 'reason'], 'additionalProperties': False}
+    schema = {'type': 'object', 'properties': {'decision': {'type': 'string', 'enum': ['switch', 'stop'] + (['resume'] if allow_resume else [])}, 'next_region': {'type': ['string', 'null']}, 'reason': {'type': 'string'}}, 'required': ['decision', 'next_region', 'reason'], 'additionalProperties': False}
     request = {'role': 'branch_correction', 'stage': 'branch_correction', 'system_prompt': prompt.read_text(), 'user_prompt': text, 'dynamic_prompt': text, 'screenshots': [str(Path(frame).resolve())], 'image_refs': [str(Path(frame).resolve())], 'fixed_parts': [{'path': '纠错/暂挂分支并切换.prompt', 'text': prompt.read_text()}], 'response_schema': schema, 'switch_context': {'loop_key': loop_key, 'trigger': cause, 'snapshot': str(snapshot), 'affected': affected, 'excluded': sorted((r for r in excluded if r in records)), 'work': work, 'task': source.get('task_name'), 'candidates': {n: rid for (n, (rid, _)) in candidates.items()}, 'failed_call': failed_call}}
     from regrow.prompts.frame_context import label
     return label(request, request['screenshots'][0], '本次继续或切换策略的观察图；不用于补写原动作结果')
@@ -142,9 +142,16 @@ def commit(run, job, q, reply, call):
         ledger['history'] = []
         atomic(path, ledger)
         return {'resumed': True, 'call': call, 'knowledge': pointer}
-    target = ctx['candidates'].get(reply['next_region'])
+    eligible = set(ctx['candidates'].values())
+    target = ctx['candidates'].get(reply['next_region'], reply['next_region'] if reply['next_region'] in eligible else None)
+    _, records, state = _record_load(run)
+    from regrow.traversal.action_context import shortest_known_path
+    from regrow.traversal.task_deferral import choose_unfinished
+    if target not in state.get('interactive_regions', []) and (not target or not shortest_known_path(records, state, target)):
+        fallback = choose_unfinished(records, state, regions=eligible)
+        target = fallback['region'] if fallback else None
     if not target:
-        raise ValueError('unknown independent branch')
+        return None
     if str(_record_load(run)[0]) != ctx['snapshot']:
         raise ValueError('knowledge changed before switch')
     if read(run / 'pending_step.json')['episode'] != job['path']:

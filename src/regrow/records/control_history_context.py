@@ -49,6 +49,9 @@ def describe(region, cid, *, detailed=True):
     result = {'name': control['name']}
     if description:
         result['description'] = description
+    icon = last_reported(control, 'icon_description').get('icon_description')
+    if icon:
+        result['icon_description'] = icon
     knowledge = known_information(control, parameters=detailed)
     if knowledge:
         result['knowledge'] = knowledge

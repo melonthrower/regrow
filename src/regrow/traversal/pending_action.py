@@ -76,7 +76,7 @@ def take(run, request):
     if not valid:
         return None
     from regrow.records.calls import submission
-    _, reply = submission(run, source['call'])
+    original, reply = submission(run, source['call'])
     q = deepcopy(request)
     q['action_source'] = deepcopy(source)
     q['source'].update(snapshot=source['snapshot'], observation=source['observation'])
@@ -88,8 +88,14 @@ def take(run, request):
     platform = read(Path(run) / 'run_manifest.json').get('platform', 'android')
     q = platform_request(q, platform)
     from regrow.recognition.named_references import labels, _decode_references
-    names, _ = labels(run, q)
-    proposal = _decode_references(reply['next_action'], {name: ref for ref, name in names.items()})
+    if original.get('control_reference_style') == 'id_name':
+        # Receive the optional Action in the normal action job, after the
+        # previous result is committed. A bad ID/name cannot reject that result.
+        proposal = deepcopy(reply['next_action'])
+        q['received_control_labels'] = original['control_reference_names']
+    else:
+        names, _ = labels(run, q, id_name=False)
+        proposal = _decode_references(reply['next_action'], {name: ref for ref, name in names.items()})
     write_json(Path(run) / 'calls' / source['call'] / 'next_action_context.json', q)
     write_json(Path(run) / 'calls' / source['call'] / 'next_action_candidate.json', proposal)
     return q, proposal, source['call']

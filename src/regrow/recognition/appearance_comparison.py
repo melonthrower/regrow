@@ -5,7 +5,7 @@ import json
 import jsonschema
 from regrow.records.snapshots import load
 from regrow.records.object_store import control_record
-from regrow.recognition.identity_templates import variants
+from regrow.recognition.identity_templates import variants, appearance_box
 from regrow.prompts.frame_context import primary, label
 
 
@@ -21,7 +21,7 @@ def batches(run, original, candidate, *, failed=None):
         if len(appearances) != 1 or appearances[0].get('image_conditions'):
             continue
         old = appearances[0]
-        if not old.get('source_image') or not old.get('bbox'):
+        if not old.get('source_image') or not appearance_box(old):
             reason = control['name'] + '的旧外观缺少原图或范围，不能比较并补状态说明'
             if failed is None:
                 raise ValueError(reason)
@@ -30,9 +30,10 @@ def batches(run, original, candidate, *, failed=None):
         source = str((snapshot / old['source_image']).resolve())
         groups.setdefault(source, []).append({
             'ref': ref, 'position': position, 'control': ref,
-            'name': control['name'], 'historical_box': old['bbox'],
+            'name': control['name'], 'historical_box': appearance_box(old),
             'image': str((snapshot / old['image']).resolve()),
             'description': old.get('description', ''),
+            'icon_description': old.get('icon_description', ''),
             'proposed_state': row.get('image_conditions', [])})
     return list(groups.items())
 
@@ -50,6 +51,7 @@ def request(root, run, original, source, rows):
                 '比较对象': [{'ref': row['ref'], '名称': row['name'],
                           '历史图中范围': ', '.join(str(row['historical_box'][key]) for key in ('left', 'top', 'right', 'bottom')),
                           '历史外观': row['description'],
+                          **({'历史图标外观': row['icon_description']} if row.get('icon_description') else {}),
                           '本次提议状态': row['proposed_state']} for row in rows]}
     fields = {'ref': {'type': 'string', 'enum': [r['ref'] for r in rows]},
               'relation': {'type': 'string', 'enum': ['same_appearance', 'new_appearance', 'different_control', 'uncertain']},

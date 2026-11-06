@@ -9,7 +9,7 @@ from pathlib import Path
 
 def local_done(task):
     return bool(task and task.get('status') == 'done' and not any(task.get(k) for k in (
-        'shared_task_ref', 'equivalent_to', 'shared_result', 'coverage_exemption')))
+        'equivalent_to', 'coverage_exemption')))
 
 def request(root, run, region, name, reason):
     """Build one explicit completed-task review from its real completion call."""

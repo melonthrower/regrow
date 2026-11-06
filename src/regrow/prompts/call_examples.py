@@ -25,8 +25,6 @@ def sections(schema):
         if branch:
             value = sample(branch)
             value.update(action=action, reason=reason)
-            if action == 'none' and 'retry_when' in branch.get('properties', {}):
-                value['retry_when'] = '获得所需授权并能进入目标界面后，再继续原问题。'
             endings.append(example(value, schema, '### ' + action + '格式正例'))
     result['结论格式示例'] = '\n\n'.join(endings)
     branch = complete or none

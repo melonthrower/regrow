@@ -16,7 +16,7 @@ def rule_selection(request, *, tasks=MISSING, binding=None):
     This metadata selects guidance, never grants registration permission.
     """
     original = request
-    while original.get('role') in ('step_correction', 'control_identity_selection') and original.get('original_request'):
+    while original.get('role') in ('step_correction',) and original.get('original_request'):
         original = original['original_request']
     saved = original.get('context_scope', {}).get('selection')
     if saved is not None:
@@ -173,10 +173,4 @@ def control_information(region, cid, scope):
     needed = any((task.get('status') in ('pending', 'blocked') and (task.get('completion_action') or {}).get('control', task.get('control')) == cid for task in pending))
     if needed and parameters(control):
         result['constraints'] = deepcopy(parameters(control))
-    from regrow.records.shared_controls import view
-    if view(records, region['id'], cid):
-        from regrow.records.task_knowledge import control_knowledge
-        shared = {key: value for (key, value) in control_knowledge(region, cid, getattr(region, 'store', None)).items() if value.get('source', {}).get('shared')}
-        if shared:
-            result['共享知识'] = shared
     return result

@@ -18,10 +18,6 @@ def same_use(left, right):
         left_ref = getattr(left, 'ref', None) or left.get('task')
         right_ref = getattr(right, 'ref', None) or right.get('task')
         return bool(left_ref and left_ref == right_ref)
-    for local, origin in ((left, right), (right, left)):
-        shared = local.get('shared_task_ref') or {}
-        if shared.get('region') and getattr(origin, 'ref', None) == shared['region'] + '/' + shared.get('task', ''):
-            return True
     # New questions carry applicability in their wording, not an empty scope.
     return bool(left.get('name') and left.get('name') == right.get('name')
                 and left.get('task_type') == right.get('task_type'))

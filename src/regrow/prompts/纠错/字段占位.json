@@ -1,9 +1,7 @@
 {
   "action": "<填写动作类型>",
   "action_result": {
-    "description": "<填写该对象或结果的描述>",
     "exception": "<填写异常类型>",
-    "returns_to_previous": "<填写是否返回先前界面>",
     "recovery_handoff": "<填写异常恢复交接信息>"
   },
   "add": "<填写新增项列表>",
@@ -16,7 +14,6 @@
     "bottom": "<填写下边界坐标>"
   },
   "before": "<填写修订前的值>",
-  "blocked_by": "<填写阻碍类型>",
   "candidate": "<填写选中的候选引用>",
   "changes": "<填写修改内容>",
   "comparisons": "<填写比较结果列表>",
@@ -24,7 +21,6 @@
     "<填写适用条件>"
   ],
   "constraints": "<填写约束信息>",
-  "context_matches": "<填写当前画面是否符合区块适用上下文>",
   "control": "<填写控件引用>",
   "control_identity": "<填写控件身份关系>",
   "control_index": "<填写控件在本次列表中的位置>",
@@ -58,7 +54,6 @@
     "<填写外观图的适用条件>"
   ],
   "index": "<填写已有条目的引用>",
-  "inventory": "<填写任务清点结果>",
   "jump_to": "<填写跳转关系列表>",
   "knowledge": [
     {
@@ -81,23 +76,19 @@
       "<填写删除的已有知识编号；无删除时省略delete>"
     ]
   },
-  "may_open_content": "<填写是否打开新内容>",
   "name": "<填写名称>",
-  "needs_exploration": "<填写是否还需探索>",
   "next_region": "<填写下一步区块>",
   "objects": "<填写对象列表>",
-  "observed_assignments": "<填写本次观察到的控件归属>",
-  "operations": "<填写待探索任务列表>",
-  "out_of_scope_reason": "<填写超出探索范围的原因>",
-  "parent_index": "<填写父区块在本次列表中的位置>",
-  "path": "<填写给定对象的位置标识>",
-  "previous_regions": [
+  "observed_assignments": [
     {
-      "ref": "<填写给定的先前区块引用>",
-      "state": "<填写 retained_interactive、changed_interactive、visible_background_blocked、not_visible 或 uncertain>",
-      "context_matches": "<填写当前画面是否符合区块适用上下文>"
+      "control": "<填写待复查控件引用>",
+      "ref": "<填写已有区块引用>",
+      "evidence": "<填写当前归属依据>"
     }
   ],
+  "operations": "<填写待探索任务列表>",
+  "out_of_scope_reason": "<填写超出探索范围的原因>",
+  "path": "<填写给定对象的位置标识>",
   "proposal": "<填写修正后的提案>",
   "reason": "<填写理由>",
   "record_edit": "<填写记录修订内容>",
@@ -111,32 +102,24 @@
   "remove": "<填写移除项列表>",
   "replace_with": "<填写替代引用>",
   "resolution": "<填写本次修订方式>",
-  "retry_when": "<填写可以恢复探索的条件>",
-  "returns_to_previous": "<填写是否返回先前界面>",
   "right": "<填写右边界坐标>",
-  "shared_instances": "<填写共享控件关联>",
   "state": "<填写当前状态>",
   "state_description": "<填写当前画面中影响内容或操作集合的状态>",
   "status": "<填写当前进度>",
   "supports": "<填写功能支持对象引用>",
   "target": "<填写操作目标>",
   "task": "<填写任务引用>",
-  "task_review_reason": "<填写需要重新提出探索任务的问题>",
   "task_type": "<填写探索任务类型>",
   "task_update": [
     {
       "task": "<填写本次需要更新的任务引用>",
       "state": "<填写 done、pending 或 blocked>",
-      "remaining_question": "<pending 或 blocked 时填写剩下的问题；done 时省略>",
-      "retry_when": "<blocked 时填写可以继续的条件；其他情况省略>"
+      "remaining_question": "<pending 或 blocked 时填写剩下的问题；done 时省略>"
     }
   ],
   "text": "<填写文本内容>",
   "top": "<填写上边界坐标>",
   "bottom": "<填写下边界坐标>",
-  "uncertainties": [
-    "<填写尚未确认的事项>"
-  ],
   "update": "<填写更新项列表>",
   "x": "<填写横坐标>",
   "y": "<填写纵坐标>",
@@ -150,5 +133,7 @@
       "control": "<填写探索对象的控件引用；探索区块自身时填空字符串>",
       "target": "<填写要查明的问题及对象或范围>"
     }
-  ]
+  ],
+  "appearance_bbox": "<填写供外观裁图及身份辨认的范围；无法确认时null>",
+  "parent": "<填写已确认的物理父区块引用；无法确认时省略>"
 }

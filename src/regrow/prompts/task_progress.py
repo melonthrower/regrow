@@ -16,12 +16,10 @@ def render_current(records, state, current_task=None):
 
 def render(region, records=None, *, include_history=True, current_task=None):
     from regrow.records import history_context as _task_attempt_context
-    from regrow.records import shared_controls as _shared_controls
     from regrow.records.tasks import coverage
     records = records if records is not None else {region['id']: region}
     describe = _task_attempt_context.attempts
     lines = [region['name'] + '：探索任务']
-    lines.extend(_shared_controls.render(records, region['id']))
     c = coverage(region, records)
     for name in owned_tasks(region):
         if not _record_in_scope(region, owned_tasks(region)[name], records):

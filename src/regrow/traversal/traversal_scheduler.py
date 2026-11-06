@@ -16,7 +16,6 @@ def pending_target_task(records, region, active=None):
         if any(name == active.get('name') for name, _ in pending_tasks(records[active['region']], records)):
             return dict(active)
     rows = pending_tasks(records[region], records)
-    rows.sort(key=lambda row: not bool(row[1].get('prepares')))
     return {'region': region, 'name': rows[0][0]} if rows else None
 
 
@@ -112,7 +111,7 @@ def handoff_no_action(run, request, proposal, call, frame):
 
 def select_work(records, state, working=None):
     """Return a read-only work decision, without constructing a model request."""
-    from regrow.traversal import task_prerequisites as _task_prerequisites
+
     from regrow.records import task_settlement as _task_settlement
     from regrow.traversal import inventory_scroll as _inventory_scroll
     from regrow.traversal import task_deferral as _task_deferral
@@ -181,12 +180,15 @@ def select_work(records, state, working=None):
             if reviews_task(records[owner], active):
                 return choice('task_proposal', owner, reason='register evidence for the current task')
             return choice('action', rid, task=dict(active), source_regions=list(allowed), reason='continue the existing task on its current surface')
+        from regrow.records.task_updates import needs_evidence_review
+        observation = (state.get('observation') or {}).get('id')
+        if needs_evidence_review(region, observation):
+            return choice('task_proposal', rid, reason='assess deferred questions from new object evidence')
         if not progress['inventory_complete'] and (not progress['pending']) and _task_deferral.inventory_evidence_changed(region):
             return choice('task_proposal', rid, reason='prepare tasks for observed controls')
         pending = [name for name in progress['pending'] if not owned_tasks(region)[name].get('equivalent_to')]
         names = pending
         if names:
-            names.sort(key=lambda name: not bool(owned_tasks(region)[name].get('prepares')))
             selected = {'region': rid, 'name': names[0]}
             if reviews_task(region, selected):
                 return choice('task_proposal', rid, reason='register evidence for the selected task')
@@ -195,6 +197,11 @@ def select_work(records, state, working=None):
             parent = working if working != rid and working in records else _task_routing.parent_region(records, state, rid)
             if parent in records and _task_deferral.runnable(records[parent], records):
                 return navigation(parent, 'resume unfinished work at the observed entry parent')
+    from regrow.records.task_updates import needs_evidence_review
+    observation = (state.get('observation') or {}).get('id')
+    for observed in allowed:
+        if not _task_deferral.scope_review_pending(records[observed]) and needs_evidence_review(records[observed], observation):
+            return choice('task_proposal', observed, reason='assess deferred questions on another observed surface')
     frontier = _task_deferral.choose_unfinished(records, {**state, 'working_region': rid or working})
     if frontier:
         other = frontier['region']
@@ -245,50 +252,22 @@ class Scheduler:
     def current(self):
         """Reconcile committed work, then choose and render through the components."""
         from regrow.records import task_settlement as _task_settlement
-        from regrow.records import coverage_exemption as _coverage_exemption
         from regrow.traversal import traversal_scope as _traversal_scope
-        from regrow.traversal import task_prerequisites as _task_prerequisites
-        from regrow.traversal import task_result_review as _task_result_review
+
         from regrow.traversal.action_proposer import request_from_run
         from regrow.records.snapshots import write_json
         if not (self.run / 'execution_pending.json').exists() and (not step_repair.pending(self.run)):
             _task_settlement.reconcile_run(self.run)
-        _coverage_exemption.refresh(self.run)
         (_, known, state) = _record_load(self.run)
         _traversal_scope.exclude_known_external(self.run, known, state)
         retire_completed_goal(self.run)
-        _task_prerequisites.prioritize(self.run, self.frame)
+
         (_, known, state) = _record_load(self.run)
-        if state.get('reason') == 'verify_prepared_dependency' and state.get('next_action_mode') == 'discover':
-            raise step_repair.Paused('ready_next_round', '准备任务已完成；下一轮观察目标是否解锁')
         decision = select_work(known, state)
-        deferred = _task_result_review.next_deferred(
-            self.root, self.run, self.frame, task=decision.get('task'),
-            allow_other=decision['kind'] == 'idle')
-        if deferred:
-            return deferred
         self.decisions.append({**decision, 'snapshot': _record_load(self.run)[0].name})
         write_json(self.output / 'scheduling.json', self.decisions)
         return request_from_run(self.root, self.run, decision=decision, frame=self.frame)
 
-def offer_foreground_navigation(records, state, focus, reply):
-    """A blocked route entry is not a prerequisite for choosing a navigation action."""
-    if reply.get('focus_presence') != 'not_interactive':
-        return False
-    observation = state.get('observation')
-    if not observation or observation.get('image') != state.get('pending_frame'):
-        return False
-    refs = [r for r in state.get('interactive_regions', []) if r != focus and r in records]
-    parents = {records[r].get('parent_region') for r in refs}
-    refs = [r for r in refs if r not in parents]
-    if not refs:
-        return False
-    state.pop('handoff_summary', None)
-    state.update(interactive_regions=refs, next_action_mode='explore', reason='navigation_from_foreground', phase='ready_for_next_action')
-    state['observation'] = {**observation, 'foreground': reply['foreground'], 'uncertainties': reply.get('uncertainties', [])}
-    for key in ('inspection_region', 'required_control', 'discovery_mode', 'pending_frame'):
-        state.pop(key, None)
-    return True
 
 def schedule_local_inspection(records, state):
     from regrow.traversal import action_context as _stepwise_flow

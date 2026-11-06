@@ -4,14 +4,14 @@
   "branch": "codex/regrow-initial",
   "visibility": "public",
   "kind": "research_snapshot_limited_native_saved_frame_validation",
-  "previous_source_commit": "bb8c1ca1cac711ebb7c6fb948346d54c64cfe98f",
+  "previous_source_commit": "33613fa3766a1801bf6991d8ff0149a3239714ce",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
   "draft_status": "Call consolidation implemented; direct new_tasks ownership in action updates remains unresolved. No prompt redesign.",
-  "verification_scope": "Prior scoped checks/Clock replies and Action reentry fix retained. Structured-history handoff fix: 1 focused check and 2 full real stopped-Settings saved-frame replies, normal correction/binding accepted, 0 new GUI. Live pilot stopped at 33 requests/7 GUI, 6 results committed and 1 unresolved; not stable or a full-framework gate.",
+  "verification_scope": "Prior limited checks retained. Layout module alias fix: 1 focused check; 1 full real a0009 saved-frame update reply registered and next action request built through normal entry points, GUI0. Separate action-selection saved-frame probe had 3 malformed replies and remains unaccepted. Pilot stopped at 36 requests/8 GUI/7 committed results, with a0008 unresolved; not stable or a full gate.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,7 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "bb8c1ca1cac711ebb7c6fb948346d54c64cfe98f",
+  "snapshot_parent_commit": "33613fa3766a1801bf6991d8ff0149a3239714ce",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {

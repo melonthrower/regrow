@@ -1,3 +1,5 @@
+> 2026-11-07 接线：matching.refine两处外观框读取统一使用已导入的templates别名，修复重复视觉候选路径的NameError；原匹配算法、阈值和身份/点击区域含义不变。
+
 > 2026-11-07 当前观察：新合同无focus_presence或uncertainties，局部发现不再按旧三态丢弃可见Region/Control；纯展示与空列表仍可登记。前景、异常、对象身份及同图completion_updates仍走原校验。已退休专用调用不再构造新请求；历史截图/原答与旧字段读取保留。
 
 > 2026-11-06：new_tasks.target按原文保存，不作对象解引用；new_tasks.control仍沿同答对象绑定。next_action名称在主更新对象接受后解释，目标补登记/暂挂恢复保留source_field并复用同一动作来源读取。验证与限制见根目录SNAPSHOT_STATUS.md。

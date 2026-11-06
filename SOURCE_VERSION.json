@@ -4,14 +4,14 @@
   "branch": "codex/regrow-initial",
   "visibility": "public",
   "kind": "research_snapshot_limited_native_saved_frame_validation",
-  "previous_source_commit": "33613fa3766a1801bf6991d8ff0149a3239714ce",
+  "previous_source_commit": "3a84c81829c57f336e8ad7705394b89d2cc428c0",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
   "draft_status": "Call consolidation implemented; direct new_tasks ownership in action updates remains unresolved. No prompt redesign.",
-  "verification_scope": "Prior limited checks retained. Layout module alias fix: 1 focused check; 1 full real a0009 saved-frame update reply registered and next action request built through normal entry points, GUI0. Separate action-selection saved-frame probe had 3 malformed replies and remains unaccepted. Pilot stopped at 36 requests/8 GUI/7 committed results, with a0008 unresolved; not stable or a full gate.",
+  "verification_scope": "Navigation target continuation fix: 2 focused checks; real accepted discovery0078 replayed unchanged through normal commit, plus 1 new full real discovery reply accepted through the normal no-task deferral and next-request path, GUI0. Pilot paused for review at 79 requests/14 GUI/10 committed results, 4 suspended; not stable or a full gate. Earlier action-format failures and direct action new_tasks ownership remain unresolved.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,7 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "33613fa3766a1801bf6991d8ff0149a3239714ce",
+  "snapshot_parent_commit": "3a84c81829c57f336e8ad7705394b89d2cc428c0",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {

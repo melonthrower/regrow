@@ -147,9 +147,10 @@ def defer(run, target):
     job = {**read(Path(run) / episode), 'stage': 'action', 'request': request,
            'call': target['call'], 'attempt': None}
     reason = '拟操作「' + str(target['target']) + '」仍未可靠关联；保留原问题，先探索其他任务。'
-    decision = task_deferral.defer(run, job, reason, retry_when='target_identity_or_changed_surface')
-    if decision is None:
-        raise ValueError('目标补登记无法关联原任务；保留记录待核对')
+    if target.get('task'):
+        decision = task_deferral.defer(run, job, reason, retry_when='target_identity_or_changed_surface')
+        if decision is None:
+            raise ValueError('目标补登记无法关联原任务；保留记录待核对')
 
     def finish(records, state, *_):
         state['action_target_registration']['status'] = 'deferred'
@@ -158,7 +159,13 @@ def defer(run, target):
         state.pop('pending_frame', None)
         state.pop('correction_context', None)
         state.pop('discovery_mode', None)
-    return publish(run, 'target-registration-deferred-' + target['call'], finish)
+        if not target.get('task'):
+            state.update(next_action_mode='explore', phase='ready_for_next_action')
+    pointer = publish(run, 'target-registration-deferred-' + target['call'], finish)
+    if not target.get('task'):
+        task_deferral.advance_unfinished(run)
+        return read(Path(run) / 'knowledge_current.json')
+    return pointer
 
 
 def advance(run, call, request):

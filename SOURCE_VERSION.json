@@ -4,14 +4,14 @@
   "branch": "codex/regrow-initial",
   "visibility": "public",
   "kind": "research_snapshot_limited_native_saved_frame_validation",
-  "previous_source_commit": "b9d21ef92b9900d7b20f385f1857dfe40be8ad38",
+  "previous_source_commit": "eeb5355a7f9c922a0d20e6a51e94b6de18312d38",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
   "draft_status": "Call consolidation implemented; direct new_tasks ownership in action updates remains unresolved. No prompt redesign.",
-  "verification_scope": "Discovery relocation wiring: 2 focused checks and 1 new Luna reply from full real pilot0085 context through existing reopen_blocked, locator, Runner, discovery registration and next-request construction; GUI0. Old replies and repair counts retained. Pilot paused at 85 requests/14 GUI, all 6 tasks blocked; not stable or a full gate. No new prompt body or design edits.",
+  "verification_scope": "Continuation Region references: 2 distinct focused checks; original real0106 unchanged reply accepted through normal preview_next/take/Runner, plus 2 new Luna replies from complete real a0018 context accepted through normal update, object supplement, registration and continuation binding; GUI0. Pilot107 requests/17GUI/13 committed, 4 suspended results, 6 blocked and 2 pending tasks, 5 transport failures; not stable, no unlimited phase or full gate. Final code fix saved-frame validated, not live-deployed at publication. No new prompt/design edits.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,7 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "b9d21ef92b9900d7b20f385f1857dfe40be8ad38",
+  "snapshot_parent_commit": "eeb5355a7f9c922a0d20e6a51e94b6de18312d38",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {

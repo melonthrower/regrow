@@ -93,6 +93,7 @@ def take(run, request):
         # previous result is committed. A bad ID/name cannot reject that result.
         proposal = deepcopy(reply['next_action'])
         q['received_control_labels'] = original['control_reference_names']
+        q['received_region_labels'] = original.get('region_reference_names', {})
     else:
         names, _ = labels(run, q, id_name=False)
         proposal = _decode_references(reply['next_action'], {name: ref for ref, name in names.items()})

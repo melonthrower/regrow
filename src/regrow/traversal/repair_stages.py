@@ -168,7 +168,7 @@ def accept_action(run, q, proposal, ref, records):
         from regrow.recognition.named_references import _decode_references
         labels = q['received_control_labels']
         proposal = _decode_references(proposal, {name: cid for cid, name in labels.items()},
-                                     control_labels=labels)
+                                     control_labels=labels, region_labels=q.get('received_region_labels'))
     manifest = Path(run) / 'run_manifest.json'
     platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'
     jsonschema.validate(proposal, q['response_schema'])

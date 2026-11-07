@@ -236,7 +236,7 @@ def prepare(root, request):
     shown = marked_copy(latest, _wire_report(latest_report, latest)) if latest is not None else marked_copy(feedback['reply'], report)
     contract = q.get('name_contract', {})
     base = None
-    if contract.get('nested'):
+    if contract.get('nested') and not feedback.get('reply_is_wire'):
         from regrow.recognition.named_references import encode_objects
         if latest is None:
             shown = encode_objects(shown, contract['names'], contract['owners'], current=contract['current'])

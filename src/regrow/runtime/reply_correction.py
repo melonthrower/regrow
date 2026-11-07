@@ -55,6 +55,7 @@ def request(root, original, rejected, report, first_call):
     q = without_full_format(original)
     q = organize(root, q, part, describe(report, rejected, q),
                  fill_missing(root, rejected, report, original['response_schema']), report=report)
+    q['_correction_context']['reply_is_wire'] = True
     q['format_original_call'] = first_call
     for key in ('_structured_user_prompt', '_presentation_digest'):
         q.pop(key, None)

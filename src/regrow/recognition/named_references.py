@@ -298,7 +298,8 @@ def prepare(run, request):
                     for old, new in [('parent_index', '父区块'), ('region_index', '所属区块'),
                                      ('control_index', '目标控件'), ('candidate_index', '对象引用')]:
                         row[key] = row[key].replace(old, new)
-        shown = encode_objects(feedback['reply'], names, owners, current=contract['current'])
+        shown = (deepcopy(feedback['reply']) if feedback.get('reply_is_wire')
+                 else encode_objects(feedback['reply'], names, owners, current=contract['current']))
         q['user_prompt'] = q['dynamic_prompt'] = body(feedback['context'], issues, shown, feedback['notes'])
         q['named_issue'] = json.dumps(issues, ensure_ascii=False, indent=2)
     if q.get('proposal_base') is not None and nested:

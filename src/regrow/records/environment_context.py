@@ -93,10 +93,10 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
         cid = edge.get('target_control')
         if cid:
             control = owned_controls(records[rid]).get(cid, {})
-            out.append('  '*depth + '└─ ' + prefix + '[引用：' + records[rid]['name'] + ' / '
-                       + control.get('name', cid) + ' ' + cid + ']')
+            out.append('  '*depth + '└─ ' + prefix + '[引用：' + rid + '/' + records[rid]['name']
+                       + ' / ' + cid + '/' + control.get('name', cid) + ']')
         elif rid in shown or parents.get(rid) != source:
-            out.append('  '*depth + '└─ ' + prefix + '[引用：' + records[rid]['name'] + ' ' + rid + ']')
+            out.append('  '*depth + '└─ ' + prefix + '[引用：' + rid + '/' + records[rid]['name'] + ']')
         else:
             node(rid, depth, prefix)
 
@@ -106,20 +106,15 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
         mark = '（本步关注区块）' if rid == focus else ''
         if region_work(region).get('out_of_scope_reason'):
             mark += '（本次范围外）'
-        out.append('  '*depth + ('└─ ' if depth else '') + prefix + region['name'] + ' [' + rid + ']' + mark)
+        out.append('  '*depth + '└─ ' + prefix + rid + '/' + region['name'] + mark)
         tasks(region, None, depth+1)
-        from regrow.records.candidate_access import candidate_access_entries, describe
-        candidates = candidate_access_entries(records, rid)
         if view == 'controls':
             for cid, control in owned_controls(region).items():
-                out.append('  '*(depth+1) + '├─ ' + control['name'] + ' [' + cid + ']')
+                out.append('  '*(depth+1) + '├─ ' + cid + '/' + control['name'])
                 tasks(region, cid, depth+2)
                 for edge in graph[rid]:
                     if edge.get('control') == cid:
                         target(edge, depth+2, rid)
-                for row in candidates:
-                    if row['entry_control'] == cid:
-                        out.append('  '*(depth+2) + describe(row, records))
             for edge in graph[rid]:
                 if edge.get('control') is None:
                     out.append('  '*(depth+1) + '├─ 已记录的区块操作')
@@ -127,7 +122,9 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
         else:
             # Functions remain owned by their original Regions. Shared controls do
             # not move a destination's functions to its entry's owner.
+            from regrow.records.candidate_access import candidate_access_entries, describe
             from regrow.records.function_updates import resolved_constraints
+            candidates = candidate_access_entries(records, rid)
             used = set()
             functions = region.get('functions', {})
             if not functions:

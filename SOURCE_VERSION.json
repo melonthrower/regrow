@@ -3,15 +3,15 @@
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "research_snapshot_limited_native_saved_frame_validation",
-  "previous_source_commit": "36e037d915f7ff6359f5c62cb11886003a2498a2",
+  "kind": "research_snapshot_offline_presentation_validation",
+  "previous_source_commit": "042e425f5be20bb59df8160a4ab87465ce4f0937",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Global registration/update trees and local execution trees implemented; abstract-object/instance mechanism remains unimplemented and its Prompt candidate unapproved.",
-  "verification_scope": "Two focused additions and 3 adjacent checks passed; one obsolete returns-flag fixture fails equally at baseline. Complete real saved-frame action104/update106: 5 HTTP attempts, 2 connection failures, 3 Luna replies accepted through normal action binding, update and crop registration; GUI0. No live continuation or full regression gate.",
+  "draft_status": "Single ID/name tree labels and control-tree candidate-line removal implemented; abstract-object/instance mechanism remains unimplemented and its Prompt candidate unapproved.",
+  "verification_scope": "Two existing adjacent-contract checks passed. Complete real action104/update106 rebuilt offline through normal entry points: final non-tree user text, system and schema match previous batch; all 8 update Region refs retained. Initial root-ID omission fixed, failed preview preserved. 0 new Luna/GUI; no live continuation or full gate.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,7 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "36e037d915f7ff6359f5c62cb11886003a2498a2",
+  "snapshot_parent_commit": "042e425f5be20bb59df8160a4ab87465ce4f0937",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {

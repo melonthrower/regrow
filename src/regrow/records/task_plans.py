@@ -12,6 +12,7 @@ from regrow.records.object_store import owned_controls, owned_tasks, replace_own
 from regrow.records import task_assessments, task_settlement as settlement, task_updates as updates
 from regrow.records.tasks import read as task_value, equivalent_source
 from regrow.records.control_records import aliases
+from regrow.records.diagnostics import Rejected, reject
 
 
 FIELDS = ('new_tasks', 'task_update', 'evidence')
@@ -107,7 +108,8 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
     local = bool((request or {}).get('discovery_context', {}).get('mode') == 'local')
     task_assessments.envelope(payload, spec, partial=local)
     if not payload['evidence'].strip():
-        raise ValueError('任务提出需要本次范围及判断依据')
+        reject('task_proposal_evidence', region['name'], payload['evidence'], '本次范围的判断依据',
+               field='任务提出依据', reason='任务提出的判断依据为空。')
     old = owned_tasks(region)
     tasks = dict(old)
     considered = set(owned_controls(region) if reviewed_controls is None else reviewed_controls)
@@ -115,7 +117,8 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
                        if previous == cid or any(a['id'] == previous for a in aliases(control))), previous)
                   for previous in considered}
     if not considered.issubset(owned_controls(region)):
-        raise ValueError('本次清点的控件身份已变化，需重新读取问题范围')
+        reject('task_proposal_controls', region['name'], sorted(considered - set(owned_controls(region))),
+               '本次区块中仍有效的控件引用', field='任务提出范围', reason='部分控件引用已不在本次区块中。')
     assessment = {'accepted': [], 'rejected': []}
     seen = set()
     rows = payload.get('task_update', [])
@@ -125,20 +128,26 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
         name = names[0] if len(names) == 1 else None
         current = tasks.get(name)
         if current is None and not local:
-            raise ValueError('已有任务增量未能关联本区块明确task，需先核对引用')
+            reject('task_reference', row.get('task') or region['name'], row.get('task'),
+                   [updates.reference(region['id'], n) for n in old], field='任务引用',
+                   reason='该任务更新没有对应到本区块的明确旧任务。')
         try:
             jsonschema.validate(row, spec['properties']['task_update']['items'])
             if current is None:
-                raise ValueError('该任务引用不在本次给定范围内')
+                reject('task_reference', row.get('task') or region['name'], row.get('task'),
+                       '本次给定范围中的任务', field='任务引用', reason='该任务引用不在本次给定范围内。')
             if counts[row['task']] != 1:
-                raise ValueError('同一任务不能重复提交判断')
+                reject('task_duplicate', row['task'], counts[row['task']], '同一任务只提交一次判断',
+                       field='任务更新', reason='该任务在本次回复中被重复提交。')
             previous = task_value(current, 'latest_update', {})
             if previous.get('source', {}).get('source_call') == call:
                 assessment['accepted'].append({'task': row['task'], 'state': previous.get('state'), 'already_accepted': True})
                 seen.add(name)
                 continue
             if name not in update_names(region, scope_review=bool(scope_review)):
-                raise ValueError('只能更新本轮允许的未结束本地任务；其他原任务保持')
+                reject('task_update_scope', row['task'], row,
+                       [updates.reference(region['id'], n) for n in update_names(region, scope_review=bool(scope_review))],
+                       field='任务更新', reason='该任务不在本轮允许更新的未结束本地任务范围中。')
             task = deepcopy(current)
             from regrow.traversal import parameter_evidence_review
             review = region_work(region).get('task_inventory', {}).get('review', {})
@@ -158,10 +167,12 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
             jsonschema.validate(submitted, spec['properties']['new_tasks']['items'])
             cid = (bindings or {}).get(submitted['control'], submitted['control'])
             if submitted['control'] and cid is None:
-                raise ValueError('该控件名称重名或对应对象未被本次登记接受，请引用明确对象')
+                reject('task_control_reference', submitted['control'], submitted['control'],
+                       '本次登记接受的唯一明确控件', field='新任务控件', reason='控件名称重名或对应对象未被本次登记接受。')
             cid = cid or None
             if cid is not None and cid not in owned_controls(region):
-                raise ValueError('新问题的控件未在本次成功登记或存在明确身份歧义')
+                reject('task_control_reference', submitted['control'], cid, '本次区块中成功登记的明确控件',
+                       field='新任务控件', reason='该控件不属于本次成功登记的明确对象。')
             definition = submitted
             task = {**deepcopy(definition), 'control': cid, 'status': 'pending', 'source_call': call, 'attempts': []}
             if 'function_refs' in task:
@@ -187,22 +198,27 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
         except (ValueError, jsonschema.ValidationError) as error:
             if not local:
                 raise
-            detail = task_assessments.rejected(None, submitted, call, error, index)
+            detail = task_assessments.rejected(None, submitted, call, error, index, field='new_tasks')
             detail['field'] = 'new_tasks'
             assessment['rejected'].append(detail)
     if scope_review:
         for name in sorted(set(update_names(region, scope_review=True)) - seen):
             ref = updates.reference(region['id'], name)
             if not any(row.get('task') == ref for row in assessment['rejected']):
+                error = Rejected({'errors': [{'code': 'task_review_missing', 'object': ref,
+                    'actual': None, 'expected': '对本轮指定复核任务给出判断',
+                    'reason': '本轮指定复核的任务没有提交判断。'}], 'unchecked': []})
                 assessment['rejected'].append(task_assessments.rejected(tasks[name], {'task': ref}, call,
-                    ValueError('本轮要求复核的任务尚未给出判断'), None))
+                    error, None))
     for name, task in tasks.items():
         if task.get('equivalent_to'):
             canonical = equivalent_source(tasks, task)
             if not canonical or settlement.registration_kind(canonical) != settlement.registration_kind(task) or name == task['equivalent_to']:
-                raise ValueError('等价任务须引用同类问题的直接代表')
+                reject('task_equivalent_reference', name, task['equivalent_to'], '同类问题的直接代表任务',
+                       field='等价任务引用', reason='填写的等价任务不是同类问题的直接代表。')
     if assessment['rejected'] and not assessment['accepted'] and not payload['new_tasks'] and not local:
-        raise ValueError('；'.join(str(row.get('task')) + '：' + row['reason'] for row in assessment['rejected']))
+        raise Rejected({'errors': [item for row in assessment['rejected']
+                       for item in row['diagnostic']['errors']], 'unchecked': []})
     replace_owned_tasks(region, tasks)
     prior = region_work(region).get('task_inventory', {})
     considered.update(cid for cid in prior.get('controls', []) if cid in owned_controls(region))

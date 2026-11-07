@@ -1,6 +1,7 @@
 """Stable numbered Region knowledge, updated without rewriting untouched paragraphs."""
 from copy import deepcopy
 import re
+from regrow.records.diagnostics import reject
 
 def normalize(region, records):
     """Read preserved old summaries once; never rewrite their original snapshot."""
@@ -23,11 +24,14 @@ def validate(region, changes):
     deleted = changes.get('delete', [])
     ids = updated + deleted
     if len(ids) != len(set(ids)):
-        raise ValueError('同一知识段落只能修改或删除一次')
+        reject('region_knowledge_duplicate', region['name'], ids, '每个知识段落只修改或删除一次',
+               field='区块知识修订', reason='同一知识段落在本次回复中被重复修改或删除。')
     if any((ref not in current for ref in ids)):
-        raise ValueError('知识修改或删除必须引用已提供的段落编号')
+        reject('region_knowledge_reference', region['name'], [ref for ref in ids if ref not in current],
+               list(current), field='区块知识引用', reason='部分被修改或删除的知识段落没有对应的已提供编号。')
     if any((not row['text'].strip() for row in changes.get('update', []))) or any((not text.strip() for text in changes.get('add', []))):
-        raise ValueError('新增或修改的知识段落不能为空')
+        reject('region_knowledge_empty', region['name'], changes, '非空的知识段落正文',
+               field='区块知识正文', reason='新增或修改的知识段落正文为空。')
 
 def apply(region, changes, records):
     validate(region, changes)

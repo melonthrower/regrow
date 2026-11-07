@@ -29,7 +29,8 @@ def selected_indices(reply, names=None):
     refs = {names.get(row['ref'], row['ref']) for row in reply['current_regions'] if row.get('ref')}
     indexes = {row['region_index'] for row in reply['current_regions'] if type(row.get('region_index')) is int}
     indexes.update(i for i, row in enumerate(reply.get('regions', []))
-                   if row.get('ref') and (row.get('_matched_id') or names.get(row['ref'], row['ref'])) in refs)
+                   if row.get('name') in refs or row.get('ref')
+                   and (row.get('_matched_id') or names.get(row['ref'], row['ref'])) in refs)
     return indexes
 
 def current_refs(reply, records, delta_refs, names=None):

@@ -86,7 +86,7 @@ class ActionExecutor:
             changed_frame = not frame_comparison['unchanged'] if frame_comparison is not None else (
                 not confirmed and not same_surface(folder / 'before.png', folder / 'pre_dispatch.png'))
             if changed_window or changed_frame:
-                repair.reject_action(fresh, proposal, ref, '投递前窗口或画面发生变化；动作未执行，请按唯一最新投递前图重新确认目标与坐标，而非仅因动态内容变化反复刷新。', pre_dispatch_review={'before': str(folder / 'before.png'), 'current': str(folder / 'pre_dispatch.png'), 'window': dispatch_window})
+                repair.reject_action(fresh, proposal, ref, '投递前窗口或目标范围发生变化；动作未执行，请按最新投递前图核对目标与坐标。', pre_dispatch_review={'before': str(folder / 'before.png'), 'current': str(folder / 'pre_dispatch.png'), 'window': dispatch_window, 'frame_comparison': frame_comparison, 'changed_window': changed_window})
             from regrow.recognition import action_target_review
             doubt = action_target_review.conflict(fresh, proposal, binding)
             if doubt and not action_target_review.confirmed(q, proposal, folder / 'pre_dispatch.png',

@@ -22,12 +22,13 @@ cfg = load_explore_api_config(local_explore_api_config_path())
 agent = transport.OpenAIAPIExplorerAgent(base_url=cfg.base_url, api_key=cfg.api_key, model=cfg.model, reasoning_effort='medium', output_root=str(call), timeout=cfg.timeout_seconds)
 original = transport.requests.post
 count = 0
+structure_report = {}
 
 class NoRetry(BaseException):
     pass
 
 def post(*args, **kwargs):
-    global count
+    global count, structure_report
     if count:
         raise NoRetry('one request only')
     count += 1
@@ -47,7 +48,17 @@ def post(*args, **kwargs):
         body = response.json()
         save(call / 'raw_response.json', body)
         try:
-            result = parse(body)
+            original_reply = parse(body)
+            from regrow.runtime.reply_structure import recover
+            result, structure_report = recover(request, original_reply)
+            if structure_report['changed'] or structure_report['errors']:
+                save(call / 'structure_recovery.json', structure_report)
+                save(call / 'unfiltered_response.json', original_reply)
+            if not isinstance(result, dict):
+                error = ReplyParseError('本次回复未能对应唯一完整的记录对象', [json.dumps(original_reply, ensure_ascii=False)])
+                if structure_report['errors']:
+                    error.detail['errors'] = structure_report['errors']
+                raise error
         except ReplyParseError as error:
             save(call / 'parse_error.json', error.detail)
             raise
@@ -60,9 +71,10 @@ transport.requests.post = post
 try:
     result = agent._call(role=request['role'], system_prompt=request['system_prompt'], user_prompt=request['user_prompt'], screenshots=[(RUN / p).read_bytes() for p in request['screenshots']], response_schema=request['response_schema'])
     from regrow.runtime.reply_fields import filter_extra_fields
-    filtered, removed = filter_extra_fields(result, request['response_schema'])
+    filtered, removed = (result, []) if structure_report.get('errors') else filter_extra_fields(result, request['response_schema'])
     if removed:
-        save(call / 'unfiltered_response.json', result)
+        if not (call / 'unfiltered_response.json').exists():
+            save(call / 'unfiltered_response.json', result)
         save(call / 'ignored_fields.json', removed)
     result = filtered
     save(call / 'response.json', result)

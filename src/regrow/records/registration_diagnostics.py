@@ -6,12 +6,7 @@ from regrow.records.object_store import owned_controls
 import json
 import jsonschema
 import re
-
-class Rejected(ValueError):
-
-    def __init__(self, report):
-        self.report = report
-        super().__init__(json.dumps(report, ensure_ascii=False))
+from regrow.records.diagnostics import Rejected
 
 def schema_errors(error):
     """Explain the uniquely selected type/enum branch without changing validation."""

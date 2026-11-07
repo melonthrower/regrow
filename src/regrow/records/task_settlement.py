@@ -107,22 +107,43 @@ def register_entry(value, records, actual, attempt, labels=None, *, knowledge, r
     if value is None:
         return
     import jsonschema
+    from regrow.records.diagnostics import reject
     jsonschema.validate(value, entry_schema())
     rid = (labels or {}).get(value['region'])
     matches = [rid] if rid in records else [rid for (rid, r) in records.items() if r['name'] == value['region']]
     if len(matches) != 1:
-        raise ValueError('入口去向需要本轮已登记的唯一完整区块名')
+        reject('destination_reference', value['region'],
+               {'填写的目标': value['region'], '对应区块': [records[r]['name'] for r in matches]},
+               '访问目标对应本轮已登记的唯一完整区块名', field='访问目标区块',
+               reason='填写的访问目标未能唯一对应一个已登记区块。')
     target = matches[0]
     action = owned_actions(actual)[attempt]
     changed = {row['region'] for row in action.get('region_changes', []) if row['state'] == 'changed_interactive'}
     before = set(action.get('evidence', {}).get('before_regions', []))
     reached = (reported_destination or target in action['observed_destinations']) if 'observed_destinations' in action else (target not in before or target in changed)
-    if target not in action.get('interactive_regions', []) or not reached or action.get('result', {}).get('exception') != 'none':
-        raise ValueError('入口去向需要本次动作的到达依据，且目标属于动作后前景；仅同时可见不足以证明跳转')
+    target_name = records[target]['name']
+    if target not in action.get('interactive_regions', []):
+        reject('destination_not_current', target_name,
+               {'声明到达的目标': target_name, '当前前景区块': [records.get(r, {}).get('name', r)
+                for r in action.get('interactive_regions', [])]},
+               '声明为本次到达的目标须包含在动作后的当前前景区块中', field='访问目标与当前前景区块',
+               reason='你声明本次到达“' + target_name + '”，但当前前景区块中没有包含它。',
+               repair='根据动作后图核对访问目标和当前前景区块的引用。')
+    if not reached:
+        reject('destination_not_reached', target_name,
+               {'目标': target_name, '动作前已有区块': [records.get(r, {}).get('name', r) for r in action.get('evidence', {}).get('before_regions', [])],
+                '本次确认到达的区块': [records.get(r, {}).get('name', r) for r in action.get('observed_destinations', [])]},
+               '访问关系须有本次实际动作到达目标的依据；前后都可见本身不表示到达', field='本次到达依据',
+               reason='目标区块可见，但本次动作尚未确认到达该目标。')
+    if action.get('result', {}).get('exception') != 'none':
+        reject('destination_action_exception', target_name, action.get('result', {}).get('exception'),
+               '无异常的本次动作到达结果', field='动作结果',
+               reason='本次动作结果仍有异常，不能登记为无异常到达目标。')
     from regrow.records.control_knowledge import text
     knowledge = text(knowledge)
     if not value['evidence'].strip():
-        raise ValueError('入口关联需要本次实际动作及后图来源')
+        reject('destination_evidence', target_name, value['evidence'],
+               '本次实际动作及后图来源', field='访问依据', reason='访问关联的依据为空。')
     entry = {**value, 'region': target, 'attempt': attempt, 'meaning': knowledge, 'conditions': list(dict.fromkeys(action.get('conditions', []) + value.get('conditions', [])))}
     return entry
 
@@ -131,39 +152,60 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
     if not values:
         return
     jsonschema = __import__('jsonschema')
+    from regrow.records.diagnostics import reject, Rejected
     jsonschema.validate(values, destination_schema())
     from regrow.records.object_store import observation_history
     action = owned_actions(actual)[attempt]
     if not has_observed_result(action) or action.get('association', {}).get('status') == 'unconfirmed':
-        raise ValueError('目标关联缺少已确认的实际动作来源')
+        reject('destination_action_source', actual['name'],
+               {'动作来源关联': action.get('association', {}).get('status'),
+                '投递记录': action.get('delivery'), '已有动作后观察': bool(action.get('evidence', {}).get('after_observation'))},
+               '已确认的本次实际动作来源与结果观察', field='访问关联的动作来源',
+               reason='本次动作来源或结果观察尚未确认，不能据此保存访问目标。')
     source_control = action.get('control')
     record = owned_controls(actual).get(source_control) if source_control else actual
     if record is None:
-        raise ValueError('实际操作对象未登记，不能保存目标关联')
+        reject('destination_source_control', actual['name'], source_control,
+               '已登记的实际操作控件', field='实际操作控件', reason='动作来源控件没有对应登记对象。')
     from regrow.records.tasks import store_object_entry
-    from regrow.records.control_routes import update_conditions
-    update_conditions(record, values, action, call)
-    for value in values:
-        if 'index' in value:
-            continue
+    for position, value in enumerate(values):
         index = value['region_index']
         if not 0 <= index < len(region_refs):
-            raise ValueError('jump_to.region_index必须引用本次regions')
+            reject('destination_reference', '本次访问目标', index,
+                   [records[r]['name'] for r in region_refs], field='访问目标区块',
+                   reason='访问目标引用未能对应本次回复中的区块。')
         target = region_refs[index]
-        entry = register_entry({'region': records[target]['name'], 'evidence': action['evidence']['after_observation'],
-                                'conditions': value.get('conditions', [])},
-                               records, actual, attempt, {records[target]['name']: target},
-                               knowledge='', reported_destination=True)
+        try:
+            entry = register_entry({'region': records[target]['name'], 'evidence': action['evidence']['after_observation'],
+                                    'conditions': value.get('conditions', [])},
+                                   records, actual, attempt, {records[target]['name']: target},
+                                   knowledge='', reported_destination=True)
+        except Rejected as error:
+            for item in error.report['errors']:
+                item['path'] = f'/jump_to/{position}/region_index'
+                if item['code'] == 'destination_not_current':
+                    item['related_paths'] = ['/current_regions']
+            raise
         if 'control_index' in value:
             ci = value['control_index']
             if type(ci) is not int or not 0 <= ci < len(controls):
-                raise ValueError('访问目标控件尚未唯一解析；请核对目标名称及所属区块。')
+                reject('destination_control_reference', records[target]['name'], ci,
+                       '目标区块中本次唯一可对应的控件', field='到达后的目标控件',
+                       reason='填写的目标控件未能唯一对应，请核对名称及所属区块。')
             row = controls[ci]
             from regrow.records.object_knowledge import control_only
             if control_only(row):
                 cid = row['ref']
                 if cid not in owned_controls(records[target]):
-                    raise ValueError('访问目标控件不属于目标区块“' + records[target]['name'] + '”，请核对归属。')
+                    owners = [r['name'] for r in records.values() if cid in owned_controls(r)]
+                    from regrow.records.object_store import control_record
+                    control_name = (control_record(records, cid) or {}).get('name', cid)
+                    reject('destination_control_owner', control_name,
+                           {'目标区块': records[target]['name'], '填写的目标控件': control_name,
+                            '控件已登记所属区块': owners},
+                           '到达控件属于所填写的目标区块', field='到达后的目标控件',
+                           reason='“' + control_name + '”不属于目标区块“' + records[target]['name'] + '”。',
+                           repair='本字段表示到达后的控件；若只确认打开区块，登记目标区块即可。')
                 # The jump itself is the reported result. This reuses an existing
                 # identity, not a fabricated controls observation or new image.
                 entry['control'] = cid
@@ -172,13 +214,21 @@ def register_destinations(values, records, region_refs, controls, actual, attemp
                     target_name = records[target]['name']
                     registered = owned_controls(records[target]).get(row.get('ref'), {})
                     control_name = row.get('name') or registered.get('name') or row.get('ref', '未命名控件')
-                    raise ValueError(f'访问关系指向“{target_name}”中的“{control_name}”，但该控件的本次观察不属于这个区块。请核对目标名称及归属。')
+                    owner_index = row.get('region_index')
+                    owner = records[region_refs[owner_index]]['name'] if type(owner_index) is int and 0 <= owner_index < len(region_refs) else '未确认'
+                    reject('destination_control_owner', control_name,
+                           {'目标区块': target_name, '控件本次观察所属区块': owner},
+                           '到达控件的本次观察属于所填写的目标区块', field='到达后的目标控件',
+                           reason=f'访问关系指向“{target_name}”中的“{control_name}”，但本次控件观察归在“{owner}”。')
                 matches = [cid for cid,c in owned_controls(records[target]).items()
                            if any(o.get('evidence', {}).get('source_call') == call and
                                   o['evidence'].get('source_field') == f'/controls/{ci}'
                                   for o in observation_history(c))]
                 if len(matches) != 1:
-                    raise ValueError('目标控件尚未唯一登记')
+                    reject('destination_control_reference', row.get('name') or row.get('ref') or records[target]['name'],
+                           {'匹配的控件': matches, '目标区块': records[target]['name']},
+                           '本次目标区块中唯一登记的控件', field='到达后的目标控件',
+                           reason='目标控件没有唯一登记结果。')
                 entry['control'] = matches[0]
         entry['source'] = {**action.get('evidence', {}), 'attempt': attempt, 'basis': 'explored'}
         store_object_entry(record, entry)
@@ -192,11 +242,7 @@ def destination_schema():
                           'description': '本次controls数组中的位置；不是控件ID。区块目标省略。'},
         'conditions': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}}},
         'required': ['region_index'], 'additionalProperties': False}
-    existing = {'type': 'object', 'properties': {
-        'index': {'type': 'integer', 'minimum': 0},
-        'conditions': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}}},
-        'required': ['index', 'conditions'], 'additionalProperties': False}
-    return {'type': 'array', 'items': {'anyOf': [observed, existing]}}
+    return {'type': 'array', 'items': observed}
 
 
 def registered_result(task, action, attempt):

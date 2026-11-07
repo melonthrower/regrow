@@ -7,6 +7,7 @@ import subprocess
 import jsonschema
 from regrow.records.snapshots import read, write_json
 from regrow.runtime.model_transport import BudgetExhausted
+from regrow.records.diagnostics import DiagnosticUnavailable
 
 _BUDGET = ContextVar('reply_correction_budget', default=None)
 
@@ -52,11 +53,13 @@ def request(root, original, rejected, report, first_call):
     from regrow.prompts.field_placeholders import fill_missing, without_full_format
     part = load(root, ['纠错/原格式重答.prompt'])[0]
     q = without_full_format(original)
-    q = organize(root, q, part, describe(report, rejected, q), fill_missing(root, rejected, report, original['response_schema']))
+    q = organize(root, q, part, describe(report, rejected, q),
+                 fill_missing(root, rejected, report, original['response_schema']), report=report)
     q['format_original_call'] = first_call
     for key in ('_structured_user_prompt', '_presentation_digest'):
         q.pop(key, None)
-    return q
+    from regrow.prompts.correction_fields import prepare as marked_fields
+    return marked_fields(root, q)
 
 
 def call(transport, incoming):
@@ -65,6 +68,11 @@ def call(transport, incoming):
     pointer = transport.run / 'pending_format_reply.json'
     if pointer.exists():
         state = read(pointer)
+        if state.get('diagnostic_failure'):
+            failure = state['diagnostic_failure']
+            error = DiagnosticUnavailable(failure.get('diagnostic'), failure['missing'])
+            error.detail.update(failure)
+            raise error
         from regrow.recognition.named_references import internal_request
         same_internal = incoming == internal_request(state['original'])
         if not same_internal and all(incoming != state[key] for key in ('input', 'original', 'next')):
@@ -100,19 +108,25 @@ def call(transport, incoming):
                 raise
             detail = read(parse_error)
             reply = detail.get('reply_texts', [])
-            report = {'errors': [{'code': 'parse', 'expected': '回复无法解析为唯一JSON对象：' + detail['reason']}], 'unchecked': []}
+            report = {'errors': detail.get('errors') or [{'code': 'parse', 'object': '整份回复', 'actual': reply,
+                      'expected': '回复须为唯一JSON对象',
+                      'reason': '回复无法解析为唯一JSON对象：' + detail['reason']}], 'unchecked': []}
         else:
             from regrow.recognition.named_references import normalize_reply
             from regrow.runtime.model_transport import expand_schema
             if q.get('name_contract'):
                 reply = normalize_reply(expand_schema(q['response_schema']), reply)
-            errors = reply_errors(q, reply, defer_objects=True)
+            recovery = transport.run / 'calls' / ref / 'structure_recovery.json'
+            errors = (read(recovery).get('errors', []) if recovery.exists() else [])
+            errors += reply_errors(q, reply, defer_objects=True)
             if not errors:
                 from regrow.recognition.named_references import decode, internal_request
                 try:
                     derived = decode(q, reply)
                 except ValueError as error:
-                    errors.append({'code':'object_reference', 'expected':str(error)})
+                    details = getattr(error, 'report', None)
+                    errors.extend(details['errors'] if isinstance(details, dict) and details.get('errors')
+                                  else [{'code': 'object_reference', 'raw_error': str(error)}])
                 else:
                     pointer.unlink(missing_ok=True)
                     if q.get('name_contract'):
@@ -125,5 +139,11 @@ def call(transport, incoming):
         state.update(last_call=ref, error=report, charged=False)
         raw = transport.run / 'calls' / ref / 'unfiltered_response.json'
         rejected = read(raw) if raw.exists() else reply
-        state['next'] = request(transport.root, state['original'], rejected, report, state['first_call'])
+        try:
+            state['next'] = request(transport.root, state['original'], rejected, report, state['first_call'])
+        except DiagnosticUnavailable as error:
+            error.detail['call'] = ref
+            state['diagnostic_failure'] = error.detail
+            write_json(pointer, state)
+            raise
         write_json(pointer, state)

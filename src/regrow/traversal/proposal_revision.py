@@ -91,13 +91,13 @@ def examples(base):
     return []
 
 
-def _error(path, message):
+def _error(path, message, **facts):
     from regrow.records.registration_diagnostics import Rejected
     raise Rejected({'errors': [{'code': 'candidate_revision', 'path': path,
-                               'expected': message}], 'unchecked': []})
+                               'expected': message, **facts}], 'unchecked': []})
 
 
-def _objects(base, edits, kind):
+def _objects(base, edits, kind, *, provenance=None):
     if not isinstance(base, list) or not isinstance(edits, list):
         _error('/' + kind, '对象修订须为数组')
     rows = deepcopy(base)
@@ -131,6 +131,10 @@ def _objects(base, edits, kind):
             if any(key in edit for key in removed_fields):
                 _error(path, '同一字段不能同时撤掉和重新赋值')
             changes = {key: deepcopy(value) for key, value in edit.items() if key not in ('candidate_index', 'remove_fields')}
+            if provenance is not None:
+                origin = len(rows) if index is None else index
+                for field in changes:
+                    provenance[(origin, field)] = position
             if index is None:
                 rows.append(changes)
             else:
@@ -143,7 +147,7 @@ def _objects(base, edits, kind):
     return [row for i, row in enumerate(rows) if i not in removed], indexes
 
 
-def _references(result, indexes):
+def _references(result, indexes, proposal=None, provenance=None):
     # Only protocol relationships are indexes; knowledge parameter names are data.
     origins = {kind: {new: old for old, new in values.items()} for kind, values in indexes.items()}
     def remap(row, key, kind, path):
@@ -153,8 +157,14 @@ def _references(result, indexes):
         if key == 'parent_index' and isinstance(value, str):
             return  # A known Region ID does not move when reply rows change.
         if type(value) is not int or value not in indexes[kind]:
-            _error(path + '/' + key,
-                   f'按原稿编号，{path}/{key}={value}指向已撤回或不存在的对象；请同时修正这条关系')
+            parts = path.strip('/').split('/')
+            group = parts[0]
+            edit = (provenance or {}).get(group, {}).get((int(parts[1]), key))
+            latest = edit is not None or group not in OBJECTS and group in (proposal or {})
+            location = f'/{group}/{edit}/{key}' if edit is not None else path + '/' + key
+            _error(location,
+                   f'按原稿编号，{path}/{key}={value}指向已撤回或不存在的对象；请同时修正这条关系',
+                   actual=value, reply_source='latest_reply' if latest else 'proposal_base')
         row[key] = indexes[kind][value]
     for i, row in enumerate(result.get('regions', [])):
         remap(row, 'parent_index', 'regions', f'/regions/{origins["regions"][i]}')
@@ -178,9 +188,12 @@ def merge(request, proposal):
         return {**deepcopy(base), **deepcopy(proposal)}
     result = {**deepcopy(base), **deepcopy(proposal)}
     indexes = {}
+    provenance = {}
     for kind in OBJECTS:
-        rows, indexes[kind] = _objects(base.get(kind, []), proposal.get(kind, []), kind)
+        provenance[kind] = {}
+        rows, indexes[kind] = _objects(base.get(kind, []), proposal.get(kind, []), kind,
+                                      provenance=provenance[kind])
         if kind in base or kind in proposal:
             result[kind] = rows
-    _references(result, indexes)
+    _references(result, indexes, proposal, provenance)
     return result

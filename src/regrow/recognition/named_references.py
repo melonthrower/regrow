@@ -8,6 +8,7 @@ from collections import Counter
 import json
 import re
 import unicodedata
+from regrow.records.diagnostics import reject
 
 TOKEN = re.compile(r'(?<![A-Za-z0-9_])[rc]\d+(?![A-Za-z0-9_])')
 REFERENCE_FIELDS = {'ref','target','control','region','source_region','source_control',
@@ -142,6 +143,12 @@ def wire_schema(schema, nested):
         if node.get('pattern') in ('^r[0-9]+$', '^c[0-9]+$'): node.pop('pattern')
         props = node.get('properties', {})
         if nested and 'regions' in props and 'controls' in props:
+            if 'current_regions' in props:
+                props['current_regions']['items'] = {
+                    'type': 'object', 'properties': {'ref': {
+                        'type': 'string', 'minLength': 1,
+                        'description': '已有区块使用本轮给出的ID/名称；本次新区块使用其登记名称。'}},
+                    'required': ['ref'], 'additionalProperties': False}
             region = item_schema(props['regions']['items']); props['regions']['items']=region
             control = item_schema(deepcopy(props['controls']['items']))
             _drop(control, {'region_index','candidate_index'})
@@ -217,6 +224,9 @@ def encode_objects(value, names, owners, *, current=False):
             row['region']=reference(regions,row.pop('region_index'))
         if 'control_index' in row:
             row['control']=reference(value['controls'],row.pop('control_index'))
+    for row in v.get('current_regions', []):
+        if 'region_index' in row:
+            row['ref'] = reference(regions, row.pop('region_index'))
     if current:  # Retained only for already-sent inline-current contracts.
         v.pop('current_regions',None)
     return text(v,names)
@@ -438,8 +448,12 @@ def decode(request, reply):
     from regrow.recognition.update_visibility import selected_indices
     selected = selected_indices(value)
     for position, row in enumerate(rows):
-        if not isinstance(row,dict):raise ValueError('区块列表中的每项须为对象')
-        if not isinstance(row.get('controls',[]),list):raise ValueError('区块「'+str(_key(row))+'」的controls须为列表，不能为null或其他类型')
+        if not isinstance(row,dict):
+            reject('object_format', '本次登记的区块条目', row, '对象', field='区块条目',
+                   reason='区块列表中提交了非对象内容。')
+        if not isinstance(row.get('controls',[]),list):
+            reject('object_format', str(_key(row)), row.get('controls'), '控件列表', field='控件',
+                   reason='该区块的 controls 需要填写列表，不能填写 null 或其他类型。')
         region={k:v for k,v in row.items() if k not in ('controls','current','parent')}
         if 'remove_fields' in region:
             region['remove_fields'] = ['parent_index' if field == 'parent' else field for field in region['remove_fields']]
@@ -479,12 +493,16 @@ def decode(request, reply):
             parent = resolve(raw_parent, references) if raw_parent is not None else None
             if parent is not None and type(parent) is not int:
                 if raw_parent not in contract['names'] or not re.fullmatch(r'r\d+', raw_parent):
-                    raise ValueError('区块「' + str(_key(row)) + '」的父区块「' + str(raw_parent)
-                        + '」未能对应已知区块或本次回复中的唯一对象；请核对实际包含关系。')
+                    reject('parent_region', str(_key(row)), raw_parent,
+                           '已知区块或本次回复中唯一的区块', field='父区块',
+                           reason='填写的父区块未能唯一对应已有或本次登记的区块。',
+                           repair='根据实际包含关系核对父区块引用。')
                 parent = raw_parent
             regions[i]['parent_index'] = parent
         for c in row.get('controls',[]):
-            if not isinstance(c,dict):raise ValueError('区块「'+str(_key(row))+'」的控件列表中每项须为对象')
+            if not isinstance(c,dict):
+                reject('object_format', str(_key(row)), c, '控件对象', field='控件条目',
+                       reason='该区块的控件列表中提交了非对象内容。')
             c=deepcopy(c)
             if not control_only(c):c['region_index']=indexes[i]
             if base:
@@ -513,6 +531,17 @@ def decode(request, reply):
                 members=[m for m in members if m.get('region_index')!=indexes[i] and not (row.get('ref') and m.get('ref')==row['ref'])]
                 if row.get('current') is True and not row.get('remove'):members.append({'region_index':indexes[i]})
         value['current_regions']=members
+    for member in value.get('current_regions', []):
+        ref = member.get('ref')
+        if ref and ref not in contract['names']:
+            index = resolve(ref, references)
+            if type(index) is not int:
+                reject('current_region_reference', str(ref),
+                       {'当前前景引用': ref, '本次登记区块': [_key(r) for r in rows]},
+                       '本轮提供的已有区块引用或本次登记的唯一区块名称', field='当前前景区块',
+                       reason='当前前景引用未能唯一对应一个区块，请核对名称。')
+            member.clear()
+            member['region_index'] = index
     planned=deepcopy(base.get('controls',[])) if base else []
     for c in controls:
         ci=c.get('candidate_index')

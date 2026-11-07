@@ -10,6 +10,7 @@ from regrow.records.object_store import find_control
 from copy import deepcopy
 import json
 from pathlib import Path
+from regrow.records.diagnostics import reject
 
 def object_schema(fields):
     return {'type': 'object', 'properties': {k: deepcopy(v) for (k, v) in fields.items()}, 'required': list(fields), 'additionalProperties': False}
@@ -80,11 +81,15 @@ def decide(task, row, basis, *, product_complete, records, labels=None):
     if review_sources:
         basis = {**basis, 'registration_gap_evidence': review_sources}
     if state == 'done' and blocked:
-        raise ValueError('任务 ' + row['task'] + ' 仍有已记录的真实执行、身份或前提阻塞；保留已有事实并明确继续或受阻')
+        reject('task_unresolved_blocker', row['task'],
+               {'提交的进展': state, '仍未解决的阻塞': blocked}, '没有未解决的真实执行、身份或前提阻塞',
+               field='任务进展', reason='该任务仍有未解决的真实阻塞，不能直接结算完成。')
     if state == 'done' and not product_complete:
         from regrow.records.task_settlement import missing_product_fields
         missing = '、'.join(missing_product_fields(task))
-        raise ValueError('任务 ' + row['task'] + ' 尚不能结算，缺少：' + missing)
+        reject('task_missing_result', row['task'], {'提交的进展': state, '尚缺登记内容': missing},
+               '原任务完成所需的登记内容已提供', field='任务进展',
+               reason='该任务的完成登记仍缺少：' + missing + '。')
     previous = task_audit(task).get('latest_update')
     if previous:
         task_audit(task).setdefault('update_history', []).append(deepcopy(previous))
@@ -301,26 +306,41 @@ def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidate
     for row in rows:
         ref = row['task']
         if ref not in allowed or ref in selected:
-            raise ValueError('任务更新须引用本次披露的唯一任务，不得重复或新建任务')
+            reject('task_update_reference', ref,
+                   {'填写的任务': ref, '本次是否已提交': ref in selected}, list(allowed),
+                   field='任务更新引用', reason='该任务没有随本次披露，或在本次回复中被重复提交。')
         candidate = allowed[ref]
         region = owner if ref == active else records[candidate['region']]
         task = owned_tasks(region).get(candidate['name'])
         if task is None:
-            raise ValueError('任务已迁移或不再存在，不能沿旧候选结算其他任务')
+            reject('task_update_reference', ref, candidate, '本次候选对应的现存原任务',
+                   field='任务更新引用', reason='候选对应的原任务已迁移或不再存在。')
         if task.get('status') not in ('pending', 'blocked') or task.get('equivalent_to'):
-            raise ValueError('只能更新本次未结束的本地探索任务')
+            reject('task_update_scope', ref,
+                   {'当前进展': task.get('status'), '等价任务引用': task.get('equivalent_to')},
+                   '本次未结束的本地探索任务', field='任务更新范围', reason='该任务已结束或是等价任务，不能按本次本地任务更新。')
         migrated = ref == active and any((h.get('region') == candidate['region'] and h.get('control') == candidate['control'] and (h.get('attempt') == attempt) for h in task_value(task, 'ownership_history', [])))
         if candidate['control'] != task.get('control') and (not migrated) or candidate['conditions'] != task.get('conditions', []):
-            raise ValueError('任务身份或适用条件已变化，需重新核对本次候选')
+            reject('task_update_context', ref,
+                   {'候选控件': candidate['control'], '当前控件': task.get('control'),
+                    '候选条件': candidate['conditions'], '当前条件': task.get('conditions', [])},
+                   '候选任务与当前任务的控件和适用条件一致', field='任务身份与条件',
+                   reason='任务的控件或适用条件已变化，需要核对本次候选。')
         if ref != active:
             target = completion_target(region, task)
             from regrow.records.action_evidence import has_observed_result
             visible = target['region'] in action.get('interactive_regions', [])
             if row['state'] == 'done' and (hard_block(task) or not has_observed_result(action) or not visible or action['result']['exception'] != 'none'):
-                raise ValueError('相关问题须有本次实际后图中的目标观察，且没有未解决的真实执行或归属阻塞')
+                reject('related_task_result', ref,
+                       {'提交的进展': row['state'], '未解决阻塞': hard_block(task),
+                        '本次动作结果已确认': has_observed_result(action), '目标在动作后前景中': visible,
+                        '动作异常': action.get('result', {}).get('exception')},
+                       '相关任务完成须有本次后图的目标观察且无未解决阻塞或异常', field='相关任务进展',
+                       reason='该相关任务的本次完成依据尚不满足要求。')
         selected[ref] = (region, task, row)
     if binding.get('task_name') and active not in selected:
-        raise ValueError('更新需保留本轮当前任务的进展，即使本次只是准备动作')
+        reject('active_task_update_missing', binding['task_name'], [row['task'] for row in rows],
+               active, field='当前任务进展', reason='本次回复没有提供当前任务的进展；准备动作也需要保留该判断。')
     active_row = selected.get(active, (None, None, {}))[2]
     if active_row:
         settle(owner, binding, {**reply, 'task_update': active_row}, attempt, records, receipt=receipt, labels=labels, explicit=True)

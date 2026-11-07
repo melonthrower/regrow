@@ -12,19 +12,10 @@ from pathlib import Path
 import uuid
 import subprocess
 import jsonschema
+from regrow.records.diagnostics import DiagnosticUnavailable, diagnostic, require_report, reject
 
 def read(path):
     return json.loads(Path(path).read_text())
-
-def diagnostic(error):
-    if hasattr(error, 'report'):
-        return error.report
-    if isinstance(error, jsonschema.ValidationError):
-        from regrow.records.registration_diagnostics import schema_errors
-        return {'errors': schema_errors(error),
-                'unchecked': ['结构尚未通过，后续语义检查未执行。']}
-    return str(error)
-
 
 def support_review_eligible(error):
     """A malformed reply needs correction, not invented support tasks."""
@@ -187,7 +178,7 @@ def confirmed_dispatch_review(run, job, current_calls, window, current_frame):
 def reobservable_block(run):
     """Return only a blocked proposal with no executed action left to register."""
     job = pending(run)
-    if not job or job['status'] != 'blocked' or job.get('attempt'):
+    if not job or job['status'] != 'blocked' or job.get('attempt') or job.get('diagnostic_failure'):
         return None
     if job.get('service_failure') and content_rejection(job['service_failure']['error']):
         return None
@@ -221,6 +212,8 @@ def task_review_images(value):
     return True
 
 def request(root, job, context):
+    job = deepcopy(job)
+    job['error'] = require_report(job.get('error'), job.get('rejected_reply', job.get('candidate')))
     from regrow.prompts import frame_context as _frame_context
     from regrow.runtime import model_transport as _model_transport
     from regrow.prompts import target_observation as _target_observation
@@ -348,7 +341,19 @@ def request(root, job, context):
         correction['proposal_base'] = proposal_base
         correction['proposal_revision'] = MODE
     correction['frame_context'] = {str(frame): role['用途'] for (frame, role) in zip(frames, image_roles)}
-    return _control_identity_review.attach(root, job, correction)
+    correction = _control_identity_review.attach(root, job, correction)
+    if correction.get('role') == 'step_correction':
+        retained = deepcopy(dynamic)
+        for key in ('被拒绝回复', '本次合并基准', '上次失败或停止诊断（保留原文，非当前能力清单）'):
+            retained.pop(key, None)
+        correction['_correction_context'] = {
+            'context': json.dumps(retained, ensure_ascii=False, indent=2),
+            'reply': deepcopy(dynamic.get('本次合并基准', rejected)),
+            'issues': [], 'notes': None, 'report': deepcopy(job['error'])}
+        if proposal_base is not None and job.get('rejected_reply') is not None:
+            correction['_correction_context']['latest_reply'] = deepcopy(
+                job.get('rejected_model_reply', job['rejected_reply']))
+    return correction
 
 class Runner:
 
@@ -366,6 +371,25 @@ class Runner:
 
     def save(self, job):
         atomic(self.run / job['path'], job)
+
+    def pause_diagnostic(self, job, error):
+        job.update(status='blocked', diagnostic_failure=deepcopy(error.detail))
+        if error.detail.get('call'):
+            job['call'] = error.detail['call']
+        self.save(job)
+        raise Paused(error.status, error.reason) from error
+
+    def correction_request(self, job):
+        try:
+            require_report(job.get('error'), job.get('rejected_reply', job.get('candidate')))
+            display_job = deepcopy(job)
+            if job.get('rejected_reply') is not None and job.get('call'):
+                source = self.run / 'calls' / job['call'] / 'response.json'
+                if source.exists():
+                    display_job['rejected_model_reply'] = read(source)
+            return request(self.root, display_job, self.adapters.context(self.run, job))
+        except DiagnosticUnavailable as error:
+            self.pause_diagnostic(job, error)
 
     def sent_request(self, job, q, ref, repairing):
         path = self.run / 'calls' / str(ref) / 'request.json'
@@ -394,19 +418,25 @@ class Runner:
         from regrow.traversal import task_deferral as _task_deferral
         if not isinstance(reason, str):
             reason = json.dumps(reason, ensure_ascii=False)
+        # Stopping/retry-budget messages do not replace the latest failed facts.
+        try:
+            retained = require_report(job.get('error'), job.get('rejected_reply', job.get('candidate')))
+        except DiagnosticUnavailable:
+            retained = job.get('error') or reason
+        job['stop_reason'] = reason
         if job['request'].get('done_task_review'):
-            job.update(status='deferred', error=reason,
+            job.update(status='deferred', error=retained,
                        deferral={'next': False, 'record_review_only': True})
             self.save(job)
             (self.run / self.pointer_name).unlink(missing_ok=True)
             raise Paused('record_review_deferred', reason)
         decision = _task_deferral.defer(self.run, job, reason)
         if decision is not None:
-            job.update(status='deferred', deferral=decision, error=reason)
+            job.update(status='deferred', deferral=decision, error=retained)
             self.save(job)
             (self.run / self.pointer_name).unlink(missing_ok=True)
             raise Paused('task_deferred' if decision['next'] else 'task_blocked', reason)
-        job.update(status='blocked', error=reason)
+        job.update(status='blocked', error=retained)
         self.save(job)
         raise Paused('correction_blocked', reason)
 
@@ -423,7 +453,12 @@ class Runner:
         if pending(self.run, self.pointer_name):
             raise Paused('correction_blocked', '已有步骤待修复')
         key = uuid.uuid4().hex
-        job = {'path': f'repair_episodes/{key}/episode.json', 'stage': 'action', 'request': deepcopy(q), 'attempt': None, 'status': 'repair', 'repairs': 0, 'observations': 0, 'history': [{'call': ref, 'error': reason}], 'seen': [], 'supplements': [], 'candidate': candidate, 'call': ref, 'error': reason, 'requires_observation': True}
+        actual = action_target_doubt or ({key: pre_dispatch_review[key] for key in
+                  ('frame_comparison', 'changed_window') if key in pre_dispatch_review}
+                  if pre_dispatch_review else None)
+        report = {'errors': [{'code': 'action_evidence_review', 'object': candidate.get('target'),
+                             'actual': actual, 'expected': reason}], 'unchecked': []} if actual else reason
+        job = {'path': f'repair_episodes/{key}/episode.json', 'stage': 'action', 'request': deepcopy(q), 'attempt': None, 'status': 'repair', 'repairs': 0, 'observations': 0, 'history': [{'call': ref, 'error': report}], 'seen': [], 'supplements': [], 'candidate': candidate, 'call': ref, 'error': report, 'requires_observation': True}
         if action_target_doubt:
             job['action_target_doubt'] = deepcopy(action_target_doubt)
         if pre_dispatch_review:
@@ -488,6 +523,15 @@ class Runner:
             atomic(self.run / self.pointer_name, {'episode': job['path']})
         elif stage != job['stage']:
             raise Paused('correction_blocked', '必须先处理尚未完成的步骤：' + job['stage'])
+        if job.get('diagnostic_failure'):
+            failure = job['diagnostic_failure']
+            raise Paused(DiagnosticUnavailable.status,
+                         DiagnosticUnavailable(failure.get('diagnostic'), failure['missing']).reason)
+        if job['status'] in ('repair', 'blocked') and not job.get('service_failure'):
+            try:
+                require_report(job.get('error'), job.get('rejected_reply', job.get('candidate')))
+            except DiagnosticUnavailable as error:
+                self.pause_diagnostic(job, error)
         if (stage == 'update' and job['status'] not in ('complete', 'deferred', 'blocked')
                 and (_result_updater.has_source_revision(job['request'])
                      or job.get('suspended_recovery') and 'next_action' in job['request'].get('response_schema', {}).get('properties', {})
@@ -559,7 +603,7 @@ class Runner:
                 retry_archive = archive.with_name('service-retry-before-image-contract.json')
                 if not (self.run / retry_archive).exists():
                     atomic(self.run / retry_archive, retry)
-                rebuilt = request(self.root, job, self.adapters.context(self.run, job)) if job['status'] == 'repair' else deepcopy(fresh)
+                rebuilt = self.correction_request(job) if job['status'] == 'repair' else deepcopy(fresh)
                 if job['status'] == 'repair':
                     _correction_crop_feedback.attach(self.run, job, rebuilt)
                 job['service_retry_request'] = rebuilt
@@ -581,14 +625,19 @@ class Runner:
             if last.get('resolution') == 'edit_record' and self.adapters.edit_proposal(self.run, job, last.get('record_edit')):
                 self.save(job)
             else:
-                self.stop(job, job['error'])
+                self.stop(job, job.get('stop_reason') or job['error'])
         if job['status'] == 'deferred':
             (self.run / self.pointer_name).unlink(missing_ok=True)
-            raise Paused('task_deferred' if job['deferral']['next'] else 'task_blocked', job['error'])
+            raise Paused('task_deferred' if job['deferral']['next'] else 'task_blocked', job.get('stop_reason') or job['error'])
         while True:
             if job['status'] == 'complete':
                 (self.run / self.pointer_name).unlink(missing_ok=True)
                 return job
+            if job['status'] == 'repair':
+                try:
+                    require_report(job.get('error'), job.get('rejected_reply', job.get('candidate')))
+                except DiagnosticUnavailable as error:
+                    self.pause_diagnostic(job, error)
             if job['status'] == 'observe':
                 from regrow.runtime import reply_correction
                 if self.available() < 1:
@@ -607,6 +656,8 @@ class Runner:
                     raise Paused('repair_pending', str(error))
                 except reply_correction.Failed as error:
                     self.stop(job, str(error))
+                except DiagnosticUnavailable as error:
+                    self.pause_diagnostic(job, error)
                 except (ValueError, jsonschema.ValidationError) as error:
                     job['error'] = diagnostic(error)
                     job['history'].append({'observation_error': diagnostic(error)})
@@ -644,6 +695,8 @@ class Runner:
                     if job['stage'] == 'update' and error.status == 'correction_blocked':
                         self.stop(job, error.reason)
                     raise
+                except DiagnosticUnavailable as error:
+                    self.pause_diagnostic(job, error)
                 except (ValueError, jsonschema.ValidationError) as error:
                     if job['stage'] == 'action' and getattr(error, 'refresh_request', False):
                         try:
@@ -700,7 +753,7 @@ class Runner:
             elif repairing:
                 if job['repairs'] >= 2:
                     self.stop(job, '纠错次数已用完；保留原任务和未解决记录')
-                q = request(self.root, job, self.adapters.context(self.run, job))
+                q = self.correction_request(job)
                 _correction_crop_feedback.attach(self.run, job, q)
                 job['repairs'] += 1
                 self.save(job)
@@ -721,6 +774,8 @@ class Runner:
                 job['call'] = error.state['last_call']
                 self.save(job)
                 self.stop(job, str(error))
+            except DiagnosticUnavailable as error:
+                self.pause_diagnostic(job, error)
             except subprocess.CalledProcessError:
                 manifest = Path(self.run) / 'run_manifest.json'
                 failed = read(manifest).get('last_call') if manifest.exists() else None
@@ -793,7 +848,18 @@ class Runner:
                             original, revised = semantic_revision(reviewed, candidate)
                             job.update(request=original, candidate=revised)
                             job.pop('registration_submission', None)
-                            job.update(status='repair', error='该旧控件复用已被否定。请修正本次对象登记及相关任务知识、jump_to和下一步：旧对象未出现则撤回引用；当前为新对象则省略ref并补充资料；不要把新对象作用继续写到旧控件。依据：' + reply['reason'])
+                            pair = q['control_identity_pair']
+                            report = {'errors': [{'code': 'control_reuse_denied',
+                                'object': pair['region_name'] + '中的' + pair['current_name'],
+                                'field': '旧控件引用',
+                                'actual': {'提交的引用': pair.get('submitted_ref', pair['ref']),
+                                           '历史控件': pair['old_name'], '身份比较结论': reply['control_identity'],
+                                           '比较依据': reply['reason']},
+                                'reason': '当前控件与所引用的历史控件不是同一对象。',
+                                'expected': '不再把当前对象的作用写入该历史控件',
+                                'repair': '修正本次对象登记及相关任务知识、访问目标和下一步：旧对象未出现则撤回引用；当前为新对象则省略ref并补充资料。'}],
+                                'unchecked': []}
+                            job.update(status='repair', error=report)
                         self.save(job)
                         continue
                     repeated = reply.get('proposal') if isinstance(reply, dict) else None
@@ -804,15 +870,24 @@ class Runner:
                     _registration_diagnostics.check('correction', {'response_schema': q['response_schema'], 'original_stage': job['stage']}, reply, {})
                     resolution = 'defer' if reply['resolution'] == 'blocked' else reply['resolution']
                     if not reply['reason'].strip():
-                        raise ValueError('需要说明修复依据')
+                        reject('correction_reason', '本次纠错回复', reply['reason'], '非空的修复依据',
+                               field='修复依据', reason='纠错回复没有说明修复依据。')
                     if resolution != 'revise' and reply['proposal'] is not None:
-                        raise ValueError(f'resolution={resolution}要求proposal=null；保留你的修复方式，将proposal改为null，观察对象或原因写在reason。动作none也属于提案，不能代替null。')
+                        reject('correction_proposal', '本次纠错回复',
+                               {'修复方式': resolution, '提交的提案': reply['proposal']},
+                               '修复方式不是 revise 时 proposal 为 null', field='修复方式与提案',
+                               reason='该修复方式不接受业务提案。')
                     if resolution == 'revise' and reply['proposal'] is None:
-                        raise ValueError('resolution=revise需要完整proposal；若需要补观察应选择observe并保持proposal=null。')
+                        reject('correction_proposal', '本次纠错回复', reply['proposal'],
+                               'revise 对应需要修正的业务提案', field='修订提案', reason='选择了修订提案，但 proposal 为空。')
                     if resolution == 'edit_record' and reply.get('record_edit') is None:
-                        raise ValueError('resolution=edit_record需要record_edit说明具体修订。')
+                        reject('correction_record_edit', '本次纠错回复', reply.get('record_edit'),
+                               'edit_record 对应具体记录修订', field='记录修订', reason='选择了修订记录，但没有提交具体修订。')
                     if resolution not in ('revise', 'edit_record') and reply.get('record_edit') is not None:
-                        raise ValueError(f'resolution={resolution}要求record_edit=null；保留修复方式，不混入记录修订。')
+                        reject('correction_record_edit', '本次纠错回复',
+                               {'修复方式': resolution, '记录修订': reply.get('record_edit')},
+                               '该修复方式的 record_edit 为 null', field='修复方式与记录修订',
+                               reason='该修复方式不接受记录修订。')
                     if resolution == 'defer':
                         self.stop(job, reply['reason'])
                     if resolution == 'observe':
@@ -841,7 +916,11 @@ class Runner:
                             self.save(job)
                             continue
                         job['request'] = self.adapters.refresh(self.root, self.run, job)
-                        job['error'] = '记录修订已保存；请依据新记录修正原步骤提案'
+                        job['error'] = {'errors': [{'code': 'record_updated',
+                            'object': job['request'].get('focus_region_name') or '原步骤提案',
+                            'actual': deepcopy(reply.get('record_edit')),
+                            'expected': '依据已保存的新记录修订原步骤提案',
+                            'reason': '记录修订已保存，需要按更新后的记录继续判断原提案。'}], 'unchecked': []}
                         job['status'] = 'repair'
                         self.save(job)
                         continue

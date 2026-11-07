@@ -14,6 +14,9 @@ class Conflict(ValueError):
     def __init__(self, pair):
         self.control_identity_pair = pair
         purpose = '本帧旧身份引用尚无外观对应，需根据原场景确认' if pair.get('kind') == 'reuse' else '新建控件与本区块唯一历史候选冲突，需要核对当前场景与历史记录'
+        self.report = {'errors': [{'code': 'control_identity_review', 'object': pair['current_name'],
+            'actual': {'本次控件': pair['current_name'], '历史候选': pair['old_name']},
+            'expected': purpose}], 'unchecked': []}
         super().__init__(purpose + '：' + pair['current_name'] + ' / ' + pair['old_name'])
 
 class CandidateConflict(ValueError):
@@ -21,6 +24,9 @@ class CandidateConflict(ValueError):
 
     def __init__(self, candidates):
         self.control_identity_candidates = candidates
+        self.report = {'errors': [{'code': 'control_identity_review', 'object': candidates[0]['current_name'],
+            'actual': {'本次控件': candidates[0]['current_name'], '历史候选': [p['old_name'] for p in candidates]},
+            'expected': '结合当前场景和历史外观核对这些候选是否为同一控件，不能仅按相似外观合并'}], 'unchecked': []}
         super().__init__('当前控件“' + candidates[0]['current_name'] + '”与历史控件“' + '、'.join(p['old_name'] for p in candidates) + '”仍未区分；保留该对象未决，不自动合并或新建重复对象')
 
 def box(value):

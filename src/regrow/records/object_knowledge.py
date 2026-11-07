@@ -1,6 +1,7 @@
 """Object knowledge edits shared by observations, task reviews and no-action answers."""
 from regrow.records.object_store import control_record
 from regrow.records import control_knowledge, region_knowledge
+from regrow.records.diagnostics import reject
 
 
 def control_only(row):
@@ -39,14 +40,19 @@ def apply(records, reply, source):
     """Called inside the same transaction, before task assessment."""
     for row in reply.get('controls', []):
         if not control_only(row):
-            raise ValueError('知识修订只引用已提供控件并更新knowledge，不报告前台外观')
+            reject('knowledge_edit_fields', row.get('ref') or row.get('name') or '本次控件', row,
+                   '已有控件引用及需要修订的 knowledge', field='控件知识修订',
+                   reason='本次知识修订混入了当前外观或其他非知识字段。')
         record = control_record(records, row['ref'])
         if record is None:
-            raise ValueError('知识修订引用的控件不存在：' + row['ref'])
+            reject('knowledge_control_reference', row['ref'], row['ref'], '已提供的已有控件引用',
+                   field='控件知识修订', reason='知识修订引用没有对应的已登记控件。')
         control_knowledge.update(record, row['knowledge'], source)
     for row in reply.get('regions', []):
         if not region_only(row) or row['ref'] not in records:
-            raise ValueError('区块知识修订须引用已提供区块及local_knowledge')
+            reject('knowledge_region_reference', row.get('ref') or row.get('name') or '本次区块', row,
+                   '已提供区块的引用及 local_knowledge', field='区块知识修订',
+                   reason='该条目没有对应的已提供区块，或混入了区块知识之外的字段。')
         region_knowledge.validate(records[row['ref']], row['local_knowledge'])
         region_knowledge.apply(records[row['ref']], row['local_knowledge'], records)
 

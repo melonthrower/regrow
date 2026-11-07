@@ -2,6 +2,7 @@
 from copy import deepcopy
 from regrow.records.object_store import owned_controls, owned_tasks
 from regrow.records.control_knowledge import parameter_facts, evidence
+from regrow.records.diagnostics import reject
 
 
 def schema(regions=None):
@@ -39,7 +40,10 @@ def resolve(records, value, owner):
     rid, sep, name = value.partition('/')
     if sep and name in records.get(rid, {}).get('functions', {}):
         return value
-    raise ValueError('功能引用未登记或不明确：' + value)
+    reject('function_reference', value, value,
+           [reference(owner, name) for name in records[owner].get('functions', {})],
+           field='功能引用', reason='填写的功能引用没有对应到已登记功能。',
+           repair='已有功能使用其提供的引用；尚未登记的功能使用新增，不以更新替代新增。')
 
 
 def task_refs(records, owner, refs):
@@ -58,7 +62,11 @@ def support_rows(region, values, source=None):
     for value in values:
         if value == region['id']:
             if not region.get('local_knowledge'):
-                raise ValueError('区块「' + region['name'] + '」引用有效，但缺少区块用途知识；有观察依据时补充local_knowledge，否则撤回无依据的功能支持。')
+                reject('function_support_knowledge', region['name'],
+                       {'支持对象': value, '区块知识': region.get('local_knowledge')},
+                       '支持区块已有与功能相关的用途知识', field='功能支持对象',
+                       reason='区块引用有效，但该区块没有可支持功能的用途知识。',
+                       repair='有观察依据时补充区块知识，否则撤回无依据的功能支持。')
             result.append({'kind':'region','region':region['id'],'control':None,'name':region['name']})
             continue
         controls = owned_controls(region)
@@ -73,14 +81,22 @@ def support_rows(region, values, source=None):
             if len(matches) == 1:
                 cid = matches[0]
         if cid is None:
-            available = '、'.join(c['name'] + '（' + k + '）' for k,c in controls.items())
-            raise ValueError('区块「' + region['name'] + '」的功能支持引用无法对应本区块对象：' + str(value) + '。请使用控件树中的控件ID或本区块ID，不拼接区块与控件引用。本区块控件：' + available + '。这不是缺少用途知识的诊断。')
+            reject('function_support_reference', region['name'],
+                   {'填写的支持对象': value, '本区块控件': {k: c['name'] for k,c in controls.items()}},
+                   '本区块已登记控件的引用或本区块引用', field='功能支持对象',
+                   reason='填写的支持引用没有对应到该区块中的对象。')
         if not controls[cid].get('knowledge'):
-            raise ValueError('区块「' + region['name'] + '」的「' + controls[cid]['name'] + '」缺少用途知识；有观察依据时在同次回复补充knowledge，否则撤回无依据的功能支持。')
+            reject('function_support_knowledge', region['name'] + '中的' + controls[cid]['name'],
+                   {'支持对象': cid, '控件知识': controls[cid].get('knowledge')},
+                   '支持控件已有与功能相关的用途知识', field='功能支持对象',
+                   reason='控件引用有效，但该控件没有可支持功能的用途知识。',
+                   repair='有观察依据时补充控件知识，否则撤回无依据的功能支持。')
         c = controls[cid]
         result.append({'kind':'control','region':region['id'],'control':cid,'name':c['name'],'source':evidence(c)})
     if not result:
-        raise ValueError('新增功能至少需要一项本区块已有用途知识作为支持')
+        reject('function_support_empty', region['name'], values,
+               '至少一项本区块已有用途知识作为功能支持', field='功能支持对象',
+               reason='本次功能没有任何知识支持对象。')
     return result
 
 
@@ -103,30 +119,38 @@ def apply(records, updates, source, allowed_regions=None):
     for group in updates:
         rid = group['region']
         if rid not in records:
-            raise ValueError('功能所属区块尚未登记：' + rid)
+            reject('function_owner', rid, rid, '已登记的功能所属区块', field='功能所属区块',
+                   reason='填写的功能所属区块尚未登记。')
         region = records[rid]; directory = region.setdefault('functions', {})
         for row in group.get('add', []):
             name = row['name'].strip()
             if name in directory:
-                raise ValueError('功能「'+name+'」已存在，请引用原功能增量更新')
+                reject('function_duplicate', region['name'] + '的' + name, row,
+                       '新增功能名称与已有功能不同；已有功能通过原引用更新', field='新增功能',
+                       reason='该区块已经登记了同名功能。')
             _store(region, name, row, source)
         for row in group.get('update', []):
             ref = resolve(records, row['ref'], rid)
             if not ref.startswith(rid + '/'):
-                raise ValueError('功能更新引用必须属于指定区块')
+                reject('function_owner', row['ref'], {'功能引用': ref, '填写的区块': region['name']},
+                       '被更新功能属于指定区块', field='功能更新', reason='更新的功能不属于填写的区块。')
             old = ref[len(rid)+1:]; changes = row['changes']; name = changes.get('name', old).strip()
             if name != old and name in directory:
-                raise ValueError('目标功能已存在；合并请用remove.replace_with，不覆盖已有功能')
+                reject('function_duplicate', region['name'] + '的' + old, {'新名称': name, '已有功能': list(directory)},
+                       '新名称不覆盖其他已有功能', field='功能名称',
+                       reason='改名后的目标功能已经存在；合并需要使用删除时的替换引用。')
             previous = deepcopy(directory[old]); _store(region, name, changes, source, previous)
             if name != old:
                 del directory[old]; _rewrite_refs(records, ref, reference(rid,name))
         for row in group.get('remove', []):
             ref = resolve(records,row['ref'],rid)
             if not ref.startswith(rid+'/'):
-                raise ValueError('删除功能必须属于指定区块')
+                reject('function_owner', row['ref'], {'功能引用': ref, '填写的区块': region['name']},
+                       '被删除功能属于指定区块', field='删除功能', reason='删除的功能不属于填写的区块。')
             replacement = resolve(records,row['replace_with'],rid) if row.get('replace_with') else None
             if replacement == ref:
-                raise ValueError('功能不能合并到自身')
+                reject('function_self_merge', row['ref'], {'删除的功能': ref, '替换为': replacement},
+                       '合并的来源与目标为不同功能', field='功能合并', reason='合并目标与被删除功能是同一个对象。')
             del directory[ref[len(rid)+1:]]; _rewrite_refs(records, ref, replacement)
     for region in records.values():
         for task in owned_tasks(region).values():
@@ -176,11 +200,15 @@ def _store(region, name, fields, source, previous=None):
         if key in fields:
             row[key] = deepcopy(fields[key])
     if not name or not row.get('description','').strip():
-        raise ValueError('功能名称和用途说明不能为空')
+        reject('function_description', name or region['name'],
+               {'功能名称': name, '用途说明': row.get('description')}, '非空的功能名称和用途说明',
+               field='功能名称与用途', reason='功能名称或用途说明为空。')
     if 'supports' in fields:
         row['support_controls'] = support_rows(region,fields['supports'],source)
     elif not row.get('support_controls'):
-        raise ValueError('首次更新旧功能时请明确它的对象知识支持')
+        reject('function_support_missing', name, row.get('support_controls'),
+               '首次更新时给出功能所依赖的对象知识支持', field='功能支持对象',
+               reason='旧功能尚无知识支持，本次更新也没有给出支持对象。')
     for key in ('target_role', 'access_entry'):
         if key in fields:
             if fields[key] is None:
@@ -190,14 +218,20 @@ def _store(region, name, fields, source, previous=None):
     if row.get('access_entry'):
         entry = support_rows(region, [row['access_entry']], source)[0].get('control')
         if entry is None or entry not in {s.get('control') for s in row['support_controls']}:
-            raise ValueError('功能「' + name + '」的独立入口必须是本功能支持对象中的实际控件；配合输入、选择或确认不等于独立入口。')
+            reject('function_access_entry', name,
+                   {'填写的独立入口': row['access_entry'], '功能支持控件': [s.get('control') for s in row['support_controls']]},
+                   '独立入口为本功能支持对象中的实际控件', field='功能独立入口',
+                   reason='独立入口没有对应到本功能的实际支持控件。')
         row['access_entry'] = entry
     facts = catalog(region)
     constraints = parameter_references(region, fields.get('constraints', row.get('constraints', {})), row['support_controls'], source)
     controls = {s.get('control') for s in row['support_controls']}
     for ref in constraints:
         if ref not in facts or facts[ref]['control'] not in controls:
-            raise ValueError('功能「'+name+'」的constraints应填写参数引用，不是观察或规则句子。实际填写：'+ref+'。本功能支持对象可用参数引用：'+('、'.join(k for k,v in facts.items() if v['control'] in controls) or '无；没有参数引用时省略constraints')+'。规则正文归来源对象knowledge。')
+            reject('function_parameter_reference', name, ref,
+                   [k for k,v in facts.items() if v['control'] in controls], field='功能参数引用',
+                   reason='填写内容没有对应到本功能支持对象的参数引用。',
+                   repair='使用已有参数引用；规则正文归来源对象知识，没有参数引用时省略 constraints。')
     row['constraints'] = {ref: {'ref':ref, 'region':region['id'], 'control':facts[ref]['control']}
                           for ref in constraints}
     row.setdefault('constraints',{})

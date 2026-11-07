@@ -48,6 +48,7 @@ def key(row):
 
 def update(record, value, source):
     from regrow.records.object_store import observation_history
+    from regrow.records.diagnostics import reject
     current = items(record.get('knowledge'))
     changed = []
     original_size = len(current)
@@ -56,14 +57,18 @@ def update(record, value, source):
     for row in items(value):
         index = row.pop('index', None)
         if index is not None and (not 0 <= index < original_size or index in revised):
-            raise ValueError('knowledge.index必须唯一引用给定的已有知识')
+            reject('knowledge_reference', record.get('name') or '本次控件',
+                   {'填写的知识引用': index, '已有知识数量': original_size, '本次已修订引用': sorted(revised)},
+                   '本次给定且没有重复修订的已有知识引用', field='用途知识引用',
+                   reason='该知识引用不存在或在本次回复中被重复修订。')
         if index is not None:
             revised.add(index)
             revisions.append({'before': deepcopy(current[index]), 'after': row})
         if index is None:
             index = next((i for i, old in enumerate(current) if old == row), len(current))
         if not 0 <= index <= len(current):
-            raise ValueError('knowledge.index没有对应的当前知识')
+            reject('knowledge_reference', record.get('name') or '本次控件', index,
+                   '已提供的当前知识引用', field='用途知识引用', reason='该引用没有对应的当前知识。')
         if index == len(current):
             current.append(row)
         else:

@@ -49,7 +49,7 @@ def envelope(reply, schema, *, partial=False):
     jsonschema.validate(reply, outer)
 
 
-def rejected(task, row, call, error, index):
+def rejected(task, row, call, error, index, *, field='task_update'):
     from regrow.records.tasks import audit
     import jsonschema
     if isinstance(error, jsonschema.ValidationError):
@@ -61,17 +61,26 @@ def rejected(task, row, call, error, index):
                   'completion_condition': '完成条件'}
         reasons = []
         for item in schema_errors(error):
-            field = '的'.join(labels.get(p, p) for p in item['path'].strip('/').split('/') if p)
+            label = '的'.join(labels.get(p, p) for p in item['path'].strip('/').split('/') if p)
             actual = item.get('actual')
-            detail = (field + '：' if field else '') + item['expected']
+            detail = (label + '：' if label else '') + item['expected']
             if not isinstance(actual, (dict, list)):
                 detail += '；实际为 ' + repr(actual)
             reasons.append(detail)
         reason = '；'.join(reasons)
     else:
-        reason = str(error)
+        from regrow.records.diagnostics import require_report
+        report = require_report(error, row)
+        reason = '；'.join(str(item.get('reason') or item['expected']) for item in report['errors'])
+    from regrow.records.diagnostics import diagnostic, require_report
+    report = require_report(diagnostic(error), row)
+    for item in report['errors']:
+        if item.get('validator'):
+            item['object'] = row.get('task') or row.get('name') or row.get('question') or '本次提出的新任务'
+            item['path'] = ('/' + field + '/' + str(index) + item.get('path', '')) if index is not None else item.get('path', '')
     detail = {'task': row.get('task'), 'proposed_update': deepcopy(row),
-              'source_call': call, 'source_index': index, 'reason': reason}
+              'source_call': call, 'source_index': index, 'reason': reason,
+              'diagnostic': report}
     if task is not None:
         audit(task).setdefault('assessment_rejections', []).append(deepcopy(detail))
     return detail

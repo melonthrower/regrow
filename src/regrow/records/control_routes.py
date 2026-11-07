@@ -1,11 +1,11 @@
-"""Current observed targets and explicit revisions of their UI conditions."""
+"""Current observed targets and their recorded visit evidence."""
 from copy import deepcopy
 
 
 def card(record, records=None):
     result = []
-    for i, row in enumerate(record.get('jump_to', [])):
-        item = {'index': i, **{k: deepcopy(v) for k, v in row.items() if k in ('region', 'control', 'conditions')}}
+    for row in record.get('jump_to', []):
+        item = {k: deepcopy(v) for k, v in row.items() if k in ('region', 'control', 'conditions')}
         if records is not None and row.get('region') in records:
             from regrow.records.object_store import owned_controls
             region = records[row['region']]
@@ -14,24 +14,6 @@ def card(record, records=None):
                 item['control_name'] = owned_controls(region)[row['control']]['name']
         result.append(item)
     return result
-
-
-def update_conditions(record, values, action, call):
-    from regrow.records.object_store import observation_history
-    routes = record.get('jump_to', [])
-    seen = set()
-    for value in values:
-        if 'index' not in value:
-            continue
-        index = value['index']
-        if index in seen or not 0 <= index < len(routes):
-            raise ValueError('jump_to.index必须唯一引用给定的已有跳转')
-        seen.add(index)
-        previous = deepcopy(routes[index])
-        routes[index]['conditions'] = list(dict.fromkeys(value['conditions']))
-        observation_history(record, create=True).append({
-            'jump_to_update': {'before': previous, 'after': deepcopy(routes[index])},
-            'evidence': {**deepcopy(action.get('evidence', {})), 'source_call': call}})
 
 
 def current_conditions(record, entry):

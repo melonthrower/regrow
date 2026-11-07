@@ -298,7 +298,7 @@ def worker(dest):
     sys.path.insert(0, str(source))
     from regrow.records import snapshots
     from regrow.recognition import locator
-    from regrow.traversal import task_proposer, action_proposer, result_updater, region_functions, traversal_scheduler
+    from regrow.traversal import task_proposer, action_proposer, result_updater, traversal_scheduler
     from regrow.traversal.step_repair import Runner, Paused
     from regrow.runtime.model_transport import prepare_request
     from regrow.runtime.desktop_transport import DesktopRun
@@ -398,11 +398,8 @@ def worker(dest):
         stage = 'update'
     elif role == 'task_proposal':
         q = task_proposer.plan_request(source, records, state, src['region']);stage = 'task_proposal'
-    elif role == 'task_result_review':
-        from regrow.traversal import task_result_review
-        q = task_result_review.request(source, run, src, original.get('screenshots', []));stage = 'task_result_review'
     else:
-        q = region_functions.request(source, records[src['region']], state, records);stage = 'function_registration'
+        raise ValueError('此历史独立调用已退出；原请求/回复仍可审阅，当前调用使用任务提出或动作更新。')
     def capture_request(request):
         return prepare_request(source, run, request, spec['platform'])
     class PreviewDone(BaseException):pass

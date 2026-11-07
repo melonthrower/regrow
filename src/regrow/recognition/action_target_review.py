@@ -136,6 +136,9 @@ class Conflict(ValueError):
     blocked_by = 'binding_conflict'
     def __init__(self, doubt):
         self.action_target_doubt = doubt
+        self.report = {'errors': [{'code': 'action_target_review',
+            'object': (doubt.get('原选择') or {}).get('名称') or (doubt.get('原选择') or {}).get('target') or '本次操作目标',
+            'actual': doubt, 'expected': doubt.get('说明') or '结合本次截图核对目标身份与拟操作位置'}], 'unchecked': []}
         names = '、'.join(row['名称'] for row in doubt.get('位置处其他候选', []))
         super().__init__('本次操作对象需核对：' + ('点击位置的候选为' + names if names else '点击位置没有唯一可靠的已有控件定位') + '。')
 

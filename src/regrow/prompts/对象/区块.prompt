@@ -294,9 +294,9 @@ out_of_scope_reason 仅当用户明确指定的本轮探索范围排除了整个
 <!-- BEGIN_PROMPT_BLOCK id="region.current_regions" requires="region.foreground_concept,region.registration,control.references" -->
 # 动作后处于前景的区块：current_regions
 只列出动作后图中已确认处于前景的区块，包括仍在的旧区块和新出现的区块。
-已有区块用 ref；本次 regions 中的区块也可用 region_index 引用，位置从 0 开始。同一区块列一次；每项只选一种引用方式。
+统一用 ref 引用区块：已有区块使用本轮给出的“ID/名称”；本次 regions 中的新区块使用其登记名称。同一区块只列一次。
 复用有行为适用上下文的区块时，结合历史和本图确认其整体职责仍一致后引用，无需再次输出 context_matches。确实无法确认的前景区块，或 action_result.exception 非 none 时，填 []。
-正例：旧工具栏 r0002 仍在，新打开的表单登记为 regions[0]，填写 [{"ref":"r0002"},{"region_index":0}]。
+正例：旧工具栏 r0002/工具栏 仍在，新打开的表单在本次 regions 中登记为“编辑表单”，填写 [{"ref":"r0002/工具栏"},{"ref":"编辑表单"}]。
 <!-- END_PROMPT_BLOCK id="region.current_regions" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.ownership_status" requires="" -->

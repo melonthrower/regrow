@@ -108,7 +108,8 @@ def prepare_request(root, run, request, platform='android'):
         from regrow.prompts.frame_context import validate
         validate(request)
         from regrow.recognition.named_references import prepare, render
-        return render(prepare(run, request))
+        from regrow.prompts.correction_fields import prepare as marked_fields
+        return render(marked_fields(root, prepare(run, request)))
     if platform == 'desktop':
         from regrow.runtime.desktop_transport import prepare_request as desktop_context
         request = desktop_context(root, request)
@@ -156,7 +157,8 @@ def prepare_request(root, run, request, platform='android'):
         request['user_prompt'] += '\n\n' + output_instruction
     from regrow.prompts.history_disclosure import project
     request = project(request)
-    return render_names(request)
+    from regrow.prompts.correction_fields import prepare as marked_fields
+    return render_names(marked_fields(root, request))
 
 class ModelTransport:
     """Run adapters supply root, run, account, ledger and save()."""

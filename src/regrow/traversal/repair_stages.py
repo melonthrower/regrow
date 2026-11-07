@@ -741,7 +741,7 @@ def observe(runner, job):
             discovery.commit(runner.root, runner.run, ref)
         job['request'] = refresh(runner.root, runner.run, job)
         job.pop('requires_observation', None)
-    job['error'] = '补充观察已取得，请结合证据修复原步骤；补观察不是原动作后图'
+    job['history'].append({'framework': '补充观察已取得，请结合证据修复原步骤；补观察不是原动作后图'})
 
 def observe_registered(runner, job):
     """Supplementary discovery uses its own discovery contract and resumable repair."""
@@ -804,7 +804,7 @@ def observe_registered(runner, job):
             break
     job['request'] = refresh(runner.root, runner.run, job)
     job.pop('requires_observation', None)
-    job['error'] = '补充定位已登记；使用刷新后的候选继续原任务。'
+    job['history'].append({'framework': '补充定位已登记；使用刷新后的候选继续原任务。'})
 
 def edit_proposal(run, job, edits):
     """Apply matching field edits to an uncommitted proposal before publishing it."""

@@ -48,7 +48,11 @@ def original_reply(root, job):
     if isinstance(job.get('error'), dict):
         rejected = fill_missing(root, rejected, job['error'], original['response_schema'])
     part = load(root, ['纠错/原格式重答.prompt'])[0]
-    result = organize(root, correction, part, describe(job.get('error'), rejected, original), rejected, feedback)
+    result = organize(root, correction, part, describe(job.get('error'), rejected, original),
+                      rejected, feedback, report=job['error'])
+    if base is not None and job.get('rejected_reply') is not None:
+        result['_correction_context']['latest_reply'] = deepcopy(
+            job.get('rejected_model_reply', feedback.get('未接受的局部修订')))
     result.update(role='step_correction', stage='step_correction',
                   correction_format='original', original_request=original)
     if base is not None:

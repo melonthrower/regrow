@@ -2,6 +2,7 @@
 from copy import deepcopy
 import re
 import unicodedata
+from regrow.records.diagnostics import reject
 
 
 def label(control, name):
@@ -19,12 +20,16 @@ def resolve_label(value, labels, *, allow_path=False, prefix='c'):
     title = '控件' if prefix == 'c' else '区块'
     expected = labels.get(control)
     if expected is None:
-        raise ValueError(title + '引用“' + value + '”的ID未在本轮材料中提供；请使用本轮给出的' + title + '引用。')
+        reject('object_reference', value, value, '本轮材料提供的' + title + 'ID/名称',
+               field=title + '引用', reason=title + '引用“' + value + '”的ID未在本轮材料中提供。',
+               repair='核对本次目标，使用材料中对应的完整引用。')
     if value == expected:
         return control
     if allow_path and value.startswith(expected + '/'):
         return control + value[len(expected):]
-    raise ValueError(title + '引用“' + value + '”与本轮给出的“' + expected + '”不一致；请按给定引用修正。')
+    reject('object_reference', value, value, expected, field=title + '引用',
+           reason=title + '编号与名称不一致；该编号在本轮材料中对应“' + expected + '”。',
+           repair='核对实际要引用的对象，使用其给定编号和名称。')
 
 
 def mapping(request):
@@ -107,7 +112,9 @@ def decode(request, reply):
         if legacy and 'index' in row:
             index = row.pop('index')
             if type(index) is not int or not 0 <= index < len(ids):
-                raise ValueError('历史回复的控件编号不在原请求中')
+                reject('object_reference', row.get('name') or '历史控件引用', index,
+                       '原请求提供的控件编号', field='控件引用',
+                       reason='历史回复引用的控件编号不在原请求提供的范围内。')
             row['ref'] = ids[index]
         if row.get('ref'):
             row.setdefault('identity', 'same')

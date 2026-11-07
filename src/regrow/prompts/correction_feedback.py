@@ -4,7 +4,7 @@ import re
 import json
 
 
-def organize(root, request, instruction, issues, reply, notes=None):
+def organize(root, request, instruction, issues, reply, notes=None, *, report=None):
     """Put the current repair question before the original business context."""
     from regrow.prompts.compose import shared_paths, unindexed
     from regrow.prompts.run_context import SCOPE_PATH
@@ -25,7 +25,8 @@ def organize(root, request, instruction, issues, reply, notes=None):
     # Demote the saved question headings; they are background for this repair.
     context = re.sub(r'^(#+) ', r'\1# ', context, flags=re.M)
     q['_correction_context'] = {'context': context, 'issues': deepcopy(issues),
-                                'reply': deepcopy(reply), 'notes': deepcopy(notes)}
+                                'reply': deepcopy(reply), 'notes': deepcopy(notes),
+                                'report': deepcopy(report)}
     q['user_prompt'] = q['dynamic_prompt'] = body(context, issues, reply, notes)
     for key in ('_structured_user_prompt', '_presentation_digest'):
         q.pop(key, None)
@@ -50,7 +51,10 @@ LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': 
           'needs_exploration': '是否需要探索',
           'matching_records': '匹配的旧对象', 'matches': '匹配对象',
           'proposed_region_name': '提出的所属区块', 'proposed_region': '区块引用',
-          'foreground': '前景', 'changes': '修改内容'}
+          'foreground': '前景', 'changes': '修改内容', 'ref': '对象引用',
+          'appearance_bbox': '外观范围', 'click_bbox': '点击范围', 'supports': '支持对象',
+          'constraints': '参数引用', 'state': '进展', 'remaining_question': '未答部分',
+          'jump_to': '访问目标', 'region': '区块', 'control': '控件', 'parent': '父区块'}
 
 
 TYPES = {'array': '列表', 'object': '对象', 'string': '文字', 'boolean': 'true 或 false',
@@ -92,10 +96,14 @@ def schema_feedback(item, text):
 
 
 def describe(error, reply, request=None):
-    if not isinstance(error, dict):
-        return error
+    from regrow.records.diagnostics import require_report
+    error = require_report(error, reply)
     proposal = reply.get('proposal', reply) if isinstance(reply, dict) else {}
     def text(value):
+        if value is None:
+            return 'null'
+        if isinstance(value, bool):
+            return 'true' if value else 'false'
         if isinstance(value, list):
             return '、'.join(text(v) for v in value) or '无'
         if isinstance(value, dict):
@@ -124,6 +132,10 @@ def describe(error, reply, request=None):
             name = names.get(indexes[index])
         if not name:
             name = names.get(obj.get('ref'))
+        if not name and isinstance(obj.get('ref'), str):
+            name = obj['ref']
+        if not name and isinstance(obj.get('description'), str):
+            name = '描述为“' + obj['description'] + '”的条目'
         if not name and isinstance(obj.get('task'), str):
             ref = obj['task']
             owner, separator, task = ref.partition('/')
@@ -142,12 +154,12 @@ def describe(error, reply, request=None):
         if item.get('code') == 'candidate_revision':
             # This path can index the submitted edit, not the retained draft.
             # Naming an object from the draft here would point to the wrong row.
-            rows.append({'对象': '本次局部修订', '所在字段': item.get('path', ''),
-                         '问题': item.get('expected', '')})
+            rows.append({'对象': '本次局部修订', '问题': item.get('expected', ''),
+                         '实际填写': text(item.get('actual'))})
             continue
         node = reply
-        subject = '本次回复'
-        field = ''
+        subject = text(item.get('object')) if item.get('object') not in (None, '', 'reply') else '本次回复'
+        field = item.get('field', '')
         collection = ''
         for token in item.get('path', '').strip('/').split('/'):
             token = token.replace('~1', '/').replace('~0', '~')
@@ -167,7 +179,7 @@ def describe(error, reply, request=None):
             if isinstance(node, dict) and label(node):
                 subject = (collection + '：' if collection else '') + label(node)
                 field = ''
-        reason = item.get('expected') or item.get('reason') or item.get('repair')
+        reason = item.get('reason') or item.get('expected')
         if not reason:
             continue
         reason = text(reason)
@@ -198,10 +210,13 @@ def describe(error, reply, request=None):
                     row['合同外字段'] = unknown
                 row['允许的字段名'] = item.get('allowed_fields', [])
         actual = item.get('actual')
-        if item.get('validator') in ('type', 'enum', 'const', 'minimum', 'maximum',
-                                     'exclusiveMinimum', 'exclusiveMaximum', 'pattern', 'multipleOf'):
+        if item.get('code') == 'parse':
+            row['实际填写'] = '见下方待修正回复。'
+        elif 'actual' in item:
             row['实际填写'] = ('对象：' + text(actual) if isinstance(actual, dict)
                            else '列表：' + text(actual) if isinstance(actual, list) else actual)
+        if not item.get('validator') and item.get('reason') and item.get('expected'):
+            row['要求'] = text(item['expected'])
         repair = item.get('repair')
         if repair and repair not in ('按该字段格式修订，不修改其他真实证据。', '按字段格式修订，不改变真实证据。'):
             row['修正要求'] = text(repair)
@@ -211,7 +226,7 @@ def describe(error, reply, request=None):
             regions = proposal.get('regions', [])
             row['问题'] = '所属区块引用不存在；本次区块为：' + '、'.join(r.get('name', '未命名区块') for r in regions)
         rows.append(row)
-    return rows or deepcopy(error)
+    return rows
 
 
 def present(value, request=None):

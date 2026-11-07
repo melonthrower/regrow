@@ -17,6 +17,7 @@ GEOMETRY = {'bbox', 'appearance_bbox', 'icon_bbox', 'click_bbox', 'click_area', 
 BOX = {'type': 'object', 'properties': {k: {'type': 'integer', 'minimum': 0}
        for k in ('left', 'top', 'right', 'bottom')},
        'required': ['left', 'top', 'right', 'bottom'], 'additionalProperties': False}
+OPTIONAL_BOX = {'anyOf': [deepcopy(BOX), {'type': 'null'}]}
 
 
 def semantic_schema(schema):
@@ -44,6 +45,9 @@ def missing(candidate):
             if kind == 'regions' and i not in current:
                 continue
             known = row.get('ref') or (kind == 'controls' and 'index' in row)
+            if (kind == 'controls' and appearance_box(row) is None
+                    and any(field in row for field in ('appearance_bbox', 'bbox'))):
+                continue
             if (known and not (kind == 'controls' and row.get('add_image'))) or (appearance_box(row) if kind == 'controls' else row.get('bbox')):
                 continue
             rows.append({'path': f'/{kind}/{i}', **deepcopy(row)})
@@ -87,7 +91,7 @@ def request(root, original, candidate, rows, *, grounding=None):
             row['当前外观'] = info['state']
     paths = [row['path'] for row in rows]
     item = {'type': 'object', 'properties': {
-        'path': {'type': 'string', 'enum': paths}, 'appearance_bbox': {'anyOf':[deepcopy(BOX), {'type':'null'}]}, 'reason': {'type':'string'}},
+        'path': {'type': 'string', 'enum': paths}, 'appearance_bbox': deepcopy(OPTIONAL_BOX), 'reason': {'type':'string'}},
         'required': ['path', 'appearance_bbox'], 'additionalProperties': False}
     q = {'role': 'object_registration', 'stage': 'object_registration',
          'system_prompt': text, 'fixed_parts': [{'path': '任务/对象识别资料.prompt', 'text': text}],
@@ -125,6 +129,7 @@ def validate(q, reply, run):
     with Image.open(Path(run) / primary(q)) as im:
         width, height = im.size
     result = []
+    without_appearance = set()
     field = box_field(q)
     for path in q['registration_paths']:
         matches = [(i, row) for i, row in enumerate(reply['objects']) if row.get('path') == path]
@@ -143,15 +148,19 @@ def validate(q, reply, run):
         row = deepcopy(matches[0][1])
         b = row[field]
         if b is None:
+            if path.startswith('/controls/'):
+                without_appearance.add(path)
             if not row.get('reason', '').strip():
                 row['reason'] = '本次未定位该对象，也未给出辨认依据'
         elif not (0 <= b['left'] < b['right'] <= width and 0 <= b['top'] < b['bottom'] <= height):
             row.update({field: None, 'reason': '识别范围超出本张图片或没有正面积'})
         result.append(row)
-    blocked = [row for row in result if row[field] is None and row['path'] in q.get('registration_required_paths', [])]
+    blocked = [row for row in result if row[field] is None
+               and row['path'] not in without_appearance
+               and row['path'] in q.get('registration_required_paths', [])]
     if blocked:
         raise ValueError('本步必需对象尚未定位：' + '；'.join(row['path'] + '：' + row['reason'] for row in blocked))
-    return {'objects': result}
+    return {'objects': result, 'without_appearance': sorted(without_appearance)}
 
 
 def retain_located(original, candidate, failed):
@@ -427,7 +436,8 @@ def complete(runner, job):
         located = validate(located_request, result['candidate'], runner.run)
         for row in located['objects']:
             _, kind, index = row['path'].split('/')
-            if row[box_field(located_request)] is None:
+            if (row[box_field(located_request)] is None
+                    and row['path'] not in located['without_appearance']):
                 failed[row['path']] = row['reason']
             else:
                 field = box_field(job['request'], kind)
@@ -440,7 +450,7 @@ def complete(runner, job):
     q['response_schema'] = expand_schema(q['response_schema'])
     for kind in ('regions', 'controls'):
         fields = q['response_schema']['properties'][kind]['items']['properties']
-        fields[box_field(q, kind)] = deepcopy(BOX)
+        fields[box_field(q, kind)] = deepcopy(OPTIONAL_BOX if kind == 'controls' else BOX)
     select(q, primary(job['request']), '原动作后图；识别范围由单图补登记取得')
     q['semantic_request'] = deepcopy(job['request'])
     q['semantic_request'].pop('control_identity_reviews', None)
@@ -472,7 +482,7 @@ def complete(runner, job):
         'registration_sources': deepcopy(q['registration_sources']),
         'registration_gaps': deepcopy(gaps),
         'registration_source_indices': deepcopy(source_indices),
-        'schema_extension': {'appearance_bbox': deepcopy(BOX), 'bbox': deepcopy(BOX)}}
+        'schema_extension': {'appearance_bbox': deepcopy(OPTIONAL_BOX), 'bbox': deepcopy(BOX)}}
     save_candidate(runner, job, q, enriched)
 
 

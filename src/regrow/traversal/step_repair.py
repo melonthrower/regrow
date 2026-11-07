@@ -532,11 +532,10 @@ class Runner:
                 require_report(job.get('error'), job.get('rejected_reply', job.get('candidate')))
             except DiagnosticUnavailable as error:
                 self.pause_diagnostic(job, error)
+        # Active identity comparisons do not make the execution-source contract old.
         if (stage == 'update' and job['status'] not in ('complete', 'deferred', 'blocked')
                 and (_result_updater.has_source_revision(job['request'])
-                     or job.get('suspended_recovery') and 'next_action' in job['request'].get('response_schema', {}).get('properties', {})
-                     or any(job.get(key) for key in ('control_identity_pair',
-                         'control_identity_candidates', 'identity_recheck_request')))):
+                     or job.get('suspended_recovery') and 'next_action' in job['request'].get('response_schema', {}).get('properties', {}))):
             archive = Path(job['path']).with_name('episode-before-fixed-source.json')
             if not (self.run / archive).exists():
                 atomic(self.run / archive, job)

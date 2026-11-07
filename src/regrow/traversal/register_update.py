@@ -89,8 +89,6 @@ def commit_update(root, run, call_ref, attempt_ref):
     dispatch = _record_read(dispatch_path) if dispatch_path.exists() else {}
     if dispatch.get('recovery'):
         raise ValueError('recovery actions must not use business update registration')
-    ordinary_back = dispatch.get('action', {}).get('action') == 'back'
-    ordinary_scroll = dispatch.get('action', {}).get('action') in ('scroll', 'wait', 'key_press', 'hotkey')
     binding = {}
     binding = _record_read(run / f'action_attempts/{attempt_ref}/binding.json')
     dispatch = _record_read(run / f'action_attempts/{attempt_ref}/dispatch.json')
@@ -140,19 +138,16 @@ def commit_update(root, run, call_ref, attempt_ref):
     suspended = _suspended_updates
     historical = suspended.validate_commit(run, attempt_ref, reply, request, binding, snapshot, records)
     coordinate_action = control is None and binding.get('association', {}).get('status') == 'unconfirmed'
-    if source not in records or (not coordinate_action and (not ordinary_back) and (not ordinary_scroll) and (control not in owned_controls(records[source]))):
+    from regrow.records.function_evidence import region_action
+    region_owned = region_action({'control': control, 'operation': dispatch.get('action', {}).get('action'),
+                                 'association': binding.get('association')})
+    if source not in records or (not coordinate_action and not region_owned and control not in owned_controls(records[source])):
         raise ValueError('action source control is missing from its Region')
     owner = records[source]
     aliases = {old['id']: rid for (rid, r) in records.items() for old in r.get('merged_records', []) if old['id'] not in records}
     working_ref = aliases.get(working_ref, working_ref)
     binding = _region_records.rewrite(binding, aliases)
     working = records[working_ref]
-    if ordinary_scroll:
-        if control is not None:
-            raise ValueError('invalid Region scroll owner')
-    elif ordinary_back:
-        if control is not None:
-            raise ValueError('invalid region-owned return')
     region_changes = _update_visibility.historical_changes(reply, records, request.get('region_names'))
     delta_refs = _owner_materialize_regions(records, reply, call_ref, edge['after_observation'], request.get('region_names'), frame=run / edge['after_image'] if edge.get('after_image') else None)
     _registration_diagnostics.check_visibility(reply, delta_refs, region_changes, request.get('region_names'))

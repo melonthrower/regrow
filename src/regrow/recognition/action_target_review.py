@@ -98,6 +98,8 @@ def unresolved(request, proposal):
 
 def conflict(request, proposal, binding):
     """Check an explicit identity or recheck an automatically associated target."""
+    if binding.get('reference_bound'):
+        return None  # A visual-candidate list cannot override an accurate object ref.
     if proposal.get('action') not in POINTER_ACTIONS or not binding.get('control_ref'):
         return None
     if confirmed(request, proposal):

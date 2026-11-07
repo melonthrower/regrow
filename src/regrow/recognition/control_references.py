@@ -9,6 +9,48 @@ def label(control, name):
     return control + '/' + name
 
 
+def recorded_target(records, value):
+    """Resolve an explicit object ref against records, independently of UI lists."""
+    if records is None or not isinstance(value, str):
+        return None
+    value = value.strip()
+    match = re.fullmatch(r'([cr]\d+)(?:/(.*))?', value)
+    if not match:
+        return None
+    ref, name = match.groups()
+    from regrow.records.object_store import control_record, owned_controls
+    record = records.get(ref) if ref.startswith('r') else control_record(records, ref)
+    title = '区块' if ref.startswith('r') else '控件'
+    if record is None:
+        reject('object_reference', value, value, '已登记的准确' + title + 'ref',
+               field='动作目标', reason='动作目标“' + value + '”没有对应的已登记' + title + '。')
+    expected = ref + '/' + record['name']
+    if name is not None and value != expected:
+        reject('object_reference', value, value, expected, field='动作目标',
+               reason='动作目标编号与名称不一致；该编号对应“' + expected + '”。')
+    owners = ([ref] if ref.startswith('r') else
+              [rid for rid, region in records.items() if ref in owned_controls(region)])
+    return {'ref': ref, 'kind': 'region' if ref.startswith('r') else 'control',
+            'regions': owners}
+
+
+def decode_action_target(request, proposal, call):
+    """Interpret a retained Action using the labels actually sent with its call."""
+    if request.get('action_source', {}).get('call') != call:
+        return proposal
+    value = deepcopy(proposal)
+    if 'received_control_labels' in request:
+        from regrow.recognition.named_references import _decode_references
+        labels = request['received_control_labels']
+        value = _decode_references(value, {name: cid for cid, name in labels.items()},
+                                  control_labels=labels, region_labels=request.get('received_region_labels'))
+    action = value.get('operation', value)
+    ref = request.get('received_new_targets', {}).get(action.get('target'))
+    if ref and not re.fullmatch(r'[cr]\d+', str(action.get('target', ''))):
+        action['target'] = ref
+    return value
+
+
 def resolve_label(value, labels, *, allow_path=False, prefix='c'):
     """Resolve a disclosed ID/name string; never repair it by another name."""
     if not isinstance(value, str):

@@ -1,27 +1,43 @@
-"""Associate an action proposal with recorded visual candidates, before delivery."""
+"""Bind explicit object refs from records; use visual candidates for other targets."""
 
-def bind_action_target(request, proposal):
-    binding = _bind_action_target(request, proposal)
+def bind_action_target(request, proposal, *, records=None):
+    binding = _bind_action_target(request, proposal, records=records)
     source = request.get('source', {})
     if binding.get('status') == 'matched' and request.get('preparation_allowed') and source.get('task_name'):
         binding['preparatory_action'] = binding.get('control_ref') != source.get('task_control') or binding.get('region_ref') != source.get('completion_region', source.get('region'))
     return binding
 
-def _bind_action_target(request, proposal):
-    """Explicit linkage to recorded candidates, not a live identity verifier.
-    """
+def _bind_action_target(request, proposal, *, records=None):
+    """Associate the reported target without inferring identity from its position."""
     base = {'region_ref': request['source']['region'], 'observation_ref': request['source']['observation'], 'control_ref': None, 'working_region': request['source'].get('working_region', request['source']['region'])}
     for key in ('task_name', 'task_region', 'task_type', 'return_to'):
         if key in request['source']:
             base[key] = request['source'][key]
+    from regrow.recognition.control_references import recorded_target
+    reference = recorded_target(records, proposal.get('target')) if proposal.get('action') != 'none' else None
+    if reference:
+        owners = reference['regions']
+        source = request.get('source', {})
+        preferred = [source.get(key) for key in ('working_region', 'region', 'completion_region', 'task_region')]
+        if reference['kind'] == 'control':
+            from regrow.records.object_store import control_record, observation_history
+            control = control_record(records, reference['ref'])
+            preferred += [row.get('evidence', {}).get('region') for row in reversed(observation_history(control))]
+        owner = next((rid for rid in preferred if rid in owners), owners[0])
+        base.update(region_ref=owner,
+                    control_ref=reference['ref'] if reference['kind'] == 'control' else None,
+                    reference_bound=True, model_grounded=True,
+                    basis='explicit registered object ref; ownership from records')
+        if reference['kind'] == 'region':
+            base['association'] = {'status': 'confirmed', 'basis': 'explicit_ref', 'region': owner}
     if proposal.get('action') == 'back':
         if proposal.get('x') is None and proposal.get('y') is None:
-            return {**base, 'status': 'matched', 'basis': 'region-owned return action; verify foreground before delivery'}
+            return {**base, 'status': 'matched', 'basis': base.get('basis', 'region-owned return action; verify foreground before delivery')}
         return {**base, 'status': 'unresolved', 'reason': 'back not allowed for this task'}
     if proposal.get('action') in ('key_press', 'hotkey'):
-        return {**base, 'status': 'matched', 'basis': 'Region-owned keyboard action; current focus must be observed'}
+        return {**base, 'status': 'matched', 'basis': base.get('basis', 'Region-owned keyboard action; current focus must be observed')}
     if proposal.get('action') == 'wait':
-        return {**base, 'status': 'matched', 'basis': 'Region-owned observation wait'}
+        return {**base, 'status': 'matched', 'basis': base.get('basis', 'Region-owned observation wait')}
     if proposal.get('action') == 'none':
         return {**base, 'status': 'no_action'}
     if proposal.get('action') == 'scroll':
@@ -59,6 +75,9 @@ def _bind_action_target(request, proposal):
         (width, height) = frame.size
     if not (0 <= x < width and 0 <= y < height):
         return {**base, 'status': 'unresolved', 'reason': 'coordinates outside screenshot'}
+    if reference:
+        return {**base, 'status': 'matched', 'model_grounded': True,
+                'basis': 'explicit registered object ref; ownership from records; coordinates supplied by model'}
     target = str(proposal.get('target', '')).strip()
     rows = candidate_rows(request)
     hits = candidate_matches(request, target)
@@ -104,6 +123,6 @@ def candidate_line(row):
     return '- target=' + json.dumps(row['target'], ensure_ascii=False) + '；名称：' + row['name']
 
 def disclose_candidates(request):
-    """Display the same controls that bind_action_target can resolve."""
+    """Display selected historical/visual guidance; this is not the ref registry."""
     from regrow.prompts.target_observation import render
     return render(request)

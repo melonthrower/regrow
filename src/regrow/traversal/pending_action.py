@@ -64,6 +64,37 @@ def discard_changed_work(run, request=None):
         abandon(run, reason)
 
 
+def _new_target_refs(run, source, request, reply):
+    """Read IDs assigned to this call's declared new names, without visual recall."""
+    from regrow.records.snapshots import read
+    from regrow.records.object_store import load as load_objects, observation_history
+    declared = {}
+    indexes = request.get('registration_source_indices', {})
+    for kind in ('regions', 'controls'):
+        for index, row in enumerate(reply.get(kind, [])):
+            if row.get('name') and not row.get('ref'):
+                original = indexes[kind][index] if kind in indexes else index
+                declared.setdefault(row['name'], set()).add(f'/{kind}/{original}')
+    if not declared:
+        return {}
+    snapshot = Path(run) / source['snapshot']
+    records = load_objects(snapshot)
+    parent = read(snapshot / 'source.json').get('parent_snapshot')
+    previous = read(Path(run) / parent / 'objects.json') if parent else {}
+    previous_ids = set(previous.get('regions', {})) | set(previous.get('controls', {}))
+    matches = {name: set() for name in declared}
+    for ref, record in [*records.items(), *records.controls.items()]:
+        name = record['name']
+        if name not in declared:
+            continue
+        observed = any(row.get('evidence', {}).get('source_call') == source['call']
+                       and row['evidence'].get('source_field') in declared[name]
+                       for row in observation_history(record))
+        if ref not in previous_ids or observed:
+            matches[name].add(ref)
+    return {name: next(iter(refs)) for name, refs in matches.items() if len(refs) == 1}
+
+
 def take(run, request):
     """Drop before saving an action job; a crash may lose only this optimization."""
     _, records, state = load(run)
@@ -97,6 +128,9 @@ def take(run, request):
     else:
         names, _ = labels(run, q, id_name=False)
         proposal = _decode_references(reply['next_action'], {name: ref for ref, name in names.items()})
+    new_refs = _new_target_refs(run, source, original, reply)
+    if new_refs:
+        q['received_new_targets'] = new_refs
     write_json(Path(run) / 'calls' / source['call'] / 'next_action_context.json', q)
     write_json(Path(run) / 'calls' / source['call'] / 'next_action_candidate.json', proposal)
     return q, proposal, source['call']

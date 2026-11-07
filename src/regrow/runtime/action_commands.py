@@ -1,6 +1,7 @@
 from regrow.paths import SOURCE_ROOT
 'Shared Android action contract for exploration and recovery.\n\nNames follow the original traversal contract; ADB performs platform translation.\nOld tap evidence is readable, but new requests advertise click.\n'
 import json
+import re
 from pathlib import Path
 import shlex
 import time
@@ -121,7 +122,7 @@ def normalize(proposal):
         p.setdefault('reason', p['task_update'].get('reason', ''))
         p.setdefault('target', p['task_update']['task'])
     p.setdefault('target', '当前工作')
-    if p['action'] == 'back':
+    if p['action'] == 'back' and not re.fullmatch(r'[cr]\d+(?:/.*)?', str(p['target']).strip()):
         p['target'] = '系统返回'
     if p['action'] not in ('input_text', 'key_press', 'hotkey'):
         p['text'] = None

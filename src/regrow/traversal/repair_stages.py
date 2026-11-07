@@ -164,20 +164,20 @@ def accept_action(run, q, proposal, ref, records):
     from regrow.runtime import action_commands as _action_commands
     from regrow.recognition import ownership_review as _ownership_review
     from regrow.traversal import operation_blocking as _operation_blocking
-    if q.get('action_source', {}).get('call') == ref and 'received_control_labels' in q:
-        from regrow.recognition.named_references import _decode_references
-        labels = q['received_control_labels']
-        proposal = _decode_references(proposal, {name: cid for cid, name in labels.items()},
-                                     control_labels=labels, region_labels=q.get('received_region_labels'))
+    from regrow.recognition.control_references import decode_action_target
+    proposal = decode_action_target(q, proposal, ref)
     manifest = Path(run) / 'run_manifest.json'
     platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'
     jsonschema.validate(proposal, q['response_schema'])
     proposal = _action_commands.for_request(proposal, q)
     _action_commands.validate(proposal, platform)
     proposal = _action_commands.normalize(proposal)
-    binding = _action_binding.bind_action_target(q, proposal)
+    binding = _action_binding.bind_action_target(q, proposal, records=records)
     if binding['status'] not in ('matched', 'no_action'):
-        raise BindingConflict('动作绑定失败：' + binding.get('reason', binding['status']))
+        failure = BindingConflict('动作绑定失败：' + binding.get('reason', binding['status']))
+        if binding.get('report'):
+            failure.report = binding['report']
+        raise failure
     if binding['status'] == 'no_action' and proposal.get('task_update'):
         from copy import deepcopy as copy_records
         from regrow.records.task_updates import store_increment
@@ -203,7 +203,8 @@ def accept_action(run, q, proposal, ref, records):
                 raise StaleActionSource('接续动作的原任务或动作后观察已不可继续；按正常调度重新选择')
         if binding.get('observation_ref') != (current_state.get('observation') or {}).get('id'):
             raise StaleActionSource('动作来源观察已过期；请按原任务刷新当前观察上下文，旧截图来源不能继续投递')
-        _ownership_review.check_action(run, binding)
+        if not binding.get('reference_bound'):
+            _ownership_review.check_action(run, binding)
         _action_commands.commands(proposal, platform)
         from regrow.recognition import action_target_review
         doubt = action_target_review.conflict(q, proposal, binding)

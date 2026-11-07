@@ -154,7 +154,7 @@ def action_source_observation(run, selection_call, observation, region, control=
     if not selection_call or not (run / 'calls' / selection_call / 'request.json').exists():
         raise ValueError('dispatched action source request is missing')
     from regrow.records.calls import action_submission
-    (request, _) = action_submission(run, selection_call, source_field)
+    (request, selected) = action_submission(run, selection_call, source_field)
     source = request.get('source', {})
     snapshot = source.get('snapshot')
     if not snapshot:
@@ -166,14 +166,35 @@ def action_source_observation(run, selection_call, observation, region, control=
     if source.get('observation') != observation or (state.get('observation') or {}).get('id') != observation:
         raise ValueError('dispatched request and source snapshot observation disagree')
     extra = None
+    from regrow.recognition.control_references import decode_action_target
+    selected = decode_action_target(request, selected, selection_call)
+    selected = selected.get('operation', selected)
+    target = selected.get('target', '')
+    reference = None
+    import re
+    if isinstance(target, str) and re.fullmatch(r'[cr]\d+(?:/.*)?', target.strip()):
+        from regrow.records import object_store
+        from regrow.recognition.control_references import recorded_target
+        reference = recorded_target(object_store.load(path), target)
+        same = (region in reference['regions'] and
+                control == (reference['ref'] if reference['kind'] == 'control' else None))
+        if not same:
+            from regrow.records.diagnostics import reject
+            reject('action_reference_source', target,
+                   {'Luna选择的目标': target, '拟记录区块': region, '拟记录控件': control},
+                   '实际操作来源与Luna给出的准确ref一致', field='实际操作来源',
+                   reason='记录的动作来源与本次明确选择的对象不一致。')
     if region not in state.get('interactive_regions', []):
-        candidates = [c for c in request.get('backend_candidates', []) if c.get('region_ref') == region and c.get('id') == control and (c.get('candidate_scope') in ('foreground_entry_trigger', 'last_action_surface', 'task_target_history'))]
-        if control is None or len(candidates) != 1:
-            raise ValueError('source Region was not interactive and no dispatched related control candidate exists')
-        if candidates[0]['candidate_scope'] == 'task_target_history':
-            if not source.get('task_name') or (region, control) != (
-                    source.get('completion_region') or source.get('task_region'), source.get('task_control')):
-                raise ValueError('historical task target does not match the dispatched original task')
-        extra = {'region': region, 'control': control, 'scope': candidates[0]['candidate_scope']}
+        if reference:
+            extra = {'region': region, 'control': control, 'scope': 'explicit_ref'}
+        else:
+            candidates = [c for c in request.get('backend_candidates', []) if c.get('region_ref') == region and c.get('id') == control and (c.get('candidate_scope') in ('foreground_entry_trigger', 'last_action_surface', 'task_target_history'))]
+            if control is None or len(candidates) != 1:
+                raise ValueError('source Region was not interactive and no dispatched related control candidate exists')
+            if candidates[0]['candidate_scope'] == 'task_target_history':
+                if not source.get('task_name') or (region, control) != (
+                        source.get('completion_region') or source.get('task_region'), source.get('task_control')):
+                    raise ValueError('historical task target does not match the dispatched original task')
+            extra = {'region': region, 'control': control, 'scope': candidates[0]['candidate_scope']}
     return {'id': observation, 'region_refs': state['interactive_regions'], 'snapshot': snapshot, 'selection_call': selection_call,
             **({'source_field': source_field} if source_field else {}), **({'related_control': extra} if extra else {})}

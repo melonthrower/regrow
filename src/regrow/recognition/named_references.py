@@ -61,6 +61,12 @@ def labels(run, request, *, id_name=True):
     material = json.dumps({k: request.get(k) for k in ('user_prompt','response_schema','control_refs',
                           'region_names','discovery_context','backend_candidates')}, ensure_ascii=False)
     ids = set(TOKEN.findall(material))
+    original = request.get('original_request', request)
+    if request.get('pipeline_step') == 'action' or original.get('pipeline_step') == 'action':
+        # Action refs use the same authoritative records as the tree. This is
+        # identity metadata, not another visual-candidate or writable-object list.
+        ids.update(records)
+        ids.update(cid for region in records.values() for cid in owned_controls(region))
     names = {rid: rid + '/' + r['name'] if id_name else r['name'] for rid,r in records.items() if rid in ids}
     owners = {}
     from regrow.recognition.control_references import label

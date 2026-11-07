@@ -25,9 +25,16 @@ def target_region(request, target):
 def bind(request, proposal, base):
     if not (request.get('allow_scroll') or request.get('navigation_advice')):
         return {**base, 'status': 'unresolved', 'reason': 'scroll is outside the routed task'}
-    region = target_region(request, proposal.get('target'))
+    region = base['region_ref'] if base.get('reference_bound') else target_region(request, proposal.get('target'))
     if region is None:
-        return {**base, 'status': 'unresolved', 'reason': '滚动 target 请填写当前区块树中实际要滚动的区块 ID'}
+        reason = '滚动目标未对应准确 ref 或当前区块树中的唯一区块'
+        report = {'errors': [{'code': 'action_target', 'path': '/target', 'field': 'target',
+                              'object': proposal.get('target') or '滚动目标',
+                              'actual': proposal.get('target'), 'reason': reason,
+                              'expected': 'target 应能绑定到具体区块或控件；已登记对象可直接填写准确 ref。',
+                              'repair': '根据当前截图选择实际要滚动的对象，填写其准确 ref，并保留正确的动作参数。'}],
+                  'unchecked': ['目标尚未绑定，后续投递检查未执行。']}
+        return {**base, 'status': 'unresolved', 'reason': reason, 'report': report}
     frames = request.get('image_refs', [])
     if len(frames) != 1 or not Path(frames[0]).is_file():
         return {**base, 'status': 'unresolved', 'reason': 'current screenshot is missing'}
@@ -40,4 +47,5 @@ def bind(request, proposal, base):
     desktop = request.get('platform') == 'desktop'
     if not (0 <= x < width and 0 <= y < height) or (not desktop and (not (0 <= ex < width and 0 <= ey < height))) or (x, y) == (ex, ey):
         return {**base, 'status': 'unresolved', 'reason': 'scroll coordinates outside screenshot or no displacement'}
-    return {**base, 'region_ref': region, 'status': 'matched', 'model_grounded': True, 'basis': 'explicit current Region selection; model coordinates locate the scroll, its effect is observed afterwards'}
+    return {**base, 'region_ref': region, 'status': 'matched', 'model_grounded': True,
+            'basis': base.get('basis', 'explicit current Region selection; model coordinates locate the scroll, its effect is observed afterwards')}

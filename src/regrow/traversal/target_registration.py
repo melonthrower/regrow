@@ -109,7 +109,7 @@ def registered(records, target, call, *, run=None, snapshot=None):
         rows.append(item)
     request.update(backend_candidates=rows, image_refs=[target['frame']], screenshots=[target['frame']])
     try:
-        binding = bind_action_target(request, normalize(proposal))
+        binding = bind_action_target(request, normalize(proposal), records=records)
     except Conflict:
         return False
     return binding.get('status') == 'matched' and binding.get('control_ref') in {cid for _, cid in observed}

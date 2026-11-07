@@ -254,7 +254,8 @@ def recorded_match(region, aid, action, target, receipt=None):
     if target['control'] is None and region['id'] != target['region'] or action.get('control') != target['control'] or aid in target.get('excluded_attempts', []) or not has_observed_result(action) or (action.get('association', {}).get('status') == 'unconfirmed') or (action.get('result', {}).get('exception') == 'unexpected_exit'):
         return False
     operation = action_name(action.get('operation'))
-    if target['control'] is None and operation not in ('scroll', 'back', 'wait', 'key_press', 'hotkey'):
+    from regrow.records.function_evidence import region_action
+    if target['control'] is None and not region_action({**action, 'operation': operation}):
         return False
     if receipt is not None:
         if receipt.get('exit_code') != 0:

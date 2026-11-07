@@ -803,8 +803,6 @@ def view(value, request):
         result = {**{k: result[k] for k in first if k in result}, **{k: v for (k, v) in result.items() if k not in first}}
     if role in ('observation', 'observation_update'):
         matching(result)
-    if role == 'observation_update' and '已知区块' in result:
-        result['历史身份参考'] = result.pop('已知区块')
     return result
 
 def map_knowledge(value):

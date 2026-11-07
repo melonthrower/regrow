@@ -1,4 +1,4 @@
-from regrow.records.history_context import identity_candidates
+from regrow.records.history_context import related_regions
 from regrow.recognition import foreground_scope
 from regrow.records.snapshots import load as _record_load
 'Observe and register executed actions; keep model observation and publication separate.'
@@ -16,11 +16,12 @@ from pathlib import Path
 import jsonschema
 from regrow.recognition import identity_templates as templates
 
-def build_update_request(root, dynamic, screenshots, *, selection=None):
+def build_update_request(root, dynamic, screenshots, *, region_refs=(), function_regions=(), selection=None):
     """Keep model inputs separate from internal evidence metadata and routing."""
     from regrow.records import control_records as _control_records
     from regrow.recognition import discovery_delta as _discovery_delta
     dynamic = dict(dynamic)
+    function_regions = list(function_regions)
     if selection is None:
         selection = selection_from_dynamic(dynamic)
     pr = Path(root) / 'regrow/prompts'
@@ -36,13 +37,11 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
     templates.extend_schema(schema)
     from regrow.recognition import foreground_scope as foreground_scope
     foreground_scope.extend_schema(schema)
-    refs = [r['ref'] for r in dynamic.get('已知区块', []) if r.get('ref')]
-    function_regions = list(refs)
     from regrow.records.function_updates import schema as function_schema
     schema['properties']['function_updates'] = function_schema(function_regions)
-    if refs:
+    if region_refs:
         field = schema['properties']['current_regions']['items']['oneOf'][0]['properties']['ref']
-        field.update(enum=list(dict.fromkeys(refs)), description='使用本轮已知区块的ref编号。')
+        field.update(enum=list(dict.fromkeys(region_refs)), description='使用本轮全局树提供的区块ref编号。')
     schema['properties'].pop('working_context', None)
     schema['required'] = [k for k in schema['required'] if k != 'working_context']
     from regrow.records import control_records
@@ -77,6 +76,7 @@ def build_update_request(root, dynamic, screenshots, *, selection=None):
             part['text'] = ''
     request = {'pipeline_step': 'update', 'role': 'observation_update', 'stage': stage['stage'], 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': list(screenshots), 'response_schema': schema, 'fixed_parts': parts, 'context_scope': {'selection': selection}}
     request['function_update_regions'] = function_regions
+    request['region_refs'] = list(region_refs)
     from regrow.traversal.object_registration import semantic_schema
     request['response_schema'] = semantic_schema(schema)
     from regrow.prompts.frame_context import label
@@ -181,35 +181,20 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     dynamic['任务更新引用'] = refs
     if binding.get('task_name'):
         dynamic['当前任务引用'] = reference(binding.get('task_region', binding['region_ref']), binding['task_name'])
-    dynamic['当前截图视觉匹配到的既有区块'] = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'anchors': r['anchors']} for r in ranking if r['anchors']]
-    dynamic['已知区块'] = identity_candidates(records, state, binding, dynamic['当前截图视觉匹配到的既有区块'], source_destinations=recalled['destinations'])
+    visual_hits = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'anchors': r['anchors']} for r in ranking if r['anchors']]
+    function_regions = related_regions(records, state, binding, visual_hits, source_destinations=recalled['destinations'])
     from regrow.records.control_routes import card as route_card
     dynamic['实际对象已有跳转'] = route_card(actual_object, records)
-    from regrow.recognition.history_matching import with_history as named_candidates
-    (dynamic['已知区块'], region_names) = named_candidates(records, dynamic['已知区块'])
-    # State descriptions come from admitted appearance records, not task knowledge.
-    for region in dynamic['已知区块']:
-        controls = owned_controls(records[region['ref']])
-        for row in region.get('controls', []):
-            appearances = templates.variants(controls.get(row.get('ref'), {}))
-            if appearances:
-                descriptions = []
-                for appearance in appearances:
-                    conditions = appearance.get('image_conditions', [])
-                    description = '、'.join(conditions) if conditions else (
-                        appearance.get('description', '').rstrip('。') + '，状态未注明').lstrip('，')
-                    if description not in descriptions:
-                        descriptions.append(description)
-                row['已保存外观'] = '；'.join(descriptions)
+    region_names = {rid: rid for rid in records}
     labels = {rid: label for (label, rid) in region_names.items()}
     dynamic.pop('当前截图视觉匹配到的既有区块', None)
     if recalled['actions'] or recalled.get('incoming') or not recalled['confirmed']:
         dynamic['本次入口历史落点'] = source_candidates.describe(recalled, labels)
     from regrow.records.function_updates import view as function_view
-    dynamic['已有功能'] = [row for item in dynamic['已知区块']
-                           for row in function_view(records, item['ref'])]
+    dynamic['已有功能'] = [row for rid in function_regions for row in function_view(records, rid)]
     dynamic['身份引用'] = 'ref使用已提供的区块或控件编号；name只表示名称。'
-    source = {'region': binding['region_ref'], 'working_region': binding['working_region'], 'observation': binding['observation_ref'], 'attempt': folder.name, 'control_ref': binding.get('control_ref')}
+    source = {'region': binding['region_ref'], 'working_region': binding['working_region'], 'observation': binding['observation_ref'], 'attempt': folder.name, 'control_ref': binding.get('control_ref'),
+              'operation': proposal['action'] if recalled['confirmed'] else None}
     if binding.get('task_name'):
         source.update(task_region=binding.get('task_region', binding['region_ref']), task_name=binding['task_name'])
     from regrow.records.context_scope import rule_selection
@@ -219,7 +204,8 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
         prior = observed[-1]
         if not region_bound or prior.get('uncertainty'):
             dynamic['动作前对象观察'] = {'来源': prior.get('evidence', {}), '区块' if region_bound else '控件': actual_object['name'], **{k: prior[k] for k in ('uncertainty',) if prior.get(k)}}
-    u = build_update_request(root, dynamic, [str((folder / n).relative_to(run)) for n in ['before.png', 'after.png']], selection=selection)
+    u = build_update_request(root, dynamic, [str((folder / n).relative_to(run)) for n in ['before.png', 'after.png']],
+                             region_refs=list(records), function_regions=function_regions, selection=selection)
     u['source'] = source
     u['task_update_candidates'] = task_candidates
     from regrow.traversal.suspended_updates import context as suspended_context
@@ -229,7 +215,7 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
         if task.get('status') == 'pending' and not hard_block(task):
             from regrow.runtime.action_commands import executable_operation_schema
             u['response_schema']['properties']['next_action'] = executable_operation_schema()
-    u = history_matching.attach(u, records, ranking, region_names, snapshot)
+    u['matching_audit'] = ranking
     u['region_names'] = region_names
     _page_context.attach(u, records, state, usage='before_action', run=run, extra_regions=[binding['region_ref'], binding['working_region'], binding.get('task_region')])
     write_json(folder / 'update_request.json', u)

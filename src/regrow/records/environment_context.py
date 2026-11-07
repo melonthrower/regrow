@@ -61,12 +61,13 @@ def structure(records, region_ids=None):
     return graph, expansion, parents
 
 
-def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None):
+def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None, interaction=None):
     """Two presentations of the same graph; names are always read from current records."""
     if view not in ('controls', 'operations'):
         raise ValueError('unknown forest view')
     graph, roots, parents = structure(records, region_ids)
     shown, out = set(), []
+    interaction = interaction or {}
     title = '控件树' if view == 'controls' else '应用操作树'
     if region_ids is not None:
         title = '局部' + title
@@ -104,13 +105,27 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
         shown.add(rid)
         region = records[rid]
         mark = '（本步关注区块）' if rid == focus else ''
+        if rid == interaction.get('region'):
+            mark += '【上次交互所在区块】'
         if region_work(region).get('out_of_scope_reason'):
             mark += '（本次范围外）'
         out.append('  '*depth + '└─ ' + prefix + rid + '/' + region['name'] + mark)
         tasks(region, None, depth+1)
         if view == 'controls':
             for cid, control in owned_controls(region).items():
-                out.append('  '*(depth+1) + '├─ ' + cid + '/' + control['name'])
+                mark = ''
+                if rid == interaction.get('region') and cid == interaction.get('control_ref'):
+                    from regrow.prompts.prompt_material import identity_steps
+                    operation = identity_steps([{'action': interaction['operation']}])[0]['操作']
+                    mark = '【上次交互：' + operation + '】'
+                out.append('  '*(depth+1) + '├─ ' + cid + '/' + control['name'] + mark)
+                if mark:
+                    from regrow.records.control_knowledge import card
+                    from regrow.prompts.history_disclosure import readable
+                    knowledge = card(control)
+                    if knowledge:
+                        out.extend('  '*(depth+2) + line for line in
+                                   readable({'已有知识': knowledge}, 1).splitlines())
                 tasks(region, cid, depth+2)
                 for edge in graph[rid]:
                     if edge.get('control') == cid:
@@ -181,7 +196,7 @@ def local_progress(records, focus):
     return '\n'.join(lines)
 
 
-def render(records, state, focus, goal=None, kind='observation', region_ids=()):
+def render(records, state, focus, goal=None, kind='observation', region_ids=(), interaction=None):
     goal = goal or {}
     view = 'controls'
     selected = None
@@ -192,7 +207,7 @@ def render(records, state, focus, goal=None, kind='observation', region_ids=()):
             selected.update(state.get('interactive_regions', []))
     out = [forest(records, view=view, focus=focus,
                   task_region=focus if kind == 'task_proposal' else None,
-                  region_ids=selected)]
+                  region_ids=selected, interaction=interaction)]
     gr, cid = goal.get('region'), goal.get('control')
     if gr in records:
         control = owned_controls(records[gr]).get(cid, {})
@@ -233,4 +248,5 @@ def for_request(request, records, state):
     selected.update(source.get(key) for key in ('region', 'working_region', 'task_region', 'return_to'))
     for edge in request.get('navigation_path') or []:
         selected.update(edge.get(key) for key in ('source_region', 'target_region'))
-    return render(records, state, focus, goal, kind=kind, region_ids=selected)
+    interaction = source if kind == 'update' and source.get('attempt') and source.get('operation') else None
+    return render(records, state, focus, goal, kind=kind, region_ids=selected, interaction=interaction)

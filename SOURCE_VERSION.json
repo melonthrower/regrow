@@ -3,15 +3,15 @@
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "research_snapshot_offline_prompt_composition_validation",
-  "previous_source_commit": "7f6cc53161f1ef7aa7b2347412c32726331f623d",
+  "kind": "research_snapshot_viewer_validation",
+  "previous_source_commit": "1308ed70803b7b2a0fda0760e6dae764ce459853",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Disclosed common object-abstraction Prompt applied to observation, observation_update and task_proposal. Typed abstraction/instance relationships and tree support remain unimplemented; new model behavior has not been validated.",
-  "verification_scope": "Four complete real saved-frame requests rebuilt through normal builder/Runner/transport: discovery, task proposal and update include one common block each; action selection includes none. Function registration present in proposal/update. 0 new Luna/GUI; no independent review, review package or full gate. Composition validation only, not model-behavior acceptance.",
+  "draft_status": "Read-only registration overlays and exploration tree verified in the existing viewer. Traversal semantics and outstanding abstraction/instance implementation boundaries retain their separate status.",
+  "verification_scope": "Existing real run records, Python/JS syntax, direct HTTP endpoints and actual browser display/scale/toggle checks. No additional Luna or GUI actions for viewer verification; no full gate.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,14 +29,13 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "7f6cc53161f1ef7aa7b2347412c32726331f623d",
+  "snapshot_parent_commit": "1308ed70803b7b2a0fda0760e6dae764ce459853",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {
-    "source": "Shared object-abstraction principle and disclosed field/composition edits applied to current source.",
-    "new_prompt_body_edits_in_this_batch": true,
+    "new_prompt_body_edits_in_this_batch": false,
     "live_frozen_source_changed": false,
-    "preexisting_candidates": "Other earlier candidates retain their separate unaccepted status; this batch is not blanket Prompt approval."
+    "preexisting_candidates": "Earlier semantic/Prompt candidates retain their separate validation status."
   },
   "source_export_cleanup": "Only the disclosed six Prompt/composition paths and current wiring/status notes changed; old inactive grouping manual shortened without activation."
 }

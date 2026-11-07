@@ -51,7 +51,10 @@ def source_call(root, key, call):
     if call not in entry['calls']:
         raise ValueError('未知调用')
     run = Path(entry['run'])
-    return run, read(run / 'calls' / call / 'request.json')
+    request = read(run / 'calls' / call / 'request.json')
+    if request is None:
+        raise ValueError('原请求暂不可用；历史目录条目仍保留')
+    return run, request
 
 
 def recorded_source(run, request):
@@ -143,6 +146,10 @@ def overview(root):
         steps = []
         for call in entry['calls']:
             q = read(run / 'calls' / call / 'request.json')
+            if q is None:
+                steps.append({'call': call, 'role': 'unavailable',
+                              'label': '原请求暂不可用', 'modules': []})
+                continue
             steps.append({'call': call, 'role': q['role'], 'label': LABELS.get(q['role'], q['role']),
                           'modules': request_modules(q)})
         result.append({'id': entry['id'], 'title': entry['title'], 'archived': entry.get('archived', False), 'steps': steps})

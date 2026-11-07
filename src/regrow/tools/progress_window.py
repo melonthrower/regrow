@@ -88,6 +88,16 @@ def server(run, mirror, port=0, runner=None, hub=None):
                     value = region_graph.project(active_run) if active_run else {'nodes': [], 'edges': [], 'app': '尚未选择应用', 'snapshot': None}
                     body = json.dumps(value, ensure_ascii=False).encode()
                     mime = 'application/json; charset=utf-8'
+                elif path == '/frame-view.json':
+                    from regrow.tools.frame_annotations import project
+                    (active_run, _) = active()
+                    if not active_run:
+                        self.send_error(503, 'No traversal frame yet')
+                        return
+                    args = parse_qs(urlsplit(self.path).query)
+                    value = project(active_run, args.get('view', ['live'])[0])
+                    body = json.dumps(value, ensure_ascii=False).encode()
+                    mime = 'application/json; charset=utf-8'
                 elif path == '/graph-image':
                     (active_run, _) = active()
                     args = parse_qs(urlsplit(self.path).query)

@@ -57,3 +57,6 @@ python3 tools/prompt_review_editor.py <审阅数据目录>
 UI把内部work_context.reason放进“内部调度与调用来源”，任务与本步单独显示；这不篡改历史system/user，也不声称自动改写了所有运行prompt。测试结果与版本历史保留，未保存的上下文另有浏览器恢复稿。入口为tools/prompt_review_work.py，界面worktrace.js；复用tools/prompt_review_trace.py正常构建/校验/纠错/登记。
 
 2026-10-16：默认显示当前工作版本的完整请求，历史system/user与执行记录收进折叠对照。只选同案例/步骤/版本且源码散列仍匹配的预览；模块有未收录改动、版本/源码不符或未生成预览时展示最新模块稿并标明尚未组装，不拿旧请求冒充当前稿。生成0030正常离线预览验证新“动作执行”正文，0 Luna/GUI。证据在工作区artifacts/tmp_tests/current_draft_view_20261016_01。
+
+
+2026-11-07：历史目录中的原请求暂不可用时，仍保留该调用条目并明确标示，不阻断其他真实轨迹的读取；点入缺失请求返回具体说明，不补造记录。

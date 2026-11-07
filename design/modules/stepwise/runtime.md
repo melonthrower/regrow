@@ -225,3 +225,6 @@ recovery.build_request按transport实际平台构造说明；桌面发送入口�
 
 ## 2026-11-03 应用材料的正常发送接点
 model_transport在原运行范围之后调用application_judgement.prepare，仅对五类当前界面调用替换/补齐目标应用材料。名称来自manifest.app_name或app，保留其他材料和JSON后的帧说明。没有新增模型调用。已发送原格式纠错保持原合同；历史任务清点不读取当前应用归属。动作材料就近显示目标应用，输出定义仍来自对象词项与实际schema。
+
+
+2026-11-07 只读看板：`tools/frame_annotations.py` 从已提交观察读取区块 bbox、控件 appearance_bbox 及 source_image，`progress_window` 在对应原图叠加范围，画面下方复用 graph.json 的控件树、操作树和当前进度。最近框架画面没有对应原登记框时明确提示；可切换最近有框的登记画面。框不是点击范围，不把历史坐标搬到新图，不改遍历记录、Prompt或执行。实际浏览器核对缩放、框开关、树及两个画面模式通过；本轮遍历仍使用原冻结源码。

@@ -234,10 +234,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             if previous and rid not in records:
                 add('unknown_region', f'/regions/{i}/ref', r['name'], previous, list(ctx.get('region_names', {})) if stage == 'discovery' else list(q.get('region_names') or [v['name'] for v in records.values()]), '使用本轮提供的区块ID。')
             rids.append(rid)
-        for index, rid in enumerate(rids):
-            if rid is not None and rid in rids[:index]:
-                add('duplicate_region', f'/regions/{index}/ref', records[rid]['name'], rid,
-                    '同一区块只登记一次', '将该区块的状态、控件和知识合在同一条区块记录中，不另建相同区块。')
         for i, member in enumerate(p.get('current_regions', [])):
             path = f'/current_regions/{i}'
             if 'region_index' in member:
@@ -258,8 +254,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             errors.extend(visibility_errors(p, rids, [], q.get('region_names')))
         for (index, names) in parent_cycles(records, p.get('regions', []), rids):
             add('parent_cycle', f'/regions/{index}/parent_index', p['regions'][index]['name'], names, '合并已保留关系后无父子环', '依据实际容器关系修正父级；省略会保留旧关系，无父容器时使用null。')
-        seen = {}
-        bound = {}
         for (i, c) in enumerate(p.get('controls', [])):
             from regrow.records.object_knowledge import control_only
             if control_only(c):
@@ -284,10 +278,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                 same_control = bool(previous and previous == other.get('ref'))
                 if not same_control and oi != idx and isinstance(oi, int) and (0 <= oi < len(rids)) and cb and (cb == ob) and (name == (other.get('name') or other.get('text', ''))) and (p['regions'][idx].get('parent_index') == oi or p['regions'][oi].get('parent_index') == idx):
                     add('duplicate_control_owner', path, obj, {'other': f'/controls/{j}', 'box': cb}, '父子区块同一物理控件只保留一个归属', '核对后只提交实际所属区块中的一份控件；已有重复记录通过现有移动/合并接口保留历史。不同物理对象不可合并。')
-            key = (idx, name)
-            if key in seen:
-                add('duplicate_submission', path + '/name', obj, name, seen[key], '同一对象只提交一次；不同对象需可区分名称。')
-            seen[key] = path
             cid = None
             if stage == 'discovery':
                 identity = c.get('identity')
@@ -320,10 +310,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                         add('unknown_candidate_control', path + '/region_index', obj, {'ref': previous, 'registered_region': owner, 'registered_region_name': records[owner]['name'], 'control': key, 'historical_appearance': appearance}, {'proposed_region': rid, 'proposed_region_name': p['regions'][idx]['name']}, '该历史控件位于另一所属区块。先结合旧外观与当前图判断是否同一对象；若当前是不同的可见控件，按新对象登记并说明差异。若确认同一对象，保留正确原归属；仅当旧归属确有错误且本次提供修订能力时，才用record_edit的region修订。')
                     else:
                         add('unknown_candidate_control', path + '/ref', obj, previous, list(ctx.get('control_names', {})) if stage == 'discovery' else [v['name'] for v in controls.values()], '使用本轮提供的控件ID；历史存在但未披露时补充候选核对，不能为绕过错误重复新建。')
-            if cid:
-                if (idx, cid) in bound:
-                    add('duplicate_binding', path + '/ref', obj, previous, bound[(idx, cid)], '同一区块的同一旧对象只绑定一次。')
-                bound[(idx, cid)] = path
             conflicts = [k for (k, v) in controls.items() if v['name'] == name and k != cid]
             if conflicts:
                 add('existing_control_conflict', path + '/name', obj, name, {'matching_records': conflicts}, '核对旧对象后复用；已重复登记用merge_into保留历史；不同对象用可区分名称。')

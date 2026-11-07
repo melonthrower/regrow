@@ -424,6 +424,8 @@ def decode(request, reply):
     region_labels = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'r\d+', ref)}
                      if contract.get('region_reference_style') == 'id_name' else None)
     value=_decode_references(deepcopy(main),contract['aliases'],control_labels=control_labels,region_labels=region_labels,new_controls=new_names)
+    from regrow.records.object_supplements import combine
+    value, omitted_controls = combine(value, contract['names'])
     if main is not reply and 'next_action' in reply:
         value['next_action'] = deepcopy(reply['next_action'])
     if (isinstance(reply.get('proposal'), dict) and isinstance(main.get('proposal'), dict)
@@ -499,7 +501,9 @@ def decode(request, reply):
                            repair='根据实际包含关系核对父区块引用。')
                 parent = raw_parent
             regions[i]['parent_index'] = parent
-        for c in row.get('controls',[]):
+        for j, c in enumerate(row.get('controls',[])):
+            if ('regions', i, 'controls', j) in omitted_controls:
+                continue
             if not isinstance(c,dict):
                 reject('object_format', str(_key(row)), c, '控件对象', field='控件条目',
                        reason='该区块的控件列表中提交了非对象内容。')

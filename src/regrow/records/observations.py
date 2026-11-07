@@ -22,6 +22,11 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
     from regrow.recognition import region_candidate_names as _region_candidate_names
     from regrow.records import control_records as _control_records
     _registration_diagnostics.check('update', {'region_names': region_names or {}}, reply, records, frame=frame)
+    from regrow.records.object_supplements import accepted_knowledge
+    knowledge = accepted_knowledge(reply['controls'], {
+        cid: cid + '/' + control['name'] for region in records.values()
+        for cid, control in owned_controls(region).items()})
+    written_knowledge = set()
     from regrow.recognition.update_visibility import selected_indices
     current = selected_indices(reply, region_names)
     next_r = max([int(k[1:]) for k in records] + [0]) + 1
@@ -62,7 +67,10 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
     for (i, p) in enumerate(reply['controls']):
         from regrow.records.object_knowledge import control_only, apply
         if control_only(p):
-            apply(records, {'controls': [p]}, {'source_call': call_ref, 'observation': observation, 'basis': 'object_knowledge'})
+            if p['ref'] not in written_knowledge:
+                apply(records, {'controls': [{**p, 'knowledge': knowledge.get(p['ref'], p['knowledge'])}]},
+                      {'source_call': call_ref, 'observation': observation, 'basis': 'object_knowledge'})
+                written_knowledge.add(p['ref'])
             continue
         if not 0 <= p['region_index'] < len(region_refs):
             raise ValueError('invalid control owner index')
@@ -80,9 +88,10 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
             from regrow.records.control_records import set_group
             set_group(r, ref, p['list_group'])
         observation_history(c).append(_region_evidence.control_observation(p, {'source_call': call_ref, 'source_field': f'/controls/{i}', 'observation': observation, 'region': r['id']}))
-        if 'knowledge' in p:
+        if 'knowledge' in p and ref not in written_knowledge:
             from regrow.records.control_knowledge import update
-            update(c, p['knowledge'], {'source_call': call_ref, 'observation': observation, 'region': r['id'], 'basis': 'discovery'})
+            update(c, knowledge.get(ref, p['knowledge']), {'source_call': call_ref, 'observation': observation, 'region': r['id'], 'basis': 'discovery'})
+            written_knowledge.add(ref)
     return region_refs
 
 def observe_current_regions(records, region_refs, call, observation):

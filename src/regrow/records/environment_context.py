@@ -37,9 +37,10 @@ def links(records, rid):
     return rows
 
 
-def structure(records):
+def structure(records, region_ids=None):
     """Stable expansion owners; disconnected components and cycles keep their nodes."""
-    graph = {rid: links(records, rid) for rid in sorted(records)}
+    selected = records.keys() if region_ids is None else records.keys() & set(region_ids)
+    graph = {rid: links(records, rid) for rid in sorted(selected)}
     incoming = {edge['region'] for edges in graph.values() for edge in edges
                 if not edge.get('target_control')}
     roots = [rid for rid in graph if rid not in incoming]
@@ -51,7 +52,7 @@ def structure(records):
         seen.add(rid)
         parents[rid] = parent
         for edge in graph[rid]:
-            if not edge.get('target_control'):
+            if not edge.get('target_control') and edge['region'] in graph:
                 visit(edge['region'], rid)
     for rid in [*roots, *graph]:
         if rid not in seen:
@@ -60,13 +61,15 @@ def structure(records):
     return graph, expansion, parents
 
 
-def forest(records, *, view='controls', focus=None, task_region=None):
+def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None):
     """Two presentations of the same graph; names are always read from current records."""
     if view not in ('controls', 'operations'):
         raise ValueError('unknown forest view')
-    graph, roots, parents = structure(records)
+    graph, roots, parents = structure(records, region_ids)
     shown, out = set(), []
     title = '控件树' if view == 'controls' else '应用操作树'
+    if region_ids is not None:
+        title = '局部' + title
     out.append(title + '（已登记内容与已观察的访问关系）')
     out.append('下级区块表示操作可到达的目标；条件标在相应去向旁。')
 
@@ -154,7 +157,7 @@ def forest(records, *, view='controls', focus=None, task_region=None):
         if rid not in shown:
             node(rid, 0)
     # Different function ordering cannot drop a component from the view.
-    for rid in sorted(records):
+    for rid in sorted(graph):
         if rid not in shown:
             node(rid, 0)
     return '\n'.join(out)
@@ -181,11 +184,18 @@ def local_progress(records, focus):
     return '\n'.join(lines)
 
 
-def render(records, state, focus, goal=None, kind='observation'):
+def render(records, state, focus, goal=None, kind='observation', region_ids=()):
     goal = goal or {}
     view = 'controls'
+    selected = None
+    if kind not in ('observation', 'observation_update', 'update', 'ownership_review'):
+        selected = {focus, goal.get('region')}
+        if kind != 'task_proposal':
+            selected.update(region_ids)
+            selected.update(state.get('interactive_regions', []))
     out = [forest(records, view=view, focus=focus,
-                  task_region=focus if kind == 'task_proposal' else None)]
+                  task_region=focus if kind == 'task_proposal' else None,
+                  region_ids=selected)]
     gr, cid = goal.get('region'), goal.get('control')
     if gr in records:
         control = owned_controls(records[gr]).get(cid, {})
@@ -206,6 +216,9 @@ def render(records, state, focus, goal=None, kind='observation'):
 
 
 def for_request(request, records, state):
+    # Corrections keep the original question's identity/execution scope.
+    while request.get('original_request'):
+        request = request['original_request']
     source = request.get('source', {})
     work = request.get('work_context', {})
     focus = source.get('region') or request.get('discovery_context', {}).get('focus') or work.get('region') or state.get('working_region')
@@ -218,4 +231,9 @@ def for_request(request, records, state):
     elif request.get('stage') == 'task_proposal':
         goal = {'region': focus}
     kind = 'update' if request.get('role') == 'observation_update' else request.get('role', work.get('kind'))
-    return render(records, state, focus, goal, kind=kind)
+    scope = request.get('context_scope', {})
+    selected = set(scope.get('regions', [])) | set(scope.get('controls', {}))
+    selected.update(source.get(key) for key in ('region', 'working_region', 'task_region', 'return_to'))
+    for edge in request.get('navigation_path') or []:
+        selected.update(edge.get(key) for key in ('source_region', 'target_region'))
+    return render(records, state, focus, goal, kind=kind, region_ids=selected)

@@ -1,4 +1,5 @@
 from regrow.records.snapshots import load as _record_load
+from regrow.records.object_store import owned_controls
 'Pre-dispatch checks, single GUI delivery, receipt and before/after evidence.'
 import shutil
 from regrow.records.snapshots import read
@@ -70,15 +71,26 @@ class ActionExecutor:
         if proposal['action'] in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'hover', 'drag', 'scroll', 'input_text'):
             fresh = {**q, 'image_refs': [str(folder / 'pre_dispatch.png')], 'screenshots': [str(folder / 'pre_dispatch.png')]}
             from regrow.recognition.visual_backtrack import same_surface
+            from regrow.recognition.target_frame import compare
+            region = records.get(binding['region_ref'], {})
+            frame_comparison = compare(folder / 'before.png', folder / 'pre_dispatch.png',
+                                       region, snapshot, proposal, run=run,
+                                       control=owned_controls(region).get(binding.get('control_ref')),
+                                       control_ref=binding.get('control_ref'),
+                                       platform=getattr(transport, 'platform', 'android'))
             dispatch_window = foreground_window(transport)
             changed_window = bool(selection_window and dispatch_window and (selection_window != dispatch_window))
             confirmed = step_repair.confirmed_dispatch_review(run, accepted, calls, dispatch_window, out / 'current.png')
-            write_json(folder / 'pre_dispatch_check.json', {'window': dispatch_window, 'changed_window': changed_window, 'confirmed_call': ref if confirmed else None})
-            if changed_window or (not confirmed and (not same_surface(folder / 'before.png', folder / 'pre_dispatch.png'))):
+            write_json(folder / 'pre_dispatch_check.json', {'window': dispatch_window, 'changed_window': changed_window,
+                       'confirmed_call': ref if confirmed else None, 'frame_comparison': frame_comparison})
+            changed_frame = not frame_comparison['unchanged'] if frame_comparison is not None else (
+                not confirmed and not same_surface(folder / 'before.png', folder / 'pre_dispatch.png'))
+            if changed_window or changed_frame:
                 repair.reject_action(fresh, proposal, ref, '投递前窗口或画面发生变化；动作未执行，请按唯一最新投递前图重新确认目标与坐标，而非仅因动态内容变化反复刷新。', pre_dispatch_review={'before': str(folder / 'before.png'), 'current': str(folder / 'pre_dispatch.png'), 'window': dispatch_window})
             from regrow.recognition import action_target_review
             doubt = action_target_review.conflict(fresh, proposal, binding)
-            if doubt and not action_target_review.confirmed(q, proposal, folder / 'pre_dispatch.png'):
+            if doubt and not action_target_review.confirmed(q, proposal, folder / 'pre_dispatch.png',
+                                                           frame_comparison=frame_comparison):
                 repair.reject_action(fresh, proposal, ref, str(action_target_review.Conflict(doubt)),
                                      action_target_doubt=doubt)
             write_json(folder / 'pre_dispatch_binding.json', binding)

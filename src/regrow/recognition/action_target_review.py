@@ -16,11 +16,13 @@ def frames(request):
     return list(request.get('image_refs') or request.get('screenshots') or [])
 
 
-def confirmed(request, proposal, current_frame=None):
+def confirmed(request, proposal, current_frame=None, *, frame_comparison=None):
     review = request.get('action_target_confirmation', {})
     valid = review.get('frames') == frames(request) and review.get('action') == action_key(proposal)
     if not valid or current_frame is None:
         return valid
+    if frame_comparison is not None:
+        return bool(frame_comparison['unchanged'])
     from PIL import Image
     import numpy as np
     try:

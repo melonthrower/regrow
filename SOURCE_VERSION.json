@@ -3,15 +3,15 @@
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "research_snapshot_viewer_validation",
-  "previous_source_commit": "1308ed70803b7b2a0fda0760e6dae764ce459853",
+  "kind": "research_snapshot_saved_frame_target_validation",
+  "previous_source_commit": "a658d43245607c88ce815f7cb86ae7084534f0be",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Read-only registration overlays and exploration tree verified in the existing viewer. Traversal semantics and outstanding abstraction/instance implementation boundaries retain their separate status.",
-  "verification_scope": "Existing real run records, Python/JS syntax, direct HTTP endpoints and actual browser display/scale/toggle checks. No additional Luna or GUI actions for viewer verification; no full gate.",
+  "draft_status": "Pre-dispatch comparison now prefers the actual located control, then its Region, with existing checks retained when neither scope is known. Other abstraction/instance and traversal issues retain their separate unaccepted status.",
+  "verification_scope": "Six focused checks; complete original run context rebuilt by the maintained workbench, two actual Luna replies passed normal validation and binding; normal executor passed both pre-dispatch checks using the real failure capture and stopped at a zero-GUI budget. No new GUI navigation, full gate or whole-framework acceptance.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,13 +29,14 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "1308ed70803b7b2a0fda0760e6dae764ce459853",
+  "snapshot_parent_commit": "a658d43245607c88ce815f7cb86ae7084534f0be",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {
     "new_prompt_body_edits_in_this_batch": false,
     "live_frozen_source_changed": false,
-    "preexisting_candidates": "Earlier semantic/Prompt candidates retain their separate validation status."
+    "live_traversal_resumed": false,
+    "preexisting_candidates": "Other semantic/Prompt candidates retain their separate validation status."
   },
   "source_export_cleanup": "Only the disclosed six Prompt/composition paths and current wiring/status notes changed; old inactive grouping manual shortened without activation."
 }

@@ -148,7 +148,7 @@ response_example.guide统一按对象分段、表内使用局部字段名，退�
 
 2026-10-29现场验证终点：全新Clock100HTTP/27动作批次，两树从0098已提交快照导出9区块28控件11功能。任务提出重复树接点已撤回，0021正常请求与登记验证；操作树本批没有function_registration消费者，仍是已实现导出/总结入口。25动作登记，a0012和a0027未登记；视觉复核发现a0016源身份错绑、a0024变化方向反写，树会继承记录质量问题。仅接受所测目录投影，不接受全图事实可靠性；详细报告、原答/截图/冻结源见clock_forest_fresh100_20261029_01。
 
-2026-10-29：action_target_review继承原已发送schema，model_transport对此角色跳过control_indexes.prepare及ID文本替换，保持原知识引用范围/必填字段；平台动作合同复用，未建立第二套输出规范。action_executor已有窗口/画面检查先行，再按pre_dispatch图匹配；只有同动作且图像像素相同时复用旧确认，不因same_surface近似就跳过新位置冲突。5项辅助检查、Clock原生保存帧最终2调用纠错/1调用对照，0GUI；投递前钩子仅静态/辅助检查，未实机部署。工作台增加中文标签，核对调用不能独立重放，须从原动作完整上下文开始。
+2026-10-29：action_target_review继承原已发送schema，model_transport对此角色跳过control_indexes.prepare及ID文本替换，保持原知识引用范围/必填字段；平台动作合同复用，未建立第二套输出规范。action_executor已有窗口/画面检查先行，再按pre_dispatch图匹配；当时仅同动作且整图像素相同时复用旧确认；此整图要求已由2026-11-07的目标范围比较替代，原验证仍仅对应当时实现。5项辅助检查、Clock原生保存帧最终2调用纠错/1调用对照，0GUI；投递前钩子仅静态/辅助检查，未实机部署。工作台增加中文标签，核对调用不能独立重放，须从原动作完整上下文开始。
 
 
 2026-10-29 旧提示清理：删除31份当前源码/配置无引用的旧Prompt片段；17份调用主模板、仍被读取的对象定义、工作台历史稿及运行冻结源保留。仅移除不参与当前组装的文件，不改正文、schema或遍历行为。清单和离线检查见 artifacts/tmp_tests/obsolete_prompts_20261029_01/。
@@ -228,3 +228,7 @@ model_transport在原运行范围之后调用application_judgement.prepare，仅
 
 
 2026-11-07 只读看板：`tools/frame_annotations.py` 从已提交观察读取区块 bbox、控件 appearance_bbox 及 source_image，`progress_window` 在对应原图叠加范围，画面下方复用 graph.json 的控件树、操作树和当前进度。最近框架画面没有对应原登记框时明确提示；可切换最近有框的登记画面。框不是点击范围，不把历史坐标搬到新图，不改遍历记录、Prompt或执行。实际浏览器核对缩放、框开关、树及两个画面模式通过；本轮遍历仍使用原冻结源码。
+
+
+2026-11-07 当前投递前比较：`recognition.target_frame.compare` 在动作依据图中复用现有外观匹配定位目标Control，实际操作位置在范围内时比较该范围在投递前图中的原位RGB像素；其他控件、所属区块其他内容与系统栏变化不使该比较失效。Control范围无法确定或不能覆盖操作位置时，退到所属Region的同帧登记边界或匹配范围；范围均未知时保留原检查。`ActionExecutor.execute` 只计算一次，通用画面检查和 `action_target_review.confirmed` 共用此结果；窗口变化仍独立核对，动作确认仍限同一完整动作。桌面scroll只核对滚轮投递点，drag与Android滑动还核对真实终点。已有具体范围变化时须重新核对，原一次纠错不跳过它。原回执、防重投与动作后观察不改。
+6项聚焦检查通过；本轮0009真实历史正常重建，Luna原答经正常校验/核对绑定c0001，2HTTP/0GUI；正常executor复用原失败现场取图，两道检查通过后由0GUI预算停止，未投递动作、身份未新增。Applications实例范围无法从Notifications代表外观取得，本例实际回退r0001范围；不宣称所有实例均有具体控件范围。主试跑保持46/8暂停。证据target_region_frame_compare_20261107_01及原工作台job20261107T085112-6e9b08ce。

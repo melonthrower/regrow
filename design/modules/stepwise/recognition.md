@@ -95,3 +95,6 @@ control_identity_review.check对普通observation_update与已有普通发现一
 
 ## 2026-11-03 当前应用与目标核对
 当前辨认在目标应用材料内读取通用归属说明；来源固定本次manifest。辨认异常沿原foreground字段和恢复分支。action_target_review继承动作原schema，新增异常字段由同一词项说明；异常原答验证后回原action接受入口，不做动作规范化或产生确认。正常/历史旧动作合同不变。已知真实首版字段说明漏接在Gedit小窗暴露并修复；当前验证边界见11月日志。
+
+
+2026-11-07 `target_frame`负责投递前局部画面比较：优先已有外观在依据图中定位的具体Control，位置/范围须涵盖实际操作点，否则回退所属Region；不把历史代表项的旧框当作本次实例。复用原SceneMatcher/match_appearances阈值，不增加Luna字段、图片指纹或另一套身份判断。比较结果供executor及同动作确认复用；像素未变不表示操作成功，结果仍由真实后图登记。原Applications时钟案例在Region回退下通过，具体控件优先与区块内其他内容变化由聚焦检查覆盖；正常原生保存帧2HTTP/0GUI，不是新GUI验证。

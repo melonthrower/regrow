@@ -30,6 +30,13 @@ For every code change under `src/regrow/` or `gui_rewalk/`, or a behavior-affect
    claim runtime validation
    when only static or offline checks were run.
 
+## 验证、审阅与交付按改动规模（用户更新 2026-11-07）
+
+- 名称、格式、树展示等简单改动，直接沿原有调用入口输出，查看最终格式是否符合预期即可；不默认追加测试、Luna/GUI调用、陌生读者审阅或审阅包。
+- 发现具体问题时，只补与该问题直接相关的必要核对。涉及含义、登记、调度、执行等行为变化，再按实际影响选择验证和审阅，不机械地对每次改动执行完整流程。
+- 简单偏好、记忆和文字更新也不自动触发独立审阅、单独设计文档、改动地图或Astra打包；用户要求交付，或确有对外审阅需要时再准备。原有证据保留，必要结果简短记入现有记录。
+- 本节优先于下文“每次改动都审阅”“每轮测试都打包”等笼统要求，不把小修改扩大成审计工程。
+
 ## Research prototype scope
 
 This repository prioritizes rapid research iteration, testing ideas, and making
@@ -104,10 +111,10 @@ design; they are not application-specific rules to encode in the framework.
 Use the root agent directly for investigation, planning, implementation, tests,
 and reporting. Do not delegate implementation or testing by default.
 
-The user explicitly requires a fresh unfamiliar-reader agent after every change.
-This is standing authorization for review, including prompt, code, configuration,
-and documentation changes. Give the reviewer no conversation history or intended
-conclusion: first let it infer meaning and behavior from the changed artifact and
+For changes that need independent review under the proportional rule above,
+use a fresh unfamiliar-reader agent. This remains standing authorization for
+such review of prompt, code, configuration, and documentation changes.
+Give the reviewer no conversation history or intended conclusion: first let it infer meaning and behavior from the changed artifact and
 necessary adjacent context, then compare that reading against the user's intent.
 Preserve the independent reading and the subsequent comparison separately. Resolve
 material findings and obtain a focused follow-up review of resulting revisions
@@ -181,10 +188,10 @@ archives.
 
 ## User communication preferences
 
-- After each test round, package the report, referenced screenshots, relevant
-  requests/replies and ledgers, related source/diffs, and verification logs for
-  Astra in `to_astra/<test-name>/`. Include a ZIP with working relative report
-  links and a short contents/version note. Remove credentials and private
+- When the user requests a review package or external review requires one,
+  package the report, referenced screenshots, relevant requests/replies and ledgers,
+  related source/diffs, and verification logs for Astra in `to_astra/<test-name>/`.
+  Include a ZIP with working relative report links and a short contents/version note. Remove credentials and private
   endpoints from exported copies, preserve original evidence, distinguish frozen
   runtime source from current source, and never overwrite an older delivery.
 
@@ -222,6 +229,9 @@ skipping required business prerequisites, condition observations, or confirmatio
 
 ## Traversal change review preference
 
+Presentation-only changes follow the proportional rule above; independent review
+and a new Luna call are not required by default.
+
 For future traversal framework/prompt behavior changes, after focused verification,
 ask an independent unfamiliar-reader agent to review the relevant generated prompts,
 screenshots, and changed contracts. Address findings, then validate with an actual
@@ -232,6 +242,9 @@ from executed GUI validation. Do not claim successful navigation without a real
 post-action observation.
 
 ## Native framework validation requirement
+
+This requirement governs behavior acceptance. Simple presentation changes use
+the original call output to check formatting under the proportional rule above.
 
 For future framework or prompt behavior changes, acceptance tests must use requests
 built by the normal framework entry points from real run records, including their
@@ -275,9 +288,9 @@ upload runtime records, screenshots, credentials, private endpoints, dependency
 links, or unverified edits as accepted changes. A research snapshot must clearly
 state its limited verification scope and does not imply a release/full gate.
 
-After every design, deliver a separate design document and concrete change map
-for external Astra review. Pin the map to the exported GitHub commit; include
-repository-relative file paths, verified line anchors/ranges, function names,
+For substantive designs requiring external Astra review, deliver a separate
+design document and concrete change map. Pin the map to the exported GitHub
+commit; include repository-relative file paths, verified line anchors/ranges, function names,
 current behavior, proposed edits, and acceptance cases. Label new files as new
 (no invented existing line numbers). Distinguish proposed changes, implemented
 changes, and behavior actually validated. If the source changes, issue a new
@@ -292,7 +305,7 @@ matching source/diff and a portable review package when needed.
 - Add rules only for an explicit requirement or evidenced failure. Put deterministic checks in code; do not automatically turn each failure into a permanent prompt prohibition. Retain semantic guidance the model needs to answer correctly.
 - Replace superseded logic in the same change, including obsolete branches, forwarding interfaces, and current documentation. Preserve historical evidence outside the active maintenance path.
 - Group cohesive responsibilities in readable files. Avoid trivial forwarding files and avoid mixing recognition, scheduling, and persistence merely to reduce file count.
-- For each change, show the concrete problem, responsible implementation, and retired logic. For model-behavior changes, also show representative complete prompt/history/output. Use proportionate verification and the required unfamiliar-reader review; do not substitute a short excerpt or schema validity for semantic correctness.
+- For each change, show the concrete problem, responsible implementation, and retired logic. For model-behavior changes, also show representative complete prompt/history/output. Apply the proportional verification/review rule above; do not substitute a short excerpt or schema validity for semantic correctness.
 - When a small requirement needs the same judgment patched in many places, inspect ownership and interfaces before adding patches. Necessary cross-module wiring is allowed; duplicated business decisions are the warning sign.
 - Next agreed focus: first trace foreground/interactive-region information through recognition, scheduling, candidate selection, execution checks, and registration. Separate scene advice from evidence-based operation validation, preserving task ownership and actual-action evidence. Then consolidate history selection at its production entry. These are pending work, not implemented or accepted behavior; do not expand features before clarifying these chains.
 

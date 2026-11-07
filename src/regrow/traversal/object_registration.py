@@ -63,9 +63,8 @@ def required_paths(original, candidate):
             if actual and row.get('ref') == actual:
                 required.add(f'/{kind}/{i}')
     for route in candidate.get('jump_to', []):
-        for field, kind in (('region_index', 'regions'), ('control_index', 'controls')):
-            if type(route.get(field)) is int and 0 <= route[field] < len(candidate.get(kind, [])):
-                required.add(f'/{kind}/{route[field]}')
+        from regrow.records.destination_refs import declared_paths
+        required.update(declared_paths(route, candidate.get('regions', []), candidate.get('controls', [])))
     pending = list(required)
     while pending:
         path = pending.pop()
@@ -204,6 +203,17 @@ def retain_located(original, candidate, failed):
                 continue
             accepted['current_regions'].append(deepcopy(member))
             indexes['current_regions'].append(i)
+    from regrow.records.destination_refs import declared_paths
+    withheld_paths = {f'/{kind}/{i}' for kind, values in omitted.items() for i in values}
+    for position, route in enumerate(candidate.get('jump_to', [])):
+        pending_targets = declared_paths(route, candidate.get('regions', []), candidate.get('controls', [])) & withheld_paths
+        if pending_targets and 'region' in route:
+            from regrow.records.diagnostics import reject
+            reject('destination_target_pending', route.get('control') or route['region'],
+                   {'访问目标': deepcopy(route), '尚未接收的目标观察': sorted(pending_targets)},
+                   '本次目标观察或新对象先通过接收；已有对象不要求重复登记',
+                   path=f'/jump_to/{position}', field='访问目标',
+                   reason='本次访问目标对应的观察或新对象仍有错误，保留关系等待修正。')
     for route in accepted.get('jump_to', []):
         for field, kind in (('region_index', 'regions'), ('control_index', 'controls')):
             if field not in route:

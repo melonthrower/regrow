@@ -554,7 +554,9 @@ def decode(request, reply):
             merged.update({k:v for k,v in c.items() if k not in ('candidate_index','remove_fields')})
             planned[ci]=merged
         else:planned.append(c)
-    for route_number, route in enumerate(value.get('jump_to',[])):
+    direct_routes = 'region' in contract.get('schema', {}).get('properties', {}).get(
+        'jump_to', {}).get('items', {}).get('properties', {})
+    for route_number, route in enumerate(value.get('jump_to',[]) if not direct_routes else []):
         if 'region' in route:route['region_index']=resolve(route.pop('region'),references)
         if 'control' in route:
             name=route.pop('control')

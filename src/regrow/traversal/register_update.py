@@ -211,7 +211,9 @@ def commit_update(root, run, call_ref, attempt_ref):
     if historical:
         suspended.release_result_block(records, historical, call_ref, attempt_ref)
     _record_settle_task(records[binding.get('task_region', source)], effective_binding, settlement_reply, attempt_ref, records, receipt=receipt, labels=request.get('region_names'), candidates=request.get('task_update_candidates'))
-    register_destinations(reply.get('jump_to'), records, delta_refs, reply['controls'], owner, attempt_ref, call_ref)
+    destinations = _region_records.rewrite(reply.get('jump_to'), aliases)
+    register_destinations(destinations, records, delta_refs, reply['controls'], owner, attempt_ref, call_ref,
+                          regions=reply['regions'])
     navigation.bind_return(records, source, attempt_ref)
     for target in a.get('observed_destinations', []):
         if target != source:

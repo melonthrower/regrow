@@ -99,7 +99,9 @@ def selection_from_dynamic(dynamic):
 def has_source_revision(request):
     """Older pending contracts must be rebuilt before another model reply."""
     fields = request.get('response_schema', {}).get('properties', {})
-    return bool({'source_region_split', 'entry_identity'} & fields.keys())
+    routes = fields.get('jump_to', {}).get('items', {}).get('properties', {})
+    return bool({'source_region_split', 'entry_identity'} & fields.keys()
+                or 'region_index' in routes)
 
 def route_update(root, reply, receipt, *, schema=None):
     """Validate a candidate, then propose a branch. Caller must commit before use.

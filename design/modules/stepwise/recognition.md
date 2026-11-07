@@ -1,3 +1,5 @@
+2026-11-08 访问目标直接引用：新observation_update/纠错内部jump_to保留region/control对象引用，已有ID直接查对象表，不依赖本次regions/controls或追加只读载体；本批新对象名称在正常登记后关联ID。records/destination_refs统一维护目标解析及实际提交的本批观察依赖；登记前复用已确认合并映射，真实动作/后图/当前目标和控件归属检查保持。旧保存的位置合同只读兼容，新续接入口重建旧合同；对外字段和固定Prompt不改。三项约定本地检查及静态复核完成，0新Luna/GUI；合并分支仅静态核对，原运行仍停61。
+
 2026-11-08 登记补充接收：named_references.decode解回给定身份后调用records/object_supplements.combine，再解关系。同Region和同归属Control补充可分条，Control纯知识与当前外观观察保留独立；纯知识跨材料引用不改变归属。含外观知识不在识别前搬移，原身份核对/分区继续。字段定义见object_fields，限定验证见11月日志；原运行未切换。
 
 ## 2026-11-07 公共对象抽象原则

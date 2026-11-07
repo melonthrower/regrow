@@ -64,10 +64,11 @@ knowledge[].description 描述控件能够完成的操作，以及如何使用�
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration" requires="control.definition,control.references" -->
 # 登记控件：controls
-报告本步所需的新对象或变化。当前已展开内容中清晰可见、承担不同功能的命令分别登记，不用一个“普通命令项”等代表对象代替多个功能。
-尽量覆盖视野内的功能区块和稳定操作部件。用于给同一操作选择参数值的网格或列表，按选择部件登记，取值完整写入它的 knowledge.constraints；其中独立的搜索、滚动或确认部件按实际职责保留。不同业务命令仍分别登记，不将整个菜单合成一个选择部件，也不为每个参数值复制控件树节点。
-大量重复数据只登记当前观察和后续操作需要辨认的具体成员，不要求枚举整个长列表；共同操作认识可以复用。登记身份不表示已经执行，也不要求立即提出任务。用途明确时可直接登记知识；暂时无法确认时，knowledge 可以为空，后续再补充。
-正例：打开、保存、导出、打印是不同命令，分别登记；两个文件可以共享打开方式，但要操作其中某个文件时，应保留该文件及其独立菜单按钮的身份。
+报告本步所需的新对象或变化，登记范围依据对象抽象原则。
+允许用抽象控件表示共同操作，不要求为每个普通数据实例登记名称或控件。
+抽象控件以共同操作角色命名，目标定位方式、参数和必要条件写入 knowledge 及其 constraints。
+用于同一操作选择参数的部件，记录参数的指定方式、已知功能选项和必要条件；独立的搜索、滚动或确认部件按实际职责登记。
+用途明确时可直接登记知识；暂时无法确认时，knowledge 可以为空，后续再补充。
 <!-- END_PROMPT_BLOCK id="control.registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration_ref" requires="" -->
@@ -75,19 +76,14 @@ knowledge[].description 描述控件能够完成的操作，以及如何使用�
 <!-- END_PROMPT_BLOCK id="control.registration_ref" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.registration_name" requires="" -->
-name 填写界面中能够辨认控件的简短名称。需要区分同名控件时，在 description 中补充其所在位置或服务对象。控件的用途、操作方式和使用条件记录在 knowledge 中。icon_description 描述图标外观，辅助辨认历史控件。
+name 填写便于辨认控件的简短名称；抽象控件使用共同操作角色的名称。需要区分同名控件时，在 description 中补充其所在位置或服务对象。用途、操作方式、目标参数和必要条件记录在 knowledge 中；icon_description 描述图标外观。
 <!-- END_PROMPT_BLOCK id="control.registration_name" -->
 
 
 <!-- BEGIN_PROMPT_BLOCK id="control.list_group" requires="" -->
-list_group 表示同一区块中具有共同操作方式、可以复用操作知识的一组同类控件。
-
-同组控件仍然是不同的实际对象，各自保留身份。已经了解的共同用法可以在适用条件下复用，不必为每个成员重复探索。
-
-例如，“工作表1”和“工作表2”都是工作表标签，具有共同的切换操作方式，可以属于“工作表标签”组；“新增工作表”按钮负责另一项独立功能，不属于该组。
-分组依据是成员的共同用途和操作方式，不是仅凭外观、位置或点击动作相同。组内成员保留各自身份；成员名称、当前数据和可见内容可以作为同一操作的不同目标。
-
-正例：多个普通文档条目都可以按相同方式打开，可登记为“文档条目”组；已知共同用法时不必逐个试验，但需要定位的文档仍保留具体控件。反例：导入、导出、打印虽然都是菜单中的可点击命令，却产生不同业务结果，不属于一个可互换的命令组。
+list_group 可选，填写已经分别登记的同类控件所属的共同操作组名。
+本字段关联已有成员，不要求为使用分组而枚举普通实例名称或另行登记成员。
+已登记的不同实际对象保持各自身份和真实过程；分组不表示它们是同一实例，也不代理任务完成。
 <!-- END_PROMPT_BLOCK id="control.list_group" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.box_coordinates" requires="" -->

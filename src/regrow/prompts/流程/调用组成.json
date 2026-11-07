@@ -667,7 +667,11 @@
             ]
           }
         ],
-        "concepts": []
+        "concepts": [
+          {
+            "block": "object.abstraction"
+          }
+        ]
       }
     },
     "task_proposal": {
@@ -750,6 +754,9 @@
           },
           {
             "block": "control.definition"
+          },
+          {
+            "block": "object.abstraction"
           }
         ],
         "outputs": [
@@ -1247,6 +1254,11 @@
             "when_paths": [
               "function_updates"
             ]
+          }
+        ],
+        "concepts": [
+          {
+            "block": "object.abstraction"
           }
         ]
       }
@@ -1808,7 +1820,8 @@
       "对象/区块.prompt",
       "对象/任务.prompt",
       "对象/动作.prompt",
-      "对象/遍历.prompt"
+      "对象/遍历.prompt",
+      "对象/抽象.prompt"
     ]
   }
 }

@@ -3,39 +3,43 @@
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "explicit_user_requested_keyboard_diagnostic_checkpoint_before_test",
-  "previous_source_commit": "e99dbda5f08630e3087929517da06eac7f0f43fe",
+  "kind": "research_snapshot_native_200_not_accepted",
+  "source_commit": "2955169ed53239ed96c1d57266617866b551d49f",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Native traversal stopped at 74 calls because keyboard validation did not produce structured facts. Candidate changes feedback only; single-key versus hotkey contract and supported keys unchanged.",
-  "verification_scope": "Original abstraction prompt check and two focused tests previously passed. New keyboard diagnostic fix not yet verified; publish first per user instruction. Native live 74 attempts/41 GUI actions all registered, whole behavior not accepted.",
-  "local_only_material": [
-    "tests",
-    "validation logs",
-    "review reports",
-    "daily notes",
-    "old export bundles"
-  ],
-  "legacy_debug_redactions": [
+  "verification": {
+    "model_attempts": 200,
+    "model_replies": 200,
+    "gui_operations": 150,
+    "registered_actions": 150,
+    "tasks_done": 4,
+    "tasks_pending": 2,
+    "tasks_blocked": 0,
+    "format_failures_corrected": 2,
+    "semantic_acceptance": false,
+    "traversal_complete": false,
+    "dynamic_collection_accepted": false,
+    "full_framework_gate_run": false
+  },
+  "source_versions": [
     {
-      "path": "gui_rewalk/tools/_debug_parse.py",
-      "kind": "private_endpoint_only"
+      "calls": "0001–0074",
+      "commit": "e99dbda5f08630e3087929517da06eac7f0f43fe"
     },
     {
-      "path": "gui_rewalk/tools/_find_duplicates.py",
-      "kind": "private_endpoint_only"
+      "calls": "0075–0200",
+      "commit": "2955169ed53239ed96c1d57266617866b551d49f",
+      "change": "Keyboard rejection diagnostics only; prompts identical"
     }
   ],
-  "snapshot_parent_commit": "e99dbda5f08630e3087929517da06eac7f0f43fe",
-  "live_runtime_changed": false,
-  "published_source_changed": true,
-  "prompt_provenance": {
-    "new_prompt_body_edits_in_this_batch": true,
-    "source": "User-supplied final specification dated 2026-11-09 section 5, verbatim",
-    "live_traversal_resumed": false
-  },
-  "source_export_cleanup": "Only the disclosed six Prompt/composition paths and current wiring/status notes changed; old inactive grouping manual shortened without activation."
+  "known_issues": [
+    "Instance data remains in stable knowledge",
+    "Duplicate control identities persist",
+    "Single-option menu and focus are misinterpreted",
+    "Selector task remains unresolved"
+  ],
+  "publication_scope": "Concise status only; raw evidence and internal research history excluded"
 }

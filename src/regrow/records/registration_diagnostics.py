@@ -207,9 +207,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
         from regrow.prompts.frame_context import primary
         if frame is None:
             frame = primary(q)
-        if stage == 'discovery':
-            from regrow.recognition import local_partition as local_partition
-            errors.extend(local_partition.errors(q, p))
         ctx = q.get('discovery_context', {})
         from regrow.recognition.update_visibility import selected_indices
         selected = selected_indices(p, q.get('region_names') or ctx.get('region_names'))

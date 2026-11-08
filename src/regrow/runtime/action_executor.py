@@ -7,7 +7,6 @@ from regrow.records.snapshots import write_json
 from regrow.runtime.action_commands import commands
 from regrow.runtime.action_commands import execute as execute_action
 from regrow.traversal import step_repair as step_repair
-from regrow.recognition import visual_backtrack as visual_backtrack
 
 def foreground_window(transport):
     if hasattr(transport, 'foreground_window'):
@@ -28,14 +27,6 @@ def window_evidence(window, target):
     package = match.group(1) if match else None
     return {'目标应用': target, '前台应用': package, '与目标应用一致': package == target if package else None, '窗口记录': window, '来源': 'Android mCurrentFocus；读取失败或不能解析时未知'}
 
-def system_action_changed(action, before, after, before_window=None, after_window=None):
-    if action not in ('back', 'key_press', 'hotkey'):
-        return False
-    if action in ('key_press', 'hotkey'):
-        return bool(before_window and after_window and (before_window != after_window)) or not visual_backtrack.same_surface(before, after)
-    if before_window and after_window:
-        return before_window != after_window
-    return not visual_backtrack.same_surface(before, after)
 
 class ActionExecutor:
 
@@ -68,34 +59,16 @@ class ActionExecutor:
         write_json(folder / 'proposal.json', proposal)
         write_json(folder / 'binding.json', binding)
         transport.screenshot(folder / 'pre_dispatch.png')
-        if proposal['action'] in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'hover', 'drag', 'scroll', 'input_text'):
+        dispatch_window = foreground_window(transport)
+        changed_window = proposal['action'] != 'wait' and bool(selection_window and dispatch_window and selection_window != dispatch_window)
+        write_json(folder / 'pre_dispatch_check.json', {'window': dispatch_window,
+                   'changed_window': changed_window})
+        if changed_window:
             fresh = {**q, 'image_refs': [str(folder / 'pre_dispatch.png')], 'screenshots': [str(folder / 'pre_dispatch.png')]}
-            from regrow.recognition.visual_backtrack import same_surface
-            from regrow.recognition.target_frame import compare
-            region = records.get(binding['region_ref'], {})
-            frame_comparison = compare(folder / 'before.png', folder / 'pre_dispatch.png',
-                                       region, snapshot, proposal, run=run,
-                                       control=owned_controls(region).get(binding.get('control_ref')),
-                                       control_ref=binding.get('control_ref'),
-                                       platform=getattr(transport, 'platform', 'android'))
-            dispatch_window = foreground_window(transport)
-            changed_window = bool(selection_window and dispatch_window and (selection_window != dispatch_window))
-            confirmed = step_repair.confirmed_dispatch_review(run, accepted, calls, dispatch_window, out / 'current.png')
-            write_json(folder / 'pre_dispatch_check.json', {'window': dispatch_window, 'changed_window': changed_window,
-                       'confirmed_call': ref if confirmed else None, 'frame_comparison': frame_comparison})
-            changed_frame = not frame_comparison['unchanged'] if frame_comparison is not None else (
-                not confirmed and not same_surface(folder / 'before.png', folder / 'pre_dispatch.png'))
-            if changed_window or changed_frame:
-                repair.reject_action(fresh, proposal, ref, '投递前窗口或目标范围发生变化；动作未执行，请按最新投递前图核对目标与坐标。', pre_dispatch_review={'before': str(folder / 'before.png'), 'current': str(folder / 'pre_dispatch.png'), 'window': dispatch_window, 'frame_comparison': frame_comparison, 'changed_window': changed_window})
-            from regrow.recognition import action_target_review
-            doubt = action_target_review.conflict(fresh, proposal, binding)
-            if doubt and not action_target_review.confirmed(q, proposal, folder / 'pre_dispatch.png',
-                                                           frame_comparison=frame_comparison):
-                repair.reject_action(fresh, proposal, ref, str(action_target_review.Conflict(doubt)),
-                                     action_target_doubt=doubt)
-            write_json(folder / 'pre_dispatch_binding.json', binding)
-        elif proposal['action'] in ('back', 'key_press', 'hotkey') and system_action_changed(proposal['action'], folder / 'before.png', folder / 'pre_dispatch.png', selection_window, foreground_window(transport)):
-            repair.reject_action({**q, 'screenshots': [str(folder / 'pre_dispatch.png')], 'image_refs': [str(folder / 'pre_dispatch.png')]}, proposal, ref, '投递前前景画面变化；键盘动作尚未执行，请重新核对')
+            repair.reject_action(fresh, proposal, ref, '投递前窗口发生变化；动作未执行，请按最新截图重新选择目标与坐标。',
+                                 pre_dispatch_review={'before': str(folder / 'before.png'), 'current': str(folder / 'pre_dispatch.png'),
+                                                      'window': dispatch_window, 'changed_window': True})
+        write_json(folder / 'pre_dispatch_binding.json', binding)
         try:
             command_list = commands(proposal, getattr(transport, 'platform', 'android'))
         except ValueError as error:
@@ -114,13 +87,7 @@ class ActionExecutor:
             write_json(folder / 'dispatch.json', {'source_call': ref,
                 **({'source_field': source_field} if source_field else {}),
                 'source_region': binding['region_ref'], 'source_control': binding['control_ref'], 'working_region': binding['working_region'], 'action': p, 'status': 'dispatching'})
-            input_context = None
-            if p['action'] == 'input_text':
-                from regrow.runtime.input_target import context
-                from regrow.records.action_evidence import attach_execution
-                attach_execution(records, run)
-                input_context = context(snapshot, records, binding, q)
-            result = execute_action(transport, p, folder / 'execution', input_context=input_context)
+            result = execute_action(transport, p, folder / 'execution')
             write_json(folder / 'receipt.json', result)
             manifest = read(run / 'run_manifest.json')
             manifest['actual_gui_actions'] = manifest.get('actual_gui_actions', 0) + 1

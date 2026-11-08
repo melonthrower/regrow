@@ -203,15 +203,13 @@ def accept_action(run, q, proposal, ref, records):
                 raise StaleActionSource('接续动作的原任务或动作后观察已不可继续；按正常调度重新选择')
         if binding.get('observation_ref') != (current_state.get('observation') or {}).get('id'):
             raise StaleActionSource('动作来源观察已过期；请按原任务刷新当前观察上下文，旧截图来源不能继续投递')
+        if binding.get('association', {}).get('status') == 'unconfirmed':
+            # The existing observation handoff registers this target before
+            # delivery. A description is never a second executable binding.
+            return {'binding': binding, 'proposal': proposal, 'request': q, 'call': ref}
         if not binding.get('reference_bound'):
             _ownership_review.check_action(run, binding)
         _action_commands.commands(proposal, platform)
-        from regrow.recognition import action_target_review
-        doubt = action_target_review.conflict(q, proposal, binding)
-        if doubt:
-            raise action_target_review.Conflict(doubt)
-        if action_target_review.confirmed(q, proposal):
-            binding['target_confirmation'] = deepcopy(q['action_target_confirmation'])
         _operation_blocking.check_action(records, binding, proposal)
     return {'binding': binding, 'proposal': proposal, 'request': q, 'call': ref}
 
@@ -364,7 +362,7 @@ def context(run, job):
         selected = chosen[0] if len(chosen) == 1 else None
         selected_owner = selected.get('region_ref', source['region']) if selected else None
         value['失败对象'] = {'区块': records.get(selected_owner, {}).get('name') if proposal.get('target') else region['name'], '控件': selected['name'] if selected else proposal.get('target') or control.get('name'), '动作': proposal.get('action'), '依据': '被拒绝提案的目标，尚未投递' if proposal.get('target') else '尚无动作提案，沿用原任务对象'}
-        value['本轮约束'] = {k: job['request'][k] for k in ('allow_back', 'allow_input', 'allow_scroll', 'region_target', 'navigation_path') if k in job['request']}
+        value['本轮限制'] = {k: job['request'][k] for k in ('allow_back', 'allow_input', 'allow_scroll', 'region_target', 'navigation_path') if k in job['request']}
     if job.get('blocked_by') == 'binding_conflict':
         (_, all_records, state) = _record_load(run)
         q = job['request']
@@ -382,7 +380,7 @@ def context(run, job):
                 incoming.append({'区块': r['name'], '控件': control['name'], '历史外观': target(control, None), '历史目的区块': all_records.get(edge['target_region'], {}).get('name'), '说明': '这是历史进入入口，不是已确认当前可交互的候选；结合截图判断。'})
         proposal = job.get('candidate') or {}
         proposal = proposal.get('operation', proposal)
-        value['定位与绑定冲突'] = {'框架认定的当前区块': [all_records[r]['name'] for r in state.get('interactive_regions', []) if r in all_records], '模型建议目标': proposal.get('target'), '模型建议位置': [proposal.get('x'), proposal.get('y')], '当前动作候选': [{'区块': all_records.get(c.get('region_ref', source.get('region')), {}).get('name'), '控件': c['name'], '匹配位置': q.get('visual_choices', {}).get(c['id'], [])} for c in q.get('backend_candidates', [])], '框架拒绝依据': job.get('error'), '历史进入目标的入口': incoming, '处理说明': '候选为空仅表示框架没有定位记录，不证明截图没有按钮。核对框架落点；落点错误用observe重定位并刷新候选，再回动作步执行。菜单选项与打开菜单的按钮是不同对象，不能通过改名相互替换。'}
+        value['定位与绑定冲突'] = {'框架认定的当前区块': [all_records[r]['name'] for r in state.get('interactive_regions', []) if r in all_records], '模型建议目标': proposal.get('target'), '模型建议位置': [proposal.get('x'), proposal.get('y')], '当前动作候选': [{'区块': all_records.get(c.get('region_ref', source.get('region')), {}).get('name'), '控件': c['name']} for c in q.get('backend_candidates', [])], '框架拒绝依据': job.get('error'), '历史进入目标的入口': incoming, '处理说明': '候选为空仅表示框架没有定位记录，不证明截图没有按钮。核对框架落点；落点错误用observe重定位并刷新候选，再回动作步执行。菜单选项与打开菜单的按钮是不同对象，不能通过改名相互替换。'}
     if job['stage'] == 'action':
         source = job['request'].get('source', {})
         rid = source.get('task_region') or source.get('region')

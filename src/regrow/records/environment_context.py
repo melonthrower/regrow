@@ -61,18 +61,21 @@ def structure(records, region_ids=None):
     return graph, expansion, parents
 
 
-def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None, interaction=None):
+def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None, interaction=None,
+           control_regions=None):
     """Two presentations of the same graph; names are always read from current records."""
     if view not in ('controls', 'operations'):
         raise ValueError('unknown forest view')
     graph, roots, parents = structure(records, region_ids)
     shown, out = set(), []
     interaction = interaction or {}
-    title = '控件树' if view == 'controls' else '应用操作树'
+    overview = view == 'controls' and control_regions is not None
+    title = '应用结构概览' if overview else '控件树' if view == 'controls' else '应用操作树'
     if region_ids is not None:
         title = '局部' + title
-    out.append(title + '（已登记内容与已观察的访问关系）')
-    out.append('下级区块表示操作可到达的目标；条件标在相应去向旁。')
+    out.append(title if overview else title + '（已登记内容与已观察的访问关系）')
+    if not overview:
+        out.append('下级区块表示操作可到达的目标；条件标在相应去向旁。')
 
     def tasks(region, cid, depth):
         if region['id'] != task_region:
@@ -86,6 +89,10 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
 
     def target(edge, depth, source):
         rid = edge['region']
+        if overview:
+            if rid not in shown and parents.get(rid) == source:
+                node(rid, depth)
+            return
         conditions = edge.get('conditions', [])
         prefix = ('（条件：' + '；'.join(conditions) + '）') if conditions else ''
         observed = edge.get('observed_source')
@@ -113,6 +120,8 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
         tasks(region, None, depth+1)
         if view == 'controls':
             for cid, control in owned_controls(region).items():
+                if control_regions is not None and rid not in control_regions:
+                    continue
                 mark = ''
                 if rid == interaction.get('region') and cid == interaction.get('control_ref'):
                     from regrow.prompts.prompt_material import identity_steps
@@ -127,18 +136,25 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
                         out.extend('  '*(depth+2) + line for line in
                                    readable({'已有知识': knowledge}, 1).splitlines())
                 tasks(region, cid, depth+2)
+                if control_regions is None:
+                    for edge in graph[rid]:
+                        if edge.get('control') == cid:
+                            target(edge, depth+2, rid)
+            if control_regions is None:
                 for edge in graph[rid]:
-                    if edge.get('control') == cid:
+                    if edge.get('control') is None:
+                        out.append('  '*(depth+1) + '├─ 已记录的区块操作')
                         target(edge, depth+2, rid)
-            for edge in graph[rid]:
-                if edge.get('control') is None:
-                    out.append('  '*(depth+1) + '├─ 已记录的区块操作')
-                    target(edge, depth+2, rid)
+            else:
+                for edge in graph[rid]:
+                    if edge['region'] == rid:
+                        continue
+                    target({**edge, 'target_control': None}, depth+1, rid)
         else:
             # Functions remain owned by their original Regions. Shared controls do
             # not move a destination's functions to its entry's owner.
             from regrow.records.candidate_access import candidate_access_entries, describe
-            from regrow.records.function_updates import resolved_constraints
+            from regrow.records.function_updates import resolved_parameters
             candidates = candidate_access_entries(records, rid)
             used = set()
             functions = region.get('functions', {})
@@ -146,7 +162,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
                 out.append('  '*(depth+1) + '└─ 尚无已登记应用操作')
             for name, function in functions.items():
                 out.append('  '*(depth+1) + '├─ ' + name + ' [' + rid + '/' + name + ']')
-                parameters = resolved_constraints(region, function)
+                parameters = resolved_parameters(region, function)
                 if parameters:
                     out.append('  '*(depth+2) + '参数引用：' + '、'.join(parameters))
                 if function.get('target_role'):
@@ -196,22 +212,16 @@ def local_progress(records, focus):
     return '\n'.join(lines)
 
 
-def render(records, state, focus, goal=None, kind='observation', region_ids=(), interaction=None):
+def render(records, state, focus, goal=None, kind='observation', interaction=None):
     goal = goal or {}
-    view = 'controls'
-    selected = None
-    if kind not in ('observation', 'observation_update', 'update', 'ownership_review'):
-        selected = {focus, goal.get('region')}
-        if kind != 'task_proposal':
-            selected.update(region_ids)
-            selected.update(state.get('interactive_regions', []))
-    out = [forest(records, view=view, focus=focus,
+    out = [forest(records, view='controls', focus=focus,
                   task_region=focus if kind == 'task_proposal' else None,
-                  region_ids=selected, interaction=interaction)]
+                  control_regions={focus}, interaction=interaction)]
     gr, cid = goal.get('region'), goal.get('control')
     if gr in records:
         control = owned_controls(records[gr]).get(cid, {})
-        out.append('原探索目标：' + records[gr]['name'] + (' / ' + control['name'] if control else ''))
+        out.append('原探索目标：' + records[gr]['name']
+                   + (' / ' + control['name'] if control and gr == focus else ''))
     last = state.get('last_action_result') or {}
     action = owned_actions(records.get(last.get('region'), {})).get(last.get('action'), {})
     obs = state.get('observation') or {}
@@ -243,10 +253,5 @@ def for_request(request, records, state):
     elif request.get('stage') == 'task_proposal':
         goal = {'region': focus}
     kind = 'update' if request.get('role') == 'observation_update' else request.get('role', work.get('kind'))
-    scope = request.get('context_scope', {})
-    selected = set(scope.get('regions', [])) | set(scope.get('controls', {}))
-    selected.update(source.get(key) for key in ('region', 'working_region', 'task_region', 'return_to'))
-    for edge in request.get('navigation_path') or []:
-        selected.update(edge.get(key) for key in ('source_region', 'target_region'))
     interaction = source if kind == 'update' and source.get('attempt') and source.get('operation') else None
-    return render(records, state, focus, goal, kind=kind, region_ids=selected, interaction=interaction)
+    return render(records, state, focus, goal, kind=kind, interaction=interaction)

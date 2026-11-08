@@ -42,7 +42,7 @@ def merge(records, state, sources, target, *, snapshot, rebase, evidence):
     aliases = {s: target for s in sources}
     for source in sources:
         src = rebase(rs[source], snapshot, snapshot)
-        for field in ('controls', 'actions', 'tasks', 'functions', 'constraints'):
+        for field in ('controls', 'actions', 'tasks', 'functions', 'parameters'):
             query = {'controls': owned_controls, 'tasks': owned_tasks, 'actions': owned_actions}.get(field)
             values = query(dst) if query else dst.setdefault(field, {})
             incoming = query(src) if query else src.get(field, {})

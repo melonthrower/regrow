@@ -1,3 +1,11 @@
+2026-11-08 参数命名统一工作稿：操作参数统一使用parameters。控件参数归knowledge[].parameters，区块参数目录使用parameters，功能的parameters只保存参数引用；动作仍填写本次实际参数值。原constraints只在旧记录/旧请求读取时兼容，不与parameters并列写新数据。参数值的既有表示法和其他对象语义不变；399停点图与0258完整原记录的两项隔离副本核对通过，0新模型/GUI；仅验证命名、旧数据读取和登记链路。新的完整参数解释及本轮补充示例仍待用户确认。
+
+2026-11-08 应用结构概览：模型树中的每个已登记区块只出现一次，沿既有稳定展示父级组织层次；不再显示返回、循环、重复来路、引用或访问条件说明。仅当前关注区块展开全部登记控件，未知关注区块不扩展其他控件；没有连接或没有自然起点的部分分别作为根补齐，不编造物理父级。底层访问图、对象/任务/动作、默认图页完整树和操作树保持。仅本地呈现验证：真实0239/0129正常入口预览及一个7区块合并图样例通过，0Luna/0GUI，不声称模型或GUI行为验收。证据artifacts/region_structure_overview/20261108T112746Z_01。
+
+2026-11-08 图像匹配删除工作稿：普通识别/更新不再扫描历史裁图或据命中扩展知识，不再通过相似外观、候选重叠或像素位置复核/关联身份；已列前景内的旧控件自动召回也退出。普通动作选择调用前重截当前实机图，next_action仍按其动作后图接续，不新增选点复核。执行前保留窗口检查、完整截图证据、引用/坐标/动作校验、预算与未知投递防重放，退出模板定位、局部/整图变化门和输入聚焦图像确认。正常外观裁图与Luna外观状态比较保留。两类独占核对角色及资源已删除；其他固定Prompt先保持，用户正在审阅完整普通动作请求。两例保存帧3Luna/0GUI：IPv6新登记10控件，9个IPv4参数控件名称/知识保持；返回Network复用r0003并保存返回边、11区块60控件保持，但侧栏r0001仍漏列，完整前景召回未接受。正常执行入口保存帧0Luna/0GUI：时钟变化通过到零GUI预算、模拟窗口变化拒投递。非现场遍历/全框架验收，原399次运行未动。证据 artifacts/visual_matching_removal/20261108T095811Z_01；独立初读及测试范围修订复审完成；侧栏漏列仍未接受。
+
+2026-11-08 功能认识修复工作稿：control_identity_review对普通observation、observation_update、task_proposal及其补登记包装退出外观相似触发的强制身份比较；Luna按当前页面与已有身份决定新建/复用，引用、归属和字段冲突继续校验。显式专项核对及历史原件保留，不自动恢复终止的deferred。原0147/0148、0239/0240完整答复在隔离副本中正常登记了IPv6独立控件及功能，未新增比较调用；原运行仍deferred。动作描述仅用于现有目标登记，执行前改为正式ref；Region目标确认读取本次真实Region观察，不按点下子控件替代。后者经聚焦静态复核，未新增GUI或运行案例。统一公开字段布局仍为未激活草稿。
+
 2026-11-08 更新身份判定续接证据：v6的a0074在0239主答、0240补框后，于0241–0246保留6次不同对象的身份比较，跨原6调用步骤轮次且未触发fixed-source重建。随后两项Automatic控件仍有多历史候选，功能引用被其未接收身份阻塞，原结果最终deferred；故只证明累计判定不再被该重建条件清空，不证明a0074完整登记。a0055、a0074原动作均保留、未重放。
 
 2026-11-08 原始格式纠错布局：runtime/reply_correction在反馈中标明reply_is_wire；correction_fields及首次named_references展示据此保留公开格式原答，不再按内部扁平对象重新编码。非法顶层controls仍按原schema标错，不自动移动或放宽接收。实机0258原格式错误的0259请求已保留原字段、引用、前后图和来源；0262→0263正常纠正嵌套并保存c0070候选知识。0259/0260将c0069误填为Region；0260错误行已按Region引用枚举单独隔离并保存缺口，其余正确内容发布，未误建区块；0261才正确补回控件知识，不将整体发布等同全部字段纠正。静态陌生阅读未发现该三处布局接线直接回归，其他纠错角色未新增实测；无固定Prompt正文、输出schema或新离线测试改动。
@@ -14,25 +22,39 @@
 
 2026-11-08 登记补充接收：named_references.decode解回给定身份后调用records/object_supplements.combine，再解关系。同Region和同归属Control补充可分条，Control纯知识与当前外观观察保留独立；纯知识跨材料引用不改变归属。含外观知识不在识别前搬移，原身份核对/分区继续。字段定义见object_fields，限定验证见11月日志；原运行未切换。
 
+2026-11-07 动作后更新不再构造或发送独立历史身份目录；旧identity_candidates退役，related_regions只返回原选择范围的区块ID供功能材料使用。history_matching仍可为任务候选等内部消费者提供图像匹配，匹配不限制全局树身份引用。已有区块引用来自本次树提供的身份，新对象仍按原解码和登记规则。原0010单项离线检查通过；未作为新Luna语义/导航验收。仅实际交互控件的树节点附原已有知识、序号和参数约束，供直接修订，不展开其他区块历史目录。
+
+## 2026-11-07 当前前景区块具名引用
+
+`current_regions` 对 Luna 只开放 `ref`：已有区块填给定 ID/名称，同答新区块填登记名。`named_references.wire_schema/decode/encode_objects` 统一公开格式、解回内部位置及纠错回显；未知或不能唯一解析的新名直接指出具体区块。`update_visibility.selected_indices` 在解码前识别本答新区块名称。旧保存合同仍按原格式读，不改历史回复。3 项聚焦检查通过；此前5HTTP/0GUI保留目标控件混填失败及相邻发现结果。后续 jump_to 正例明确来源后，原菜单完整更新2HTTP/0GUI限定通过，新菜单 ref 正常登记；两批证据与范围见11月日志。
+
 ## 2026-11-07 公共对象抽象原则
 
 发现及动作后更新通过调用组成的 concepts 读取唯一 `对象/抽象.prompt::object.abstraction`，与任务提出共用。区块/控件字段保留登记格式、命名与知识填写要求，旧强制成员枚举文字退出。当前仅完成源码接入与正常请求组装核对；抽象关系字段、实例化树及模型行为未验收。
 
-> 2026-11-07 新观察接线：await_discovery明确设置已有relocate标记，恢复或未执行提案的重观察不再沿用旧local范围。原Task、回复、纠错次数及保留目标语义不变。2聚焦与完整真实0085副本的1条Luna重新定位回复正常登记通过，0GUI；pilot仍85请求/14GUI、6任务blocked，未稳定；Prompt正文和设计不改。
-
-> 2026-11-07 接线：matching.refine两处外观框读取统一使用已导入的templates别名，修复重复视觉候选路径的NameError；原匹配算法、阈值和身份/点击区域含义不变。
-
 > 2026-11-07 当前观察：新合同无focus_presence或uncertainties，局部发现不再按旧三态丢弃可见Region/Control；纯展示与空列表仍可登记。前景、异常、对象身份及同图completion_updates仍走原校验。已退休专用调用不再构造新请求；历史截图/原答与旧字段读取保留。
 
-> 2026-11-06：new_tasks.target按原文保存，不作对象解引用；new_tasks.control仍沿同答对象绑定。next_action名称在主更新对象接受后解释，目标补登记/暂挂恢复保留source_field并复用同一动作来源读取。验证与限制见根目录SNAPSHOT_STATUS.md。
+> 2026-11-06 冻结后：ownership_review原始builder及正常最终发送均读取同一对象块，保留调查目的/环境边界；既有forest提供控件树。assignment严格已有ref/新name+description二选一，control限明确争议对象；name_contract在请求创建时冻结，记录前由原发送纠错入口解回ID。新请求保留独立current_regions，允许regions=[]仍列旧前景；previous仅在update_visibility历史读取，退出当前诊断。
+
+> 2026-11-06 收尾：Control/Region引用准备保留调用方既有可写枚举，包括空集合；只读候选和纠错不得扩回可写范围。同身份多行补充由统一接收入口汇合，不按条目数量重新判断对象身份；不同对象仍按各自引用保存。具体聚焦/保存帧证据及搜索框外观未接受项见冻结原文设计与11月日志。
+
+> 2026-11-06 冻结原文：普通Region不再输出context_matches或受其布尔硬门限制；behavior_context和明确身份差异保留。parent边界用完整已有引用或本答唯一新名，内部关系兼容既有ID/位置；对象纠错和补登记不再丢已有父级。普通locator及动作后候选共用history_context.region_states读取最近3条互异状态及原来源。新Prompt示例保持原文，动态对象引用继续精确核对。
+
+> 2026-11-06 Region：region_references为新模型合同移除普通identity/identity_evidence，保留未审字段；named_references按ID和完整名称核对，Task/功能复合引用不进入单区块解析。discovery_delta只在新合同内部推导same/new；旧name_contract及纯ID请求按保存格式读。局部观察仍只观察focus，可同答携带已披露相关区块的纯知识编辑。
+
+> 2026-11-06 最终Control：appearance_box统一读appearance_bbox并兼容旧bbox，不读取click_bbox作为身份框。普通有效ref不因像素缺匹配再复核；无ref的同位置多历史候选在原Runner中用partition_request保留缺口，独立对象继续，实际来源/访问目标必要对象仍走原暂挂。删除selection调用/资源/纠错入口；单一冲突的双图身份比较和按需外观比较、原缓存保留。icon_description可选登记并沿现有身份材料读取。
+
+> 2026-11-06 Control：named_references在普通、纠错和专项调用中统一呈现ID/名称；control_references只按本次给定标签精确读回，不按名称换身份。region.nested和control.registration移除无条件control.identity依赖，专项身份/外观调用保留。Task.target自然语言不解引用，同答新Control仍以登记名回指。
+
+> 2026-11-06：new_tasks.target按原文保存，不作对象解引用；new_tasks.control仍沿同答对象绑定。next_action名称在主更新对象接受后解释，目标补登记/暂挂恢复保留source_field并复用同一动作来源读取。验证与限制见11月日志。
 
 # 识别
 
 2026-10-30累计合并：区块定义允许多个功能及纯展示内容，身份依实际延续判断。控件登记、discovery_inventory 与同图 discovery_completion 按必要功能/操作方式选代表，已有代表覆盖的同类待补项可据实 excluded；不合并不同物理对象，也不要求穷尽同类数据。control_references 无旧控件 ID 时去掉无效空 allOf，字段和有效约束保持。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。
 
 - [locator.py](../../../src/regrow/recognition/locator.py)：构造当前图的发现/再识别请求，核对已有身份，允许补新控件与无控件展示区。
-- [matching.py](../../../src/regrow/recognition/matching.py)：外观定位、重复外观的相对位置核对及候选呈现，复用原算法。
-- region_identity、control_identity_review：处理复用/新建身份与有依据的身份复核。
+- 当前图定位由普通观察及动作选择中的 Luna 判断；历史身份由已有对象记录提供，不运行裁图匹配。
+- region_identity：解析正常观察中的复用/新建身份，引用、归属及字段冲突沿正常登记校验。
 
 识别阶段的运行协调、补观察和原任务保留已迁到 [traversal/observation.py](../../../src/regrow/traversal/observation.py)。接受的对象观察由 records 登记，识别不另维护一套对象表。
 
@@ -112,5 +134,28 @@ control_identity_review.check对普通observation_update与已有普通发现一
 ## 2026-11-03 当前应用与目标核对
 当前辨认在目标应用材料内读取通用归属说明；来源固定本次manifest。辨认异常沿原foreground字段和恢复分支。action_target_review继承动作原schema，新增异常字段由同一词项说明；异常原答验证后回原action接受入口，不做动作规范化或产生确认。正常/历史旧动作合同不变。已知真实首版字段说明漏接在Gedit小窗暴露并修复；当前验证边界见11月日志。
 
+2026-11-04共享控件纠错呈现：named_references 在组织本次纠错的嵌套材料前，用实际动作 source 的 control_ref/region 及 binding 核对展示位置，显式原稿 region_index 仍优先。仅实际操作控件使用该位置；其他共享控件不按 task_region、working_region 或首个成员猜测。此映射仅在请求内使用；纯知识 decode 仍不补 region_index，既有已发 name_contract 不重建。当前原生保存帧验收见 shared_control_correction_20261104_01；无明确位置时的平铺后备合同尚未实现，路线因果与点位漏判不属于本次改动。
+
+本批A1验证结果：8项辅助检查通过；原0107完整副本正常Runner续接，0108为1HTTP/0GUI，原答正常登记，共享引用/单份知识/任务归属不变，c0062历史中新增的仅是object_knowledge审计而非几何身份观察。新回复仍误述绘图工具栏前后可见，语义未接受；未部署原图，不能据此宣称图知识正确。未运行全框架门禁。
+
+2026-11-04点位核对A2：目标在当前图有可靠匹配而拟点在其bbox外时，即使该点没有其他已登记候选，也进入既有action_target_review，返回原动作合同。新增动态说明按用户要求直接给匹配位置、bbox、拟点击点和核对问题；不自动移点、不直接判错。同一control的多个Region引用按一个身份计数；视觉关联仍须明确本次操作区块。原确认的同图/同完整动作约束保留。当前聚焦辅助检查7项通过；原生保存帧和反向边界的结果见action_point_review_20261104_01，未据离线检查宣称GUI验收。
+
+A2保存帧错点分支：完整0106/a0013原生reject_action→Runner→Luna核对1HTTP/0GUI，原答将1127,108改为420,108且保留c0062/原任务，正常schema/解码/绑定通过，无新投递或图发布。标签路径漏接经独立审查修复，复用原动作选点图文案；v1预览保留。合法框外输入的真实反向例尚缺，整批未接受、不提交/部署框架源码；详见本批REPORT。
+
+## 2026-11-05 正常local融合任务提出（工作树候选，验收中）
+仅正常local且focus为已有Region时传入task_plans子合同及同源知识/旧题材料；global、relocate、同帧对象补登记不增加任务字段。新控件名通过本次已接受原回复行的source_field映射正式ID；重名/拒收对象不按全图猜测任务绑定。任务字段错误不交对象partition处理，合法观察保留后由公共任务登记接受/拒绝。
+共享纯知识继续按control全局身份写入，外层区块仅展示；正常local显式focus_presence与ref-only观察不会因知识子项被滤掉。当前14辅助检查及真实Settings0105完整请求预览通过，模型登记/GUI仍待后续本批证据，不称行为接受。
+
+本批验收限制：Settings0105局部融合仍重复新增未答原题，VSCode0165仍把已有共同用法的未操作实例重新立题，均为语义未通过；程序成功登记不代表该候选行为接受。顺序调整候选尚未确认/应用，真实GUI未续跑。见本批settings-semantic-audit.json、vscode-semantic-audit.json。
+
+2026-11-05 Overnight06：指定done原题复核的record_edit.task，只有与本请求实际提供的完整显示名精确相等时，回读为保留全部分隔空格的原任务键；其他阶段、近似名和修改权限不扩展，原模型回复不改。两个引用辅助检查及04真实完整常量回读通过；新完整Writer1HTTP/0GUI正常登记只验相邻无前缀原题，未伪称前缀模型分支覆盖。源码/原件/审阅见Overnight06/月志，完整框架候选未整体验收。
+
+2026-11-07 视觉匹配接线：matching.refine读取外观框统一使用本模块已有templates别名；修复重复视觉候选分组路径的NameError。原唯一/歧义/组布局匹配、身份与点击区域含义不变，匹配不证明可操作或成功。
+
+2026-11-07 新观察接线：await_discovery明确设已有discovery_mode=relocate，使恢复及未执行提案重观察进入正常重新定位，而非沿用截图中已不在场的旧local范围。retain_target继续保留原问题和身份召回、刷新frame；原模型回复和修复次数不清除。Prompt正文、local/relocate含义不变。
+
 
 2026-11-07 `target_frame`负责投递前局部画面比较：优先已有外观在依据图中定位的具体Control，位置/范围须涵盖实际操作点，否则回退所属Region；不把历史代表项的旧框当作本次实例。复用原SceneMatcher/match_appearances阈值，不增加Luna字段、图片指纹或另一套身份判断。比较结果供executor及同动作确认复用；像素未变不表示操作成功，结果仍由真实后图登记。原Applications时钟案例在Region回退下通过，具体控件优先与区块内其他内容变化由聚焦检查覆盖；正常原生保存帧2HTTP/0GUI，不是新GUI验证。
+
+
+2026-11-07 诊断：主要 ID/名称、父引用及当前前景解码错误已提供结构化事实；目标/身份疑点保留现有证据核对合同，不把未匹配直接判为错误。部分身份比较自身及必需外观确认仍仅有普通异常；旧 check_control_crop 当前没有调用点，不将其当作正常主链路覆盖证据。没有因此新增模型或界面验证。

@@ -20,7 +20,7 @@
   "conditions": [
     "<填写适用条件>"
   ],
-  "constraints": "<填写约束信息>",
+  "parameters": "<填写参数说明或引用>",
   "control": "<填写控件引用>",
   "control_identity": "<填写控件身份关系>",
   "control_index": "<填写控件在本次列表中的位置>",

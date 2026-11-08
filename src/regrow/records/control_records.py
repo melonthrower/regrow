@@ -144,7 +144,8 @@ def normalize(records):
             if event not in observation_history(control):
                 observation_history(control, create=True).append(event)
         control['knowledge'] = current
-        control.pop('constraints', None)
+        control.pop('parameters', None)
+        control.pop('constraints', None)  # Former top-level field, kept only in original snapshots.
         for name, fact in rules.items():
             put_parameter(control, name, fact, fact.get('conditions', []))
         for field in ('merged_records', 'shared_control_ref', 'ownership_evidence', 'shared_task_history'):

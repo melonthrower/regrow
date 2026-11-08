@@ -1,4 +1,4 @@
-"""Bind explicit object refs from records; use visual candidates for other targets."""
+"""Bind registered refs; route descriptions to registration before execution."""
 
 def bind_action_target(request, proposal, *, records=None):
     binding = _bind_action_target(request, proposal, records=records)
@@ -40,6 +40,11 @@ def _bind_action_target(request, proposal, *, records=None):
         return {**base, 'status': 'matched', 'basis': base.get('basis', 'Region-owned observation wait')}
     if proposal.get('action') == 'none':
         return {**base, 'status': 'no_action'}
+    if not reference:
+        return {**base, 'status': 'matched', 'model_grounded': True,
+                'association': {'status': 'unconfirmed', 'target': proposal.get('target'),
+                                'reason': '操作目标尚无准确ref；先完成当前对象登记，再按ref选择动作。'},
+                'basis': 'registration required; no executable object binding'}
     if proposal.get('action') == 'scroll':
         from regrow.traversal import region_scroll as region_scroll
         return region_scroll.bind(request, proposal, base)
@@ -75,31 +80,11 @@ def _bind_action_target(request, proposal, *, records=None):
         (width, height) = frame.size
     if not (0 <= x < width and 0 <= y < height):
         return {**base, 'status': 'unresolved', 'reason': 'coordinates outside screenshot'}
-    if reference:
-        return {**base, 'status': 'matched', 'model_grounded': True,
-                'basis': 'explicit registered object ref; ownership from records; coordinates supplied by model'}
-    target = str(proposal.get('target', '')).strip()
-    rows = candidate_rows(request)
-    hits = candidate_matches(request, target)
-    if len(hits) == 1:
-        c = hits[0]
-        return {**base, 'region_ref': c.get('region_ref', base['region_ref']), 'status': 'matched', 'control_ref': c['id'], 'model_grounded': True, 'basis': 'explicit recorded control selection; coordinates do not verify identity or outcome'}
-    if target:
-        from regrow.recognition import action_target_review
-        located = action_target_review.unresolved(request, proposal)
-        if located:
-            return {**base, **located, 'status': 'matched', 'model_grounded': True}
-    if len(hits) > 1:
-        return {**base, 'status': 'unresolved', 'reason': '该控件的本次操作区块尚未确定，请结合当前图核对'}
-    if not target:
-        return {**base, 'status': 'unresolved', 'reason': 'missing target description'}
-    import re
-    if any((row['target'] in target for row in rows)) or re.search('\\br\\d+/c\\d+\\b', target):
-        return {**base, 'status': 'unresolved', 'reason': 'target中的身份引用不完整或相互冲突；请逐字填写控件树中的控件ID，不混入其他身份或说明'}
-    return {**base, 'status': 'matched', 'model_grounded': True, 'basis': 'unrecorded model target; no recorded identity inferred from coordinates', 'association': {'status': 'unconfirmed', 'target': target, 'x': x, 'y': y, 'candidates': [], 'reason': 'target not in the supplied identity candidates'}}
+    return {**base, 'status': 'matched', 'model_grounded': True,
+            'basis': 'explicit registered object ref; ownership from records; coordinates supplied by model'}
 
 def candidate_matches(request, target):
-    """Resolve explicit text against the disclosed catalogue, never by position."""
+    """Select disclosed metadata for repair context, never an execution binding."""
     if not isinstance(target, str):
         return []
     target = target.strip()
@@ -109,7 +94,8 @@ def candidate_matches(request, target):
         source = request.get('source', {})
         for rid in (source.get('working_region'), source.get('region')):
             local = [c for c in hits if c.get('region_ref', source.get('region')) == rid]
-            if len(local) == 1: return local
+            if len(local) == 1:
+                return local
     return hits
 
 def candidate_key(request, candidate):

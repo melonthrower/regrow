@@ -164,8 +164,7 @@ def build(records, state, run=None, *, scope=None):
     names = {rid: r.get('name', rid) for (rid, r) in records.items()}
     for region in records.values():
         names.update({cid: c.get('name', cid) for (cid, c) in owned_controls(region).items()})
-    visual = state.get('visual_navigation') or {}
-    localization_only = visual.get('observation') == oid and bool(visual.get('replay') or str(oid).startswith('navigation:'))
+    localization_only = False
     from regrow.records import page_history as page_history
     from regrow.records import function_evidence as function_evidence
     incoming = {rid: [{'region': row['来源区块记录'], 'attempt': row['动作记录']} for row in function_evidence.incoming_results(records[rid], records) if row['异常'] in ('', 'none') and rid in [r['区块'] for r in row['动作后可交互区块']]] for rid in refs if rid in records}
@@ -295,8 +294,6 @@ def separate_map(request):
 def refresh(request):
     # Identity questions disclose their frozen subjects at the send boundary.
     # Keep the inherited page context for validation; do not append its raw view.
-    if request.get('role') in ('control_identity_comparison',):
-        return request
     from regrow.prompts.history_disclosure import structured_text
     request['user_prompt'] = structured_text(request)
     if request.get('stage') == 'step_correction' and request.get('original_request'):

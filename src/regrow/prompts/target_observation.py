@@ -88,17 +88,16 @@ def attach(request, records):
         from regrow.records.control_history_context import known_information
         candidate['knowledge'] = known_information(control, parameters=False)
         if candidate['id'] == source.get('task_control') and parameters(control):
-            candidate['constraints'] = parameters(control)
+            candidate['parameters'] = parameters(control)
     return refresh(request)
 
 def refresh(request):
-    """Rebuild positions after a frame replacement, including the rendered table."""
+    """Refresh recorded target context after a frame replacement."""
     from regrow.records import page_context as page_context
     page_context.refresh(request)
     if request.get('stage') == 'step_correction':
         return request
-    from regrow.recognition import matching as choices
-    request = choices.prepare(request)
+    request.pop('visual_choices', None)
     from regrow.traversal.action_binding import disclose_candidates
     return disclose_candidates(render(request))
 
@@ -131,7 +130,7 @@ def render(request):
         lines.append('  - ' + row['name'] + '；target=' + json.dumps(row['target'], ensure_ascii=False))
         if item.get('candidate_scope') == 'last_action_surface':
             group['candidate_reason'] = item['candidate_reason']
-        facts = known.get((rid, cid)) or {k: item[k] for k in ('knowledge', 'constraints') if item.get(k)}
+        facts = known.get((rid, cid)) or {k: item[k] for k in ('knowledge', 'parameters') if item.get(k)}
         if facts:
             lines.extend(('    ' + line for line in knowledge_text(facts).splitlines()))
         observed = item.get('target_observation', {})

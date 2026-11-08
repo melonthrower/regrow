@@ -259,7 +259,7 @@
                     "minLength": 1
                   }
                 },
-                "constraints": {
+                "parameters": {
                   "type": "array",
                   "items": {
                     "type": "string",
@@ -313,7 +313,7 @@
                         "minLength": 1
                       }
                     },
-                    "constraints": {
+                    "parameters": {
                       "type": "array",
                       "items": {
                         "type": "string",

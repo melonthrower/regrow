@@ -10,7 +10,8 @@ from regrow.traversal import work_context
 def target_candidates(records, target):
     """Exact labels offer all possible owners; they never establish identity."""
     controls = []
-    regions = []
+    regions = [rid for rid, region in records.items()
+               if target in (rid, region['name'], rid + '/' + region['name'])]
     for rid, region in records.items():
         for cid, control in owned_controls(region).items():
             if target == cid or target == control['name']:
@@ -35,8 +36,8 @@ def context(records, state, request, proposal, call, frame, episode=None):
     if (previous.get('task') == task and previous.get('target') == result['target']
             and previous.get('controls') == controls and previous.get('regions') == result['regions']
             and previous.get('frame')):
-        from regrow.recognition.visual_backtrack import same_surface
-        if same_surface(previous['frame'], frame):
+        from regrow.traversal.exploration_loop import same_observation
+        if same_observation(previous['frame'], frame):
             result['repeat'] = True
     return result
 
@@ -69,50 +70,20 @@ def reobserve(records, state, frame):
 def registered(records, target, call, *, run=None, snapshot=None):
     """Only an accepted current observation can resolve the registration goal."""
     matches = set()
-    observed = []
     for rid, region in records.items():
         for cid, control in owned_controls(region).items():
-            if frame_observation(control, kind='controls', call=call, region=rid):
-                observed.append((rid, cid))
             if (cid in target['controls'] or control['name'] == target['target']):
                 if frame_observation(control, kind='controls', call=call, region=rid):
                     matches.add(cid)
-    if run is None or snapshot is None:
-        return len(matches) == 1
-    if not observed:
-        return False
-    # A new object's accepted name can differ from the old unexecuted proposal.
-    # Reuse normal binding with only this call's accepted visual identities.
-    from regrow.records.calls import action_submission
-    from regrow.records.action_candidates import candidate
-    from regrow.runtime.action_commands import normalize
-    from regrow.traversal.action_binding import bind_action_target
-    from regrow.recognition.action_target_review import Conflict
-    request, proposal = action_submission(run, target['call'], target.get('source_field'))
-    original_frame = (Path(run) / request['screenshots'][0]).resolve()
-    if original_frame != Path(target['frame']).resolve():
-        # A fresh observation can confirm a known identity, but the old click
-        # point cannot identify a renamed/new object on a different frame.
-        return len(matches) == 1
-    request = deepcopy(request)
-    request.pop('action_target_confirmation', None)
-    rows = []
-    for rid, cid in observed:
-        item = deepcopy(candidate(records[rid], cid, None))
-        if item is None:
-            continue
-        if item.get('image'):
-            item['image'] = str((Path(snapshot) / item['image']).resolve())
-        for appearance in item.get('appearances', []):
-            if appearance.get('image'):
-                appearance['image'] = str((Path(snapshot) / appearance['image']).resolve())
-        rows.append(item)
-    request.update(backend_candidates=rows, image_refs=[target['frame']], screenshots=[target['frame']])
-    try:
-        binding = bind_action_target(request, normalize(proposal), records=records)
-    except Conflict:
-        return False
-    return binding.get('status') == 'matched' and binding.get('control_ref') in {cid for _, cid in observed}
+    region_targets = {rid for rid, region in records.items()
+                      if target['target'] in (rid, region['name'], rid + '/' + region['name'])}
+    if region_targets:
+        current = {rid for rid in region_targets
+                   if frame_observation(records[rid], kind='regions', call=call, region=rid)}
+        # A named Region must not be replaced by a child control merely because
+        # the proposed scroll point happens to fall inside that control.
+        return len(current) == 1 and not matches
+    return len(matches) == 1
 
 
 def related_gaps(records, target, pending):
@@ -202,11 +173,11 @@ def retry_evidence(run, records, task, call, frame, snapshot):
     """Unrelated re-registration on the same surface cannot release this task."""
     from regrow.records.calls import action_submission
     from regrow.runtime.action_commands import normalize
-    from regrow.recognition.visual_backtrack import same_surface
+    from regrow.traversal.exploration_loop import same_observation
     request, proposal = action_submission(run, task['deferral']['source_call'], task['deferral'].get('source_field'))
     proposal = normalize(proposal)
     target = context(records, {}, request, proposal, task['deferral']['source_call'], frame)
     if registered(records, target, call, run=run, snapshot=snapshot):
         return True
     original = Path(run) / request['screenshots'][0]
-    return original.is_file() and Path(frame).is_file() and not same_surface(original, frame)
+    return original.is_file() and Path(frame).is_file() and not same_observation(original, frame)

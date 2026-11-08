@@ -33,28 +33,6 @@ def atomic(path, value):
     tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
     os.replace(tmp, path)
 
-def refresh_retained_identity_candidate(run, job):
-    """An identity-only answer cannot migrate a retained stage's other fields."""
-    history = job.get('history', [])
-    if not (job.get('control_identity_pair') or job.get('control_identity_candidates') or any((row.get('role') in ('control_identity_comparison',) for row in history))):
-        return False
-    rebuilt = [i for (i, row) in enumerate(history) if row.get('framework') == 'rebuilt_stage_image_contract']
-    if not rebuilt or any((row.get('framework') == 'refresh_incompatible_retained_candidate' for row in history[rebuilt[-1]:])):
-        return False
-    try:
-        from regrow.runtime.update_reply import main_pair
-        spec, main = main_pair(job['request']['response_schema'], job.get('candidate'))
-        jsonschema.validate(main, spec)
-    except jsonschema.ValidationError as error:
-        digest = hashlib.sha256(json.dumps(job, sort_keys=True).encode()).hexdigest()[:12]
-        archive = Path(job['path']).with_name('episode-before-candidate-refresh-' + digest + '.json')
-        atomic(Path(run) / archive, job)
-        job['history'].append({'framework': 'refresh_incompatible_retained_candidate', 'original_episode': str(archive), 'previous_call': job.get('call'), 'error': diagnostic(error)})
-        job.update(status='initial', candidate=None, record_edit=None)
-        for key in ('control_identity_pair', 'control_identity_candidates', 'service_retry_request'):
-            job.pop(key, None)
-        return True
-    return False
 
 def content_rejection(failure):
     """Identify the provider's recorded content refusal, not every HTTP 402."""
@@ -221,19 +199,12 @@ def request(root, job, context):
     from regrow.recognition import control_observation_repair as _control_observation_repair
     from regrow.traversal import correction_prompts as _correction_prompts
     from regrow.records import page_context as _page_context
-    from regrow.recognition import matching as _visual_choices
-    from regrow.recognition import control_identity_review as _control_identity_review
-    if job['stage'] == 'action' and job.get('action_target_doubt'):
-        from regrow.recognition import action_target_review
-        return action_target_review.request(root, job)
-    if not (job.get('control_identity_pair') or job.get('control_identity_candidates')
-            or job['request'].get('needs_task_inspection') or job.get('record_edit') or job['request'].get('done_task_review') or job['request'].get('action_owner_review')
+    if not (job['request'].get('needs_task_inspection') or job.get('record_edit') or job['request'].get('done_task_review') or job['request'].get('action_owner_review')
             or job.get('pre_dispatch_review') or _correction_prompts.needs_record_repair(job)):
         return _correction_prompts.original_reply(root, job)
     original = deepcopy(job['request'])
     rejected = deepcopy(job.get('rejected_reply', job.get('candidate')))
-    identity_review = bool(job.get('control_identity_pair') or job.get('control_identity_candidates'))
-    if job['stage'] == 'update' and not identity_review:
+    if job['stage'] == 'update':
         # Registration uses the after-frame for geometry. Correcting the action
         # result must return to its original semantic pair and output contract.
         from regrow.traversal.object_registration import semantic_revision
@@ -303,8 +274,6 @@ def request(root, job, context):
     if original.get('needs_task_inspection'):
         dynamic['当前前置缺口'] = '原任务控件缺少已登记的当前定位，点击坐标或改写名称不能补齐登记。请选择observe定向观察原任务控件，或defer保留缺口；补定位成功后回正常动作选择。'
         dynamic['原任务'] = original.get('source', {}).get('task_name')
-    if original.get('visual_choices'):
-        dynamic['待消歧控件'] = _visual_choices.describe(original)
     parts = _correction_prompts.parts(root, job, context)
     if job['stage'] == 'action':
         target_prompt = Path(root) / 'regrow/prompts/动作/目标观察阅读.prompt'
@@ -313,9 +282,6 @@ def request(root, job, context):
     if dispatch_review:
         path = '纠错/投递前画面变化.prompt'
         parts.append({'path': path, 'text': (Path(root) / 'regrow/prompts' / path).read_text()})
-    if original.get('visual_choices'):
-        choice_prompt = Path(root) / 'regrow/prompts/纠错/控件候选消歧.prompt'
-        parts.append({'path': '纠错/控件候选消歧.prompt', 'text': choice_prompt.read_text()})
     from regrow.prompts.compose import compose
     original_parts = original.get('fixed_parts', [])
     if '\n\n'.join((p['text'] for p in original_parts)) != original['system_prompt']:
@@ -341,7 +307,6 @@ def request(root, job, context):
         correction['proposal_base'] = proposal_base
         correction['proposal_revision'] = MODE
     correction['frame_context'] = {str(frame): role['用途'] for (frame, role) in zip(frames, image_roles)}
-    correction = _control_identity_review.attach(root, job, correction)
     if correction.get('role') == 'step_correction':
         retained = deepcopy(dynamic)
         for key in ('被拒绝回复', '本次合并基准', '上次失败或停止诊断（保留原文，非当前能力清单）'):
@@ -449,18 +414,15 @@ class Runner:
         atomic(self.run / self.pointer_name, {'episode': job['path']})
         return self.perform(stage)
 
-    def reject_action(self, q, candidate, ref, reason, pre_dispatch_review=None, action_target_doubt=None):
+    def reject_action(self, q, candidate, ref, reason, pre_dispatch_review=None):
         if pending(self.run, self.pointer_name):
             raise Paused('correction_blocked', '已有步骤待修复')
         key = uuid.uuid4().hex
-        actual = action_target_doubt or ({key: pre_dispatch_review[key] for key in
-                  ('frame_comparison', 'changed_window') if key in pre_dispatch_review}
+        actual = ({'changed_window': pre_dispatch_review['changed_window']}
                   if pre_dispatch_review else None)
         report = {'errors': [{'code': 'action_evidence_review', 'object': candidate.get('target'),
                              'actual': actual, 'expected': reason}], 'unchecked': []} if actual else reason
         job = {'path': f'repair_episodes/{key}/episode.json', 'stage': 'action', 'request': deepcopy(q), 'attempt': None, 'status': 'repair', 'repairs': 0, 'observations': 0, 'history': [{'call': ref, 'error': report}], 'seen': [], 'supplements': [], 'candidate': candidate, 'call': ref, 'error': report, 'requires_observation': True}
-        if action_target_doubt:
-            job['action_target_doubt'] = deepcopy(action_target_doubt)
         if pre_dispatch_review:
             job['pre_dispatch_review'] = deepcopy(pre_dispatch_review)
         self.save(job)
@@ -477,7 +439,7 @@ class Runner:
                 job['service_error_history'].append(failed)
             if job['status'] == 'blocked':
                 role = job['service_retry_request'].get('role')
-                job['status'] = 'repair' if role in ('step_correction', 'control_identity_comparison') else 'initial'
+                job['status'] = 'repair' if role == 'step_correction' else 'initial'
             self.save(job)
             raise Paused('model_service_unavailable', '模型接口失败；保留原步骤和任务，修复服务或请求后继续，不据此切换业务区块。')
         if job.get('suspended_recovery'):
@@ -511,7 +473,6 @@ class Runner:
         from regrow.records import update_semantic_review as _update_semantic_review
         from regrow.recognition import ownership_review as _ownership_review
         from regrow.runtime import model_transport as _model_transport
-        from regrow.recognition import control_identity_review as _control_identity_review
         from regrow.records import registration_diagnostics as _registration_diagnostics
         job = pending(self.run, self.pointer_name)
         if job is None:
@@ -572,20 +533,8 @@ class Runner:
                 job['history'].append({'framework': 'rebuilt_original_action_material', 'original_request': str(archive), 'original_episode': str(episode_archive), 'previous_call': job.get('call')})
                 job.update(request=fresh, status='initial', candidate=None, record_edit=None)
                 self.save(job)
-        if job.get('control_identity_candidates'):
-            from regrow.traversal.object_registration import partition_request, save_candidate
-            group = job['control_identity_candidates']
-            reason = str(_control_identity_review.CandidateConflict(group))
-            try:
-                revised, retained = partition_request(job['request'], job['candidate'],
-                    {'/controls/' + str(group[0]['control_index']): reason})
-            except ValueError as required_object:
-                self.stop(job, str(required_object))
-            job.pop('control_identity_candidates')
-            job.update(status='accept')
-            save_candidate(self, job, revised, retained)
         retry = job.get('service_retry_request', {})
-        old_retry = len(retry.get('screenshots', [])) > 1 and retry.get('role') != 'control_identity_comparison' and not task_review_images(retry)
+        old_retry = len(retry.get('screenshots', [])) > 1 and not task_review_images(retry)
         if ((len(job['request'].get('screenshots', [])) > 1 and not task_review_images(job['request'])) or old_retry) and job['status'] != 'complete':
             archive = Path(job['path']).with_name('request-before-image-contract.json')
             if not (self.run / archive).exists():
@@ -596,8 +545,6 @@ class Runner:
                 fresh = self.adapters.refresh(self.root, self.run, job)
             job['request'] = fresh
             job['history'].append({'framework': 'rebuilt_stage_image_contract', 'original_request': str(archive)})
-            if job.get('control_identity_pair'):
-                job['control_identity_pair']['current_image'] = 1
             if old_retry:
                 retry_archive = archive.with_name('service-retry-before-image-contract.json')
                 if not (self.run / retry_archive).exists():
@@ -607,8 +554,6 @@ class Runner:
                     _correction_crop_feedback.attach(self.run, job, rebuilt)
                 job['service_retry_request'] = rebuilt
                 job['history'].append({'framework': 'rebuilt_service_retry_image_contract', 'original_request': str(retry_archive)})
-            self.save(job)
-        if job['status'] != 'complete' and refresh_retained_identity_candidate(self.run, job):
             self.save(job)
         if stage == 'update' and self.review_update is not None and (not job.get('requires_update_review')):
             job['requires_update_review'] = True
@@ -658,6 +603,10 @@ class Runner:
                 except DiagnosticUnavailable as error:
                     self.pause_diagnostic(job, error)
                 except (ValueError, jsonschema.ValidationError) as error:
+                    # Preserve the actual validator's facts before partitioning
+                    # can raise a second, dependent-object failure.
+                    job['error'] = diagnostic(error)
+                    self.save(job)
                     job['error'] = diagnostic(error)
                     job['history'].append({'observation_error': diagnostic(error)})
                 job['status'] = 'repair'
@@ -715,23 +664,6 @@ class Runner:
                         self.stop(job, str(error))
                     if getattr(error, 'blocked_by', None):
                         job['blocked_by'] = error.blocked_by
-                    if getattr(error, 'control_identity_pair', None):
-                        job['control_identity_pair'] = error.control_identity_pair
-                    if getattr(error, 'control_identity_candidates', None):
-                        from regrow.traversal.object_registration import partition_request, save_candidate
-                        group = error.control_identity_candidates
-                        failed = {'/controls/' + str(group[0]['control_index']): str(error)}
-                        try:
-                            q, retained = partition_request(job['request'], job['candidate'], failed)
-                        except ValueError as required_object:
-                            self.stop(job, str(required_object))
-                        job.pop('control_identity_candidates', None)
-                        job.pop('control_identity_pair', None)
-                        job['history'].append({'call': job['call'], 'unresolved_identity': group, 'reason': str(error)})
-                        save_candidate(self, job, q, retained)
-                        continue
-                    if getattr(error, 'action_target_doubt', None):
-                        job['action_target_doubt'] = error.action_target_doubt
                     job['error'] = diagnostic(error)
                     job['status'] = 'repair'
                     job['history'].append({'call': job['call'], 'error': diagnostic(error)})
@@ -799,8 +731,7 @@ class Runner:
                 self.switch_branch(job)
             q = self.sent_request(job, q, ref, repairing)
             previous_call = job.get('call')
-            if q.get('role') not in ('control_identity_comparison',):
-                job.pop('registration_submission', None)
+            job.pop('registration_submission', None)
             job['call'] = ref
             job['history'].append({'call': ref, 'role': q.get('role')})
             try:
@@ -820,49 +751,8 @@ class Runner:
                         job.update(request=corrected_request, candidate=candidate, status='accept')
                         self.save(job)
                         continue
-                    if q.get('role') == 'action_target_review':
-                        from regrow.recognition import action_target_review
-                        reviewed, candidate = action_target_review.accept(q, reply, ref)
-                        atomic(self.run / 'calls' / ref / 'effective_request.json', reviewed)
-                        atomic(self.run / 'calls' / ref / 'effective_candidate.json', candidate)
-                        job.pop('action_target_doubt', None)
-                        job.update(request=reviewed, candidate=candidate, status='accept')
-                        self.save(job)
-                        continue
-                    if q.get('role') == 'control_identity_comparison':
-                        (reviewed, candidate) = _control_identity_review.compared_candidate(q, reply)
-                        if candidate is None:
-                            self.stop(job, '身份比较仍未确认：' + reply['reason'])
-                        if job['stage'] == 'update':
-                            from regrow.traversal.object_registration import revised_request
-                            reviewed = revised_request(reviewed, previous_call)
-                        atomic(self.run / 'calls' / ref / 'effective_request.json', reviewed)
-                        atomic(self.run / 'calls' / ref / 'effective_candidate.json', candidate)
-                        if not q.get('identity_rules_recheck'):
-                            job['repairs'] = max(0, job['repairs'] - 1)
-                        job.pop('control_identity_pair', None)
-                        job.update(request=reviewed, candidate=candidate, status='accept')
-                        if reply['control_identity'] == 'different' and q['control_identity_pair'].get('kind') == 'reuse':
-                            from regrow.traversal.object_registration import semantic_revision
-                            original, revised = semantic_revision(reviewed, candidate)
-                            job.update(request=original, candidate=revised)
-                            job.pop('registration_submission', None)
-                            pair = q['control_identity_pair']
-                            report = {'errors': [{'code': 'control_reuse_denied',
-                                'object': pair['region_name'] + '中的' + pair['current_name'],
-                                'field': '旧控件引用',
-                                'actual': {'提交的引用': pair.get('submitted_ref', pair['ref']),
-                                           '历史控件': pair['old_name'], '身份比较结论': reply['control_identity'],
-                                           '比较依据': reply['reason']},
-                                'reason': '当前控件与所引用的历史控件不是同一对象。',
-                                'expected': '不再把当前对象的作用写入该历史控件',
-                                'repair': '修正本次对象登记及相关任务知识、访问目标和下一步：旧对象未出现则撤回引用；当前为新对象则省略ref并补充资料。'}],
-                                'unchecked': []}
-                            job.update(status='repair', error=report)
-                        self.save(job)
-                        continue
                     repeated = reply.get('proposal') if isinstance(reply, dict) else None
-                    if repeated is not None and (not q.get('control_identity_pair')):
+                    if repeated is not None:
                         check = hashlib.sha256(json.dumps([repeated, job['request'], job.get('supplements'), reply.get('record_edit')], sort_keys=True).encode()).hexdigest()
                         if check in job['seen']:
                             self.stop(job, '重复提交同一证据下已拒绝的提案')

@@ -164,7 +164,7 @@ def destination_knowledge(records, region, edges):
                 continue
             # These are read-only foreign facts, not knowledge-revision slots.
             facts = [{k: v for k, v in row.items() if k != 'index'} for row in card(control)]
-            legacy_parameters = parameter_text({'constraints': control.get('constraints', {})})
+            legacy_parameters = parameter_text({'parameters': control.get('parameters', {})})
             if facts or legacy_parameters:
                 controls.append({'control': cid, '名称': control['name'],
                                  **({'当前知识': facts} if facts else {}),

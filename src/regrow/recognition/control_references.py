@@ -166,7 +166,7 @@ def decode(request, reply):
     if legacy:
         for group in value.get('function_updates', []):
             for row in [*group.get('add', []), *(r['changes'] for r in group.get('update', []))]:
-                for key in ('supports', 'constraints'):
+                for key in ('supports', 'parameters', 'constraints'):
                     if key in row:
                         row[key] = [re.sub(r'控件\[index=(\d+)\]', lambda m: ids[int(m[1])], ref) if isinstance(ref,str) else ids[ref] for ref in row[key]]
     return value

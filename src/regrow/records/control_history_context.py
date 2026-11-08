@@ -57,7 +57,7 @@ def describe(region, cid, *, detailed=True):
         result['knowledge'] = knowledge
     if detailed and parameters(control):
         from copy import deepcopy
-        result['constraints'] = deepcopy(parameters(control))
+        result['parameters'] = deepcopy(parameters(control))
     return result
 
 def comparison(records, rid, cid):

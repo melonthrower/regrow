@@ -157,7 +157,7 @@ def region_information(region, scope):
         return {}
     if region['id'] not in scope.get('regions', []):
         return {}
-    return {k: deepcopy(region[k]) for k in ('local_knowledge', 'constraints') if region.get(k)}
+    return {k: deepcopy(region[k]) for k in ('local_knowledge', 'parameters') if region.get(k)}
 
 def control_information(region, cid, scope):
     if scope.get('kind') in ('locate', 'update', 'task_proposal', 'scope_review'):
@@ -172,5 +172,5 @@ def control_information(region, cid, scope):
     pending = [owned_tasks(records.get(ref['region'], {})).get(ref['name'], {}) for ref in scope.get('tasks', [])]
     needed = any((task.get('status') in ('pending', 'blocked') and (task.get('completion_action') or {}).get('control', task.get('control')) == cid for task in pending))
     if needed and parameters(control):
-        result['constraints'] = deepcopy(parameters(control))
+        result['parameters'] = deepcopy(parameters(control))
     return result

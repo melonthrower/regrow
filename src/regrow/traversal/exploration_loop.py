@@ -11,8 +11,7 @@ import json
 from pathlib import Path
 
 def same_observation(a, b):
-    from regrow.recognition import visual_backtrack as _visual_backtrack
-    return Path(a).read_bytes() == Path(b).read_bytes() or _visual_backtrack.same_surface(a, b)
+    return Path(a).read_bytes() == Path(b).read_bytes()
 
 def progress_key(records, *, navigation=False):
     rows = {}

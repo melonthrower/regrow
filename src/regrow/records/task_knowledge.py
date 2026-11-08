@@ -32,7 +32,7 @@ def control_knowledge(region, cid, records=None):
     if purpose or parameters(control):
         evidence = purpose.get('evidence', {})
         source = {key: deepcopy(evidence[key]) for key in ('basis', 'shared', 'local_execution') if key in evidence}
-        result['已知用途'] = {'description': purpose.get('knowledge', ''), 'constraints': deepcopy(parameters(control)), 'source': {'region': region['id'], 'control': cid, **source}}
+        result['已知用途'] = {'description': purpose.get('knowledge', ''), 'parameters': deepcopy(parameters(control)), 'source': {'region': region['id'], 'control': cid, **source}}
     return result
 
 def refresh(records, state):
@@ -46,4 +46,4 @@ def summary_view(disclosure):
         return {k: deepcopy(value[k]) for k in ('name', 'description', 'domain', 'conditions') if k in value}
     from regrow.records.function_updates import description
     local = disclosure.get('knowledge', {})
-    return {'self': {k: v for (k, v) in disclosure['self'].items() if k != 'summary' or not local}, 'entries': disclosure['entries'], 'knowledge': deepcopy(local), 'constraints': {k: parameter(v) for (k, v) in disclosure.get('constraints', {}).items()}, 'functions': {name: {'description': description(value), 'constraints': {k: parameter(v) for (k, v) in value.get('constraints', {}).items()}} for (name, value) in disclosure.get('functions', {}).items()}}
+    return {'self': {k: v for (k, v) in disclosure['self'].items() if k != 'summary' or not local}, 'entries': disclosure['entries'], 'knowledge': deepcopy(local), 'parameters': {k: parameter(v) for (k, v) in disclosure.get('parameters', {}).items()}, 'functions': {name: {'description': description(value), 'parameters': {k: parameter(v) for (k, v) in value.get('parameters', {}).items()}} for (name, value) in disclosure.get('functions', {}).items()}}

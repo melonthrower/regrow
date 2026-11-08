@@ -14,7 +14,7 @@ continue/defer也可记录已确认的部分。已有明确用途或足够参数
 
 功能探索以knowledge为答案；已有答案足够时可直接采用，不重复改写。控件function达到给定的单次目标操作要求并登记直接语义后，本轮使用answered；新出现对象的独立探索不填为原任务的remaining_question或next_action。准备动作尚未完成原目标，或原目标确有投递失败、遮挡等障碍时，按实际continue或defer。区块本身、参数和独立准备任务仍按各自给定目标判断。
 
-knowledge填写列表。description写用途和使用方式，适用模式或限制写在同一句描述中；参数写在constraints中。只提交新增或需要修订的知识；修订已有知识时用index引用给定知识序号，其他知识保留，新增不填index。
+knowledge填写列表。description写用途和使用方式，适用模式或限制写在同一句描述中；参数写在parameters中。只提交新增或需要修订的知识；修订已有知识时用index引用给定知识序号，其他知识保留，新增不填index。
 局部例：同一个“插入”按钮在不同编辑模式打开不同面板，为原知识补充适用模式并登记新用途：
 ```json
 {"knowledge":[{"index":0,"description":"文本编辑模式下，打开文字元素面板。"},{"description":"绘图模式下，打开图形面板。"}]}

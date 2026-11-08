@@ -39,28 +39,14 @@ def validate_identity(reply):
         if item['identity'] == 'uncertain' or (item['identity'] == 'same') != bool(item['ref']):
             raise ValueError('unresolved or inconsistent identity')
 
-def match_context(match):
-    """Keep the useful recall result; raw locations stay in the visual plan."""
-    if match.get('accepted'):
-        note = '本图有唯一外观候选，仍结合当前区块核对身份。'
-    elif match.get('candidates') or match.get('box'):
-        note = '外观有多个或不充分的候选，结合本区块语义核对。'
-    else:
-        note = '未获得可靠外观位置，仍可依据当前图及已有记录辨认。'
-    return {'匹配说明': note, '候选位置': [row['box'] for row in match.get('candidates', []) if row.get('box')]}
-
 def prepare(root, records, state, frame, foreground=None, *, work=None):
     from regrow.traversal import register_update as _register_update
-    from regrow.recognition import visual_region_locator as _visual_region_locator
     from regrow.recognition import discovery_completion as _discovery_completion
     from regrow.traversal import work_context as _work_context
-    from regrow.recognition import history_matching as _history_matching
     from regrow.recognition import region_candidate_names as _region_candidate_names
-    from regrow.recognition import local_partition as _local_partition
     from regrow.recognition import discovery_inventory as _discovery_inventory
     from regrow.prompts import frame_context as _frame_context
     reg = _register_update
-    locator = _visual_region_locator
     if state.get('discovery_completion'):
         state = deepcopy(state)
         state['discovery_completion'] = _discovery_completion.scoped_batch(records, state['discovery_completion'])
@@ -76,12 +62,15 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     focus = state.get('inspection_region') or state.get('working_region')
     target = state.get('action_target_registration') or {}
     required_regions = target.get('regions', []) if target.get('status') == 'pending' else []
-    plan = locator.plan(records, focus, frame, force_relocate=state.get('discovery_mode') == 'relocate', required_control=state.get('required_control'), required_regions=required_regions, offset=state.get('control_scan', {}).get(focus, 0), foreground_resolution=state.get('foreground_resolution'), foreground=foreground)
-    names = {}
+    required = [rid for rid in dict.fromkeys(required_regions) if rid in records]
+    local = focus in records and state.get('discovery_mode') != 'relocate' and not any(rid != focus for rid in required)
+    ids = [focus] if local else list(dict.fromkeys([focus, *required, *(foreground or {}).get('regions', [])]))
+    plan = {'mode': 'local' if local else 'relocate', 'focus': focus,
+            'regions': [{'region': rid, 'required_history': rid in required} for rid in ids if rid in records],
+            'controls': [{'control': cid} for cid in owned_controls(records[focus])] if local else []}
+    names = {rid: rid for rid in records}
     cnames = {}
     candidates = []
-    if plan['mode'] != 'local':
-        (rows, names) = _history_matching.with_history(records, [{'region_ref': c['region'], 'name': records[c['region']]['name']} for c in plan['regions']])
     labels = {rid: label for (label, rid) in names.items()}
     for candidate in plan['regions']:
         rid = candidate['region']
@@ -90,7 +79,6 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         if not labels and sum((x['name'] == label for x in records.values())) > 1:
             label += f'（候选{len(names) + 1}）'
         names[rid] = rid
-        anchors = [{'名称': owned_controls(r)[h['control']]['name'], '位置': h['box']} for h in candidate['anchors']]
         candidates.append({'ref': rid, '名称': r['name']})
         if candidate.get('required_history'):
             candidates[-1]['提供原因'] = '拟操作目标或原任务关联的历史身份；尚未确认当前可见。'
@@ -114,12 +102,7 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         for item in plan['controls']:
             cid = item['control']
             cnames[cid] = cid
-            controls.append({**identity(records[focus], cid, records=records), '视觉匹配': match_context(item['match'])})
-        for cid in owned_controls(records[focus]):
-            if cid in cnames:
-                continue
-            cnames[cid] = cid
-            controls.append({**identity(records[focus], cid, records=records), '视觉匹配': {'匹配说明': '本轮未匹配，仅提供历史身份供看图核对', '候选位置': []}})
+            controls.append(identity(records[focus], cid, records=records))
     pr = Path(root) / 'regrow/prompts'
     from regrow.prompts.compose import parts as rule_parts
     from regrow.records.context_scope import rule_selection
@@ -138,21 +121,19 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         candidate = next((c for c in candidates if c['ref'] == group['区块']), None)
         if candidate is not None:
             candidate['已有控件'] = group['控件']
+    partition = None
     if plan['mode'] == 'local':
         dynamic['本轮观察范围'] = '本轮定位区块及其直接所属控件。'
-        if plan.get('partition_context'):
-            dynamic['同帧已确认区块划分'] = _local_partition.prompt(plan['partition_context'])
+        from regrow.recognition.local_partition import build, prompt
+        partition = build(records, focus, frame, foreground)
+        if partition:
+            dynamic['同帧已确认区块划分'] = prompt(partition)
     if state.get('recovery_handoff'):
         dynamic['恢复交接（历史观察，不代表任务完成）'] = state['recovery_handoff']
     if plan['mode'] != 'local':
         dynamic['本轮观察范围'] = '当前前景的功能区块，以及本图中能确认的直接所属控件。'
     if focus in records:
         _discovery_inventory.supplement(root, records[focus], dynamic, parts)
-    if plan.get('foreground_check'):
-        dynamic['前景归属核对'] = {'候选独立区块': records[plan['foreground_check']['region']]['name'], '说明': plan['foreground_check']['reason']}
-    resolved = state.get('foreground_resolution')
-    if resolved and plan['mode'] == 'local' and (resolved.get('focus') == focus) and (resolved.get('frame_path') == str(Path(frame).resolve())) and (resolved.get('frame_sha256') == hashlib.sha256(Path(frame).read_bytes()).hexdigest()):
-        dynamic['已解决的前景核对'] = resolved['conclusion']
     task_contract = None
     if plan['mode'] == 'local' and focus in records:
         from regrow.records.task_plans import context as task_context
@@ -167,14 +148,14 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
         dynamic = {key: value for key, value in dynamic.items() if value not in (None, '', [], {})}
     response_schema = schema(root, plan['mode'], focus in records, task_contract=task_contract)
     response_schema['properties']['foreground']['required'] += ['exception', 'recovery_handoff']
-    request = {'pipeline_step': 'discovery', 'role': 'observation', 'stage': 'discovery', 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [frame], 'response_schema': response_schema, 'fixed_parts': parts, 'discovery_context': {'mode': plan['mode'], 'focus': focus, 'region_names': names, 'control_names': cnames, 'visual_plan': plan, 'partition_context': plan.get('partition_context')}}
+    request = {'pipeline_step': 'discovery', 'role': 'observation', 'stage': 'discovery', 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [frame], 'response_schema': response_schema, 'fixed_parts': parts, 'discovery_context': {'mode': plan['mode'], 'focus': focus, 'region_names': names, 'control_names': cnames, 'partition_context': partition}}
     if task_contract is not None:
         request['source'] = {'region': focus, 'controls': list(owned_controls(records[focus]))}
     _frame_context.label(request, frame, '本次发现观察图')
     _work_context.attach(request, records, state, work)
     from regrow.records.context_scope import for_request
     for_request(request, records, state)
-    return _history_matching.attach(request, records, plan['regions'], names)
+    return request
 
 def request_from_run(root, run, *, work=None):
     from regrow.recognition import foreground_scope as _foreground_scope

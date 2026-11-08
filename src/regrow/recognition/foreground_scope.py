@@ -30,7 +30,6 @@ def audit(run, job):
     fields = q.get('response_schema', {}).get('properties', {}).get('foreground', {}).get('properties', {})
     if job['stage'] not in ('discovery', 'update') or not fields:
         return None
-    from regrow.recognition import history_matching as history_matching
     (q, reply) = _owner_submission(run, job['call'])
     from regrow.prompts.frame_context import primary
     frame = Path(run) / primary(q)
@@ -68,8 +67,7 @@ def audit(run, job):
                 issues.append({'source_field': f'/regions/{source_index}', 'field': 'image', 'reason': '区块框为空、倒置或超出当前截图；不缓存该边界或保存模板'})
             else:
                 identified.append({'source_field': f'/regions/{source_index}', 'bbox': box})
-    ranking = history_matching.scan({rid: r for (rid, r) in records.items() if rid not in excluded}, snapshot, frame)
-    value = {'identified_regions': identified, 'template_rejections': issues, 'source_call': job['call'], 'frame_sha256': fingerprint(frame), 'scope': scope, 'ranking': ranking, 'basis': 'same-call semantic foreground; image matches are identity candidates only', 'limitation': 'geometry checks do not prove the model selected the correct foreground'}
+    value = {'identified_regions': identified, 'template_rejections': issues, 'source_call': job['call'], 'frame_sha256': fingerprint(frame), 'scope': scope, 'ranking': [], 'basis': 'same-call semantic foreground and current-frame geometry', 'limitation': 'geometry checks do not prove the model selected the correct foreground'}
     path = Path(run) / 'calls' / job['call'] / 'foreground_matching.json'
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2))
     return value

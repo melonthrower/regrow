@@ -121,9 +121,9 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_any_paths": [
-                  "controls.knowledge.constraints"
+                  "controls.knowledge.parameters"
                 ]
               }
             ],
@@ -184,7 +184,7 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_paths": [
                   "regions.controls"
                 ]
@@ -217,42 +217,6 @@
             ]
           }
         ]
-      }
-    },
-    "control_identity_comparison": {
-      "groups": [
-        {
-          "question": "给定历史控件在图1能否对应到同一对象，还是不同或仍无法确认？",
-          "materials": [
-            "核对对象",
-            "当前任务与本次操作",
-            "相关历史与已登记认识",
-            "同区块的已接受状态依据",
-            "仍需注意",
-            "先前身份判断（本次待复核）",
-            "补充观察",
-            "平台"
-          ]
-        }
-      ],
-      "direct_question": true,
-      "declared_materials_only": true,
-      "render": "identity_material",
-      "template": "调用/控件身份比较.prompt",
-      "supplement_paths": [],
-      "stage": "control_identity_comparison",
-      "field_sections": {
-        "outputs": [
-          {
-            "block": "control.identity_comparison",
-            "fields": [
-              "control_identity",
-              "reason"
-            ],
-            "details": []
-          }
-        ],
-        "environment": false
       }
     },
     "ownership_review": {
@@ -545,7 +509,7 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_paths": [
                   "regions.controls"
                 ]
@@ -608,9 +572,9 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_any_paths": [
-                  "controls.knowledge.constraints"
+                  "controls.knowledge.parameters"
                 ]
               },
               {
@@ -787,9 +751,9 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_any_paths": [
-                  "controls.knowledge.constraints"
+                  "controls.knowledge.parameters"
                 ]
               }
             ],
@@ -846,7 +810,7 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_paths": [
                   "regions.controls"
                 ]
@@ -1118,7 +1082,7 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_paths": [
                   "regions.controls"
                 ]
@@ -1181,9 +1145,9 @@
                 ]
               },
               {
-                "block": "control.knowledge_constraints",
+                "block": "control.knowledge_parameters",
                 "when_any_paths": [
-                  "controls.knowledge.constraints"
+                  "controls.knowledge.parameters"
                 ]
               },
               {
@@ -1527,194 +1491,6 @@
         ],
         "environment": false
       }
-    },
-    "action_target_review": {
-      "template": "调用/操作目标核对.prompt",
-      "stage": "action_target_review",
-      "question": "本次实际应操作哪个对象？直接输出核对后的动作。",
-      "groups": [
-        {
-          "question": "核对动作对象与当前点位",
-          "materials": [
-            "原动作上下文",
-            "原拟执行动作",
-            "定位疑点",
-            "上次回复问题",
-            "上次回复"
-          ]
-        }
-      ],
-      "direct_question": true,
-      "declared_materials_only": true,
-      "field_sections": {
-        "concepts": [
-          {
-            "block": "region.definition"
-          },
-          {
-            "block": "task.definition",
-            "work_kinds": [
-              "action"
-            ]
-          }
-        ],
-        "outputs": [
-          {
-            "block": "region.application_exception",
-            "fields": [
-              "exception",
-              "recovery_handoff"
-            ],
-            "details": []
-          },
-          {
-            "block": "action.proposal",
-            "fields": [],
-            "format": "platform",
-            "details": []
-          },
-          {
-            "block": "action.complete",
-            "fields": [
-              "action",
-              "reason"
-            ],
-            "actions": [
-              "complete"
-            ],
-            "details": []
-          },
-          {
-            "block": "action.none",
-            "fields": [
-              "action",
-              "reason"
-            ],
-            "actions": [
-              "none"
-            ],
-            "block_by_work_kind": {
-              "navigate": "action.none_navigation"
-            },
-            "details": []
-          },
-          {
-            "block": "control.knowledge_revision",
-            "fields": [
-              "controls"
-            ],
-            "details": [
-              {
-                "block": "control.knowledge_description",
-                "when_any_paths": [
-                  "controls.knowledge"
-                ]
-              },
-              {
-                "block": "control.knowledge_index",
-                "when_any_paths": [
-                  "controls.knowledge.index"
-                ]
-              },
-              {
-                "block": "control.knowledge_constraints",
-                "when_any_paths": [
-                  "controls.knowledge.constraints"
-                ]
-              }
-            ],
-            "when_paths": [
-              "controls.knowledge"
-            ],
-            "actions": [
-              "complete",
-              "none"
-            ]
-          },
-          {
-            "block": "region.local_knowledge",
-            "fields": [
-              "regions"
-            ],
-            "details": [
-              {
-                "block": "region.nested",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "region.current",
-                "when_paths": [
-                  "regions.current"
-                ]
-              },
-              {
-                "block": "region.parent",
-                "when_paths": [
-                  "regions.parent"
-                ]
-              },
-              {
-                "block": "control.registration",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.registration_ref",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.registration_name",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.knowledge_description",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.knowledge_constraints",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.knowledge_index",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.list_group",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              },
-              {
-                "block": "control.add_image",
-                "when_paths": [
-                  "regions.controls"
-                ]
-              }
-            ],
-            "when_paths": [
-              "regions.local_knowledge"
-            ],
-            "actions": [
-              "complete",
-              "none"
-            ]
-          }
-        ]
-      },
-      "supplement_paths": []
     }
   },
   "work": {
@@ -1772,7 +1548,6 @@
         "action_selection",
         "recovery",
         "ownership_review",
-        "action_target_review",
         "observation_update"
       ]
     },
@@ -1782,7 +1557,6 @@
         "action_selection",
         "recovery",
         "ownership_review",
-        "action_target_review",
         "observation_update"
       ]
     },

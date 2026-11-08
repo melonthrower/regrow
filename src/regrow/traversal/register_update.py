@@ -62,14 +62,12 @@ def commit_update(root, run, call_ref, attempt_ref):
     from regrow.recognition import region_identity as _region_identity
     from regrow.traversal import result_updater as _result_updater
     from regrow.records import snapshots as _knowledge_transaction
-    from regrow.recognition import control_identity_review as _control_identity_review
     from regrow.traversal import action_context as _stepwise_flow
     from regrow.traversal import suspended_updates as _suspended_updates
     from regrow.records import region_records as _region_records
     from regrow.recognition import region_candidate_names as _region_candidate_names
     from regrow.records import registration_diagnostics as _registration_diagnostics
     from regrow.recognition import update_visibility as _update_visibility
-    from regrow.recognition import matching as _image_match
     from regrow.records import task_updates as _task_updates
 
     from regrow.traversal import task_routing as _task_routing
@@ -127,8 +125,6 @@ def commit_update(root, run, call_ref, attempt_ref):
             _record_write_json(tmp_pointer, pointer)
             os.replace(tmp_pointer, _knowledge_transaction.pointer(current))
         return pointer
-    if current.exists():
-        _control_identity_review.check_request(run, request, reply)
     if not current.exists():
         raise ValueError('current record snapshot is required before registering an action')
     prior = run / _record_read(current)['snapshot']
@@ -173,7 +169,6 @@ def commit_update(root, run, call_ref, attempt_ref):
         gap = region_work(records[rid]).get('registration_gaps', {}).get('task_proposal')
         if gap:
             gap['recheck_after'] = call_ref
-    old_control_refs = visibility.locate_retained(records, region_refs, call_ref, snapshot, run / edge['after_image'] if edge.get('after_image') else None, _image_match, observation=edge['after_observation']) if region_refs else []
     association = deepcopy(binding.get('association'))
     a = rebase(_region_evidence.action_record(edge), run, snapshot)
     if association:
@@ -223,9 +218,7 @@ def commit_update(root, run, call_ref, attempt_ref):
         for transition in region['transitions']:
             if navigation.contextual_return(owned_actions(region).get(transition['attempt'], {})):
                 transition['destination_behavior'] = 'history_dependent'
-    state = {'update_status': 'committed', 'update_digest': digest, 'source_call': call_ref, 'attempt': attempt_ref, 'working_region': working_ref, 'interactive_regions': region_refs, 'last_action_result': {'region': source, 'action': attempt_ref}, 'next_action_mode': branch['next_action_mode'], 'reason': branch['reason'], 'phase': 'ready_for_next_action', 'execution_status': 'not_started', 'observation': {'id': edge['after_observation'], 'image': edge.get('after_image'), 'control_refs': [cid for ref in region_refs for (cid, c) in owned_controls(records[ref]).items() if frame_observation(c, kind='controls', call=call_ref, observation=edge['after_observation'])] + old_control_refs, 'foreground': reply['foreground']}}
-    if old_control_refs:
-        state['visual_navigation'] = {'observation': edge['after_observation'], 'controls': {cid: rid for rid in region_refs for cid in old_control_refs if cid in owned_controls(records[rid])}, 'evidence': 'retained controls matched against current after-image'}
+    state = {'update_status': 'committed', 'update_digest': digest, 'source_call': call_ref, 'attempt': attempt_ref, 'working_region': working_ref, 'interactive_regions': region_refs, 'last_action_result': {'region': source, 'action': attempt_ref}, 'next_action_mode': branch['next_action_mode'], 'reason': branch['reason'], 'phase': 'ready_for_next_action', 'execution_status': 'not_started', 'observation': {'id': edge['after_observation'], 'image': edge.get('after_image'), 'control_refs': [cid for ref in region_refs for (cid, c) in owned_controls(records[ref]).items() if frame_observation(c, kind='controls', call=call_ref, observation=edge['after_observation'])], 'foreground': reply['foreground']}}
     previous_state = _record_read(prior / 'runtime_state.json') if current.exists() else {}
     if previous_state.get('discovery_completion_history'):
         state['discovery_completion_history'] = deepcopy(previous_state['discovery_completion_history'])

@@ -61,43 +61,6 @@ def rediscover(run, q, reason):
     _record_publish(run, 'task-inspection-' + key[:12], mutate)
     return True
 
-def locate_task_control(run, q, frame):
-    """Refresh only the chosen task's missing control, using current visual evidence."""
-    from regrow.traversal import discovery_step as _discovery_step
-    from regrow.recognition import matching as _image_match
-    source = q.get('source', {})
-    cid = source.get('task_control')
-    rid = source.get('completion_region') or source.get('task_region')
-    if not cid or not rid:
-        return False
-    (snapshot, records, state) = _record_load(run)
-    obs = state.get('observation') or {}
-    if rid not in state.get('interactive_regions', []):
-        return False
-    if any((c.get('id') == cid for c in q.get('backend_candidates', []))):
-        return False
-    control = owned_controls(records.get(rid, {})).get(cid, {})
-    row = templates.latest(control)
-    if not row:
-        return False
-    path = (snapshot / row['image']).resolve()
-    if not path.is_file():
-        return False
-    match = _image_match.locate(str(path), str(frame))
-    if not match['accepted']:
-        return False
-    import uuid
-
-    def mutate(records, state, *args):
-        state['observation']['control_refs'] = list(dict.fromkeys([*obs.get('control_refs', []), cid]))
-        proof = state.setdefault('visual_navigation', {'observation': obs['id'], 'controls': {}})
-        if proof.get('observation') != obs['id']:
-            proof = {'observation': obs['id'], 'controls': {}}
-            state['visual_navigation'] = proof
-        proof.setdefault('controls', {})[cid] = rid
-        proof.setdefault('task_matches', {})[cid] = {'frame': str(frame), 'match': match}
-    _record_publish(run, 'task-location-' + uuid.uuid4().hex, mutate)
-    return True
 
 def retained_action_target(run, snapshot, records, state):
     """Read the unexecuted target and its native frame from the saved call."""
@@ -145,10 +108,10 @@ def retained_action_target(run, snapshot, records, state):
 
 
 def register_action_target(run, request, proposal, binding, call, *, episode=None):
-    """Register unbound click/input targets through discovery before delivery."""
+    """Register any object-directed target through discovery before delivery."""
     if binding.get('association', {}).get('status') != 'unconfirmed':
         return False
-    if proposal.get('action') not in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'input_text'):
+    if proposal.get('action') not in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'input_text', 'scroll', 'hover', 'drag'):
         return False
     frame = str((Path(run) / request['screenshots'][0]).resolve())
     if not Path(frame).is_file():
@@ -190,6 +153,3 @@ class Locator:
         if batch.get('pending') and not target_pending and batch.get('sha256') != _discovery_completion.fingerprint(self.frame):
             discovery.await_discovery(self.run, str(self.frame), 'fresh-discovery-' + self.frame.parent.name)
         return run_stage(self.root, self.run, self.call, repair=self.repair)
-
-    def locate_control(self, request):
-        return locate_task_control(self.run, request, self.frame)

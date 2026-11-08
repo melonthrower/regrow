@@ -1,10 +1,36 @@
-2026-11-08 原始格式纠错布局：runtime/reply_correction在反馈中标明reply_is_wire；correction_fields及首次named_references展示据此保留公开格式原答，不再按内部扁平对象重新编码。非法顶层controls仍按原schema标错，不自动移动或放宽接收。实机0258原格式错误的0259请求已保留原字段、引用、前后图和来源；0262→0263正常纠正嵌套并保存c0070候选知识。0259/0260将c0069误填为Region；0260错误行已按Region引用枚举单独隔离并保存缺口，其余正确内容发布，未误建区块；0261才正确补回控件知识，不将整体发布等同全部字段纠正。静态陌生阅读未发现该三处布局接线直接回归，其他纠错角色未新增实测；无固定Prompt正文、输出schema或新离线测试改动。
+2026-11-08 参数命名统一工作稿：操作参数统一使用parameters。控件参数归knowledge[].parameters，区块参数目录使用parameters，功能的parameters只保存参数引用；动作仍填写本次实际参数值。原constraints只在旧记录/旧请求读取时兼容，不与parameters并列写新数据。参数值的既有表示法和其他对象语义不变；399停点图与0258完整原记录的两项隔离副本核对通过，0新模型/GUI；仅验证命名、旧数据读取和登记链路。新的完整参数解释及本轮补充示例仍待用户确认。
+
+2026-11-08 图像匹配删除工作稿：普通识别/更新不再扫描历史裁图或据命中扩展知识，不再通过相似外观、候选重叠或像素位置复核/关联身份；已列前景内的旧控件自动召回也退出。普通动作选择调用前重截当前实机图，next_action仍按其动作后图接续，不新增选点复核。执行前保留窗口检查、完整截图证据、引用/坐标/动作校验、预算与未知投递防重放，退出模板定位、局部/整图变化门和输入聚焦图像确认。正常外观裁图与Luna外观状态比较保留。两类独占核对角色及资源已删除；其他固定Prompt先保持，用户正在审阅完整普通动作请求。两例保存帧3Luna/0GUI：IPv6新登记10控件，9个IPv4参数控件名称/知识保持；返回Network复用r0003并保存返回边、11区块60控件保持，但侧栏r0001仍漏列，完整前景召回未接受。正常执行入口保存帧0Luna/0GUI：时钟变化通过到零GUI预算、模拟窗口变化拒投递。非现场遍历/全框架验收，原399次运行未动。证据 artifacts/visual_matching_removal/20261108T095811Z_01；独立初读及测试范围修订复审完成；侧栏漏列仍未接受。
+
+2026-11-08 功能认识修复工作稿：复用reply_structure.recover，在实际schema要求动作字符串时合并单个action容器与外层互补字段；不同值保留为具体字段冲突。原顶层controls不属于本次schema、且下层允许controls时，仅将已有唯一披露归属的纯控件知识移入regions[].controls；新对象和多归属不猜。原始raw_response/unfiltered_response保留，派生结果沿正常校验、解码和登记。0101原答动作接受及0258原答知识保存的隔离检查通过，0新HTTP/GUI；不是新模型行为或业务效果验证。异常字段顶层化及其他统一输出的named_references适配仍在after-proposed草稿，须随待确认的完整Prompt一起接入，当前未激活。
+
+2026-11-08 原始格式纠错布局（此前实跑冻结版）：runtime/reply_correction在反馈中标明reply_is_wire；correction_fields及首次named_references展示据此保留公开格式原答，不再按内部扁平对象重新编码。该版非法顶层controls仍按原schema标错，不自动移动或放宽接收。实机0258原格式错误的0259请求已保留原字段、引用、前后图和来源；0262→0263正常纠正嵌套并保存c0070候选知识。0259/0260将c0069误填为Region；0260错误行已按Region引用枚举单独隔离并保存缺口，其余正确内容发布，未误建区块；0261才正确补回控件知识，不将整体发布等同全部字段纠正。静态陌生阅读未发现该三处布局接线直接回归，其他纠错角色未新增实测；无固定Prompt正文、输出schema或新离线测试改动。
 
 2026-11-08 准确ref动作绑定已接入：动作选择、纠错及next_action接收共用Records对象表，已有区块/控件的准确ref不依赖backend_candidates、interactive_regions或外观匹配；未知ID及ID/名称不符明确拒绝。原任务归属保留；动作绑定、投递来源核验、Region动作结果和任务证据共用同一身份/来源判断。back保留明确ref，同次更新改名按原调用名称合同解释；同答新对象登记名按已接受发布快照中的唯一身份解回ID，不靠坐标猜对象。描述型目标仍沿原识别流程。滚动目标未匹配时，校验直接提供target、实际值与条件，原纠错据此标记；不以普通字符串停在诊断缺失。原动作格式、坐标、窗口/目标变化及未知投递防重放保持。无固定Prompt改动。新空图Settings真实遍历已完成无框c0008准确ref点击及登记；0046滚动目标诊断缺失经修复，0047按准确c0025重答、a0022执行、0048登记。0055同答新名分配c0026、a0028执行和0057登记已通过；0122/c0003与0130/c0009在候选和当前区块名单缺失时仍执行并登记，0131保留原任务。两组完整原件及冻结源码已由陌生读者独立核对；这不表示全部引用材料缺失，也不自动修正跨页面归属。Region指针click、back和同次改名仍仅静态核对，未新增离线案例或全量门禁。原61次运行保持；新运行不限总调用，每100次由root检查，失败与恢复原件保留。
 
+## 2026-11-07 格式接收结构恢复
+
+`model_reply_parse` 保留完整JSON容器，支持完整代码块/说明包围的JSON，拒绝截断、冲突的多回复及同层不同值的重复键。`reply_structure.recover(request, reply)` 依据实际schema、给定ref和同答controls的明确区块归属，恢复容器层级、单项列表、以ref为键的对象与同对象互补字段；原有typed子记录边界保留，动作参数不跨记录拼接，目标区块只在同答归属唯一时补齐。缺值、不同对象或冲突候选不猜。主体更新与可选next_action仍沿main_pair分开接收。
+
+正常 sender 在agent消费和额外字段过滤前执行唯一整理入口，发生整理时保存 structure_recovery.json 和原始 unfiltered_response.json；完整原HTTP仍在raw_response.json，统一response.json供后读。格式纠错读取结构错误的具体候选事实，不因后续过滤丢失冲突；未增加模型调用、替代登记或新的业务完成标准。现有冻结运行不自动更新。
+
+本轮仅离线原答验证：原Settings 0011、0014、0039完整请求/历史/原截图及HTTP回答，经真实call_model_once、reply_correction、普通引用解码全部通过；两个动作参数与当时纠错后的回答一致、理由仍取原答，0039区块取自同答已声明的唯一归属。全程网络禁止，0新HTTP/GUI，未发布对象图或执行动作，不称新模型/GUI行为验收。4项新增检查通过；旧parser夹具缺helper、旧过滤歧义断言在改前函数上也失败，原日志保留，不修相邻实现。证据artifacts/runs/reply_structure_recovery_20261107_01/。
+
+> 2026-11-07 当前前景区块：新的 `current_regions` 字段格式只含具名 `ref`，由 named_references 在发送及纠错时统一呈现；内部位置不交给 Luna 填写，旧已发合同保持。引用与原生验证的限定结果见11月日志。
+
 > 2026-11-07 提示出口：调用组成及实际动态schema同步清退独立功能总结/结果复核，当前13类。冻结存活正文/正反例保持，仅机械删除退役字段条款；六段参数化增量与归属两块保留。新动作/恢复/next_action继续共享同一平台动作空间；Android key_press枚举直接取实际执行键表。旧专用步骤保留episode并撤销指针，不再发送旧合同，工作台原历史仍可读。
 
-> 2026-11-06：公共executable_operation_schema独立于Task schema，普通动作、恢复及next_action复用；update_reply.main_pair仅在本地接收拆开主更新与可选Action。双图更新的next_action使用后图坐标，主体仍不输出几何；旧调用沿保存合同读取。验证与限制见根目录SNAPSHOT_STATUS.md。
+> 2026-11-06 参数化探索：交接 v1.1 六段原文追加至 control.list_group、task.propose、region.registration/function_updates/state_description、action.jump_to；其余冻结正文/例子保留。task_proposal/observation_update 配方与实际 Schema 同步开放可选功能增量，归属等无关角色不注入功能输出块。access_entry 共用已有 ID/名称解析和真实身份合并重指向；旧共享复查配方、专用 Prompt 和消费者退役。
+
+> 2026-11-06 冻结后：新发送合同保留顶层current_regions，不再只用嵌套region.current表达前景；已保存旧contract继续解码。归属字段正文由catalog/field_sections同源读取，源外围块标记不进入模型正文，保留手册仅作为调查边界补充。当前80块、16用途38份离线请求已组成；两个新字段原文逐字核对，其余五份冻结文件逐字不变。行为验收见11月日志，不将离线夹具当保存帧模型。
+
+> 2026-11-06 冻结六Prompt接线：正文/固定示例按附件保留；动态名称仅在材料边界转换，function_updates仍纯ID及Control参数引用。重复prepare沿原name_contract和显式ref.enum（包括空集合）保持可写范围，格式说明明示空范围不可填；新对象仍可按本步schema登记。身份历史显示沿单pair原材料，退役selection残留已删除。重复已知Region的被拒回复可展示，走原格式完整重答，原答不自动去重。最终39项/159子检查及空范围2项通过；全批15HTTP/0新GUI，合成Task/Control与最后搜索框裁图仍未接受，见11月日志和冻结原文设计。
+
+> 2026-11-06 最终Control：调用组成现16类，无control_identity_selection。对象外观补登记输出objects[].appearance_bbox、可选reason；只有定位未确认/消歧解释，普通发现的Control schema不被要求输出reason。父步骤按补登记实际保存合同接收旧bbox结果；新无几何主更新补成Control.appearance_bbox，Region原bbox保持。旧原答/缓存不改，动作/可用性与next_action执行链不改。
+
+> 2026-11-06 Control：新name_contract标明id_name，已有Control标签单个字符串按第一个/分隔；ID和完整名称须匹配本轮材料。历史name_contract及旧next_action继续按旧名称/重名限定读回。可选next_action的标签在主结果成功登记后送原动作纠错链，错引用不回滚主结果。
+
+> 2026-11-06：公共executable_operation_schema独立于Task schema，普通动作、恢复及next_action复用；update_reply.main_pair仅在本地接收拆开主更新与可选Action。双图更新的next_action使用后图坐标，主体仍不输出几何；旧调用沿保存合同读取。验证与限制见11月日志。
 
 # 提示、模型和执行支撑
 
@@ -230,9 +256,26 @@ recovery.build_request按transport实际平台构造说明；桌面发送入口�
 ## 2026-11-03 应用材料的正常发送接点
 model_transport在原运行范围之后调用application_judgement.prepare，仅对五类当前界面调用替换/补齐目标应用材料。名称来自manifest.app_name或app，保留其他材料和JSON后的帧说明。没有新增模型调用。已发送原格式纠错保持原合同；历史任务清点不读取当前应用归属。动作材料就近显示目标应用，输出定义仍来自对象词项与实际schema。
 
+## 2026-11-05 执行材料与保存帧验证（候选）
+page_history.execution供本步结果和相关历史复用真实receipt/dispatch数据，保留实际点击/拖动坐标；result_updater不再用proposal冒充缺失的执行明细，意图仅保留目的，回执与已执行步骤分开。共享知识原外层区块只存interpreted_request展示提示，原请求/原答保留；旧已保存name_contract不重建。
+本批14项辅助检查与GIMP0337保存帧1HTTP/0GUI限定通过；无Settings GUI部署。复制Writer预览遇用户XFS 700G硬配额，0HTTP，失败保留；仅本任务停止的零调用预览副本经gzip完整性/归档成员核对后压缩，原运行及新GIMP调用未动。共享磁盘空闲不代表账号可写配额。
+
+2026-11-05保存帧工作台：worker仅重建已有六类明确业务角色；step_correction/目标核对/未知角色拒绝在复制/模型前，选择对应原业务调用。修复原0104曾静默落入功能整理的默认分支。真实0104拒绝与0103正常任务提出完整预览均0HTTP/0GUI；未改普通业务分支或新增UI/CLI入口，详见overnight_plan_20261105_03。
+
+2026-11-05 Overnight04：显式原题记录复核复用原完成语义图与正常Runner；两图无几何输出，frame_context.primary按该原请求主图选择。具名reopen.before在同一协议回读，其他before字段不扩展。未能修订清本次review指针、不暂挂业务task；发布后正常收尾不重复写记录。Writer0175/VSCode0198共2实际HTTP/0GUI，原0196单图registration_request恢复真实双图已覆盖；0174临时目录依赖入口缺失在HTTP前失败，逻辑计数保留，单列0HTTP。无新GUI，原现场不动。完整配置/日志/源码/diff见Overnight04。
+
+
+2026-11-05 Overnight07：补历史范围校验后同笔结果结算前撤纯result_registration_pending（严格episode/archive/attempt，旧值入现有history，原题/真实前提/status判断保留）。2辅助检查通过；latest完整真实旧候选仍拒绝覆盖。归档时点完整Settings分支0110更新+0111外观共2HTTP/0GUI，原repairs=2，continue建议把Region填control被原合同拒绝，结果无commit，因此释放分支原生未验收。重复暂挂旧目录冲突另存原异常，defer_result仅改重档选择新目录；正常Runner续接0新增HTTP返回deferred，旧档/计数不变。完整请求/答/图/冻结v9v10/差异/保全与独立复审见artifacts/runs/overnight_plan_20261105_07。Prompt未变，全计划/Settings实机未完成，不提交未通过候选，原索引不变。
+
 
 2026-11-07 只读看板：`tools/frame_annotations.py` 从已提交观察读取区块 bbox、控件 appearance_bbox 及 source_image，`progress_window` 在对应原图叠加范围，画面下方复用 graph.json 的控件树、操作树和当前进度。最近框架画面没有对应原登记框时明确提示；可切换最近有框的登记画面。框不是点击范围，不把历史坐标搬到新图，不改遍历记录、Prompt或执行。实际浏览器核对缩放、框开关、树及两个画面模式通过；本轮遍历仍使用原冻结源码。
 
 
 2026-11-07 当前投递前比较：`recognition.target_frame.compare` 在动作依据图中复用现有外观匹配定位目标Control，实际操作位置在范围内时比较该范围在投递前图中的原位RGB像素；其他控件、所属区块其他内容与系统栏变化不使该比较失效。Control范围无法确定或不能覆盖操作位置时，退到所属Region的同帧登记边界或匹配范围；范围均未知时保留原检查。`ActionExecutor.execute` 只计算一次，通用画面检查和 `action_target_review.confirmed` 共用此结果；窗口变化仍独立核对，动作确认仍限同一完整动作。桌面scroll只核对滚轮投递点，drag与Android滑动还核对真实终点。已有具体范围变化时须重新核对，原一次纠错不跳过它。原回执、防重投与动作后观察不改。
 6项聚焦检查通过；本轮0009真实历史正常重建，Luna原答经正常校验/核对绑定c0001，2HTTP/0GUI；正常executor复用原失败现场取图，两道检查通过后由0GUI预算停止，未投递动作、身份未新增。Applications实例范围无法从Notifications代表外观取得，本例实际回退r0001范围；不宣称所有实例均有具体控件范围。主试跑保持46/8暂停。证据target_region_frame_compare_20261107_01及原工作台job20261107T085112-6e9b08ce。
+
+
+2026-11-07 纠错入口：格式接收与步骤修复统一要求结构化失败事实；`correction_feedback` 显示对象、字段、实际内容和条件，不再把普通异常包装为通用修复提示。格式循环保存诊断缺失并在重入、计费和发送前停止。用户确认的真实菜单文本及无诊断禁止重答两项本地检查通过（0HTTP/0GUI）；字段语义覆盖仍不完整，未新增模型/GUI验收。
+
+
+2026-11-07 字段标记纠错：`correction_fields.prepare` 共用展示选择与 JSONC 注释，格式循环在 request 构造时直接接入（实际重答不再经过 prepare_request），步骤纠错在正常发送末端接入。仅在临时深拷贝使用不可能来自 JSON 的 tuple 标记键，不向业务数据添加错误字段；删除无关字段讲解及整份生成格式，返回/验收 Schema 保持。解析失败无具体字段时保留整份回复及原解析原因。两项本地输出检查：真实菜单保留 jump_to/current_regions 说明；description 类型错仅保留其说明；原稿显示值、任务/历史、截图和接收格式核对通过，0HTTP/GUI。旧无字段定位异常仍遵守原停点，不宣称全部规则或 Luna 修复行为已验收。

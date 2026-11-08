@@ -1,4 +1,10 @@
-2026-11-08 准确ref实跑的当前边界：新空图Settings在399次窗口停审，整次遍历尚未完成。无框、同答新名及候选/当前名单漏列的准确ref已有真实执行与登记；后续同一Apply任务反复复查已见状态，原答持续pending。当前任务选择与完成判断仍沿原流程，没有按次数强制写done；两次更早的结果登记仍deferred。任务进展指引的新候选只保存在本地工作台、待用户确认，未改源码或验证。保留本轮原件与停点，不将窗口结束或任务数量当作全应用功能覆盖。
+2026-11-08 参数命名统一工作稿：操作参数统一使用parameters。控件参数归knowledge[].parameters，区块参数目录使用parameters，功能的parameters只保存参数引用；动作仍填写本次实际参数值。原constraints只在旧记录/旧请求读取时兼容，不与parameters并列写新数据。参数值的既有表示法和其他对象语义不变；399停点图与0258完整原记录的两项隔离副本核对通过，0新模型/GUI；仅验证命名、旧数据读取和登记链路。新的完整参数解释及本轮补充示例仍待用户确认。
+
+2026-11-08 图像匹配删除工作稿：普通识别/更新不再扫描历史裁图或据命中扩展知识，不再通过相似外观、候选重叠或像素位置复核/关联身份；已列前景内的旧控件自动召回也退出。普通动作选择调用前重截当前实机图，next_action仍按其动作后图接续，不新增选点复核。执行前保留窗口检查、完整截图证据、引用/坐标/动作校验、预算与未知投递防重放，退出模板定位、局部/整图变化门和输入聚焦图像确认。正常外观裁图与Luna外观状态比较保留。两类独占核对角色及资源已删除；其他固定Prompt先保持，用户正在审阅完整普通动作请求。两例保存帧3Luna/0GUI：IPv6新登记10控件，9个IPv4参数控件名称/知识保持；返回Network复用r0003并保存返回边、11区块60控件保持，但侧栏r0001仍漏列，完整前景召回未接受。正常执行入口保存帧0Luna/0GUI：时钟变化通过到零GUI预算、模拟窗口变化拒投递。非现场遍历/全框架验收，原399次运行未动。证据 artifacts/visual_matching_removal/20261108T095811Z_01；独立初读及测试范围修订复审完成；侧栏漏列仍未接受。
+
+2026-11-08 功能认识修复工作稿：对象动作执行绑定只读Records准确ref；描述目标保留原任务与未投递动作，经现有同图发现/补登记分配身份后再选动作，不按候选或外观直接执行。click/input/scroll/hover/drag共用该入口，等待和全局按键保持原无对象动作。step_repair在分项隔离前保存最初结构化错误；object_registration将后续目标依赖错误追加，避免覆盖字段原因。普通语义登记退出外观相似身份强制比较；活动旧比较任务留退役记录，终止的deferred不自动重试。五项约定原答/绑定离线检查完成；独立复核三处接线回归修正并静态关闭。P03历史已丢失原因无法恢复，新诊断合并失败分支未另造案例；原399/61不动。完整字段重写仍待用户确认，任务尺度尚未作为新Prompt行为验证。
+
+2026-11-08 准确ref实跑的当前边界：新空图Settings在399次窗口停审，整次遍历尚未完成。无框、同答新名及候选/当前名单漏列的准确ref已有真实执行与登记；后续同一Apply任务反复复查已见状态，原答持续pending。当前任务选择与完成判断仍沿原流程，没有按次数强制写done；两次更早的结果登记仍deferred。此前单段任务指引候选已否决，完整字段重写候选02待确认，未写Prompt源码或验证。保留本轮原件与停点，不将窗口结束或任务数量当作全应用功能覆盖。
 
 2026-11-08 更新身份判定续接证据：v6的a0074在0239主答、0240补框后，于0241–0246保留6次不同对象的身份比较，跨原6调用步骤轮次且未触发fixed-source重建。随后两项Automatic控件仍有多历史候选，功能引用被其未接收身份阻塞，原结果最终deferred；故只证明累计判定不再被该重建条件清空，不证明a0074完整登记。a0055、a0074原动作均保留、未重放。
 
@@ -14,19 +20,31 @@
 
 2026-11-08 访问目标直接引用：新observation_update/纠错内部jump_to保留region/control对象引用，已有ID直接查对象表，不依赖本次regions/controls或追加只读载体；本批新对象名称在正常登记后关联ID。records/destination_refs统一维护目标解析及实际提交的本批观察依赖；登记前复用已确认合并映射，真实动作/后图/当前目标和控件归属检查保持。旧保存的位置合同只读兼容，新续接入口重建旧合同；对外字段和固定Prompt不改。三项约定本地检查及静态复核完成，0新Luna/GUI；合并分支仅静态核对，原运行仍停61。
 
+2026-11-07 动作后更新只以全局树提供已登记身份，撤去独立历史身份参考段。current_regions内部允许引用覆盖该树全部区块；function_updates仍使用原相关区块范围。source.operation来自已执行proposal且来源身份已确认，供树标记实际交互；任务所属区块和实际操作区块继续分开。原0010完整记录经正常续接builder/发送准备及原回复解码/内部格式检查通过，0HTTP/GUI，未补框或发布。仅实际交互控件的树节点附原已有知识、序号和参数约束，供直接修订，不展开其他区块历史目录。
+
+2026-11-07 对象补登记：Control显式合法null可随知识通过，后续不对同份已回答的候选重复补框；它不同于漏答、格式错误或越界框。实际来源/访问目标仍保留，不撤掉jump_to绕过登记。Region定位规则不变；无框不自动变成抽象身份。两项本地检查通过，现场状态见SERVER_HANDOFF。
+
 ## 2026-11-07 提题共用对象抽象原则
 
 `task_proposal` 的 concepts 与发现/动作后更新共用 `对象/抽象.prompt::object.abstraction`；`task.propose` 保留问题、归属、顺序和空数组的输出合同，普通实例的共性判断及例子集中在公共块。正常 `function_updates` 位于任务提出和动作后更新，均能读取公共原则；动作选择/目标核对不加载该块。未修改调度、schema、任务状态或实际动作记录；当前仅核对Prompt组装。
 
-> 2026-11-07 接续区块引用接线：next_action与普通动作同样解码原请求的区块ID/名称，补原Region标签传递；不改Prompt或设计。两项不同聚焦检查、原真实106无改答直接接受及完整真实上下文2条Luna回复经正常登记/接续接受通过，0GUI。主试跑107请求/17GUI/13结果登记，4旧结果暂挂、6任务blocked/2pending、5次连接失败；六处接线修复后仍不认定稳定，不启动不限次数长探索。新修复只做保存帧验收，未在主VM增加调用；动作后无控件新题的区块归属仍待明确。
-
-> 2026-11-07 接线：没有关联Task的导航目标仍未登记时，只暂挂该次未执行目标，保留已接受观察与所有Task，沿已有advance_unfinished选择其他未完区块；不再调用要求Task的暂挂器。有Task保持原路径。
-
 > 2026-11-07 动作请求与正式ActionProposer共用selection_schema，重复处理仅保留原业务动作分支和唯一非none异常交回，避免生成无动作的none异常分支。首窗9回复/0GUI的格式循环原件保留；一处聚焦检查及完整真实保存帧1回复/0GUI接受正常绑定，修复后现场效果另记。Prompt正文、Task含义和执行合同未改。
 
-> 2026-11-07 当前调用：正常任务提出与动作更新负责function_updates及task_update[]；new_tasks仍由有明确区块范围的正常task_proposal登记；已知准备由当前原Task选择真实GUI动作，原target/owner保持。关联旧题按实际后图目标分别结算，旁观答案为observation_only；新证据进入普通task_proposal，一份观察已评估后不反复复查。无独立功能总结/结果复核/依赖准备Task。branch_correction.next_region可达时优先，否则按正常候选选择；纠错错误类别仅输入，defer统一让出。历史原答与待登记动作保留。限定验证见SNAPSHOT_STATUS.md。
+> 2026-11-07 当前调用：正常任务提出与动作更新负责function_updates及task_update[]；new_tasks仍由有明确区块范围的正常task_proposal登记；已知准备由当前原Task选择真实GUI动作，原target/owner保持。关联旧题按实际后图目标分别结算，旁观答案为observation_only；新证据进入普通task_proposal，一份观察已评估后不反复复查。无独立功能总结/结果复核/依赖准备Task。branch_correction.next_region可达时优先，否则按正常候选选择；纠错错误类别仅输入，defer统一让出。历史原答与待登记动作保留。限定验证见11月日志。
 
-> 2026-11-06：动作后更新可提供调用级完整next_action，成功登记后挂一次性后图来源；正常恢复/调度/action_ready后进入原action job、纠错、绑定和执行。任务/观察失效撤销候选，暂停作业亦重查；不在updater执行GUI。验证与限制见根目录SNAPSHOT_STATUS.md。
+> 2026-11-06 参数化探索：任务提出与动作后更新开放可选 function_updates，知识→功能→Task 仍走原发布事务；零 new_tasks 可保存功能。任务提供当前及合法关联区块已有功能、同组实际控件与候选提示，动作更新提供已有目录供增量修订。可选空功能增量不扫描历史目录引用。普通流程、历史整理、纠错不再生成 shared_control_review；旧挂起复查保留 episode 并撤销指针，不发模型或执行 GUI。function_registration 仍为显式收尾；真实路由和 Return 算法保持，候选只供理解/下一步验证。
+
+> 2026-11-06 冻结后：task_review_reason的两处自动TaskProposer生产分支已删除；范围变更、参数/入口复核及实际任务纠错继续使用既有review。普通补提只允许未审新控件，旧pending/blocked与原target不变；零新题写入该批覆盖。归属复查resolved包含原归属正确，无迁移不重置清点；repair_stages的记录修订沿同一ref目标批量迁移。没有新增模型角色或GUI路径。
+
+> 2026-11-06 冻结原文：六文件定稿task.propose/task.update支持零新任务及按原target收束；task_inventory仅是首次提出来源和明确复核，旧partial不成为独立债务。inventory_scroll依据现存Region任务，select_work继续旧pending、跳过blocked后寻找其他工作，无可推进才idle。prepare_scope_resume显式选定旧排除区块可重开并留旧原因，scope_change复核仍先行；不清除真实阻塞。共享异常七枚举，沿原恢复/结果复核，无新调用类型。
+
+> 2026-11-06 Region：TaskProposer不再提出或消费shared_instances，正常观察中的全局Control引用和同类用法分组仍在。任务提出、动作/结果、复核及独立功能总结按实际关联提供双方旧知识，功能总结保留本区块顶层local_knowledge，相关区块用可选regions纯知识增量；function_updates含义不改。正常Task/Action/next_action链不重建，inventory残留单列后续清理。
+
+> 2026-11-06 最终Control：删除候选选择后，回复后才算出的多历史冲突不能静默新建。Runner复用原对象隔离/缺口及必要对象暂挂，使独立工作继续；不新建状态机或进度标记。已接受后图的next_action仍正常调度后消费，实际保存帧接收匹配c0005、0新增选择调用、0GUI；真实点选效果未验证。
+
+> 2026-11-06 Control：新任务/动作已有控件引用统一为本轮ID/名称，new_tasks.target与Action合同不变。退役entry_identity辅助函数不再读入口flags，候选从同对象未解决任务和真实历史动作/跳转取；不复活旧入口流程。用户确认直接删除四个Task语义块及其配方引用；inventory/evidence和coverage的既有格式表并入task.propose/task.update，未补替代规则。 最终Task保存帧因未见后续结果填写inventory=partial，清点判断语义尚未接受，留作后续设计。
+
+> 2026-11-06：动作后更新可提供调用级完整next_action，成功登记后挂一次性后图来源；正常恢复/调度/action_ready后进入原action job、纠错、绑定和执行。任务/观察失效撤销候选，暂停作业亦重查；不在updater执行GUI。验证与限制见11月日志。
 
 2026-11-02最新验证：用户原文版2次保存帧/0GUI；原问题结算通过，新任务仍预加子菜单调查，整体未接受、未部署，原Calc任务状态不变。详见当月日志与task_goal_verbatim_20261102_01/REPORT.md。
 
@@ -88,7 +106,7 @@
 
 2026-10-19：普通动作/更新只展开当前任务及必要准备/路线的直接证据，保留已确认规则、失败、反例、条件和剩余问题；同一事件正文只展示一次，不展开无关任务或整图历史。任务提出以当前区块控件/知识/最小任务状态及短来路为主，同屏其他区块不自动展开共享池。parameter针对目标控件自身输入/选择，目标内容的独立控件归其所属区块。task_proposal不收几何，完成参数代表探索不要求穷尽；区块总结沿原ready入口。
 
-控件读写接线：任务/动作后判断编辑目标控件当前knowledge项，不在任务复制答案；参数读写和功能支持读取知识项constraints。材料提供知识项序号；访问目标使用对象引用，不输出旧路线序号。已有目标直接复用ID，新对象正常登记后关联。任务与动作主对象未在本批另行清理，归属/结算边界不变。模型提示复用现有字段呈现器，从Schema生成枚举、可空布尔及数组项下一层对象字段；不把完整Schema发送模型。next_action用精确给定区块ID或名称、控件名称和动作枚举；无给定归属的新对象可省略建议。实际验收见月志。
+控件读写接线：任务/动作后判断编辑目标控件当前knowledge项，不在任务复制答案；参数读写和功能支持读取知识项parameters。材料提供知识项序号；访问目标使用对象引用，不输出旧路线序号。已有目标直接复用ID，新对象正常登记后关联。任务与动作主对象未在本批另行清理，归属/结算边界不变。模型提示复用现有字段呈现器，从Schema生成枚举、可空布尔及数组项下一层对象字段；不把完整Schema发送模型。next_action用精确给定区块ID或名称、控件名称和动作枚举；无给定归属的新对象可省略建议。实际验收见月志。
 
 2026-10-20：提出步operations仅新增，task_update负责允许的旧任务；重复新建明确报错，不以此计入旧问题已复核。功能/参数目标统一读取任务模块task.type；具体动作仍由正常动作选择决定，已有证据可回答时不强制额外证明动作。验证范围见本月日志。
 
@@ -228,3 +246,33 @@ application_judgement统一扩展任务提出/动作选择合同并在业务编�
 ## 2026-11-05 历史重复动作拦截退役
 按已交付计划第4步，动作接受不再按同任务、同表面、相同输入/导航的历史次数拒绝新提案；专用重复禁止规则与入口删除。最近尝试原始证据和入口结果语义复核保留；目标、身份、时效、实际崩溃限制及未知投递防重放仍生效。
 VLC原0253完整保存帧经正常入口生成新回复并接受c0119输入1.000，1HTTP/0GUI；未实际投递或恢复值，旧数值任务终点尚待调整。3项聚焦合同检查通过，独立阅读/意图比较/新原答复核留在artifacts/runs/overnight_plan_20261105_01；其余计划尚未实施。
+
+## 2026-11-05 Overnight其余步骤接线（工作树候选，验收中）
+Task Proposal 与动作后结果通过实际保存 Schema 提交可选功能增量；动作none/complete不因此扩权，无增量不扫描旧引用。普通推进及session idle不自动额外整理目录；run_task_step.finalize_functions为显式零GUI入口，finalize_knowledge仍只处理真实历史未答工作。目录服务/内容失败保存episode并释放全局pending，不阻断普通探索。
+TaskProposer/region_tasks复用records/task_plans；同控件同类型不再终身唯一，精确原条件重复拒绝、同已接受来源重入不重复建题。语义重复由正常模型结合只读done原条件判断。原题/旧键/真实尝试不扩写。reopen_task允许按给定证据复核已执行后错误done，旧判断存revisions，after进未答记录而不覆盖reason/原条件，真实阻塞保留；不自动扫描done。
+已按用户本次实施指令合入先前完整v2候选，并接通相应schema/材料；字段接线仍在原生验收。14辅助检查通过，GIMP0337新模型正常登记1HTTP/0GUI，明确未提交裁剪；其余病例与Settings实机待完成。旧pending强条件的正式范围修订未实现，不静默以新弱标准done。
+
+本批验收限制：Settings0105局部融合仍重复新增未答原题，VSCode0165仍把已有共同用法的未操作实例重新立题，均为语义未通过；程序成功登记不代表该候选行为接受。顺序调整候选尚未确认/应用，真实GUI未续跑。见本批settings-semantic-audit.json、vscode-semantic-audit.json。
+
+2026-11-05新增有限证据：Writer0024同答19控件/11task绑定正确（1HTTP/0GUI），3选择框内容未知漏task仍未接受；Settings旧a0025在隔离副本显式迁移后正常登记/原入口done（2HTTP/0GUI），原run不动。错误done完整复核、其他旧结果及真实坏task行仍未完成，不能据此接受整计划或实机。新六文件Prompt候选留工作台，未确认/未应用。
+
+2026-11-05 Overnight04：显式task_record_repair.request接通原题/旧完成调用/实际语义图，Runner.repair_step沿现有记录修订只复核该done题；普通清点不凭摘要重开。原题/快照/图过期拒绝，派生共享/等价/覆盖完成回来源；成功只保存原题修订，未能修订只结束review、不改变done或清点。Writer错误done重开、VSCode正确done保留，正常原样Luna两例2实际HTTP/0GUI与独立复审限定通过。原正常更新读窄原题问题仍待六文件候选确认和验收；无Settings实机，依赖未接受框架草稿留本地。详见Overnight04报告/月志。
+
+2026-11-05 Overnight05补验：正常finalize_functions在完整Writer隔离图0176登记目录，零GUI且77task不改；首答摘要抄候选未接受，经正常具体纠错0177格式失败/0178原值登记后摘要只留用法，控件参数/功能/任务/动作不变。共3HTTP/0GUI，无源码/Prompt改动；knowledge_pending是有限目录窗口，不是这笔失败或全图完成。详情Overnight05/月志。未提升正常任务语义或Settings验收。
+
+
+## 2026-11-05 精确重复提案不再形成纠错待办（限定实现）
+同对象、同登记类别、同完成条件的新增提案复用已有任务，仅在本次task_assessments标为redundant；原题、状态、真实阻塞和来源不改。同答合法task_update正常保存；同来源重入仍标already_accepted。历史旧拒绝中，只有明确为精确同题且仍能关联现存任务的条目从修订视图过滤；其他错误、阶段失败和episode保持。
+任务清点context和records.tasks.proposal_gap复用同一判断，避免历史纯重复拒绝清空旧题更新资格或成为额外inventory债务；旧快照原件不改。控件名与内部ID未对齐的旧拒绝不做推测性过滤。
+验证：两项聚焦pytest通过；完整Settings0105真实保存帧正常builder→Luna原答→校验/登记1HTTP/0GUI，旧题continue且原blocked保留、无新题或提案缺口。新回复未重复operations，因此此次真实调用不覆盖冗余分支；该分支及真实错误保留由两项辅助检查覆盖，不声称模型重复立题已解决。完整探索策略/模板Prompt和跨区块主要功能优先尚未实施，原现场未恢复。
+证据：artifacts/runs/exploration_strategy_20261105_01。命令：PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 /data/shenghonghui/miniconda3/envs/guiwalk-android/bin/python -m pytest -q tests/test_traversal_plan_core.py::test_new_question_preserves_done_and_local_bad_task_does_not_undo_observation tests/test_traversal_plan_core.py::test_old_exact_duplicate_gap_keeps_original_task_available_without_hiding_real_errors --basetemp artifacts/tmp_tests/exploration_strategy_20261105_01/pytest；原生用tools/prompt_review_trace.py及本批native-settings0105/job.json。
+
+2026-11-07 目标补登记接线：无关联Task的导航目标仍未确认时，只将该次未执行目标补登记标为deferred，保留已接受观察和所有Task，沿现有advance_unfinished选择其他未完区块；不再调用需要Task的暂挂器。有Task的原路径保持，不虚构准备Task或GUI成功。
+
+2026-11-07 接续区块引用：pending_action.take将原更新请求的region_reference_names与控件标签一起保留；repair_stages.accept_action交既有_decode_references解码。next_action的区块ID/名称与普通动作保持同一合同，不再因漏区块映射被当作未知滚动目标。原任务/观察检查、一次消费、旧已落盘缺表请求及Prompt正文不改。
+
+
+2026-11-07 纠错接线：Runner 遇到诊断不足保留请求、原答、待登记动作及 episode，以 `framework_diagnostic_missing` 暂停，不借重观察/换支路重答。成功补观察只追加 history，不覆盖原失败报告；身份比较否定复用时保存实际引用、比较结论及理由。三项独立静态审阅发现已修订复核；动作绑定、补框和部分记录修订的普通异常尚未迁移，整体接线未完成。
+
+
+2026-11-07 字段标记：普通步骤及保留的 step_correction 能力共用纠错展示，身份/目标视觉核对保持专门合同。局部合并失败从本次已保存 response.json 读取实际未接受提交，另保留原稿；不再用旧值遮住新错误。proposal_revision 只增临时字段来源记录，异常 path/actual/reply_source 区分本次 edits 与原稿保留关系；成功合并的结果、返回结构和业务规则不变。此分支仅静态修订复核，未新增用户未确认的执行案例。

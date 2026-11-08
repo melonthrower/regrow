@@ -136,14 +136,12 @@ def prepare_request(root, run, request, platform='android'):
     request = with_frame_context(request, run)
 
     from regrow.recognition import control_references
-    if request.get('role') != 'action_target_review':
-        request = control_references.prepare(request)
+    request = control_references.prepare(request)
     from regrow.recognition import region_references
     request = region_references.prepare(request)
     from regrow.prompts.output import effective_role
     action_references = (request.get('role') in ('action_selection', 'step_correction')
                          and effective_role(request, root) == 'action_selection')
-    target_review = request.get('role') == 'action_target_review'
     if action_references:
         from regrow.prompts.target_observation import action_references as render_action_references
         request = render_action_references(request)

@@ -55,13 +55,13 @@ def disclose(records, rid):
     region = records[rid]
     own = card(region, records)
     current = bool(region.get('local_knowledge'))
-    from regrow.records.function_updates import resolved_constraints
-    functions = {name: {**deepcopy(value), 'constraints': resolved_constraints(region, value)}
+    from regrow.records.function_updates import resolved_parameters
+    functions = {name: {**deepcopy(value), 'parameters': resolved_parameters(region, value)}
                  for name, value in region.get('functions', {}).items()}
     from regrow.records.region_knowledge import context
     return {'self': own, 'knowledge': deepcopy(region.get('local_knowledge', {})) if current else {},
             'related_knowledge': [row for row in context(records, [rid]) if row['ref'] != rid],
-            'constraints': deepcopy(region.get('constraints', {})), 'functions': functions,
+            'parameters': deepcopy(region.get('parameters', {})), 'functions': functions,
             'entries': [{**edge, 'destination': card(records[edge['region']], records)} for edge in entries(region, records)]}
 
 def parameter_support(region, records):

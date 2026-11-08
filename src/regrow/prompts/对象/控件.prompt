@@ -27,22 +27,22 @@ region_index 填写控件所属区块在本轮 regions 数组中的索引，从 
 <!-- END_PROMPT_BLOCK id="control.knowledge_base" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="control.knowledge_revision" requires="control.definition,control.references,control.knowledge_base" -->
-本轮获得新认识时，通过 ref 引用原控件，在 knowledge 中提交新增或需要修订的知识。新知识省略 index；修订已有知识用原条目的 index（从 0 开始），填写完整的新 description。其他知识保持不变，修订时省略 constraints 保留原参数说明。
+本轮获得新认识时，通过 ref 引用原控件，在 knowledge 中提交新增或需要修订的知识。新知识省略 index；修订已有知识用原条目的 index（从 0 开始），填写完整的新 description。其他知识保持不变，修订时省略 parameters 保留原参数说明。
 
 例如，已有知识 0 为“调整选中文字的字号。”，后续打开列表并完整看到 12、14、16，修订同一知识：
 ```json
-{"controls":[{"ref":"c001/字体大小","knowledge":[{"index":0,"description":"调整选中文字的字号。","constraints":{"字号":{"description":"字号可选12、14、16。"}}}]}]}
+{"controls":[{"ref":"c001/字体大小","knowledge":[{"index":0,"description":"调整选中文字的字号。","parameters":{"字号":{"description":"字号可选12、14、16。"}}}]}]}
 ```
 不同的操作知识省略 index 追加；补充同一字号的候选仍修订 index:0。没有变化的知识无需重复输出。
 <!-- END_PROMPT_BLOCK id="control.knowledge_revision" -->
 
-<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_constraints" requires="" -->
-knowledge[].constraints 记录操作中可供指定的参数，供后续生成具有具体目标的指令。以参数名作为键，description 说明参数的设置方式、可指定的取值及必要条件。
+<!-- BEGIN_PROMPT_BLOCK id="control.knowledge_parameters" requires="" -->
+knowledge[].parameters 记录操作中可供指定的参数，供后续生成具有具体目标的指令。以参数名作为键，description 说明参数的设置方式、可指定的取值及必要条件。
 
 对于自由输入的参数，说明输入格式和范围；对于从候选项中选择的参数，记录已知选项及其适用条件。后续发现新选项时，补充到同一参数知识中。
 
-更新知识时，省略 constraints 表示保留原有参数说明。
-<!-- END_PROMPT_BLOCK id="control.knowledge_constraints" -->
+更新知识时，省略 parameters 表示保留原有参数说明。
+<!-- END_PROMPT_BLOCK id="control.knowledge_parameters" -->
 
 
 
@@ -66,7 +66,7 @@ knowledge[].description 描述控件能够完成的操作，以及如何使用�
 # 登记控件：controls
 报告本步所需的新对象或变化，登记范围依据对象抽象原则。
 允许用抽象控件表示共同操作，不要求为每个普通数据实例登记名称或控件。
-抽象控件以共同操作角色命名，目标定位方式、参数和必要条件写入 knowledge 及其 constraints。
+抽象控件以共同操作角色命名，目标定位方式、参数和必要条件写入 knowledge 及其 parameters。
 用于同一操作选择参数的部件，记录参数的指定方式、已知功能选项和必要条件；独立的搜索、滚动或确认部件按实际职责登记。
 用途明确时可直接登记知识；暂时无法确认时，knowledge 可以为空，后续再补充。
 <!-- END_PROMPT_BLOCK id="control.registration" -->
@@ -92,11 +92,7 @@ appearance_bbox 用原图整数 left、top、right、bottom 框住供外观裁�
 <!-- END_PROMPT_BLOCK id="control.box_coordinates" -->
 
 
-<!-- BEGIN_PROMPT_BLOCK id="control.identity_comparison" requires="control.identity" -->
-# 比较当前与历史控件
-结合当前图与给定历史原图，返回 control_identity：same 表示同一控件，different 表示有依据确认不是同一控件，uncertain 表示仍不能确认。reason 简述两图中支持判断的依据。
-多个历史候选尚未排除时保留 uncertain，不自动选一个合并，也不据此新建重复对象。
-<!-- END_PROMPT_BLOCK id="control.identity_comparison" -->
+
 
 <!-- BEGIN_PROMPT_BLOCK id="control.appearance_comparison" requires="control.references" -->
 # 比较外观：comparisons

@@ -30,7 +30,7 @@ def run(root, transport, out, call, repair=None):
     from regrow.traversal import recovery_tasks
     from regrow.runtime import action_commands as _action_commands
     from regrow.traversal import recovery_stall as _recovery_stall
-    from regrow.recognition import visual_backtrack as _visual_backtrack
+    from regrow.traversal.exploration_loop import same_observation
     reg = _register_update
     discovery = _discovery_step
     policy = _recovery
@@ -149,7 +149,7 @@ def run(root, transport, out, call, repair=None):
             last = episode['actions'][-1]
             same = {k: v for (k, v) in proposal.items() if k != 'reason'} == {k: v for (k, v) in last.get('action', {}).items() if k != 'reason'}
             old_frame = last.get('frame')
-            if same and old_frame and _visual_backtrack.same_surface(old_frame, observations / 'current.png') and (reply['exception'] == last.get('exception')) and (proposal['action'] not in ('back', 'wait')):
+            if same and old_frame and same_observation(old_frame, observations / 'current.png') and (reply['exception'] == last.get('exception')) and (proposal['action'] not in ('back', 'wait')):
                 episode.update(status='stopped', reason='same action and unresolved exception; do not repeat blindly')
                 save()
                 break

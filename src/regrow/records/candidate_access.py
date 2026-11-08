@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from regrow.records.object_store import owned_controls
-from regrow.records.function_updates import reference, resolved_constraints
+from regrow.records.function_updates import reference, resolved_parameters
 
 
 def candidate_access_entries(records, rid):
@@ -31,7 +31,7 @@ def candidate_access_entries(records, rid):
             row = {'source_region': rid, 'function_ref': reference(rid, name),
                    'entry_control': cid, 'binding': {'control': cid, 'name': controls[cid]['name']},
                    'target_role': role, 'basis': 'knowledge_inference'}
-            parameters = resolved_constraints(region, function)
+            parameters = resolved_parameters(region, function)
             if parameters:
                 row['binding']['parameters'] = parameters
             if examples:

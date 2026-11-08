@@ -137,7 +137,7 @@ def desktop_parts(root, request):
     role = effective_role(request, root)
     directory = Path(root) / 'regrow/prompts'
     config = catalog(root)['platforms']['desktop']
-    if request.get('role') in ('control_identity_comparison', 'appearance_comparison'):
+    if request.get('role') in ('appearance_comparison',):
         return
     path = config['path']
     text = (directory / path).read_text()
@@ -159,7 +159,7 @@ def action_contract(root, request, parts):
     keeps the exact contract it previously saw. Old archived bullet manuals are
     left intact instead of silently replacing their instructions.
     """
-    if effective_role(request, root) not in ('action_selection', 'action_target_review', 'recovery', 'ownership_review', 'observation_update'):
+    if effective_role(request, root) not in ('action_selection', 'recovery', 'ownership_review', 'observation_update'):
         return None
     selected = action_schema(request['response_schema'])
     if selected is None:

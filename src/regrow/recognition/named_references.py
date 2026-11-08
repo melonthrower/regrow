@@ -12,7 +12,7 @@ from regrow.records.diagnostics import reject
 
 TOKEN = re.compile(r'(?<![A-Za-z0-9_])[rc]\d+(?![A-Za-z0-9_])')
 REFERENCE_FIELDS = {'ref','target','control','region','source_region','source_control',
-                    'task','supports','constraints','access_entry','replace_with','candidate','path','parent'}
+                    'task','supports','parameters','constraints','access_entry','replace_with','candidate','path','parent'}
 
 
 def normalized(value):
@@ -387,19 +387,19 @@ def _decode_references(value, aliases, key=None, path=(), *, control_labels=None
         if 'function_updates' in path:
             if key in ('region', 'supports', 'access_entry') and value in {**(control_labels or {}), **(region_labels or {})}:
                 return value
-            if key == 'constraints' and value.partition('/')[0] in (control_labels or {}):
+            if key in ('parameters', 'constraints') and value.partition('/')[0] in (control_labels or {}):
                 return value
         if key == 'control' and 'new_tasks' in path and value in new_controls:
             return value
         function_ref=(key=='function_refs' or ('function_updates' in path and key in ('ref','replace_with')))
-        if (function_ref or key in ('constraints', 'task')) and value in aliases:
+        if (function_ref or key in ('parameters', 'constraints', 'task')) and value in aliases:
             return aliases[value]
         if control_labels is not None:
             from regrow.recognition.control_references import resolve_label
-            resolved = resolve_label(value, control_labels, allow_path=function_ref or key == 'constraints')
+            resolved = resolve_label(value, control_labels, allow_path=function_ref or key in ('parameters', 'constraints'))
             if resolved is not None:
                 return resolved
-        if region_labels is not None and not function_ref and key not in ('constraints', 'task'):
+        if region_labels is not None and not function_ref and key not in ('parameters', 'constraints', 'task'):
             from regrow.recognition.control_references import resolve_label
             resolved = resolve_label(value, region_labels, prefix='r')
             if resolved is not None:

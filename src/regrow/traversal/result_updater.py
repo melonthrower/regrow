@@ -175,16 +175,13 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     progress_now = coverage(owner, records)
     from regrow.records.task_updates import catalog
     from regrow.records.task_updates import reference
-    from regrow.recognition import history_matching as history_matching
-    ranking = history_matching.scan(records, snapshot, folder / 'after.png', scope=foreground_scope.load(run, folder / 'after.png'))
-    task_candidates = catalog(records, binding, [r['region'] for r in ranking if r['anchors']])
+    function_regions = related_regions(records, state, binding, source_destinations=recalled['destinations'])
+    task_candidates = catalog(records, binding, function_regions)
     dynamic['来源区块已有任务'] = [{k: v for (k, v) in row.items() if k != 'control'} for row in task_candidates]
     refs = [row['task'] for row in task_candidates if row['status'] in ('pending', 'blocked')]
     dynamic['任务更新引用'] = refs
     if binding.get('task_name'):
         dynamic['当前任务引用'] = reference(binding.get('task_region', binding['region_ref']), binding['task_name'])
-    visual_hits = [{'region_ref': r['region'], 'name': records[r['region']]['name'], 'anchors': r['anchors']} for r in ranking if r['anchors']]
-    function_regions = related_regions(records, state, binding, visual_hits, source_destinations=recalled['destinations'])
     from regrow.records.control_routes import card as route_card
     dynamic['实际对象已有跳转'] = route_card(actual_object, records)
     region_names = {rid: rid for rid in records}
@@ -217,7 +214,6 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
         if task.get('status') == 'pending' and not hard_block(task):
             from regrow.runtime.action_commands import executable_operation_schema
             u['response_schema']['properties']['next_action'] = executable_operation_schema()
-    u['matching_audit'] = ranking
     u['region_names'] = region_names
     _page_context.attach(u, records, state, usage='before_action', run=run, extra_regions=[binding['region_ref'], binding['working_region'], binding.get('task_region')])
     write_json(folder / 'update_request.json', u)

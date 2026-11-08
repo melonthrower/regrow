@@ -103,9 +103,6 @@ def request_from_run(root, run, region_ref=None, task_ref=None, *, decision=None
                     v['source_image'] = str((snapshot / v['source_image']).resolve())
     if state['observation'].get('image'):
         state['observation']['image'] = str((run / state['observation']['image']).resolve())
-    if state.get('visual_navigation'):
-        from regrow.recognition import visual_backtrack as navigation
-        navigation.project(records, state)
     decision = decision or select_work(records, state, region_ref)
     result = render_work(root, records, state, decision)
     _action_candidates.attach_related(result, records, state)

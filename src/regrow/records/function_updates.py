@@ -13,7 +13,7 @@ def schema(regions=None):
     fields = {k: deepcopy(string) for k in ('name', 'description')}
     fields.update(supports={'type': 'array', 'minItems': 1, 'uniqueItems': True,
                            'items': string},
-                  constraints=deepcopy(strings),
+                  parameters=deepcopy(strings),
                   target_role=deepcopy(string), access_entry=deepcopy(string))
     changes = deepcopy(fields)
     for key in ('target_role', 'access_entry'):
@@ -111,8 +111,16 @@ def _rewrite_refs(records, old, new):
 def apply(records, updates, source, allowed_regions=None):
     """Called in the normal publication transaction, after object knowledge edits."""
     import jsonschema
+    from regrow.records.object_store import normalize_parameters
     updates = deepcopy(updates)
     for group in updates:
+        if isinstance(group.get('add'), list):
+            group['add'] = [normalize_parameters(row) if isinstance(row, dict) else row
+                            for row in group['add']]
+        if isinstance(group.get('update'), list):
+            for row in group['update']:
+                if isinstance(row, dict) and isinstance(row.get('changes'), dict):
+                    row['changes'] = normalize_parameters(row['changes'])
         for row in group.get('remove', []):
             row.pop('reason', None)  # Old accepted requests may still carry it.
     jsonschema.validate(updates, schema(allowed_regions))
@@ -191,7 +199,8 @@ def parameter_references(region, values, supports, source):
 
 
 def _store(region, name, fields, source, previous=None):
-    row = deepcopy(previous or {})
+    from regrow.records.object_store import normalize_parameters
+    row = normalize_parameters(deepcopy(previous or {}))
     if previous:
         row['description'] = description(previous)
     for key in ('object', 'completion', 'unconfirmed'):
@@ -224,27 +233,29 @@ def _store(region, name, fields, source, previous=None):
                    reason='独立入口没有对应到本功能的实际支持控件。')
         row['access_entry'] = entry
     facts = catalog(region)
-    constraints = parameter_references(region, fields.get('constraints', row.get('constraints', {})), row['support_controls'], source)
+    parameters = parameter_references(region, fields.get('parameters', row.get('parameters', {})), row['support_controls'], source)
     controls = {s.get('control') for s in row['support_controls']}
-    for ref in constraints:
+    for ref in parameters:
         if ref not in facts or facts[ref]['control'] not in controls:
             reject('function_parameter_reference', name, ref,
                    [k for k,v in facts.items() if v['control'] in controls], field='功能参数引用',
                    reason='填写内容没有对应到本功能支持对象的参数引用。',
-                   repair='使用已有参数引用；规则正文归来源对象知识，没有参数引用时省略 constraints。')
-    row['constraints'] = {ref: {'ref':ref, 'region':region['id'], 'control':facts[ref]['control']}
-                          for ref in constraints}
-    row.setdefault('constraints',{})
+                   repair='使用已有参数引用；规则正文归来源对象知识，没有参数引用时省略 parameters。')
+    row['parameters'] = {ref: {'ref':ref, 'region':region['id'], 'control':facts[ref]['control']}
+                          for ref in parameters}
+    row.setdefault('parameters',{})
     row.update(region=region['id'],source_call=source.get('source_call'), support_tasks=[],task_refs=[])
     row['locations'] = [{'region':s['region'],'control':s.get('control')} for s in row['support_controls']]
     region['functions'][name] = row
 
 
-def resolved_constraints(region, function):
+def resolved_parameters(region, function):
     """Project current parameter facts without replacing persisted references."""
+    from regrow.records.object_store import normalize_parameters
     facts = catalog(region)
+    function = normalize_parameters(function)
     return {key: deepcopy(facts.get(key, value))
-            for key, value in function.get('constraints', {}).items()}
+            for key, value in function.get('parameters', {}).items()}
 
 
 def view(records, rid, refs=None):
@@ -254,8 +265,8 @@ def view(records, rid, refs=None):
         if refs is not None and ref not in refs:continue
         item={'功能':name,'引用':ref,'用途':description(f)}
         item['支持对象']=[s.get('name',s.get('control') or rid) for s in f.get('support_controls',[])]
-        constraints=resolved_constraints(region, f)
-        if constraints:item['参数知识引用']=constraints
+        parameters=resolved_parameters(region, f)
+        if parameters:item['参数知识引用']=parameters
         if f.get('target_role'):item['预期目标职责']=f['target_role']
         if f.get('access_entry'):item['独立入口']=f['access_entry']
         rows.append(item)

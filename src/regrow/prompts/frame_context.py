@@ -18,7 +18,7 @@ def primary(request):
     frames = request.get('screenshots') or request.get('image_refs') or []
     if not frames:
         return None
-    if len(frames) == 1 or request.get('role') in ('control_identity_comparison', 'appearance_comparison'):
+    if len(frames) == 1 or request.get('role') in ('appearance_comparison',):
         return frames[0]
     original = request.get('original_request', request)
     review = original.get('done_task_review')

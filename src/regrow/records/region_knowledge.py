@@ -16,7 +16,7 @@ def normalize(region, records):
     parts += [row['description'] for row in current.get('conditions', []) if row.get('description')]
     region['local_knowledge'] = {records.allocate('knowledge'): text for text in parts if text.strip()}
     if current.get('parameters'):
-        region['constraints'] = deepcopy(current['parameters'])
+        region['parameters'] = deepcopy(current['parameters'])
 
 def validate(region, changes):
     current = region.get('local_knowledge', {})

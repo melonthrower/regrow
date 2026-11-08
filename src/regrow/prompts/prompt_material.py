@@ -167,27 +167,6 @@ def observation_details(value):
         window.pop('窗口记录', None)
         window.pop('来源', None)
 
-def matching(value):
-    """Offer one named coordinate list, never collapse competing identities."""
-    match = value.get('历史匹配对照')
-    if not isinstance(match, dict):
-        return
-    rows = match.get('候选匹配线索', [])
-    indexed = {row.get('候选'): row for row in rows}
-    visual = value.get('当前截图视觉匹配到的既有区块')
-    if isinstance(visual, list) and all((row.get('name') in indexed and row.get('control_positions') == [h.get('当前候选位置') for h in indexed[row['name']].get('命中控件', [])] for row in visual)):
-        value.pop('当前截图视觉匹配到的既有区块')
-    for candidate in value.get('程序匹配候选', []):
-        other = indexed.get(candidate.get('名称'))
-        if not other:
-            continue
-        anchors = candidate.get('定位锚点', [])
-        known = {(h.get('名称'), tuple(h.get('当前候选位置', []))) for h in other.get('命中控件', [])}
-        remaining = [a for a in anchors if (a.get('名称'), tuple(a.get('位置', []))) not in known]
-        if anchors and (not remaining):
-            candidate.pop('定位锚点')
-        elif len(remaining) < len(anchors):
-            candidate['定位锚点'] = remaining
 
 def summary(value, request):
     """Reference exact action evidence once; do not resolve historical doubts."""
@@ -320,8 +299,8 @@ def identity_knowledge(value):
         item = identity_fields(row, {'description': '说明', 'conditions': '适用条件'})
         if 'conditions' in row:
             item['适用条件'] = deepcopy(row['conditions'])
-        if row.get('constraints'):
-            item['已登记规则'] = identity_facts({'constraints': row['constraints']})
+        if row.get('parameters'):
+            item['已登记规则'] = identity_facts({'parameters': row['parameters']})
         if item:
             result.append(item)
     return result
@@ -399,7 +378,7 @@ def identity_facts(context):
                 body = {k: v for k, v in previous.items() if k != '名称'}
                 if body and not same(body, key) and previous not in prior.get('此前记录', []):
                     prior.setdefault('此前记录', []).append(previous)
-    for row in context.get('constraints', {}).values():
+    for row in context.get('parameters', {}).values():
         add(row)
     for task in context.get('关联任务', []):
         for row in task.get('findings', {}).values():
@@ -453,7 +432,7 @@ def identity_event(event, facts=(), names=None):
         rows = event.get(key, [])
         rows = list(rows.values()) if isinstance(rows, dict) else rows
         if isinstance(rows, list):
-            remaining = identity_facts({'constraints': {str(i): row for i, row in enumerate(rows)}})
+            remaining = identity_facts({'parameters': {str(i): row for i, row in enumerate(rows)}})
             remaining = [row for row in remaining if row not in facts]
             if remaining:
                 result[key] = remaining
@@ -607,175 +586,11 @@ def identity_supplement(row):
     return result
 
 
-def identity_view(value, request):
-    """The disclosure exit for a pairwise comparison and its rechecks."""
-    pairs = [request['control_identity_pair']]
-    needs = request.get('material_needs', {})
-    subjects = needs.get('control_history', [{'region': p['region'], 'control': p['control']} for p in pairs])
-    wanted = {(row['region'], row['control']) for row in subjects}
-    if wanted != {(p['region'], p['control']) for p in pairs}:
-        raise ValueError('身份披露对象必须保持完整的原候选集合')
-    names = request.get('original_request', {}).get('page_context', {}).get('history', {}).get('names', {})
-    names = {**names, **{p['region']: p['region_name'] for p in pairs},
-             **{p['control']: p['old_name'] for p in pairs}}
-    histories = []
-    current_attempt = needs.get('current_attempt') or request.get('original_request', {}).get('source', {}).get('attempt')
-    for pair in pairs:
-        extra = {aid: row for aid, row in value.get('直接相关历史', {}).items()
-                 if aid != current_attempt and
-                 (row.get('region'), row.get('control')) == (pair['region'], pair['control'])}
-        context = deepcopy(pair.get('context', {}))
-        context.get('实际尝试与来源', {}).pop(current_attempt, None)
-        history = identity_history(context, extra, names)
-        histories.append({'对象': pair['old_name'], **history})
-    pair = pairs[0]
-    from regrow.prompts.frame_context import purpose
-    current = {'图片': 1, '图像时点': purpose(request, pair['current_frame'])}
-    if pair.get('current_box'):
-        current.update({'提案中的对象名称': pair['current_name'], '身份框（左、上、右、下；原图像素）': pair['current_box']})
-    else:
-        current['待确认'] = '本图没有已绑定的当前框；先寻找给定历史对象，不能用旁边的其他控件代替。'
-        if pair.get('current_candidates'):
-            current['外观位置线索（未确认对应）'] = pair['current_candidates']
-    if pair.get('region_description'):
-        current['最近登记的区块状态（历史，非当前确认）'] = {
-            '原描述': pair['region_description'], '时点限制': '描述中的“当前”指记录当时；不保证与图2同一时点。'}
-    frozen = request.get('identity_candidate')
-    candidate = (frozen['controls'][pair['control_index']] if isinstance(frozen, dict) and frozen.get('controls')
-                 else value.get('单图步骤待登记的候选观察', {}))
-    proposed = identity_notes(candidate)
-    if candidate.get('knowledge'):
-        proposed['提出的知识'] = identity_knowledge(candidate['knowledge'])
-    if proposed:
-        current['原单图提案中的观察（待核对，尚未接受）'] = proposed
-    historical = [{'名称': p['old_name'], '所属区块': p['region_name'],
-                   **identity_fields(p.get('context', {}), {'description': '历史描述'}),
-                   **identity_fields(p, {'historical_description': '历史外观'}),
-                   **({'图片': 2, '图像时点': '给定控件的历史外观；不保证与下面每条历史记录同一时点',
-                       '身份框（左、上、右、下；原图像素）': p['historical_box']})}
-                  for p in pairs]
-    result = {'核对对象': {'历史对象': historical[0], '当前对象': current}}
-    original = value.get('原任务与实际操作', {})
-    task = original.get('当前任务') or original.get('任务目标') or {}
-    if task.get('control') and task.get('control_name'):
-        names[task['control']] = task['control_name']
-    operation = identity_fields(original, {'实际来源区块': '实际来源区块', '实际入口': '实际对象',
-                                          '准备动作说明': '准备操作的目的'})
-    card = identity_fields(task, {'control': '任务对象', 'control_name': '任务对象', '原控件': '任务对象', 'task_type': 'task_type',
-        '说明': '原问题', 'target': '原问题', 'reason': '原问题', 'status': 'status', '未答部分': '未答部分', 'remaining_question': '未答部分',
-        '原有用途条件': '适用条件', 'conditions': '适用条件'})
-    if task.get('task_type') in ('function', 'parameter', 'region_content'):
-        from regrow.prompts.object_blocks import task_definition
-        if card.get('原问题') == task_definition(task['task_type'])['goal']:
-            card.pop('原问题')
-    if '任务对象' in card:
-        card['任务对象'] = identity_name(card['任务对象'], names)
-    own = next((p for p in pairs if task.get('task') in
-                [p['region'] + '/' + t['name'] for t in p.get('context', {}).get('关联任务', [])]), None)
-    known = {row.get('说明') for row in identity_facts(own['context'])} if own else set()
-    rules = [row for row in task.get('已确认规则', []) if row not in known]
-    if rules:
-        card['已有答案'] = deepcopy(rules)
-    for key in ('当前控件知识', '目标已知知识'):
-        if task.get(key):
-            knowledge = identity_knowledge(task[key])
-            if own and isinstance(knowledge, list) and (task.get('control') == own['control'] or
-                                                       task.get('control_name') == own['old_name']):
-                # Only exact shared fields are omitted; no prose similarity test.
-                facts = identity_facts(own['context'])
-                for item in knowledge:
-                    if '已登记规则' in item:
-                        remaining = [fact for fact in item['已登记规则'] if fact not in facts]
-                        if remaining:
-                            item['已登记规则'] = remaining
-                        else:
-                            item.pop('已登记规则')
-                knowledge = [item for item in knowledge if not same(item, {
-                    '说明': own['context'].get('knowledge'), '适用条件': []})]
-                summary = own['context'].get('knowledge')
-                if isinstance(summary, str) and summary.startswith('推测用途：'):
-                    knowledge = [item for item in knowledge if not same(item, {
-                        '说明': summary.removeprefix('推测用途：'), '适用条件': []})]
-            if knowledge:
-                card[key] = knowledge
-    for key, label in (('knowledge_source', '知识使用限制'), ('completion_basis', '任务完成依据限制')):
-        note = identity_basis(task.get(key))
-        if note:
-            card[label] = note
-    for key in ('blocker', 'prerequisite', 'prerequisite_observation', 'prepares'):
-        if task.get(key):
-            card[{'prerequisite_observation': '原问题前提观察', 'prepares': '准备所服务的问题'}.get(key, key)] = identity_task_relation(task[key], names)
-    if task.get('任务补充'):
-        card['任务补充'] = {**identity_notes(task['任务补充']),
-            **identity_fields(task['任务补充'], {'说明': '说明', '探索内容': '探索内容',
-                 '当前阻碍': '当前阻碍', '所需条件': '所需条件', '原控件': '任务对象'})}
-    relation = identity_fields(task.get('完成对象'), {'任务区块': '任务区块', '待执行区块': '操作区块',
-        '待执行控件': '操作对象', '适用条件': '适用条件', '所需登记': '待回答内容'})
-    if relation:
-        card['任务与操作对象的关系'] = {k: identity_name(v, names) for k, v in relation.items()}
-    if card:
-        operation['当前任务'] = card
-    if original.get('实际动作'):
-        operation['本次记录的操作'] = identity_steps(original['实际动作'], names)
-    receipt = original.get('回执') or {}
-    if 'exit_code' in receipt:
-        operation['投递结果'] = ('命令投递成功' if receipt['exit_code'] == 0 else '投递结果尚未确认'
-                               if receipt['exit_code'] is None else '命令投递失败，返回码：' + str(receipt['exit_code']))
-    if 'text_delivered' in receipt:
-        operation['文字投递'] = '已发送' if receipt['text_delivered'] else '未发送'
-    if receipt.get('input_mode'):
-        operation['输入方式'] = {'replace': '替换原文本', 'append': '追加文本'}.get(receipt['input_mode'], receipt['input_mode'])
-    if receipt.get('semantic_result'):
-        operation['效果确认'] = {'unverified': '尚未确认；投递成功不等于界面效果已确认'}.get(receipt['semantic_result'], receipt['semantic_result'])
-    if receipt.get('stderr'):
-        operation['投递错误'] = receipt['stderr']
-    if receipt.get('description'):
-        operation['投递说明'] = receipt['description']
-    if receipt.get('input_target'):
-        operation['回执中的输入对象'] = identity_task_relation(receipt['input_target'], names)
-    current_event = value.get('直接相关历史', {}).get(current_attempt)
-    if current_event:
-        operation['本次动作已有记录（仍需核对）'] = identity_event(current_event, names=names)
-    for key in ('来源身份说明', '控件关联待核对', '登记说明'):
-        if original.get(key):
-            operation[key] = identity_notes(original[key])
-    if operation:
-        result['当前任务与本次操作'] = operation
-    result['相关历史与已登记认识'] = histories[0]
-    owner = value.get('区块状态的已接受依据', {})
-    if owner:
-        result['同区块的已接受状态依据'] = [identity_event(row, names=names) for row in owner.values()]
-    notes = []
-    if current_attempt:
-        notes.append('本次动作已进入结果登记阶段；本步只复核身份，不重新投递动作。')
-    if pair.get('kind') == 'reuse':
-        notes.append('different 只撤回本帧对旧控件的引用，旧身份和历史保留。')
-    if pair.get('selection_reason'):
-        notes.append('先前候选选择依据（仍待本次核对）：' + pair['selection_reason'])
-    if pair.get('candidate_count', 1) > 1:
-        notes.append('其他候选尚未排除；所选对象不同时，仍须保留 uncertain，不能直接新建。')
-    if notes:
-        result['仍需注意'] = notes
-    error = value.get('核对原因')
-    if isinstance(error, dict) and '先前身份判断（本次待复核）' in error:
-        result['先前身份判断（本次待复核）'] = error['先前身份判断（本次待复核）']
-        if error.get('reason'):
-            result.setdefault('仍需注意', []).append('本次重核原因：' + error['reason'])
-    supplements = [identity_supplement(row) for row in value.get('补充观察', [])]
-    if supplements:
-        result['补充观察'] = supplements
-    for key in ('平台',):
-        if key in value:
-            result[key] = deepcopy(value[key])
-    return result
 
 
 def view(value, request):
     """Read-only presentation, shared by normal and corrected requests."""
     role = request.get('role')
-    if role in ('control_identity_comparison',) and (
-            request.get('control_identity_pair')):
-        return identity_view(value, request)
     material = deepcopy(value)
     if role == 'observation_update':
         update_task(material)
@@ -801,14 +616,12 @@ def view(value, request):
         observation_details(result)
         first = ('本轮工作', '当前任务', '其他可登记任务', '实际来源区块', '实际入口', '实际动作', '回执', '登记页面组成与访问来路')
         result = {**{k: result[k] for k in first if k in result}, **{k: v for (k, v) in result.items() if k not in first}}
-    if role in ('observation', 'observation_update'):
-        matching(result)
     return result
 
 def map_knowledge(value):
     """Suppress empty scaffolding, not unsummarized destinations or conditions."""
     result = deepcopy(value)
-    for key in ('knowledge', 'conditions', 'constraints', 'functions', 'entries'):
+    for key in ('knowledge', 'conditions', 'parameters', 'functions', 'entries'):
         if result.get(key) in ([], {}):
             result.pop(key, None)
     own = result.get('self', {})

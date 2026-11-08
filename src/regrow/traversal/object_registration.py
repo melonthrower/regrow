@@ -243,7 +243,27 @@ def remap_gaps(gaps, previous):
 
 def partition_request(original, candidate, failed, errors=()):
     """Reuse object gaps and original-index mappings across acceptance stages."""
-    accepted, gaps, indexes = retain_located(original, candidate, failed)
+    try:
+        accepted, gaps, indexes = retain_located(original, candidate, failed)
+    except ValueError as dependency:
+        # A dependency failure must not erase the validator facts that caused
+        # this partition. Keep both in their actual order for ordinary repair.
+        from regrow.records.diagnostics import diagnostic, Rejected
+        primary = deepcopy(list(errors))
+        if not primary:
+            for path, reason in failed.items():
+                _, kind, position = path.split('/')
+                row = candidate[kind][int(position)]
+                primary.append({'code': 'object_registration', 'path': path,
+                    'object': row.get('name') or row.get('ref') or '本次登记对象',
+                    'actual': deepcopy(row), 'expected': reason, 'reason': reason})
+        dependent = diagnostic(dependency)
+        if isinstance(dependent, dict):
+            primary.extend(deepcopy(dependent.get('errors', [])))
+        else:
+            primary.append({'code': 'registration_dependency', 'object': '本次登记的依赖对象',
+                            'actual': str(dependency), 'expected': '依赖对象通过接收后才能登记关联内容'})
+        raise Rejected({'errors': primary, 'unchecked': []}) from dependency
     if not gaps:
         return original, accepted
     q = deepcopy(original)
@@ -300,7 +320,9 @@ def isolate_update(run, request, candidate, binding=None):
             parts = error.get('path', '').strip('/').split('/')
             if (len(parts) < 2 or parts[0] not in ('regions', 'controls') or not parts[1].isdigit()
                     or not 0 <= int(parts[1]) < len(accepted.get(parts[0], []))):
-                raise Rejected(report)
+                earlier = [deepcopy(item) for gap in q.get('registration_gaps', [])
+                           for item in gap.get('errors', [])]
+                raise Rejected({**report, 'errors': earlier + report['errors']})
             failed['/' + '/'.join(parts[:2])] = error.get('repair') or error.get('expected', '对象尚未确认')
         q, accepted = partition_request(q, accepted, failed, report['errors'])
         # Each pass removes at least one reported row and its dependent rows.
@@ -376,7 +398,6 @@ def complete(runner, job):
                                       sort_keys=True).encode()).hexdigest()[:16]
     enriched = deepcopy(candidate)
     labels = []
-    confirmed = set()
     grounding = {}
     failed = {}
     from regrow.recognition import appearance_comparison
@@ -413,7 +434,6 @@ def complete(runner, job):
             labels.append({'control': old['control'], 'image': old['image'],
                            'state': reply['historical_state'], 'source_call': saved['call'],
                            'reason': reply['reason']})
-            confirmed.add(old['control'])
             if current['add_image']:
                 grounding['/controls/' + str(old['position'])] = {
                     'control': old['control'], 'name': old['name'],
@@ -469,21 +489,6 @@ def complete(runner, job):
         q['registration_gaps'] = gaps
         q['registration_source_indices'] = source_indices
     q['appearance_labels'] = labels
-    # Identity/state and current-box grounding have separate model evidence.
-    # Preserve both sources when satisfying the existing publication review.
-    if confirmed:
-        from regrow.recognition.control_identity_review import reused_candidates
-        from regrow.recognition.control_references import decode
-        from regrow.records.snapshots import load
-        snapshot, records, _ = load(runner.run)
-        for pair in reused_candidates(records, snapshot, runner.run / primary(q), q, decode(q, enriched)):
-            if pair['control'] in confirmed:
-                q.setdefault('control_identity_reviews', []).append({
-                    'key': pair['key'], 'decision': 'same',
-                    'reason': ('双图比较确认旧身份与状态；当前框由单图定位独立确认'
-                               if pair.get('current_box') else '双图比较确认本帧旧身份及相同外观'),
-                    'comparison_calls': [r['source_call'] for r in labels if r['control'] == pair['control']],
-                    'grounding_call': appearance_call if pair.get('current_box') else None})
     folder = runner.run / 'calls' / job['call']
     job['registration_submission'] = {
         'objects': [{'path': '/' + kind + '/' + str(index), 'appearance_bbox': deepcopy(appearance_box(row))}

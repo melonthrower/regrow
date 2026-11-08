@@ -14,17 +14,24 @@ from regrow.records.tasks import audit as task_audit
 from regrow.records.tasks import detached as task_state
 WORK_FIELDS = {'function_inventory', 'task_inventory', 'out_of_scope_reason', 'registration_gaps', 'support_review_key', 'partition_review', 'registration_gap_history', 'control_observation_revisions', 'prior_local_knowledge', 'prior_partition_functions'}
 
-def normalize_constraints(value):
-    """Import the former object field once; old snapshots remain untouched."""
+def normalize_parameters(value):
+    """Read former field names into one parameter definition, without rewriting evidence."""
     result = dict(value)
     old_routes = result.pop('entries', None)
     if old_routes and 'jump_to' not in result:
         result['jump_to'] = old_routes
-    old = result.pop('parameters', None)
-    if old:
-        constraints = deepcopy(old)
-        constraints.update(result.get('constraints', {}))
-        result['constraints'] = constraints
+    old = result.pop('constraints', None)
+    if old is not None:
+        if isinstance(old, dict) and isinstance(result.get('parameters', {}), dict):
+            result['parameters'] = {**deepcopy(old), **result.get('parameters', {})}
+        elif 'parameters' not in result:
+            result['parameters'] = deepcopy(old)
+    if isinstance(result.get('knowledge'), list):
+        result['knowledge'] = [normalize_parameters(row) if isinstance(row, dict) else row
+                               for row in result['knowledge']]
+    if isinstance(result.get('functions'), dict):
+        result['functions'] = {name: normalize_parameters(row) if isinstance(row, dict) else row
+                               for name, row in result['functions'].items()}
     return result
 
 def region_work(region):
@@ -42,7 +49,7 @@ def incoming(region, records=None):
 class Region(dict):
 
     def __init__(self, value, store):
-        value = normalize_constraints(value)
+        value = normalize_parameters(value)
         super().__init__({key: item for (key, item) in value.items() if key not in WORK_FIELDS | {'observations', 'reached_by'}})
         self.store = store
         self.history = observation_history(value)
@@ -65,7 +72,7 @@ class Region(dict):
 class Control(dict):
 
     def __init__(self, value):
-        value = normalize_constraints(value)
+        value = normalize_parameters(value)
         super().__init__({key: item for (key, item) in value.items() if key != 'observations'})
         self.history = observation_history(value)
 

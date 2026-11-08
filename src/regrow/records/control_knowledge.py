@@ -12,21 +12,24 @@ def schema():
                       'description': '修订给定已有知识时引用其序号；新增省略。'},
             'description': {'type': 'string', 'minLength': 1,
                             'description': '控件用途与规则；必要的页面、模式和限制写在同一描述中。'},
-            'constraints': {'type': 'object', 'minProperties': 1, 'additionalProperties': {
+            'parameters': {'type': 'object', 'minProperties': 1, 'additionalProperties': {
                 'type': 'object', 'properties': {'description': {'type': 'string', 'minLength': 1}},
                 'required': ['description'], 'additionalProperties': False}}},
         'required': ['description'], 'additionalProperties': False}}
 
 
 def items(value):
+    from regrow.records.object_store import normalize_parameters
     if isinstance(value, str):
         return [{'description': value.strip()}] if value.strip() else []
     result = []
     for source in value or []:
-        if not isinstance(source, dict) or not (source.get('description') or source.get('constraints')):
+        if isinstance(source, dict):
+            source = normalize_parameters(source)
+        if not isinstance(source, dict) or not (source.get('description') or source.get('parameters')):
             continue
         row = deepcopy(source)
-        for name, fact in row.get('constraints', {}).items():
+        for name, fact in row.get('parameters', {}).items():
             fact.setdefault('name', name)
         conditions = row.pop('conditions', [])
         if conditions:
@@ -34,7 +37,7 @@ def items(value):
             if row.get('description'):
                 row['description'] = prefix + row['description']
             # Parameter readers may use a fact independently of its parent prose.
-            for fact in row.get('constraints', {}).values():
+            for fact in row.get('parameters', {}).values():
                 fact.setdefault('conditions', list(conditions))
                 if fact.get('description'):
                     fact['description'] = prefix + fact['description']
@@ -72,15 +75,15 @@ def update(record, value, source):
         if index == len(current):
             current.append(row)
         else:
-            if 'constraints' not in row and current[index].get('constraints'):
-                row['constraints'] = current[index]['constraints']
+            if 'parameters' not in row and current[index].get('parameters'):
+                row['parameters'] = current[index]['parameters']
             current[index] = row
         changed.append(deepcopy(row))
     record['knowledge'] = current
     event = {'knowledge': changed, 'evidence': deepcopy(source)}
     if revisions:
         event['knowledge_revisions'] = deepcopy(revisions)
-    findings = [deepcopy(fact) for row in changed for fact in row.get('constraints', {}).values()]
+    findings = [deepcopy(fact) for row in changed for fact in row.get('parameters', {}).values()]
     if findings:
         event['parameter_findings'] = findings
     observation_history(record, create=True).append(event)
@@ -126,7 +129,7 @@ def text(value):
 def card(record):
     rows = [{'index': i, **row} for i, row in enumerate(items(record.get('knowledge')))]
     for row in rows:
-        for name, fact in row.get('constraints', {}).items():
+        for name, fact in row.get('parameters', {}).items():
             if fact.get('name') == name:
                 fact.pop('name')
     return rows
@@ -160,13 +163,13 @@ def merge(target, source):
         previous = items(target.get('knowledge'))
         target['knowledge'] = [group['row'] for group in groups.values()]
         for old in previous:
-            if not old.get('constraints'):
+            if not old.get('parameters'):
                 continue
             row = next((v for v in target['knowledge'] if key(v) == key(old)), None)
             if row is None:
-                target['knowledge'].append({'constraints': old['constraints']})
+                target['knowledge'].append({'parameters': old['parameters']})
             else:
-                row['constraints'] = old['constraints']
+                row['parameters'] = old['parameters']
         for group in groups.values():
             observation_history(target, create=True).append({
                 'knowledge': [deepcopy(group['row'])],
@@ -187,8 +190,8 @@ def invalidate(record, attempt, bad):
                           for event in events)
         if not affected or independent:
             kept.append(row)
-        elif row.get('constraints'):
-            kept.append({'constraints': row['constraints']})
+        elif row.get('parameters'):
+            kept.append({'parameters': row['parameters']})
     if kept == current:
         return False
     record['knowledge'] = kept
@@ -200,9 +203,10 @@ def function_key(row):
 
 
 def _parameter_locations(record):
+    from regrow.records.object_store import normalize_parameters
     seen = {}
     for row in record.get('knowledge', []) if isinstance(record.get('knowledge'), list) else []:
-        for local, fact in row.get('constraints', {}).items():
+        for local, fact in normalize_parameters(row).get('parameters', {}).items():
             current = deepcopy(fact)
             if row.get('conditions') and 'conditions' not in current:
                 current['conditions'] = list(row['conditions'])
@@ -222,10 +226,11 @@ def _parameter_locations(record):
 
 def parameters(record):
     """Parameter rules are selected from their owning knowledge, not copied."""
-    from regrow.records.object_store import Region
+    from regrow.records.object_store import Region, normalize_parameters
+    current = normalize_parameters(record)
     if isinstance(record, Region) or 'controls' in record:
-        return record.get('constraints', {})
-    return {**record.get('constraints', {}), **{ref: fact for ref, row, local, fact in _parameter_locations(record)}}
+        return current.get('parameters', {})
+    return {**current.get('parameters', {}), **{ref: fact for ref, row, local, fact in _parameter_locations(record)}}
 
 
 def parameter_view(record):
@@ -240,7 +245,7 @@ def parameter_view(record):
 
 def parameter_facts(record):
     """Read current parameters and their original observations for every consumer."""
-    from regrow.records.object_store import observation_history
+    from regrow.records.object_store import observation_history, normalize_parameters
     from regrow.records.tasks import invalidated, source_attempts
     bad = invalidated(record)
     rows = [row for row in observation_history(record) if not row.get('visual_only')
@@ -254,9 +259,10 @@ def parameter_facts(record):
         # Follow explicit revisions only while this parameter itself stayed unchanged.
         for event in reversed(rows):
             for revision in event.get('knowledge_revisions', []):
-                before, after = revision['before'], revision['after']
+                before = normalize_parameters(revision['before'])
+                after = normalize_parameters(revision['after'])
                 if (function_key(after) in owner_keys
-                        and before.get('constraints', {}).get(local) == after.get('constraints', {}).get(local)):
+                        and before.get('parameters', {}).get(local) == after.get('parameters', {}).get(local)):
                     owner_keys.add(function_key(before))
         for event in rows:
             previous_facts = event.get('parameter_findings', [])
@@ -279,26 +285,26 @@ def parameter_facts(record):
 def put_parameter(record, name, fact, conditions=None):
     from regrow.records.object_store import Region
     if isinstance(record, Region) or 'controls' in record:
-        record.setdefault('constraints', {})[name] = fact
+        record.setdefault('parameters', {})[name] = fact
         return
     record['knowledge'] = items(record.get('knowledge'))
     location = next(((row, local) for ref, row, local, current in _parameter_locations(record) if ref == name), None)
     if location:
         owner, stored_name = location
     else:
-        owner = items([{'conditions': list(conditions or []), 'constraints': {name: fact}}])[0]
-        fact = owner['constraints'][name]
+        owner = items([{'conditions': list(conditions or []), 'parameters': {name: fact}}])[0]
+        fact = owner['parameters'][name]
         record['knowledge'].append(owner)
         stored_name = name
-    owner.setdefault('constraints', {})[stored_name] = fact
+    owner.setdefault('parameters', {})[stored_name] = fact
 
 
 def remove_parameter(record, name):
     from regrow.records.object_store import Region
     if isinstance(record, Region) or 'controls' in record:
-        record.get('constraints', {}).pop(name, None)
+        record.get('parameters', {}).pop(name, None)
         return
     for ref, row, local, fact in list(_parameter_locations(record)):
         if ref == name:
-            row['constraints'].pop(local, None)
+            row['parameters'].pop(local, None)
     record['knowledge'] = items(record.get('knowledge'))

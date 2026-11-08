@@ -1,3 +1,7 @@
+2026-11-08 参数命名统一工作稿：操作参数统一使用parameters。控件参数归knowledge[].parameters，区块参数目录使用parameters，功能的parameters只保存参数引用；动作仍填写本次实际参数值。原constraints只在旧记录/旧请求读取时兼容，不与parameters并列写新数据。参数值的既有表示法和其他对象语义不变；399停点图与0258完整原记录的两项隔离副本核对通过，0新模型/GUI；仅验证命名、旧数据读取和登记链路。新的完整参数解释及本轮补充示例仍待用户确认。
+
+2026-11-08 图像匹配删除工作稿：结果登记只采用本次正式观察，不再按旧裁图匹配补control_refs或visual_navigation；身份取正常Luna判断与准确引用，保留归属/字段冲突、实际动作来源及前后图。已有图像原件、历史已接收身份结论和未知投递原件保留，不重放原动作。限定验证及侧栏未接受项见11月日志。
+
 2026-11-08 本轮新增未解决登记风险：新控件被暂缓接收且被jump_to依赖时，object_registration.retain_located可能以destination_target_pending覆盖上游字段诊断并归档整次结果。实机a0055/0147即如此：0148补框通过，但未接收的“IPv6 DNS Automatic 开关”最初失败报告未保存，当前不能确认其原因；该结果仍待补登记，不能重做GUI或据后续新图推断旧结果。deferred登记缺口不会由仅处理suspended服务恢复的restore_next自动重试。此为新发现的相邻登记/诊断问题，本批未改规则，原任务及原件保留。
 
 2026-11-08 source凭据：records/action_evidence保留调用、source.snapshot和observation一致性检查；从实际发送回复的明确ref核对对象存在及所属区块。名单外的准确ref使用related_control.scope=explicit_ref留来源，不伪造当前观察。Region动作按是否有control绑定判断，键盘/返回/滚动显式绑定控件时保持该来源。
@@ -8,21 +12,45 @@
 
 2026-11-08 同对象补充：records/object_supplements为合并规则唯一实现，具名解码复用combine；materialize_regions在原观察验收之后、写入之前复用accepted_knowledge检查同ID知识冲突并合并参数，每ID知识只更新一次。各观察/外观及其来源保留，未通过的身份或外观不因提前搬移获得知识接收资格。旧duplicate_region/duplicate_submission/duplicate_binding一次提交限制退出，持久对象表不改。限定验证见11月日志。
 
-> 2026-11-07 接线：没有旧description的历史观察可保留结果调用/后图的来源对象；最近观察交接用列表成员比较去重，沿用原事实与旧短文本相等规则，不要求来源对象可哈希。
+2026-11-07 environment_context的全局控件树在动作后更新及其原请求纠错中，按真实source标记上次交互区块和控件；未确认来源不生成该标记。其他树/局部树/归属复查的默认呈现不变，标记不写回对象身份、前景、知识或关系。独立历史目录撤去，原任务与已有功能材料保留。原0010离线正常入口格式检查通过，0HTTP/GUI；未登记记录。仅实际交互控件的树节点附原已有知识、序号和参数约束，供直接修订，不展开其他区块历史目录。
+
+2026-11-07 控件无外观：单图补登记允许Control的显式合法null进入派生提交，沿原事务保存知识与实际动作结果；无有效框时沿原记录逻辑不生成模板图。保留原语义/外观调用和原回复；不新增抽象分类或修改记录层裁图规则。两项本地检查通过，0新HTTP/GUI。
+
+## 2026-11-07 访问关系删除路线 index
+
+正文随后按用户确认的完整候选替换，分别说明区块目标与控件目标，明确来源由执行记录提供；本轮仅核对文字和差异，未新增测试或模型调用。下述2HTTP是前一版删除index及单正例的保存帧结果。
+
+`control_routes.card` 不再展示路线序号；`task_settlement.destination_schema/register_destinations` 删除按序号修订条件的分支及 `update_conditions` 写入入口。新模型输出仅有目标 region、可选目标 control 和 conditions；区块目标省略 control。来源沿实际执行记录，不增设替代序号或旧字段迁移。历史原件和既有事件读取保持。
+
+2项聚焦检查通过；Settings 原0004完整前置记录和前后图经正常 builder/Runner/transport/补登记/发布验证，2HTTP（主答+补框）、0纠错、0GUI。原答只报目标菜单，正式保存 c0003→r0004，原菜单任务done，c0007/c0008及真实裁图正常；原运行未改。证据和限定范围见11月日志。
 
 > 2026-11-07 当前记录：action_evidence.has_observed_result以成功投递、结果调用与真实后图来源供结算/函数历史读取，不再要求模型description。task_updates允许同帧多对象原题各自更新，未被实际操作的问题不获得该动作归属。action后新对象沿已有task_proposal/task_plans登记新题，不写虚构动作或全区已审范围。navigation.bind_return只绑定实际进入attempt及已报告真实落点；无变化Back不生返回边。旧coverage_exemption一律撤回代理，旧prepares归档并保留原尝试、原问题恢复普通调度；迁移在副本读取/正常新发布发生，不覆盖旧快照。
 
-> 2026-11-06：新任务原文target、state及旧判断只读映射统一接线；旧建议不再作为可执行任务字段。更新登记原事务保存后图Action来源，实际来源读取复用calls.action_submission；对象知识与真实阻塞合同保留。验收边界见根目录SNAPSHOT_STATUS.md。
+> 2026-11-06 参数化探索：function_updates.schema/_store/view 共用可选 target_role/access_entry；入口须为本功能已有知识的实际支持控件，省略不推断，update 的 null 撤回字段；constraints 继续动态读取 Control 参数。candidate_access 为只读投影，只有明确独立入口+目标职责才展开同组实际成员，真实成功成员使用原边，候选不绑定目标 ID。历史例子沿原动作来源与 attempt。shared_tasks 现在仅负责旧数据归一化：独立任务恢复本地进度，纯复制归档至对象历史，有本地探索者保留；不再代理来源任务的产品或完成条件，不触发整区重提。正常下次发布保存归一化结果，旧快照不改。remove 保持用户确认的清理/替代功能引用语义，任务状态不变。
+
+> 2026-11-06 冻结后：知识或参数更新不写Task重提事件；新独立控件由new_scope_controls补一次并在零新题时合并已审来源。归属迁移复用原publish，Task/动作/边随控件迁移，已审controls覆盖随迁移且旧两侧来源保留；已有未审目标保留首次提出任务义务，只承接迁入对象的部分覆盖；现有Region知识继续活跃，无关任务/active_task不清空。continue积累原证据和全部冲突；defer的未提交归属仍保留对应对象缺口。原子失败不发布半迁移。
+
+> 2026-11-06 收尾：同一对象的多条补充经统一接收后保存为一个对象；未通过的内容不提前发布。最终入口副本沿正常Runner接续登记，原任务done；最终搜索框appearance_bbox混入空态提示仍未接受，原答/裁图保留，未手工替换。详见冻结原文设计与11月日志。
+
+> 2026-11-06 冻结原文：观察历史保存state_description，history_context提供有界去重来源；父级省略保留、null清除，引用已有父级不虚构该父级新观察。task_plans不再保存模型三态inventory，沿既有task_inventory保存提出来源和明确review；旧值只读。function_updates的remove.reason退役，replace_with及Control参数来源校验保持；参数事实不复制到功能正文目录。
+
+> 2026-11-06 Region：region_knowledge.related/context从已有正文的Region/Control ID、唯一完整名称及已确认合并别名选择一跳相关段落；名称只作历史召回线索，不承担身份写入；object_knowledge.fields给双方可写引用，普通发送共用该选择。知识以原kID在原事务更新，观察与前景分开；function_scope披露相关知识及已有路径，采集读取器继续从正常快照读取。Region合并不再把有效local_knowledge仅转入prior字段，保留来源及kID；确认的Region/Control别名可重指向，旧名或同名功能歧义保留原文与待核对提示，不自动语义同步。
+
+> 2026-11-06 最终Control：新观察保存appearance_bbox、可选click_bbox及icon_description；外观裁图与点击图分别保存，普通输入/已保存状态不重复新增身份图。旧bbox读取沿appearance_box兼容，不改历史文件。知识仍由control_knowledge.update按0起始index修订、无index追加、未提交项/省略constraints保留；没有Knowledge新对象或并行答案。
+
+> 2026-11-06 Control：新控件不再补齐、保存或合并may_open_content/needs_exploration；旧快照值保留可读，未知工作由Task承载。knowledge.index及省略constraints保留旧值沿用原实现。当前Control本体为name/description/knowledge/image/jump_to五项，分组仍归Region；历史日期条目不代表新输出要求。
+
+> 2026-11-06：新任务原文target、state及旧判断只读映射统一接线；旧建议不再作为可执行任务字段。更新登记原事务保存后图Action来源，实际来源读取复用calls.action_submission；对象知识与真实阻塞合同保留。验收边界见11月日志。
 
 # 记录
 
-## 2026-11-07 全局登记树与局部执行树
+## 2026-11-08 应用结构概览与本步控件
 
-`environment_context.for_request/render` 统一选择树的范围：识别登记、动作后更新给全局树；归属复查和图页继续使用默认全局 `forest`。任务提出只展开本区块；动作选择/导航/操作目标核对保留当前前景、工作/任务归属、明确返回目标及已选路线中的区块，其余目标只引用不展开。纠错沿原请求范围，不增加模型角色或新配置开关。
+模型调用展示入口展开概览：下一级表示曾通过上一级区块内的控件实际打开的区块，不表示物理包含或唯一归属。仅使用已有真实访问记录，不根据名称、位置或同屏出现推断跳转；不修改parent_region。每个区块按稳定ID只出现一次。复用原`structure`确定的展示父级：先从没有入边的区块遍历，再按既有稳定顺序补尚未访问的部分。多入口/共享目标只在首次确定的位置展开；自环、回到祖先或其他重复到达不追加引用；纯环和断开部分用已有组件根补齐；没有连接的区块单独列根。概览不是物理包含证明、导航脚本或完整边清单；不推断缺失连接，不修改持久父级。
 
-`structure/forest` 在构建投影前接收选定区块集合，默认仍为全局。局部树是已有图的读取视图，不表示其他对象不存在或不可操作，也不修改长期图、身份、任务和执行记录。当前选中区块内仍保留完整历史成员；进一步收敛控件、知识或抽象差分不属于本批。
+只展开本次已绑定关注区块的全部登记控件，不按标签页、是否在当前图出现或相关性再筛选。`for_request`沿用source.region → discovery_context.focus → work_context.region → working_region；纠错读取原请求，任务提出使用原rid，归属复查使用原source。实际交互标记和当前区块已有知识保留；原任务/动作材料保持。
 
-树中的区块、控件及目标引用统一显示一次 `ID/名称`，直接供图页和模型发送入口复用。控件树不逐项显示“候选入口/预期职责”，真实访问去向及其条件继续展示；候选推导数据和应用操作树的候选说明保留。
+`forest(control_regions=...)`走概览呈现，省略入口控件、控件级跳转、访问条件/重复去向文字；底层`links/structure`及全部访问事实保留。图页默认完整控件树和应用操作树不传该范围，维持原输出。只替换呈现，不新增开关或另一套持久树。两份真实正常入口输出及7区块合并图检查见本月日志；无新模型/GUI。
 
 2026-10-30累计合并：control_history_context 与 task_inventory_context 展示全部当前用途和知识序号，不因缺少 task_ref 自动添加“推测用途/未探索”；正文不确定性与实际动作历史仍保留。未修改 confirmed 的历史来源资格、撤销逻辑或功能支持准入。 本轮19项聚焦与40份离线呈现核对、两份真实记录离线预览通过；0新Luna/GUI，行为仍待验证，详见当月日志。
 
@@ -54,7 +82,7 @@
 
 历史答案核验先确认source.task_region及绑定任务的完整ref，而非比较source任务键与通用task.name；相同“功能探索”标签不意味着同一任务。随后仍核对实际控件、披露的历史动作、回执、观察来源、失败和条件。当前帧观察也不得绕过任务绑定检查。
 
-出现/访问关系统一为jump_to，输出目标是本次region_index及可选control_index，已有关系可按index修订conditions。登记后转换为稳定ID，区分同区块不同目标。当前关系只保留目标/条件；实际动作、意义与来源留在历史，读者由control_routes查询，不复活旧条件副本。旧entries仅作为历史导入读取，不改写旧运行。
+出现/访问关系统一为 jump_to：Luna 填目标 region（给定 ID/名称或本答新区块名）与可选目标 control；来源由实际执行记录取得。只登记本次观察到的目标及其 conditions，不提供旧路线序号或按序号修订条件的分支。登记后转换为稳定 ID，区分同区块不同目标；当前关系只保留目标/条件，实际动作与来源留在历史。旧记录原件不改写。
 
 2026-10-19：同类实例的模型材料外层用“用途与依据”，保留known_information内层的已知/推测来源，避免双重已知标签或将推测外标成确认；原事实、任务、条件和参数来源未改。
 
@@ -63,7 +91,7 @@
 
 `history_context.question_state`统一读取当前任务的已确认参数规则与最新具体未答部分，动作卡和更新catalog共用；不靠模型从动作流水重新推导已接受事实。清点投影保留本区块控件的实际失败、条件与关联边界，不以最后一条动作替代全部记录。
 
-控件持久合同：七项见[object_fields.md](object_fields.md)。参数规则嵌入knowledge，分组属于Region.list_groups，图片列表保存真实状态；来源、旧共享包装和合并别名归既有历史，读者复用control_knowledge/control_records/control_routes。Region可直接引用同一Control，解除一处引用不删除其他引用；任务/实际动作仍保留原区块归属。功能合并按条件保留确认及其他条件猜测，复用有效确认来源，不因参数追加丢失确认。发现登记复用frame_observation按kind/call/region读取真实观察，知识事件不作为裁图来源。实际验收边界见月志。
+控件持久合同：五项见[object_fields.md](object_fields.md)。参数规则嵌入knowledge，分组属于Region.list_groups，图片列表保存真实状态；来源、旧共享包装和合并别名归既有历史，读者复用control_knowledge/control_records/control_routes。Region可直接引用同一Control，解除一处引用不删除其他引用；任务/实际动作仍保留原区块归属。功能合并按条件保留确认及其他条件猜测，复用有效确认来源，不因参数追加丢失确认。发现登记复用frame_observation按kind/call/region读取真实观察，知识事件不作为裁图来源。实际验收边界见月志。
 
 2026-10-20：任务判断next_action显式null清空，continue省略时仅保留尚未消耗的先前建议；已确认执行的旧建议由task_settlement/decide消耗，显式新建议优先；defer/answered不向后读暴露。新任务与旧判断分属operations/task_update，正常校验、纠错及登记共用新合同。may_open_content新输出只收boolean，历史未确认值不改写。验证范围见本月日志。
 
@@ -93,7 +121,7 @@ function_updates.py统一应用功能add/update/remove，先对象知识、再�
 
 当前访问目标控件按稳定身份及目标区块归属校验，不要求已有控件提交本次观察。若本答实际提交目标观察或新对象，其接收依赖仍须满足；纯知识补充不变成本次观察。错误指出具体目标和已登记归属，实机部署以运行记录为准。
 
-参数引用读写（已部署，整体验收未完成）：功能参数只读解析统一归function_updates.resolved_constraints，功能目录与无scope页面知识披露都从当前控件事实读取；不将读取结果写回持久功能。修订功能时以最终supports/constraints校验，旧副本仅在该功能被修订时转成引用。支持替换不能留下不受支持的参数键；显式清空参数引用仍可用。原生历史整理1HTTP/0GUI验证存储引用及完整后读。
+参数引用读写（已部署，整体验收未完成）：功能参数只读解析统一归function_updates.resolved_parameters，功能目录与无scope页面知识披露都从当前控件事实读取；不将读取结果写回持久功能。修订功能时以最终supports/parameters校验，旧副本仅在该功能被修订时转成引用。支持替换不能留下不受支持的参数键；显式清空参数引用仍可用。原生历史整理1HTTP/0GUI验证存储引用及完整后读。
 
 2026-10-25 控件知识描述统一：新knowledge项只要求description，必要页面/模式/限制写入正文，不再输出conditions；constraints仍可选，其他对象conditions不变。带知识项index修订，无index新增，完全相同内容复用。旧知识条件在control_knowledge.items读取时并入描述，历史原件保留；旧参数条件保留在其原参数事实以保持来源关联。两个聚焦检查通过，完整真实保存帧预览完成；实际Luna验证待记录。
 
@@ -152,3 +180,29 @@ coverage保留首次任务提出、显式清点review、新控件未考虑和任
 ## 2026-11-01 当前知识修订与直接目标材料
 
 区块local_knowledge保持当前整体用法；新证据补全/推翻所提供段落时，正常回复用update/delete同次修订，历史原件保留。具体控件参数留在控件知识，不复制成平行区块答案。history_context.identity_candidates只为动作来源/工作/任务归属区块附旧段落；task_result_review补所属区块段落。现有字段和事务登记不变。task_inventory_context.destination_knowledge读取一跳已登记/已观察目标的当前知识和已回答问题；同目标去重，控件目标不扩到兄弟，仅读不扩写范围。旧图不会被批量改写。保存帧Screen k0024实际修订、c0139参数done、新菜单及代表项裁剪通过；具体限制见2026-11月志。
+
+## 2026-11-05 任务与纯知识登记接线（工作树候选，验收中）
+- records/task_plans.py统一任务子合同、只读材料和登记；独立提案先做知识/共享预处理，普通local先物化对象，再按本次原回复行来源绑定新控件并调用同一内核。任务项拒收保留原答和task_proposal缺口，合法对象/合法任务同一发布。
+- Task Proposal 与动作后结果按实际保存 Schema 提交可选功能增量；apply_for_request 仅在有真实增量时应用目录写入和引用校验。普通动作 none/complete 不因此扩权；旧目录/引用不批量清除。
+- named_references的display_regions只保留原外层区块展示提示，知识按全局control更新；有独立current_regions时显示容器不成为观察，正常local的focus观察保留。
+- 完成推导看首次有效任务提出、明确新增范围/重提题事件及真实任务登记失败；旧partial文案和历史控件差集不另成清零清单。该批曾由task_review_reason自动生产task_proposal复核；2026-11-06冻结后修订已删除此生产分支，旧无kind自由文字也不自动升级。done原完成条件只读提供。
+- 14项相邻辅助检查通过；GIMP0337完整原记录新Luna原答正常登记1HTTP/0GUI，其他原生/GUI验收仍在进行；不表示整份计划或Settings已跑通。证据artifacts/runs/overnight_plan_20261105_02。
+
+执行事实的共用投影为page_history.execution；history_context.task_goal与结果更新复用同一函数。真实Writer记录只读检查通过（0HTTP/0GUI）；冻结v4尚含旧函数名残留，v5修复此调用，不能混用版本说明。
+
+2026-11-05 Overnight04：reopen_task仅在显式给定原题/旧判断/实际图的记录复核开放；按原快照和完整task绑定，保留completion_condition/name/reason/type/control及真实attempt/对象知识。旧判断存revisions和update_history，未答写latest_update，真实阻塞维持blocked。shared_task_ref/equivalent_to/shared_result/coverage_exemption回规范来源；未接受review不改任务。原生两例2HTTP/0GUI仅此合同通过，非正常结算语义全接受；原件Overnight04。
+
+
+## 2026-11-05 精确重复提案不再形成纠错待办（限定实现）
+同对象、同登记类别、同完成条件的新增提案复用已有任务，仅在本次task_assessments标为redundant；原题、状态、真实阻塞和来源不改。同答合法task_update正常保存；同来源重入仍标already_accepted。历史旧拒绝中，只有明确为精确同题且仍能关联现存任务的条目从修订视图过滤；其他错误、阶段失败和episode保持。
+任务清点context和records.tasks.proposal_gap复用同一判断，避免历史纯重复拒绝清空旧题更新资格或成为额外inventory债务；旧快照原件不改。控件名与内部ID未对齐的旧拒绝不做推测性过滤。
+验证：两项聚焦pytest通过；完整Settings0105真实保存帧正常builder→Luna原答→校验/登记1HTTP/0GUI，旧题continue且原blocked保留、无新题或提案缺口。新回复未重复operations，因此此次真实调用不覆盖冗余分支；该分支及真实错误保留由两项辅助检查覆盖，不声称模型重复立题已解决。完整探索策略/模板Prompt和跨区块主要功能优先尚未实施，原现场未恢复。
+证据：artifacts/runs/exploration_strategy_20261105_01。命令：PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 /data/shenghonghui/miniconda3/envs/guiwalk-android/bin/python -m pytest -q tests/test_traversal_plan_core.py::test_new_question_preserves_done_and_local_bad_task_does_not_undo_observation tests/test_traversal_plan_core.py::test_old_exact_duplicate_gap_keeps_original_task_available_without_hiding_real_errors --basetemp artifacts/tmp_tests/exploration_strategy_20261105_01/pytest；原生用tools/prompt_review_trace.py及本批native-settings0105/job.json。
+
+2026-11-07 接线修复：动作结果不带旧description时，历史观察可为结果调用/后图来源对象；最近观察交接以列表成员比较去重，沿用已有来源记录及旧文字相等规则，不要求来源对象可哈希。Prompt正文与登记合同不变。
+
+
+2026-11-07 诊断接线：`diagnostics.Rejected` 复用原报告接口，具体校验传对象、字段/路径、实际内容及失败条件；知识、功能、任务和访问关系的主要校验已接。任务行 Schema 报告保留任务及完整列表路径。当前仍有合并条件未区分实际原因，以及 access_entry 复用 supports 校验时误标字段；本次仅两项本地检查和静态复核，不能视为逐字段验收。
+
+
+2026-11-07 错误字段位置：register_destinations 在真实访问目标验收失败时补 jump_to 的本次条目位置；目标与前景不一致的诊断关联 current_regions。只影响纠错定位与展示，不放宽来源、到达、前景、控件归属或发布规则。原菜单记录沿正常 Runner 的本地输出检查通过，0模型/GUI。

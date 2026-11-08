@@ -32,6 +32,6 @@
 ```json
 {"controls":[{"region_index":0,"name":"关闭","description":"对话框上的叉形按钮","knowledge":[{"description":"关闭当前对话框","conditions":[]}]}]}
 ```
-已知控件只补必要变化；没有新用途信息时不重报knowledge。知识项若有参数规则，可选constraints保存name/description规则；不把输入当前值当成规则。
+已知控件只补必要变化；没有新用途信息时不重报knowledge。知识项若有参数规则，可选parameters保存name/description规则；不把输入当前值当成规则。
 正例：普通复认沿用原知识与图片，发现新的适用条件时修订相应知识项。反例：把输入文本变化当成新控件或另一张按钮状态图。
 name使用稳定名称；整个区块确实超出用户允许范围时才填out_of_scope_reason。

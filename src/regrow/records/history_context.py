@@ -82,7 +82,7 @@ def region_states(region, limit=3):
     return list(reversed(rows))
 
 
-def related_regions(records, state, binding, visual_hits, source_destinations=None):
+def related_regions(records, state, binding, source_destinations=None):
     """Select related history owners without building a second identity catalog."""
     anchors = {binding.get('region_ref'), binding.get('working_region'), binding.get('task_region'), *state.get('interactive_regions', []), *state.get('region_path', [])[-1:]}
     selected = set(anchors)
@@ -94,16 +94,7 @@ def related_regions(records, state, binding, visual_hits, source_destinations=No
                 if rid != binding.get('region_ref') or action.get('control') != binding.get('control_ref'):
                     continue
                 selected.update(action.get('interactive_regions', []))
-    hit_ids = set()
-    for hit in visual_hits:
-        rid = hit.get('region_ref')
-        if rid is None:
-            matches = [k for (k, r) in records.items() if r['name'] == hit['name']]
-            rid = matches[0] if len(matches) == 1 else None
-        if rid in records:
-            hit_ids.add(rid)
-
-    return [rid for rid in records if rid in selected or rid in hit_ids]
+    return [rid for rid in records if rid in selected]
 
 
 def disclose(region, control, records):

@@ -33,6 +33,11 @@ class _Recovery:
         self.references.update(request.get('control_reference_names', {}).values())
         self.references.update(request.get('region_reference_names', {}).values())
         self.owners = {}
+        contract = request.get('name_contract', {})
+        names = contract.get('names', {})
+        for ref, owners in contract.get('owners', {}).items():
+            values = {names.get(owner, owner) for owner in owners}
+            self.owners.setdefault(names.get(ref, ref), set()).update(values)
         self._owners(reply)
 
     def _owners(self, value):
@@ -108,6 +113,57 @@ class _Recovery:
         if not isinstance(value, dict) or not properties:
             return deepcopy(value), [], []
         result = deepcopy(value)
+        # A single action envelope can contain complementary fields of the
+        # same reply. Do not borrow from sibling actions or prefer a conflict.
+        action = result.get('action')
+        action_spec = properties.get('action', {})
+        if (isinstance(action, dict) and isinstance(action.get('action'), str)
+                and action_spec.get('type') == 'string'):
+            outer = {k: v for k, v in result.items() if k != 'action'}
+            conflicts = [k for k, v in action.items() if k in outer and _key(outer[k]) != _key(v)]
+            if conflicts:
+                return result, [], [{'code': 'structure_field_conflict', 'object': key,
+                    'path': '/' + '/'.join(map(str, (*path, key))), 'field': key,
+                    'actual': {'outer': outer[key], 'action': action[key]},
+                    'expected': '同一次动作回复的同一字段只有一个一致的值',
+                    'reason': '外层与动作内层填写了不同内容，不能选择其中一个覆盖。'} for key in conflicts]
+            result = {**outer, **action}
+            events.append({'kind': 'action_envelope', 'source': [*path, 'action'], 'destination': list(path)})
+        # An existing control's unique, disclosed membership can recover a
+        # misplaced knowledge row. New/ambiguous ownership is never inferred.
+        regions_spec = properties.get('regions', {}).get('items', {})
+        region_choices = list(_choices(regions_spec))
+        if ('controls' not in properties and isinstance(result.get('controls'), list)
+                and any('controls' in c.get('properties', {}) for c in region_choices)):
+            regions = result.setdefault('regions', [])
+            if isinstance(regions, list):
+                from regrow.records.object_knowledge import control_only
+                pending = []
+                for index, row in enumerate(result['controls']):
+                    if not isinstance(row, dict) or not control_only(row):
+                        return deepcopy(value), [], []
+                    ref = row.get('ref') if isinstance(row, dict) else None
+                    owners = self.owners.get(ref, set()) if isinstance(ref, str) else set()
+                    if len(owners) != 1:
+                        return deepcopy(value), [], [{'code': 'structure_owner_ambiguous',
+                            'object': ref or '待归属控件', 'actual': deepcopy(row),
+                            'path': '/' + '/'.join(map(str, (*path, 'controls', index))),
+                            'field': '控件所属区块',
+                            'expected': '已有唯一归属的控件，或明确放在所属区块内',
+                            'reason': '提供的身份材料不能唯一确定这条控件登记属于哪个区块。'}]
+                    owner = next(iter(owners))
+                    target = next((r for r in regions if isinstance(r, dict) and r.get('ref') == owner), None)
+                    if target is None:
+                        target = {'ref': owner, 'controls': []}
+                        regions.append(target)
+                    if not isinstance(target.get('controls', []), list):
+                        return deepcopy(value), [], []
+                    pending.append((target, row, ref, owner))
+                for target, row, ref, owner in pending:
+                    target.setdefault('controls', []).append(deepcopy(row))
+                    events.append({'kind': 'known_control_owner', 'source': [*path, 'controls'],
+                                   'control': ref, 'region': owner})
+                result.pop('controls')
         if isinstance(identity, str) and identity in self.references and 'ref' in properties:
             if 'ref' in result and result['ref'] != identity:
                 return result, [], [{'code': 'structure_identity_conflict', 'object': identity,

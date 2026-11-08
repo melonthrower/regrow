@@ -53,15 +53,16 @@ def region_material(rid, region):
     controls = []
     for cid, control in region.get('controls', {}).items():
         controls.append({'ref': cid, 'name': control['name'],
-                         'knowledge': [{k: v for k, v in row.items() if k != 'constraints'}
+                         'knowledge': [{k: v for k, v in row.items() if k != 'parameters'}
                                        for row in control_knowledge.card(control) if row.get('description')],
                          'parameters': control_knowledge.parameter_facts(control),
                          'knowledge_source': control_knowledge.evidence(control),
                          **{key: deepcopy(control[key]) for key in ('description', 'may_open_content', 'needs_exploration', 'jump_to') if key in control}})
-    functions = deepcopy(region.get('functions', {}))
+    functions = {name: object_store.normalize_parameters(deepcopy(function))
+                 for name, function in region.get('functions', {}).items()}
     for function in functions.values():
-        if function.get('constraints'):
-            function['constraints'] = function_updates.resolved_constraints(region, function)
+        if function.get('parameters'):
+            function['parameters'] = function_updates.resolved_parameters(region, function)
     return {'region_ref': rid, 'name': region['name'], 'description': region.get('description', ''),
             'functions': functions, 'local_knowledge': deepcopy(region.get('local_knowledge', {})),
             'parameters': control_knowledge.parameter_facts(region), 'controls': controls,
@@ -97,7 +98,7 @@ def generation_material(rid, region):
             'support_controls': [{key: deepcopy(support[key])
                                   for key in ('kind', 'region', 'control', 'name') if key in support}
                                  for support in function.get('support_controls', [])],
-            'constraints': parameters(function_updates.resolved_constraints(region, function))}
+            'parameters': parameters(function_updates.resolved_parameters(region, function))}
     return {'region_ref': rid, 'name': region['name'],
             'description': region.get('description', ''), 'functions': functions,
             'local_knowledge': deepcopy(region.get('local_knowledge', {})),

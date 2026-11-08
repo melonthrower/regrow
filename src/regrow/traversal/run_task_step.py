@@ -90,6 +90,20 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
     calls = []
 
     def call(q):
+        nonlocal selection_window
+        if q.get('role') == 'action_selection':
+            from copy import deepcopy
+            from uuid import uuid4
+            from regrow.prompts.frame_context import label
+            from regrow.prompts.target_observation import refresh
+            q = deepcopy(q)
+            frame = out / ('action-frame-' + uuid4().hex + '.png')
+            transport.screenshot(frame)
+            selection_window = foreground_window(transport)
+            q.update(screenshots=[str(frame)], image_refs=[str(frame)])
+            q['frame_context'] = {}
+            label(q, str(frame), '本次动作选点依据图；尚未执行所选动作')
+            q = refresh(q)
         (ref, reply) = transport.call(q)
         calls.append(ref)
         return (ref, reply)
@@ -102,8 +116,6 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
 
     def current():
         request = scheduler.current()
-        if locator.locate_control(request):
-            request = scheduler.current()
         return request
     if (run / 'ownership_review.json').exists():
         result = _ownership_review.run(root, transport, out, call)

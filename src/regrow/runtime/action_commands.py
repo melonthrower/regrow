@@ -181,7 +181,7 @@ def commands(proposal, platform='android'):
     replacement = ['shell', 'input', 'text', shlex.quote(text.replace(' ', '%s'))] if text else ['shell', 'input', 'keyevent', '67']
     return [tap, ['shell', 'input', 'keycombination', '113', '29'], replacement]
 
-def execute(transport, proposal, folder, *, input_context=None):
+def execute(transport, proposal, folder):
     """Shared receipts and command accounting; delivery is never semantic success."""
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
@@ -194,11 +194,8 @@ def execute(transport, proposal, folder, *, input_context=None):
     def save(name, data):
         (folder / name).write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
     save('dispatch.json', {'action': proposal, 'commands': argv, 'status': 'dispatching'})
-    if input_context is not None:
-        save('input_context.json', input_context)
     receipts = []
     steps = []
-    target = None
 
     def send(command, step):
         if transport.account['gui_started'] >= transport.account['max_gui_commands']:
@@ -226,8 +223,6 @@ def execute(transport, proposal, folder, *, input_context=None):
             receipt['input_mode'] = 'replace'
             if not delivered and receipt['exit_code'] == 0:
                 receipt.update(semantic_result='focus_changed_surface', description=description)
-        if target:
-            receipt['input_target'] = target
         save('receipt.json', receipt)
         return receipt
     if proposal['action'] != 'input_text':
@@ -244,17 +239,7 @@ def execute(transport, proposal, folder, *, input_context=None):
         return finish(False)
     time.sleep(2)
     transport.screenshot(folder / 'after_focus.png')
-    if input_context is None:
-        from regrow.recognition.visual_backtrack import same_surface
-        decision = {'status': 'same_surface' if same_surface(folder / 'before_focus.png', folder / 'after_focus.png') else 'unresolved', 'reason': '无区块控件证据，采用整图保守核验'}
-    else:
-        from regrow.runtime.input_target import resolve
-        decision = resolve(input_context, folder / 'before_focus.png', folder / 'after_focus.png')
-    save('focus_check.json', decision)
-    if decision['status'] not in ('same_target', 'same_surface'):
-        return finish(False, '实际点击已保存；输入对象未可靠确认，尚未发送文字，交回发现与更新流程')
-    target = decision.get('target', target)
     if send(argv[1], {'action': 'select_all', 'method': 'CTRL+A'})['exit_code'] != 0:
         return finish(False, '全选命令失败，未发送文字')
-    result = send(argv[2], {'action': 'input_text', 'text': proposal['text'], **(target or {})})
+    result = send(argv[2], {'action': 'input_text', 'text': proposal['text']})
     return finish(result['exit_code'] == 0)

@@ -34,7 +34,7 @@ def restored_update(records, rid, name, historical):
     row = {k: deepcopy(historical[k]) for k in
            ('description', 'object', 'completion', 'unconfirmed') if k in historical}
     row.update(name=name, supports=[s['control'] for s in supports],
-               constraints=list(historical.get('constraints', {})))
+               parameters=list(historical.get('parameters', {})))
     return {'region': rid, 'add': [row]}
 
 

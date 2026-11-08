@@ -13,7 +13,6 @@ def business_request(run, request):
 
 def submission(run, ref):
     """Resolve a corrected candidate without modifying the actual model artifacts."""
-    from regrow.recognition import control_identity_review as _control_identity_review
     folder = Path(run) / 'calls' / ref
     q = read(folder / 'interpreted_request.json') if (folder / 'interpreted_request.json').exists() else business_request(run, read(folder / 'request.json'))
     reply = read(folder / 'interpreted_response.json') if (folder / 'interpreted_response.json').exists() else read(folder / 'response.json')
@@ -27,14 +26,8 @@ def submission(run, ref):
     if (q.get('role') in ('step_correction', 'control_identity_comparison', 'action_target_review')
             and (folder / 'effective_request.json').exists() and (folder / 'effective_candidate.json').exists()):
         return read(folder / 'effective_request.json'), read(folder / 'effective_candidate.json')
-    if q.get('role') == 'action_target_review':
-        from regrow.recognition.action_target_review import accept
-        return accept(q, reply, ref)
-    if q.get('role') == 'control_identity_comparison':
-        (original, candidate) = _control_identity_review.compared_candidate(q, reply)
-        if candidate is None:
-            raise ValueError('身份比较仍未确认，不能登记')
-        return (original, candidate)
+    if q.get('role') in ('action_target_review', 'control_identity_comparison'):
+        raise ValueError('历史身份核对尚无已接收结果；请查看该次冻结源码及原始记录，不在当前流程重发退役调用。')
     if q.get('role') == 'step_correction':
         from regrow.records.task_assessments import planning, envelope
         if planning(q):

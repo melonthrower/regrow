@@ -180,8 +180,7 @@ def supplement(root, records, state, frame, *, items=None):
     queries = [g['proposal'] for g in batch['pending']]
     ids = retrieve(records, queries)
     from regrow.recognition.region_candidate_names import candidates
-    from regrow.recognition.history_matching import with_history
-    describe = with_history if ctx['mode'] != 'local' else candidates
+    describe = candidates
     (rows, names) = describe(records, [{'region_ref': rid, 'name': records[rid]['name'], '提供原因': ['按缺口文字检索；仍须核对当前截图'], '当前状态': '未定位；仅供身份核对'} for rid in ids])
     receipt = []
     for rid in batch['regions']:
@@ -231,12 +230,11 @@ def supplement(root, records, state, frame, *, items=None):
     q['system_prompt'] = '\n\n'.join((p['text'] for p in q['fixed_parts']))
     q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     from regrow.traversal import work_context as work_context
+    ctx['region_names'].update({rid: rid for rid in records})
     work_context.attach(q, records, state)
     q['screenshots'] = [frame]
     extend_schema(q['response_schema'])
-    from regrow.recognition import history_matching as history_matching
-    ranking = history_matching.scan({rid: records[rid] for rid in names.values()}, None, frame)
-    return history_matching.attach(q, records, ranking, names)
+    return q
 
 def prepare_registration(reply, request, known, batch, diagnostics):
     report = diagnostics.collect('discovery', request, reply, known)
@@ -295,7 +293,7 @@ def recall_into_request(q, records, queries):
     """Repair observation recalls named missing objects, not the entire graph."""
     ctx = q['discovery_context']
     dynamic = json.loads(q['user_prompt'])
-    rows = dynamic.setdefault('程序匹配候选', [])
+    rows = dynamic.setdefault('相关历史候选', [])
     recalled = retrieve(records, queries)
     for rid in recalled:
         if rid in ctx['region_names'].values():
@@ -310,7 +308,7 @@ def recall_into_request(q, records, queries):
             n += 1
             label = f'{base}（候选{n}）'
         ctx['region_names'][label] = rid
-        rows.append({'名称': label, '历史描述': r.get('description', ''), '区块图匹配': {'匹配说明': '按未确认对象召回的历史身份；不是当前视觉匹配', '候选位置': []}, '定位锚点': []})
+        rows.append({'名称': label, '历史描述': r.get('description', '')})
     if ctx['mode'] != 'local':
         from regrow.recognition.region_candidate_names import control_candidates
         owners = set(recalled) | {rid for (rid, r) in records.items() if set(owned_controls(r)) & set(ctx.get('control_names', {}).values())}
@@ -318,6 +316,6 @@ def recall_into_request(q, records, queries):
         if controls:
             dynamic['相关区块控件身份候选'] = controls
     dynamic.pop('省略的候选数量', None)
-    dynamic['历史检索范围'] = '保留本轮视觉候选，仅额外召回与未确认对象相关的少量历史；未召回不证明对象不存在。'
+    dynamic['历史检索范围'] = '与本次未确认对象相关的历史身份；未召回不证明对象不存在。'
     q['user_prompt'] = q['dynamic_prompt'] = json.dumps(dynamic, ensure_ascii=False, indent=2)
     return q

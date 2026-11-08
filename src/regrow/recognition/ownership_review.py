@@ -309,7 +309,7 @@ def request(root, run, episode, frame):
                  for name in ('region.ownership_status', 'region.observed_assignments'))
     dynamic = {'原区块': {'ref': source['id'], '名称': source['name'], '描述': source['description']}, '待核对历史控件': [{'ref': cid, '名称': c['name'], '最近登记观察': {k: next((row[k] for row in reversed(observation_history(c)) if k in row and not row.get('visual_only')), '') for k in ('icon_description', 'knowledge', 'possible_operation', 'uncertainty')}} for cid, c in owned_controls(source).items() if cid in refs], '待核对的划分建议': episode['proposed_regions'], '已观察归属': {cid: item for cid, item in episode['assignments'].items() if cid in refs}, '归属冲突': {cid: item for cid, item in episode['conflicts'].items() if cid in refs}, '本次复查动作': episode['actions'][-6:], '说明': '核对列出对象的归属；无法确认的对象保留疑点，不要求补齐其他控件。'}
     from regrow.records.environment_context import forest
-    dynamic['控件树'] = forest(records, view='controls', focus=source['id'])
+    dynamic['控件树'] = forest(records, view='controls', focus=source['id'], control_regions={source['id']})
     request = {'pipeline_step': 'recovery', 'stage': 'ownership_review', 'role': 'ownership_review', 'system_prompt': '\n\n'.join(part['text'] for part in parts), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [str(frame)], 'fixed_parts': parts, 'response_schema': schema}
     from regrow.prompts.frame_context import label
     from regrow.recognition.named_references import prepare

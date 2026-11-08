@@ -27,7 +27,7 @@ def restore(request):
     result.pop('_structured_user_prompt', None)
     result.pop('_presentation_digest', None)
     return result
-LABELS = {'name': '名称', 'control': '控件', 'region': '区块', 'action': '操作', 'conditions': '适用条件', 'status': '进度', 'text': '输入文本', 'keys': '按键', 'key': '按键', 'direction': '方向', 'amount': '幅度', 'reason': '理由', 'knowledge': '已知用途', 'description': '说明', 'task_type': '任务类型', 'registration_kind': '要登记的内容', 'evidence': '观察依据', 'source': '来源', 'constraints': '约束', 'domain': '取值范围', 'basis': '依据类别', 'task': '任务', 'kind': '工作类型', 'attempt': '动作记录', 'prerequisite': '前置条件', 'control_name': '控件', '动作后可交互区块': '动作后前景区块', '当时可交互区块': '当时前景区块'}
+LABELS = {'name': '名称', 'control': '控件', 'region': '区块', 'action': '操作', 'conditions': '适用条件', 'status': '进度', 'text': '输入文本', 'keys': '按键', 'key': '按键', 'direction': '方向', 'amount': '幅度', 'reason': '理由', 'knowledge': '已知用途', 'description': '说明', 'task_type': '任务类型', 'registration_kind': '要登记的内容', 'evidence': '观察依据', 'source': '来源', 'parameters': '参数', 'domain': '取值范围', 'basis': '依据类别', 'task': '任务', 'kind': '工作类型', 'attempt': '动作记录', 'prerequisite': '前置条件', 'control_name': '控件', '动作后可交互区块': '动作后前景区块', '当时可交互区块': '当时前景区块'}
 VALUES = {'status': {'done': '探索信息已登记', 'record_only': '仅记录用途', 'pending': '待探索', 'blocked': '受阻，需满足恢复条件'}, 'basis': {'observation_only': '按观察登记，未声称执行', 'explored': '已有探索结果'}, 'task_type': {'function': '功能探索', 'entry': '入口关联', 'parameter': '参数问题', 'region_content': '区块内容探索', 'control_effect': '功能或内容问题'}}
 
 def named_rows(rows):
@@ -96,7 +96,7 @@ def readable(value, depth=0):
         else:
             lines.append(label + '：' + readable(item, depth + 1))
     return '\n\n'.join(lines) if depth == 0 else '\n'.join(lines)
-ROLES = {'appearance_comparison', 'observation', 'task_proposal', 'action_selection', 'observation_update', 'step_correction', 'control_identity_comparison', 'ownership_review', 'recovery', 'branch_correction', 'step_observation'}
+ROLES = {'appearance_comparison', 'observation', 'task_proposal', 'action_selection', 'observation_update', 'step_correction', 'ownership_review', 'recovery', 'branch_correction', 'step_observation'}
 
 def render(value, depth=0):
     compact = lambda item: json.dumps(item, ensure_ascii=False, separators=(',', ':'))

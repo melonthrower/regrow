@@ -53,7 +53,6 @@ def commit(root, run, call_ref, *, ownership_episode=None):
     from regrow.recognition import locator as _locator
     from regrow.traversal import traversal_scheduler as _traversal_scheduler
     from regrow.recognition import region_identity as _region_identity
-    from regrow.recognition import control_identity_review as _control_identity_review
     from regrow.records import registration_diagnostics as _registration_diagnostics
     run = Path(run).resolve()
     call = run / 'calls' / call_ref
@@ -139,7 +138,6 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         for error in report['errors']:
             actual = error['actual']
             deferred_controls.setdefault(actual['region_id'], []).append(actual['control_id'])
-    _control_identity_review.check_request(run, request, reply)
     ctx = request['discovery_context']
     if audit:
         _record_write_json(call / 'visual_identity.json', {'matches': audit, 'effective_candidate': reply})
@@ -187,7 +185,6 @@ def commit(root, run, call_ref, *, ownership_episode=None):
             c['_matched_id'] = cid
 
     def mutate(records, state, snapshot, temp):
-        from regrow.recognition import visual_region_locator as _visual_region_locator
         from regrow.traversal import task_deferral as _task_deferral
 
         for rid, controls in deferred_controls.items():
@@ -207,9 +204,6 @@ def commit(root, run, call_ref, *, ownership_episode=None):
         from regrow.records.object_knowledge import observed_refs
         all_refs = refs
         refs = observed_refs(reply, refs)
-        resolved = _visual_region_locator.resolve_foreground_check(ctx['visual_plan'], run / frame, refs, call_ref, previous=state.get('foreground_resolution'))
-        if resolved:
-            state['foreground_resolution'] = resolved
         _owner_save_region_images(records, refs, reply, call_ref, run, frame, snapshot, temp)
         from regrow.records.observations import restore_source_indices
         restore_source_indices(records, refs, {'regions': region_indices, 'controls': control_indices}, call_ref, obs)
@@ -274,7 +268,6 @@ def commit(root, run, call_ref, *, ownership_episode=None):
             if not (missing and any((_record_coverage(records[rid], records)['pending'] for rid in refs))):
                 scheduler.schedule_local_inspection(records, state)
         elif ctx['mode'] == 'local':
-            state.setdefault('control_scan', {})[ctx['focus']] = ctx['visual_plan']['next_offset']
             state['control_inventory_status'] = 'partial'
             if not state['observation']['control_refs']:
                 state.update(next_action_mode='explore', reason='local_inventory_requires_task_review')

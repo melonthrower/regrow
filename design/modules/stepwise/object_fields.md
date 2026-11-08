@@ -1,3 +1,5 @@
+> 2026-11-09：本批复用Region/Control/Function/Task及ref/parameters，不新增抽象类型、阶段或第二任务清单。Control参数维护取值规则；Function只保存全局控件参数引用，supports可跨区块且不移动实际成员；新任务可选function_refs，同答先知识、再功能、再任务。任务始终按原target完整范围结算，实例事实与长期能力知识分开。list_group仍只关联分别登记成员。Prompt原文已接入，模型行为尚未验收。
+
 2026-11-08 参数命名统一工作稿：操作参数统一使用parameters。控件参数归knowledge[].parameters，区块参数目录使用parameters，功能的parameters只保存参数引用；动作仍填写本次实际参数值。原constraints只在旧记录/旧请求读取时兼容，不与parameters并列写新数据。参数值的既有表示法和其他对象语义不变；399停点图与0258完整原记录的两项隔离副本核对通过，0新模型/GUI；仅验证命名、旧数据读取和登记链路。新的完整参数解释及本轮补充示例仍待用户确认。
 
 2026-11-08 字段重写状态：用户否决在旧说明后逐句补禁令的候选01。当前完整候选02重写knowledge用途/参数、new_tasks、task_update及动作共同字段的说明，按认识功能组织，保留已知认识与实际效果的区别；尚未确认，未改固定Prompt。动作代码已收束为正式ref绑定；描述只进入已有补登记，不能直接执行。异常顶层化、知识统一regions[].controls的公开格式仍是未激活草稿，不能据此解释现有历史回复。候选及完整改前对照在原Prompt工作台functional_discovery_20261108_02，约定的0253/0327新Luna检查尚未执行。

@@ -50,7 +50,7 @@ def proposal_rejections(region):
         and matching_question(owned_tasks(region), row.get('proposed_update', {})) is not None)]
 
 
-def context(records, state, rid, *, scope_review=False, observed_new=False):
+def context(records, state, rid, *, scope_review=False, observed_new=False, function_material=None):
     from regrow.records.task_inventory_context import project
     from regrow.records.control_knowledge import card
     from regrow.records.tasks import target, target_control
@@ -67,7 +67,7 @@ def context(records, state, rid, *, scope_review=False, observed_new=False):
         value['properties']['task_update']['items']['properties']['task']['enum'] = refs
     else:
         value['properties'].pop('task_update')
-    material = project(records, state, rid)
+    material = project(records, state, rid, function_material=function_material)
     catalog = material.pop('已有任务')
     material['本轮可判断旧任务'] = []
     provided = set()

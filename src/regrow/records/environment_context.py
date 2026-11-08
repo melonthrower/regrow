@@ -162,7 +162,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
                 out.append('  '*(depth+1) + '└─ 尚无已登记应用操作')
             for name, function in functions.items():
                 out.append('  '*(depth+1) + '├─ ' + name + ' [' + rid + '/' + name + ']')
-                parameters = resolved_parameters(region, function)
+                parameters = resolved_parameters(records, function)
                 if parameters:
                     out.append('  '*(depth+2) + '参数引用：' + '、'.join(parameters))
                 if function.get('target_role'):

@@ -1,17 +1,17 @@
 {
-  "date": "2026-11-07",
+  "date": "2026-11-09",
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "research_snapshot_saved_frame_target_validation",
-  "previous_source_commit": "a658d43245607c88ce815f7cb86ae7084534f0be",
+  "kind": "explicit_user_requested_pre_live_test_research_checkpoint",
+  "previous_source_commit": "a4861399001f95e3dbd26db3562578b620f916fe",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Pre-dispatch comparison now prefers the actual located control, then its Region, with existing checks retained when neither scope is known. Other abstraction/instance and traversal issues retain their separate unaccepted status.",
-  "verification_scope": "Six focused checks; complete original run context rebuilt by the maintained workbench, two actual Luna replies passed normal validation and binding; normal executor passed both pre-dispatch checks using the real failure capture and stopped at a zero-GUI budget. No new GUI navigation, full gate or whole-framework acceptance.",
+  "draft_status": "Supplied abstraction prompt text integrated verbatim. Existing function-reference wiring included as runtime dependency. New live/model behavior not yet accepted.",
+  "verification_scope": "Eight exact supplied blocks, untouched prompt text, block dependency graph and two focused local checks passed. Independent static reading found no confirmed defect. No new Luna or GUI; dynamic collection untested.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,14 +29,13 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "a658d43245607c88ce815f7cb86ae7084534f0be",
+  "snapshot_parent_commit": "a4861399001f95e3dbd26db3562578b620f916fe",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {
-    "new_prompt_body_edits_in_this_batch": false,
-    "live_frozen_source_changed": false,
-    "live_traversal_resumed": false,
-    "preexisting_candidates": "Other semantic/Prompt candidates retain their separate validation status."
+    "new_prompt_body_edits_in_this_batch": true,
+    "source": "User-supplied final specification dated 2026-11-09 section 5, verbatim",
+    "live_traversal_resumed": false
   },
   "source_export_cleanup": "Only the disclosed six Prompt/composition paths and current wiring/status notes changed; old inactive grouping manual shortened without activation."
 }

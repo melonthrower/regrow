@@ -213,7 +213,7 @@ def control_directory(cards, groups):
     return '\n\n'.join(lines)
 
 
-def project(records, state, rid):
+def project(records, state, rid, *, function_material=None):
     """Select prose for inventory; expose machine references only for output binding."""
     from regrow.records.control_history_context import known_information
     from regrow.records.control_knowledge import card, text as knowledge_text
@@ -269,11 +269,14 @@ def project(records, state, rid):
         if any(t.get('control') == cid for t in owned_tasks(source).values()):
             external.append({'region':rr, 'control':cid, '区块':source['name'], '名称':owned_controls(source)[cid]['name'], '用途与依据':known_information(owned_controls(source)[cid]), '参数说明':parameter_text(owned_controls(source)[cid]), '任务条件':['；'.join(t.get('conditions', [])) for t in owned_tasks(source).values() if t.get('control') == cid and t.get('conditions')]})
     from regrow.records.environment_context import render
-    from regrow.records.function_updates import view
+    from regrow.records.function_context import request_context
     from regrow.records.region_knowledge import related
     from regrow.records.candidate_access import candidate_access_entries
+    if function_material is None:
+        function_material, _ = request_context(records, state, rid, list(related(records, [rid])),
+                                               work=state.get('_work_context'), inventory=True)
     return {'控件': control_directory(cards, region.get('list_groups', {})), '环境位置':render(records,state,rid,kind='task_proposal'),
-            '已有功能': [row for owner in related(records, [rid]) for row in view(records, owner)],
+            **function_material,
             '候选访问关系': candidate_access_entries(records, rid),
             '已登记直接目标知识': destination_knowledge(records, region, edges),
             '已有任务': task_catalog(region, state, records), '可引用同类实例': external}

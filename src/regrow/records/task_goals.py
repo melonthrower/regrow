@@ -3,8 +3,12 @@
 
 def operation_schema():
     from regrow.records.task_updates import object_schema
-    return object_schema({'control': {'type': 'string'},
-                          'target': {'type': 'string', 'minLength': 1, 'pattern': r'\S'}})
+    value = object_schema({'control': {'type': 'string'},
+                           'target': {'type': 'string', 'minLength': 1, 'pattern': r'\S'},
+                           'function_refs': {'type': 'array', 'uniqueItems': True,
+                                             'items': {'type': 'string', 'minLength': 1}}})
+    value['required'] = ['control', 'target']
+    return value
 
 
 def legacy_definition(kind):

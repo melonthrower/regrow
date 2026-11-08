@@ -475,12 +475,13 @@ def repartition(records, state, episode, snapshot, *, existing_targets=None, mer
         # A moved control invalidates only functions which depended on it.
         removed = [name for name, function in r.get('functions', {}).items()
                    if not function.get('support_controls') or any(
-                       support.get('region') != rid or
-                       support.get('control') not in owned_controls(r)
+                       support.get('region') not in records or
+                       (support.get('control') is not None and support.get('control') not in
+                        owned_controls(records[support['region']]))
                        for support in function['support_controls'])]
         if removed:
             invalid_functions.append({'region': rid, 'remove': [
-                {'ref': rid + '/' + name, 'reason': '区块归属调整后原功能支持不再属于本区块'}
+                {'ref': rid + '/' + name, 'reason': '区块归属调整后原功能支持对象不再有效'}
                 for name in removed]})
         if removed:
             region_work(r).pop('function_inventory', None)

@@ -175,8 +175,11 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     progress_now = coverage(owner, records)
     from regrow.records.task_updates import catalog
     from regrow.records.task_updates import reference
-    function_regions = related_regions(records, state, binding, source_destinations=recalled['destinations'])
-    task_candidates = catalog(records, binding, function_regions)
+    task_regions = related_regions(records, state, binding, source_destinations=recalled['destinations'])
+    task_candidates = catalog(records, binding, task_regions)
+    from regrow.records.function_context import request_context
+    function_material, function_scope = request_context(records, state, binding['working_region'], task_regions, source=binding)
+    function_regions = list(dict.fromkeys(task_regions + list(function_scope['update_refs'])))
     dynamic['来源区块已有任务'] = [{k: v for (k, v) in row.items() if k != 'control'} for row in task_candidates]
     refs = [row['task'] for row in task_candidates if row['status'] in ('pending', 'blocked')]
     dynamic['任务更新引用'] = refs
@@ -189,8 +192,7 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     dynamic.pop('当前截图视觉匹配到的既有区块', None)
     if recalled['actions'] or recalled.get('incoming') or not recalled['confirmed']:
         dynamic['本次入口历史落点'] = source_candidates.describe(recalled, labels)
-    from regrow.records.function_updates import view as function_view
-    dynamic['已有功能'] = [row for rid in function_regions for row in function_view(records, rid)]
+    dynamic.update(function_material)
     dynamic['身份引用'] = 'ref使用已提供的区块或控件编号；name只表示名称。'
     source = {'region': binding['region_ref'], 'working_region': binding['working_region'], 'observation': binding['observation_ref'], 'attempt': folder.name, 'control_ref': binding.get('control_ref'),
               'operation': proposal['action'] if recalled['confirmed'] else None}
@@ -205,6 +207,9 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
             dynamic['动作前对象观察'] = {'来源': prior.get('evidence', {}), '区块' if region_bound else '控件': actual_object['name'], **{k: prior[k] for k in ('uncertainty',) if prior.get(k)}}
     u = build_update_request(root, dynamic, [str((folder / n).relative_to(run)) for n in ['before.png', 'after.png']],
                              region_refs=list(records), function_regions=function_regions, selection=selection)
+    from regrow.records.function_updates import scoped_schema
+    u['response_schema']['properties']['function_updates'] = scoped_schema(function_scope)
+    u['function_update_scope'] = function_scope
     u['source'] = source
     u['task_update_candidates'] = task_candidates
     from regrow.traversal.suspended_updates import context as suspended_context

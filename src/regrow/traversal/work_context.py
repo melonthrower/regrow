@@ -103,7 +103,11 @@ def attach(request, records, state, work=None):
     if work.get('region') in records:
         request['focus_region_name'] = records[work['region']]['name']
     from regrow.prompts.prompt_material import assign
-    assign(request, {TITLE: describe(work, records)})
+    material = {TITLE: describe(work, records)}
+    if work.get('kind') in ('navigate', 'recover', 'locate', 'step_observation'):
+        from regrow.records.function_context import bound_context
+        material.update(bound_context(records, state, work=work))
+    assign(request, material)
     request.pop('_work_context_text', None)
     return work
 

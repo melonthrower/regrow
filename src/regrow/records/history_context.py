@@ -328,6 +328,8 @@ def action_context(records, state, task_region, name, task):
     if task.get('blocker', {}).get('reason'):
         card['当前阻碍'] = task['blocker']['reason']
     material = {'当前任务': card}
+    from regrow.records.function_context import bound_context
+    material.update(bound_context(records, state, source={'task_region': task_region, 'task_name': name}))
     resolved = [item for item in task_value(task, 'blocker_history', []) if item.get('resolved_by')]
     ref = state.get('last_action_result') or {}
     recent = owned_actions(records.get(ref.get('region'), {})).get(ref.get('action'))

@@ -48,7 +48,7 @@ def read_stepwise_records(snapshot):
     return records, paths
 
 
-def region_material(rid, region):
+def region_material(rid, region, records=None):
     """The collector's full Region memory; generation selects its own material."""
     controls = []
     for cid, control in region.get('controls', {}).items():
@@ -62,7 +62,7 @@ def region_material(rid, region):
                  for name, function in region.get('functions', {}).items()}
     for function in functions.values():
         if function.get('parameters'):
-            function['parameters'] = function_updates.resolved_parameters(region, function)
+            function['parameters'] = function_updates.resolved_parameters(records if records is not None else {rid: region}, function)
     return {'region_ref': rid, 'name': region['name'], 'description': region.get('description', ''),
             'functions': functions, 'local_knowledge': deepcopy(region.get('local_knowledge', {})),
             'parameters': control_knowledge.parameter_facts(region), 'controls': controls,
@@ -71,7 +71,7 @@ def region_material(rid, region):
             'out_of_scope_reason': region.get('out_of_scope_reason')}
 
 
-def generation_material(rid, region):
+def generation_material(rid, region, records=None):
     """Select usage knowledge, without exploration work or recording metadata."""
     def parameters(facts):
         result = deepcopy(facts)
@@ -98,7 +98,7 @@ def generation_material(rid, region):
             'support_controls': [{key: deepcopy(support[key])
                                   for key in ('kind', 'region', 'control', 'name') if key in support}
                                  for support in function.get('support_controls', [])],
-            'parameters': parameters(function_updates.resolved_parameters(region, function))}
+            'parameters': parameters(function_updates.resolved_parameters(records if records is not None else {rid: region}, function))}
     return {'region_ref': rid, 'name': region['name'],
             'description': region.get('description', ''), 'functions': functions,
             'local_knowledge': deepcopy(region.get('local_knowledge', {})),
@@ -117,7 +117,7 @@ class StepwiseCollectionGraph:
     dependencies: dict
 
     def inventory(self):
-        material = [generation_material(rid, r) for rid, r in self.records.items() if not r.get('out_of_scope_reason')]
+        material = [generation_material(rid, r, self.records) for rid, r in self.records.items() if not r.get('out_of_scope_reason')]
         return [row for row in material if row['functions'] or row['local_knowledge'] or row['parameters']
                 or any(c['knowledge'] or c['parameters'] for c in row['controls'])]
 
@@ -145,7 +145,7 @@ def load_collection_graph(source):
         hashes.append((relative, hashlib.sha256(path.read_bytes()).hexdigest()))
     digest = hashlib.sha256(json.dumps(hashes, ensure_ascii=False).encode()).hexdigest()
     regions = {rid: SimpleNamespace(region_id=rid, name=r['name'],
-                memory=json.dumps(region_material(rid, r), ensure_ascii=False)) for rid, r in records.items()}
+                memory=json.dumps(region_material(rid, r, records), ensure_ascii=False)) for rid, r in records.items()}
     return StepwiseCollectionGraph(source, snapshot, records, controls, regions, digest, dict(hashes)), digest
 
 

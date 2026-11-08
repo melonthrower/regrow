@@ -13,30 +13,31 @@ def candidate_access_entries(records, rid):
     observed = links(records, rid)
     reached = {edge.get('control') for edge in observed}
     rows = []
-    for name, function in region.get('functions', {}).items():
-        entry = function.get('access_entry')
-        role = function.get('target_role')
-        supports = {row.get('control') for row in function.get('support_controls', [])}
-        if not role or entry not in controls or entry not in supports or not controls[entry].get('knowledge'):
-            continue
-        members = next((group for group in region.get('list_groups', {}).values() if entry in group), [entry])
-        members = [cid for cid in members if cid in controls]
-        examples = [{'source_region': edge.get('observed_source', rid), 'entry_control': edge['control'],
-                     'region': edge['region'], 'attempt': edge['attempt'],
-                     'conditions': deepcopy(edge.get('conditions', []))}
-                    for edge in observed if edge.get('control') in members]
-        for cid in members:
-            if cid in reached:
+    for owner, directory in records.items():
+        for name, function in directory.get('functions', {}).items():
+            entry = function.get('access_entry')
+            role = function.get('target_role')
+            supports = {row.get('control') for row in function.get('support_controls', [])}
+            if not role or entry not in controls or entry not in supports or not controls[entry].get('knowledge'):
                 continue
-            row = {'source_region': rid, 'function_ref': reference(rid, name),
-                   'entry_control': cid, 'binding': {'control': cid, 'name': controls[cid]['name']},
-                   'target_role': role, 'basis': 'knowledge_inference'}
-            parameters = resolved_parameters(region, function)
-            if parameters:
-                row['binding']['parameters'] = parameters
-            if examples:
-                row['historical_examples'] = deepcopy(examples)
-            rows.append(row)
+            members = next((group for group in region.get('list_groups', {}).values() if entry in group), [entry])
+            members = [cid for cid in members if cid in controls]
+            examples = [{'source_region': edge.get('observed_source', rid), 'entry_control': edge['control'],
+                         'region': edge['region'], 'attempt': edge['attempt'],
+                         'conditions': deepcopy(edge.get('conditions', []))}
+                        for edge in observed if edge.get('control') in members]
+            for cid in members:
+                if cid in reached:
+                    continue
+                row = {'source_region': rid, 'function_ref': reference(owner, name),
+                       'entry_control': cid, 'binding': {'control': cid, 'name': controls[cid]['name']},
+                       'target_role': role, 'basis': 'knowledge_inference'}
+                parameters = resolved_parameters(records, function)
+                if parameters:
+                    row['binding']['parameters'] = parameters
+                if examples:
+                    row['historical_examples'] = deepcopy(examples)
+                rows.append(row)
     return rows
 
 

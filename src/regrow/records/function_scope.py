@@ -56,7 +56,7 @@ def disclose(records, rid):
     own = card(region, records)
     current = bool(region.get('local_knowledge'))
     from regrow.records.function_updates import resolved_parameters
-    functions = {name: {**deepcopy(value), 'parameters': resolved_parameters(region, value)}
+    functions = {name: {**deepcopy(value), 'parameters': resolved_parameters(records, value)}
                  for name, value in region.get('functions', {}).items()}
     from regrow.records.region_knowledge import context
     return {'self': own, 'knowledge': deepcopy(region.get('local_knowledge', {})) if current else {},

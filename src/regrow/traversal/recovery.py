@@ -58,8 +58,11 @@ def interrupted_tasks(records, state, refs=None):
         region = records.get(ref['region'], {})
         task = owned_tasks(region).get(ref['name'])
         if task is not None:
+            from regrow.records.function_context import bound_context
+            from regrow.records.task_settlement import exploration_goal
             rows.append({'区块': region['name'], '任务': ref['name'],
-                         '任务依据与范围': task.get('completion_condition') or task.get('reason', ''),
+                         '任务依据与范围': exploration_goal(task),
+                         **bound_context(records, state, source={'task_region': ref['region'], 'task_name': ref['name']}),
                          '状态': task.get('status'), '结果依据': task_value(task, 'result_evidence', ''),
                          '触发动作': state.get('attempt')})
     return rows

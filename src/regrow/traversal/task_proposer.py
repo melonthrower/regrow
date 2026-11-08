@@ -29,6 +29,7 @@ def plan_request(root, records, state, rid, *, work=None, current_scene=True):
     from regrow.traversal import parameter_evidence_review as _parameter_evidence_review
     context = _work_context
     work = work if work is not None else context.select(records, state, 'task_proposal', rid)
+    function_work = work if work.get('task') else {**work, 'task': state.get('active_task')}
     state = context.reading_state(state, work)
     region = records[rid]
     from regrow.records.tasks import new_scope_controls, inventory_review, proposal_gap
@@ -39,9 +40,14 @@ def plan_request(root, records, state, rid, *, work=None, current_scene=True):
     considered = additional if additional or partial_scope else list(owned_controls(region))
     from regrow.records.region_knowledge import related
     function_regions = list(related(records, [rid]))
+    from regrow.records.function_context import request_context
+    from regrow.records.function_updates import scoped_schema
+    function_material, function_scope = request_context(records, state, rid, function_regions, work=function_work, inventory=True)
     schema = proposal_schema(function_regions)
-    task_schema, material = task_context(records, state, rid, scope_review=work.get('kind') == 'scope_review')
+    schema['properties']['function_updates'] = scoped_schema(function_scope)
+    task_schema, material = task_context(records, state, rid, scope_review=work.get('kind') == 'scope_review', function_material=function_material)
     schema['properties'].update(task_schema['properties'])
+    material.update(function_material)
     if 'task_update' not in task_schema['properties']:
         schema['properties'].pop('task_update', None)
     if additional or partial_scope:
@@ -56,7 +62,8 @@ def plan_request(root, records, state, rid, *, work=None, current_scene=True):
         dynamic['已有区块知识'] = region['local_knowledge']
     parts = _prompt_rules.parts(root, 'task_proposal')
     request = {'pipeline_step': 'discovery', 'stage': 'task_proposal', 'role': 'task_proposal', 'action_ready': False, 'system_prompt': '\n\n'.join((part['text'] for part in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'dynamic_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [state['observation']['image']], 'image_refs': [state['observation']['image']], 'response_schema': schema, 'fixed_parts': parts, 'source': {'region': rid, 'observation': state['observation']['id'], 'controls': considered}}
-    request['function_update_regions'] = function_regions
+    request['function_update_regions'] = list(dict.fromkeys(function_regions + list(function_scope['update_refs'])))
+    request['function_update_scope'] = function_scope
     _frame_context.label(request, state['observation']['image'], '本轮任务清点依据图')
     context.attach(request, records, state, work)
     _context_scope.for_request(request, records, state)

@@ -24,12 +24,29 @@ def commands(p):
         return []
     if k in ('key_press', 'hotkey'):
         text = p.get('text')
+        from regrow.records.diagnostics import reject
+        subject = p.get('target') or '当前键盘操作'
+        actual = {'action': k, 'text': text}
         if not isinstance(text, str):
-            raise ValueError('keyboard action needs key names in text')
+            reject('desktop_keyboard', subject, actual,
+                   'text 必须填写按键名称；单键使用 key_press，组合键使用 hotkey 并用 + 连接键名。',
+                   path='/text', field='text')
         keys = [key.strip().lower() for key in text.split('+')]
         allowed = set('abcdefghijklmnopqrstuvwxyz0123456789') | {'enter', 'tab', 'esc', 'backspace', 'delete', 'space', 'up', 'down', 'left', 'right', 'home', 'end', 'pageup', 'pagedown', 'insert', 'ctrl', 'alt', 'shift', 'win', 'super'} | {f'f{i}' for i in range(1, 25)}
-        if any((key not in allowed for key in keys)) or (k == 'key_press' and len(keys) != 1) or (k == 'hotkey' and len(keys) < 2):
-            raise ValueError('unsupported key names')
+        unsupported = [key for key in keys if key not in allowed]
+        if unsupported:
+            reject('desktop_keyboard', subject, actual,
+                   'text 含不支持的键名：' + '、'.join(repr(key) for key in unsupported)
+                   + '。支持的键名为：' + '、'.join(sorted(allowed)) + '。',
+                   path='/text', field='text')
+        if k == 'key_press' and len(keys) != 1:
+            reject('desktop_keyboard', subject, actual,
+                   'key_press 只能按一个键；当前 text 包含多个键。组合键应使用 hotkey，并用 + 连接键名。',
+                   path='/action', field='action')
+        if k == 'hotkey' and len(keys) < 2:
+            reject('desktop_keyboard', subject, actual,
+                   'hotkey 至少需要两个键并用 + 连接；只按一个键时使用 key_press。',
+                   path='/action', field='action')
         keys = ['win' if key == 'super' else key for key in keys]
         return [f'pyautogui.press({keys[0]!r})' if k == 'key_press' else 'pyautogui.hotkey(' + ', '.join((repr(key) for key in keys)) + ')']
     if extended:

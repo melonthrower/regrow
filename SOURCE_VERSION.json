@@ -3,15 +3,15 @@
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "explicit_user_requested_pre_live_test_research_checkpoint",
-  "previous_source_commit": "a4861399001f95e3dbd26db3562578b620f916fe",
+  "kind": "explicit_user_requested_keyboard_diagnostic_checkpoint_before_test",
+  "previous_source_commit": "e99dbda5f08630e3087929517da06eac7f0f43fe",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
-  "draft_status": "Supplied abstraction prompt text integrated verbatim. Existing function-reference wiring included as runtime dependency. New live/model behavior not yet accepted.",
-  "verification_scope": "Eight exact supplied blocks, untouched prompt text, block dependency graph and two focused local checks passed. Independent static reading found no confirmed defect. No new Luna or GUI; dynamic collection untested.",
+  "draft_status": "Native traversal stopped at 74 calls because keyboard validation did not produce structured facts. Candidate changes feedback only; single-key versus hotkey contract and supported keys unchanged.",
+  "verification_scope": "Original abstraction prompt check and two focused tests previously passed. New keyboard diagnostic fix not yet verified; publish first per user instruction. Native live 74 attempts/41 GUI actions all registered, whole behavior not accepted.",
   "local_only_material": [
     "tests",
     "validation logs",
@@ -29,7 +29,7 @@
       "kind": "private_endpoint_only"
     }
   ],
-  "snapshot_parent_commit": "a4861399001f95e3dbd26db3562578b620f916fe",
+  "snapshot_parent_commit": "e99dbda5f08630e3087929517da06eac7f0f43fe",
   "live_runtime_changed": false,
   "published_source_changed": true,
   "prompt_provenance": {

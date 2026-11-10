@@ -1,9 +1,12 @@
 """Recover unambiguous records using the actual call's schema and references."""
 from copy import deepcopy
 import json
+import re
+import unicodedata
 
 import jsonschema
 
+from regrow.recognition.named_references import normalized
 from regrow.runtime.model_transport import expand_schema
 from regrow.runtime.reply_fields import filter_extra_fields
 from regrow.runtime.update_reply import main_pair
@@ -26,12 +29,53 @@ def _choices(schema):
     yield schema
 
 
+def _task_excerpt(label, title):
+    """Use literal parts of the disclosed question to recognize a short label."""
+    parts = label.rstrip('。.!?').split()
+    if len(parts) < 2:
+        return False
+    remaining = unicodedata.normalize('NFKC', title).casefold()
+    for part in parts:
+        literal = re.escape(part)
+        pattern = rf'(?<![a-z0-9_]){literal}(?![a-z0-9_])' if part.isascii() else literal
+        match = re.search(pattern, remaining)
+        if match is None:
+            return False
+        remaining = remaining[match.end():]
+    return True
+
+
+def _task_matches(label, names):
+    if label in names:
+        return [label]
+    label = unicodedata.normalize('NFKC', label).strip().casefold()
+    prefix, _, title = label.partition('/')
+    owner = prefix.strip()
+    if re.fullmatch(r'[a-z]\d+', owner):
+        names = {ref: titles for ref, titles in names.items() if ref.partition('/')[0] == owner}
+        label = title.strip()
+    key = normalized(label).rstrip('。.!?')
+    if not key:
+        return []
+    equivalent = [ref for ref, titles in names.items()
+                  if any(normalized(title).rstrip('。.!?') == key for title in titles)]
+    return equivalent or [ref for ref, titles in names.items() if any(_task_excerpt(label, title) for title in titles)]
+
+
+def _task_alignment_error(code, path, actual, expected):
+    pointer = '/' + '/'.join(str(part).replace('~', '~0').replace('/', '~1') for part in path)
+    return {'code': code, 'path': pointer, 'object': '任务更新', 'field': 'task_update',
+            'actual': actual, 'expected': expected}
+
+
 class _Recovery:
     def __init__(self, request, reply):
         self.schema = expand_schema(request['response_schema'])
         self.references = set(request.get('name_contract', {}).get('names', {}).values())
         self.references.update(request.get('control_reference_names', {}).values())
         self.references.update(request.get('region_reference_names', {}).values())
+        self.task_candidates = {row['task']: row for row in request.get('task_update_candidates') or []
+                                if isinstance(row, dict) and isinstance(row.get('task'), str)}
         self.owners = {}
         contract = request.get('name_contract', {})
         names = contract.get('names', {})
@@ -80,13 +124,79 @@ class _Recovery:
             for key, child in value.items():
                 field = properties.get(key, {})
                 # Typed subrecords have their own role; never borrow their fields.
-                if key in properties and any('properties' in c or 'items' in c for c in _choices(field)):
+                if key in properties and any({'properties', 'items', 'propertyNames'} & c.keys()
+                                             for c in _choices(field)):
                     continue
                 ref = key if key in self.references else identity
                 yield from self._walk(child, properties, (*path, key), ref)
         elif isinstance(value, list):
             for i, child in enumerate(value):
                 yield from self._walk(child, properties, (*path, i), identity)
+
+    def _align_task_updates(self, result, properties, path):
+        spec = properties.get('task_update', {})
+        allowed = spec.get('propertyNames', {}).get('enum')
+        if not allowed:
+            return [], []
+        names = {}
+        for ref in allowed:
+            candidate = self.task_candidates.get(ref, {})
+            titles = [candidate.get(key) for key in ('name', 'target')]
+            names[ref] = [ref.partition('/')[2], *(title for title in titles if isinstance(title, str))]
+
+        sources = {}
+        for field, rows in result.items():
+            explicit = field == 'task_update'
+            if not explicit and (field in properties or field == 'next_action' or not isinstance(rows, dict)):
+                continue
+            matches = {label: _task_matches(label, names) for label in rows} if isinstance(rows, dict) else {}
+            # An unfamiliar wrapper is only a task update when it contains a
+            # recognized task and an explicit state field. Keep its other rows
+            # so missing information is still checked by the original schema.
+            if explicit or any(matches[label] and isinstance(row, dict) and {'state', 'status'} & row.keys()
+                               for label, row in rows.items()):
+                sources[field] = matches
+        if not sources:
+            return [], []
+        if len(sources) != 1:
+            return [], [_task_alignment_error('task_update_container_conflict', (*path, 'task_update'),
+                        list(sources), '本轮已有任务的判断放在同一个 task_update 对象中')]
+        field, matches = next(iter(sources.items()))
+        rows = result[field]
+        if not isinstance(rows, dict):
+            return [], []
+
+        restored, origins = {}, {}
+        states = spec['additionalProperties']['properties']['state']['enum']
+        labels = {'已完成': 'done', '待解决': 'pending', '暂挂': 'blocked'}
+        for label, row in rows.items():
+            matches_for_label = matches[label]
+            if len(matches_for_label) > 1:
+                return [], [_task_alignment_error('ambiguous_task_reference', (*path, field, label),
+                            {'引用': label, '候选': matches_for_label}, '使用本轮唯一的完整任务引用')]
+            ref = matches_for_label[0] if matches_for_label else label
+            if ref in origins:
+                return [], [_task_alignment_error('duplicate_task_reference', (*path, field, label),
+                            {'引用': [origins[ref], label], '对应任务': ref}, '同一道任务只填写一次')]
+            origins[ref] = label
+            if matches_for_label and isinstance(row, dict):
+                if 'state' in row and 'status' in row:
+                    return [], [_task_alignment_error('task_update_state_conflict', (*path, field, label),
+                                row, '一条任务更新只填写一个 state')]
+                supplied = row.get('state', row.get('status'))
+                if isinstance(supplied, str):
+                    key = normalized(supplied)
+                    state = labels.get(key, key)
+                    if state in states:
+                        row = {**row, 'state': state}
+                        row.pop('status', None)
+            restored[ref] = row
+        if field == 'task_update' and restored == rows:
+            return [], []
+        result.pop(field)
+        result['task_update'] = restored
+        return [{'kind': 'task_update_alignment', 'source': [*path, field],
+                 'destination': [*path, 'task_update'], 'before': rows, 'after': restored}], []
 
     def _shape(self, value, schema, path, identity):
         properties = schema.get('properties', {})
@@ -129,6 +239,10 @@ class _Recovery:
                     'reason': '外层与动作内层填写了不同内容，不能选择其中一个覆盖。'} for key in conflicts]
             result = {**outer, **action}
             events.append({'kind': 'action_envelope', 'source': [*path, 'action'], 'destination': list(path)})
+        task_changes, task_errors = self._align_task_updates(result, properties, path)
+        if task_errors:
+            return deepcopy(value), [], task_errors
+        events.extend(task_changes)
         # An existing control's unique, disclosed membership can recover a
         # misplaced knowledge row. New/ambiguous ownership is never inferred.
         regions_spec = properties.get('regions', {}).get('items', {})
@@ -203,6 +317,10 @@ class _Recovery:
         if self._valid(value, schema) and not identity:
             return deepcopy(value), [], []
         effective, _ = main_pair(schema, value)
+        # A keyed record owns its rows. A row must never replace the map,
+        # even when the row is empty and an empty map would be valid.
+        if 'propertyNames' in effective:
+            return deepcopy(value), [], []
         choices = list(_choices(effective))
         if not any(c.get('type') in ('object', 'array') or c.get('properties') or 'items' in c for c in choices):
             return deepcopy(value), [], []

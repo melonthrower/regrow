@@ -8,6 +8,13 @@ import jsonschema
 import re
 from regrow.records.diagnostics import Rejected
 
+def _schema_path(error):
+    parts = list(map(str, error.absolute_path))
+    for index in range(1, len(parts)):
+        if parts[index - 1] == 'task_update':
+            parts[index] = parts[index].replace('~', '~0').replace('/', '~1')
+    return '/' + '/'.join(parts)
+
 def schema_errors(error):
     """Explain the uniquely selected type/enum branch without changing validation."""
     if error.validator in ('anyOf', 'oneOf'):
@@ -27,7 +34,7 @@ def schema_errors(error):
             children = [e for e in error.context if list(e.schema_path)[0] == compatible[0]]
             if children:
                 return [row for child in children for row in schema_errors(child)]
-        path = '/' + '/'.join(map(str, error.absolute_path))
+        path = _schema_path(error)
         if not type_compatible and all('type' in branch for branch in branches):
             types = list(dict.fromkeys(t for branch in branches for t in
                          ([branch['type']] if isinstance(branch['type'], str) else branch['type'])))
@@ -64,7 +71,7 @@ def schema_errors(error):
         message = '缺少必填字段：' + '、'.join(missing)
     elif error.validator == 'type':
         message = '值的类型不符，要求：' + str(error.validator_value)
-    row = dict(code='schema', path='/' + '/'.join(map(str, error.absolute_path)),
+    row = dict(code='schema', path=_schema_path(error),
                object='reply', actual=error.instance, expected=message,
                validator=error.validator, requirement=error.validator_value)
     if error.validator == 'required':
@@ -156,37 +163,6 @@ def region_surface(reply, index, frame=None):
                 return None
     return box
 
-def parent_cycles(records, rows, refs):
-    """Check submitted changes together with retained parent edges."""
-    nodes = [rid if rid in records else ('new', i) for (i, rid) in enumerate(refs)]
-    edges = {rid: r.get('parent_region') for (rid, r) in records.items()}
-    changed = set()
-    for (i, row) in enumerate(rows):
-        if 'parent_index' not in row:
-            continue
-        parent = row['parent_index']
-        if parent is not None and not (type(parent) is int and 0 <= parent < len(nodes) or isinstance(parent, str) and parent in records):
-            continue
-        target = nodes[parent] if type(parent) is int else parent
-        if target != edges.get(nodes[i]):
-            changed.add(nodes[i])
-        edges[nodes[i]] = target
-    seen = set()
-    for start in changed:
-        chain = []
-        node = start
-        while node is not None and node in edges:
-            if node in chain:
-                cycle = chain[chain.index(node):]
-                key = frozenset(cycle)
-                if key not in seen and changed.intersection(cycle):
-                    seen.add(key)
-                    index = next((i for (i, n) in enumerate(nodes) if n in changed.intersection(cycle)))
-                    yield (index, [records[n]['name'] if n in records else rows[n[1]].get('name', '') for n in cycle])
-                break
-            chain.append(node)
-            node = edges[node]
-
 def collect(stage, q, p, records, binding=None, *, frame=None):
     errors = []
     unchecked = []
@@ -214,9 +190,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
         for (i, r) in enumerate(p.get('regions', [])):
             previous = r.get('ref')
             rid = None
-            parent = r.get('parent_index')
-            if parent is not None and not (type(parent) is int and 0 <= parent < len(p['regions']) and parent != i or isinstance(parent, str) and parent in records):
-                add('parent_region', f'/regions/{i}/parent_index', r.get('name', previous), parent, '已有区块或本次唯一父区块引用', '只登记实际容器关系，不虚构父区块。')
             if stage == 'discovery':
                 if r.get('identity') == 'same':
                     rid = ctx.get('region_names', {}).get(previous)
@@ -249,8 +222,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
                     continue
         if stage == 'update':
             errors.extend(visibility_errors(p, rids, [], q.get('region_names')))
-        for (index, names) in parent_cycles(records, p.get('regions', []), rids):
-            add('parent_cycle', f'/regions/{index}/parent_index', p['regions'][index]['name'], names, '合并已保留关系后无父子环', '依据实际容器关系修正父级；省略会保留旧关系，无父容器时使用null。')
         for (i, c) in enumerate(p.get('controls', [])):
             from regrow.records.object_knowledge import control_only
             if control_only(c):
@@ -268,13 +239,6 @@ def collect(stage, q, p, records, binding=None, *, frame=None):
             region = records.get(rid, {})
             controls = owned_controls(region)
             obj = (region.get('name') or p['regions'][idx]['name']) + ' → ' + name
-            cb = appearance_box(c)
-            for (j, other) in enumerate(p.get('controls', [])[:i]):
-                oi = other.get('region_index')
-                ob = appearance_box(other)
-                same_control = bool(previous and previous == other.get('ref'))
-                if not same_control and oi != idx and isinstance(oi, int) and (0 <= oi < len(rids)) and cb and (cb == ob) and (name == (other.get('name') or other.get('text', ''))) and (p['regions'][idx].get('parent_index') == oi or p['regions'][oi].get('parent_index') == idx):
-                    add('duplicate_control_owner', path, obj, {'other': f'/controls/{j}', 'box': cb}, '父子区块同一物理控件只保留一个归属', '核对后只提交实际所属区块中的一份控件；已有重复记录通过现有移动/合并接口保留历史。不同物理对象不可合并。')
             cid = None
             if stage == 'discovery':
                 identity = c.get('identity')

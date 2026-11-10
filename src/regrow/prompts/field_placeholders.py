@@ -13,6 +13,8 @@ def field_schema(schema, token):
         return schema.get('items', {})
     if token in schema.get('properties', {}):
         return schema['properties'][token]
+    if token in schema.get('propertyNames', {}).get('enum', []):
+        return schema.get('additionalProperties', {})
     candidates = [field_schema(branch, token) for key in ('anyOf', 'oneOf', 'allOf')
                   for branch in schema.get(key, [])]
     candidates = [item for item in candidates if item]
@@ -23,6 +25,9 @@ def fit_template(template, schema):
     """Use the actual call's container shape and allowed keys, without inventing values."""
     if schema.get('type') == 'object' and isinstance(template, list) and len(template) == 1:
         template = template[0]
+        keys = schema.get('propertyNames', {}).get('enum', [])
+        if keys:
+            return {keys[0]: fit_template(template, schema['additionalProperties'])}
     if isinstance(template, dict):
         allowed = schema.get('properties')
         return {key: fit_template(value, field_schema(schema, key))

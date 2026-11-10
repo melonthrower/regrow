@@ -22,13 +22,9 @@ def schema(root, mode, focus_present=True, *, task_contract=None):
         item['properties'].update(ref={'type': ['string', 'null']}, identity={'type': 'string', 'enum': ['same', 'new', 'uncertain']}, identity_evidence={'type': 'string'})
         item['required'] += ['ref', 'identity', 'identity_evidence']
     value['properties']['controls'].pop('maxItems', None)
-    # Local observations still cover only the focus. Related historical Regions
-    # may accompany them solely for knowledge edits; commit checks that boundary.
     _region_identity.extend_schema(value)
     _control_records.extend_schema(value, required=True)
     _region_identity.extend_schema(value, required=True)
-    if mode == 'local':
-        value['properties']['regions']['description'] = '仅登记指定区块及其直接所属控件；不在本步展开其他同屏区块。'
     if task_contract is not None:
         value['properties'].update(deepcopy(task_contract['properties']))
         value['required'] += [key for key in task_contract['required'] if key not in value['required']]
@@ -123,7 +119,7 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
             candidate['已有控件'] = group['控件']
     partition = None
     if plan['mode'] == 'local':
-        dynamic['本轮观察范围'] = '本轮定位区块及其直接所属控件。'
+        dynamic['本轮观察范围'] = '定位区块及其直接所属控件。'
         from regrow.recognition.local_partition import build, prompt
         partition = build(records, focus, frame, foreground)
         if partition:
@@ -149,7 +145,10 @@ def prepare(root, records, state, frame, foreground=None, *, work=None):
     response_schema = schema(root, plan['mode'], focus in records, task_contract=task_contract)
     response_schema['properties']['foreground']['required'] += ['exception', 'recovery_handoff']
     request = {'pipeline_step': 'discovery', 'role': 'observation', 'stage': 'discovery', 'system_prompt': '\n\n'.join((p['text'] for p in parts)), 'user_prompt': json.dumps(dynamic, ensure_ascii=False, indent=2), 'screenshots': [frame], 'response_schema': response_schema, 'fixed_parts': parts, 'discovery_context': {'mode': plan['mode'], 'focus': focus, 'region_names': names, 'control_names': cnames, 'partition_context': partition}}
-    if task_contract is not None:
+    if local:
+        request['discovery_context']['focus_only'] = True
+        region_ref = response_schema['properties']['regions']['items']['properties']['ref']
+        region_ref['enum'] = [focus]
         request['source'] = {'region': focus, 'controls': list(owned_controls(records[focus]))}
     _frame_context.label(request, frame, '本次发现观察图')
     _work_context.attach(request, records, state, work)

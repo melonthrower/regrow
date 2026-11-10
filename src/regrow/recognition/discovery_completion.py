@@ -42,15 +42,9 @@ def partition(reply, rejected_regions=(), rejected_controls=(), errors=()):
     rs = reply['regions']
     cs = reply['controls']
     withheld = set(rejected_regions) | {i for (i, r) in enumerate(rs) if r.get('identity') == 'uncertain'}
-    for _ in rs:
-        withheld.update(i for i, r in enumerate(rs) if i not in withheld
-                        and type(r.get('parent_index')) is int and r['parent_index'] in withheld)
     keep = [i for i in range(len(rs)) if i not in withheld]
     indices = {i: j for (j, i) in enumerate(keep)}
     accepted['regions'] = [deepcopy(rs[i]) for i in keep]
-    for r in accepted['regions']:
-        if type(r.get('parent_index')) is int and r['parent_index'] in indices:
-            r['parent_index'] = indices[r['parent_index']]
     accepted['controls'] = []
     ck = []
     gaps = []
@@ -91,10 +85,6 @@ def resolve_gaps(pending, updates, reply):
     if len(set(labels)) != len(labels) or set(labels) != {g['item'] for g in pending}:
         raise ValueError('每个旧缺口必须明确处理一次；省略不能视为解决')
     safe_regions = {i for (i, r) in enumerate(reply['regions']) if r['identity'] != 'uncertain'}
-    for _ in reply['regions']:
-        safe_regions = {i for i in safe_regions if reply['regions'][i].get('parent_index') is None
-                        or isinstance(reply['regions'][i]['parent_index'], str)
-                        or reply['regions'][i]['parent_index'] in safe_regions}
     safe_controls = {i for (i, c) in enumerate(reply['controls']) if c['identity'] != 'uncertain' and c.get('region_index') in safe_regions}
     remaining = []
     for (old, u) in zip(sorted(pending, key=lambda x: x['item']), sorted(updates, key=lambda x: x['item'])):

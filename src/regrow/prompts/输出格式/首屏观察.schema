@@ -70,13 +70,6 @@
               }
             ],
             "description": "新对象提供来源截图中的身份裁图范围，无法可靠裁图时填null；旧对象复认可省略，需要更新身份图时再填写，不是操作范围。"
-          },
-          "parent": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "minLength": 1
           }
         },
         "required": [

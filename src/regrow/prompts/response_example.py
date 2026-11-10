@@ -131,7 +131,8 @@ def guide(schema):
                 lines.append('| `' + name + '` | ' + mark + ' | ' + _cell(detail) + ' |')
         values = node.get('additionalProperties')
         if isinstance(values, dict):
-            lines.append('以名称作为键；每个键对应的值填写如下。')
+            lines.append('键使用本轮给出的完整引用。每个键对应的值填写如下。'
+                         if node.get('propertyNames', {}).get('enum') else '以名称作为键；每个键对应的值填写如下。')
             if _structured(values):
                 section(values, path, None, describe=True)
             else:

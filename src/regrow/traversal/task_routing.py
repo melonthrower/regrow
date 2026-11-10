@@ -32,7 +32,7 @@ def path_for(records, state, current):
     path = state.get('region_path', [])
     return path[:path.index(current) + 1] if current in path else entry_path(records, current)
 
-def parent_region(records, state, current):
+def preceding_entry_region(records, state, current):
     path = path_for(records, state, current)
     return path[-2] if len(path) > 1 else None
 

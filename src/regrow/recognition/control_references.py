@@ -109,11 +109,17 @@ def prepare(request):
     from regrow.runtime.model_transport import expand_schema
     q['response_schema'] = expand_schema(q.get('response_schema', {}))
     items = list(_schemas(q['response_schema']))
-    ids = list(mapping(q))
-    candidates = set(re.findall(r'(?<![A-Za-z0-9_])c\d+(?![A-Za-z0-9_])', q.get('user_prompt', '')))
-    candidates.update(q.get('discovery_context', {}).get('control_names', {}).values())
-    for cid in sorted(candidates, key=lambda value: int(value[1:])):
-        if cid not in ids: ids.append(cid)
+    discovery = q.get('discovery_context', {})
+    local = discovery.get('focus_only')
+    candidates = discovery.get('control_names', {}).values()
+    if local:
+        ids = list(dict.fromkeys(candidates))
+    else:
+        ids = list(mapping(q))
+        disclosed = set(re.findall(r'(?<![A-Za-z0-9_])c\d+(?![A-Za-z0-9_])', q.get('user_prompt', '')))
+        for cid in sorted(disclosed.union(candidates), key=lambda value: int(value[1:])):
+            if cid not in ids:
+                ids.append(cid)
     q['control_refs'] = ids
     if q.get('original_request') and 'control_indexes' not in q['original_request']:
         # Corrections retain the actual original contract, including old evidence.
@@ -121,7 +127,7 @@ def prepare(request):
     for item in items:
         props = item['properties']
         known_edits = set(props) <= {'ref', 'knowledge'}
-        allowed = props.get('ref', {}).get('enum', ids)
+        allowed = ids if local else props.get('ref', {}).get('enum', ids)
         if known_edits:
             props['ref'] = {'type': 'string', 'enum': allowed,
                             'description': '使用本轮材料提供的控件ID/名称。'}

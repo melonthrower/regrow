@@ -194,9 +194,9 @@ def select_work(records, state, working=None):
                 return choice('task_proposal', rid, reason='register evidence for the selected task')
             return choice('action', rid, task=selected, source_regions=[rid], reason='advance an existing task without requiring a complete inventory')
         if progress['complete']:
-            parent = working if working != rid and working in records else _task_routing.parent_region(records, state, rid)
-            if parent in records and _task_deferral.runnable(records[parent], records):
-                return navigation(parent, 'resume unfinished work at the observed entry parent')
+            earlier = working if working != rid and working in records else _task_routing.preceding_entry_region(records, state, rid)
+            if earlier in records and _task_deferral.runnable(records[earlier], records):
+                return navigation(earlier, 'resume unfinished work at an observed earlier entry')
     from regrow.records.task_updates import needs_evidence_review
     observation = (state.get('observation') or {}).get('id')
     for observed in allowed:
@@ -207,6 +207,30 @@ def select_work(records, state, working=None):
         other = frontier['region']
         return select_work(records, {**state, 'active_task': None, 'working_region': other}, other)
     return choice('idle', reason='当前无可推进的范围内工作；保留暂挂和登记缺口，不声明全应用完成')
+
+def needs_local_before_task(records, state, decision):
+    """An unassessed visible Region needs local recognition before first tasks."""
+    rid = decision.get('region')
+    if decision.get('kind') != 'task_proposal' or rid not in records:
+        return False
+    if rid not in state.get('interactive_regions', []):
+        return False
+    if region_work(records[rid]).get('task_inventory', {}).get('source_call'):
+        return False
+    return bool((state.get('observation') or {}).get('image'))
+
+def require_local_before_task(run, rid):
+    """Publish a normal discovery handoff; do not invent a parallel task stage."""
+    def mutate(records, state, *_):
+        frame = (state.get('observation') or {}).get('image')
+        if rid not in records or rid not in state.get('interactive_regions', []) or not frame:
+            raise ValueError('selected Region is no longer on the observed surface')
+        state.update(working_region=rid, inspection_region=rid, pending_frame=frame,
+                     next_action_mode='discover', phase='awaiting_discovery',
+                     reason='local_inspection_before_task_proposal')
+        state.pop('required_control', None)
+        state.pop('discovery_mode', None)
+    _record_publish(run, 'local-before-task-' + rid, mutate)
 
 def pending_work(run):
     """Executed evidence takes precedence over proposing another GUI action."""
@@ -239,6 +263,8 @@ def preview_next(root, run):
     from regrow.traversal.action_proposer import request_from_run
     (_, records, state) = _record_load(run)
     decision = select_work(records, state)
+    if needs_local_before_task(records, state, decision):
+        return {'stage': 'locate', 'action_ready': False, 'reason': 'local_inspection_before_task_proposal'}
     if decision['kind'] in ('locate', 'recover', 'wait'):
         return {'stage': decision['kind'], 'action_ready': False, 'reason': decision['reason']}
     return request_from_run(root, run, decision=decision)
@@ -264,8 +290,16 @@ class Scheduler:
 
         (_, known, state) = _record_load(self.run)
         decision = select_work(known, state)
+        local_handoff = needs_local_before_task(known, state, decision)
+        if local_handoff:
+            require_local_before_task(self.run, decision['region'])
+            (_, known, state) = _record_load(self.run)
+            decision = select_work(known, state)
         self.decisions.append({**decision, 'snapshot': _record_load(self.run)[0].name})
         write_json(self.output / 'scheduling.json', self.decisions)
+        if local_handoff:
+            return {'stage': 'locate', 'action_ready': False,
+                    'reason': 'local_inspection_before_task_proposal'}
         return request_from_run(self.root, self.run, decision=decision, frame=self.frame)
 
 
@@ -275,9 +309,17 @@ def schedule_local_inspection(records, state):
     refs = state['interactive_regions']
     observation = state.get('observation') or {}
     if target in refs:
-        state.pop('inspection_region', None)
+        # Once tasks have been considered for the Region, later relocation
+        # should not repeat local inspection just because new facts need review.
+        if region_work(records[target]).get('task_inventory', {}).get('source_call'):
+            state.pop('inspection_region', None)
+            state.pop('required_control', None)
+            state.update(next_action_mode='explore', phase='ready_for_next_action')
+            return
+        state['inspection_region'] = target
         state.pop('required_control', None)
-        state.update(next_action_mode='explore', phase='ready_for_next_action')
+        state.update(next_action_mode='discover', phase='awaiting_discovery',
+                     pending_frame=observation.get('image'), reason='inspect_region_before_tasks')
         return
     route = _stepwise_flow.shortest_known_path(records, state, target, require_control=False)
     if refs and target not in refs and (not route or route[0]['operation'] == 'back'):
@@ -285,10 +327,7 @@ def schedule_local_inspection(records, state):
         state.pop('required_control', None)
         state.update(next_action_mode='explore', reason='navigation_from_foreground', phase='ready_for_next_action')
         return
-    if target in refs:
-        state['inspection_region'] = target
-        state.pop('required_control', None)
-    elif route:
+    if route:
         state['inspection_region'] = route[0]['source_region']
         state['required_control'] = route[0]['source_control']
     elif refs:

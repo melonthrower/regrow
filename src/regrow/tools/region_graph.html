@@ -27,7 +27,7 @@ function pageMap(view){
  function fold(key,title,open=false){const d=el('details');d.dataset.key=key;d.open=openStates.has(key)?openStates.get(key):open;d.append(el('summary',title));return d}
  function tree(nodes,parent){for(const n of nodes){const d=fold('region:'+n.ref,n.name,true),items=el('ul');
   for(const c of n.controls){items.append(el('li',c.name+(c.evidence==='current_observation'&&c.state?'（'+c.state+'）':'')))}
-  d.append(items);tree(n.children||[],d);parent.append(d)}}
+  d.append(items);parent.append(d)}}
  tree(view.current_tree||[],box);
  if(!view.current_tree?.length)box.append(el('p','当前前景尚未确认','muted'));
  if(view.background_regions?.length)box.append(el('p','该次观察的受阻背景：'+view.background_regions.map(n=>n.name).join('、'),'muted'));
@@ -35,7 +35,7 @@ function pageMap(view){
  if(entries.length)box.append(el('p','访问来路不是页面包含层级；历史分支不代表当前可操作。','muted'));
  entries.forEach((entry,i)=>{const historical=i>=path.length,direct=confirmed&&!historical&&i===path.length-1;
   const d=fold('entry:'+entry.via.attempt,(historical?'已登记历史入口（未证明是本次来路）：':direct?'直接进入来源：':confirmed?'更早经过：':'先前来路（与本轮连接未确认）：')+entry.from_regions.map(name).join('、')+' → '+name(entry.via.control)+' → '+entry.to_regions.map(name).join('、'),direct);
-  for(const b of entry.parent_branches){const branch=fold('branch:'+entry.via.attempt+':'+b.ref,b.name+' · 已知分支（折叠不等于完成）');
+  for(const b of entry.preceding_branches){const branch=fold('branch:'+entry.via.attempt+':'+b.ref,b.name+' · 已知分支（折叠不等于完成）');
    const lines=el('ul');for(const e of b.entries||[])lines.append(el('li',name(e.control)+' → '+name(e.target_region)));
    for(const task of b.pending_tasks||[])lines.append(el('li','待探索：'+task));branch.append(lines);d.append(branch)}
   box.append(d)});

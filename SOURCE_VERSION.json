@@ -1,45 +1,26 @@
 {
-  "date": "2026-11-09",
+  "date": "2026-11-10",
   "repository": "melonthrower/regrow",
   "branch": "codex/regrow-initial",
   "visibility": "public",
-  "kind": "research_snapshot_native_200_not_accepted",
-  "source_commit": "2955169ed53239ed96c1d57266617866b551d49f",
+  "kind": "settings_traversal_research_snapshot",
+  "previous_public_commit": "e30200379ed6ff72e5ab1fc8d58e2bb00dd1c82c",
+  "runtime_source_sha256": "cc20d6385f673e3671b335c50b8521416f150acb443881bef3c446c7d7c2e6c2",
   "components": {
     "traversal": "src/regrow/",
     "instruction_generation": "gui_rewalk/run_capability_task_synthesis.py",
     "trajectory_collection": "gui_rewalk/run_visual_collection.py"
   },
   "verification": {
-    "model_attempts": 200,
-    "model_replies": 200,
-    "gui_operations": 150,
-    "registered_actions": 150,
-    "tasks_done": 4,
-    "tasks_pending": 2,
-    "tasks_blocked": 0,
-    "format_failures_corrected": 2,
-    "semantic_acceptance": false,
+    "model_attempts": 1599,
+    "main_gui_actions": 612,
+    "recovery_actions": 11,
+    "last_reviewed_call": 1591,
+    "reviewed_regions": 94,
+    "verified_access_edges": 162,
     "traversal_complete": false,
-    "dynamic_collection_accepted": false,
-    "full_framework_gate_run": false
-  },
-  "source_versions": [
-    {
-      "calls": "0001–0074",
-      "commit": "e99dbda5f08630e3087929517da06eac7f0f43fe"
-    },
-    {
-      "calls": "0075–0200",
-      "commit": "2955169ed53239ed96c1d57266617866b551d49f",
-      "change": "Keyboard rejection diagnostics only; prompts identical"
-    }
-  ],
-  "known_issues": [
-    "Instance data remains in stable knowledge",
-    "Duplicate control identities persist",
-    "Single-option menu and focus are misinterpreted",
-    "Selector task remains unresolved"
-  ],
-  "publication_scope": "Concise status only; raw evidence and internal research history excluded"
+    "stop_loss_behavior_accepted": false,
+    "full_framework_gate_run": false,
+    "new_model_or_gui_actions_for_publication": 0
+  }
 }

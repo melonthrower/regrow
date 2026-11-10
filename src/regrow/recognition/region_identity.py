@@ -26,11 +26,6 @@ def extend_schema(schema, required=False):
     item['properties']['state_description'] = {'type': 'string', 'minLength': 1, 'description': '本次图中影响内容或操作集合的状态；只写已观察事实，不改变区块身份，不推断未报告对象不存在。'}
     item['required'] = [k for k in item.get('required', []) if k not in ('context_matches', 'controls_complete', 'out_of_scope_reason')]
     item['properties'].pop('context_matches', None)
-    # The wire uses optional parent references; the retained internal field
-    # accepts either a same-reply position or an already registered Region ID.
-    item['properties'].pop('parent', None)
-    item['properties']['parent_index'] = {'type': ['integer', 'string', 'null']}
-    item['required'] = [key for key in item['required'] if key != 'parent_index']
     schema['properties']['regions']['description'] = '本次识别或更新的区块；划分与复用依据实际观察。'
     schema['properties']['regions']['items']['properties']['ref']['description'] = '确认是同一区块时填写给定的区块ID；新对象按本轮格式填写。'
     item = schema['properties']['regions']['items']

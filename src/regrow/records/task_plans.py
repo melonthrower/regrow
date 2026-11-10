@@ -21,7 +21,7 @@ FIELDS = ('new_tasks', 'task_update', 'evidence')
 def schema():
     from regrow.records.task_goals import operation_schema
     string = {'type': 'string', 'minLength': 1}
-    value = updates.object_schema({'evidence': string, 'task_update': {'type': 'array', 'items': updates.schema()},
+    value = updates.object_schema({'evidence': string, 'task_update': updates.batch_schema(),
         'new_tasks': {'type': 'array', 'items': operation_schema()}})
     value['required'].remove('task_update')
     return value
@@ -64,7 +64,7 @@ def context(records, state, rid, *, scope_review=False, observed_new=False, func
         allowed = {row.get('task') for row in rejected if row.get('field') != 'new_tasks'}
         refs = [ref for ref in refs if ref in allowed]
     if refs:
-        value['properties']['task_update']['items']['properties']['task']['enum'] = refs
+        value['properties']['task_update'] = updates.batch_schema(refs)
     else:
         value['properties'].pop('task_update')
     material = project(records, state, rid, function_material=function_material)
@@ -121,7 +121,9 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
                '本次区块中仍有效的控件引用', field='任务提出范围', reason='部分控件引用已不在本次区块中。')
     assessment = {'accepted': [], 'rejected': []}
     seen = set()
-    rows = payload.get('task_update', [])
+    submitted_updates = payload.get('task_update', {})
+    keyed = isinstance(submitted_updates, dict)
+    rows = updates.batch_rows(submitted_updates)
     counts = Counter(row.get('task') for row in rows)
     for index, row in enumerate(rows):
         names = [name for name in old if updates.reference(region['id'], name) == row.get('task')]
@@ -132,7 +134,11 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
                    [updates.reference(region['id'], n) for n in old], field='任务引用',
                    reason='该任务更新没有对应到本区块的明确旧任务。')
         try:
-            jsonschema.validate(row, spec['properties']['task_update']['items'])
+            update_spec = spec['properties']['task_update']
+            if keyed:
+                jsonschema.validate(submitted_updates[row['task']], update_spec['additionalProperties'])
+            else:
+                jsonschema.validate(row, update_spec['items'])
             if current is None:
                 reject('task_reference', row.get('task') or region['name'], row.get('task'),
                        '本次给定范围中的任务', field='任务引用', reason='该任务引用不在本次给定范围内。')
@@ -161,7 +167,7 @@ def apply(region, reply, call, *, records, state=None, request=None, reviewed_co
             seen.add(name)
             assessment['accepted'].append({'task': row['task'], 'state': row['state']})
         except (ValueError, jsonschema.ValidationError) as error:
-            assessment['rejected'].append(task_assessments.rejected(current, row, call, error, index))
+            assessment['rejected'].append(task_assessments.rejected(current, row, call, error, row['task'] if keyed else index))
     for index, submitted in enumerate(payload['new_tasks']):
         try:
             jsonschema.validate(submitted, spec['properties']['new_tasks']['items'])

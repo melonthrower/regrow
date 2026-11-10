@@ -28,7 +28,7 @@ def region_transitions(graph):
     return result
 
 def new_region(ref, name, description=''):
-    return {'id': ref, 'name': name, 'description': description, 'parent_region': None, 'observations': [], 'controls': {}, 'functions': {}, 'actions': {}, 'transitions': []}
+    return {'id': ref, 'name': name, 'description': description, 'observations': [], 'controls': {}, 'functions': {}, 'actions': {}, 'transitions': []}
 
 def region_observation(proposal, evidence, image=None):
     return {**{key: deepcopy(proposal[key]) for key in ('description', 'bbox', 'state_description') if key in proposal}, 'image': image, **templates.assessment(proposal), 'evidence': deepcopy(evidence)}
@@ -73,15 +73,6 @@ def region_records(graph, observation_ref=None):
         observed = next((o for o in included if o['id'] == evidence['observation']), {})
         observation_history(r)[-1]['source_image'] = observed.get('frame')
         records[ref] = r
-    for raw in graph['regions']:
-        if raw['id'] not in records:
-            continue
-        parent = raw.get('proposal', {}).get('parent_index')
-        if parent is not None:
-            siblings = [v for v in graph['regions'] if v.get('source_call') == raw.get('source_call')]
-            if not 0 <= parent < len(siblings):
-                raise ValueError('invalid discovery parent index')
-            records[raw['id']]['parent_region'] = siblings[parent]['id']
     for raw in graph['controls']:
         owner = raw['owner_ref']
         ref = raw['id']

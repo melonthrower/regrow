@@ -5,7 +5,7 @@ import re
 
 # JSON keys are strings; this private key cannot hide a submitted field.
 _MARKS = ('correction_field_marks',)
-_RENAMES = {'parent_index': 'parent', 'region_index': 'region', 'control_index': 'control'}
+_RENAMES = {'region_index': 'region', 'control_index': 'control'}
 
 
 def locations(report):

@@ -50,7 +50,9 @@ class Region(dict):
 
     def __init__(self, value, store):
         value = normalize_parameters(value)
-        super().__init__({key: item for (key, item) in value.items() if key not in WORK_FIELDS | {'observations', 'reached_by'}})
+        # Historical snapshots stay immutable, but an obsolete containment
+        # field must not leak back into newly published Region objects.
+        super().__init__({key: item for (key, item) in value.items() if key not in WORK_FIELDS | {'observations', 'reached_by', 'parent_region'}})
         self.store = store
         self.history = observation_history(value)
         self.work = {key: item for (key, item) in region_work(value).items() if key in WORK_FIELDS}

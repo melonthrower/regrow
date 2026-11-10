@@ -8,7 +8,7 @@ from regrow.records.object_store import owned_actions
 from regrow.records.object_store import observation_history
 from regrow.records.object_store import region_state
 from copy import deepcopy
-REGION_KEYS = {'region', 'region_ref', 'source_region', 'target_region', 'working_region', 'task_region', 'parent_region', 'deferred_routing_target', 'inspection_region', 'return_to', 'destination_region'}
+REGION_KEYS = {'region', 'region_ref', 'source_region', 'target_region', 'working_region', 'task_region', 'deferred_routing_target', 'inspection_region', 'return_to', 'destination_region'}
 REGION_LISTS = {'interactive_regions', 'observed_destinations', 'before_regions', 'region_refs', 'region_path', 'visited_regions', 'partition_children'}
 from regrow.recognition import identity_templates as templates
 

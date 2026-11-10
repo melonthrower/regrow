@@ -53,13 +53,15 @@ def build_update_request(root, dynamic, screenshots, *, region_refs=(), function
     field['properties']['exception']['enum'] = list(EXCEPTIONS)
     field['required'] = list(dict.fromkeys(field['required'] + ['recovery_handoff']))
     if '任务更新引用' in dynamic or dynamic.get('本轮探索任务') or dynamic.get('来源区块已有任务'):
-        from regrow.records.task_updates import schema as task_update_schema
+        from regrow.records.task_updates import batch_schema
         refs = dynamic.pop('任务更新引用', None)
-        item = task_update_schema(selection['task_types'], refs)
-        schema['properties']['task_update'] = {'type': 'array', 'items': item}
         if refs == []:
-            schema['properties'].pop('task_update')
+            schema['properties'].pop('task_update', None)
         else:
+            active = dynamic.get('当前任务引用')
+            if refs and active in refs:
+                refs = [active, *[ref for ref in refs if ref != active]]
+            schema['properties']['task_update'] = batch_schema(refs)
             schema['required'].append('task_update')
     _control_records.extend_schema(schema)
     schema['properties']['controls']['items']['properties']['image_conditions'] = {

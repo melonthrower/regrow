@@ -12,7 +12,7 @@
 通常为 null。仅来源区块本身结构或职责确实不同，无法解释为原控件的条件用途时填写：
 - name、description：新来源的名称与职责。
 - context、original_context：区块级区别；evidence：结构与职责依据。
-- region、controls：取自动作前记录的实际来源；ref 为空，parent_index=null，region_index=0。
+- region、controls：取自动作前记录的实际来源；新区块 ref 为空，控件 region_index=0。
 - acted_control：动作前记录中实际执行的控件，不能按字段要求猜造。
 - shared_controls：仅引用其他有真实历史行为支持的稳定控件；未知项留空。
 动作后新表面仍走普通 regions/controls，不填进动作前来源。当前前景由 current_regions 报告。

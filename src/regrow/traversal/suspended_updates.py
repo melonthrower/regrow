@@ -160,8 +160,9 @@ def validate_commit(run, attempt, reply, request, binding, snapshot, records):
     for (rid, region) in records.items():
         if any((completion_target(region, t).get('region') == binding.get('region_ref') and completion_target(region, t).get('control') == binding.get('control_ref') for t in owned_tasks(region).values())):
             affected.add(rid)
+    from regrow.records.task_updates import batch_rows, is_batch
     updates = reply.get('task_update') or {}
-    for row in updates if isinstance(updates, list) else [updates]:
+    for row in batch_rows(updates) if is_batch(updates) else [updates]:
         followup = row.get('next_action')
         if followup:
             affected.add(names.get(followup['region']))

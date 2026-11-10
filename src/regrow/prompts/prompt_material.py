@@ -564,9 +564,6 @@ def identity_supplement(row):
             visible = identity_notes(item)
             if key == 'regions':
                 visible['名称'] = labels[i]
-                if item.get('parent_index') is not None:
-                    parent = item['parent_index']
-                    visible['包含它的区块'] = owner(parent) if type(parent) is int else identity_name(parent, {})
             else:
                 if 'region_index' in item:
                     visible['所属区块'] = owner(item['region_index'])

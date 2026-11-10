@@ -154,12 +154,6 @@
                 ]
               },
               {
-                "block": "region.parent",
-                "when_paths": [
-                  "regions.parent"
-                ]
-              },
-              {
                 "block": "control.registration",
                 "when_paths": [
                   "regions.controls"
@@ -380,14 +374,11 @@
       "supplement_paths": [
         "发现手册/补登记.prompt",
         "发现手册/增量补全.prompt",
-        "任务/工作区块定位.prompt",
         "任务/当前区块重定位.prompt"
       ],
       "stage": "observation",
       "mode_parts": {
-        "local": [
-          "任务/工作区块定位.prompt"
-        ],
+        "local": [],
         "default": [
           "任务/当前区块重定位.prompt"
         ]
@@ -470,12 +461,6 @@
                 "block": "region.current",
                 "when_paths": [
                   "regions.current"
-                ]
-              },
-              {
-                "block": "region.parent",
-                "when_paths": [
-                  "regions.parent"
                 ]
               },
               {
@@ -780,12 +765,6 @@
                 ]
               },
               {
-                "block": "region.parent",
-                "when_paths": [
-                  "regions.parent"
-                ]
-              },
-              {
                 "block": "control.registration",
                 "when_paths": [
                   "regions.controls"
@@ -1043,12 +1022,6 @@
                 "block": "region.current",
                 "when_paths": [
                   "regions.current"
-                ]
-              },
-              {
-                "block": "region.parent",
-                "when_paths": [
-                  "regions.parent"
                 ]
               },
               {

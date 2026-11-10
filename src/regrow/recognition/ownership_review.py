@@ -675,17 +675,8 @@ def independent_target(run, q, p, pending, report):
     ri = target.get('region_index')
     if target.get('identity') not in ('same', 'new') or type(ri) is not int:
         return None
-    seen = set()
-    while ri is not None:
-        if isinstance(ri, str) and ri in _record_load(run)[1]:
-            break  # An existing physical parent is not another proposal row.
-        if type(ri) is not int or ri in seen or not 0 <= ri < len(p['regions']):
-            return None
-        seen.add(ri)
-        owner = p['regions'][ri]
-        if owner.get('identity') not in ('same', 'new'):
-            return None
-        ri = owner.get('parent_index')
+    if not 0 <= ri < len(p['regions']) or p['regions'][ri].get('identity') not in ('same', 'new'):
+        return None
     keep = [i for i in range(len(p['controls'])) if i not in disputed]
     accepted = deepcopy(p)
     accepted['controls'] = [accepted['controls'][i] for i in keep]

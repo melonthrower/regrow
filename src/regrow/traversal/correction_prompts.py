@@ -63,7 +63,7 @@ def original_reply(root, job):
     return result
 
 RECORD_CODES = {'duplicate_submission', 'duplicate_binding', 'existing_control_conflict', 'list_representative', 'task_owner'}
-OWNER_CODES = {'owner', 'control_owner_surface', 'duplicate_control_owner', 'region_ownership_review', 'parent_region', 'parent_cycle', 'local_region_bounds', 'local_control_owner', 'local_control_duplicate'}
+OWNER_CODES = {'owner', 'control_owner_surface', 'region_ownership_review', 'local_region_bounds', 'local_control_owner', 'local_control_duplicate'}
 
 def current_parse_failure(job):
     return job.get('blocked_by') == 'model_response_parse_error' and job.get('candidate') is None

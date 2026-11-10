@@ -96,8 +96,8 @@ def apply(records, source, split, call, observation, attempt, *, frame=None):
         return (source, None, None)
     region = deepcopy(split['region'])
     controls = deepcopy(split['controls'])
-    if region.get('ref') or region.get('parent_index') is not None:
-        raise ValueError('行为分离的新区块不能复用旧身份或猜父级')
+    if region.get('ref'):
+        raise ValueError('行为分离的新区块不能复用旧身份')
     if any((c.get('ref') or c.get('region_index') != 0 for c in controls)):
         raise ValueError('行为分离控件必须来自新来源区块，不能继承旧控件身份')
     if not split['context'].strip() or split['context'] == split['original_context']:

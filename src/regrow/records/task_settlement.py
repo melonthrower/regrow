@@ -272,7 +272,7 @@ def settle_task(owner, binding, reply, attempt, records=None, *, receipt=None, l
     from copy import deepcopy
     from regrow.records import task_updates as updates
     records = records or {owner['id']: owner}
-    if isinstance(reply.get('task_update'), list):
+    if updates.is_batch(reply.get('task_update')):
         return updates.apply(owner, binding, reply, attempt, records, receipt=receipt, labels=labels, candidates=candidates, settle=settle_task)
     name = binding.get('task_name')
     task = owned_tasks(owner).get(name)

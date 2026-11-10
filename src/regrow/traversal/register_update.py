@@ -145,7 +145,9 @@ def commit_update(root, run, call_ref, attempt_ref):
     binding = _region_records.rewrite(binding, aliases)
     working = records[working_ref]
     region_changes = _update_visibility.historical_changes(reply, records, request.get('region_names'))
+    previously_known_regions = set(records)
     delta_refs = _owner_materialize_regions(records, reply, call_ref, edge['after_observation'], request.get('region_names'), frame=run / edge['after_image'] if edge.get('after_image') else None)
+    newly_registered_regions = set(records) - previously_known_regions
     _registration_diagnostics.check_visibility(reply, delta_refs, region_changes, request.get('region_names'))
     visibility = _update_visibility
     from regrow.records.object_knowledge import observed_refs
@@ -197,7 +199,7 @@ def commit_update(root, run, call_ref, attempt_ref):
     apply_for_request(records, request, reply, {'source_call':call_ref, 'attempt':attempt_ref})
     settlement_reply = reply
     if request.get('task_update_candidates') == [] and 'task_update' not in request['response_schema'].get('properties', {}):
-        settlement_reply = {**reply, 'task_update': []}
+        settlement_reply = {**reply, 'task_update': {}}
     if historical:
         suspended.release_result_block(records, historical, call_ref, attempt_ref)
     _record_settle_task(records[binding.get('task_region', source)], effective_binding, settlement_reply, attempt_ref, records, receipt=receipt, labels=request.get('region_names'), candidates=request.get('task_update_candidates'))
@@ -237,6 +239,14 @@ def commit_update(root, run, call_ref, attempt_ref):
     state['recovery_handoff'] = reply['action_result'].get('recovery_handoff', '')
     if historical:
         suspended.complete(records, previous_state, state, historical, call_ref, attempt_ref)
+    focus = state.get('working_region')
+    if (not historical and state['next_action_mode'] == 'explore'
+            and focus in newly_registered_regions and focus in region_refs):
+        # An action update cannot claim complete local recognition simply by
+        # creating a Region (even if it listed a few direct controls).
+        state.update(next_action_mode='discover', phase='awaiting_discovery',
+                     inspection_region=focus, pending_frame=edge['after_image'],
+                     reason='new_region_needs_local_inspection')
     from regrow.traversal.pending_action import retain
     retain(state, records, request, reply, binding, call_ref, snapshot_ref, historical=bool(historical))
     snapshot.parent.mkdir(parents=True, exist_ok=True)

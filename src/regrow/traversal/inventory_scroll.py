@@ -10,7 +10,8 @@ def eligible(region, task):
 
 def select(region, reply):
     from regrow.records.task_settlement import registration_kind
-    for row in [*reply.get('task_update', []), *reply.get('new_tasks', [])]:
+    from regrow.records.task_updates import batch_rows
+    for row in [*batch_rows(reply.get('task_update')), *reply.get('new_tasks', [])]:
         if 'task' in row:
             from regrow.records.task_updates import reference
             for (name, task) in owned_tasks(region).items():

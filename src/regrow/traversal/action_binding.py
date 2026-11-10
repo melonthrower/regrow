@@ -40,14 +40,14 @@ def _bind_action_target(request, proposal, *, records=None):
         return {**base, 'status': 'matched', 'basis': base.get('basis', 'Region-owned observation wait')}
     if proposal.get('action') == 'none':
         return {**base, 'status': 'no_action'}
+    if proposal.get('action') == 'scroll':
+        from regrow.traversal import region_scroll as region_scroll
+        return region_scroll.bind(request, proposal, base)
     if not reference:
         return {**base, 'status': 'matched', 'model_grounded': True,
                 'association': {'status': 'unconfirmed', 'target': proposal.get('target'),
                                 'reason': '操作目标尚无准确ref；先完成当前对象登记，再按ref选择动作。'},
                 'basis': 'registration required; no executable object binding'}
-    if proposal.get('action') == 'scroll':
-        from regrow.traversal import region_scroll as region_scroll
-        return region_scroll.bind(request, proposal, base)
     if proposal.get('action') in ('hover', 'drag'):
         from PIL import Image
         from pathlib import Path

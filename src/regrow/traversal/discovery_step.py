@@ -166,16 +166,41 @@ def commit(root, run, call_ref, *, ownership_episode=None):
             if rid not in known:
                 raise ValueError('unknown candidate Region')
             r['_matched_id'] = rid
-    from regrow.records.object_knowledge import region_only
-    observed_regions = [row for row in reply['regions'] if not region_only(row)]
-    if ctx['mode'] == 'local' and (not (batch and (not observed_regions))) and (len(observed_regions) != 1 or observed_regions[0].get('_matched_id') != ctx['focus']):
-        raise ValueError('local discovery changed focus; relocate first')
-    for c in reply['controls']:
-        from regrow.records.object_knowledge import control_only
+    from regrow.records.diagnostics import reject
+    from regrow.records.object_knowledge import control_only, region_only
+    focus_only = ctx.get('focus_only')
+    focus = ctx.get('focus')
+    observed_indices = set()
+    for i, row in enumerate(reply['regions']):
+        rid = row.get('_matched_id')
+        if focus_only:
+            if rid == focus:
+                observed_indices.add(i)
+            elif not region_only(row) or row.get('name') != known[rid]['name']:
+                reject('local_region_scope', row['name'], row['name'], known[focus]['name'],
+                       path=f'/regions/{region_indices[i]}', field='局部识别区块',
+                       reason='该条目包含另一独立区块的对象登记。',
+                       repair='本轮只观察定位区块；相关已登记区块仅可修订已开放的关系知识。')
+        elif not region_only(row):
+            observed_indices.add(i)
+    if (ctx['mode'] == 'local' and not (batch and not observed_indices)
+            and not any(reply['regions'][i].get('_matched_id') == focus for i in observed_indices)):
+        if focus_only:
+            reject('local_region_missing', known[focus]['name'], [row['name'] for row in reply['regions']],
+                   known[focus]['name'], field='定位区块', reason='回复缺少本轮定位区块的确认。',
+                   repair='根据截图确认定位区块；确认后在 regions 中提交它的已有引用。')
+        raise ValueError('local discovery omitted its focus Region')
+    for i, c in enumerate(reply['controls']):
         if control_only(c):
             continue
         if not 0 <= c['region_index'] < len(reply['regions']):
             raise ValueError('invalid control owner index')
+        if focus_only and c['region_index'] not in observed_indices:
+            owner = reply['regions'][c['region_index']]['name']
+            reject('local_control_scope', c['name'], owner, known[focus]['name'],
+                   path=f'/controls/{control_indices[i]}', field='控件归属',
+                   reason='该控件随本轮未观察的区块一起登记。',
+                   repair='只登记直接属于定位区块的控件。')
         if c['identity'] == 'same':
             cid = ctx['control_names'].get(c['ref'], c['ref'] if c['ref'] in request.get('control_refs', []) else None)
             rid = reply['regions'][c['region_index']].get('_matched_id')
@@ -200,10 +225,9 @@ def commit(root, run, call_ref, *, ownership_episode=None):
             state.pop('discovery_completion', None)
         obs = batch.get('observation', 'discovery:' + call_ref)
         retained = {rid: deepcopy(records[rid]) for rid in batch.get('regions', []) if rid in records}
-        refs = _owner_materialize_regions(records, reply, call_ref, obs, ctx['region_names'], frame=run / frame)
-        from regrow.records.object_knowledge import observed_refs
-        all_refs = refs
-        refs = observed_refs(reply, refs)
+        refs = _owner_materialize_regions(records, reply, call_ref, obs, ctx['region_names'], frame=run / frame,
+                                         observed_indices=observed_indices if focus_only else None)
+        refs = [rid for i, rid in enumerate(refs) if i in observed_indices]
         _owner_save_region_images(records, refs, reply, call_ref, run, frame, snapshot, temp)
         from regrow.records.observations import restore_source_indices
         restore_source_indices(records, refs, {'regions': region_indices, 'controls': control_indices}, call_ref, obs)

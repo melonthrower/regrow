@@ -27,6 +27,27 @@ def schema(kinds=None, refs=None):
     return result
 
 
+def batch_schema(refs=None):
+    item = schema()
+    del item['properties']['task']
+    item['required'].remove('task')
+    result = {'type': 'object', 'additionalProperties': item}
+    if refs is not None:
+        result['propertyNames'] = {'enum': list(dict.fromkeys(refs))}
+    return result
+
+
+def is_batch(value):
+    return isinstance(value, list) or (isinstance(value, dict) and not {'task', 'state', 'decision'}.intersection(value))
+
+
+def batch_rows(value):
+    """Read keyed updates and previously saved array replies as settlement rows."""
+    if isinstance(value, dict):
+        return [{**row, 'task': ref} for ref, row in value.items()]
+    return value or []
+
+
 def assessment(row):
     """Read a saved old judgement without enabling the old output contract."""
     if 'state' in row or 'decision' not in row:
@@ -288,16 +309,16 @@ def catalog(records, binding, observed_regions=()):
 
 def current(reply, binding):
     value = reply.get('task_update')
-    if isinstance(value, list):
+    if is_batch(value):
         ref = reference(binding.get('task_region', binding['region_ref']), binding.get('task_name', ''))
-        return next((row for row in value if row.get('task') == ref), {})
+        return next((row for row in batch_rows(value) if row.get('task') == ref), {})
     return value or reply.get('task_result') or {}
 
 def apply(owner, binding, reply, attempt, records, *, receipt, labels, candidates, settle):
     """Called within the normal update transaction after real identity registration."""
     from regrow.records.task_settlement import completion_target
     from regrow.records.task_settlement import recorded_match
-    rows = reply['task_update']
+    rows = batch_rows(reply['task_update'])
     allowed = {row['task']: row for row in candidates or []}
     selected = {}
     active = binding.get('task_update_ref') or reference(owner['id'], binding.get('task_name', ''))

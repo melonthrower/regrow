@@ -54,7 +54,7 @@ LABELS = {'knowledge': '用途知识', 'region_index': '所属区块', 'index': 
           'foreground': '前景', 'changes': '修改内容', 'ref': '对象引用',
           'appearance_bbox': '外观范围', 'click_bbox': '点击范围', 'supports': '支持对象',
           'parameters': '参数引用', 'state': '进展', 'remaining_question': '未答部分',
-          'jump_to': '访问目标', 'region': '区块', 'control': '控件', 'parent': '父区块'}
+          'jump_to': '访问目标', 'region': '区块', 'control': '控件'}
 
 
 TYPES = {'array': '列表', 'object': '对象', 'string': '文字', 'boolean': 'true 或 false',

@@ -12,7 +12,7 @@ from regrow.records.diagnostics import reject
 
 TOKEN = re.compile(r'(?<![A-Za-z0-9_])[rc]\d+(?![A-Za-z0-9_])')
 REFERENCE_FIELDS = {'ref','target','control','region','source_region','source_control',
-                    'task','supports','parameters','constraints','access_entry','replace_with','candidate','path','parent'}
+                    'task','supports','parameters','constraints','access_entry','replace_with','candidate','path'}
 
 
 def normalized(value):
@@ -138,8 +138,7 @@ def wire_schema(schema, nested):
         props.pop('candidate_index',None)
         if 'remove_fields' in props:
             values=props['remove_fields'].get('items',{}).get('enum',[])
-            props['remove_fields']['items']['enum']=['parent' if k == 'parent_index' else k
-                for k in values if k not in ('region_index','candidate_index')]
+            props['remove_fields']['items']['enum']=[k for k in values if k not in ('region_index','candidate_index')]
         props['ref']={'type':'string','minLength':1}
         return {'type':'object','properties':props,'anyOf':[{'required':['ref']},{'required':['name']}],'additionalProperties':False}
     def visit(node):
@@ -160,10 +159,6 @@ def wire_schema(schema, nested):
             _drop(control, {'region_index','candidate_index'})
             _drop(region, {'candidate_index'})
             region['properties']['controls'] = {'type':'array','items':control}
-            if 'parent_index' in region['properties']:
-                region['properties'].pop('parent_index')
-                region['properties']['parent'] = {'type':['string','null'], 'minLength': 1}
-                region['required'] = [k for k in region.get('required',[]) if k != 'parent_index']
             props.pop('controls')
             node['required'] = [k for k in node.get('required',[]) if k != 'controls']
             if 'jump_to' in props:
@@ -204,8 +199,6 @@ def encode_objects(value, names, owners, *, current=False):
     for i,row in enumerate(regions):
         row.pop('candidate_index',None)
         if current: row['current']=i in selected
-        if 'parent_index' in row:
-            row['parent']=reference(regions,row.pop('parent_index'))
     for c in v.pop('controls'):
         c.pop('candidate_index',None);i=c.pop('region_index',None)
         if i is None:
@@ -290,12 +283,9 @@ def prepare(run, request):
             if not isinstance(row, dict):
                 continue
             location = str(row.get('所在字段', ''))
-            if 'parent_index' in location:
-                row['问题'] = ('父区块引用未能对应本次回复或修订基准中的唯一对象。'
-                             '请补充该父区块引用，或依据实际包含关系修正。')
             for key in ('字段', '所在字段', '问题', '修正要求'):
                 if isinstance(row.get(key), str):
-                    for old, new in [('parent_index', '父区块'), ('region_index', '所属区块'),
+                    for old, new in [('region_index', '所属区块'),
                                      ('control_index', '目标控件'), ('candidate_index', '对象引用')]:
                         row[key] = row[key].replace(old, new)
         shown = (deepcopy(feedback['reply']) if feedback.get('reply_is_wire')
@@ -383,6 +373,17 @@ def internal_request(request, reply=None):
 def _decode_references(value, aliases, key=None, path=(), *, control_labels=None, region_labels=None, new_controls=()):
     if key == 'target' and 'new_tasks' in path:
         return deepcopy(value)
+    if key == 'task_update' and isinstance(value, dict):
+        from regrow.records.task_updates import is_batch
+        if is_batch(value):
+            updates = {}
+            for label, row in value.items():
+                ref = aliases.get(label) or label
+                if ref in updates:
+                    reject('task_update_reference', ref, label, '同一道任务只使用一个完整引用',
+                           field='任务更新引用', reason='不同键指向同一道任务。')
+                updates[ref] = deepcopy(row)
+            return updates
     if isinstance(value,str) and (key in REFERENCE_FIELDS or key=='function_refs'):
         if 'function_updates' in path:
             if key in ('region', 'supports', 'access_entry') and value in {**(control_labels or {}), **(region_labels or {})}:
@@ -463,9 +464,7 @@ def decode(request, reply):
         if not isinstance(row.get('controls',[]),list):
             reject('object_format', str(_key(row)), row.get('controls'), '控件列表', field='控件',
                    reason='该区块的 controls 需要填写列表，不能填写 null 或其他类型。')
-        region={k:v for k,v in row.items() if k not in ('controls','current','parent')}
-        if 'remove_fields' in region:
-            region['remove_fields'] = ['parent_index' if field == 'parent' else field for field in region['remove_fields']]
+        region={k:v for k,v in row.items() if k not in ('controls','current')}
         if ((contract['current'] or 'current_regions' in value) and row.get('ref') and set(row) <= {'ref', 'controls', 'current'}
                 and (row.get('current') is not True if contract['current'] else position not in selected) and row.get('controls')
                 and all(control_only(c) for c in row['controls'])):
@@ -497,17 +496,6 @@ def decode(request, reply):
             for name in (r.get('name'),r.get('ref'),contract['names'].get(r.get('ref'))):
                 if name and name not in references:references[name]=i
     for i,row in enumerate(rows):
-        if 'parent' in row:
-            raw_parent = row['parent']
-            parent = resolve(raw_parent, references) if raw_parent is not None else None
-            if parent is not None and type(parent) is not int:
-                if raw_parent not in contract['names'] or not re.fullmatch(r'r\d+', raw_parent):
-                    reject('parent_region', str(_key(row)), raw_parent,
-                           '已知区块或本次回复中唯一的区块', field='父区块',
-                           reason='填写的父区块未能唯一对应已有或本次登记的区块。',
-                           repair='根据实际包含关系核对父区块引用。')
-                parent = raw_parent
-            regions[i]['parent_index'] = parent
         for j, c in enumerate(row.get('controls',[])):
             if ('regions', i, 'controls', j) in omitted_controls:
                 continue

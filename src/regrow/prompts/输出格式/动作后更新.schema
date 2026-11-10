@@ -59,13 +59,6 @@
           "ref": {
             "type": "string",
             "description": "已有对象的名称/文字；新对象为空；同名不证明身份。"
-          },
-          "parent": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "minLength": 1
           }
         },
         "required": [

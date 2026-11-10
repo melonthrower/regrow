@@ -1,6 +1,6 @@
-"""Read-only page composition and visit ancestry derived from recorded evidence.
+"""Read-only visible Regions and visit ancestry derived from recorded evidence.
 
-Composition, incoming navigation and task ownership remain distinct. Nothing in
+Visible objects, incoming navigation and task ownership remain distinct. Nothing in
 this view authorizes an action or changes the underlying Region graph.
 """
 from regrow.records.object_store import owned_actions
@@ -23,7 +23,7 @@ def _observed(obj, observation):
 def _region(records, ref):
     return {'ref': ref, 'name': records.get(ref, {}).get('name', ref)}
 
-def _parent_branches(records, refs):
+def _preceding_branches(records, refs):
     branches = []
     for ref in refs:
         region = records.get(ref, {})
@@ -42,7 +42,7 @@ def _index(records):
 def _entry(records, rid, aid, action):
     evidence = action.get('evidence', {})
     before = list(evidence.get('before_regions', []))
-    return {'from_regions': before, 'to_regions': list(action.get('interactive_regions', [])), 'via': {'region': rid, 'attempt': aid, 'control': action.get('control')}, 'before_observation': evidence.get('before_observation'), 'after_observation': evidence.get('after_observation'), 'parent_branches': _parent_branches(records, before)}
+    return {'from_regions': before, 'to_regions': list(action.get('interactive_regions', [])), 'via': {'region': rid, 'attempt': aid, 'control': action.get('control')}, 'before_observation': evidence.get('before_observation'), 'after_observation': evidence.get('after_observation'), 'preceding_branches': _preceding_branches(records, before)}
 
 def _origin(records, index, observation):
     (chain, visited) = ([], set())
@@ -96,7 +96,7 @@ def build(records, state, run=None, *, scope=None):
     oid = observation.get('id')
     refs = list(dict.fromkeys(state.get('interactive_regions', [])))
     current_controls = set(observation.get('control_refs', []))
-    (issues, nodes, parents) = ([], {}, {})
+    (issues, nodes) = ([], [])
     for rid in refs:
         if rid not in records:
             issues.append({'kind': 'missing_region', 'ref': rid})
@@ -113,37 +113,11 @@ def build(records, state, run=None, *, scope=None):
         from regrow.records.task_knowledge import control_knowledge
         from regrow.records.context_scope import region_information
         from regrow.records.context_scope import control_information
-        nodes[rid] = {**_region(records, rid), 'controls': controls, 'children': [], 'knowledge': disclose(records, rid) if scope is None else region_information(region, scope)}
+        nodes.append({**_region(records, rid), 'controls': controls, 'knowledge': disclose(records, rid) if scope is None else region_information(region, scope)})
         if scope is None:
-            nodes[rid]['operation_knowledge'] = control_knowledge(region, None)
+            nodes[-1]['operation_knowledge'] = control_knowledge(region, None)
         for control in controls:
             control['knowledge'] = control_knowledge(region, control['ref']) if scope is None else control_information(region, control['ref'], scope)
-        parent = region.get('parent_region')
-        if parent:
-            own_row = _observed(region, oid)
-            parent_row = _observed(records.get(parent, {}), oid)
-            if parent in refs and own_row and parent_row and (not (own_row.get('visual_only') or parent_row.get('visual_only'))):
-                parents[rid] = parent
-            else:
-                issues.append({'kind': 'unconfirmed_containment', 'ref': rid, 'parent': parent})
-    cyclic = set()
-    for rid in parents:
-        (path, cursor) = ([], rid)
-        while cursor in parents:
-            if cursor in path:
-                cyclic.update(path[path.index(cursor):])
-                break
-            path.append(cursor)
-            cursor = parents[cursor]
-    if cyclic:
-        issues.append({'kind': 'containment_cycle', 'refs': sorted(cyclic)})
-    roots = []
-    for (rid, node) in nodes.items():
-        parent = parents.get(rid)
-        if parent in nodes and rid not in cyclic:
-            nodes[parent]['children'].append(node)
-        else:
-            roots.append(node)
     index = _index(records)
     origin = _origin(records, index, oid)
     matches = index.get(oid, [])
@@ -169,7 +143,7 @@ def build(records, state, run=None, *, scope=None):
     from regrow.records import function_evidence as function_evidence
     incoming = {rid: [{'region': row['来源区块记录'], 'attempt': row['动作记录']} for row in function_evidence.incoming_results(records[rid], records) if row['异常'] in ('', 'none') and rid in [r['区块'] for r in row['动作后可交互区块']]] for rid in refs if rid in records}
     last_action = {'region': matches[0][0], 'attempt': matches[0][1], 'changes_surface': bool(matches[0][2].get('evidence', {}).get('before_regions')) and set(matches[0][2]['evidence']['before_regions']) != set(matches[0][2].get('interactive_regions', []))} if len(matches) == 1 and origin['boundary'] not in ('ambiguous_action_observation', 'cyclic_action_observation') else None
-    view = {'current_tree': roots, 'background_regions': background, 'names': names, 'last_action': last_action, 'incoming_actions': incoming, 'goal': {**active, 'status': task.get('status', 'unknown')}, 'origin': origin, 'issues': issues, 'localization_only': localization_only, 'observation': {'id': oid, 'image': frame, 'sha256': _digest(frame)}, 'usage': 'selection', 'run_root': str(run) if run else None, 'frame_relation': 'historical_structure_needs_recheck'}
+    view = {'current_tree': nodes, 'background_regions': background, 'names': names, 'last_action': last_action, 'incoming_actions': incoming, 'goal': {**active, 'status': task.get('status', 'unknown')}, 'origin': origin, 'issues': issues, 'localization_only': localization_only, 'observation': {'id': oid, 'image': frame, 'sha256': _digest(frame)}, 'usage': 'selection', 'run_root': str(run) if run else None, 'frame_relation': 'historical_structure_needs_recheck'}
     if scope is None:
         view['history'] = page_history.build(records, state, run, extra_attempts=_source_attempts(view))
     return view
@@ -223,7 +197,6 @@ def _display(view, goal_in_task_context=False):
                 lines.append('  ' * (depth + 1) + '- ' + control['ref'] + ' ' + control['name'] + qualifier)
                 if control.get('knowledge') and (not inventory_region):
                     lines.extend(('  ' * (depth + 2) + line for line in knowledge_text(control['knowledge']).splitlines()))
-            tree(node['children'], depth + 1)
     if inventory_region:
         pass
     if not action_view and not location:
@@ -244,7 +217,7 @@ def _display(view, goal_in_task_context=False):
         if history_text:
             lines.append(history_text if action_view else page_history.TITLE + '：\n' + history_text)
     if view['issues'] and not action_view and not location:
-        lines.append('部分包含关系缺少本轮依据或成环；已保留区块并展开为独立节点。')
+        lines.append('部分已登记前景区块引用目前无法读取。')
     return '\n'.join(lines)
 
 def _frame_relation(view, frames):

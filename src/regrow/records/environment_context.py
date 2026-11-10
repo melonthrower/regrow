@@ -1,6 +1,6 @@
-"""Readable forests projected from existing identities and observed forward links.
+"""Readable navigation views projected from observed Region access links.
 
-No tree is persisted. Display parents are neither physical containment nor routes.
+No Region containment tree is stored. Indentation is display order only.
 """
 from regrow.records.object_store import owned_controls, owned_actions, owned_tasks, region_work
 
@@ -44,13 +44,13 @@ def structure(records, region_ids=None):
     incoming = {edge['region'] for edges in graph.values() for edge in edges
                 if not edge.get('target_control')}
     roots = [rid for rid in graph if rid not in incoming]
-    parents, seen, expansion = {}, set(), []
+    expansion_sources, seen, expansion = {}, set(), []
 
-    def visit(rid, parent=None):
+    def visit(rid, source=None):
         if rid in seen:
             return
         seen.add(rid)
-        parents[rid] = parent
+        expansion_sources[rid] = source
         for edge in graph[rid]:
             if not edge.get('target_control') and edge['region'] in graph:
                 visit(edge['region'], rid)
@@ -58,7 +58,7 @@ def structure(records, region_ids=None):
         if rid not in seen:
             expansion.append(rid)
             visit(rid)
-    return graph, expansion, parents
+    return graph, expansion, expansion_sources
 
 
 def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None, interaction=None,
@@ -66,7 +66,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
     """Two presentations of the same graph; names are always read from current records."""
     if view not in ('controls', 'operations'):
         raise ValueError('unknown forest view')
-    graph, roots, parents = structure(records, region_ids)
+    graph, roots, expansion_sources = structure(records, region_ids)
     shown, out = set(), []
     interaction = interaction or {}
     overview = view == 'controls' and control_regions is not None
@@ -75,7 +75,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
         title = '局部' + title
     out.append(title if overview else title + '（已登记内容与已观察的访问关系）')
     if not overview:
-        out.append('下级区块表示操作可到达的目标；条件标在相应去向旁。')
+        out.append('缩进只展示已观察的操作可达关系；条件标在相应去向旁。')
 
     def tasks(region, cid, depth):
         if region['id'] != task_region:
@@ -90,7 +90,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
     def target(edge, depth, source):
         rid = edge['region']
         if overview:
-            if rid not in shown and parents.get(rid) == source:
+            if rid not in shown and expansion_sources.get(rid) == source:
                 node(rid, depth)
             return
         conditions = edge.get('conditions', [])
@@ -103,7 +103,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
             control = owned_controls(records[rid]).get(cid, {})
             out.append('  '*depth + '└─ ' + prefix + '[引用：' + rid + '/' + records[rid]['name']
                        + ' / ' + cid + '/' + control.get('name', cid) + ']')
-        elif rid in shown or parents.get(rid) != source:
+        elif rid in shown or expansion_sources.get(rid) != source:
             out.append('  '*depth + '└─ ' + prefix + '[引用：' + rid + '/' + records[rid]['name'] + ']')
         else:
             node(rid, depth, prefix)
@@ -192,14 +192,14 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
 
 
 def local_progress(records, focus):
-    """Expand progress only for focus, its display parent and siblings."""
+    """Expand progress only for focus and nearby access-map entries."""
     from regrow.records.tasks import coverage
     if focus not in records:
         return ''
-    _, _, parents = structure(records)
-    parent = parents[focus]
-    peers = [rid for rid in sorted(records) if parents.get(rid) == parent] if parent else [focus]
-    selected = list(dict.fromkeys(([parent] if parent else []) + peers))
+    _, _, sources = structure(records)
+    source = sources[focus]
+    peers = [rid for rid in sorted(records) if sources.get(rid) == source] if source else [focus]
+    selected = list(dict.fromkeys(([source] if source else []) + peers))
     lines = ['局部探索进度']
     for rid in selected:
         progress = coverage(records[rid], records)
@@ -214,9 +214,12 @@ def local_progress(records, focus):
 
 def render(records, state, focus, goal=None, kind='observation', interaction=None):
     goal = goal or {}
+    control_regions = {focus}
+    if kind == 'update' and interaction:
+        control_regions.add(interaction.get('working_region'))
     out = [forest(records, view='controls', focus=focus,
                   task_region=focus if kind == 'task_proposal' else None,
-                  control_regions={focus}, interaction=interaction)]
+                  control_regions=control_regions, interaction=interaction)]
     gr, cid = goal.get('region'), goal.get('control')
     if gr in records:
         control = owned_controls(records[gr]).get(cid, {})

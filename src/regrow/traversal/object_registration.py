@@ -70,9 +70,8 @@ def required_paths(original, candidate):
         path = pending.pop()
         _, kind, i = path.split('/')
         row = candidate[kind][int(i)]
-        parent = row.get('region_index' if kind == 'controls' else 'parent_index')
-        if type(parent) is int and 0 <= parent < len(candidate.get('regions', [])):
-            path = f'/regions/{parent}'
+        if kind == 'controls' and type(row.get('region_index')) is int and 0 <= row['region_index'] < len(candidate.get('regions', [])):
+            path = f'/regions/{row["region_index"]}'
             if path not in required:
                 required.add(path)
                 pending.append(path)
@@ -235,10 +234,10 @@ def remap_gaps(gaps, previous):
         for error in gap.get('errors', []):
             error['path'] = f'/{kind}/{previous[kind][gap["index"]]}' + error['path'][len(path):]
         gap['index'] = previous[kind][gap['index']]
-        field = 'parent_index' if kind == 'regions' else 'region_index'
-        i = gap['proposal'].get(field)
-        if type(i) is int and 0 <= i < len(previous['regions']):
-            gap['proposal'][field] = previous['regions'][i]
+        if kind == 'controls':
+            i = gap['proposal'].get('region_index')
+            if type(i) is int and 0 <= i < len(previous['regions']):
+                gap['proposal']['region_index'] = previous['regions'][i]
 
 
 def partition_request(original, candidate, failed, errors=()):

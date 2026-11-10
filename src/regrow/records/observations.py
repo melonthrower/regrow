@@ -17,7 +17,7 @@ def unique(items, name, get_name):
 def label(control):
     return control['name']
 
-def materialize_regions(records, reply, call_ref, observation, region_names=None, *, frame=None):
+def materialize_regions(records, reply, call_ref, observation, region_names=None, *, frame=None, observed_indices=None):
     from regrow.records import registration_diagnostics as _registration_diagnostics
     from regrow.recognition import region_candidate_names as _region_candidate_names
     from regrow.records import control_records as _control_records
@@ -27,8 +27,9 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
         cid: cid + '/' + control['name'] for region in records.values()
         for cid, control in owned_controls(region).items()})
     written_knowledge = set()
+    from regrow.records.object_knowledge import region_only
     from regrow.recognition.update_visibility import selected_indices
-    current = selected_indices(reply, region_names)
+    current = selected_indices(reply, region_names) if observed_indices is None else observed_indices
     next_r = max([int(k[1:]) for k in records] + [0]) + 1
     next_c = max([int(k[1:]) for r in records.values() for k in owned_controls(r)] + [0]) + 1
     region_refs = []
@@ -52,18 +53,11 @@ def materialize_regions(records, reply, call_ref, observation, region_names=None
             from regrow.records.region_knowledge import validate, apply
             validate(r, p['local_knowledge'])
             apply(r, p['local_knowledge'], records)
-        from regrow.records.object_knowledge import region_only
-        if region_only(p) or i not in current:
-            region_refs.append(ref)
-            continue
-        observation_history(r).append(_region_evidence.region_observation(p, {'source_call': call_ref, 'source_field': f'/regions/{i}', 'observation': observation}))
+        if i in current and (observed_indices is not None or not region_only(p)):
+            observation_history(r).append(_region_evidence.region_observation(p, {'source_call': call_ref, 'source_field': f'/regions/{i}', 'observation': observation}))
         region_refs.append(ref)
     if len(set(region_refs)) != len(region_refs):
         raise ValueError('same Region reported twice')
-    for (i, p) in enumerate(reply['regions']):
-        if 'parent_index' in p:
-            parent = p['parent_index']
-            records[region_refs[i]]['parent_region'] = region_refs[parent] if type(parent) is int else parent
     for (i, p) in enumerate(reply['controls']):
         from regrow.records.object_knowledge import control_only, apply
         if control_only(p):

@@ -154,8 +154,6 @@ def _references(result, indexes, proposal=None, provenance=None):
         if key not in row or row[key] is None:
             return
         value = row[key]
-        if key == 'parent_index' and isinstance(value, str):
-            return  # A known Region ID does not move when reply rows change.
         if type(value) is not int or value not in indexes[kind]:
             parts = path.strip('/').split('/')
             group = parts[0]
@@ -166,8 +164,6 @@ def _references(result, indexes, proposal=None, provenance=None):
                    f'按原稿编号，{path}/{key}={value}指向已撤回或不存在的对象；请同时修正这条关系',
                    actual=value, reply_source='latest_reply' if latest else 'proposal_base')
         row[key] = indexes[kind][value]
-    for i, row in enumerate(result.get('regions', [])):
-        remap(row, 'parent_index', 'regions', f'/regions/{origins["regions"][i]}')
     for i, row in enumerate(result.get('controls', [])):
         remap(row, 'region_index', 'regions', f'/controls/{origins["controls"][i]}')
     for i, row in enumerate(result.get('current_regions', [])):

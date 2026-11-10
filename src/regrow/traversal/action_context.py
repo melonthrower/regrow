@@ -126,11 +126,6 @@ def render_exploration_tree(records, state, region_ref, *, limit=8):
                 lines.append('  │  已观察跳转 → ' + records[target]['name'] + ('（本次返回落点，依赖进入路径）' if contextual_return(action) else '（详情折叠，不代表探索完成）'))
     if len(controls) > limit:
         lines.append(f'  └─ 另有 {len(controls) - limit} 个已登记控件折叠，不代表探索完成。')
-    children = [r['name'] for r in records.values() if r.get('parent_region') == region_ref and r is not region]
-    if children:
-        lines.append('已登记子区块（独立探索，详情折叠）：' + '、'.join(children[:limit]))
-        if len(children) > limit:
-            lines.append(f'另有 {len(children) - limit} 个子区块折叠。')
     return '\n'.join(lines)
 
 def assemble_context(root, records, state, region_ref):

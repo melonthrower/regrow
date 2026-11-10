@@ -125,9 +125,8 @@ def for_request(request, records):
     ids = [row['ref'] for row in rows]
     for item in _schemas(request['response_schema'], 'regions'):
         props = item.get('properties', {})
-        if set(props) <= {'ref', 'local_knowledge'} and 'ref' in props:
-            writable = list(ids)
-            props['ref']['enum'] = list(dict.fromkeys([*props['ref'].get('enum', []), *writable]))
+        if 'ref' in props and (discovery.get('focus_only') or set(props) <= {'ref', 'local_knowledge'}):
+            props['ref']['enum'] = list(dict.fromkeys([*props['ref'].get('enum', []), *ids]))
     if discovery:
         discovery.setdefault('region_names', {}).update({rid: rid for rid in ids})
     if request.get('role') == 'observation_update':

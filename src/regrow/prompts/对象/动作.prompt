@@ -11,10 +11,11 @@
 <!-- END_PROMPT_BLOCK id="action.proposal" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.next_action" requires="task.definition" -->
-# 接下来执行的一步操作：next_action
-next_action 填写接下来要执行的一步操作，采用与普通动作选择相同的动作格式，并完整填写该动作所需的参数。
+# 接下来执行的一步操作 next_action
 
-当前任务仍需继续探索且本轮可以操作时，根据本轮动作后截图选择下一步。每次最多提供一条动作；暂时无法确定下一步时不填写。
+原任务判为 pending，且本轮动作后图支持直接执行时，填写一条普通动作格式的 next_action。reason 写出支撑这一步的当前依据，以及预期取得的新观察或要建立的必要条件。
+
+原任务为 done 或 blocked，或需要由调度先到达另一处工作界面时，省略 next_action。
 <!-- END_PROMPT_BLOCK id="action.next_action" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.result" requires="" -->

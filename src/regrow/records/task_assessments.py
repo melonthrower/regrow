@@ -21,6 +21,10 @@ def row_error(request, reply, error):
         return False
     spec = request.get('response_schema', {}).get('properties', {}).get(parts[0], {})
     rows = reply.get(parts[0])
+    if parts[0] == 'task_update' and spec.get('type') == 'object' and isinstance(rows, dict):
+        key = parts[1].replace('~1', '/').replace('~0', '~')
+        allowed = spec.get('propertyNames', {}).get('enum')
+        return isinstance(rows.get(key), dict) and (allowed is None or key in allowed)
     return (spec.get('type') == 'array' and parts[1].isdigit()
             and isinstance(rows, list) and int(parts[1]) < len(rows)
             and isinstance(rows[int(parts[1])], dict)
@@ -43,6 +47,8 @@ def envelope(reply, schema, *, partial=False):
     if spec.get('type') == 'array' and isinstance(rows, list) and all(
             isinstance(row, dict) if partial else known_row(row, spec) for row in rows):
         spec['items'] = {}
+    if spec.get('type') == 'object' and isinstance(rows, dict) and all(isinstance(row, dict) for row in rows.values()):
+        spec['additionalProperties'] = {}
     operations = outer.get('properties', {}).get('new_tasks', {})
     if partial and operations.get('type') == 'array' and isinstance(reply.get('new_tasks'), list) and all(isinstance(row, dict) for row in reply['new_tasks']):
         operations['items'] = {}
@@ -77,7 +83,9 @@ def rejected(task, row, call, error, index, *, field='task_update'):
     for item in report['errors']:
         if item.get('validator'):
             item['object'] = row.get('task') or row.get('name') or row.get('question') or '本次提出的新任务'
-            item['path'] = ('/' + field + '/' + str(index) + item.get('path', '')) if index is not None else item.get('path', '')
+            if index is not None:
+                key = str(index).replace('~', '~0').replace('/', '~1')
+                item['path'] = '/' + field + '/' + key + item.get('path', '')
     detail = {'task': row.get('task'), 'proposed_update': deepcopy(row),
               'source_call': call, 'source_index': index, 'reason': reason,
               'diagnostic': report}

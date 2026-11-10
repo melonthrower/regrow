@@ -38,7 +38,7 @@
 <!-- BEGIN_PROMPT_BLOCK id="region.registration" requires="region.definition,region.references,control.references" -->
 # 登记区块：regions
 
-根据对象抽象原则登记新区块，或引用已经存在的区块。
+在本次观察范围内，根据对象抽象原则登记新区块或引用已有区块。
 name 写简短、便于辨认的名称；
 description 描述区块稳定的职责和内容范围。
 
@@ -102,8 +102,11 @@ name 使用便于辨认的共同职责名称，具体目标及其已观察差异
 <!-- END_PROMPT_BLOCK id="region.update_registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.local_registration" requires="" -->
-本次局部识别中，regions 仅填写本轮定位区块，controls 仅填写它直属的必要控件。
-正例：本轮定位搜索区时，登记搜索区及其搜索框、提交按钮。
+局部识别围绕「本轮定位区块」了解它能做什么、需要哪些使用条件，以及与其他区块怎样配合。根据当前图确认目标后，在 regions 用它的 ref 登记本次观察，同一条可登记直属控件和补充关系知识。其他独立区块在各自的局部识别中登记。
+对材料中明确开放修订的关联区块，可用仅含 ref 和 local_knowledge 的条目更新有证据支持的关系知识。
+
+正例：目标区内有一个执行操作的按钮和一个为该操作选择方式的控件。两者作用各异，共同服务于目标区的职责，都归入目标区。
+反例：相邻区域有自己的查看、选择或排序功能，即使它的内容随目标区的操作更新，也由它自己的局部识别登记。本轮可以记录证据支持的区块间使用关系。
 <!-- END_PROMPT_BLOCK id="region.local_registration" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.local_knowledge" requires="region.references,control.references" -->
@@ -129,22 +132,18 @@ delete：删除已确认不成立的知识。
 
 区块知识着重说明可复用的使用关系。例如，“在搜索输入区输入关键词后，搜索结果区更新可选择的结果项”，可以帮助后续操作衔接；无需把本次输入的具体关键词及出现的每个结果写成一段不断增长的关系知识。真实输入及对应截图仍保存在本次操作证据中。新的操作关系或必要条件出现时，再更新相关区块知识。
 
-正例：本次确认，权限区中的解锁开关会让高级设置区原先禁用的选项可用：
+正例：本轮为权限区补充已确认的关系。开启解锁开关后，另一处的高级选项变为可用。以下示例展示关系知识的填写方式。
 {
   "regions": [
     {
       "ref": "r0003/权限设置",
       "local_knowledge": {"add": ["开启 c0012/高级功能解锁 后，r0007/高级设置 中的高级配置选项变为可用。"]}
-    },
-    {
-      "ref": "r0007/高级设置",
-      "local_knowledge": {"add": ["本区块的高级配置选项需要先在 r0003/权限设置 中开启 c0012/高级功能解锁，之后才能使用。"]}
     }
   ]
 }
-同一事实已在两侧保存时，依据本轮新证据同时修订受影响的双方段落；另一侧尚不能确认时，明确留下待核查问题，不声称两侧已经一致。
+新证据表明已登记的关系有变化时，修订本次材料明确开放的相关段落。双方都开放且各有证据时，可以同次修订两侧。证据不足的一侧留作待核查。
 
-补充例：后续再次探索，发现解锁仍需要先进入管理员模式。假设上述两侧段落已分别登记为 k0001、k0002，按各自原 ID 更新完整文本，不另增一条含义重叠的知识：
+补充例：本次观察确认解锁需要先进入管理员模式，两侧已登记的 k0001、k0002 都在本次材料的可修订范围内。分别按原 ID 更新完整文本。
 
 ```json
 {
@@ -375,36 +374,6 @@ uncertain 表示当前证据不足以判断前景是否存在妨碍本次工作�
 <!-- BEGIN_PROMPT_BLOCK id="region.current" requires="region.foreground_concept" -->
 current 为 true 表示本次确认该区块处于当前前景；只标记当前实际看见的区块。省略或 false 表示本次没有作前景确认，不新增“已消失”的历史事实。补历史区块知识不需要 current:true。没有可确认的当前区块时，不标记任何区块为 true。
 <!-- END_PROMPT_BLOCK id="region.current" -->
-
-<!-- BEGIN_PROMPT_BLOCK id="region.parent" requires="region.references" -->
-parent 可选，记录截图或已有认识能够明确确认的物理包含关系，不用专门为找父区块而探索。已有父区块写“ID/名称”引用；同轮新登记的父区块可用本轮唯一的名称关联。无法确认时省略；省略不删除已保存的父级。明确确认原父子关系不成立时可以写 null。
-
-正例：已有 r0002/侧边栏，本轮辨认出其中三个职责不同的子区块：
-
-```json
-{
-  "regions": [
-    {
-      "name": "侧边栏顶部操作区",
-      "description": "提供新建对话、搜索和侧边栏布局操作。",
-      "parent": "r0002/侧边栏"
-    },
-    {
-      "name": "项目列表区",
-      "description": "展示已有项目并支持进入项目。",
-      "parent": "r0002/侧边栏"
-    },
-    {
-      "name": "最近对话列表区",
-      "description": "展示并打开近期对话。",
-      "parent": "r0002/侧边栏"
-    }
-  ]
-}
-```
-
-反例：点击最近对话条目后进入的对话内容区，不能仅因从侧边栏进入，就登记为侧边栏的子区块；访问关系由实际跳转记录，和物理包含关系不同。
-<!-- END_PROMPT_BLOCK id="region.parent" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="region.application_exception" requires="traversal.exception,region.recovery_handoff" -->
 先报告本次观察到的 exception。没有异常时继续填写本步业务字段；有异常时只填写 exception 和 recovery_handoff，交给恢复流程，不登记任务、知识或探索动作。

@@ -115,8 +115,14 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
     updater = ResultUpdater(root, transport, repair)
 
     def current():
-        request = scheduler.current()
-        return request
+        while True:
+            request = scheduler.current()
+            if (request['stage'] != 'locate'
+                    or _record_load(run)[2].get('next_action_mode') != 'discover'):
+                return request
+            locator.discover()
+            if route_recovery():
+                return None
     if (run / 'ownership_review.json').exists():
         result = _ownership_review.run(root, transport, out, call)
         if not result.get('continue_current'):
@@ -179,6 +185,8 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
         if route_recovery():
             return
     q = current()
+    if q is None:
+        return
     pending_action.discard_changed_work(run, q)
     if q['stage'] == 'task_proposal':
         TaskProposer.run(repair, q)
@@ -189,6 +197,8 @@ def _run_step(root, run, out, *, review_update=None, limits=None):
             if route_recovery():
                 return
         q = current()
+        if q is None:
+            return
         if q['stage'] == 'task_proposal':
             write_json(out / 'result.json', {'status': 'task_proposal', 'calls': calls, 'gui_actions': 0})
             transport.account['status'] = 'paused_after_rediscovery'

@@ -62,7 +62,7 @@ def structure(records, region_ids=None):
 
 
 def forest(records, *, view='controls', focus=None, task_region=None, region_ids=None, interaction=None,
-           control_regions=None):
+           control_regions=None, knowledge_regions=()):
     """Two presentations of the same graph; names are always read from current records."""
     if view not in ('controls', 'operations'):
         raise ValueError('unknown forest view')
@@ -128,7 +128,7 @@ def forest(records, *, view='controls', focus=None, task_region=None, region_ids
                     operation = identity_steps([{'action': interaction['operation']}])[0]['操作']
                     mark = '【上次交互：' + operation + '】'
                 out.append('  '*(depth+1) + '├─ ' + cid + '/' + control['name'] + mark)
-                if mark:
+                if mark or rid in knowledge_regions:
                     from regrow.records.control_knowledge import card
                     from regrow.prompts.history_disclosure import readable
                     knowledge = card(control)
@@ -212,14 +212,32 @@ def local_progress(records, focus):
     return '\n'.join(lines)
 
 
+def _update_destination_regions(records, interaction):
+    source = interaction.get('region')
+    attempt = interaction.get('attempt')
+    operation = interaction.get('operation')
+    if source not in records or not attempt or not operation:
+        return set()
+    control = interaction.get('control_ref')
+    actions = owned_actions(records[source])
+    return {edge['region'] for edge in links(records, source)
+            if edge['region'] != source and edge['control'] == control
+            and edge.get('observed_source', source) == source
+            and edge['attempt'] < attempt and actions[edge['attempt']].get('operation') == operation}
+
+
 def render(records, state, focus, goal=None, kind='observation', interaction=None):
     goal = goal or {}
     control_regions = {focus}
+    destination_regions = set()
     if kind == 'update' and interaction:
         control_regions.add(interaction.get('working_region'))
+        destination_regions = _update_destination_regions(records, interaction)
+        control_regions.update(destination_regions)
     out = [forest(records, view='controls', focus=focus,
                   task_region=focus if kind == 'task_proposal' else None,
-                  control_regions=control_regions, interaction=interaction)]
+                  control_regions=control_regions, interaction=interaction,
+                  knowledge_regions=destination_regions)]
     gr, cid = goal.get('region'), goal.get('control')
     if gr in records:
         control = owned_controls(records[gr]).get(cid, {})

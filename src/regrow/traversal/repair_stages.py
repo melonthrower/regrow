@@ -165,6 +165,16 @@ def accept_action(run, q, proposal, ref, records):
     from regrow.recognition import ownership_review as _ownership_review
     from regrow.traversal import operation_blocking as _operation_blocking
     from regrow.recognition.control_references import decode_action_target
+    source = q.get('action_source') or {}
+    if source.get('field') == 'next_action' and source.get('call') == ref:
+        from regrow.records.diagnostics import Rejected
+        from regrow.runtime.reply_structure import recover
+        proposal, report = recover(q, proposal)
+        evidence = Path(run) / 'calls' / ref / 'next_action_structure_recovery.json'
+        if (report['changed'] or report['errors']) and not evidence.exists():
+            _record_write_json(evidence, report)
+        if report['errors']:
+            raise Rejected({'errors': report['errors'], 'unchecked': ['接续动作的业务校验尚未执行。']})
     proposal = decode_action_target(q, proposal, ref)
     manifest = Path(run) / 'run_manifest.json'
     platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'

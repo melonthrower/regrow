@@ -29,6 +29,95 @@ def _choices(schema):
     yield schema
 
 
+_FIELD_NAME = re.compile(r'[A-Za-z][A-Za-z0-9_]*')
+
+
+def _field_form(name):
+    return re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '_', name).lower()
+
+
+def _near_spelling(source, target):
+    """Offer a name written in another case style or with one character edit."""
+    source, target = _field_form(source), _field_form(target)
+    if source == target:
+        return True
+    # Distinct short keys such as x, y and ref have too little spelling evidence.
+    if min(len(source), len(target)) < 4:
+        return False
+    if len(source) > len(target):
+        source, target = target, source
+    if len(target) - len(source) > 1:
+        return False
+    index = next((i for i, (a, b) in enumerate(zip(source, target)) if a != b), len(source))
+    if len(source) != len(target):
+        return source[index:] == target[index + 1:]
+    return (source[index + 1:] == target[index + 1:]
+            or source[index:index + 2] == target[index:index + 2][::-1]
+            and source[index + 2:] == target[index + 2:])
+
+
+def _pointer(path):
+    return ''.join('/' + str(part).replace('~', '~0').replace('/', '~1') for part in path)
+
+
+def _alignment_evidence(name, target, supplied, spec, required):
+    if _field_form(name) == _field_form(target):
+        return True
+    if isinstance(supplied, (list, dict)):
+        return bool(supplied)
+    return required or isinstance(spec, dict) and any('enum' in arm or 'const' in arm for arm in _choices(spec))
+
+
+def _align_names(value, fields, declared, path, known_field):
+    """Use matching names as candidates, then validate their entire submitted value."""
+    if not isinstance(value, dict) or not fields:
+        return value, [], []
+    result = dict(value)
+    changes, errors = [], []
+    for name, supplied in value.items():
+        if name in declared or not _FIELD_NAME.fullmatch(name):
+            continue
+        nearby = {key: [spec for spec, required in options
+                        if _alignment_evidence(name, key, supplied, spec, required)]
+                  for key, options in fields.items() if _near_spelling(name, key)}
+        nearby = {key: specs for key, specs in nearby.items() if specs}
+        if not nearby or known_field(name, supplied):
+            continue
+        candidates = [key for key, specs in nearby.items() if any(
+            jsonschema.Draft202012Validator(spec).is_valid(supplied) for spec in specs)]
+        issue = {'object': name, 'field': name, 'path': _pointer((*path, name)), 'actual': supplied}
+        if len(candidates) != 1:
+            code = 'ambiguous_structure' if len(candidates) > 1 else 'structure_field_alignment'
+            errors.append({**issue, 'code': code, 'expected': sorted(candidates or nearby),
+                           'reason': '按本轮字段结构无法确定唯一可对齐的字段。'})
+            continue
+        target = candidates[0]
+        if target in result and _key(result[target]) != _key(supplied):
+            errors.append({**issue, 'code': 'structure_field_conflict', 'expected': target,
+                           'actual': {name: supplied, target: result[target]},
+                           'reason': '同一字段的两种写法填写了不同内容。'})
+            continue
+        result[target] = result.pop(name)
+        changes.append({'kind': 'schema_field_alignment', 'source': [*path, name],
+                        'destination': [*path, target]})
+    return result, changes, errors
+
+
+def _alignment_errors(schema, value, path=()):
+    from regrow.records.registration_diagnostics import reply_errors
+    return [{**error, 'path': _pointer(path) + ('' if error['path'] == '/' else error['path'])}
+            for error in reply_errors({'response_schema': schema}, value)]
+
+
+def _only_wrapper(value, path):
+    """Opening a wrapper must preserve any siblings of the candidate."""
+    for part in path:
+        if len(value) != 1:
+            return False
+        value = value[part]
+    return True
+
+
 def _task_excerpt(label, title):
     """Use literal parts of the disclosed question to recognize a short label."""
     parts = label.rstrip('。.!?').split()
@@ -71,6 +160,7 @@ def _task_alignment_error(code, path, actual, expected):
 class _Recovery:
     def __init__(self, request, reply):
         self.schema = expand_schema(request['response_schema'])
+        self.field_specs = None
         self.references = set(request.get('name_contract', {}).get('names', {}).values())
         self.references.update(request.get('control_reference_names', {}).values())
         self.references.update(request.get('region_reference_names', {}).values())
@@ -83,6 +173,25 @@ class _Recovery:
             values = {names.get(owner, owner) for owner in owners}
             self.owners.setdefault(names.get(ref, ref), set()).update(values)
         self._owners(reply)
+
+    def _known_field(self, name, value):
+        """An exact field used elsewhere may carry its own meaning at the wrong level."""
+        if self.field_specs is None:
+            self.field_specs = {}
+
+            def collect(node):
+                if isinstance(node, dict):
+                    for key, spec in node.get('properties', {}).items():
+                        self.field_specs.setdefault(key, []).append(spec)
+                    for child in node.values():
+                        collect(child)
+                elif isinstance(node, list):
+                    for child in node:
+                        collect(child)
+
+            collect(self.schema)
+        return any(jsonschema.Draft202012Validator(spec).is_valid(value)
+                   for spec in self.field_specs.get(name, []))
 
     def _owners(self, value):
         if isinstance(value, dict):
@@ -122,10 +231,8 @@ class _Recovery:
         yield value, path, identity
         if isinstance(value, dict):
             for key, child in value.items():
-                field = properties.get(key, {})
-                # Typed subrecords have their own role; never borrow their fields.
-                if key in properties and any({'properties', 'items', 'propertyNames'} & c.keys()
-                                             for c in _choices(field)):
+                # A declared field has a role even when its supplied type is wrong.
+                if key in properties:
                     continue
                 ref = key if key in self.references else identity
                 yield from self._walk(child, properties, (*path, key), ref)
@@ -220,9 +327,20 @@ class _Recovery:
                 if self._fit(restored, item) is not None:
                     return [restored], changes + [{'kind': 'single_item', 'source': list(path)}], failed
             return deepcopy(value), [], []
-        if not isinstance(value, dict) or not properties:
+        if not isinstance(value, dict):
             return deepcopy(value), [], []
         result = deepcopy(value)
+        entry_schema = schema.get('additionalProperties')
+        if isinstance(entry_schema, dict):
+            key_validator = jsonschema.Draft202012Validator(schema.get('propertyNames', {}))
+            for key, entry in result.items():
+                if key in properties or not key_validator.is_valid(key):
+                    continue
+                result[key], edits, failed = self.normalize(entry, entry_schema, (*path, key), search=False)
+                events.extend(edits)
+                errors.extend(failed)
+        if not properties:
+            return result, events, errors
         # A single action envelope can contain complementary fields of the
         # same reply. Do not borrow from sibling actions or prefer a conflict.
         action = result.get('action')
@@ -239,10 +357,6 @@ class _Recovery:
                     'reason': '外层与动作内层填写了不同内容，不能选择其中一个覆盖。'} for key in conflicts]
             result = {**outer, **action}
             events.append({'kind': 'action_envelope', 'source': [*path, 'action'], 'destination': list(path)})
-        task_changes, task_errors = self._align_task_updates(result, properties, path)
-        if task_errors:
-            return deepcopy(value), [], task_errors
-        events.extend(task_changes)
         # An existing control's unique, disclosed membership can recover a
         # misplaced knowledge row. New/ambiguous ownership is never inferred.
         regions_spec = properties.get('regions', {}).get('items', {})
@@ -317,10 +431,6 @@ class _Recovery:
         if self._valid(value, schema) and not identity:
             return deepcopy(value), [], []
         effective, _ = main_pair(schema, value)
-        # A keyed record owns its rows. A row must never replace the map,
-        # even when the row is empty and an empty map would be valid.
-        if 'propertyNames' in effective:
-            return deepcopy(value), [], []
         choices = list(_choices(effective))
         if not any(c.get('type') in ('object', 'array') or c.get('properties') or 'items' in c for c in choices):
             return deepcopy(value), [], []
@@ -331,10 +441,51 @@ class _Recovery:
         if isinstance(value, list) and ('items' in schema or schema.get('type') == 'array'):
             return self._shape(value, schema, path, identity)
         candidates, partial, errors = {}, [], []
+        # A keyed record's entries are values, not alternative wrappers for the map.
+        if isinstance(value, dict) and any(isinstance(c.get('additionalProperties'), dict) for c in choices):
+            search = False
+        alignment_fields = {}
+        if identity is None:
+            for choice in choices:
+                if choice.get('additionalProperties') is not False:
+                    continue
+                required = choice.get('required', [])
+                for key, spec in choice.get('properties', {}).items():
+                    alignment_fields.setdefault(key, []).append((spec, key in required))
         nodes = self._walk(value, properties, path, identity) if search else [(value, path, identity)]
+        task_spec = properties.get('task_update')
+        keyed_tasks = isinstance(task_spec, dict) and task_spec.get('propertyNames', {}).get('enum')
         for node, source, ref in nodes:
+            task_edits = []
+            if keyed_tasks and isinstance(node, dict):
+                # Use the existing task aliases before testing field-name candidates.
+                task_aligned = deepcopy(node)
+                task_edits, failed = self._align_task_updates(task_aligned, properties, source)
+                if failed:
+                    errors.extend(failed)
+                    continue
+                if task_edits:
+                    node = task_aligned
+            if alignment_fields:
+                aligned, events, failed = _align_names(node, alignment_fields, properties, source, self._known_field)
+                if failed:
+                    errors.extend(error for error in failed if source == path
+                                  or error['code'] in ('structure_field_conflict', 'ambiguous_structure'))
+                    continue
+                if events:
+                    if self._valid(aligned, schema):
+                        if source == path or (ref is None and _only_wrapper(value, source[len(path):])):
+                            candidates.setdefault(_key(aligned), (deepcopy(aligned), task_edits + events, source))
+                        else:
+                            errors.append({'code': 'ambiguous_structure', 'object': '本次回复',
+                                'path': _pointer(source), 'actual': node, 'expected': '唯一完整且无并列内容的回复',
+                                'reason': '接受包装中的候选会丢弃显式引用或同层内容。'})
+                    elif source == path:
+                        errors.extend(_alignment_errors(schema, aligned, path))
+                    continue
             for choice in choices:
                 shaped, events, failed = self._shape(node, choice, source, ref)
+                events = task_edits + events
                 errors.extend(failed)
                 if source == path:
                     partial.append((shaped, events, failed))
@@ -368,6 +519,9 @@ def recover(request, reply):
     """Return a derived reply and diagnostics; never modify the original answer."""
     recovery = _Recovery(request, reply)
     result, changes, errors = recovery.normalize(reply, recovery.schema)
+    if any(change['kind'] == 'schema_field_alignment' for change in changes) and not recovery._valid(result, recovery.schema):
+        errors = errors or _alignment_errors(recovery.schema, result)
+        result, changes = deepcopy(reply), []
     if not changes and not errors:
         result = deepcopy(reply)  # Unrelated extras remain owned by the existing filter.
     report = {'changed': result != reply, 'changes': changes, 'errors': errors}

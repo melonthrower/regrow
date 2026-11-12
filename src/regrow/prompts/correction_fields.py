@@ -245,7 +245,18 @@ def prepare(root, request):
             base = encode_objects(retained, contract['names'], contract['owners'], current=contract['current'])
     elif latest is not None:
         base = marked_copy(feedback['reply'], {**report, 'errors': base_errors})
-    sections = ['# 原任务与相关材料\n' + feedback['context']]
+    sections, facts = [], []
+    for item in report['errors']:
+        code = item.get('code') or ''
+        if (item.get('validator') or code in ('schema', 'parse', 'duplicate_field', 'ambiguous_structure')
+                or code.startswith('structure_')):
+            continue
+        field = item.get('field') or item.get('path')
+        facts.append({'对象': item.get('object') or '本次回复', **({'字段': field} if field else {}),
+                      '实际情况': item.get('actual'), '需要满足的条件': item.get('expected') or item.get('reason')})
+    if facts:
+        sections.append('# 本次业务校验未通过的事实\n' + json.dumps(facts, ensure_ascii=False, indent=2))
+    sections.append('# 原任务与相关材料\n' + feedback['context'])
     notes = deepcopy(feedback.get('notes'))
     if notes and contract.get('nested') and q.get('proposal_base') is not None:
         for key in ('修订方式', '局部修订格式示例', '未接受的局部修订'):

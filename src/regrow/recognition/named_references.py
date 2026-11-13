@@ -4,13 +4,14 @@ The wire reply is immutable. Only an explicit derived reply flattens nested
 observations and resolves names within the objects disclosed by this request.
 """
 from copy import deepcopy
-from collections import Counter
 import json
 import re
 import unicodedata
 from regrow.records.diagnostics import reject
+from regrow.recognition import reference_fields
 
 TOKEN = re.compile(r'(?<![A-Za-z0-9_])[rc]\d+(?![A-Za-z0-9_])')
+OBJECT_ID = re.compile(r'[rc][0-9]+')
 REFERENCE_FIELDS = {'ref','target','control','region','source_region','source_control',
                     'task','supports','parameters','constraints','access_entry','replace_with','candidate','path'}
 
@@ -35,60 +36,76 @@ def resolve(value, aliases):
     return next(iter(hits)) if len(hits) == 1 and None not in hits else value
 
 
-def text(value, names):
-    if isinstance(value, str):
-        def display(match):
-            name = names.get(match[0], match[0])
-            if name.startswith(match[0] + '/') and value[match.end():].startswith('/'):
-                return match[0]
-            return name
-        return TOKEN.sub(display, value)
-    if isinstance(value, list):
-        return [text(v, names) for v in value]
-    if isinstance(value, dict):
-        # The function directory has its own ID and parameter-reference fields.
-        return {k: deepcopy(v) if k == 'function_updates' else text(v, names) for k, v in value.items()}
-    return value
-
-
-def labels(run, request, *, id_name=True):
+def labels(run, request):
     from regrow.records.snapshots import load
     from regrow.records.object_store import owned_controls
     try:
         _, records, _ = load(run)
     except (OSError, ValueError):
         records = {}
-    material = json.dumps({k: request.get(k) for k in ('user_prompt','response_schema','control_refs',
-                          'region_names','discovery_context','backend_candidates')}, ensure_ascii=False)
-    ids = set(TOKEN.findall(material))
-    original = request.get('original_request', request)
-    if request.get('pipeline_step') == 'action' or original.get('pipeline_step') == 'action':
-        # Action refs use the same authoritative records as the tree. This is
-        # identity metadata, not another visual-candidate or writable-object list.
-        ids.update(records)
-        ids.update(cid for region in records.values() for cid in owned_controls(region))
-    names = {rid: rid + '/' + r['name'] if id_name else r['name'] for rid,r in records.items() if rid in ids}
-    owners = {}
+    ids = disclosed_ids(request)
+    ids.update(request.get('control_refs', []))
+    ids.update(request.get('region_refs', []))
     from regrow.recognition.control_references import label
+    names = {rid: label(rid, region['name']) for rid, region in records.items() if rid in ids}
+    owners = {}
     for rid,r in records.items():
         for cid,c in owned_controls(r).items():
             if cid in ids:
-                names[cid] = label(cid, c['name']) if id_name else c['name']
+                names[cid] = label(cid, c['name'])
                 owners.setdefault(cid, []).append(rid)
-                names.setdefault(rid, rid + '/' + r['name'] if id_name else r['name'])
-    counts = Counter(normalized(n) for n in names.values())
-    for ref,name in list(names.items()):
-        if counts[normalized(name)] > 1:
-            if ref in owners:
-                names[ref] = ' / '.join([records[owners[ref][0]]['name'], name])
-            else:
-                r = records[ref]
-                names[ref] = name + '（' + r.get('description', '') + '）'
-    # If even the supplied descriptions do not distinguish two objects, leave
-    # both unresolved; never silently map a shared label to the last object.
-    counts = Counter(names.values())
-    names = {ref:name for ref,name in names.items() if counts[name] == 1}
+                names.setdefault(rid, label(rid, r['name']))
     return names, _display_owners(run, request, owners)
+
+
+def disclosed_ids(request):
+    """Use explicit candidates and typed material, without reading IDs out of prose."""
+    from regrow.prompts.prompt_material import body
+    material, _ = body(request)
+    ids = set()
+
+    def add(value):
+        if isinstance(value, str):
+            prefix = value.partition('/')[0]
+            if OBJECT_ID.fullmatch(prefix):
+                ids.add(prefix)
+
+    fields = {'id', 'ref', 'control', 'region', 'source_region', 'source_control', 'region_ref',
+              'control_ref', 'task_region', 'task_control', 'working_region', 'completion_region',
+              'return_to', 'from_region', 'to_region', 'from_control', 'to_control', 'next_region'}
+    def material_ids(node):
+        if isinstance(node, list):
+            for item in node:
+                material_ids(item)
+        elif isinstance(node, dict):
+            for key, value in node.items():
+                if key in fields:
+                    add(value)
+                if isinstance(value, (dict, list)):
+                    material_ids(value)
+
+    from regrow.runtime.model_transport import expand_schema
+    for ref in reference_fields.reference_values(expand_schema(request['response_schema'])):
+        add(ref)
+    material_ids(request.get('source', {}))
+    material_ids(request.get('backend_candidates', []))
+    page = request.get('page_context', {})
+    for key in ('current_tree', 'origin', 'background_regions', 'goal'):
+        material_ids(page.get(key))
+    discovery = request.get('discovery_context', {})
+    for key in ('region_names', 'control_names'):
+        for ref in discovery.get(key, {}).values():
+            add(ref)
+    for key in ('本次身份候选', '本轮局部控件', '待核对历史控件', '比较对象', '待补齐对象',
+                '原区块', '当前任务', '本轮可判断旧任务', '已有功能', '任务关联功能', '可修订候选的完整知识'):
+        material_ids(material.get(key))
+    # These two producers emit object labels as tree nodes. Free-form
+    # descriptions in those sections cannot add objects to the mapping.
+    for key in ('控件树', '环境位置'):
+        block = material.get(key)
+        if isinstance(block, str):
+            ids.update(re.findall(r'(?m)^ *[└├]─ ([rc][0-9]+)(?=/)', block))
+    return ids
 
 
 def _display_owners(run, request, memberships):
@@ -104,17 +121,28 @@ def display_regions(request, reply):
     contract = request.get('name_contract')
     if not contract or not contract.get('nested') or not isinstance(reply, dict):
         return {}
-    value = _decode_references(reply, contract['aliases'])
+    if contract.get('typed_fields'):
+        names = {label: ref for ref, label in contract['names'].items()}
+    else:
+        names = contract['aliases']
+    value = reply
     if isinstance(value.get('proposal'), dict):
         value = value['proposal']
     from regrow.records.object_knowledge import control_only
     result = {}
-    for row in value.get('regions', []):
-        if not isinstance(row, dict) or row.get('ref') not in contract['names']:
+    rows = value.get('regions', [])
+    for row in rows if isinstance(rows, list) else ():
+        label = row.get('ref') if isinstance(row, dict) else None
+        rid = names.get(label) if isinstance(label, str) else None
+        if rid not in contract['names']:
             continue
-        for control in row.get('controls', []):
+        controls = row.get('controls', [])
+        for control in controls if isinstance(controls, list) else ():
             if isinstance(control, dict) and control_only(control):
-                result.setdefault(control['ref'], row['ref'])
+                label = control.get('ref')
+                cid = names.get(label) if isinstance(label, str) else None
+                if cid in contract['names']:
+                    result.setdefault(cid, rid)
     return result
 
 
@@ -127,6 +155,20 @@ def _drop(schema, keys):
         for child in schema.values(): _drop(child, keys)
     elif isinstance(schema, list):
         for child in schema: _drop(child, keys)
+
+
+def _output_objects(schema):
+    """Yield the current business shape, including the proposal inside a repair."""
+    if not isinstance(schema, dict):
+        return
+    fields = schema.get('properties', {})
+    if 'proposal' in fields:
+        yield from _output_objects(fields['proposal'])
+    else:
+        yield fields
+    for key in ('anyOf', 'oneOf'):
+        for branch in schema.get(key, []):
+            yield from _output_objects(branch)
 
 
 def wire_schema(schema, nested):
@@ -145,7 +187,6 @@ def wire_schema(schema, nested):
         if isinstance(node, list):
             for child in node: visit(child)
         if not isinstance(node, dict): return
-        if node.get('pattern') in ('^r[0-9]+$', '^c[0-9]+$'): node.pop('pattern')
         props = node.get('properties', {})
         if nested and 'regions' in props and 'controls' in props:
             if 'current_regions' in props:
@@ -182,24 +223,50 @@ def _key(row):
     return row.get('ref') or row.get('name', '')
 
 
-def encode_objects(value, names, owners, *, current=False):
-    """Present a canonical correction base without positional relationship work."""
+def encode_reply(value, contract):
+    """Present the correction candidate before serializing it as JSON."""
+    if not contract or not isinstance(value, dict):
+        return deepcopy(value)
     v = deepcopy(value)
-    if not isinstance(v,dict) or 'regions' not in v or 'controls' not in v:
-        return text(v,names)
-    regions=v['regions']; selected=set()
+    if isinstance(v.get('proposal'), dict):
+        v['proposal'] = _nest_objects(v['proposal'], contract)
+    else:
+        v = _nest_objects(v, contract)
+    if contract.get('typed_fields'):
+        return reference_fields.translate(v, contract, to_wire=True)
+    # Old sent contracts deliberately used IDs inside function_updates.
+    return reference_fields.translate(v, {**contract, 'legacy': True}, to_wire=True)
+
+
+def _nest_objects(value, contract):
+    if not contract.get('nested') or 'regions' not in value or 'controls' not in value:
+        return value
+    owners, current = contract['owners'], contract['current']
+    v = deepcopy(value)
+    regions = v['regions']
+    selected = set()
+    if not isinstance(regions, list) or not isinstance(v['controls'], list):
+        return v
     def reference(rows, index):
         # A rejected candidate may contain an unresolved name or bad position.
         # Keep that value visible for correction instead of indexing with it.
         return _key(rows[index]) if type(index) is int and 0 <= index < len(rows) else deepcopy(index)
-    for r in v.get('current_regions',[]):
+    for r in v.get('current_regions', []):
+        if not isinstance(r, dict):
+            continue
         if type(r.get('region_index')) is int: selected.add(r['region_index'])
         elif r.get('ref'):
-            selected.update(i for i,row in enumerate(regions) if row.get('ref')==r['ref'])
-    for i,row in enumerate(regions):
+            selected.update(i for i, row in enumerate(regions)
+                            if isinstance(row, dict) and row.get('ref') == r['ref'])
+    for i, row in enumerate(regions):
+        if not isinstance(row, dict):
+            continue
         row.pop('candidate_index',None)
         if current: row['current']=i in selected
     for c in v.pop('controls'):
+        if not isinstance(c, dict):
+            v.setdefault('controls', []).append(c)
+            continue
         c.pop('candidate_index',None);i=c.pop('region_index',None)
         if i is None:
             locations = owners.get(c.get('ref'), [])
@@ -209,145 +276,171 @@ def encode_objects(value, names, owners, *, current=False):
             # decode still strips this container for pure knowledge; it never
             # writes membership, visibility, observation or task ownership.
             rid = locations[0] if locations else None
-            matches=[j for j,r in enumerate(regions) if rid and r.get('ref')==rid]
+            matches = [j for j, row in enumerate(regions)
+                       if rid and isinstance(row, dict) and row.get('ref') == rid]
             if not matches and rid:
                 regions.append({'ref':rid});matches=[len(regions)-1]
             if not matches:
-                raise ValueError('无法确定知识修订控件的所属区块：'+str(c.get('ref')))
+                v.setdefault('controls', []).append(c)
+                continue
             # Duplicate rows can occur in a rejected reply. They still name
             # one owner; retain the rows for correction without rebinding it.
             i=matches[0]
-        regions[i].setdefault('controls',[]).append(c)
+        if type(i) is int and 0 <= i < len(regions) and isinstance(regions[i], dict):
+            controls = regions[i].setdefault('controls', [])
+            if isinstance(controls, list):
+                controls.append(c)
+                continue
+        v.setdefault('controls', []).append({**c, 'region_index': i})
     for row in v.get('jump_to',[]):
+        if not isinstance(row, dict):
+            continue
         if 'region_index' in row:
             row['region']=reference(regions,row.pop('region_index'))
         if 'control_index' in row:
             row['control']=reference(value['controls'],row.pop('control_index'))
     for row in v.get('current_regions', []):
+        if not isinstance(row, dict):
+            continue
         if 'region_index' in row:
             row['ref'] = reference(regions, row.pop('region_index'))
     if current:  # Retained only for already-sent inline-current contracts.
         v.pop('current_regions',None)
-    return text(v,names)
+    return v
 
 
 def prepare(run, request):
     """Select the wire contract before the normal field-section renderer runs."""
     q=deepcopy(request)
-    if q.get('name_contract'): return q
+    if q.get('name_contract'):
+        return q
     from regrow.runtime.model_transport import expand_schema
     schema=expand_schema(q['response_schema'])
-    props=schema.get('properties',{})
-    nested=('regions' in props and 'controls' in props and
-            ('region_index' in json.dumps(props['controls']) or q.get('original_request',{}).get('named_nested')))
-    names,owners=labels(run,q)
-    if 'region_refs' in q:
+    nested = any('regions' in props and 'controls' in props and
+                 ('region_index' in json.dumps(props['controls']) or q.get('original_request', {}).get('named_nested'))
+                 for props in _output_objects(schema))
+    saved = q.get('sent_name_contract') or q.get('original_request', {}).get('sent_name_contract')
+    if saved:
+        names, owners = deepcopy(saved['names']), deepcopy(saved['owners'])
+    else:
+        names, owners = labels(run, q)
+    if q.get('action_source') and q.get('received_new_targets'):
+        new_ids = set(q['received_new_targets'].values())
+        registered, _ = labels(run, {**q, 'control_refs': [*q.get('control_refs', []), *new_ids]})
+        names.update({ref: label for ref, label in registered.items() if ref in new_ids})
+    if 'region_refs' in q and not saved:
         from regrow.recognition.control_references import _schemas
         q['region_refs'] = [ref for ref in q['region_refs'] if ref in names]
         for item in _schemas(schema, 'regions'):
             field = item.get('properties', {}).get('ref', {})
             if 'enum' in field:
                 field['enum'] = [ref for ref in field['enum'] if ref in names]
-    aliases={name:ref for ref,name in names.items()}
-    # Task/function references are scoped compound names, also copied verbatim.
-    def collect(node):
-        if isinstance(node,dict):
-            for value in node.get('enum',[]):
-                if isinstance(value,str): aliases[text(value,names)]=value
-            for child in node.values():collect(child)
-        elif isinstance(node,list):
-            for child in node:collect(child)
-    collect(schema)
     paths={}
     if q.get('registration_paths'):
-        material=json.JSONDecoder().raw_decode(q.get('dynamic_prompt') or q['user_prompt'])[0]
-        for row in material.get('待补齐对象',[]):
-            path=row['path'];label=row.get('名称') or row.get('name') or path
-            if row.get('所属区块'):label=str(row['所属区块'])+' / '+label
-            paths[path]=label
+        original = q.get('original_request', q)
+        saved_paths = original.get('registration_path_names', {})
+        from regrow.prompts.prompt_material import body
+        material, _ = body(original)
+        used = set()
+        for row in material.get('待补齐对象', []):
+            path = row['path']
+            ref = row.get('ref')
+            label = names.get(ref) or saved_paths.get(path) or row.get('名称') or row.get('name') or path
+            if ref not in names and row.get('所属区块') and path not in saved_paths:
+                label = str(row['所属区块']) + ' / ' + label
+            if label in used:
+                label = path
+            paths[path] = label
+            used.add(label)
+        paths = {path: paths.get(path, saved_paths.get(path, path)) for path in q['registration_paths']}
         if len(set(paths.values())) != len(paths):
-            paths={p:p for p in paths}  # ambiguity stays explicit, never chooses an object
-        aliases.update({name:path for path,name in paths.items()})
-    contract={'schema':schema,'names':names,'aliases':aliases,'owners':owners,'nested':nested,
+            paths={p:p for p in paths}  # Distinct request slots may have the same display name.
+    candidates = q.get('backend_candidates', [])
+    example = next((names[row['id']] for row in candidates if row['id'] in names),
+                   '未登记控件的可见描述')
+    contract={'schema':schema,'names':names,'owners':owners,'nested':nested,
               'control_reference_style':'id_name', 'region_reference_style':'id_name',
-              'current':False,'paths':paths}
+              'current':False,'paths':paths,'typed_fields':True,'action_example':example}
+    review = q.get('done_task_review')
+    if review:
+        contract['edit_task_region'] = review['region']
+    if q.get('proposal_base') is not None:
+        contract['base'] = deepcopy(q['proposal_base'])
     q['name_contract']=contract
-    q['response_schema']=text(wire_schema(schema,nested),names)
-    if paths:
-        q['response_schema']=_replace_paths(q['response_schema'],paths)
-    feedback = q.get('_correction_context')
-    if feedback and q.get('named_nested') and nested:
-        from regrow.prompts.correction_feedback import body
-        issues = deepcopy(feedback['issues'])
-        for row in issues if isinstance(issues, list) else []:
-            if not isinstance(row, dict):
-                continue
-            location = str(row.get('所在字段', ''))
-            for key in ('字段', '所在字段', '问题', '修正要求'):
-                if isinstance(row.get(key), str):
-                    for old, new in [('region_index', '所属区块'),
-                                     ('control_index', '目标控件'), ('candidate_index', '对象引用')]:
-                        row[key] = row[key].replace(old, new)
-        shown = (deepcopy(feedback['reply']) if feedback.get('reply_is_wire')
-                 else encode_objects(feedback['reply'], names, owners, current=contract['current']))
-        q['user_prompt'] = q['dynamic_prompt'] = body(feedback['context'], issues, shown, feedback['notes'])
-        q['named_issue'] = json.dumps(issues, ensure_ascii=False, indent=2)
-    if q.get('proposal_base') is not None and nested:
-        contract['base']=deepcopy(q['proposal_base'])
-    if q.get('proposal_base') is not None and nested:
-        from regrow.prompts.correction_feedback import organize
-        base=encode_objects(q['proposal_base'],names,owners,current=contract['current'])
-        original=q.get('original_request',{})
-        part={'path':'纠错/具名对象修订','text':'# 修订对象\n按原格式只提交要修订的对象；已有对象用ref，原稿新对象用其name。控件放在所属区块的controls内。未提到的对象和字段保留；撤回时填写ref或name、remove:true和reason。撤掉对象内误填字段时用remove_fields列出字段名，单纯省略仍会保留旧稿字段。current_regions和jump_to只有明确提交时整体替换。'}
-        issue=q.get('named_issue') or re.split(r'# 本次补充材料|\n原任务与相关材料',q.get('user_prompt',''),maxsplit=1)[0]
-        issue=issue.removeprefix('本次问题\n').removeprefix('# 本次问题\n').strip()
-        if 'ref和knowledge' in issue or 'ref、knowledge' in issue:
-            affected=set(TOKEN.findall(issue))
-            for control in contract['base'].get('controls',[]):
-                ref=control.get('ref');label=names.get(ref,ref)
-                identified=ref in affected or bool(label and ('「'+label+'」' in issue or '"'+label+'"' in issue))
-                if identified and ref and 'knowledge' in control:
-                    fields=[k for k in control if k not in ('ref','knowledge','identity','name','_matched_id','region_index')]
-                    if fields:issue+='\n控件「'+names.get(control['ref'],control['ref'])+'」旧稿还保留'+ '、'.join(fields)+'；仅补知识时，请明确提交 remove_fields: '+json.dumps(fields,ensure_ascii=False)+'，不必提交内部归属编号。'
-        q['user_prompt']='本次问题\n'+issue+'\n\n原任务与相关材料\n'+original.get('user_prompt','')+'\n\n本次合并基准（省略字段保留）\n'+json.dumps(base,ensure_ascii=False,indent=2)
-        q['system_prompt']=original.get('system_prompt','')+'\n\n'+part['text']
-        from regrow.prompts.response_example import guide
-        q['system_prompt']+='\n\n'+guide(q['response_schema'])
-        q['fixed_parts']=[{'path':'原调用/具名合同','text':original.get('system_prompt','')},part,{'path':'纠错/具名格式','text':guide(q['response_schema'])}]
+    q['response_schema']=reference_fields.wire_schema(wire_schema(schema,nested),contract)
     return q
 
 
-def _replace_paths(value, paths):
-    if isinstance(value,str):
-        for old,new in sorted(paths.items(),key=lambda x:-len(x[0])):value=value.replace(old,new)
-        return value
-    if isinstance(value,list):return [_replace_paths(v,paths) for v in value]
-    if isinstance(value,dict):return {k:_replace_paths(v,paths) for k,v in value.items()}
-    return value
+def present_revision(q):
+    """Keep partial edits and the retained base in the same bound contract."""
+    contract = q.get('name_contract')
+    if not contract or q.get('proposal_base') is None or not contract['nested']:
+        return q
+    from regrow.prompts.response_example import guide
+    wrapped = 'proposal' in q['response_schema'].get('properties', {})
+    original = q.get('original_request', {})
+    field = '在 proposal 内' if wrapped else ''
+    part = {'path': '纠错/具名对象修订', 'text': '# 修订对象\n' + field
+            + '按本轮格式提交要修订的对象。已有对象用 ref，原稿中的新对象用其登记名称。'
+            + '控件放在所属区块的 controls 内。未提到的对象及字段保留。撤回对象时提供其引用、remove 和 reason。'
+            + '撤掉误填字段时用 remove_fields 指明。current_regions 和 jump_to 在提交时整体替换。'}
+    fmt = {'path': '纠错/具名格式', 'text': guide(q['response_schema'])}
+    q['fixed_parts'] = [*q.get('fixed_parts', []), part, fmt]
+    q['system_prompt'] = '\n\n'.join(p['text'] for p in q['fixed_parts'])
+    if not q.get('_correction_context'):
+        base = encode_reply(q['proposal_base'], contract)
+        q['user_prompt'] = original.get('user_prompt', '') + '\n\n本次合并基准\n' + json.dumps(base, ensure_ascii=False)
+    return q
 
 
 def render(request):
-    """Only model-facing prose changes; source/binding/history metadata stay IDs."""
-    q=deepcopy(request);contract=q.get('name_contract')
-    if not contract:return q
-    names=contract['names']
-    def prose(value):
-        value=_replace_paths(text(value,names),contract['paths'])
-        for old,new in [('控件ID','控件引用'),('区块ID','区块名称'),('控件 ID','控件引用'),('区块 ID','区块名称'),('稳定编号','引用名称'),('ref编号','ref名称')]:value=value.replace(old,new)
-        return value
-    literal = contract.get('region_reference_style') == 'id_name'
-    for field in ('system_prompt','user_prompt','dynamic_prompt'):
-        if field in q:
-            if literal and field == 'system_prompt':
-                continue
-            if field == 'user_prompt':
-                from regrow.prompts.history_disclosure import replace_presentation
-                replace_presentation(q, prose(q[field]))
-            else:
-                q[field]=prose(q[field])
-    if not literal:
-        for part in q.get('fixed_parts',[]):part['text']=prose(part['text'])
+    """Display disclosed references beside prose without rewriting rendered JSON."""
+    q = deepcopy(request)
+    contract = q.get('name_contract')
+    if not contract:
+        return q
+    from regrow.prompts.history_disclosure import replace_presentation
+    if q.get('role') == 'object_registration' and not q.get('_correction_context'):
+        from regrow.prompts.prompt_material import body
+        material, suffix = body(q)
+        paths = contract['paths']
+        for row in material.get('待补齐对象', []):
+            row['path'] = paths.get(row['path'], row['path'])
+            if row.get('ref') in contract['names']:
+                row['ref'] = contract['names'][row['ref']]
+        replace_presentation(q, json.dumps(material, ensure_ascii=False, indent=2) + suffix)
+        return q
+    feedback = q.get('_correction_context')
+    shown = feedback['context'] if feedback else q.get('user_prompt', '')
+    labels = [label for label in contract['names'].values() if label not in shown]
+    if labels:
+        material = shown + '\n\n## 本轮已有对象引用\n' + '、'.join(labels)
+        if feedback:
+            feedback['context'] = material
+        else:
+            replace_presentation(q, material)
     return q
+
+
+def continuation_schema(request):
+    """Select the next Action contract from the call that supplied that Action."""
+    from regrow.runtime.model_transport import expand_schema
+
+    def find(schema):
+        spec = schema.get('properties', {}).get('next_action')
+        if spec is not None:
+            return spec
+        for key in ('anyOf', 'oneOf'):
+            for branch in schema.get(key, []):
+                spec = find(branch)
+                if spec is not None:
+                    return spec
+        return None
+
+    schema = expand_schema(request['response_schema'])
+    if 'proposal' in schema.get('properties', {}):
+        schema = schema['properties']['proposal']
+    return find(schema)
 
 
 def internal_request(request, reply=None):
@@ -355,11 +448,18 @@ def internal_request(request, reply=None):
     if c:
         q['response_schema']=c['schema']
         q['named_nested']=c['nested']
-        if c.get('control_reference_style') == 'id_name':
+        q['sent_name_contract'] = {key: deepcopy(c[key])
+                                   for key in ('names', 'owners', 'paths', 'typed_fields', 'aliases') if key in c}
+        if c.get('paths'):
+            q['registration_path_names'] = c['paths']
+        continuation = continuation_schema(request)
+        if continuation is not None:
+            q['next_action_wire_schema'] = continuation
+        if not c.get('typed_fields') and c.get('control_reference_style') == 'id_name':
             q['control_reference_style'] = 'id_name'
             q['control_reference_names'] = {ref: name for ref, name in c['names'].items()
                                             if re.fullmatch(r'c\d+', ref)}
-        if c.get('region_reference_style') == 'id_name':
+        if not c.get('typed_fields') and c.get('region_reference_style') == 'id_name':
             q['region_reference_style'] = 'id_name'
             q['region_reference_names'] = {ref: name for ref, name in c['names'].items()
                                            if re.fullmatch(r'r\d+', ref)}
@@ -424,35 +524,61 @@ def decode(request, reply):
     # Its malformed subtree cannot prevent the main observation from decoding.
     from regrow.runtime.update_reply import main_pair
     _, main = main_pair(request['response_schema'], reply)
-    new_names = {control.get('name') for region in main.get('regions', [])
-                 for control in region.get('controls', [])
-                 if isinstance(control, dict) and control.get('name') and not control.get('ref')}
-    control_labels = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'c\d+', ref)}
-                      if contract.get('control_reference_style') == 'id_name' else None)
-    region_labels = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'r\d+', ref)}
-                     if contract.get('region_reference_style') == 'id_name' else None)
-    value=_decode_references(deepcopy(main),contract['aliases'],control_labels=control_labels,region_labels=region_labels,new_controls=new_names)
-    from regrow.records.object_supplements import combine
-    value, omitted_controls = combine(value, contract['names'])
+    typed = contract.get('typed_fields')
+    if typed:
+        value = reference_fields.translate(main, contract)
+    else:
+        new_names = {c['name'] for r in main.get('regions', []) if isinstance(r, dict)
+                     and isinstance(r.get('controls', []), list) for c in r.get('controls', [])
+                     if isinstance(c, dict) and isinstance(c.get('name'), str) and not c.get('ref')}
+        controls = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'c\d+', ref)}
+                    if contract.get('control_reference_style') == 'id_name' else None)
+        regions = ({ref: name for ref, name in contract['names'].items() if re.fullmatch(r'r\d+', ref)}
+                   if contract.get('region_reference_style') == 'id_name' else None)
+        value = _decode_references(main, contract['aliases'], control_labels=controls,
+                                   region_labels=regions, new_controls=new_names)
+    if typed and isinstance(value.get('proposal'), dict):
+        proposal = dict(value['proposal'])
+        if isinstance(reply.get('proposal'), dict) and 'next_action' in reply['proposal']:
+            proposal['next_action'] = deepcopy(reply['proposal']['next_action'])
+        return {**value, 'proposal': _decode_objects(request, proposal, reply['proposal'])}
     if main is not reply and 'next_action' in reply:
         value['next_action'] = deepcopy(reply['next_action'])
-    if (isinstance(reply.get('proposal'), dict) and isinstance(main.get('proposal'), dict)
-            and 'next_action' in reply['proposal'] and 'next_action' not in main['proposal']):
-        value['proposal']['next_action'] = deepcopy(reply['proposal']['next_action'])
-    original = request.get('original_request', request)
-    edit = value.get('record_edit')
-    if original.get('done_task_review') and isinstance(edit, dict) and edit.get('field') == 'reopen_task':
-        edit['before'] = resolve(edit.get('before'), contract['aliases'])
-        task_name = original['done_task_review']['task']
-        if reply['record_edit'].get('task') == text(task_name, contract['names']):
-            edit['task'] = task_name
+    if not typed:
+        if (isinstance(reply.get('proposal'), dict) and isinstance(main.get('proposal'), dict)
+                and 'next_action' in reply['proposal'] and 'next_action' not in main['proposal']):
+            value['proposal']['next_action'] = deepcopy(reply['proposal']['next_action'])
+        original = request.get('original_request', request)
+        edit = value.get('record_edit')
+        if original.get('done_task_review') and isinstance(edit, dict) and edit.get('field') == 'reopen_task':
+            edit['before'] = resolve(edit.get('before'), contract['aliases'])
+            task_name = original['done_task_review']['task']
+            if contract['aliases'].get(reply['record_edit'].get('task'), reply['record_edit'].get('task')) == task_name:
+                edit['task'] = task_name
+    return _decode_objects(request, value, reply)
+
+
+def _decode_objects(request, value, reply):
+    contract = request['name_contract']
+    from regrow.records.object_knowledge import control_only
+    from regrow.records.object_supplements import combine
+    value, omitted_controls = combine(value, contract['names'])
     if not contract['nested']:return value
-    new_names = {control.get('name') for region in reply.get('regions', [])
-                 for control in region.get('controls', [])
-                 if isinstance(control, dict) and control.get('name') and not control.get('ref')}
-    for raw, operation in zip(reply.get('new_tasks', []), value.get('new_tasks', [])):
-        if isinstance(raw, dict) and isinstance(operation, dict) and raw.get('control') in new_names:
-            operation['control'] = raw['control']
+    regions_value = value.get('regions', [])
+    if not isinstance(regions_value, list) or any(
+            not isinstance(row, dict) or not isinstance(row.get('controls', []), list)
+            or any(not isinstance(control, dict) for control in row.get('controls', []))
+            for row in regions_value):
+        reject('object_format', '本次区块及控件', regions_value, '区块和控件条目均须为对象列表',
+               path='/regions', field='区块及控件')
+    if not contract.get('typed_fields'):
+        new_names = {c['name'] for r in reply.get('regions', []) if isinstance(r, dict)
+                     and isinstance(r.get('controls', []), list) for c in r.get('controls', [])
+                     if isinstance(c, dict) and isinstance(c.get('name'), str) and not c.get('ref')}
+        for raw, operation in zip(reply.get('new_tasks', []), value.get('new_tasks', [])):
+            label = raw.get('control') if isinstance(raw, dict) else None
+            if isinstance(label, str) and label in new_names and isinstance(operation, dict):
+                operation['control'] = label
     rows=value.get('regions',[]);base=contract.get('base')
     regions=[];controls=[];indexes=[]
     from regrow.recognition.update_visibility import selected_indices
@@ -533,7 +659,7 @@ def decode(request, reply):
     for member in value.get('current_regions', []):
         ref = member.get('ref')
         if ref and ref not in contract['names']:
-            index = resolve(ref, references)
+            index = references.get(ref) if contract.get('typed_fields') else resolve(ref, references)
             if type(index) is not int:
                 reject('current_region_reference', str(ref),
                        {'当前前景引用': ref, '本次登记区块': [_key(r) for r in rows]},
@@ -549,10 +675,12 @@ def decode(request, reply):
             merged.update({k:v for k,v in c.items() if k not in ('candidate_index','remove_fields')})
             planned[ci]=merged
         else:planned.append(c)
-    direct_routes = 'region' in contract.get('schema', {}).get('properties', {}).get(
-        'jump_to', {}).get('items', {}).get('properties', {})
+    direct_routes = any('region' in props.get('jump_to', {}).get('items', {}).get('properties', {})
+                        for props in _output_objects(contract['schema']))
     for route_number, route in enumerate(value.get('jump_to',[]) if not direct_routes else []):
-        if 'region' in route:route['region_index']=resolve(route.pop('region'),references)
+        if 'region' in route:
+            name = route.pop('region')
+            route['region_index'] = references.get(name, name) if contract.get('typed_fields') else resolve(name, references)
         if 'control' in route:
             name=route.pop('control')
             raw_name=reply.get('jump_to',[])[route_number].get('control',name)

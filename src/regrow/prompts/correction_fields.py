@@ -184,6 +184,24 @@ def _wire_report(report, reply):
     return result
 
 
+def _reference_format(request, paths):
+    """Show the same allowed reference values as the actual retry Schema."""
+    from regrow.prompts.object_blocks import enabled_fields
+    from regrow.runtime.model_transport import expand_schema
+    keys = {'region', 'control', 'ref', 'supports', 'access_entry', 'path', 'task', 'task_update', 'next_region'}
+    rows = []
+    for tokens, spec in enabled_fields(expand_schema(request['response_schema'])):
+        if not tokens or not isinstance(spec, dict) or tokens[-1] not in keys or not _related('.'.join(tokens), paths):
+            continue
+        enum = spec.get('propertyNames', {}).get('enum') if tokens[-1] == 'task_update' else spec.get('enum')
+        choices = [spec['const']] if 'const' in spec else enum
+        if choices:
+            line = '- `' + '.'.join(tokens) + '`：' + json.dumps(choices, ensure_ascii=False)
+            if line not in rows:
+                rows.append(line)
+    return '\n'.join(rows)
+
+
 def _paragraphs(text, leaves):
     """A grouped definition can retain its field paragraphs without rewriting them."""
     if not leaves:
@@ -212,7 +230,7 @@ def prepare(root, request):
         path = part['path']
         if saved and path in ('原调用/具名合同', '原步骤保存规则', '原调用/原步骤保存规则'):
             continue
-        if path == '纠错/具名格式':
+        if path == '输出格式/本次纠错引用':
             continue
         if '/片段-' in path:
             key = path.split('/片段-', 1)[1]
@@ -230,19 +248,24 @@ def prepare(root, request):
             parts.append(deepcopy(part))
     q['fixed_parts'] = parts
     q['system_prompt'] = '\n\n'.join(part['text'] for part in parts)
+    format_help = _reference_format(q, paths)
+    if format_help:
+        part = {'path': '输出格式/本次纠错引用', 'text': '# 本次格式允许的引用\n' + format_help}
+        q['fixed_parts'].append(part)
+        q['system_prompt'] += '\n\n' + part['text']
     latest = feedback.get('latest_reply')
     base_errors = [item for item in report['errors'] if item.get('reply_source') == 'proposal_base']
     latest_report = {**report, 'errors': [item for item in report['errors'] if item not in base_errors]}
     shown = marked_copy(latest, _wire_report(latest_report, latest)) if latest is not None else marked_copy(feedback['reply'], report)
     contract = q.get('name_contract', {})
     base = None
-    if contract.get('nested') and not feedback.get('reply_is_wire'):
-        from regrow.recognition.named_references import encode_objects
+    if contract and not feedback.get('reply_is_wire'):
+        from regrow.recognition.named_references import encode_reply
         if latest is None:
-            shown = encode_objects(shown, contract['names'], contract['owners'], current=contract['current'])
+            shown = encode_reply(shown, contract)
         else:
             retained = marked_copy(feedback['reply'], {**report, 'errors': base_errors})
-            base = encode_objects(retained, contract['names'], contract['owners'], current=contract['current'])
+            base = encode_reply(retained, contract)
     elif latest is not None:
         base = marked_copy(feedback['reply'], {**report, 'errors': base_errors})
     sections, facts = [], []
@@ -265,6 +288,10 @@ def prepare(root, request):
         sections.append('# 本次补充材料\n' + json.dumps(notes, ensure_ascii=False, indent=2))
     if base is not None:
         sections.append('# 保留的原稿（本次修订尚未合入）\n```jsonc\n' + annotated(base) + '\n```')
+    if feedback.get('original_reply') is not None:
+        original_reply = feedback['original_reply']
+        texts = original_reply if isinstance(original_reply, list) else [json.dumps(original_reply, ensure_ascii=False, indent=2)]
+        sections.append('# 原始回复\n' + '\n\n'.join(texts))
     sections.append('# 待修正回复（错误处已标注）\n```jsonc\n' + annotated(shown, latest_report if latest is not None else report) + '\n```')
     q['user_prompt'] = q['dynamic_prompt'] = '\n\n'.join(sections)
     q['correction_field_paths'] = sorted(paths)

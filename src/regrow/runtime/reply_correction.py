@@ -47,15 +47,20 @@ def abandon(run, reason):
         pointer.unlink()
 
 
-def request(root, original, rejected, report, first_call):
+def request(root, original, rejected, report, first_call, *, original_texts=(), interpreted=None):
     from regrow.prompts.compose import load
     from regrow.prompts.correction_feedback import describe, organize
     from regrow.prompts.field_placeholders import fill_missing, without_full_format
     part = load(root, ['纠错/原格式重答.prompt'])[0]
     q = without_full_format(original)
-    q = organize(root, q, part, describe(report, rejected, q),
-                 fill_missing(root, rejected, report, original['response_schema']), report=report)
+    draft = interpreted if interpreted is not None else rejected
+    q = organize(root, q, part, describe(report, draft, q),
+                 fill_missing(root, draft, report, original['response_schema']), report=report)
     q['_correction_context']['reply_is_wire'] = True
+    if interpreted is not None:
+        q['_correction_context']['reply_is_wire'] = False
+    if original_texts and not isinstance(rejected, list):
+        q['_correction_context']['original_reply'] = list(original_texts)
     q['format_original_call'] = first_call
     for key in ('_structured_user_prompt', '_presentation_digest'):
         q.pop(key, None)
@@ -75,7 +80,16 @@ def call(transport, incoming):
             error.detail.update(failure)
             raise error
         from regrow.recognition.named_references import internal_request
-        same_internal = incoming == internal_request(state['original'])
+        saved = state['original']
+        interpreted = internal_request(saved)
+        # Check the exact internal projection that existed before the saved
+        # contract metadata was added. Never compare only role or task identity.
+        legacy = dict(interpreted)
+        for key in ('sent_name_contract', 'next_action_wire_schema', 'registration_path_names'):
+            if key not in saved:
+                legacy.pop(key, None)
+        same_internal = incoming == interpreted or (not saved.get('name_contract', {}).get('typed_fields')
+                                                     and incoming == legacy)
         if not same_internal and all(incoming != state[key] for key in ('input', 'original', 'next')):
             raise Pending(state, different_request=True)
     else:
@@ -100,6 +114,7 @@ def call(transport, incoming):
             state['charged'] = True
             write_json(pointer, state)
         q = state['next']
+        internal_candidate = None
         try:
             ref, reply = transport._call_once(q)
         except subprocess.CalledProcessError:
@@ -115,7 +130,7 @@ def call(transport, incoming):
         else:
             from regrow.recognition.named_references import normalize_reply
             from regrow.runtime.model_transport import expand_schema
-            if q.get('name_contract'):
+            if q.get('name_contract') and not q['name_contract'].get('typed_fields'):
                 reply = normalize_reply(expand_schema(q['response_schema']), reply)
             recovery = transport.run / 'calls' / ref / 'structure_recovery.json'
             errors = (read(recovery).get('errors', []) if recovery.exists() else [])
@@ -124,6 +139,13 @@ def call(transport, incoming):
                 from regrow.recognition.named_references import decode, internal_request
                 try:
                     derived = decode(q, reply)
+                    interpreted = internal_request(state['original'], reply)
+                    if q.get('name_contract', {}).get('typed_fields'):
+                        internal_errors = reply_errors(interpreted, derived, defer_objects=True)
+                        if internal_errors:
+                            internal_candidate = derived
+                            from regrow.records.diagnostics import Rejected
+                            raise Rejected({'errors': internal_errors, 'unchecked': []})
                 except ValueError as error:
                     details = getattr(error, 'report', None)
                     errors.extend(details['errors'] if isinstance(details, dict) and details.get('errors')
@@ -131,7 +153,7 @@ def call(transport, incoming):
                 else:
                     pointer.unlink(missing_ok=True)
                     if q.get('name_contract'):
-                        write_json(transport.run / 'calls' / ref / 'interpreted_request.json', internal_request(state['original'], reply))
+                        write_json(transport.run / 'calls' / ref / 'interpreted_request.json', interpreted)
                         write_json(transport.run / 'calls' / ref / 'interpreted_response.json', derived)
                     return ref, derived
             report = {'errors': errors, 'unchecked': ['格式尚未通过，业务语义检查尚未执行。']}
@@ -141,7 +163,11 @@ def call(transport, incoming):
         raw = transport.run / 'calls' / ref / 'unfiltered_response.json'
         rejected = read(raw) if raw.exists() else reply
         try:
-            state['next'] = request(transport.root, state['original'], rejected, report, state['first_call'])
+            from regrow.runtime.model_reply_parse import reply_texts
+            path = transport.run / 'calls' / ref / 'raw_response.json'
+            texts = reply_texts(read(path)) if path.is_file() else []
+            state['next'] = request(transport.root, state['original'], rejected, report, state['first_call'],
+                                    original_texts=texts, interpreted=internal_candidate)
         except DiagnosticUnavailable as error:
             error.detail['call'] = ref
             state['diagnostic_failure'] = error.detail

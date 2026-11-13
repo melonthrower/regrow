@@ -86,15 +86,15 @@ def request(root, run, job, frame, failure, failed_call):
             if action.get('control') == source['control'] and action.get('delivery') == 'executed_receipt_zero' and (action.get('result', {}).get('exception') == 'none'):
                 excluded.update(action.get('interactive_regions', []))
     candidates = {}
+    from regrow.recognition.control_references import label as object_label
     for (rid, r) in records.items():
         if rid in excluded or not _task_deferral.runnable(r, records):
             continue
         pending = [n for (n, t) in _task_deferral.pending_tasks(r, records)]
         if not pending and _record_coverage(r, records)['inventory_complete']:
             continue
-        candidates.setdefault(r['name'], []).append((rid, pending))
-    candidates = {n: v[0] for (n, v) in candidates.items() if len(v) == 1}
-    dynamic = {'当前问题': {'失败步骤': job['stage'], '触发证据': readable_trigger(cause, records), '已执行动作': job.get('attempt'), '说明': '本步选择如何继续；原任务和未确认结果保留，不推断被拒原因或补写原结果。'}, '暂挂区块': [records[rid]['name'] for rid in sorted(excluded) if rid in records], '工作任务': source.get('task_name'), '可继续的独立区块': [{'名称': n, '描述': records[rid].get('description', ''), '待办': todo} for (n, (rid, todo)) in candidates.items()], '当前截图': '本次提供的观察画面；用于判断本轮允许的继续或切换策略，不用于补写缺失的原动作结果。'}
+        candidates[object_label(rid, r['name'])] = (rid, pending)
+    dynamic = {'当前问题': {'失败步骤': job['stage'], '触发证据': readable_trigger(cause, records), '已执行动作': job.get('attempt'), '说明': '本步选择如何继续；原任务和未确认结果保留，不推断被拒原因或补写原结果。'}, '暂挂区块': [records[rid]['name'] for rid in sorted(excluded) if rid in records], '工作任务': source.get('task_name'), '可继续的独立区块': [{'引用': n, '描述': records[rid].get('description', ''), '待办': todo} for (n, (rid, todo)) in candidates.items()], '当前截图': '本次提供的观察画面；用于判断本轮允许的继续或切换策略，不用于补写缺失的原动作结果。'}
     task = owned_tasks(records.get(work, {})).get(source.get('task_name'))
     if task:
         dynamic['原任务累计证据'] = _history_context.task_goal(task, records, run)
@@ -105,7 +105,7 @@ def request(root, run, job, frame, failure, failed_call):
     allow_resume = cause.get('kind') == 'exploration_loop' and (not job.get('attempt')) and (not (Path(run) / 'execution_pending.json').exists()) and (state.get('resolved_loop', {}).get('key') != loop_key)
     dynamic['继续原分支'] = '可以选择resume：指出一个具体可行的新办法，框架解除此次循环挂起并回到发现步，再由动作步执行。' if allow_resume else '不能再次以同一证据恢复原分支；选择独立区块或说明实际阻塞。'
     text = json.dumps(dynamic, ensure_ascii=False, indent=2)
-    schema = {'type': 'object', 'properties': {'decision': {'type': 'string', 'enum': ['switch', 'stop'] + (['resume'] if allow_resume else [])}, 'next_region': {'type': ['string', 'null']}, 'reason': {'type': 'string'}}, 'required': ['decision', 'next_region', 'reason'], 'additionalProperties': False}
+    schema = {'type': 'object', 'properties': {'decision': {'type': 'string', 'enum': ['switch', 'stop'] + (['resume'] if allow_resume else [])}, 'next_region': {'type': ['string', 'null'], 'enum': [None, *(rid for rid, _ in candidates.values())]}, 'reason': {'type': 'string'}}, 'required': ['decision', 'next_region', 'reason'], 'additionalProperties': False}
     request = {'role': 'branch_correction', 'stage': 'branch_correction', 'system_prompt': prompt.read_text(), 'user_prompt': text, 'dynamic_prompt': text, 'screenshots': [str(Path(frame).resolve())], 'image_refs': [str(Path(frame).resolve())], 'fixed_parts': [{'path': '纠错/暂挂分支并切换.prompt', 'text': prompt.read_text()}], 'response_schema': schema, 'switch_context': {'loop_key': loop_key, 'trigger': cause, 'snapshot': str(snapshot), 'affected': affected, 'excluded': sorted((r for r in excluded if r in records)), 'work': work, 'task': source.get('task_name'), 'candidates': {n: rid for (n, (rid, _)) in candidates.items()}, 'failed_call': failed_call}}
     from regrow.prompts.frame_context import label
     return label(request, request['screenshots'][0], '本次继续或切换策略的观察图；不用于补写原动作结果')

@@ -127,7 +127,8 @@ def render(request):
         cid = item['id']
         group = groups.setdefault(rid, {'name': item.get('region_name', rid), 'lines': []})
         lines = group['lines']
-        lines.append('  - ' + row['name'] + '；target=' + json.dumps(row['target'], ensure_ascii=False))
+        from regrow.recognition.control_references import label
+        lines.append('  - target=' + json.dumps(label(cid, row['name']), ensure_ascii=False))
         if item.get('candidate_scope') == 'last_action_surface':
             group['candidate_reason'] = item['candidate_reason']
         facts = known.get((rid, cid)) or {k: item[k] for k in ('knowledge', 'parameters') if item.get(k)}
@@ -142,7 +143,7 @@ def render(request):
                 lines.append('    ' + field + '：' + readable(observed[field], 1))
     text = []
     for (rid, group) in groups.items():
-        text.append('- ' + rid + ' ' + group['name'])
+        text.append('- ' + rid + '/' + group['name'])
         if group.get('candidate_reason'):
             text.append('  身份来源：' + group['candidate_reason'])
         if group.get('knowledge'):
@@ -173,7 +174,8 @@ def action_references(request):
             refs.update(spec.get('enum', []))
     names = dict(request.get('page_context', {}).get('names', {}))
     names.update({c['id']: c['name'] for c in request.get('backend_candidates', [])})
-    rows = [names.get(ref, ref) + ' — ref=' + ref for ref in sorted(refs)]
+    from regrow.recognition.control_references import label
+    rows = [label(ref, names[ref]) for ref in sorted(refs) if ref in names]
     owner = request.get('source', {}).get('task_region')
     values = {'可补充知识（仅none/complete）':
               {'原任务所属区块': names.get(owner, owner), '本轮可更新控件引用': rows}} if rows else {}

@@ -24,6 +24,8 @@ def original_reply(root, job):
     from regrow.prompts.field_placeholders import fill_missing
     original = deepcopy(job['request'])
     rejected = deepcopy(job.get('rejected_reply', job.get('candidate')))
+    if job.get('rejected_reply_is_wire'):
+        rejected = deepcopy(job['rejected_model_reply'])
     if job['stage'] == 'update':
         from regrow.traversal.object_registration import semantic_revision
         original, rejected = semantic_revision(original, rejected)
@@ -50,6 +52,8 @@ def original_reply(root, job):
     part = load(root, ['纠错/原格式重答.prompt'])[0]
     result = organize(root, correction, part, describe(job.get('error'), rejected, original),
                       rejected, feedback, report=job['error'])
+    if job.get('rejected_reply_is_wire'):
+        result['_correction_context']['reply_is_wire'] = True
     if base is not None and job.get('rejected_reply') is not None:
         result['_correction_context']['latest_reply'] = deepcopy(
             job.get('rejected_model_reply', feedback.get('未接受的局部修订')))

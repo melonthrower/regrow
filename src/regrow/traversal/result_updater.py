@@ -195,7 +195,7 @@ def build_attempt_update(root, transport, folder, *, snapshot=None):
     if recalled['actions'] or recalled.get('incoming') or not recalled['confirmed']:
         dynamic['本次入口历史落点'] = source_candidates.describe(recalled, labels)
     dynamic.update(function_material)
-    dynamic['身份引用'] = 'ref使用已提供的区块或控件编号；name只表示名称。'
+    dynamic['身份引用'] = '已有区块或控件的 ref 使用本轮给定的完整 ID/名称；新对象填写登记名称。'
     source = {'region': binding['region_ref'], 'working_region': binding['working_region'], 'observation': binding['observation_ref'], 'attempt': folder.name, 'control_ref': binding.get('control_ref'),
               'operation': proposal['action'] if recalled['confirmed'] else None}
     if binding.get('task_name'):

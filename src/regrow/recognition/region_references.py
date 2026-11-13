@@ -11,9 +11,11 @@ def prepare(request):
     from regrow.runtime.model_transport import expand_schema
     q['response_schema'] = expand_schema(q['response_schema'])
     ids = list(q.get('region_refs', []))
-    material = q.get('user_prompt', '')
-    material += str(q.get('region_names', {})) + str(q.get('discovery_context', {}).get('region_names', {}))
-    for rid in sorted(set(re.findall(r'(?<![A-Za-z0-9_])r\d+(?![A-Za-z0-9_])', material))):
+    from regrow.recognition.named_references import disclosed_ids
+    disclosed = {ref for ref in disclosed_ids(q) if ref.startswith('r')}
+    disclosed.update(ref for ref in q.get('region_names', {}).values()
+                     if isinstance(ref, str) and re.fullmatch(r'r[0-9]+', ref))
+    for rid in sorted(disclosed):
         if rid not in ids:
             ids.append(rid)
     q['region_refs'] = ids

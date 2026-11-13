@@ -107,9 +107,9 @@ def prepare_request(root, run, request, platform='android'):
         # The original is the actual sent contract, including bound aliases.
         from regrow.prompts.frame_context import validate
         validate(request)
-        from regrow.recognition.named_references import prepare, render
+        from regrow.recognition.named_references import prepare, present_revision, render
         from regrow.prompts.correction_fields import prepare as marked_fields
-        return render(marked_fields(root, prepare(run, request)))
+        return marked_fields(root, render(present_revision(prepare(run, request))))
     if platform == 'desktop':
         from regrow.runtime.desktop_transport import prepare_request as desktop_context
         request = desktop_context(root, request)
@@ -145,8 +145,9 @@ def prepare_request(root, run, request, platform='android'):
     if action_references:
         from regrow.prompts.target_observation import action_references as render_action_references
         request = render_action_references(request)
-    from regrow.recognition.named_references import prepare as prepare_names, render as render_names
+    from regrow.recognition.named_references import prepare as prepare_names, present_revision, render as render_names
     request = prepare_names(run, request)
+    request = present_revision(request)
     request['response_schema'] = compact_schema(request['response_schema'])
     from regrow.prompts.output import prepare
     request = prepare(request, root)
@@ -156,7 +157,7 @@ def prepare_request(root, run, request, platform='android'):
     from regrow.prompts.history_disclosure import project
     request = project(request)
     from regrow.prompts.correction_fields import prepare as marked_fields
-    return render_names(marked_fields(root, request))
+    return marked_fields(root, render_names(request))
 
 class ModelTransport:
     """Run adapters supply root, run, account, ledger and save()."""

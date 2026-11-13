@@ -3,7 +3,7 @@
 <!-- BEGIN_PROMPT_BLOCK id="action.proposal" requires="control.definition,control.references" -->
 # 提出一步操作
 根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。
-- target：本步直接操作的对象；滚动填写实际区块名称，控件操作填写控件名称，未登记控件用可辨认的短描述。
+- target：本步直接操作的对象。已有区块或控件使用本轮给定的完整 ID/名称，未登记控件用可辨认的短描述。
 - x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。
 - text、end_x、end_y：按下方当前平台动作表填写。
 
@@ -54,7 +54,7 @@ reason 说明原问题尚缺什么信息，以及本步为何没有可推进的�
 <!-- END_PROMPT_BLOCK id="action.execution" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.operation_fields" requires="" -->
-target 填本步实际操作对象的已给名称；确实没有对应身份时，用可辨认的短描述。x、y 使用当前原图整数点位；text、end_x、end_y 按当前平台表填写。
+target 填本步实际操作对象的完整引用；确实没有对应身份时，用可辨认的短描述。x、y 使用当前原图整数点位；text、end_x、end_y 按当前平台表填写。
 正例：点击关闭提示的按钮，reason 写“解除遮挡以继续观察原表单”。
 <!-- END_PROMPT_BLOCK id="action.operation_fields" -->
 
@@ -144,16 +144,16 @@ revise 按本次修订说明提交改动；未提到的字段保留。regions/co
 <!-- END_PROMPT_BLOCK id="action.record_edit" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.record_edit_basic" requires="" -->
-region、control 复制本轮给定的区块 ID、控件 ID；区块级修订的 control 填空字符串。field 指定修订类型，evidence 说明实际依据。
+region、control 复制本轮给定的区块、控件完整引用；区块级修订的 control 填空字符串。field 指定修订类型，evidence 说明实际依据。
 - name、description、list_group：before 是该字段原值，after 是完整新值；清除错误分组时 after=""。
-- merge_into：仅合并同一物理对象的重复记录。控件合并的 control、before 为来源控件 ID，after 为保留控件 ID；区块合并的 region、before 为来源区块 ID，control=""，after 为保留区块 ID。
-- remove：删除没有动作、任务或访问关系引用的误登记控件；control、before 为该控件 ID，after=""。
-- region：同一控件归属有误时，region、before 为原区块 ID，control 为控件 ID，after 为已给出的正确区块 ID。当前待结算动作的来源控件及任务保持原归属。
+- merge_into：仅合并同一物理对象的重复记录。控件合并的 control、before 为来源控件引用，after 为保留控件引用；区块合并的 region、before 为来源区块引用，control=""，after 为保留区块引用。
+- remove：删除没有动作、任务或访问关系引用的误登记控件；control、before 为该控件引用，after=""。
+- region：同一控件归属有误时，region、before 为原区块引用，control 为控件引用，after 为已给出的正确区块引用。当前待结算动作的来源控件及任务保持原归属。
 正例：同一个返回箭头重复登记为 c0001、c0002，可将重复记录合到保留 ID；分别存在的两个同类条目保持各自身份。
 <!-- END_PROMPT_BLOCK id="action.record_edit_basic" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.record_edit_task" requires="" -->
-任务修订使用 region、task、field、before、after、evidence；region 是给定区块引用，task 是原任务名，before 是原控件引用。
+任务修订使用 region、task、field、before、after、evidence。region 是给定区块的完整引用。task 是原任务的完整引用，例如 `r0003/查明搜索方式。`。before 是原控件引用。
 task_control：尚未执行、没有历史或依赖的 pending 任务可改绑，after 为给定的正确控件引用。suspend_task：保留归属和历史暂挂，after=""。
 reopen_task：仅复核本次明确提供的原任务、旧完成判断和实际证据。evidence 指出旧判断为何未回答原完成条件，after 写原题仍未回答的部分；保留原题及实际尝试，已有真实阻塞继续保留。共享任务须回到其规范来源复核，不把新的独立问题写入旧题。
 

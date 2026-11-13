@@ -37,10 +37,10 @@ def submission(run, ref):
             spec, main = main_pair(q['response_schema'], reply)
             jsonschema.validate(main, spec)
         if q.get('correction_format') == 'original':
-            from regrow.traversal.proposal_revision import merge
+            from regrow.traversal.proposal_revision import continuation_source, merge
             if (folder / 'effective_request.json').exists() and (folder / 'effective_candidate.json').exists():
                 return read(folder / 'effective_request.json'), read(folder / 'effective_candidate.json')
-            return deepcopy(q['original_request']), merge(q, reply)
+            return continuation_source(q['original_request'], q, reply), merge(q, reply)
         normalized = folder / 'effective_candidate.json'
         if reply['resolution'] == 'edit_record' and normalized.exists():
             return (read(folder / 'effective_request.json'), read(normalized))
@@ -49,8 +49,9 @@ def submission(run, ref):
         effective = folder / 'effective_request.json'
         if effective.exists() and normalized.exists():
             return read(effective), read(normalized)
-        from regrow.traversal.proposal_revision import merge
-        return (read(effective) if effective.exists() else deepcopy(q['original_request']), merge(q, reply['proposal']))
+        from regrow.traversal.proposal_revision import continuation_source, merge
+        original = read(effective) if effective.exists() else q['original_request']
+        return continuation_source(original, q, reply['proposal']), merge(q, reply['proposal'])
     return (q, reply)
 
 

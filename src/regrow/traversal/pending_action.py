@@ -95,6 +95,29 @@ def _new_target_refs(run, source, request, reply):
     return {name: next(iter(refs)) for name, refs in matches.items() if len(refs) == 1}
 
 
+def _archived_aliases(run, request, source):
+    """Older calls without a map can only use identities from before the reply."""
+    from regrow.records.object_store import load as load_objects
+    from regrow.records.snapshots import read
+    manifest = Path(run) / source['snapshot'] / 'source.json'
+    if not manifest.is_file():
+        return {}
+    parent = read(manifest).get('parent_snapshot')
+    if not parent:
+        return {}
+    path = Path(run) / parent
+    if not (path / 'objects.json').is_file():
+        return {}
+    records = load_objects(path)
+    material = request.get('user_prompt', '')
+    names = {}
+    for ref, record in [*records.items(), *records.controls.items()]:
+        name = record.get('name')
+        if name and name in material:
+            names.setdefault(name, set()).add(ref)
+    return {name: next(iter(refs)) for name, refs in names.items() if len(refs) == 1}
+
+
 def take(run, request):
     """Drop before saving an action job; a crash may lose only this optimization."""
     _, records, state = load(run)
@@ -118,16 +141,22 @@ def take(run, request):
     from regrow.records.snapshots import read
     platform = read(Path(run) / 'run_manifest.json').get('platform', 'android')
     q = platform_request(q, platform)
-    from regrow.recognition.named_references import labels, _decode_references
-    if original.get('control_reference_style') == 'id_name':
-        # Receive the optional Action in the normal action job, after the
-        # previous result is committed. A bad ID/name cannot reject that result.
-        proposal = deepcopy(reply['next_action'])
+    proposal = deepcopy(reply['next_action'])
+    contract = original.get('sent_name_contract')
+    if not contract:
+        from regrow.records.calls import business_request
+        sent = business_request(run, read(Path(run) / 'calls' / source['call'] / 'request.json'))
+        contract = sent.get('sent_name_contract', {})
+    if original.get('next_action_wire_schema') and contract.get('typed_fields'):
+        q['next_action_wire_schema'] = original['next_action_wire_schema']
+        q['sent_name_contract'] = contract
+    elif original.get('control_reference_style') == 'id_name':
         q['received_control_labels'] = original['control_reference_names']
         q['received_region_labels'] = original.get('region_reference_names', {})
     else:
-        names, _ = labels(run, q, id_name=False)
-        proposal = _decode_references(reply['next_action'], {name: ref for ref, name in names.items()})
+        aliases = contract.get('aliases') or _archived_aliases(run, original, source)
+        q['received_legacy_aliases'] = {name: ref for name, ref in aliases.items()
+                                        if ref in records or ref in records.controls}
     new_refs = _new_target_refs(run, source, original, reply)
     if new_refs:
         q['received_new_targets'] = new_refs

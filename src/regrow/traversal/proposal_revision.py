@@ -5,6 +5,19 @@ MODE = 'object_fields'
 OBJECTS = ('regions', 'controls')
 
 
+def continuation_source(original, correction, proposal):
+    """An edited Action belongs to the request which supplied that subtree."""
+    q = deepcopy(original)
+    if not isinstance(proposal, dict) or 'next_action' not in proposal:
+        return q
+    contract = correction.get('sent_name_contract')
+    schema = correction.get('next_action_wire_schema')
+    if contract and schema:
+        q['sent_name_contract'] = deepcopy(contract)
+        q['next_action_wire_schema'] = deepcopy(schema)
+    return q
+
+
 def _object_branches(schema):
     if schema.get('type') == 'object' or 'properties' in schema:
         yield schema

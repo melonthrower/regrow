@@ -2,13 +2,10 @@
 from copy import deepcopy
 import json
 import re
-import unicodedata
 
 import jsonschema
 
-from regrow.recognition.named_references import normalized
 from regrow.runtime.model_transport import expand_schema
-from regrow.runtime.reply_fields import filter_extra_fields
 from regrow.runtime.update_reply import main_pair
 
 
@@ -36,39 +33,53 @@ def _field_form(name):
     return re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '_', name).lower()
 
 
-def _near_spelling(source, target):
-    """Offer a name written in another case style or with one character edit."""
+def _spelling_kind(source, target):
+    """Identify one spelling difference without choosing a destination."""
     source, target = _field_form(source), _field_form(target)
     if source == target:
-        return True
+        return 'style'
     # Distinct short keys such as x, y and ref have too little spelling evidence.
     if min(len(source), len(target)) < 4:
-        return False
+        return None
     if len(source) > len(target):
         source, target = target, source
     if len(target) - len(source) > 1:
-        return False
+        return None
     index = next((i for i, (a, b) in enumerate(zip(source, target)) if a != b), len(source))
     if len(source) != len(target):
-        return source[index:] == target[index + 1:]
-    return (source[index + 1:] == target[index + 1:]
-            or source[index:index + 2] == target[index:index + 2][::-1]
-            and source[index + 2:] == target[index + 2:])
+        return 'insert_delete' if source[index:] == target[index + 1:] else None
+    if source[index + 1:] == target[index + 1:]:
+        return 'substitute'
+    if source[index:index + 2] == target[index:index + 2][::-1] and source[index + 2:] == target[index + 2:]:
+        return 'transpose'
+    return None
 
 
 def _pointer(path):
     return ''.join('/' + str(part).replace('~', '~0').replace('/', '~1') for part in path)
 
 
-def _alignment_evidence(name, target, supplied, spec, required):
-    if _field_form(name) == _field_form(target):
+def _alignment_evidence(spelling, name, target, supplied, spec, required):
+    if spelling == 'style':
         return True
     if isinstance(supplied, (list, dict)):
         return bool(supplied)
-    return required or isinstance(spec, dict) and any('enum' in arm or 'const' in arm for arm in _choices(spec))
+    if isinstance(spec, dict) and any('enum' in arm or 'const' in arm for arm in _choices(spec)):
+        return True
+    if not isinstance(supplied, str):
+        return required
+    # A required free-text field can still have a different meaning from a similar word.
+    if len(_field_form(target)) < 9:
+        return False
+    if spelling == 'transpose':
+        return True
+    if spelling == 'insert_delete':
+        short, long = sorted((_field_form(name), _field_form(target)), key=len)
+        return any(long[:i] + long[i + 1:] == short for i in range(2, len(long) - 2))
+    return False
 
 
-def _align_names(value, fields, declared, path, known_field):
+def _align_names(value, fields, declared, path, known_field, normalize_value):
     """Use matching names as candidates, then validate their entire submitted value."""
     if not isinstance(value, dict) or not fields:
         return value, [], []
@@ -77,27 +88,32 @@ def _align_names(value, fields, declared, path, known_field):
     for name, supplied in value.items():
         if name in declared or not _FIELD_NAME.fullmatch(name):
             continue
-        nearby = {key: [spec for spec, required in options
-                        if _alignment_evidence(name, key, supplied, spec, required)]
-                  for key, options in fields.items() if _near_spelling(name, key)}
-        nearby = {key: specs for key, specs in nearby.items() if specs}
+        nearby = {key: spelling for key in fields if (spelling := _spelling_kind(name, key))}
         if not nearby or known_field(name, supplied):
             continue
-        candidates = [key for key, specs in nearby.items() if any(
-            jsonschema.Draft202012Validator(spec).is_valid(supplied) for spec in specs)]
+        candidates = {}
+        for key, spelling in nearby.items():
+            for spec, required in fields[key]:
+                if not _alignment_evidence(spelling, name, key, supplied, spec, required):
+                    continue
+                restored, edits, failed = normalize_value(supplied, spec, (*path, name), search=False)
+                if not failed and jsonschema.Draft202012Validator(spec).is_valid(restored):
+                    candidates.setdefault((key, _key(restored)), (key, restored, edits))
         issue = {'object': name, 'field': name, 'path': _pointer((*path, name)), 'actual': supplied}
         if len(candidates) != 1:
             code = 'ambiguous_structure' if len(candidates) > 1 else 'structure_field_alignment'
-            errors.append({**issue, 'code': code, 'expected': sorted(candidates or nearby),
+            errors.append({**issue, 'code': code, 'expected': sorted({key for key, _ in candidates} or nearby),
                            'reason': '按本轮字段结构无法确定唯一可对齐的字段。'})
             continue
-        target = candidates[0]
-        if target in result and _key(result[target]) != _key(supplied):
+        target, restored, edits = next(iter(candidates.values()))
+        if target in result and _key(result[target]) != _key(restored):
             errors.append({**issue, 'code': 'structure_field_conflict', 'expected': target,
                            'actual': {name: supplied, target: result[target]},
                            'reason': '同一字段的两种写法填写了不同内容。'})
             continue
-        result[target] = result.pop(name)
+        result.pop(name)
+        result[target] = restored
+        changes.extend(edits)
         changes.append({'kind': 'schema_field_alignment', 'source': [*path, name],
                         'destination': [*path, target]})
     return result, changes, errors
@@ -118,61 +134,82 @@ def _only_wrapper(value, path):
     return True
 
 
-def _task_excerpt(label, title):
-    """Use literal parts of the disclosed question to recognize a short label."""
-    parts = label.rstrip('。.!?').split()
-    if len(parts) < 2:
+def _covers_sources(value, paths):
+    """Check that selected candidates account for every branch of a wrapper."""
+    if () in paths:
+        return True
+    if not isinstance(value, (dict, list)):
         return False
-    remaining = unicodedata.normalize('NFKC', title).casefold()
-    for part in parts:
-        literal = re.escape(part)
-        pattern = rf'(?<![a-z0-9_]){literal}(?![a-z0-9_])' if part.isascii() else literal
-        match = re.search(pattern, remaining)
-        if match is None:
-            return False
-        remaining = remaining[match.end():]
-    return True
+    groups = {}
+    for part, *rest in paths:
+        groups.setdefault(part, set()).add(tuple(rest))
+    children = value.items() if isinstance(value, dict) else enumerate(value)
+    return all(key in groups and _covers_sources(child, groups[key]) for key, child in children)
 
 
-def _task_matches(label, names):
-    if label in names:
-        return [label]
-    label = unicodedata.normalize('NFKC', label).strip().casefold()
-    prefix, _, title = label.partition('/')
-    owner = prefix.strip()
-    if re.fullmatch(r'[a-z]\d+', owner):
-        names = {ref: titles for ref, titles in names.items() if ref.partition('/')[0] == owner}
-        label = title.strip()
-    key = normalized(label).rstrip('。.!?')
-    if not key:
-        return []
-    equivalent = [ref for ref, titles in names.items()
-                  if any(normalized(title).rstrip('。.!?') == key for title in titles)]
-    return equivalent or [ref for ref, titles in names.items() if any(_task_excerpt(label, title) for title in titles)]
-
-
-def _task_alignment_error(code, path, actual, expected):
-    pointer = '/' + '/'.join(str(part).replace('~', '~0').replace('/', '~1') for part in path)
-    return {'code': code, 'path': pointer, 'object': '任务更新', 'field': 'task_update',
-            'actual': actual, 'expected': expected}
+def _align_task_keys(value, schema, path, names):
+    """Use the offered task key or its exact historical display form."""
+    key_schema = schema.get('propertyNames')
+    if not isinstance(key_schema, dict) or 'enum' not in key_schema:
+        return value, [], []
+    offered = {ref for ref in key_schema['enum'] if isinstance(ref, str)}
+    replacements, changes, errors = {}, [], []
+    for key in value:
+        if not isinstance(key, str) or key in offered:
+            continue
+        if re.fullmatch(r'r[0-9]+/.+', key, re.S) and not key.endswith('。'):
+            alternatives = offered & {key + mark for mark in '。.!?！？'}
+            if key + '。' not in alternatives:
+                continue
+        else:
+            alternatives = set()
+            for ref in offered:
+                rid, _, title = ref.partition('/')
+                label = names.get(rid, '')
+                prefix = rid + '/'
+                if label.startswith(prefix) and key == label[len(prefix):] + ' / ' + title:
+                    alternatives.add(ref)
+        if not alternatives:
+            continue
+        source = (*path, key)
+        if len(alternatives) != 1:
+            errors.append({'code': 'ambiguous_structure', 'object': key, 'path': _pointer(source),
+                           'actual': key, 'expected': sorted(alternatives),
+                           'reason': '原答可以对应多个本轮任务，无法确认原任务。'})
+            continue
+        full = next(iter(alternatives))
+        if full in value or full in replacements.values():
+            errors.append({'code': 'structure_field_conflict', 'object': full, 'path': _pointer(source),
+                           'actual': {label: item for label, item in value.items()
+                                      if label in (key, full) or replacements.get(label) == full},
+                           'expected': '每个任务只提交一次判断',
+                           'reason': '同一任务的多种引用同时出现。'})
+        else:
+            replacements[key] = full
+            changes.append({'kind': 'schema_task_key_alignment', 'source': list(source),
+                            'destination': [*path, full]})
+    if changes and not errors:
+        aligned = {replacements.get(key, key): row for key, row in value.items()}
+        if jsonschema.Draft202012Validator(schema).is_valid(aligned):
+            return aligned, changes, []
+    return value, [], errors
 
 
 class _Recovery:
-    def __init__(self, request, reply):
+    def __init__(self, request):
         self.schema = expand_schema(request['response_schema'])
         self.field_specs = None
         self.references = set(request.get('name_contract', {}).get('names', {}).values())
         self.references.update(request.get('control_reference_names', {}).values())
         self.references.update(request.get('region_reference_names', {}).values())
-        self.task_candidates = {row['task']: row for row in request.get('task_update_candidates') or []
-                                if isinstance(row, dict) and isinstance(row.get('task'), str)}
         self.owners = {}
         contract = request.get('name_contract', {})
         names = contract.get('names', {})
+        self.names = names
+        self.legacy_tasks = not contract.get('typed_fields')
         for ref, owners in contract.get('owners', {}).items():
             values = {names.get(owner, owner) for owner in owners}
             self.owners.setdefault(names.get(ref, ref), set()).update(values)
-        self._owners(reply)
 
     def _known_field(self, name, value):
         """An exact field used elsewhere may carry its own meaning at the wrong level."""
@@ -194,25 +231,21 @@ class _Recovery:
                    for spec in self.field_specs.get(name, []))
 
     def _owners(self, value):
-        if isinstance(value, dict):
-            regions = value.get('regions', [])
-            if isinstance(regions, list):
-                for region in regions:
-                    if not isinstance(region, dict):
-                        continue
-                    owner = region.get('ref') or region.get('name')
-                    controls = region.get('controls', [])
-                    if isinstance(owner, str) and isinstance(controls, list):
-                        for control in controls:
-                            if isinstance(control, dict):
-                                ref = control.get('ref') or control.get('name')
-                                if isinstance(ref, str):
-                                    self.owners.setdefault(ref, set()).add(owner)
-            for child in value.values():
-                self._owners(child)
-        elif isinstance(value, list):
-            for child in value:
-                self._owners(child)
+        """Only this record's declared regions can supply a missing relation."""
+        owners = {ref: set(regions) for ref, regions in self.owners.items()}
+        rows = value.get('regions', [])
+        for region in rows if isinstance(rows, list) else ():
+            if not isinstance(region, dict):
+                continue
+            owner = region.get('ref') or region.get('name')
+            controls = region.get('controls', [])
+            if isinstance(owner, str) and isinstance(controls, list):
+                for control in controls:
+                    if isinstance(control, dict):
+                        ref = control.get('ref') or control.get('name')
+                        if isinstance(ref, str):
+                            owners.setdefault(ref, set()).add(owner)
+        return owners
 
     @staticmethod
     def _valid(value, schema):
@@ -220,10 +253,7 @@ class _Recovery:
         return jsonschema.Draft202012Validator(spec).is_valid(main)
 
     def _fit(self, value, schema):
-        clean, _ = filter_extra_fields(value, schema)
-        if clean in ({}, []) and value != clean:
-            return None
-        return clean if self._valid(clean, schema) else None
+        return value if self._valid(value, schema) else None
 
     def _walk(self, value, properties, path, identity=None):
         if isinstance(value, dict) and identity is None:
@@ -239,71 +269,6 @@ class _Recovery:
         elif isinstance(value, list):
             for i, child in enumerate(value):
                 yield from self._walk(child, properties, (*path, i), identity)
-
-    def _align_task_updates(self, result, properties, path):
-        spec = properties.get('task_update', {})
-        allowed = spec.get('propertyNames', {}).get('enum')
-        if not allowed:
-            return [], []
-        names = {}
-        for ref in allowed:
-            candidate = self.task_candidates.get(ref, {})
-            titles = [candidate.get(key) for key in ('name', 'target')]
-            names[ref] = [ref.partition('/')[2], *(title for title in titles if isinstance(title, str))]
-
-        sources = {}
-        for field, rows in result.items():
-            explicit = field == 'task_update'
-            if not explicit and (field in properties or field == 'next_action' or not isinstance(rows, dict)):
-                continue
-            matches = {label: _task_matches(label, names) for label in rows} if isinstance(rows, dict) else {}
-            # An unfamiliar wrapper is only a task update when it contains a
-            # recognized task and an explicit state field. Keep its other rows
-            # so missing information is still checked by the original schema.
-            if explicit or any(matches[label] and isinstance(row, dict) and {'state', 'status'} & row.keys()
-                               for label, row in rows.items()):
-                sources[field] = matches
-        if not sources:
-            return [], []
-        if len(sources) != 1:
-            return [], [_task_alignment_error('task_update_container_conflict', (*path, 'task_update'),
-                        list(sources), '本轮已有任务的判断放在同一个 task_update 对象中')]
-        field, matches = next(iter(sources.items()))
-        rows = result[field]
-        if not isinstance(rows, dict):
-            return [], []
-
-        restored, origins = {}, {}
-        states = spec['additionalProperties']['properties']['state']['enum']
-        labels = {'已完成': 'done', '待解决': 'pending', '暂挂': 'blocked'}
-        for label, row in rows.items():
-            matches_for_label = matches[label]
-            if len(matches_for_label) > 1:
-                return [], [_task_alignment_error('ambiguous_task_reference', (*path, field, label),
-                            {'引用': label, '候选': matches_for_label}, '使用本轮唯一的完整任务引用')]
-            ref = matches_for_label[0] if matches_for_label else label
-            if ref in origins:
-                return [], [_task_alignment_error('duplicate_task_reference', (*path, field, label),
-                            {'引用': [origins[ref], label], '对应任务': ref}, '同一道任务只填写一次')]
-            origins[ref] = label
-            if matches_for_label and isinstance(row, dict):
-                if 'state' in row and 'status' in row:
-                    return [], [_task_alignment_error('task_update_state_conflict', (*path, field, label),
-                                row, '一条任务更新只填写一个 state')]
-                supplied = row.get('state', row.get('status'))
-                if isinstance(supplied, str):
-                    key = normalized(supplied)
-                    state = labels.get(key, key)
-                    if state in states:
-                        row = {**row, 'state': state}
-                        row.pop('status', None)
-            restored[ref] = row
-        if field == 'task_update' and restored == rows:
-            return [], []
-        result.pop(field)
-        result['task_update'] = restored
-        return [{'kind': 'task_update_alignment', 'source': [*path, field],
-                 'destination': [*path, 'task_update'], 'before': rows, 'after': restored}], []
 
     def _shape(self, value, schema, path, identity):
         properties = schema.get('properties', {})
@@ -332,6 +297,12 @@ class _Recovery:
         result = deepcopy(value)
         entry_schema = schema.get('additionalProperties')
         if isinstance(entry_schema, dict):
+            if path[-1:] == ('task_update',):
+                names = self.names if self.legacy_tasks else {}
+                result, changes, conflicts = _align_task_keys(result, schema, path, names)
+                if conflicts:
+                    return result, [], conflicts
+                events.extend(changes)
             key_validator = jsonschema.Draft202012Validator(schema.get('propertyNames', {}))
             for key, entry in result.items():
                 if key in properties or not key_validator.is_valid(key):
@@ -341,12 +312,28 @@ class _Recovery:
                 errors.extend(failed)
         if not properties:
             return result, events, errors
+        if 'current_regions' in properties and isinstance(result.get('current_regions'), list):
+            rows = result.get('regions', [])
+            offered = [row['name'] for row in rows if isinstance(row, dict)
+                       and not row.get('ref') and isinstance(row.get('name'), str)] if isinstance(rows, list) else []
+            spec = properties['current_regions'].get('items', {})
+            if set(spec.get('properties', {})) == {'ref'}:
+                for index, member in enumerate(result['current_regions']):
+                    if (isinstance(member, dict) and set(member) == {'name'}
+                            and offered.count(member['name']) == 1):
+                        result['current_regions'][index] = {'ref': member['name']}
+                        events.append({'kind': 'declared_region_reference',
+                                       'source': [*path, 'current_regions', index, 'name'],
+                                       'destination': [*path, 'current_regions', index, 'ref']})
         # A single action envelope can contain complementary fields of the
         # same reply. Do not borrow from sibling actions or prefer a conflict.
         action = result.get('action')
         action_spec = properties.get('action', {})
-        if (isinstance(action, dict) and isinstance(action.get('action'), str)
-                and action_spec.get('type') == 'string'):
+        if isinstance(action, dict) and action_spec.get('type') == 'string':
+            if isinstance(action.get('type'), str) and 'action' not in action:
+                action = {**{k: v for k, v in action.items() if k != 'type'}, 'action': action['type']}
+            if not isinstance(action.get('action'), str):
+                return result, events, errors
             outer = {k: v for k, v in result.items() if k != 'action'}
             conflicts = [k for k, v in action.items() if k in outer and _key(outer[k]) != _key(v)]
             if conflicts:
@@ -367,11 +354,12 @@ class _Recovery:
             if isinstance(regions, list):
                 from regrow.records.object_knowledge import control_only
                 pending = []
+                disclosed = self._owners(result)
                 for index, row in enumerate(result['controls']):
                     if not isinstance(row, dict) or not control_only(row):
                         return deepcopy(value), [], []
                     ref = row.get('ref') if isinstance(row, dict) else None
-                    owners = self.owners.get(ref, set()) if isinstance(ref, str) else set()
+                    owners = disclosed.get(ref, set()) if isinstance(ref, str) else set()
                     if len(owners) != 1:
                         return deepcopy(value), [], [{'code': 'structure_owner_ambiguous',
                             'object': ref or '待归属控件', 'actual': deepcopy(row),
@@ -441,6 +429,7 @@ class _Recovery:
         if isinstance(value, list) and ('items' in schema or schema.get('type') == 'array'):
             return self._shape(value, schema, path, identity)
         candidates, partial, errors = {}, [], []
+        covered_paths = set()
         # A keyed record's entries are values, not alternative wrappers for the map.
         if isinstance(value, dict) and any(isinstance(c.get('additionalProperties'), dict) for c in choices):
             search = False
@@ -453,21 +442,10 @@ class _Recovery:
                 for key, spec in choice.get('properties', {}).items():
                     alignment_fields.setdefault(key, []).append((spec, key in required))
         nodes = self._walk(value, properties, path, identity) if search else [(value, path, identity)]
-        task_spec = properties.get('task_update')
-        keyed_tasks = isinstance(task_spec, dict) and task_spec.get('propertyNames', {}).get('enum')
         for node, source, ref in nodes:
-            task_edits = []
-            if keyed_tasks and isinstance(node, dict):
-                # Use the existing task aliases before testing field-name candidates.
-                task_aligned = deepcopy(node)
-                task_edits, failed = self._align_task_updates(task_aligned, properties, source)
-                if failed:
-                    errors.extend(failed)
-                    continue
-                if task_edits:
-                    node = task_aligned
             if alignment_fields:
-                aligned, events, failed = _align_names(node, alignment_fields, properties, source, self._known_field)
+                aligned, events, failed = _align_names(node, alignment_fields, properties, source,
+                                                        self._known_field, self.normalize)
                 if failed:
                     errors.extend(error for error in failed if source == path
                                   or error['code'] in ('structure_field_conflict', 'ambiguous_structure'))
@@ -475,7 +453,8 @@ class _Recovery:
                 if events:
                     if self._valid(aligned, schema):
                         if source == path or (ref is None and _only_wrapper(value, source[len(path):])):
-                            candidates.setdefault(_key(aligned), (deepcopy(aligned), task_edits + events, source))
+                            candidates.setdefault(_key(aligned), (deepcopy(aligned), events, source))
+                            covered_paths.add(source[len(path):])
                         else:
                             errors.append({'code': 'ambiguous_structure', 'object': '本次回复',
                                 'path': _pointer(source), 'actual': node, 'expected': '唯一完整且无并列内容的回复',
@@ -485,22 +464,28 @@ class _Recovery:
                     continue
             for choice in choices:
                 shaped, events, failed = self._shape(node, choice, source, ref)
-                events = task_edits + events
                 errors.extend(failed)
                 if source == path:
                     partial.append((shaped, events, failed))
                 fit = self._fit(shaped, schema)
                 if fit is not None and not failed:
                     candidates.setdefault(_key(fit), (fit, events, source))
+                    covered_paths.add(source[len(path):])
         if errors:
             unique = {_key(error): error for error in errors}
             return deepcopy(value), [], list(unique.values())
+        if candidates and not _covers_sources(value, covered_paths):
+            issue = {'code': 'ambiguous_structure', 'object': '本次回复', 'path': _pointer(path),
+                     'actual': value, 'expected': '包装内的内容均能归入同一回复',
+                     'reason': '选用匹配的候选会丢弃同层的其他信息。'}
+            return deepcopy(value), [], [issue]
         if len(candidates) > 1:
             # Complementary fragments can merge only under the same explicit ID.
             values = [c[0] for c in candidates.values()]
             merged = self._merge_records(values)
+            edits = [edit for _, events, _ in candidates.values() for edit in events]
             if merged is not None and self._fit(merged, schema) is not None:
-                return merged, [{'kind': 'same_object_fragments', 'sources': [list(c[2]) for c in candidates.values()]}], []
+                return merged, [*edits, {'kind': 'same_object_fragments', 'sources': [list(c[2]) for c in candidates.values()]}], []
             issue = {'code': 'ambiguous_structure', 'object': '本次回复' if not path else str(path[-1]),
                      'actual': values, 'expected': '本次字段须对应唯一且无冲突的记录',
                      'reason': '发现多条不同的完整候选，无法确定应采用哪一条。'}
@@ -517,11 +502,12 @@ class _Recovery:
 
 def recover(request, reply):
     """Return a derived reply and diagnostics; never modify the original answer."""
-    recovery = _Recovery(request, reply)
+    recovery = _Recovery(request)
     result, changes, errors = recovery.normalize(reply, recovery.schema)
-    if any(change['kind'] == 'schema_field_alignment' for change in changes) and not recovery._valid(result, recovery.schema):
-        errors = errors or _alignment_errors(recovery.schema, result)
-        result, changes = deepcopy(reply), []
+    alignments = ('schema_field_alignment', 'schema_task_key_alignment', 'declared_region_reference')
+    if any(change['kind'] in alignments for change in changes) and not recovery._valid(result, recovery.schema):
+        from regrow.records.registration_diagnostics import reply_errors
+        errors = errors or reply_errors(request, result, defer_objects=True)
     if not changes and not errors:
         result = deepcopy(reply)  # Unrelated extras remain owned by the existing filter.
     report = {'changed': result != reply, 'changes': changes, 'errors': errors}

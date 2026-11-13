@@ -35,11 +35,11 @@ def reference(rid, name):
 
 def resolve(records, value, owner):
     """Names are local; cross-Region associations must use the provided full ref."""
-    if value in records[owner].get('functions', {}):
-        return reference(owner, value)
     rid, sep, name = value.partition('/')
     if sep and name in records.get(rid, {}).get('functions', {}):
         return value
+    if value in records[owner].get('functions', {}):
+        return reference(owner, value)
     reject('function_reference', value, value,
            [reference(owner, name) for name in records[owner].get('functions', {})],
            field='功能引用', reason='填写的功能引用没有对应到已登记功能。',

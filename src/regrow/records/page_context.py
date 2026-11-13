@@ -209,7 +209,8 @@ def _display(view, goal_in_task_context=False):
     if goal_in_task_context:
         pass
     elif goal.get('name') and (not action_view):
-        lines.append(f"任务引用：{name(goal.get('region'))} / {goal['name']}（{goal['status']}）")
+        from regrow.records.task_updates import reference
+        lines.append(f"任务引用：{reference(goal['region'], goal['name'])}（{goal['status']}）")
     if view.get('history'):
         from regrow.records import page_history as page_history
         current = {'region': goal['region'], 'name': goal['name']} if goal_in_task_context else None

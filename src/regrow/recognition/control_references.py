@@ -1,5 +1,6 @@
 """Stable control references at the model boundary; names are display text."""
 from copy import deepcopy
+from pathlib import Path
 import re
 import unicodedata
 from regrow.records.diagnostics import reject
@@ -34,16 +35,40 @@ def recorded_target(records, value):
             'regions': owners}
 
 
-def decode_action_target(request, proposal, call):
+def decode_action_target(request, proposal, call, *, run=None):
     """Interpret a retained Action using the labels actually sent with its call."""
     if request.get('action_source', {}).get('call') != call:
         return proposal
-    value = deepcopy(proposal)
-    if 'received_control_labels' in request:
+    from regrow.runtime.reply_structure import recover
+    schema = request.get('next_action_wire_schema') or request['response_schema']
+    contract = request.get('sent_name_contract')
+    q = {**request, 'response_schema': schema}
+    if contract:
+        q['name_contract'] = contract
+    value, report = recover(q, proposal)
+    if run is not None and (report['changed'] or report['errors']):
+        from regrow.records.snapshots import write_json
+        evidence = Path(run) / 'calls' / call / 'next_action_structure_recovery.json'
+        if not evidence.exists():
+            write_json(evidence, report)
+    if report['errors']:
+        from regrow.records.diagnostics import Rejected
+        raise Rejected({'errors': report['errors'], 'unchecked': ['接续动作的业务校验尚未执行。']})
+    if request.get('next_action_wire_schema') and contract and contract.get('typed_fields'):
+        import jsonschema
+        from regrow.recognition.reference_fields import translate
+        jsonschema.validate(value, schema)
+        value = translate(value, contract)
+    elif 'received_control_labels' in request:
         from regrow.recognition.named_references import _decode_references
         labels = request['received_control_labels']
         value = _decode_references(value, {name: cid for cid, name in labels.items()},
                                   control_labels=labels, region_labels=request.get('received_region_labels'))
+    elif request.get('received_legacy_aliases'):
+        action = value.get('operation', value)
+        target = action.get('target')
+        if isinstance(target, str) and target in request['received_legacy_aliases']:
+            action['target'] = request['received_legacy_aliases'][target]
     action = value.get('operation', value)
     ref = request.get('received_new_targets', {}).get(action.get('target'))
     if ref and not re.fullmatch(r'[cr]\d+', str(action.get('target', ''))):
@@ -116,7 +141,8 @@ def prepare(request):
         ids = list(dict.fromkeys(candidates))
     else:
         ids = list(mapping(q))
-        disclosed = set(re.findall(r'(?<![A-Za-z0-9_])c\d+(?![A-Za-z0-9_])', q.get('user_prompt', '')))
+        from regrow.recognition.named_references import disclosed_ids
+        disclosed = {ref for ref in disclosed_ids(q) if re.fullmatch(r'c[0-9]+', ref)}
         for cid in sorted(disclosed.union(candidates), key=lambda value: int(value[1:])):
             if cid not in ids:
                 ids.append(cid)

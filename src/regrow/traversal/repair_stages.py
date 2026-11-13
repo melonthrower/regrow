@@ -135,7 +135,8 @@ def accept_candidate(root, run, job):
     if job['stage'] == 'update' and job.get('candidate') is not None:
         (q, candidate, _) = _region_identity.prepare(run, q, job['candidate'])
         job = {**job, 'candidate': candidate}
-    if job.get('candidate') is not None and job['stage'] != 'discovery':
+    retained_action = job['stage'] == 'action' and q.get('action_source', {}).get('call') == job['call']
+    if job.get('candidate') is not None and job['stage'] != 'discovery' and not retained_action:
         frame = Path(run) / _frame_context.primary(q) if job['stage'] == 'update' else None
         _registration_diagnostics.check(job['stage'], q, job['candidate'], records, binding, frame=frame)
     stage = job['stage']
@@ -165,17 +166,7 @@ def accept_action(run, q, proposal, ref, records):
     from regrow.recognition import ownership_review as _ownership_review
     from regrow.traversal import operation_blocking as _operation_blocking
     from regrow.recognition.control_references import decode_action_target
-    source = q.get('action_source') or {}
-    if source.get('field') == 'next_action' and source.get('call') == ref:
-        from regrow.records.diagnostics import Rejected
-        from regrow.runtime.reply_structure import recover
-        proposal, report = recover(q, proposal)
-        evidence = Path(run) / 'calls' / ref / 'next_action_structure_recovery.json'
-        if (report['changed'] or report['errors']) and not evidence.exists():
-            _record_write_json(evidence, report)
-        if report['errors']:
-            raise Rejected({'errors': report['errors'], 'unchecked': ['接续动作的业务校验尚未执行。']})
-    proposal = decode_action_target(q, proposal, ref)
+    proposal = decode_action_target(q, proposal, ref, run=run)
     manifest = Path(run) / 'run_manifest.json'
     platform = 'desktop' if manifest.exists() and _record_read(manifest).get('desktop') else 'android'
     jsonschema.validate(proposal, q['response_schema'])
@@ -313,10 +304,11 @@ def record_capabilities(stage=None, request=None):
     return result
 
 def context(run, job):
+    from regrow.prompts.prompt_material import body
     if job['stage'] == 'appearance_comparison':
-        return {'比较对象': json.loads(job['request']['user_prompt']), '要求': '仅修正本批控件的身份与可见状态说明；不输出坐标或执行动作。'}
+        return {'比较对象': body(job['request'])[0], '要求': '仅修正本批控件的身份与可见状态说明；不输出坐标或执行动作。'}
     if job['stage'] == 'object_registration':
-        return {'待补齐对象': json.loads(job['request']['user_prompt']),
+        return {'待补齐对象': body(job['request'])[0],
                 '要求': '仅修正本批识别范围；无法定位时明确说明，不能猜测。'}
     from regrow.traversal import discovery_step as _discovery_step
     from regrow.records import context_scope as _context_scope

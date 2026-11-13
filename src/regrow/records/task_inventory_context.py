@@ -188,7 +188,7 @@ def destination_knowledge(records, region, edges):
                        '直属控件当前知识': controls, '已回答问题': answered})
     return result
 
-def control_directory(cards, groups):
+def control_directory(cards, groups, labels):
     """Group existing material for reading; do not infer shared facts or tasks."""
     grouped = {cid for members in groups.values() for cid in members if cid in cards}
     lines = []
@@ -196,7 +196,7 @@ def control_directory(cards, groups):
     if standalone:
         lines.append('### 未分组控件')
         for cid in standalone:
-            lines.append('**' + cid + '**：' + cards[cid])
+            lines.append('**' + labels[cid] + '**：' + cards[cid])
     if grouped:
         lines.append('### 同类操作组')
         for group, members in groups.items():
@@ -204,12 +204,12 @@ def control_directory(cards, groups):
             if not members:
                 continue
             lines.append('**' + group + '**')
-            lines.append('成员：' + '、'.join(members))
+            lines.append('成员：' + '、'.join(labels[cid] for cid in members))
             material = {}
             for cid in members:
                 material.setdefault(cards[cid], []).append(cid)
             for body, sources in material.items():
-                lines.append('已有材料（' + '、'.join(sources) + '）：' + body)
+                lines.append('已有材料（' + '、'.join(labels[cid] for cid in sources) + '）：' + body)
     return '\n\n'.join(lines)
 
 
@@ -275,7 +275,9 @@ def project(records, state, rid, *, function_material=None):
     if function_material is None:
         function_material, _ = request_context(records, state, rid, list(related(records, [rid])),
                                                work=state.get('_work_context'), inventory=True)
-    return {'控件': control_directory(cards, region.get('list_groups', {})), '环境位置':render(records,state,rid,kind='task_proposal'),
+    from regrow.recognition.control_references import label
+    labels = {cid: label(cid, control['name']) for cid, control in owned_controls(region).items()}
+    return {'控件': control_directory(cards, region.get('list_groups', {}), labels), '环境位置':render(records,state,rid,kind='task_proposal'),
             **function_material,
             '候选访问关系': candidate_access_entries(records, rid),
             '已登记直接目标知识': destination_knowledge(records, region, edges),

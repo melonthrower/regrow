@@ -12,6 +12,8 @@ def main_pair(schema, reply):
         schema['properties'].pop('next_action')
         schema['required'] = [key for key in schema.get('required', []) if key != 'next_action']
         if isinstance(reply, dict):
+            if 'next_action' in reply and 'minProperties' in schema:
+                schema['minProperties'] = max(0, schema['minProperties'] - 1)
             reply = {key: value for key, value in reply.items() if key != 'next_action'}
     elif 'proposal' in props:
         schema = deepcopy(schema)

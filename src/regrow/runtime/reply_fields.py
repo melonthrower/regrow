@@ -49,11 +49,26 @@ def filter_extra_fields(reply, schema):
             if not isinstance(node, dict):
                 continue
             for key in row.get('fields', []):
-                if key in node:
-                    # An empty collection can explicitly clear a previous value.
-                    # False and zero also carry meaning. Never move these fields
-                    # automatically: the corrected reply must pass the contract.
-                    if key in contract_fields and (node[key] is not None or key in nullable_fields):
-                        continue
+                if key not in node:
+                    continue
+                value = node[key]
+                # Known fields can explicitly clear a previous value. Unknown
+                # populated containers can hold misplaced knowledge or actions.
+                if key in contract_fields and (value is not None or key in nullable_fields):
+                    continue
+                # Application judgement is explicit at the top of an action.
+                # An identical nested copy adds no independent information.
+                if (not path and key == 'foreground' and isinstance(node.get('action'), str)
+                        and isinstance(value, dict) and value
+                        and value.keys() <= {'exception', 'recovery_handoff'}
+                        and all(field in node and node[field] == item for field, item in value.items())):
                     removed.append({'object_path': path, 'field': key, 'value': node.pop(key)})
+                    continue
+                if isinstance(value, (dict, list)) and value:
+                    continue
+                if value not in (None, '', [], {}) and key.startswith(
+                        ('region', 'control', 'task', 'function', 'knowledge', 'parameter',
+                         'action', 'foreground', 'destination', 'observation')):
+                    continue
+                removed.append({'object_path': path, 'field': key, 'value': node.pop(key)})
     return result, removed

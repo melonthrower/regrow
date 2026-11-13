@@ -350,8 +350,17 @@ class Runner:
             display_job = deepcopy(job)
             if job.get('rejected_reply') is not None and job.get('call'):
                 source = self.run / 'calls' / job['call'] / 'response.json'
+                original = source.with_name('unfiltered_response.json')
+                if original.exists():
+                    source = original
                 if source.exists():
                     display_job['rejected_model_reply'] = read(source)
+            origin = job['request'].get('action_source', {})
+            if origin.get('call') == job.get('call') and origin.get('field') == 'next_action':
+                from regrow.records.calls import action_submission
+                _, raw = action_submission(self.run, job['call'], 'next_action')
+                display_job['rejected_model_reply'] = raw
+                display_job['rejected_reply_is_wire'] = True
             return request(self.root, display_job, self.adapters.context(self.run, job))
         except DiagnosticUnavailable as error:
             self.pause_diagnostic(job, error)
@@ -631,7 +640,9 @@ class Runner:
                     # Collect every schema error before readers/registration can
                     # stop on the first malformed field. Task names can be
                     # checked independently even when another field is invalid.
-                    if not job.get('record_edit'):
+                    retained_action = (job['stage'] == 'action'
+                                       and job['request'].get('action_source', {}).get('call') == job['call'])
+                    if not job.get('record_edit') and not retained_action:
                         _, records, _ = _record_load(self.run)
                         _registration_diagnostics.check(
                             'task_proposal' if job['stage'] == 'task_proposal' else 'reply',
@@ -737,10 +748,11 @@ class Runner:
             try:
                 if repairing:
                     if q.get('correction_format') == 'original':
-                        from regrow.traversal.proposal_revision import merge
+                        from regrow.traversal.proposal_revision import continuation_source, merge
                         from regrow.traversal.object_registration import revised_request
                         candidate = merge(q, reply)
                         corrected_request = revised_request(q['original_request'], previous_call) if job['stage'] == 'update' else deepcopy(q['original_request'])
+                        corrected_request = continuation_source(corrected_request, q, reply)
                         fingerprint = hashlib.sha256(json.dumps([candidate, job['request'], job.get('supplements'), job.get('record_edit')], sort_keys=True).encode()).hexdigest()
                         if fingerprint in job['seen']:
                             self.stop(job, '重复提交同一证据下已拒绝的提案')
@@ -814,11 +826,12 @@ class Runner:
                         self.save(job)
                         continue
                     job['record_edit'] = reply.get('record_edit')
-                    from regrow.traversal.proposal_revision import merge
+                    from regrow.traversal.proposal_revision import continuation_source, merge
                     candidate = merge(q, reply['proposal'])
                     if job['stage'] == 'update':
                         from regrow.traversal.object_registration import revised_request
-                        job['request'] = revised_request(job['request'], previous_call)
+                        original = revised_request(job['request'], previous_call)
+                        job['request'] = continuation_source(original, q, reply['proposal'])
                 else:
                     candidate = reply
                 fingerprint = hashlib.sha256(json.dumps([candidate, job['request'], job.get('supplements'), job.get('record_edit')], sort_keys=True).encode()).hexdigest()

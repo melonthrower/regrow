@@ -78,7 +78,7 @@ evidence 说明登记、排除或仍不能确认的依据。
 
 <!-- BEGIN_PROMPT_BLOCK id="task.branch_strategy" requires="" -->
 # 选择继续策略
-decision=switch 时，next_region 复制给定候选区块名称；没有可行办法或合适候选时选 stop，next_region=null。reason 说明选择依据和具体缺口。
+decision=switch 时，next_region 复制给定候选区块的完整 ID/名称；没有可行办法或合适候选时选 stop，next_region=null。reason 说明选择依据和具体缺口。
 正例：当前分支受阻，但另一区块有可推进问题，选择该区块并说明其独立性。
 <!-- END_PROMPT_BLOCK id="task.branch_strategy" -->
 

@@ -48,10 +48,10 @@ def _read(text):
         raise ValueError('invalid_json')
     return values[0]
 
-def parse(body):
+def reply_texts(body):
     texts = []
     if not isinstance(body, dict):
-        raise ReplyParseError('invalid_response_object', texts)
+        return texts
     for item in body.get('output') or []:
         if item.get('type') != 'message':
             continue
@@ -60,6 +60,13 @@ def parse(body):
             texts.append(''.join(pieces))
     if not texts and isinstance(body.get('output_text'), str):
         texts = [body['output_text']]
+    return texts
+
+
+def parse(body):
+    if not isinstance(body, dict):
+        raise ReplyParseError('invalid_response_object', [])
+    texts = reply_texts(body)
     if body.get('status') in ('incomplete', 'failed', 'cancelled') or body.get('error'):
         raise ReplyParseError('incomplete_reply', texts)
     if not texts or not any((t.strip() for t in texts)):

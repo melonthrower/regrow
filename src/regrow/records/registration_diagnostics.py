@@ -34,6 +34,20 @@ def schema_errors(error):
             children = [e for e in error.context if list(e.schema_path)[0] == compatible[0]]
             if children:
                 return [row for child in children for row in schema_errors(child)]
+        if not compatible and isinstance(error.instance, dict):
+            # A group owner can be the sole discriminator rejected by every
+            # branch. Keep the value and exact field visible for correction.
+            failures = [e for e in error.context if e.validator == 'enum' and len(e.path) == 1]
+            for field in dict.fromkeys(e.path[0] for e in failures):
+                schemas = [branches[i].get('properties', {}).get(field, {}) for i in type_compatible]
+                if not schemas or not all(isinstance(spec, dict) and 'enum' in spec for spec in schemas):
+                    continue
+                choices = list(dict.fromkeys(value for spec in schemas for value in spec['enum']))
+                if error.instance[field] not in choices:
+                    child = next(e for e in failures if e.path[0] == field)
+                    return [dict(code='schema', path=_schema_path(child), object='reply',
+                                 actual=child.instance, expected='值须为本轮允许的一项',
+                                 validator='enum', requirement=choices)]
         path = _schema_path(error)
         if not type_compatible and all('type' in branch for branch in branches):
             types = list(dict.fromkeys(t for branch in branches for t in
@@ -98,6 +112,12 @@ def object_schema_error(request, reply, error):
     groups = {'object_registration': ('objects', 'path', request.get('registration_paths', [])),
               'appearance_comparison': ('comparisons', 'ref',
                   [row['ref'] for row in request.get('appearance_rows', [])])}
+    if request.get('name_contract', {}).get('typed_fields'):
+        contract = request['name_contract']
+        groups['object_registration'] = ('objects', 'path',
+            [contract['paths'].get(ref, ref) for ref in request.get('registration_paths', [])])
+        groups['appearance_comparison'] = ('comparisons', 'ref',
+            [contract['names'].get(row['ref'], row['ref']) for row in request.get('appearance_rows', [])])
     parts = error.get('path', '').strip('/').split('/')
     if role in groups:
         group, key, allowed = groups[role]

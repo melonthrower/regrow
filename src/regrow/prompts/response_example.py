@@ -176,6 +176,8 @@ def sample(schema, name='', reuse=True):
         if not schema['enum']:
             raise ValueError('No allowed example value for ' + name)
         return deepcopy(schema['enum'][0])
+    if schema.get('examples'):
+        return deepcopy(schema['examples'][0])
     for union in ('anyOf', 'oneOf'):
         if union in schema:
             branches = schema[union]
@@ -258,8 +260,8 @@ def complete(schema, request=None):
     known = None if request is None else request.get('discovery_context', {}).get('region_names', request.get('region_names', {}))
     value = sample(expanded, reuse=known is None or bool(known))
     if request and isinstance(value, dict) and 'target' in value and request.get('backend_candidates'):
-        from regrow.traversal.action_binding import candidate_key
-        value['target'] = candidate_key(request, request['backend_candidates'][0])
+        ref = request['backend_candidates'][0]['id']
+        value['target'] = request.get('name_contract', {}).get('names', {}).get(ref, value['target'])
     if request and request.get('role') == 'recovery' and isinstance(value, dict):
         choices = expanded.get('properties', {}).get('decision', {}).get('enum', [])
         if value.get('exception') == 'none' and 'resume_exploration' in choices:
@@ -267,11 +269,17 @@ def complete(schema, request=None):
     if known and isinstance(value, dict) and value.get('regions'):
         focus = request.get('discovery_context', {}).get('focus')
         ref = focus if focus in known else next(iter(known.values()))
+        ref = request.get('name_contract', {}).get('names', {}).get(ref, ref)
         for row in value['regions']:
             if row.get('ref'):
                 row['ref'] = ref
     if isinstance(value, dict) and 'current_regions' in value and value.get('regions'):
-        value['current_regions'] = [{'region_index': 0}]
+        spec = expanded['properties']['current_regions']['items']
+        if 'ref' in spec.get('properties', {}):
+            region = value['regions'][0]
+            value['current_regions'] = [{'ref': region.get('ref') or region['name']}]
+        else:
+            value['current_regions'] = [{'region_index': 0}]
     jsonschema.validate(value, expanded)
     return ('## 完整输出示例\n以下仅演示本步JSON格式，不是当前截图的事实或操作建议；'
             '示例编号与坐标仅为格式占位，实际引用、坐标和结论须来自本次材料。\n```json\n'

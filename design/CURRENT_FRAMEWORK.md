@@ -1,3 +1,5 @@
+2026-11-13 模型回复引用协议：普通调用、纠错和接续动作沿单次请求保存的 `name_contract` 接收。已有 Region 与 Control 在模型侧使用完整 ID/名称，内部以稳定 ID 校验和登记。任务、功能和参数知识保留各自的复合引用。纠错稿的结构化字段先转换再呈现，实际已发送的旧请求沿其原 Schema 和引用解释。详见 [接收与运行模块](modules/stepwise/runtime.md)。
+
 > 2026-11-09 当前研究快照：定稿的遍历抽象说明已接入原 observation、observation_update、task_proposal；Region稳定职责、Control共同角色/目标参数、跨区块Function与原Task完整目标结算沿现有调用实现。功能支持及参数可跨实际区块，function_refs随原任务召回；候选不自动建立功能/访问关系。普通实例值保存在实际动作/观察证据，独立能力及必要选项仍保留。Prompt逐字核对和两项聚焦本地检查通过，新的Luna/GUI尚未开始，旧13次Settings任务收口未通过。详见[快照状态](../SNAPSHOT_STATUS.md)。
 
 2026-11-08 参数命名统一工作稿：操作参数统一使用parameters。控件参数归knowledge[].parameters，区块参数目录使用parameters，功能的parameters只保存参数引用；动作仍填写本次实际参数值。原constraints只在旧记录/旧请求读取时兼容，不与parameters并列写新数据。参数值的既有表示法和其他对象语义不变；399停点图与0258完整原记录的两项隔离副本核对通过，0新模型/GUI；仅验证命名、旧数据读取和登记链路。新的完整参数解释及本轮补充示例仍待用户确认。

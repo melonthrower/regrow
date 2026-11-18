@@ -158,6 +158,7 @@ class CollectionWriter:
     def __init__(self, root: str, platform: str, date: str, app: str,
                  graph: Any = None, node_dir: str = ""):
         self.base = os.path.join(root, platform, date, app)
+        self.platform = platform
         self.app = app
         self.node_dir = node_dir
         self.dist_cache = _DistanceCache(graph) if graph is not None else None
@@ -494,6 +495,7 @@ class CollectionWriter:
 
         meta = {
             "schema_version": "m13.visual_collection.v1",
+            "platform": self.platform,
             "executor": result.get("executor", "VisualCollectionExecutor"),
             "model_calls": result.get("model_calls"),
             "final_frame": self._write_observation_frame(

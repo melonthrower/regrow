@@ -4,8 +4,8 @@
 # 提出一步操作
 根据当前图选择实际操作的对象和位置，reason 说明这一步要解决什么；需要准备时，说明要建立的条件。
 - target：本步直接操作的对象。已有区块或控件使用本轮给定的完整 ID/名称，未登记控件用可辨认的短描述。
-- x、y：当前图中的整数像素点位。定位对象的外观图帮助辨认，操作位置以当前图为准。
-- text、end_x、end_y：按下方当前平台动作表填写。
+- 操作位置依据当前截图，定位对象的外观图用于辨认。
+- 动作参数按下方当前平台动作表填写。
 
 正例：点击当前图中的搜索按钮，reason 写“展开搜索输入框”。
 <!-- END_PROMPT_BLOCK id="action.proposal" -->
@@ -54,7 +54,7 @@ reason 说明原问题尚缺什么信息，以及本步为何没有可推进的�
 <!-- END_PROMPT_BLOCK id="action.execution" -->
 
 <!-- BEGIN_PROMPT_BLOCK id="action.operation_fields" requires="" -->
-target 填本步实际操作对象的完整引用；确实没有对应身份时，用可辨认的短描述。x、y 使用当前原图整数点位；text、end_x、end_y 按当前平台表填写。
+target 填本步实际操作对象的完整引用；确实没有对应身份时，用可辨认的短描述。坐标和其余动作参数按当前平台表填写。
 正例：点击关闭提示的按钮，reason 写“解除遮挡以继续观察原表单”。
 <!-- END_PROMPT_BLOCK id="action.operation_fields" -->
 

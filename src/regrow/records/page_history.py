@@ -18,6 +18,10 @@ TITLE = '相关任务过程'
 def _order(ref):
     return (0, int(ref[1:])) if ref.startswith('a') and ref[1:].isdigit() else (1, ref)
 
+_EXECUTION_FIELDS = ('action', 'target', 'text', 'text_delivered', 'key', 'keys',
+                     'coordinate', 'coordinate2', 'pixels', 'time', 'direction', 'amount',
+                     'button', 'duration', 'x', 'y', 'end_x', 'end_y')
+
 def execution(action, aid, run):
     detail = {}
     if action.get('text_delivered') is False:
@@ -29,13 +33,19 @@ def execution(action, aid, run):
         receipt = json.loads((folder / 'receipt.json').read_text())
         steps = receipt.get('executed_steps', [])
         if steps:
-            detail['实际执行'] = [{k: v for (k, v) in step.items() if k in ('action', 'target', 'text', 'text_delivered', 'key', 'keys', 'direction', 'amount', 'button', 'duration', 'x', 'y', 'end_x', 'end_y')} for step in steps]
+            detail['实际执行'] = [{k: v for (k, v) in step.items() if k in _EXECUTION_FIELDS} for step in steps]
+            command_path = folder / 'execution' / 'pending_command.json'
+            if len(steps) == 1 and steps[0].get('action') == 'scroll' and 'pixels' not in steps[0] and command_path.is_file():
+                sent = json.loads(command_path.read_text())
+                match = re.search(r'pyautogui\.(h?scroll)\((-?\d+)\)$', str(sent.get('command', '')))
+                if match and receipt.get('exit_code') == 0 and sent.get('step') == steps[0]:
+                    detail['实际执行'][0]['已发送滚轮格数'] = int(match[2])
         elif receipt.get('exit_code') == 0 and (folder / 'dispatch.json').is_file():
             dispatch = json.loads((folder / 'dispatch.json').read_text()).get('action', {})
             if dispatch.get('action') == action.get('operation'):
-                detail['实际投递'] = {k: dispatch[k] for k in ('action', 'target', 'text', 'key', 'keys', 'direction', 'amount', 'button', 'duration', 'x', 'y', 'end_x', 'end_y') if k in dispatch}
+                detail['实际投递'] = {k: dispatch[k] for k in _EXECUTION_FIELDS if k in dispatch}
     elif action.get('executed_steps'):
-        detail['实际执行'] = [{k: v for (k, v) in step.items() if k in ('action', 'target', 'text', 'text_delivered', 'key', 'keys', 'direction', 'amount', 'button', 'duration', 'x', 'y', 'end_x', 'end_y')} for step in action['executed_steps']]
+        detail['实际执行'] = [{k: v for (k, v) in step.items() if k in _EXECUTION_FIELDS} for step in action['executed_steps']]
     return detail
 
 def build(records, state, run=None, *, extra_regions=(), goal=None, navigation=False, extra_attempts=(), planning_region=None, displayed_findings=()):

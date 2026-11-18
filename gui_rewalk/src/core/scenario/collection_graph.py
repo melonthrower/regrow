@@ -17,6 +17,7 @@ REGROW_SOURCE = Path(__file__).resolve().parents[4] / 'src'
 if str(REGROW_SOURCE) not in sys.path:
     sys.path.insert(0, str(REGROW_SOURCE))
 from regrow.records import object_store, control_knowledge, function_updates
+from regrow.runtime import qwen_actions
 
 
 def read_stepwise_records(snapshot):

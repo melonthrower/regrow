@@ -382,7 +382,7 @@ def context(run, job):
                 incoming.append({'区块': r['name'], '控件': control['name'], '历史外观': target(control, None), '历史目的区块': all_records.get(edge['target_region'], {}).get('name'), '说明': '这是历史进入入口，不是已确认当前可交互的候选；结合截图判断。'})
         proposal = job.get('candidate') or {}
         proposal = proposal.get('operation', proposal)
-        value['定位与绑定冲突'] = {'框架认定的当前区块': [all_records[r]['name'] for r in state.get('interactive_regions', []) if r in all_records], '模型建议目标': proposal.get('target'), '模型建议位置': [proposal.get('x'), proposal.get('y')], '当前动作候选': [{'区块': all_records.get(c.get('region_ref', source.get('region')), {}).get('name'), '控件': c['name']} for c in q.get('backend_candidates', [])], '框架拒绝依据': job.get('error'), '历史进入目标的入口': incoming, '处理说明': '候选为空仅表示框架没有定位记录，不证明截图没有按钮。核对框架落点；落点错误用observe重定位并刷新候选，再回动作步执行。菜单选项与打开菜单的按钮是不同对象，不能通过改名相互替换。'}
+        value['定位与绑定冲突'] = {'框架认定的当前区块': [all_records[r]['name'] for r in state.get('interactive_regions', []) if r in all_records], '模型建议目标': proposal.get('target'), '模型建议位置': proposal.get('coordinate', [proposal.get('x'), proposal.get('y')]), '当前动作候选': [{'区块': all_records.get(c.get('region_ref', source.get('region')), {}).get('name'), '控件': c['name']} for c in q.get('backend_candidates', [])], '框架拒绝依据': job.get('error'), '历史进入目标的入口': incoming, '处理说明': '候选为空仅表示框架没有定位记录，不证明截图没有按钮。核对框架落点；落点错误用observe重定位并刷新候选，再回动作步执行。菜单选项与打开菜单的按钮是不同对象，不能通过改名相互替换。'}
     if job['stage'] == 'action':
         source = job['request'].get('source', {})
         rid = source.get('task_region') or source.get('region')

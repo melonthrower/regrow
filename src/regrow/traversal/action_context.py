@@ -71,12 +71,12 @@ def shortest_known_path(records, state, target, *, require_control=True):
             result = action.get('result', {})
             if contextual_return(action):
                 continue
-            back = action.get('operation') == 'back' and cid is None
-            if dest not in records or dest in seen or (not back and cid not in owned_controls(region)) or (action.get('control') != cid) or (action.get('operation') not in ('tap', 'click', 'back')) or (len(action.get('executed_steps', [])) > 1) or (action.get('delivery') != 'executed_receipt_zero') or (result.get('exception', 'none') != 'none') or (not (result.get('exception') == 'none' or result.get('status') == 'observed_effect')):
+            back = contextual_return(action) and cid is None
+            if dest not in records or dest in seen or (not back and cid not in owned_controls(region)) or (action.get('control') != cid) or (not back and action.get('operation') not in ('tap', 'click', 'left_click')) or (len(action.get('executed_steps', [])) > 1) or (action.get('delivery') != 'executed_receipt_zero') or (result.get('exception', 'none') != 'none') or (not (result.get('exception') == 'none' or result.get('status') == 'observed_effect')):
                 continue
             if require_control and (not path) and (not back) and (cid not in obs['control_refs']):
                 continue
-            step = {'source_region': source, 'source_control': cid, 'target_region': dest, 'attempt': edge['attempt'], 'operation': action['operation']}
+            step = {'source_region': source, 'source_control': cid, 'target_region': dest, 'attempt': edge['attempt'], 'operation': 'back' if back else action['operation']}
             seen.add(dest)
             queue.append((dest, path + [step]))
     return None
@@ -151,7 +151,7 @@ def _assemble_action_context(root, records, state, region_ref):
         owner = records[edge['source_region']]
         dynamic['已登记路线'].append({**edge, '来源区块': owner['name'], '入口': '系统返回' if edge['operation'] == 'back' else owned_controls(owner)[edge['source_control']]['name'], '目标区块': records[edge['target_region']]['name']})
     for edge in (path or [])[1:]:
-        if edge['operation'] not in ('click', 'tap'):
+        if edge['operation'] not in ('click', 'tap', 'left_click'):
             continue
         owner = records[edge['source_region']]
         control = owned_controls(owner)[edge['source_control']]

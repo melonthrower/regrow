@@ -128,7 +128,7 @@ def run(root, transport, out, call, repair=None):
             save()
             break
         restarted = any((a.get('framework_tool') == 'restart_app' for a in episode['actions']))
-        returns = sum((a.get('action', {}).get('action') == 'back' for a in episode['actions']))
+        returns = sum(row.get('action', {}).get('action') == 'back' or row.get('action', {}).get('button') == 'Back' for row in episode['actions'])
         tool = reply['framework_tool']
         proposal = reply['action']
         issuer = 'agent'
@@ -161,13 +161,19 @@ def run(root, transport, out, call, repair=None):
                 changed = True
             elif proposal and proposal['action'] not in ('back', 'wait', 'none'):
                 actions.commands(proposal, getattr(transport, 'platform', 'android'))
-                if proposal['action'] in ('key_press', 'hotkey'):
+                from regrow.runtime.qwen_actions import native
+                modern = native(proposal, getattr(transport, 'platform', 'android'))
+                if proposal['action'] in ('key_press', 'hotkey') or (modern and 'coordinate' not in proposal):
                     box = (0, 0, before.width, before.height)
                 else:
-                    (x, y) = (proposal['x'], proposal['y'])
+                    (x, y) = proposal['coordinate'] if modern else (proposal['x'], proposal['y'])
                     if not (0 <= x < before.width and 0 <= y < before.height):
                         raise ValueError('target outside frame')
-                    if proposal['action'] in ('scroll', 'drag') and (not (0 <= proposal['end_x'] < before.width and 0 <= proposal['end_y'] < before.height)):
+                    if modern and 'coordinate2' in proposal:
+                        ex, ey = proposal['coordinate2']
+                        if not (0 <= ex < before.width and 0 <= ey < before.height):
+                            raise ValueError('endpoint outside frame')
+                    if not modern and proposal['action'] in ('scroll', 'drag') and (not (0 <= proposal['end_x'] < before.width and 0 <= proposal['end_y'] < before.height)):
                         raise ValueError('endpoint outside frame')
                     box = (max(0, x - 48), max(0, y - 48), min(before.width, x + 49), min(before.height, y + 49))
                 changed = bool(ImageChops.difference(before.convert('RGB').crop(box), after.convert('RGB').crop(box)).getbbox())

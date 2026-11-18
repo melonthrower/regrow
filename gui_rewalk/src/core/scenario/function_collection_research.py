@@ -126,9 +126,11 @@ class RegionGuidedCollector:
 
     def execute(self, instruction, initial_observation=None, *, environment_context=None):
         from copy import deepcopy
-        from ..explore.actions import action_dict, execute_action, validate_for_platform
-        from ..explore.contracts import _parse_action
-        from ..explore.prompts import RESPONSE_SCHEMA
+        from io import BytesIO
+        from PIL import Image
+        import jsonschema
+        from .collection_graph import qwen_actions
+        device_schema = qwen_actions.argument_schema(self.platform)
         task = validate_region_instruction(instruction, self.ledger)
         schema = {"type": "object", "properties": {
             "app_scope": {"type": "string", "enum": ["target_app", "external_app", "uncertain"]},
@@ -136,17 +138,18 @@ class RegionGuidedCollector:
             "region_visible": {"type": "boolean"}, "complete": {"type": "boolean"},
             "condition_value": {"anyOf": [{"type": "boolean"}, {"type": "null"}]},
             "previous_action_outcome": {"type": "string", "enum": ["none", "success", "no_effect", "uncertain"]},
-            "reason": {"type": "string"}, "action": RESPONSE_SCHEMA["properties"]["action"]},
+            "reason": {"type": "string"}, "action": {"anyOf": [device_schema, {"type": "null"}]}},
             "required": ["app_scope", "visible_region_refs", "region_visible", "complete",
                          "condition_value", "previous_action_outcome", "reason", "action"],
             "additionalProperties": False}
         if self.visual_guard is not None:
             schema["properties"].update({
+                "target_name": {"type": "string"},
                 "visual_target_ref": {"anyOf": [{"type": "string"}, {"type": "null"}]},
                 "action_intent": {"type": "string"},
                 "previous_action_observation": {"type": "string"},
                 "previous_action_matches_intent": {"anyOf": [{"type": "boolean"}, {"type": "null"}]}})
-            schema["required"].extend(["visual_target_ref", "action_intent",
+            schema["required"].extend(["visual_target_ref", "target_name", "action_intent",
                                        "previous_action_observation", "previous_action_matches_intent"])
         grounding_feedback = None
         pending_schema = deepcopy(schema)
@@ -204,14 +207,14 @@ class RegionGuidedCollector:
                                    "若current_goal是定位、展开或观察准备，达到其要求的可见状态即可complete；"
                                    "若是业务目标，须实现所写结果。当前目标完成立即complete=true、action=null，将控制交回框架。"
                                    "完成后来源区块可消失或变为结果区块，按真实结果确认complete，不为保持旧区块可见而回退。"
-                                   "click、input_text、long_press、scroll都必须给当前图0至1000的point_1000；输入框已聚焦也不能省略输入点位或填null。只有back、wait无需点位。采集中的新控件owner_ref可为空。"
+                                   "action 使用本平台 Qwen3-VL 工具参数，coordinate 和 coordinate2 为当前原图像素。桌面滚动在当前指针处执行，pixels 是带符号的滚轮格数。"
                                    "不能用未显示的功能、输入凭据或执行超出用户目标的危险动作。"
                                    "完成目标或条件时action=null；否则至多一个动作。"
                                    + ("已知目标visual_target_ref复制known_visual_controls中的ref，未登记目标填null；"
-                                      "不能把目标换成坐标附近的其他控件来通过核对。已知目标action.target复制该ref的name，不填ref或内部ID；未知目标写实际控件和必要对象。"
+                                      "不能把目标换成坐标附近的其他控件来通过核对。target_name 写实际目标名称；已知控件取对应 name。"
                                       "action_intent写这一个动作期待的直接可见效果；无动作填空。"
                                       "grounding_feedback拒绝的提议未执行，不是上一动作，不要报告它的结果；"
-                                      "根据最新截图重新定位，不盲重发。反馈box为像素，动作仍用0..1000。"
+                                      "根据最新截图重新定位，不盲重发。反馈box为像素，动作坐标使用原图像素。"
                                       "previous_action_observation只写实际观察，previous_action_matches_intent说明是否实现上一步意图。"
                                       "success仅指预期直接效果已发生；误碰别的开关不是success或no_effect，应填uncertain并描述副作用。"
                                       "无待结算动作时observation为空、matches_intent=null。"
@@ -255,16 +258,21 @@ class RegionGuidedCollector:
                     goal_frames.append(frame)
                     queue.pop(0)
                     continue
-                action = _parse_action(decision.get("action"))
+                action = decision.get("action")
                 if action is None:
                     observation = self.env._get_obs()
                     continue
-                issue = validate_for_platform(action, platform=self.platform)
-                if issue:
-                    raise ValueError(issue)
+                jsonschema.validate(action, device_schema)
+                with Image.open(BytesIO(frame)) as image:
+                    for key in ('coordinate', 'coordinate2'):
+                        if key in action:
+                            x, y = action[key]
+                            if not (0 <= x < image.width and 0 <= y < image.height):
+                                raise ValueError(f"{key} outside the observed screen")
+                call = qwen_actions.tool_call(action, self.platform)
                 grounding = None
                 if self.visual_guard is not None:
-                    grounding = self.visual_guard.check(action, decision, frame, self.agent)
+                    grounding = self.visual_guard.check_tool(action, decision, frame, self.agent)
                     if not grounding["allowed"]:
                         grounding_feedback = grounding
                         observation = self.env._get_obs()
@@ -276,13 +284,14 @@ class RegionGuidedCollector:
                                    "ref_id": goal["region_ref"], "action_steps": 1, "committed": False,
                                    "observation_before": before, "observation_after": None,
                                    "grounding": {"primitive_actions": primitives, "visual_check": grounding},
-                                   "action_intent": decision.get("action_intent"),
+                                   "action_intent": decision.get("action_intent") or decision.get("reason"),
                                    "context_node_id": None, "arrived_node_id": None,
-                                   "action_spec": action_dict(action), "verification": None,
+                                   "action_spec": call, "verification": None,
                                    "graph_provenance": {"target_region_ref": goal["region_ref"],
                                                         "goal": goal["goal"], "branch_taken": branch}})
-                observation = execute_action(self.env, action, screenshot=frame, platform=self.platform,
-                                             executed_actions=primitives)
+                observation = self.env.step({"action_type": "QWEN_TOOL", "tool_call": call})
+                if not observation.get("action_error"):
+                    primitives.append(call)
                 trajectory[-1]["observation_after"] = observation
                 if observation.get("action_error"):
                     errors.append(str(observation["action_error"]))

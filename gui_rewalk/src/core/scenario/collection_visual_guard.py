@@ -31,15 +31,25 @@ class CollectionVisualGuard:
     def check(self, action, decision, screenshot, agent):
         if action.kind in {'back', 'wait'}:
             return {'allowed': True, 'verdict': 'non_point_action'}
+        return self._check_point(action.kind, action.target, _pixel_point(screenshot, action.point_1000),
+                                 decision, screenshot, agent, list(action.point_1000))
+
+    def check_tool(self, arguments, decision, screenshot, agent):
+        point = arguments.get('coordinate')
+        if point is None:
+            return {'allowed': True, 'verdict': 'non_point_action'}
+        return self._check_point(arguments['action'], decision['target_name'],
+                                 point, decision, screenshot, agent, None)
+
+    def _check_point(self, kind, target, point, decision, screenshot, agent, point_1000):
         folder = self.output_root / f'{len(self.checks) + 1:04d}'
         folder.mkdir()
         frame = folder / 'current.png'
         frame.write_bytes(screenshot)
-        point = _pixel_point(screenshot, action.point_1000)
         ref = decision.get('visual_target_ref')
         control = self.controls.get(ref)
-        result = {'target_ref': ref, 'target': action.target, 'point_pixels': list(point),
-                  'point_1000': list(action.point_1000), 'frame': str(frame),
+        result = {'target_ref': ref, 'target': target, 'point_pixels': list(point),
+                  'point_1000': point_1000, 'frame': str(frame),
                   'allowed': False, 'verdict': 'unresolved'}
         if control is not None:
             hit = self.match_control(control, str(frame))
@@ -49,7 +59,7 @@ class CollectionVisualGuard:
                 x, y = point
                 inside = box[0] <= x < box[2] and box[1] <= y < box[3]
                 result.update(allowed=inside, verdict='agree' if inside else 'mismatch')
-                if inside and action.target.strip().casefold() != control['name'].strip().casefold():
+                if inside and target.strip().casefold() != control['name'].strip().casefold():
                     result.update(allowed=False, verdict='unresolved',
                                   identity_check_reason='target label differs from selected control')
         if result['verdict'] == 'unresolved':
@@ -69,12 +79,12 @@ class CollectionVisualGuard:
                                '历史外观未可靠匹配或控件未登记，均不等于坐标错误。'
                                '只有当前图明确支持身份、可操作性和点位三者一致才confirmed=true；'
                                '遮挡、歧义、坐标落在相邻控件、无法确认时false并说明。'),
-                user_prompt=json.dumps({'target': action.target, 'kind': action.kind,
+                user_prompt=json.dumps({'target': target, 'kind': kind,
                                         'known_control': control.get('name') if control else None,
                                         'known_ref': ref,
                                         'action_intent': decision.get('action_intent', ''),
                                         'point_pixels': list(point),
-                                        'point_1000': list(action.point_1000)}, ensure_ascii=False))
+                                        'point_1000': point_1000}, ensure_ascii=False))
             result['visual_confirmation'] = verdict
             result['allowed'] = verdict.get('confirmed') is True
             if result['allowed']:

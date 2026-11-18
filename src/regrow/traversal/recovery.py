@@ -13,10 +13,20 @@ def schema():
 def action_defaults(reply):
     return deepcopy(reply)
 
+def _reply_schema(reply, platform):
+    from regrow.runtime import action_commands as _action_commands
+    envelope = reply.get('action')
+    operation = envelope.get('operation') if isinstance(envelope, dict) else None
+    from regrow.runtime.qwen_actions import native
+    contract = schema()
+    if isinstance(operation, dict) and native(operation, platform):
+        contract = _action_commands.platform_request({'response_schema': contract}, platform)['response_schema']
+    return contract
+
 def validate(reply, platform='android'):
     from regrow.runtime import action_commands as _action_commands
     reply = action_defaults(reply)
-    jsonschema.validate(reply, schema())
+    jsonschema.validate(reply, _reply_schema(reply, platform))
     (action, tool) = (reply['action'], reply['framework_tool'])
     if action:
         action = _action_commands.normalize(action)
@@ -40,7 +50,7 @@ def resolve(reply, platform='android'):
     """A cleared exception ends recovery; normal app navigation is not recovery."""
     from regrow.runtime import action_commands as _action_commands
     reply = action_defaults(reply)
-    jsonschema.validate(reply, schema())
+    jsonschema.validate(reply, _reply_schema(reply, platform))
     result = dict(reply)
     if result['exception'] == 'none':
         result.update(decision='resume_exploration', action=None, framework_tool=None, handoff=reply['handoff'] + '\n恢复观察：当前异常已消失；原探索问题尚未复核，建议中的后续动作尚未执行。')

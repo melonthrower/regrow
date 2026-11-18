@@ -30,6 +30,33 @@ def _bind_action_target(request, proposal, *, records=None):
                     basis='explicit registered object ref; ownership from records')
         if reference['kind'] == 'region':
             base['association'] = {'status': 'confirmed', 'basis': 'explicit_ref', 'region': owner}
+    from regrow.runtime.qwen_actions import native
+    if native(proposal, request.get('platform', 'android')):
+        kind = proposal['action']
+        if kind == 'type' and not (request.get('allow_input') or request.get('navigation_advice')):
+            return {**base, 'status': 'unresolved', 'reason': 'input is outside the routed task'}
+        if kind in ('scroll', 'hscroll', 'swipe') and not (request.get('allow_scroll') or request.get('navigation_advice')):
+            return {**base, 'status': 'unresolved', 'reason': 'scroll is outside the routed task'}
+        if kind in ('key', 'system_button', 'open', 'wait'):
+            return {**base, 'status': 'matched', 'basis': 'current platform or foreground action'}
+        if reference:
+            if 'coordinate' in proposal:
+                from PIL import Image
+                from pathlib import Path
+                frames = request.get('image_refs', [])
+                if len(frames) != 1 or not Path(frames[0]).is_file():
+                    return {**base, 'status': 'unresolved', 'reason': 'current screenshot is missing'}
+                with Image.open(frames[0]) as image:
+                    width, height = image.size
+                for key in ('coordinate', 'coordinate2'):
+                    if key in proposal:
+                        x, y = proposal[key]
+                        if not (0 <= x < width and 0 <= y < height):
+                            return {**base, 'status': 'unresolved', 'reason': 'coordinate outside screenshot'}
+            return {**base, 'status': 'matched', 'model_grounded': True}
+        return {**base, 'status': 'matched', 'model_grounded': True,
+                'association': {'status': 'unconfirmed', 'target': proposal.get('target'),
+                                'reason': '操作目标尚无准确ref，先登记目标再操作。'}}
     if proposal.get('action') == 'back':
         if proposal.get('x') is None and proposal.get('y') is None:
             return {**base, 'status': 'matched', 'basis': base.get('basis', 'region-owned return action; verify foreground before delivery')}

@@ -129,6 +129,23 @@ class AndroidController:
         from android_world.env import adb_utils
 
         self.last_action_error = ""
+        if action_json_dict.get('action_type') == 'QWEN_TOOL':
+            from regrow.runtime.qwen_actions import mobile_commands, validate
+            call = action_json_dict['tool_call']
+            if call['name'] != 'mobile_use':
+                raise ValueError('Expected mobile_use')
+            args = call['arguments']
+            validate(args, 'android')
+            if args['action'] == 'wait':
+                time.sleep(args['time'])
+            elif args['action'] == 'open' and '.' not in args['text']:
+                adb_utils.launch_app(args['text'], self._ctrl.env)
+            elif args['action'] == 'type':
+                adb_utils.type_text(args['text'], self._ctrl.env)
+            else:
+                for command in mobile_commands(args):
+                    adb_utils.issue_generic_request(command, self._ctrl.env)
+            return
         action_type = action_json_dict.get("action_type")
         if action_type in ("WAIT", "FAIL", "FINISHED", "DONE", "wait"):
             return

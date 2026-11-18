@@ -136,11 +136,12 @@ def take(run, request):
     q['source'].update(snapshot=source['snapshot'], observation=source['observation'])
     frame = str((Path(run) / source['image']).resolve())
     q.update(screenshots=[frame], image_refs=[frame])
-    from regrow.runtime.action_commands import executable_operation_schema, platform_request
-    q['response_schema'] = executable_operation_schema()
+    from regrow.runtime.model_transport import expand_schema
     from regrow.records.snapshots import read
-    platform = read(Path(run) / 'run_manifest.json').get('platform', 'android')
-    q = platform_request(q, platform)
+    # Validate a retained candidate against the contract at its originating update.
+    sent = expand_schema(original['response_schema'])
+    q['response_schema'] = deepcopy(sent['properties']['next_action'])
+    q['platform'] = read(Path(run) / 'run_manifest.json').get('platform', 'android')
     proposal = deepcopy(reply['next_action'])
     contract = original.get('sent_name_contract')
     if not contract:

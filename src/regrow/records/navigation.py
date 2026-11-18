@@ -3,7 +3,8 @@ from regrow.records.object_store import owned_actions
 
 def contextual_return(action):
     """Historical endpoint is not a promise about the current navigation stack."""
-    return action.get('operation') == 'back' or bool(action.get('return_context'))
+    return action.get('operation') == 'back' or (action.get('operation') == 'system_button' and any(
+        step.get('button') == 'Back' for step in action.get('executed_steps', []))) or bool(action.get('return_context'))
 
 def navigation_description(action):
     description = action.get('result', {}).get('description', '')
@@ -20,7 +21,7 @@ def bind_return(records, source, attempt):
     from regrow.records.action_evidence import has_observed_result
     from regrow.records.object_store import incoming
     action = owned_actions(records[source])[attempt]
-    if action.get('operation') != 'back' or not has_observed_result(action) or action['result']['exception'] != 'none':
+    if not contextual_return(action) or not has_observed_result(action) or action['result']['exception'] != 'none':
         return
     targets = [rid for rid in action.get('observed_destinations', []) if rid != source]
     entries = []
@@ -38,11 +39,11 @@ def bind_return(records, source, attempt):
         'evidence': dict(action['evidence'])}
 
 def known_entries(region, control, operation):
-    if operation not in ('tap', 'click'):
+    if operation not in ('tap', 'click', 'left_click'):
         return []
     hits = []
     for (aid, action) in owned_actions(region).items():
-        if action.get('control') != control or action.get('operation') not in ('tap', 'click') or action.get('delivery') != 'executed_receipt_zero' or (action.get('text_delivered') is False) or (action.get('result', {}).get('exception') != 'none') or contextual_return(action):
+        if action.get('control') != control or action.get('operation') not in ('tap', 'click', 'left_click') or action.get('delivery') != 'executed_receipt_zero' or (action.get('text_delivered') is False) or (action.get('result', {}).get('exception') != 'none') or contextual_return(action):
             continue
         targets = list(dict.fromkeys(action.get('observed_destinations', action.get('interactive_regions', []))))
         if len(targets) != 1 or targets[0] == region['id']:

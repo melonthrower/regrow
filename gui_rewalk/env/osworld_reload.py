@@ -411,6 +411,25 @@ class PythonController:
         """
         Executes a GUI action.
         """
+        if action_json_dict.get('action_type') == 'QWEN_TOOL':
+            from regrow.runtime.qwen_actions import desktop_commands
+            call = action_json_dict['tool_call']
+            if call['name'] != 'computer_use':
+                raise ValueError('Expected computer_use')
+            args = call['arguments']
+            commands = desktop_commands(args)
+            if args['action'] == 'wait':
+                time.sleep(args['time'])
+            for command in commands:
+                # A command whose delivery is uncertain must not be retried.
+                argv = ['python', '-c', self.pkgs_prefix.format(command=command)]
+                response = requests.post(self.http_server + '/execute', json={'command': argv, 'shell': False},
+                                         timeout=self.request_timeout)
+                response.raise_for_status()
+                receipt = response.json()
+                if receipt.get('returncode') != 0:
+                    raise RuntimeError('Desktop action delivery unconfirmed')
+            return
         action_type = action_json_dict['action_type']
         if action_type in ['WAIT', 'FAIL', 'FINISHED']:
             return

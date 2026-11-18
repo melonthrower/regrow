@@ -142,7 +142,7 @@ def _selected_blocks(root, original, paths):
     for rule in recipe.get('outputs', []):
         fields = rule.get('fields', [])
         platform = rule.get('format') == 'platform' and any(
-            p.split('.')[0] in ('action', 'target', 'x', 'y', 'end_x', 'end_y', 'text') for p in paths)
+            p.split('.')[0] in ('action', 'target', 'x', 'y', 'end_x', 'end_y', 'text', 'coordinate', 'coordinate2', 'keys', 'button', 'time', 'pixels') for p in paths)
         details = []
         for detail in rule.get('details', []):
             conditions = known.get(detail['block'], set())

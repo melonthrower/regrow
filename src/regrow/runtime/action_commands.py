@@ -93,26 +93,23 @@ def execution_schema():
 
 def platform_request(request, platform):
     from copy import deepcopy
+    from regrow.runtime.qwen_actions import specialize
     q = deepcopy(request)
     q['platform'] = platform
 
     def restrict(node):
         if isinstance(node, dict):
-            if platform == 'android':
-                allowed = set(ANDROID_ACTIONS) | {'complete'}
-                action = node.get('properties', {}).get('action', {})
-                if 'enum' in action:
-                    action['enum'] = [v for v in action['enum'] if v in allowed]
-                if action.get('enum') == ['key_press']:
-                    node['properties']['text']['enum'] = list(ANDROID_KEYS)
-                if 'anyOf' in node:
-                    node['anyOf'] = [b for b in node['anyOf'] if not ('enum' in b.get('properties', {}).get('action', {}) and (not set(b['properties']['action']['enum']).intersection(allowed)))]
+            if 'anyOf' in node:
+                node['anyOf'] = specialize(node['anyOf'], platform)
             for child in node.values():
                 restrict(child)
         elif isinstance(node, list):
             for child in node:
                 restrict(child)
     restrict(q.get('response_schema', {}))
+    if q.get('name_contract'):
+        # Some review requests already carry the internal reference schema.
+        restrict(q['name_contract']['schema'])
     return q
 
 def normalize(proposal):
@@ -124,7 +121,7 @@ def normalize(proposal):
     p.setdefault('target', '当前工作')
     if p['action'] == 'back' and not re.fullmatch(r'[cr]\d+(?:/.*)?', str(p['target']).strip()):
         p['target'] = '系统返回'
-    if p['action'] not in ('input_text', 'key_press', 'hotkey'):
+    if p['action'] not in ('input_text', 'key_press', 'hotkey', 'key', 'type', 'open'):
         p['text'] = None
     if p['action'] not in ('scroll', 'drag'):
         p.update(end_x=None, end_y=None)
@@ -137,7 +134,11 @@ def validate(proposal, platform='android'):
     if proposal.get('request_task_review'):
         raise ValueError('使用共同task_update提交明确判断')
     if 'operation' in proposal:
-        jsonschema.validate(proposal, schema())
+        from regrow.runtime.qwen_actions import native
+        contract = schema()
+        if native(proposal['operation'], platform):
+            contract = platform_request({'response_schema': contract}, platform)['response_schema']
+        jsonschema.validate(proposal, contract)
     normalized = normalize(proposal)
     if normalized.get('task_update') and normalized['action'] != 'none':
         raise ValueError('任务判断不能冒充已执行动作')
@@ -150,6 +151,9 @@ def commands(proposal, platform='android'):
         return desktop_commands(proposal)
     p = normalize(proposal)
     kind = p['action']
+    from regrow.runtime.qwen_actions import native, mobile_commands
+    if native(p, 'android'):
+        return mobile_commands(p)
     if kind not in ANDROID_ACTIONS:
         raise ValueError('unsupported Android action: ' + kind)
     if kind == 'key_press':
@@ -218,6 +222,9 @@ def execute(transport, proposal, folder):
 
     def finish(delivered=None, description=''):
         receipt = {**(receipts[-1] if receipts else {'exit_code': 0}), 'semantic_result': 'unverified', 'executed_steps': steps}
+        from regrow.runtime.qwen_actions import native, tool_call
+        if receipt['exit_code'] == 0 and steps and native(proposal, platform):
+            receipt['tool_call'] = tool_call(proposal, platform)
         if delivered is not None:
             receipt['text_delivered'] = delivered
             receipt['input_mode'] = 'replace'
@@ -227,8 +234,9 @@ def execute(transport, proposal, folder):
         return receipt
     if proposal['action'] != 'input_text':
         if proposal['action'] == 'wait':
-            time.sleep(2)
-            steps.append({'action': 'wait', 'seconds': 2})
+            seconds = proposal.get('time', 2)
+            time.sleep(seconds)
+            steps.append({'action': 'wait', 'time': seconds})
             save('executed_steps.json', steps)
         for command in argv:
             if send(command, dict(proposal))['exit_code'] != 0:

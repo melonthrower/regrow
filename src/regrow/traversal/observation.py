@@ -85,7 +85,7 @@ def retained_action_target(run, snapshot, records, state):
     request, proposal = submission(run, ref)
     proposal = normalize(proposal)
     frames = request.get('screenshots', [])
-    if len(frames) != 1 or proposal.get('action') not in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'input_text'):
+    if len(frames) != 1 or proposal.get('action') not in ('tap', 'click', 'left_click', 'middle_click', 'double_click', 'triple_click', 'long_press', 'right_click', 'input_text', 'mouse_move', 'left_click_drag', 'swipe'):
         return None
     frame = (run / frames[0]).resolve()
     if (not frame.is_file() or not state.get('pending_frame')
@@ -111,7 +111,7 @@ def register_action_target(run, request, proposal, binding, call, *, episode=Non
     """Register any object-directed target through discovery before delivery."""
     if binding.get('association', {}).get('status') != 'unconfirmed':
         return False
-    if proposal.get('action') not in ('tap', 'click', 'double_click', 'long_press', 'right_click', 'input_text', 'scroll', 'hover', 'drag'):
+    if proposal.get('action') not in ('tap', 'click', 'left_click', 'middle_click', 'double_click', 'triple_click', 'long_press', 'right_click', 'input_text', 'mouse_move', 'left_click_drag', 'swipe', 'scroll', 'hscroll', 'type', 'hover', 'drag'):
         return False
     frame = str((Path(run) / request['screenshots'][0]).resolve())
     if not Path(frame).is_file():

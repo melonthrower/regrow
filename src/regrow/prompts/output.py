@@ -176,13 +176,15 @@ def action_contract(root, request, parts):
     source = next((p for p in parts if p['path'] == path), None)
     if not source or '| action | 操作含义 |' not in source['text']:
         return None
-    common = definition['platforms']['common_fields']
-    fields = next((p for p in parts if p['path'] == common), None)
     _, schema = selected
     required = {action: tuple((f for f in branch.get('required', []) if f != 'action')) for branch in schema.get('anyOf', []) for action in branch.get('properties', {}).get('action', {}).get('enum', []) if action not in ('none', 'complete')}
     text = source['text']
-    heading = text.splitlines()[0].lstrip('# ')
-    (_, table) = text.split('| action | 操作含义 |', 1)
+    intro, table = text.split('| action | 操作含义 |', 1)
+    title, *body = intro.strip().splitlines()
+    # The platform section owns its coordinate conventions; the schema supplies required fields.
+    if body and body[-1].strip() == config.get('actions_heading'):
+        body.pop()
+    introduction = '\n'.join(['### ' + title.lstrip('# '), *body]).rstrip()
     rows = []
     tail = []
     seen = set()
@@ -206,9 +208,8 @@ def action_contract(root, request, parts):
             tail.append(line)
     if seen != set(required):
         raise ValueError('平台动作说明缺少：' + ', '.join(sorted(set(required) - seen)))
-    field_text = ''  # Object action.proposal owns target/reason/coordinate semantics.
     header = definition['output']['action_text']['merged_table_header']
-    return {'path': marker, 'text': '### ' + heading + '\n' + field_text + '\n\n' + header + '\n|---|---|---|\n' + '\n'.join(rows) + ('\n\n' + '\n'.join(tail) if tail else '')}
+    return {'path': marker, 'text': introduction + '\n\n' + header + '\n|---|---|---|\n' + '\n'.join(rows) + ('\n\n' + '\n'.join(tail) if tail else '')}
 
 def original_rules(request, rules):
     """Remove only whole, identical fixed parts already present in system.

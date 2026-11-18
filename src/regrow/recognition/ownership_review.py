@@ -548,8 +548,9 @@ def run(root, transport, out, call):
         atomic(path, episode)
         return {'status': 'correction_blocked', 'reason': str(error)}
     episode.pop('pending_request', None)
-    from regrow.recognition.named_references import internal_request
-    jsonschema.validate(reply, internal_request(q)['response_schema'])
+    from regrow.records.calls import submission
+    sent, _ = submission(run, ref)
+    jsonschema.validate(reply, sent['response_schema'])
     if not reply['reason'].strip():
         raise ValueError('ownership review needs reason')
     (_, records, _) = _record_load(run)
@@ -649,7 +650,7 @@ def independent_target(run, q, p, pending, report):
             or p.get('foreground', {}).get('exception', 'none') != 'none'):
         return None
     proposal = pending['proposal']
-    x, y = proposal.get('x'), proposal.get('y')
+    x, y = proposal.get('coordinate', (proposal.get('x'), proposal.get('y')))
     if type(x) not in (int, float) or type(y) not in (int, float):
         return None
     disputed = set()

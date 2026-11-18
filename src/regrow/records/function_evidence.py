@@ -22,7 +22,7 @@ def region_action(action):
     """Known Region operations do not require an associated control."""
     return (not action.get('control')
             and (action.get('association') or {}).get('status') != 'unconfirmed'
-            and (action.get('operation') in ('scroll', 'back', 'wait', 'key_press', 'hotkey')
+            and (action.get('operation') in ('scroll', 'hscroll', 'swipe', 'back', 'system_button', 'open', 'wait', 'key', 'key_press', 'hotkey')
                  or (action.get('association') or {}).get('basis') == 'explicit_ref'))
 
 def action_row(region, aid, action, records=None):

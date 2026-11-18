@@ -11,7 +11,7 @@ from regrow.records.action_evidence import has_observed_result
 import json
 
 def action_name(value):
-    return 'click' if value == 'tap' else value
+    return 'click' if value in ('tap', 'left_click') else value
 
 def task_key(task):
     from regrow.records.control_context import conditions

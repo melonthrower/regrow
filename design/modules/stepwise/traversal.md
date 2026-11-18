@@ -288,3 +288,13 @@ TaskProposer/region_tasks复用records/task_plans；同控件同类型不再终�
 
 
 2026-11-07 字段标记：普通步骤及保留的 step_correction 能力共用纠错展示，身份/目标视觉核对保持专门合同。局部合并失败从本次已保存 response.json 读取实际未接受提交，另保留原稿；不再用旧值遮住新错误。proposal_revision 只增临时字段来源记录，异常 path/actual/reply_source 区分本次 edits 与原稿保留关系；成功合并的结果、返回结构和业务规则不变。此分支仅静态修订复核，未新增用户未确认的执行案例。
+
+
+## 2026-11-19 Qwen3-VL 平台动作
+
+当次平台动作 Schema 用于选择、后图接续和恢复。对象完整引用、目标和理由沿用原遍历合同。桌面滚轮按当前指针和有符号格数执行，手机 swipe 传入两个点。
+ReGROW 用 Region、Control 与探索问题组织数据，实际设备操作采用 Qwen3-VL 的桌面 `computer_use` 和手机 `mobile_use`。动作名称、参数及其执行顺序进入训练样本；目标引用和探索理由供遍历登记。
+
+桌面滚轮在当前指针处执行。移动到列表、滚动、点击、在当前焦点输入分别记录。手机滑动由起点和终点确定。旧运行按当时请求的合同接收；仅在旧记录能确定实际步骤时转换为训练调用。
+
+OSWorld 使用既有 Qwen3VLAgent 解析器和决策帧尺寸转换坐标。其已固定版本缺少横向滚动、三击和回答的执行分支，导出时统计差异并保留官方动作。[官方工具定义](https://github.com/QwenLM/Qwen3-VL/blob/main/cookbooks/utils/agent_function_call.py) · [OSWorld 适配器](https://github.com/xlang-ai/OSWorld/blob/7a17d3abc86d524420ea4ec96752f84d245fea74/mm_agents/qwen3vl_agent.py)

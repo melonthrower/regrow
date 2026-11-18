@@ -139,6 +139,8 @@ def attach_execution(records, run):
                 a['purpose'] = data.get('reason', '')
                 receipt_path = Path(run) / f'action_attempts/{aid}/receipt.json'
                 receipt = read(receipt_path) if receipt_path.exists() else {}
+                if data.get('action') == 'system_button':
+                    a['executed_steps'] = deepcopy(receipt.get('executed_steps', []))
                 if data.get('action') == 'input_text' and 'text_delivered' in receipt:
                     a['intended_operation'] = 'input_text'
                     a['text_delivered'] = receipt['text_delivered']

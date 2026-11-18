@@ -15,6 +15,9 @@ def commands(p):
     from regrow.runtime.action_commands import normalize
     from regrow.runtime.action_commands import commands as android_validate
     p = normalize(p)
+    from regrow.runtime.qwen_actions import native, desktop_commands
+    if native(p, 'desktop'):
+        return desktop_commands(p)
     extended = p['action'] in ('key_press', 'hotkey', 'hover', 'right_click', 'drag')
     if not extended:
         android_validate(p)

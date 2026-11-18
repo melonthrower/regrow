@@ -12,7 +12,7 @@ from regrow.records.snapshots import read, write_json
 from regrow.prompts.frame_context import primary, label, select
 from regrow.recognition.identity_templates import appearance_box
 
-GEOMETRY = {'bbox', 'appearance_bbox', 'icon_bbox', 'click_bbox', 'click_area', 'x', 'y', 'end_x', 'end_y',
+GEOMETRY = {'bbox', 'appearance_bbox', 'icon_bbox', 'click_bbox', 'click_area', 'x', 'y', 'end_x', 'end_y', 'coordinate', 'coordinate2',
             'left', 'top', 'right', 'bottom'}
 BOX = {'type': 'object', 'properties': {k: {'type': 'integer', 'minimum': 0}
        for k in ('left', 'top', 'right', 'bottom')},

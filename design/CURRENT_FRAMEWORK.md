@@ -360,3 +360,8 @@ records.tasks.coverage不再用registration_gaps.discovery.pending或suspended_b
 
 
 2026-11-07 字段标记纠错：新生成的格式与步骤纠错复用 `prompts/correction_fields.py`，在原稿展示副本的错误字段旁加注释，保留原任务/历史/截图，只选相关字段原说明；接收 Schema、原答与正常登记/合并规则不变。局部修订失败保留最新提交及原稿，关系错误标明位置属于原稿还是本次修订。两项经用户确认的本地输出检查通过（0模型/GUI）；未做新模型或遍历验收，也未据此补齐所有旧语义校验的字段定位。
+
+
+## 2026-11-19 Qwen3-VL 平台动作
+
+桌面、手机 GUI 动作采用 Qwen3-VL 对应平台的工具定义，适用于遍历、采集与训练导出。详见[动作空间](modules/stepwise/traversal.md)。
